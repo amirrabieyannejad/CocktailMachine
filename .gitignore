@@ -1,0 +1,14 @@
+
+
+# Für das Latex Dokument
+*.aux
+*.bbl
+*.blg
+*.lof
+*.log
+*.lol
+*.lot
+*.out
+*.synctex
+*.thm
++.toc
