@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
 
-# type annotations and basic datatypes
+# type annotations
 from __future__ import annotations
-from typing import Dict, Optional, List, Set
+from typing import Dict, Optional, List, Set, Any
+
+# datatypes
+import dataclasses
 from dataclasses import dataclass
 from enum import Enum
+import json
+import uuid
+from uuid import UUID
 
 # server
 import http.server
@@ -15,8 +21,6 @@ import logging
 import random
 import re
 import time
-import uuid
-from uuid import UUID
 
 SERVER = "localhost"
 PORT   = 8080
@@ -35,7 +39,7 @@ class Server():
   queue:  List[Command]
   weight: float
   admins: Set[UUID]
-  users:  Dict[UUID, User]
+  users:  Dict[UUID, str]
 
   def __init__(self):
     self.pumps  = []
@@ -69,7 +73,7 @@ class Server():
       self.process(cmd)
 
   def process(self, cmd: Command):
-    admin = cmd.user.id in self.admins
+    admin = cmd.user in self.admins
 
     if isinstance(cmd, CmdTest):
       # simple test command that does nothing
@@ -96,11 +100,10 @@ class Server():
   def add_admin(self, id: UUID):
     self.admins.add(id)
 
-  def init_user(self, name: str) -> User:
+  def init_user(self, name: str) -> UUID:
     id = uuid.uuid1()
-    user = User(name, id)
-    self.users[id] = user
-    return user
+    self.users[id] = name
+    return id
 
   def ready(self) -> bool:
     return len(self.queue) == 0
@@ -121,23 +124,54 @@ class Pump():
   def refill(self, volume: float):
     self.volume += volume
 
-@dataclass(frozen=True)
-class User:
-  name: str
-  id: UUID
-
 # supported commands
 ####################
 
+# encode uuids as strings
+class UUIDJSONEncoder(json.JSONEncoder):
+  def default(self, o):
+    if isinstance(o, UUID):
+      return str(o)
+    return super().default(o)
+
 @dataclass(frozen=True)
 class Command:
-  user: User
+  user: UUID
 
+  # generate the command name from the class name
   def name(self) -> str:
     cls   = self.__class__.__name__
     name  = re.sub(r"^Cmd", "", cls)
     parts = [part.lower() for part in re.sub(r"([A-Z])", r" \1", name).split()]
     return "_".join(parts)
+
+  # encode commands as dicts and as json
+  @property
+  def __dict__(self):
+    d = {"cmd": self.name()}
+    d.update(dataclasses.asdict(self))
+    return d
+
+  @property
+  def json(self):
+    return json.dumps(self.__dict__, cls=UUIDJSONEncoder)
+
+  # load commands from json
+  @classmethod
+  def from_json(cls, json_cmd: str) -> Command:
+    d     = json.loads(json_cmd)
+    name  = d.pop("cmd")
+    parts = [part[0].upper() + part[1:] for part in re.sub(r"([_])", r" \1", name).split()]
+    cmd   = "Cmd" + "".join(parts)
+
+    try:
+      cls = globals()[cmd]
+    except:
+      raise Exception(f"unsupported command: {cmd}")
+
+    d["user"] = UUID(d["user"])
+
+    return cls(**d)
 
 @dataclass(frozen=True)
 class CmdTest(Command):
@@ -147,11 +181,6 @@ class CmdTest(Command):
 class CmdAddLiquid(Command):
   liquid: str
   volume: float
-
-Commands = [
-  {"name": "status"},
-  {"name": "add_liquid", "volume": float},
-]
 
 # process commands
 ##################

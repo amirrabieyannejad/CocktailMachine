@@ -49,3 +49,17 @@ class TestServer:
     assert s.weight == 500
 
     assert s.liquids() == {"beer": 700, "lemonade": 800}
+
+class TestJson:
+  s = sim.Server()
+  u = s.init_user("test-user")
+  a = s.init_user("test-admin")
+  s.add_admin(a)
+
+  def test_serialize(self):
+    c = sim.CmdTest(self.u)
+    assert c.json == f'{{"cmd": "test", "user": "{self.u}"}}'
+
+  def test_deserialize(self):
+    c = sim.CmdTest(self.u)
+    assert sim.Command.from_json(f'{{"cmd": "test", "user": "{self.u}"}}') == c
