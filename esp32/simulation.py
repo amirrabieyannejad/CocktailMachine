@@ -2,7 +2,7 @@
 
 # type annotations
 from __future__ import annotations
-from typing import Dict, Optional, List, Set
+from typing import Dict, NamedTuple, Optional, List, Set
 from enum import Enum
 
 # server
@@ -33,13 +33,14 @@ class Server():
   queue:  List[Command]
   weight: float
   admins: Set[UUID]
+  users:  Dict[UUID, User]
 
   def __init__(self):
     self.pumps  = []
     self.queue  = []
     self.weight = 0
     self.admins = set()
-    self.users  = Dict[UUID, str]
+    self.users  = {}
 
   def add_to_drink(self, liquid: str, volume: float):
     if volume <= 0:
@@ -66,7 +67,7 @@ class Server():
       self.process(cmd)
 
   def process(self, cmd: Command):
-    admin = cmd.user_id in self.admins
+    admin = cmd.user.id in self.admins
     # TODO
     pass
 
@@ -85,10 +86,14 @@ class Server():
   def add_admin(self, id: UUID):
     self.admins.add(id)
 
-  def init_user(self, name: str) -> UUID:
+  def init_user(self, name: str) -> User:
     id = uuid.uuid1()
-    self.users[id] = str
-    return id
+    user = User(name, id)
+    self.users[id] = user
+    return user
+
+  def ready(self) -> bool:
+    return len(self.queue) == 0
 
 class Pump():
   liquid: str
@@ -107,13 +112,21 @@ class Pump():
   def refill(self, volume: float):
     self.volume += volume
 
+class User(NamedTuple):
+  name: str
+  id: UUID
+
 # supported commands
 ####################
 
-class Command():
-  user_name: str
-  user_id:   UUID
-  name:      str
+class Command(NamedTuple):
+  name: str
+  user: User
+
+Commands = [
+  {"name": "status"},
+  {"name": "add_liquid", "volume": float},
+]
 
 # process commands
 ##################
