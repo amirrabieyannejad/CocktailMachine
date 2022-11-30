@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-# type annotations
+# type annotations and basic datatypes
 from __future__ import annotations
-from typing import Dict, NamedTuple, Optional, List, Set
+from typing import Dict, Optional, List, Set
+from dataclasses import dataclass
 from enum import Enum
 
 # server
@@ -12,6 +13,7 @@ import http.server
 import argparse
 import logging
 import random
+import re
 import time
 import uuid
 from uuid import UUID
@@ -68,13 +70,21 @@ class Server():
 
   def process(self, cmd: Command):
     admin = cmd.user.id in self.admins
-    # TODO
-    pass
+
+    if isinstance(cmd, CmdTest):
+      # simple test command that does nothing
+      pass
+
+    elif isinstance(cmd, CmdAddLiquid):
+      self.add_to_drink(cmd.liquid, cmd.volume)
+
+    else:
+      raise Exception(f"unsupported command: {cmd}")
 
   def liquids(self) -> Dict[str, float]:
     ls: Dict[str, float] = {}
     for p in self.pumps:
-      ls[p.liquid] += p.volume
+      ls[p.liquid] = ls.get(p.liquid, 0) + p.volume
     return ls
 
   def add_pump(self, pump: Pump):
@@ -104,24 +114,39 @@ class Pump():
     self.volume = max(0, volume)
 
   def drain(self, volume: float) -> float:
-    drained = max(0, self.volume - volume)
-    self.volume = drained
-
-    return drained
+    diff = max(0, min(self.volume, volume))
+    self.volume -= diff
+    return diff
 
   def refill(self, volume: float):
     self.volume += volume
 
-class User(NamedTuple):
+@dataclass(frozen=True)
+class User:
   name: str
   id: UUID
 
 # supported commands
 ####################
 
-class Command(NamedTuple):
-  name: str
+@dataclass(frozen=True)
+class Command:
   user: User
+
+  def name(self) -> str:
+    cls   = self.__class__.__name__
+    name  = re.sub(r"^Cmd", "", cls)
+    parts = [part.lower() for part in re.sub(r"([A-Z])", r" \1", name).split()]
+    return "_".join(parts)
+
+@dataclass(frozen=True)
+class CmdTest(Command):
+  pass
+
+@dataclass(frozen=True)
+class CmdAddLiquid(Command):
+  liquid: str
+  volume: float
 
 Commands = [
   {"name": "status"},
