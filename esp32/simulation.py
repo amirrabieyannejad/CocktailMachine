@@ -14,9 +14,6 @@ import json
 import uuid
 from uuid import UUID
 
-# server
-import http.server
-
 # utilities
 import argparse
 import logging
@@ -261,7 +258,10 @@ class Command(ABC):
     except:
       raise Exception(f"unsupported command: {cmd}")
 
-    parsed["user"] = UUID(parsed["user"])
+    try:
+      parsed["user"] = UUID(parsed["user"])
+    except KeyError:
+      raise Exception("missing argument: user")
 
     return cls(**parsed)
 
@@ -304,20 +304,18 @@ class CmdAddLiquid(Command):
 # ways to receive commands
 ##################
 
-def start_web_server(server: str, port: int):
-  logging.info(f"starting web server on {server}:{port}")
-  # TODO
-  pass
-
 def start_bluetooth():
-  logging.info("starting bluetooth")
-  # TODO
-  pass
+  logging.info("[TODO] starting bluetooth")
 
-def read_commands():
-  logging.info("starting to read commands on stdin")
-  # TODO
-  pass
+def read_command() -> Optional[Command]:
+  read = input("> ")
+  try:
+    cmd  = Command.from_json(read)
+  except Exception as e:
+    logging.error(e)
+    return None
+
+  return cmd
 
 # misc
 ######
@@ -331,8 +329,6 @@ def main():
     description = "Simulates the functionality of the ESP32 as far as other apps are concerned.")
 
   parser.add_argument("-b", "--bluetooth", action="store_true", help=f"turn on bluetooth ({NAME})")
-  parser.add_argument("-w", "--web",       action="store_true", help=f"turn on local web server on {SERVER}:{PORT}")
-  parser.add_argument("-i", "--stdin",     action="store_true", help=f"read commands on STDIN")
   parser.add_argument("-l", "--commands",  action="store_true", help="list all supported commands and an example JSON encoding")
 
   args = parser.parse_args()
@@ -358,13 +354,18 @@ def main():
   if args.bluetooth:
     start_bluetooth()
 
-  if args.web:
-    start_web_server(SERVER, PORT)
-
-  if args.stdin:
-    read_commands()
-
   server.show_status()
+  logging.info("reading commands from STDIN")
+
+  while True:
+    try:
+      cmd = read_command()
+      if cmd:
+        server.process(cmd)
+        server.show_status()
+
+    except KeyboardInterrupt:
+      exit(0)
 
 if __name__ == "__main__":
   main()

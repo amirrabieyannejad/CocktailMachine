@@ -16,15 +16,12 @@
 
 ## Bluetooth Server starten
 
-(braucht bluepy, siehe requirements.txt)
+TODO, braucht bluepy, siehe requirements.txt
 
     ./simulation.py --bluetooth
 
-## lokalen HTTP-Server starten
-    ./simulation.py --web
-
 ## Befehle von STDIN einlesen
-    ./simulation.py --stdin
+    ./simulation.py 
 
 ## alle Werte eines Bluetooth-LE-Servers auflisten
      ./read_bluetooth.py [MAC des Servers]
