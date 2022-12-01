@@ -12,8 +12,7 @@ class TestServer:
     s = sim.Server()
     assert s.ready(), "should be ready on startup"
 
-    u = s.init_user("test-user")
-    s.add_command(sim.CmdTest(u))
+    s.add_command(sim.CmdTest())
     assert not s.ready(), "shouldn't be ready before processing commands"
 
     s.process_queue()
@@ -59,9 +58,9 @@ class TestJson:
   s.add_admin(a)
 
   def test_serialize(self):
-    c = sim.CmdTest(self.u)
-    assert c.json() == f'{{"cmd": "test", "user": "{self.u}"}}'
+    c = sim.CmdTest()
+    assert c.json() == '{"cmd": "test"}'
 
   def test_deserialize(self):
-    c = sim.CmdTest(self.u)
-    assert sim.Command.from_json(f'{{"cmd": "test", "user": "{self.u}"}}') == c
+    c = sim.CmdTest()
+    assert sim.Command.from_json('{"cmd": "test"}') == c

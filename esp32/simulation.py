@@ -2,7 +2,7 @@
 
 # type annotations
 from __future__ import annotations
-from typing import ClassVar, Dict, Optional, List, Set, Any
+from typing import ClassVar, Dict, Optional, List, Set, Any, Tuple
 
 # datatypes
 from abc import ABC, abstractmethod
@@ -107,7 +107,7 @@ class Server():
       self.process(cmd)
 
   def process(self, cmd: Command):
-    admin = cmd.user in self.admins
+    admin = isinstance(cmd, UserCommand) and cmd.user in self.admins
 
     if isinstance(cmd, CmdTest):
       # simple test command that does nothing
@@ -216,11 +216,10 @@ class UUIDJSONEncoder(json.JSONEncoder):
 
 @dataclass(frozen=True)
 class Command(ABC):
-  # mandatory field for every command
-  user: UUID
-
   # metadata
-  desc:    ClassVar[str] = "[generic superclass of commands]"
+  desc:    ClassVar[str]  = "[generic superclass of commands]"
+  admin:   ClassVar[bool] = False
+  no_uuid: ClassVar[bool] = False
   example: ClassVar[Dict[str, Any]] = {}
 
   # generate the command name from the class name
@@ -232,13 +231,13 @@ class Command(ABC):
     return "_".join(parts)
 
   @property
-  def name(self) -> str:
+  def cmdname(self) -> str:
     return self.__class__.basename()
 
   # encode commands as dicts and as json
   @property
   def dict(self):
-    d = {"cmd": self.name}
+    d = {"cmd": self.cmdname}
     d.update(dataclasses.asdict(self))
     return d
 
@@ -251,32 +250,41 @@ class Command(ABC):
     parsed = json.loads(json_cmd)
     name   = parsed.pop("cmd")
     parts  = [part[0].upper() + part[1:] for part in re.sub(r"([_])", r" \1", name).split()]
-    cmd    = "Cmd" + "".join(parts)
+    full   = "Cmd" + "".join(parts)
 
     try:
-      cls = globals()[cmd]
+      cmd = globals()[full]
     except:
       raise Exception(f"unsupported command: {cmd}")
 
-    try:
-      parsed["user"] = UUID(parsed["user"])
-    except KeyError:
-      raise Exception("missing argument: user")
+    if isinstance(cmd, UserCommand):
+      try:
+        parsed["user"] = UUID(parsed["user"])
+      except KeyError:
+        raise Exception("missing argument: user")
 
-    return cls(**parsed)
+    return cmd(**parsed) # type: ignore # this is always a Command
 
   @classmethod
   def description(cls, indent: Optional[int] = None):
     out = []
-    out.append(f"{cls.basename()}: {cls.desc}")
+    if cls.admin:
+      out.append(f"{cls.basename()} [ADMIN]: {cls.desc}")
+    else:
+      out.append(f"{cls.basename()}: {cls.desc}")
 
-    for field in dataclasses.fields(cls):
-      out.append(f"  - {field.name}: {field.type}")
-    out.append("")
+    fields = dataclasses.fields(cls)
+    if fields:
+      for field in fields:
+        out.append(f"  - {field.name}: {field.type}")
+      out.append("")
 
     out.append("  json example:")
+
     example_values = cls.example
-    example_values["user"] = uuid.uuid1() # add random mandatory uuid
+    if [f for f in dataclasses.fields(cls) if f.name == "user"]:
+      example_values["user"] = uuid.uuid1() # add random mandatory uuid
+
     example = cls(**example_values)
 
     if indent:
@@ -286,6 +294,11 @@ class Command(ABC):
 
     return "\n".join(out)
 
+@dataclass(frozen=True)
+class UserCommand(Command):
+  # mandatory field for every authenticated command
+  user: UUID
+
 # supported commands
 ####################
 
@@ -294,12 +307,55 @@ class CmdTest(Command):
   desc = "dummy command that does nothing"
 
 @dataclass(frozen=True)
-class CmdAddLiquid(Command):
-  desc = "add given liquid to glass"
+class CmdAddLiquid(UserCommand):
   liquid: str
   volume: float
 
+  admin   = True
+  desc    = "add given liquid to glass"
   example = {"liquid": "water", "volume": 30}
+
+@dataclass(frozen=True)
+class CmdMakeRecipe(UserCommand):
+  recipe: str
+
+  desc    = "make recipe"
+  example = {"recipe": "radler"}
+
+@dataclass(frozen=True)
+class CmdDefineRecipe(UserCommand):
+  recipe: str
+  liquids: List[Tuple[str, float]]
+
+  admin   = True
+  desc    = "define new recipe"
+  example = {"recipe": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}
+
+@dataclass(frozen=True)
+class CmdAddPump(UserCommand):
+  liquid: str
+  volume: float
+
+  admin   = True
+  desc    = "add given pump to device"
+  example = {"liquid": "water", "volume": 1000}
+
+@dataclass(frozen=True)
+class CmdCalibratePumps(UserCommand):
+  desc  = "calibrate all pumps"
+  admin = True
+
+@dataclass(frozen=True)
+class CmdClean(UserCommand):
+  desc  = "clean machine"
+  admin = True
+
+@dataclass(frozen=True)
+class CmdInitUser(Command):
+  name: str
+
+  desc    = "introduce yourself as a new user and receive your uuid"
+  example = {"name": "test-user"}
 
 # ways to receive commands
 ##################
@@ -334,14 +390,15 @@ def main():
   args = parser.parse_args()
 
   if args.commands:
-    subs = Command.__subclasses__()
+    cmds = Command.__subclasses__() + UserCommand.__subclasses__()
+    cmds.remove(UserCommand)
 
-    print(f"Supported commands ({len(subs)}):")
+    print(f"Supported commands ({len(cmds)}):")
     print()
 
-    for i, cls in enumerate(subs):
+    for i, cls in enumerate(cmds):
       print(cls.description())
-      if i < len(subs) - 1:
+      if i < len(cmds) - 1:
         print()
 
     exit(0)
@@ -364,7 +421,7 @@ def main():
         server.process(cmd)
         server.show_status()
 
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, EOFError):
       exit(0)
 
 if __name__ == "__main__":
