@@ -24,7 +24,7 @@ class TestServer:
     u = s.init_user("test-user")
     s.add_pump(sim.Pump("water", 1000))
 
-    assert s.liquids() == {"water": 1000}
+    assert s.liquids() == [sim.Liquid("water", 1000, 1)]
 
     s.process(sim.CmdAddLiquid(u, "water", 40))
     assert s.weight == 40
@@ -32,7 +32,7 @@ class TestServer:
     s.process(sim.CmdAddLiquid(u, "water", 100))
     assert s.weight == 140
 
-    assert s.liquids() == {"water": 860}
+    assert s.liquids() == [sim.Liquid("water", 860, 1)]
 
   def test_drink2(self):
     s = sim.Server()
@@ -40,7 +40,8 @@ class TestServer:
     s.add_pump(sim.Pump("beer", 1000))
     s.add_pump(sim.Pump("lemonade", 1000))
 
-    assert s.liquids() == {"beer": 1000, "lemonade": 1000}
+    assert s.liquids() == [sim.Liquid("beer", 1000, 1),
+                           sim.Liquid("lemonade", 1000, 1)]
 
     s.process(sim.CmdAddLiquid(u, "beer", 300))
     assert s.weight == 300
@@ -48,7 +49,8 @@ class TestServer:
     s.process(sim.CmdAddLiquid(u, "lemonade", 200))
     assert s.weight == 500
 
-    assert s.liquids() == {"beer": 700, "lemonade": 800}
+    assert s.liquids() == [sim.Liquid("beer", 700, 1),
+                           sim.Liquid("lemonade", 800, 1)]
 
 class TestJson:
   s = sim.Server()

@@ -5,9 +5,11 @@ from __future__ import annotations
 from typing import ClassVar, Dict, Optional, List, Set, Any
 
 # datatypes
+from abc import ABC, abstractmethod
 import dataclasses
 from dataclasses import dataclass
-from enum import Enum
+import enum
+from enum import Enum, Flag
 import json
 import uuid
 from uuid import UUID
@@ -32,6 +34,38 @@ logging.basicConfig(level=logging.INFO, format='%(levelname)s %(asctime)s: %(mes
 # TODO think about return codes / states
 # TODO missing feature: abort recipe
 
+# server attributes
+###################
+
+class Property(Flag):
+  read   = enum.auto()
+  write  = enum.auto()
+  notify = enum.auto()
+
+@dataclass
+class Service():
+  label: str
+  characteristics: AsCharacteristics
+
+@dataclass
+class Characteristic():
+  desc:  str
+  value: str
+  mode:  Property = Property.read | Property.notify
+
+class AsCharacteristics(ABC):
+  @abstractmethod
+  def characteristics(self) -> List[Characteristic]:
+    ...
+
+@dataclass
+class EnumCharacteristic(AsCharacteristics):
+  name: str
+  enum: Enum
+
+  def characteristics(self) -> List[Characteristic]:
+    return [Characteristic(self.name, self.enum.value)]
+
 # server model
 ##############
 
@@ -41,6 +75,7 @@ class Server():
   weight: float
   admins: Set[UUID]
   users:  Dict[UUID, str]
+  state:  ServerState
 
   def __init__(self):
     self.pumps  = []
@@ -48,6 +83,7 @@ class Server():
     self.weight = 0
     self.admins = set()
     self.users  = {}
+    self.state  = ServerState.init
 
   def add_to_drink(self, liquid: str, volume: float):
     if volume <= 0:
@@ -86,11 +122,15 @@ class Server():
     else:
       raise Exception(f"unsupported command: {cmd}")
 
-  def liquids(self) -> Dict[str, float]:
-    ls: Dict[str, float] = {}
+  def liquids(self) -> List[Liquid]:
+    ls: Dict[str, Liquid] = {}
     for p in self.pumps:
-      ls[p.liquid] = ls.get(p.liquid, 0) + p.volume
-    return ls
+      l = ls.get(p.liquid, Liquid(p.liquid, 0, 0))
+      l.volume += p.volume
+      l.pumps  += 1
+      ls[p.liquid] = l
+
+    return list(ls.values())
 
   def add_pump(self, pump: Pump):
     self.pumps.append(pump)
@@ -109,7 +149,34 @@ class Server():
   def ready(self) -> bool:
     return len(self.queue) == 0
 
-class Pump():
+  def services(self) -> List[Service]:
+    services = []
+
+    for liquid in self.liquids():
+      name = f"liquid-{liquid.name}"
+      services.append(Service(name, liquid))
+
+    services.append(Service("service-state", EnumCharacteristic("state", self.state)))
+
+    return services
+
+  def show_status(self):
+    print("Services:")
+    for s in self.services():
+      print(f"  {s.label}:")
+      # TODO
+    #   for c in s.characteristics:
+    #     print(f"  - {c.mode}:")
+
+class ServerState(Enum):
+  init    = "initializing"
+  ready   = "ready"
+  pumping = "pumping"
+  refill  = "refill"
+  stuck   = "stuck"
+
+@dataclass
+class Pump(AsCharacteristics):
   liquid: str
   volume: float
 
@@ -125,6 +192,21 @@ class Pump():
   def refill(self, volume: float):
     self.volume += volume
 
+  def characteristics(self) -> List[Characteristic]:
+    return [Characteristic("liquid", self.liquid),
+            Characteristic("volume", "%.1f" % self.volume)]
+
+@dataclass
+class Liquid(AsCharacteristics):
+  name:   str
+  volume: float
+  pumps:  int
+
+  def characteristics(self) -> List[Characteristic]:
+    return [Characteristic("name",   self.name),
+            Characteristic("volume", "%.1f" % self.volume),
+            Characteristic("pumps",  "%d" % self.pumps)]
+
 # commands
 ##########
 
@@ -136,7 +218,7 @@ class UUIDJSONEncoder(json.JSONEncoder):
     return super().default(o)
 
 @dataclass(frozen=True)
-class Command:
+class Command(ABC):
   # mandatory field for every command
   user: UUID
 
@@ -257,15 +339,21 @@ def main():
 
   if args.commands:
     subs = Command.__subclasses__()
+
     print(f"Supported commands ({len(subs)}):")
     print()
+
     for i, cls in enumerate(subs):
       print(cls.description())
       if i < len(subs) - 1:
         print()
 
+    exit(0)
+
   # process commands
   ##################
+
+  server = Server()
 
   if args.bluetooth:
     start_bluetooth()
@@ -275,6 +363,8 @@ def main():
 
   if args.stdin:
     read_commands()
+
+  server.show_status()
 
 if __name__ == "__main__":
   main()
