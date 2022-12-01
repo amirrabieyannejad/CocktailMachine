@@ -58,7 +58,7 @@ class TestJson:
 
   def test_serialize(self):
     c = sim.CmdTest(self.u)
-    assert c.json == f'{{"cmd": "test", "user": "{self.u}"}}'
+    assert c.json() == f'{{"cmd": "test", "user": "{self.u}"}}'
 
   def test_deserialize(self):
     c = sim.CmdTest(self.u)

@@ -2,7 +2,7 @@
 
 # type annotations
 from __future__ import annotations
-from typing import Dict, Optional, List, Set, Any
+from typing import ClassVar, Dict, Optional, List, Set, Any
 
 # datatypes
 import dataclasses
@@ -20,11 +20,12 @@ import argparse
 import logging
 import random
 import re
+import textwrap
 import time
 
+NAME   = "Cocktail Machine ESP32 Simulator"
 SERVER = "localhost"
 PORT   = 8080
-DELAY  = False
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s %(asctime)s: %(message)s', datefmt='%y-%m-%d %H:%M:%S')
 
@@ -124,8 +125,8 @@ class Pump():
   def refill(self, volume: float):
     self.volume += volume
 
-# supported commands
-####################
+# commands
+##########
 
 # encode uuids as strings
 class UUIDJSONEncoder(json.JSONEncoder):
@@ -136,53 +137,89 @@ class UUIDJSONEncoder(json.JSONEncoder):
 
 @dataclass(frozen=True)
 class Command:
+  # mandatory field for every command
   user: UUID
 
+  # metadata
+  desc:    ClassVar[str] = "[generic superclass of commands]"
+  example: ClassVar[Dict[str, Any]] = {}
+
   # generate the command name from the class name
-  def name(self) -> str:
-    cls   = self.__class__.__name__
-    name  = re.sub(r"^Cmd", "", cls)
-    parts = [part.lower() for part in re.sub(r"([A-Z])", r" \1", name).split()]
+  @classmethod
+  def basename(cls) -> str:
+    name  = cls.__name__
+    base  = re.sub(r"^Cmd", "", name)
+    parts = [part.lower() for part in re.sub(r"([A-Z])", r" \1", base).split()]
     return "_".join(parts)
+
+  @property
+  def name(self) -> str:
+    return self.__class__.basename()
 
   # encode commands as dicts and as json
   @property
-  def __dict__(self):
-    d = {"cmd": self.name()}
+  def dict(self):
+    d = {"cmd": self.name}
     d.update(dataclasses.asdict(self))
     return d
 
-  @property
-  def json(self):
-    return json.dumps(self.__dict__, cls=UUIDJSONEncoder)
+  def json(self, indent=None):
+    return json.dumps(self.dict, cls=UUIDJSONEncoder, indent=indent)
 
   # load commands from json
   @classmethod
   def from_json(cls, json_cmd: str) -> Command:
-    d     = json.loads(json_cmd)
-    name  = d.pop("cmd")
-    parts = [part[0].upper() + part[1:] for part in re.sub(r"([_])", r" \1", name).split()]
-    cmd   = "Cmd" + "".join(parts)
+    parsed = json.loads(json_cmd)
+    name   = parsed.pop("cmd")
+    parts  = [part[0].upper() + part[1:] for part in re.sub(r"([_])", r" \1", name).split()]
+    cmd    = "Cmd" + "".join(parts)
 
     try:
       cls = globals()[cmd]
     except:
       raise Exception(f"unsupported command: {cmd}")
 
-    d["user"] = UUID(d["user"])
+    parsed["user"] = UUID(parsed["user"])
 
-    return cls(**d)
+    return cls(**parsed)
+
+  @classmethod
+  def description(cls, indent: Optional[int] = None):
+    out = []
+    out.append(f"{cls.basename()}: {cls.desc}")
+
+    for field in dataclasses.fields(cls):
+      out.append(f"  - {field.name}: {field.type}")
+    out.append("")
+
+    out.append("  json example:")
+    example_values = cls.example
+    example_values["user"] = uuid.uuid1() # add random mandatory uuid
+    example = cls(**example_values)
+
+    if indent:
+      out.append(textwrap.indent(example.json(indent=indent), " "*indent))
+    else:
+      out.append(f"    {example.json()}")
+
+    return "\n".join(out)
+
+# supported commands
+####################
 
 @dataclass(frozen=True)
 class CmdTest(Command):
-  pass
+  desc = "dummy command that does nothing"
 
 @dataclass(frozen=True)
 class CmdAddLiquid(Command):
+  desc = "add given liquid to glass"
   liquid: str
   volume: float
 
-# process commands
+  example = {"liquid": "water", "volume": 30}
+
+# ways to receive commands
 ##################
 
 def start_web_server(server: str, port: int):
@@ -208,17 +245,24 @@ def main():
   #################
 
   parser = argparse.ArgumentParser(
-    prog = "Cocktail Machine ESP32 Simulator",
+    prog = NAME,
     description = "Simulates the functionality of the ESP32 as far as other apps are concerned.")
 
-  parser.add_argument("-s", "--sleep",     action="store_true", help="add more realistic sleep delays after receiving commands?")
-  parser.add_argument("-b", "--bluetooth", action="store_true", help="turn on bluetooth")
+  parser.add_argument("-b", "--bluetooth", action="store_true", help=f"turn on bluetooth ({NAME})")
   parser.add_argument("-w", "--web",       action="store_true", help=f"turn on local web server on {SERVER}:{PORT}")
+  parser.add_argument("-i", "--stdin",     action="store_true", help=f"read commands on STDIN")
+  parser.add_argument("-l", "--commands",  action="store_true", help="list all supported commands and an example JSON encoding")
 
   args = parser.parse_args()
 
-  if args.sleep:
-    DELAY = True
+  if args.commands:
+    subs = Command.__subclasses__()
+    print(f"Supported commands ({len(subs)}):")
+    print()
+    for i, cls in enumerate(subs):
+      print(cls.description())
+      if i < len(subs) - 1:
+        print()
 
   # process commands
   ##################
@@ -229,7 +273,8 @@ def main():
   if args.web:
     start_web_server(SERVER, PORT)
 
-  read_commands()
+  if args.stdin:
+    read_commands()
 
 if __name__ == "__main__":
   main()
