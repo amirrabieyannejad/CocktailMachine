@@ -2,7 +2,7 @@
 
 - ein Simulator für den ESP32, der lokal ausgeführt werden kann und alle Funktionen unterstützt, damit das Protokoll entwickelt und getestet werden kann
 - in Python geschrieben, damit die Entwicklung schneller ist
-- Kommunikation über Bluetooth LE, HTTP oder STDIN im Terminal
+- Kommunikation über Bluetooth LE oder STDIN im Terminal
 
 ## Dateien:
 
