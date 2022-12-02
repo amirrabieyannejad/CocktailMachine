@@ -11,8 +11,6 @@ from dataclasses import dataclass
 import enum
 from enum import Enum, Flag
 import json
-import uuid
-from uuid import UUID
 
 # utilities
 import argparse
@@ -67,20 +65,22 @@ class EnumCharacteristic(AsCharacteristics):
 ##############
 
 class Server():
-  pumps:  List[Pump]
-  queue:  List[Command]
-  weight: float
-  admins: Set[UUID]
-  users:  Dict[UUID, str]
-  state:  ServerState
+  pumps:   List[Pump]
+  queue:   List[Command]
+  weight:  float
+  admins:  Set[User]
+  users:   Dict[User, str]
+  state:   ServerState
+  last_id: int
 
   def __init__(self):
-    self.pumps  = []
-    self.queue  = []
-    self.weight = 0
-    self.admins = set()
-    self.users  = {}
-    self.state  = ServerState.init
+    self.pumps   = []
+    self.queue   = []
+    self.weight  = 0
+    self.admins  = set()
+    self.users   = {}
+    self.state   = ServerState.init
+    self.last_id = 0
 
   def add_to_drink(self, liquid: str, volume: float):
     if volume <= 0:
@@ -135,11 +135,15 @@ class Server():
   def clean(self):
     self.weight = 0
 
-  def add_admin(self, id: UUID):
+  def add_admin(self, id: User):
     self.admins.add(id)
 
-  def init_user(self, name: str) -> UUID:
-    id = uuid.uuid1()
+  def new_user(self) -> User:
+    self.last_id += 1
+    return User(self.last_id)
+
+  def init_user(self, name: str) -> User:
+    id = self.new_user()
     self.users[id] = name
     return id
 
@@ -171,6 +175,10 @@ class ServerState(Enum):
   pumping = "pumping"
   refill  = "refill"
   stuck   = "stuck"
+
+@dataclass(frozen=True)
+class User():
+  id: int
 
 @dataclass
 class Pump(AsCharacteristics):
@@ -207,19 +215,11 @@ class Liquid(AsCharacteristics):
 # commands
 ##########
 
-# encode uuids as strings
-class UUIDJSONEncoder(json.JSONEncoder):
-  def default(self, o):
-    if isinstance(o, UUID):
-      return str(o)
-    return super().default(o)
-
 @dataclass(frozen=True)
 class Command(ABC):
   # metadata
   desc:    ClassVar[str]  = "[generic superclass of commands]"
   admin:   ClassVar[bool] = False
-  no_uuid: ClassVar[bool] = False
   example: ClassVar[Dict[str, Any]] = {}
 
   # generate the command name from the class name
@@ -235,14 +235,18 @@ class Command(ABC):
     return self.__class__.basename()
 
   # encode commands as dicts and as json
-  @property
-  def dict(self):
-    d = {"cmd": self.cmdname}
+  def dict(self) -> Dict[str, Any]:
+    d: Dict[str, Any] = {}
+    d["cmd"] = self.cmdname
     d.update(dataclasses.asdict(self))
+
+    if isinstance(self, UserCommand):
+      d["user"] = self.user.id
+
     return d
 
   def json(self, indent=None):
-    return json.dumps(self.dict, cls=UUIDJSONEncoder, indent=indent)
+    return json.dumps(self.dict(), indent=indent)
 
   # load commands from json
   @classmethod
@@ -259,7 +263,7 @@ class Command(ABC):
 
     if isinstance(cmd, UserCommand):
       try:
-        parsed["user"] = UUID(parsed["user"])
+        parsed["user"] = User(parsed["user"])
       except KeyError:
         raise Exception("missing argument: user")
 
@@ -283,7 +287,7 @@ class Command(ABC):
 
     example_values = cls.example
     if [f for f in dataclasses.fields(cls) if f.name == "user"]:
-      example_values["user"] = uuid.uuid1() # add random mandatory uuid
+      example_values["user"] = User(random.randint(1, 10000))
 
     example = cls(**example_values)
 
@@ -297,7 +301,7 @@ class Command(ABC):
 @dataclass(frozen=True)
 class UserCommand(Command):
   # mandatory field for every authenticated command
-  user: UUID
+  user: User
 
 # supported commands
 ####################
@@ -354,7 +358,7 @@ class CmdClean(UserCommand):
 class CmdInitUser(Command):
   name: str
 
-  desc    = "introduce yourself as a new user and receive your uuid"
+  desc    = "introduce yourself as a new user and receive your user id"
   example = {"name": "test-user"}
 
 # ways to receive commands
