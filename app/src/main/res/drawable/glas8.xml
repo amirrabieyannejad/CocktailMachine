@@ -17,91 +17,113 @@
     <path android:fillColor="#8c422e" android:fillType="evenOdd"
         android:pathData="M90,651.94a174.1,56.06 0,1 0,348.21 0a174.1,56.06 0,1 0,-348.21 0z"
         android:strokeColor="#fefefe" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="0"/>
+        android:strokeLineJoin="round" android:strokeWidth="0"
+        android:name="image1"/>
     <path android:fillColor="#8c422e" android:fillType="evenOdd"
         android:pathData="M90,631.94a174.1,56.06 0,1 0,348.21 0a174.1,56.06 0,1 0,-348.21 0z"
         android:strokeColor="#fefefe" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="0"/>
+        android:strokeLineJoin="round" android:strokeWidth="0"
+        android:name="image2"/>
     <path android:fillColor="#8c422e" android:fillType="evenOdd"
         android:pathData="M90,611.94a174.1,56.06 0,1 0,348.21 0a174.1,56.06 0,1 0,-348.21 0z"
         android:strokeColor="#fefefe" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="0"/>
+        android:strokeLineJoin="round" android:strokeWidth="0"
+        android:name="image3"/>
     <path android:fillColor="#8c422e" android:fillType="evenOdd"
         android:pathData="M90,591.94a174.1,56.06 0,1 0,348.21 0a174.1,56.06 0,1 0,-348.21 0z"
         android:strokeColor="#fefefe" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="0"/>
+        android:strokeLineJoin="round" android:strokeWidth="0"
+        android:name="image4"/>
     <path android:fillColor="#8c422e" android:fillType="evenOdd"
         android:pathData="M90,571.94a174.1,56.06 0,1 0,348.21 0a174.1,56.06 0,1 0,-348.21 0z"
         android:strokeColor="#fefefe" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="0"/>
+        android:strokeLineJoin="round" android:strokeWidth="0"
+        android:name="image5"/>
     <path android:fillColor="#8c422e" android:fillType="evenOdd"
         android:pathData="M90,551.94a174.1,56.06 0,1 0,348.21 0a174.1,56.06 0,1 0,-348.21 0z"
         android:strokeColor="#fefefe" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="0"/>
+        android:strokeLineJoin="round" android:strokeWidth="0"
+        android:name="image6"/>
     <path android:fillColor="#8c422e" android:fillType="evenOdd"
         android:pathData="M90,531.94a175.86,56.06 0,1 0,351.72 0a175.86,56.06 0,1 0,-351.72 0z"
         android:strokeColor="#fefefe" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="0"/>
+        android:strokeLineJoin="round" android:strokeWidth="0"
+        android:name="image7"/>
     <path android:fillColor="#8c422e" android:fillType="evenOdd"
         android:pathData="M90,511.94a178.2,56.06 0,1 0,356.41 0a178.2,56.06 0,1 0,-356.41 0z"
         android:strokeColor="#fefefe" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="0"/>
+        android:strokeLineJoin="round" android:strokeWidth="0"
+        android:name="image8"/>
     <path android:fillColor="#8c422e" android:fillType="evenOdd"
         android:pathData="M86.09,491.94a181.13,56.06 0,1 0,362.27 0a181.13,56.06 0,1 0,-362.27 0z"
         android:strokeColor="#fefefe" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="0"/>
+        android:strokeLineJoin="round" android:strokeWidth="0"
+        android:name="image9"/>
     <path android:fillColor="#8c422e" android:fillType="evenOdd"
         android:pathData="M85,471.94a181.13,56.06 0,1 0,362.27 0a181.13,56.06 0,1 0,-362.27 0z"
         android:strokeColor="#fefefe" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="0"/>
+        android:strokeLineJoin="round" android:strokeWidth="0"
+        android:name="image10"/>
     <path android:fillColor="#8c422e" android:fillType="evenOdd"
         android:pathData="M85,451.94a181.13,56.06 0,1 0,362.27 0a181.13,56.06 0,1 0,-362.27 0z"
         android:strokeColor="#fefefe" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="0"/>
+        android:strokeLineJoin="round" android:strokeWidth="0"
+        android:name="image11"/>
     <path android:fillColor="#8c422e" android:fillType="evenOdd"
         android:pathData="M85,431.94a181.13,56.06 0,1 0,362.27 0a181.13,56.06 0,1 0,-362.27 0z"
         android:strokeColor="#fefefe" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="0"/>
+        android:strokeLineJoin="round" android:strokeWidth="0"
+        android:name="image12"/>
     <path android:fillColor="#8c422e" android:fillType="evenOdd"
         android:pathData="M85,411.94a181.13,56.06 0,1 0,362.27 0a181.13,56.06 0,1 0,-362.27 0z"
         android:strokeColor="#fefefe" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="0"/>
+        android:strokeLineJoin="round" android:strokeWidth="0"
+        android:name="image13"/>
     <path android:fillColor="#8c422e" android:fillType="evenOdd"
         android:pathData="M85,391.94a183.21,56.06 0,1 0,366.41 0a183.21,56.06 0,1 0,-366.41 0z"
         android:strokeColor="#fefefe" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="0"/>
+        android:strokeLineJoin="round" android:strokeWidth="0"
+        android:name="image14"/>
     <path android:fillColor="#8c422e" android:fillType="evenOdd"
         android:pathData="M78.92,371.94a186.11,56.06 0,1 0,372.21 0a186.11,56.06 0,1 0,-372.21 0z"
         android:strokeColor="#fefefe" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="0"/>
+        android:strokeLineJoin="round" android:strokeWidth="0"
+        android:name="image15"/>
     <path android:fillColor="#8c422e" android:fillType="evenOdd"
         android:pathData="M73.68,351.94a194.67,56.06 0,1 0,389.34 0a194.67,56.06 0,1 0,-389.34 0z"
         android:strokeColor="#fefefe" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="0"/>
+        android:strokeLineJoin="round" android:strokeWidth="0"
+        android:name="image16"/>
     <path android:fillColor="#8c422e" android:fillType="evenOdd"
         android:pathData="M74.5,331.94a193.02,56.06 0,1 0,386.05 0a193.02,56.06 0,1 0,-386.05 0z"
         android:strokeColor="#fefefe" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="0"/>
+        android:strokeLineJoin="round" android:strokeWidth="0"
+        android:name="image17"/>
     <path android:fillColor="#8c422e" android:fillType="evenOdd"
         android:pathData="M80,311.94a193.02,56.06 0,1 0,386.05 0a193.02,56.06 0,1 0,-386.05 0z"
         android:strokeColor="#fefefe" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="0"/>
+        android:strokeLineJoin="round" android:strokeWidth="0"
+        android:name="image18"/>
     <path android:fillColor="#8c422e" android:fillType="evenOdd"
         android:pathData="M75.31,291.94a195.37,56.06 0,1 0,390.73 0a195.37,56.06 0,1 0,-390.73 0z"
         android:strokeColor="#fefefe" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="0"/>
+        android:strokeLineJoin="round" android:strokeWidth="0"
+        android:name="image19"/>
     <path android:fillColor="#8c422e" android:fillType="evenOdd"
         android:pathData="M72.19,271.94a196.93,56.06 0,1 0,393.86 0a196.93,56.06 0,1 0,-393.86 0z"
         android:strokeColor="#fefefe" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="0"/>
+        android:strokeLineJoin="round" android:strokeWidth="0"
+        android:name="image20"/>
     <path android:fillColor="#8c422e" android:fillType="evenOdd"
         android:pathData="M75,251.94a196.93,56.06 0,1 0,393.86 0a196.93,56.06 0,1 0,-393.86 0z"
         android:strokeColor="#fefefe" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="0"/>
+        android:strokeLineJoin="round" android:strokeWidth="0"
+        android:name="image21"/>
     <path android:fillColor="#8c422e" android:fillType="evenOdd"
         android:pathData="M72.27,231.94a198.3,56.06 0,1 0,396.59 0a198.3,56.06 0,1 0,-396.59 0z"
         android:strokeColor="#fefefe" android:strokeLineCap="round"
-        android:strokeLineJoin="round" android:strokeWidth="0"/>
+        android:strokeLineJoin="round" android:strokeWidth="0"
+        android:name="image22"/>
     <path android:fillColor="#cab2a9"
         android:pathData="m74.71,233.29c-5.97,-17.09 16.77,-34.35 58.99,-44.79 37.65,-9.3 65.1,-12.31 120.82,-13.24 61.87,-1.03 102.41,2.49 144.28,12.53 29.12,6.99 54.99,19.87 60.42,30.08 3.34,6.28 2.87,14.86 -1.12,20.37 -90.36,46.61 -325.55,57.89 -383.39,-4.96z" android:strokeWidth="1.24"/>
     <path android:fillColor="#ab938b"
