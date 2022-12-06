@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.login;
+package com.cocktailmachine.ui.login;
 
 import androidx.annotation.Nullable;
 

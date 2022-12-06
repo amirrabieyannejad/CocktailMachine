@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.login;
+package com.cocktailmachine.ui.login;
 
 /**
  * Class exposing authenticated user details to the UI.

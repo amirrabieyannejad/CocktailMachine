@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.login;
+package com.cocktailmachine.ui.login;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -6,9 +6,9 @@ import androidx.lifecycle.ViewModel;
 
 import android.util.Patterns;
 
-import com.example.cocktailmachine.data.LoginRepository;
-import com.example.cocktailmachine.data.Result;
-import com.example.cocktailmachine.data.model.LoggedInUser;
+import com.cocktailmachine.data.LoginRepository;
+import com.cocktailmachine.data.Result;
+import com.cocktailmachine.data.model.LoggedInUser;
 import com.example.cocktailmachine.R;
 
 public class LoginViewModel extends ViewModel {

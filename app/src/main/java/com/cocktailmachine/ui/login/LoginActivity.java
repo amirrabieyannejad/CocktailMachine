@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.login;
+package com.cocktailmachine.ui.login;
 
 import android.app.Activity;
 
@@ -23,8 +23,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.ui.login.LoginViewModel;
-import com.example.cocktailmachine.ui.login.LoginViewModelFactory;
 import com.example.cocktailmachine.databinding.ActivityLoginBinding;
 
 public class LoginActivity extends AppCompatActivity {

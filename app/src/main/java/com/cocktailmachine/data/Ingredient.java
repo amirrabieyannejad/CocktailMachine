@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.data;
+package com.cocktailmachine.data;
 
 import org.json.JSONObject;
 

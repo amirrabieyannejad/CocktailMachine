@@ -1,6 +1,6 @@
-package com.example.cocktailmachine.data;
+package com.cocktailmachine.data;
 
-import com.example.cocktailmachine.data.model.LoggedInUser;
+import com.cocktailmachine.data.model.LoggedInUser;
 
 /**
  * Class that requests authentication and user information from the remote data source and
