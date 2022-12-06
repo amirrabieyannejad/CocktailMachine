@@ -1,11 +1,11 @@
-package com.example.cocktailmachine.ui.login;
+package com.cocktailmachine.ui.login;
 
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.annotation.NonNull;
 
-import com.example.cocktailmachine.data.LoginDataSource;
-import com.example.cocktailmachine.data.LoginRepository;
+import com.cocktailmachine.data.LoginDataSource;
+import com.cocktailmachine.data.LoginRepository;
 
 /**
  * ViewModel provider factory to instantiate LoginViewModel.
