@@ -19,175 +19,146 @@ import random
 import re
 import textwrap
 import time
+import uuid
 
-NAME   = "Cocktail Machine ESP32 Simulator"
-SERVER = "localhost"
-PORT   = 8080
+NAME = "Cocktail Machine ESP32 Simulator"
+UUID = uuid.UUID("0f7742d4-ea2d-43c1-9b98-bb4186be905d")
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s %(asctime)s: %(message)s', datefmt='%y-%m-%d %H:%M:%S')
-
-# TODO think about return codes / states
-# TODO missing feature: abort recipe
-
-# server attributes
-###################
-
-class Property(Flag):
-  read   = enum.auto()
-  write  = enum.auto()
-  notify = enum.auto()
-
-@dataclass
-class Service():
-  label: str
-  characteristics: AsCharacteristics
-
-@dataclass
-class Characteristic():
-  desc:  str
-  value: str
-  mode:  Property = Property.read | Property.notify
-
-class AsCharacteristics(ABC):
-  @abstractmethod
-  def characteristics(self) -> List[Characteristic]:
-    ...
-
-@dataclass
-class EnumCharacteristic(AsCharacteristics):
-  name: str
-  enum: Enum
-
-  def characteristics(self) -> List[Characteristic]:
-    return [Characteristic(self.name, self.enum.value)]
 
 # server model
 ##############
 
 class Server():
-  pumps:   List[Pump]
   queue:   List[Command]
-  weight:  float
-  admins:  Set[User]
-  users:   Dict[User, str]
   state:   ServerState
-  last_id: int
+  users:   Dict[User, str]
+  admins:  Set[User]
+  next_id: int
+
+  pumps:   List[Pump]
+  recipes: List[Recipe]
+  weight:  float
 
   def __init__(self):
-    self.pumps   = []
+    # start in init state
+    self.state   = ServerState.ready
     self.queue   = []
+
+    # hardcore user 0 as admin
+    self.admins  = {User(0)}
+    self.users   = {User(0): "admin"}
+    self.next_id = 1
+
+    self.pumps   = []
     self.weight  = 0
-    self.admins  = set()
-    self.users   = {}
-    self.state   = ServerState.init
-    self.last_id = 0
-
-  def add_to_drink(self, liquid: str, volume: float):
-    if volume <= 0:
-      return
-
-    for pump in self.pumps:
-      if pump.liquid == liquid:
-        used = pump.drain(volume)
-        volume -= used
-        self.weight += used
-
-        if volume <= 0:
-          return
-
-    if volume > 0:
-      raise Exception(f"couldn't find enough liquid: {volume} ml of {liquid}")
-
-  def add_command(self, cmd: Command):
-    self.queue.append(cmd)
 
   def process_queue(self):
+    self.state = ServerState.processing
+
     while self.queue:
       cmd = self.queue.pop(0)
-      self.process(cmd)
+      ret = self.process(cmd)
+      # TODO return the return code
 
-  def process(self, cmd: Command):
-    admin = isinstance(cmd, UserCommand) and cmd.user in self.admins
+    self.state = ServerState.ready
+
+  def process(self, cmd: Command) -> ReturnCode:
+    is_admin = isinstance(cmd, UserCommand) and cmd.user in self.admins
+
+    if not cmd.allowed(self.admins):
+      return ReturnCode.not_allowed
 
     if isinstance(cmd, CmdTest):
       # simple test command that does nothing
-      pass
-
-    elif isinstance(cmd, CmdAddLiquid):
-      self.add_to_drink(cmd.liquid, cmd.volume)
+      return ReturnCode.ok
 
     else:
       raise Exception(f"unsupported command: {cmd}")
 
-  def liquids(self) -> List[Liquid]:
-    ls: Dict[str, Liquid] = {}
-    for p in self.pumps:
-      l = ls.get(p.liquid, Liquid(p.liquid, 0, 0))
-      l.volume += p.volume
-      l.pumps  += 1
-      ls[p.liquid] = l
+  def make_recipe(self, recipe: Recipe) -> bool:
+    if not recipe in self.recipes:
+      return False
 
-    return list(ls.values())
+    # assemble a list of pumping instructions to make the recipe
+    queue: List[Tuple[Pump, float]] = []
 
-  def add_pump(self, pump: Pump):
-    self.pumps.append(pump)
+    for liquid, need in recipe.liquids:
+      have = 0.0
 
-  def clean(self):
+      for pump in self.pumps:
+        if pump.liquid == liquid:
+          diff = max(pump.volume, need - have)
+          if diff > 0:
+            queue.append((pump, diff))
+            have += diff
+
+        if have >= need:
+          break
+
+      if have < need:
+        return False
+
+    # apply the pumping instructions
+    for pump, vol in queue:
+      used = pump.drain(vol)
+      self.weight += used
+
+    return True
+
+  def reset(self):
     self.weight = 0
 
   def add_admin(self, id: User):
     self.admins.add(id)
 
-  def new_user(self) -> User:
-    self.last_id += 1
-    return User(self.last_id)
-
   def init_user(self, name: str) -> User:
-    id = self.new_user()
-    self.users[id] = name
-    return id
+    user = User(self.next_id)
+    self.next_id += 1
+    self.users[user] = name
+    return user
 
-  def ready(self) -> bool:
-    return len(self.queue) == 0
+  def add_pump(self, pump: Pump):
+    self.pumps.append(pump)
 
-  def services(self) -> List[Service]:
-    services = []
+  def liquids(self) -> Dict[Liquid, float]:
+    ls: Dict[Liquid, float] = {}
 
-    for liquid in self.liquids():
-      name = f"liquid-{liquid.name}"
-      services.append(Service(name, liquid))
+    for p in self.pumps:
+      ls[p.liquid] = ls.get(p.liquid, 0) + p.volume
 
-    services.append(Service("service-state", EnumCharacteristic("state", self.state)))
+    return ls
 
-    return services
+  def add_recipe(self, recipe: Recipe):
+    self.recipes.append(recipe)
 
   def show_status(self):
-    print("Services:")
-    for s in self.services():
-      print(f"  {s.label}:")
-      # TODO
-    #   for c in s.characteristics:
-    #     print(f"  - {c.mode}:")
+    print("state:", self.state)
+    print("liquids:", self.liquids())
+    print("glass:", self.weight)
 
 class ServerState(Enum):
-  init    = "initializing"
-  ready   = "ready"
-  pumping = "pumping"
-  refill  = "refill"
-  stuck   = "stuck"
+  ready      = "ready"
+  processing = "processing"
+  pumping    = "pumping"
+  cleaning   = "cleaning"
+  refill     = "refill"
+  stuck      = "stuck"
+
+class ReturnCode(Enum):
+  ok          = "ok"
+  not_allowed = "not allowed"
+  unknowon    = "unknown"
+  empty       = "empty"
 
 @dataclass(frozen=True)
 class User():
   id: int
 
 @dataclass
-class Pump(AsCharacteristics):
-  liquid: str
+class Pump():
+  liquid: Liquid
   volume: float
-
-  def __init__(self, liquid: str, volume: float):
-    self.liquid = liquid
-    self.volume = max(0, volume)
 
   def drain(self, volume: float) -> float:
     diff = max(0, min(self.volume, volume))
@@ -197,20 +168,16 @@ class Pump(AsCharacteristics):
   def refill(self, volume: float):
     self.volume += volume
 
-  def characteristics(self) -> List[Characteristic]:
-    return [Characteristic("liquid", self.liquid),
-            Characteristic("volume", "%.1f" % self.volume)]
+@dataclass(frozen=True)
+class Liquid():
+  name: str
 
-@dataclass
-class Liquid(AsCharacteristics):
-  name:   str
-  volume: float
-  pumps:  int
+@dataclass(frozen=True)
+class Recipe():
+  name:    str
+  liquids: List[Tuple[Liquid, float]]
 
-  def characteristics(self) -> List[Characteristic]:
-    return [Characteristic("name",   self.name),
-            Characteristic("volume", "%.1f" % self.volume),
-            Characteristic("pumps",  "%d" % self.pumps)]
+#############################################################################
 
 # commands
 ##########
@@ -219,8 +186,11 @@ class Liquid(AsCharacteristics):
 class Command(ABC):
   # metadata
   desc:    ClassVar[str]  = "[generic superclass of commands]"
-  admin:   ClassVar[bool] = False
   example: ClassVar[Dict[str, Any]] = {}
+  retval:  ClassVar[Dict[str, Any]] = {}
+
+  def allowed(self, admins: Set[User]) -> bool:
+    return True
 
   # generate the command name from the class name
   @classmethod
@@ -245,8 +215,8 @@ class Command(ABC):
 
     return d
 
-  def json(self, indent=None):
-    return json.dumps(self.dict(), indent=indent)
+  def json(self):
+    return json.dumps(self.dict())
 
   # load commands from json
   @classmethod
@@ -270,7 +240,7 @@ class Command(ABC):
     return cmd(**parsed) # type: ignore # this is always a Command
 
   @classmethod
-  def description(cls, indent: Optional[int] = None) -> str:
+  def description(cls) -> str:
     out = []
     out.append(f"### {cls.basename()}: {cls.desc}")
 
@@ -280,26 +250,31 @@ class Command(ABC):
         out.append(f"- {field.name}: {field.type}")
       out.append("")
 
-    out.append("json example:")
-    out.append("")
-
     example_values = cls.example
     if [f for f in dataclasses.fields(cls) if f.name == "user"]:
       example_values["user"] = User(random.randint(1, 10000))
 
     example = cls(**example_values)
 
-    if indent:
-      out.append(textwrap.indent(example.json(indent=indent), " "*indent))
-    else:
-      out.append(f"    {example.json()}")
+    out.append("json example:")
+    out.append("")
+    out.append(f"    {example.json()}")
+    if cls.retval:
+      out.append("")
+      out.append(f"    --> {json.dumps(cls.retval)}")
 
     return "\n".join(out)
 
 @dataclass(frozen=True)
 class UserCommand(Command):
   # mandatory field for every authenticated command
-  user: User
+  user:  User
+  admin: ClassVar[bool] = False
+
+  def allowed(self, admins: Set[User]) -> bool:
+    if not self.__class__.admin:
+      return True
+    return self.user in admins
 
 # supported commands
 ####################
@@ -307,6 +282,17 @@ class UserCommand(Command):
 @dataclass(frozen=True)
 class CmdTest(Command):
   desc = "dummy command that does nothing"
+
+@dataclass(frozen=True)
+class CmdReset(Command):
+  desc = "reset the machine so it's ready to make another drink"
+
+@dataclass(frozen=True)
+class CmdMakeRecipe(UserCommand):
+  recipe: str
+
+  desc    = "make recipe by name"
+  example = {"recipe": "radler"}
 
 @dataclass(frozen=True)
 class CmdAddLiquid(UserCommand):
@@ -318,20 +304,13 @@ class CmdAddLiquid(UserCommand):
   example = {"liquid": "water", "volume": 30}
 
 @dataclass(frozen=True)
-class CmdMakeRecipe(UserCommand):
-  recipe: str
-
-  desc    = "make recipe"
-  example = {"recipe": "radler"}
-
-@dataclass(frozen=True)
 class CmdDefineRecipe(UserCommand):
-  recipe: str
+  name: str
   liquids: List[Tuple[str, float]]
 
   admin   = True
   desc    = "define new recipe"
-  example = {"recipe": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}
+  example = {"name": "radler", "liquids": [("beer", 250), ("lemonade", 250)]}
 
 @dataclass(frozen=True)
 class CmdAddPump(UserCommand):
@@ -358,6 +337,7 @@ class CmdInitUser(Command):
 
   desc    = "introduce yourself as a new user and receive your user id"
   example = {"name": "test-user"}
+  retval  = {"user": 100}
 
 # ways to receive commands
 ##################
@@ -378,6 +358,9 @@ def read_command() -> Optional[Command]:
 # misc
 ######
 
+def gen_uuid(name: str) -> uuid.UUID:
+  return uuid.uuid3(UUID, name)
+
 def print_commands(cmds: List[Any], title: str):
   print(f"## {title}")
   print()
@@ -385,7 +368,7 @@ def print_commands(cmds: List[Any], title: str):
     print(cls.description())
     if i < len(cmds) - 1:
       print()
-    print()
+  print()
 
 def main():
   # parse arguments
