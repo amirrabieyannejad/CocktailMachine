@@ -270,20 +270,18 @@ class Command(ABC):
     return cmd(**parsed) # type: ignore # this is always a Command
 
   @classmethod
-  def description(cls, indent: Optional[int] = None):
+  def description(cls, indent: Optional[int] = None) -> str:
     out = []
-    if cls.admin:
-      out.append(f"{cls.basename()} [ADMIN]: {cls.desc}")
-    else:
-      out.append(f"{cls.basename()}: {cls.desc}")
+    out.append(f"### {cls.basename()}: {cls.desc}")
 
     fields = dataclasses.fields(cls)
     if fields:
       for field in fields:
-        out.append(f"  - {field.name}: {field.type}")
+        out.append(f"- {field.name}: {field.type}")
       out.append("")
 
-    out.append("  json example:")
+    out.append("json example:")
+    out.append("")
 
     example_values = cls.example
     if [f for f in dataclasses.fields(cls) if f.name == "user"]:
@@ -394,16 +392,23 @@ def main():
   args = parser.parse_args()
 
   if args.commands:
-    cmds = Command.__subclasses__() + UserCommand.__subclasses__()
-    cmds.remove(UserCommand)
-
-    print(f"Supported commands ({len(cmds)}):")
+    print(f"# Supported commands")
     print()
 
-    for i, cls in enumerate(cmds):
-      print(cls.description())
-      if i < len(cmds) - 1:
-        print()
+    admin = [cmd for cmd in UserCommand.__subclasses__() if     cmd.admin]
+    user  = [cmd for cmd in UserCommand.__subclasses__() if not cmd.admin]
+    main  = [cmd for cmd in Command.__subclasses__() if not cmd is UserCommand]
+
+    for (cmds, title) in [(main,  "General Commands"),
+                          (user,  "User Commands"),
+                          (admin, "Admin Commands")]:
+      print(f"## {title}")
+      print()
+      for i, cls in enumerate(cmds):
+        print(cls.description())
+        if i < len(cmds) - 1:
+          print()
+      print()
 
     exit(0)
 
