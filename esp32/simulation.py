@@ -378,6 +378,15 @@ def read_command() -> Optional[Command]:
 # misc
 ######
 
+def print_commands(cmds: List[Any], title: str):
+  print(f"## {title}")
+  print()
+  for i, cls in enumerate(cmds):
+    print(cls.description())
+    if i < len(cmds) - 1:
+      print()
+    print()
+
 def main():
   # parse arguments
   #################
@@ -399,17 +408,9 @@ def main():
     user  = [cmd for cmd in UserCommand.__subclasses__() if not cmd.admin]
     main  = [cmd for cmd in Command.__subclasses__() if not cmd is UserCommand]
 
-    for (cmds, title) in [(main,  "General Commands"),
-                          (user,  "User Commands"),
-                          (admin, "Admin Commands")]:
-      print(f"## {title}")
-      print()
-      for i, cls in enumerate(cmds):
-        print(cls.description())
-        if i < len(cmds) - 1:
-          print()
-      print()
-
+    print_commands(main,  "General Commands")
+    print_commands(user,  "User Commands")
+    print_commands(admin, "Admin Commands")
     exit(0)
 
   # process commands
