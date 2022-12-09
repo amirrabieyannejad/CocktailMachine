@@ -50,10 +50,10 @@ public class BildgeneratorGlas {
         Bitmap bm2 = BitmapFactory.decodeResource(res,R.drawable.glas_fluessigkeit02);
 
 
+        canvas = new BildgeneratorGlas().erzeugeFlüssigkeitGlas(context,canvas,recipe);
 
 
-
-        myImage.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        /**myImage.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
 
         int color = Color.RED;
         ColorFilter colorfilter = new PorterDuffColorFilter(0, PorterDuff.Mode.SRC_ATOP);
@@ -61,7 +61,7 @@ public class BildgeneratorGlas {
         myImage.draw(canvas);
         myImage2.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         //myImage.setTint(0xFFFF0000);
-        myImage2.draw(canvas);
+        myImage2.draw(canvas);**/
 
         return (bm);
     }
@@ -93,6 +93,7 @@ public class BildgeneratorGlas {
             int numberSlots = this.getNumberOfSlots(sumLiquit,animationSlots-slotCounter,ingredient);
             for (int i = 0 ; i < numberSlots; i++){
                 Drawable myImage =  ResourcesCompat.getDrawable(res, listIdGlasFlüssigkeit[i+slotCounter], null);
+                myImage.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
                 myImage.setColorFilter(ingredient.getColor(), PorterDuff.Mode.SRC_ATOP);
                 myImage.draw(canvas);
             }
