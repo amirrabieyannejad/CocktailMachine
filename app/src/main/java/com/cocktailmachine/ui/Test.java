@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui;
+package com.cocktailmachine.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
