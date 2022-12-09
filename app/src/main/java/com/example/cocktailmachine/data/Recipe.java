@@ -46,7 +46,10 @@ public interface Recipe {
 
     //this Instance
 
-    public JSONObject asMessage();
+    public default JSONObject asMessage(){
+        //TODO
+        return new JSONObject();
+    }
 
     /**
      * Deletes this instance in db and in buffer.
@@ -61,7 +64,10 @@ public interface Recipe {
     /**
      * Sends to CocktailMachine to get mixed.
      */
-    public void send();
+    public default void send(){
+        //TODO:
+        return;
+    }
 
     //general
     public static Ingredient load(long id){

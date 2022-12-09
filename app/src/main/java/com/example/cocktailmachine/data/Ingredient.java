@@ -13,5 +13,9 @@ public interface Ingredient {
     public void addImageUrl(String url);
     public float getFluidInMilliliter();
     public Pump getPump();
-    public JSONObject asMessage();
+    public int getColor();
+    public default JSONObject asMessage(){
+        //TODO
+        return null;
+    }
 }
