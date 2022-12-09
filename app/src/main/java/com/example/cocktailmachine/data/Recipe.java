@@ -16,6 +16,7 @@ public interface Recipe {
     public boolean isAlcoholic();
     public boolean isAvailable();
     public List<String> getImageUrls();
+    public List<Long> getTopics();
 
     //Ingredient Changer
 
@@ -37,6 +38,7 @@ public interface Recipe {
      * @param ingredient
      */
     public void remove(Ingredient ingredient);
+    
     /**
      * Remove Ingredient from Recipe.
      * @param ingredientId
@@ -63,6 +65,8 @@ public interface Recipe {
 
     /**
      * Sends to CocktailMachine to get mixed.
+     * Reminder:
+     * send topics to user!
      */
     public default void send(){
         //TODO:
