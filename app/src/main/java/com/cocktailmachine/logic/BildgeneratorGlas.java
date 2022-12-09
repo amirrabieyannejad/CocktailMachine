@@ -42,7 +42,16 @@ public class BildgeneratorGlas {
 
         Resources res = context.getResources();
 
-        Drawable myImage =  ResourcesCompat.getDrawable(res, R.drawable.glas_fluessigkeit01, null);
+        Drawable glasHintereDarstellung =  ResourcesCompat.getDrawable(res, R.drawable.glas_hintere_darstellung, null);
+        glasHintereDarstellung.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        glasHintereDarstellung.draw(canvas);
+
+        canvas = new BildgeneratorGlas().erzeugeFlüssigkeitGlas(context,canvas,recipe);
+
+        Drawable glasFordereDarstellung =  ResourcesCompat.getDrawable(res, R.drawable.glas_fordere_darstellung, null);
+        glasFordereDarstellung.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        glasFordereDarstellung.draw(canvas);
+
         Drawable myImage2 = ResourcesCompat.getDrawable(res, R.drawable.glas_fluessigkeit02, null);
 
 
@@ -50,7 +59,7 @@ public class BildgeneratorGlas {
         Bitmap bm2 = BitmapFactory.decodeResource(res,R.drawable.glas_fluessigkeit02);
 
 
-        canvas = new BildgeneratorGlas().erzeugeFlüssigkeitGlas(context,canvas,recipe);
+
 
 
         /**myImage.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
