@@ -51,6 +51,7 @@ class Server():
     self.next_id = 1
 
     self.pumps   = []
+    self.recipes = []
     self.weight  = 0
 
   def process_queue(self):
@@ -135,6 +136,7 @@ class Server():
   def show_status(self):
     print("state:", self.state)
     print("liquids:", self.liquids())
+    print("recipes:", self.recipes)
     print("glass:", self.weight)
 
 class ServerState(Enum):
