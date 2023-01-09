@@ -3,6 +3,7 @@ package com.example.cocktailmachine.data;
 
 import com.example.cocktailmachine.data.db.NewDatabaseConnection;
 import com.example.cocktailmachine.data.db.NewEmptyIngredientException;
+import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 
 
 import org.json.JSONObject;
@@ -70,15 +71,16 @@ public interface Ingredient {
      */
     public int getColor();
 
-
-
+    //Setter
     /**
      * Add to the image address list an address.
      * @param url to be added image address
      */
     public void addImageUrl(String url);
 
+    public void setPump(Long pump, int fluidInMillimeters);
 
+    //use
     /**
      * Pump m milliliters.
      * @param millimeters m
@@ -86,6 +88,7 @@ public interface Ingredient {
      */
     public void pump(int millimeters) throws NewEmptyIngredientException;
 
+    //db
     /**
      * Save this object to database.
      */
@@ -96,6 +99,7 @@ public interface Ingredient {
      */
     public void delete();
 
+    //general
     /**
      * Static Access to ingredients.
      * Get all available ingredients.
@@ -104,6 +108,7 @@ public interface Ingredient {
     public static List<Ingredient> getIngredients(){
         return (List<Ingredient>) NewDatabaseConnection.getDataBase().getAvailableIngredients();
     }
+
     /**
      * Static Access to ingredients.
      * Get all (available) ingredients with ids in given list k.
@@ -113,6 +118,7 @@ public interface Ingredient {
     public static List<Ingredient> getIngredients(List<Long> ingredientsIds){
         return NewDatabaseConnection.getDataBase().getIngredients(ingredientsIds);
     }
+
     /**
      * Static Access to ingredients.
      * Get available ingredients with id k.
@@ -121,6 +127,42 @@ public interface Ingredient {
      */
     public static Ingredient getIngredient(Long id){
         return NewDatabaseConnection.getDataBase().getIngredient(id);
+    }
+
+    /**
+     * Static access to ingredients.
+     * Make new instance.
+     * Set up with direct link to pump.
+     * @param name name
+     * @param alcoholic alcoholic?
+     * @param available available?
+     * @param fluidInMillimeters milliliter of ingredient in pump
+     * @param pump pump id
+     * @param color color in Integer representation
+     * @return new Ingredient instance
+     */
+    public static Ingredient makeNew(String name,
+                                     boolean alcoholic,
+                                     boolean available,
+                                     int fluidInMillimeters,
+                                     long pump,
+                                     int color){
+        return new SQLIngredient(name, alcoholic, available, fluidInMillimeters, pump, color);
+    }
+
+    /**
+     * Static access to ingredients.
+     * Make new instance.
+     * Set up without link to a pump.
+     * @param name name
+     * @param alcoholic alcoholic
+     * @param color color in Integer representation
+     * @return  new Ingredient instance
+     */
+    public static Ingredient makeNew(String name,
+                                     boolean alcoholic,
+                                     int color){
+        return new SQLIngredient(name, alcoholic, color);
     }
 
     public default JSONObject asMessage(){

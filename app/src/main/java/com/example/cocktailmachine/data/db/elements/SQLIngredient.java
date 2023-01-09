@@ -16,6 +16,15 @@ public class SQLIngredient extends DataBaseElement implements Ingredient {
     private long pump;
     private int color;
 
+    public SQLIngredient(String name, boolean alcoholic, int color) {
+        this.name = name;
+        this.alcoholic = alcoholic;
+        this.color = color;
+        this.available = false;
+        this.fluidInMillimeters = -1;
+        this.pump = -1L;
+    }
+
     public SQLIngredient(String name,
                          boolean alcoholic,
                          boolean available,
@@ -95,6 +104,16 @@ public class SQLIngredient extends DataBaseElement implements Ingredient {
     public void addImageUrl(String url) {
         this.imageUrls.add(url);
         this.wasChanged();
+    }
+
+    @Override
+    public void setPump(Long pump, int fluidInMillimeters) {
+        this.available = true;
+        this.pump = pump;
+        this.fluidInMillimeters = fluidInMillimeters;
+        this.wasChanged();
+        this.save();
+        this.wasSaved();
     }
 
     @Override
