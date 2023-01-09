@@ -6,6 +6,8 @@ import com.example.cocktailmachine.data.db.NeedsMoreIngredientException;
 import com.example.cocktailmachine.data.db.NewEmptyIngredientException;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class SQLIngredientPump extends DataBaseElement{
     private int fluidInMillimeters;
@@ -47,6 +49,9 @@ public class SQLIngredientPump extends DataBaseElement{
         this.wasChanged();
     }
 
+
+
+
     @Override
     void save() {
 
@@ -56,4 +61,19 @@ public class SQLIngredientPump extends DataBaseElement{
     void delete() {
 
     }
+
+
+    private static List<SQLIngredientPump> getAvailableInstances(){
+        //TODO
+        return null;
+    }
+
+    public static SQLIngredientPump getInstanceWithPump(int pump){
+        Optional<SQLIngredientPump> o =  getAvailableInstances().stream().filter(ip-> ip.pump==pump).findFirst();
+        if(o.isPresent()){
+            return null;
+        }
+        return o.get();
+    }
+
 }
