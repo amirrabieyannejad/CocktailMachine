@@ -111,6 +111,9 @@ public class SQLIngredient extends DataBaseElement implements Ingredient {
         this.available = true;
         this.pump = pump;
         this.fluidInMillimeters = fluidInMillimeters;
+        Pump pp = NewDatabaseConnection.getDataBase().getPump(this.pump);
+        pp.setCurrentIngredient(this);
+        pp.save();
         this.wasChanged();
         this.save();
         this.wasSaved();
