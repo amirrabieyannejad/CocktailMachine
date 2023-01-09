@@ -88,6 +88,11 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
         return this.recipes.stream().filter(i->i.getID()==id).collect(Collectors.toList()).get(0);
     }
 
+    @Override
+    public List<? extends Recipe> getRecipes(List<Long> recipeIds) {
+        return this.recipes.stream().filter(i->recipeIds.contains(i.getID())).collect(Collectors.toList());
+    }
+
 
     public void addIngredientImageUrl(long ingredientId, String url) {
        // this.getWritableDatabase().

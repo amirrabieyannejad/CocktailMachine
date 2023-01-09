@@ -70,6 +70,8 @@ public interface NewDatabaseConnection {
      */
     public Recipe getRecipe(Long id);
 
+    public List<? extends Recipe> getRecipes(List<Long> recipeIds);
+
     /**
      * Get Pump with id. If current App-User has the privilege
      * of an user, this returns the Recipe, when the Recipe is available.
