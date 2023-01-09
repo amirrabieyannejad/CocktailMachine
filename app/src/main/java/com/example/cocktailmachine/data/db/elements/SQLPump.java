@@ -6,7 +6,7 @@ import com.example.cocktailmachine.data.db.NewDatabaseConnection;
 
 public class SQLPump extends DataBaseElement implements Pump {
     private int millilitersPumpedInMilliseconds;
-    private Ingredient currentIngredient;
+    private SQLIngredientPump bunker;
 
     public SQLPump(long ID, int millilitersPumpedInMilliseconds) {
         super(ID);
@@ -21,15 +21,16 @@ public class SQLPump extends DataBaseElement implements Pump {
 
     @Override
     public Ingredient getCurrentIngredient() {
-        return this.currentIngredient;
+        return this.bunker.getIngredient();
     }
 
     @Override
     public void setCurrentIngredient(Ingredient ingredient) {
-        this.currentIngredient = ingredient;
-        this.wasChanged();
+        this.bunker.delete();
+        this.bunker = new SQLIngredientPump(-1, this.getID(), ingredient.getID());
     }
 
+    //General
     @Override
     public void setPumps() {
         //TODO:????

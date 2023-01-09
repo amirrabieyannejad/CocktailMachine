@@ -27,6 +27,10 @@ public class SQLIngredientPump extends DataBaseElement{
         return Pump.getPump(this.pump);
     }
 
+    public Ingredient getIngredient(){
+        return Ingredient.getIngredient(this.ingredient);
+    }
+
     public boolean isPumpable(){
         return this.fluidInMillimeters>0;
     }
