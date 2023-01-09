@@ -17,6 +17,7 @@ public class SQLTopic extends DataBaseElement implements Topic {
         super();
         this.name = name;
         this.description = description;
+        this.save();
     }
 
     @Override
