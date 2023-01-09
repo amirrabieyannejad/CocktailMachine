@@ -9,7 +9,7 @@ public class SQLPump extends DataBaseElement implements Pump {
     private Ingredient currentIngredient;
 
     public SQLPump(long ID, int millilitersPumpedInMilliseconds) {
-        super();
+        super(ID);
         this.wasSaved();
         this.millilitersPumpedInMilliseconds = millilitersPumpedInMilliseconds;
     }
@@ -26,7 +26,7 @@ public class SQLPump extends DataBaseElement implements Pump {
 
     @Override
     public void setCurrentIngredient(Ingredient ingredient) {
-        this.currentIngredient = currentIngredient;
+        this.currentIngredient = ingredient;
         this.wasChanged();
     }
 
