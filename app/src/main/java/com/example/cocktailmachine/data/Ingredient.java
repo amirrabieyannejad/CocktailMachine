@@ -1,6 +1,7 @@
 package com.example.cocktailmachine.data;
 
 
+import com.example.cocktailmachine.data.db.NeedsMoreIngredientException;
 import com.example.cocktailmachine.data.db.NewDatabaseConnection;
 import com.example.cocktailmachine.data.db.NewEmptyIngredientException;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
@@ -86,7 +87,7 @@ public interface Ingredient {
      * @param millimeters m
      * @throws NewEmptyIngredientException ingredient is empty.
      */
-    public void pump(int millimeters) throws NewEmptyIngredientException;
+    public void pump(int millimeters) throws NewEmptyIngredientException, NeedsMoreIngredientException;
 
     //db
     /**

@@ -2,6 +2,7 @@ package com.example.cocktailmachine.data.db.elements;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
+import com.example.cocktailmachine.data.db.NeedsMoreIngredientException;
 import com.example.cocktailmachine.data.db.NewDatabaseConnection;
 import com.example.cocktailmachine.data.db.NewEmptyIngredientException;
 
@@ -12,17 +13,20 @@ public class SQLIngredient extends DataBaseElement implements Ingredient {
     private List<String> imageUrls;
     private boolean alcoholic;
     private boolean available;
-    private int fluidInMillimeters;
-    private long pump;
+    //private int fluidInMillimeters;
+    //private long pump;
     private int color;
+
+    private SQLIngredientPump bunker;
 
     public SQLIngredient(String name, boolean alcoholic, int color) {
         this.name = name;
         this.alcoholic = alcoholic;
         this.color = color;
         this.available = false;
-        this.fluidInMillimeters = -1;
-        this.pump = -1L;
+        //this.fluidInMillimeters = -1;
+        //this.pump = -1L;
+        this.bunker = null;
     }
 
     public SQLIngredient(String name,
@@ -35,9 +39,12 @@ public class SQLIngredient extends DataBaseElement implements Ingredient {
         this.name = name;
         this.alcoholic = alcoholic;
         this.available = available;
-        this.fluidInMillimeters = fluidInMillimeters;
-        this.pump = pump;
+        //this.fluidInMillimeters = fluidInMillimeters;
+        //this.pump = pump;
         this.color = color;
+        this.save();
+        this.wasSaved();
+        this.bunker = new SQLIngredientPump(fluidInMillimeters, pump, this.getID());
     }
 
     public SQLIngredient(long ID,
@@ -51,10 +58,12 @@ public class SQLIngredient extends DataBaseElement implements Ingredient {
         this.name = name;
         this.alcoholic = alcoholic;
         this.available = available;
-        this.fluidInMillimeters = fluidInMillimeters;
-        this.pump = pump;
+        //this.fluidInMillimeters = fluidInMillimeters;
+        //this.pump = pump;
         this.color = color;
         this.loadUrls();
+
+        this.bunker = new SQLIngredientPump(fluidInMillimeters, pump, this.getID());
     }
 
     public SQLIngredient(long ID,
@@ -71,9 +80,11 @@ public class SQLIngredient extends DataBaseElement implements Ingredient {
         this.imageUrls = imageUrls;
         this.alcoholic = alcoholic;
         this.available = available;
-        this.fluidInMillimeters = fluidInMillimeters;
-        this.pump = pump;
+        //this.fluidInMillimeters = fluidInMillimeters;
+        //this.pump = pump;
         this.color = color;
+
+        this.bunker = new SQLIngredientPump(fluidInMillimeters, pump, this.getID());
     }
 
     public Ingredient getThis(){
@@ -109,11 +120,12 @@ public class SQLIngredient extends DataBaseElement implements Ingredient {
     @Override
     public void setPump(Long pump, int fluidInMillimeters) {
         this.available = true;
-        this.pump = pump;
-        this.fluidInMillimeters = fluidInMillimeters;
-        Pump pp = NewDatabaseConnection.getDataBase().getPump(this.pump);
+        //this.pump = pump;
+        //this.fluidInMillimeters = fluidInMillimeters;
+        Pump pp = NewDatabaseConnection.getDataBase().getPump(pump);
         pp.setCurrentIngredient(this);
         pp.save();
+        this.bunker = new SQLIngredientPump(fluidInMillimeters, pump, this.getID());
         this.wasChanged();
         this.save();
         this.wasSaved();
@@ -121,12 +133,13 @@ public class SQLIngredient extends DataBaseElement implements Ingredient {
 
     @Override
     public int getFluidInMilliliter() {
-        return this.fluidInMillimeters;
+        //return this.fluidInMillimeters;
+        return this.bunker.getFluidInMillimeters();
     }
 
     @Override
     public Pump getPump() {
-        return Pump.getPump(this.pump);
+        return this.bunker.getPump();
     }
 
     @Override
@@ -135,12 +148,19 @@ public class SQLIngredient extends DataBaseElement implements Ingredient {
     }
 
     @Override
-    public void pump(int millimeters) throws NewEmptyIngredientException {
-        if(this.fluidInMillimeters - millimeters < this.getPump().getMillilitersPumpedInMilliseconds()){
-            throw new NewEmptyIngredientException(this);
+    public void pump(int millimeters) throws NeedsMoreIngredientException {
+        //if(this.fluidInMillimeters - millimeters < this.getPump().getMillilitersPumpedInMilliseconds()){
+        //    throw new NewEmptyIngredientException(this);
+        //}
+        //this.fluidInMillimeters = this.fluidInMillimeters - millimeters;
+        //this.wasChanged();
+        try {
+            this.bunker.pump(millimeters);
+        } catch (NeedsMoreIngredientException e) {
+            this.available = false;
+            throw e;
         }
-        this.fluidInMillimeters = this.fluidInMillimeters - millimeters;
-        this.wasChanged();
+
     }
 
     @Override
