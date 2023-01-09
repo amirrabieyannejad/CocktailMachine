@@ -86,4 +86,14 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
             return null;
         }
     }
+
+    public void setEmptyPumps(SQLiteDatabase db){
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_NAME_AVAILABLE, false);
+        try {
+            this.updateColumnToConstant(db, cv);
+        } catch (NoSuchColumnException e) {
+            e.printStackTrace();
+        }
+    }
 }

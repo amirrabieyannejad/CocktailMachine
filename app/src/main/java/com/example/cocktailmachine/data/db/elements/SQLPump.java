@@ -33,6 +33,12 @@ public class SQLPump extends DataBaseElement implements Pump {
     @Override
     public void setPumps() {
         //TODO:????
+        NewDatabaseConnection.getDataBase().loadBufferWithAvailable();
+    }
+
+    @Override
+    public void setOverrideEmptyPumps(int numberOfPumps) {
+        NewDatabaseConnection.getDataBase().loadEmpty();
     }
 
 

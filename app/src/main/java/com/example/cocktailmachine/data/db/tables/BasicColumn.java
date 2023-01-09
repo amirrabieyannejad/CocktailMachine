@@ -335,7 +335,17 @@ public abstract class BasicColumn<T extends DataBaseElement> implements BaseColu
         updateColumnsValues(db, cv, this._ID, Long.toString(id));
     }
 
-
+    public void updateColumnToConstant(SQLiteDatabase db,
+                                       ContentValues cv)
+            throws NoSuchColumnException {
+        for (String key : cv.keySet()) {
+            if (!getColumns().contains(key)) {
+                throw new NoSuchColumnException(getName(), key);
+            }
+        }
+        db.update(getName(),
+                cv, null, null);
+    }
 
 
 
@@ -344,6 +354,7 @@ public abstract class BasicColumn<T extends DataBaseElement> implements BaseColu
     public abstract T makeElement(Cursor cursor);
 
     public abstract ContentValues makeContentValues(T element);
+
     public ContentValues makeContentValuesWithID(T element){
         ContentValues cv = makeContentValues(element);
         cv.put(_ID, element.getID());

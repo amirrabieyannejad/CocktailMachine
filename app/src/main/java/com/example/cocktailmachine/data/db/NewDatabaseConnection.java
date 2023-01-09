@@ -94,6 +94,8 @@ public interface NewDatabaseConnection {
 
     void loadBufferWithAvailable();
 
+    void loadEmpty();
+
     List<? extends Recipe> loadAvailableRecipes();
 
     List<? extends Ingredient> loadAvailableIngredients();

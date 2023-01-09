@@ -1,5 +1,6 @@
 package com.example.cocktailmachine.data.db;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -130,6 +131,8 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
     @Override
     public void remove(Pump pump) {
         Tables.TABLE_PUMP.deleteElement(this.getWritableDatabase(), pump.getID());
+        Tables.TABLE_INGREDIENT.setEmptyPumps(this.getWritableDatabase());
+        Tables.TABLE_RECIPE.setEmptyPumps(this.getWritableDatabase());
     }
 
 
@@ -138,6 +141,14 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
         this.pumps = this.getPumps();
         this.ingredients = this.loadAvailableIngredients();
         this.recipes = this.loadAvailableRecipes();
+    }
+
+    @Override
+    public void loadEmpty() {
+        this.pumps = this.getPumps();
+        for(Pump pump: this.pumps){
+            pump.delete();
+        }
     }
 
     @Override

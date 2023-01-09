@@ -28,10 +28,7 @@ public interface Pump {
      */
     public Ingredient getCurrentIngredient();
 
-    /**
-     * Set up pumps with ingredients.
-     */
-    public void setPumps();
+
 
     /**
      * Update ingredient in pump.
@@ -59,6 +56,18 @@ public interface Pump {
 
 
     //general
+
+    /**
+     * Set up pumps with ingredients.
+     * Load buffer with status quo from data base.
+     */
+    public void setPumps();
+
+    /**
+     * Set up k empty pumps.
+     * @param numberOfPumps k
+     */
+    public void setOverrideEmptyPumps(int numberOfPumps);
 
     /**
      * Static access to pumps.
