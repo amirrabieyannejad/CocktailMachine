@@ -15,6 +15,15 @@ public class SQLIngredientPump extends DataBaseElement{
     private long ingredient;
 
     public SQLIngredientPump(int fluidInMillimeters, long pump, long ingredient) {
+        super();
+        this.fluidInMillimeters = fluidInMillimeters;
+        this.pump = pump;
+        this.ingredient = ingredient;
+        this.save();
+    }
+
+    public SQLIngredientPump(long id, int fluidInMillimeters, long pump, long ingredient) {
+        super(id);
         this.fluidInMillimeters = fluidInMillimeters;
         this.pump = pump;
         this.ingredient = ingredient;
@@ -29,9 +38,13 @@ public class SQLIngredientPump extends DataBaseElement{
         return Pump.getPump(this.pump);
     }
 
+    public long getPumpID() {return this.pump;}
+
     public Ingredient getIngredient(){
         return Ingredient.getIngredient(this.ingredient);
     }
+
+    public long getIngredientID() {return this.ingredient;}
 
     public boolean isPumpable(){
         return this.fluidInMillimeters>0;

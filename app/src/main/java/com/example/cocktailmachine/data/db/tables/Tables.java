@@ -24,6 +24,7 @@ public class Tables {
     public static final TopicTable TABLE_TOPIC = new TopicTable();
     public static final RecipeIngredientTable TABLE_RECIPE_INGREDIENT = new RecipeIngredientTable();
     public static final RecipeTopicTable TABLE_RECIPE_TOPIC = new RecipeTopicTable();
+    public static final IngredientPumpTable TABLE_INGREDIENT_PUMP = new IngredientPumpTable();
 
     public static List<String> getCreates(){
         List<String> res = new ArrayList<>();
@@ -35,6 +36,7 @@ public class Tables {
         res.add(TABLE_TOPIC.createTable());
         res.add(TABLE_RECIPE_INGREDIENT.createTable());
         res.add(TABLE_RECIPE_TOPIC.createTable());
+        res.add(TABLE_INGREDIENT_PUMP.createTable());
         return res;
     }
 
@@ -48,6 +50,7 @@ public class Tables {
         res.add(TABLE_TOPIC.deleteTable());
         res.add(TABLE_RECIPE_INGREDIENT.deleteTable());
         res.add(TABLE_RECIPE_TOPIC.deleteTable());
+        res.add(TABLE_INGREDIENT_PUMP.deleteTable());
         return res;
     }
 

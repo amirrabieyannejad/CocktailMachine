@@ -13,6 +13,7 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.elements.IngredientImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
+import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
@@ -69,73 +70,22 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
 
 
     //NewDatabaseConnection Overrides
-    @Override
-    public Pump getPump(Long id){
-        return this.pumps.stream().filter(p->p.getID()==id).collect(Collectors.toList()).get(0);
-    }
+
 
     @Override
-    public Ingredient getIngredient(Long id) {
-        return this.ingredients.stream().filter(i->i.getID()==id).collect(Collectors.toList()).get(0);
+    public void emptyUpPumps() {
+        Tables.TABLE_INGREDIENT_PUMP.deleteTable();
+        Tables.TABLE_INGREDIENT_PUMP.createTable();
     }
 
     @Override
-    public List<Ingredient> getIngredients(List<Long> ingredients) {
-        return this.ingredients.stream().filter(i->ingredients.contains(i.getID())).collect(Collectors.toList());
+    public void setUpPumps() {
+        this.emptyUpPumps();
+        Tables.TABLE_PUMP.deleteTable();
+        Tables.TABLE_PUMP.createTable();
     }
 
-    @Override
-    public Recipe getRecipe(Long id) {
-        return this.recipes.stream().filter(i->i.getID()==id).collect(Collectors.toList()).get(0);
-    }
-
-    @Override
-    public List<? extends Recipe> getRecipes(List<Long> recipeIds) {
-        return this.recipes.stream().filter(i->recipeIds.contains(i.getID())).collect(Collectors.toList());
-    }
-
-
-    public void addIngredientImageUrl(long ingredientId, String url) {
-       // this.getWritableDatabase().
-        Tables.TABLE_INGREDIENT_URL.addElement(this.getWritableDatabase(),ingredientId, url);
-    }
-
-    @Override
-    public void addOrUpdate(SQLIngredient ingredient) {
-        if(ingredient.isSaved() && ingredient.needsUpdate()){
-            Tables.TABLE_INGREDIENT.updateElement(this.getWritableDatabase(), ingredient);
-        }else{
-            Tables.TABLE_INGREDIENT.addElement(this.getWritableDatabase(), ingredient);
-        }
-    }
-
-    @Override
-    public void addOrUpdate(SQLRecipe recipe) {
-        if(recipe.isSaved() && recipe.needsUpdate()){
-            Tables.TABLE_RECIPE.updateElement(this.getWritableDatabase(), recipe);
-        }else{
-            Tables.TABLE_RECIPE.addElement(this.getWritableDatabase(), recipe);
-        }
-    }
-
-    @Override
-    public void remove(Ingredient ingredient) {
-        Tables.TABLE_INGREDIENT.deleteElement(this.getWritableDatabase(), ingredient.getID());
-    }
-
-    @Override
-    public void remove(Recipe recipe) {
-        Tables.TABLE_RECIPE.deleteElement(this.getWritableDatabase(), recipe.getID());
-    }
-
-    @Override
-    public void remove(Pump pump) {
-        Tables.TABLE_PUMP.deleteElement(this.getWritableDatabase(), pump.getID());
-        Tables.TABLE_INGREDIENT.setEmptyPumps(this.getWritableDatabase());
-        Tables.TABLE_RECIPE.setEmptyPumps(this.getWritableDatabase());
-    }
-
-
+    //LOAD
     @Override
     public void loadBufferWithAvailable() {
         this.pumps = this.getPumps();
@@ -162,6 +112,51 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
         return Tables.TABLE_INGREDIENT.getAvailable(this.getReadableDatabase());
     }
 
+    //CHECKER
+
+    @Override
+    public boolean checkavailablilityofallingredients(HashMap<Long, Integer> ingredients) {
+        final List<Boolean> availables = new ArrayList<>();
+        ingredients.forEach((id, time)->{
+            availables.add(this.getIngredient(id).getFluidInMilliliter()>time);
+        });
+        return availables.stream().reduce(true, (b1,b2)-> b1 && b2);
+        //return false;
+    }
+
+
+
+
+
+
+
+
+    //GETTER
+    @Override
+    public Pump getPump(Long id){
+        return this.pumps.stream().filter(p->p.getID()==id).collect(Collectors.toList()).get(0);
+    }
+
+    @Override
+    public Ingredient getIngredient(Long id) {
+        return this.ingredients.stream().filter(i->i.getID()==id).collect(Collectors.toList()).get(0);
+    }
+
+    @Override
+    public List<Ingredient> getIngredients(List<Long> ingredients) {
+        return this.ingredients.stream().filter(i->ingredients.contains(i.getID())).collect(Collectors.toList());
+    }
+
+    @Override
+    public Recipe getRecipe(Long id) {
+        return this.recipes.stream().filter(i->i.getID()==id).collect(Collectors.toList()).get(0);
+    }
+
+    @Override
+    public List<? extends Recipe> getRecipes(List<Long> recipeIds) {
+        return this.recipes.stream().filter(i->recipeIds.contains(i.getID())).collect(Collectors.toList());
+    }
+
     @Override
     public List<Recipe> getRecipeWith(String needle) {
         return this.recipes.stream().filter(i->i.getName().contains(needle)).collect(Collectors.toList());
@@ -178,33 +173,8 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
     }
 
     @Override
-    public boolean checkavailablilityofallingredients(HashMap<Long, Integer> ingredients) {
-        final List<Boolean> availables = new ArrayList<>();
-        ingredients.forEach((id, time)->{
-            availables.add(this.getIngredient(id).getFluidInMilliliter()>time);
-        });
-        return availables.stream().reduce(true, (b1,b2)-> b1 && b2);
-        //return false;
-    }
-
-    @Override
     public List<Pump> getPumps() {
         return null;
-    }
-
-    @Override
-    public void removeRecipe(long id) {
-        Tables.TABLE_RECIPE.deleteElement(this.getWritableDatabase(), id);
-    }
-
-    @Override
-    public void removeIngredient(long id) {
-        Tables.TABLE_INGREDIENT.deleteElement(this.getWritableDatabase(), id);
-    }
-
-    @Override
-    public void removePump(long id) {
-        Tables.TABLE_PUMP.deleteElement(this.getWritableDatabase(), id);
     }
 
     @Override
@@ -233,6 +203,40 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
     }
 
     @Override
+    public List<SQLRecipeIngredient> getPumpTimes(SQLRecipe newSQLRecipe) {
+        return Tables.TABLE_RECIPE_INGREDIENT.getPumpTime(this.getReadableDatabase(), newSQLRecipe);
+    }
+
+
+
+
+    //ADD OR UPDATE
+
+
+    public void addIngredientImageUrl(long ingredientId, String url) {
+        // this.getWritableDatabase().
+        Tables.TABLE_INGREDIENT_URL.addElement(this.getWritableDatabase(),ingredientId, url);
+    }
+
+    @Override
+    public void addOrUpdate(SQLIngredient ingredient) {
+        if(ingredient.isSaved() && ingredient.needsUpdate()){
+            Tables.TABLE_INGREDIENT.updateElement(this.getWritableDatabase(), ingredient);
+        }else{
+            Tables.TABLE_INGREDIENT.addElement(this.getWritableDatabase(), ingredient);
+        }
+    }
+
+    @Override
+    public void addOrUpdate(SQLRecipe recipe) {
+        if(recipe.isSaved() && recipe.needsUpdate()){
+            Tables.TABLE_RECIPE.updateElement(this.getWritableDatabase(), recipe);
+        }else{
+            Tables.TABLE_RECIPE.addElement(this.getWritableDatabase(), recipe);
+        }
+    }
+
+    @Override
     public void addOrUpdate(SQLTopic newSQLTopic) {
         if(newSQLTopic.isSaved() && newSQLTopic.needsUpdate()){
             Tables.TABLE_TOPIC.updateElement(this.getWritableDatabase(), newSQLTopic);
@@ -251,11 +255,6 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
     }
 
     @Override
-    public List<SQLRecipeIngredient> getPumpTimes(SQLRecipe newSQLRecipe) {
-        return Tables.TABLE_RECIPE_INGREDIENT.getPumpTime(this.getReadableDatabase(), newSQLRecipe);
-    }
-
-    @Override
     public void addOrUpdate(SQLRecipeTopic newSQLRecipeTopic) {
         if(newSQLRecipeTopic.isSaved() && newSQLRecipeTopic.needsUpdate()){
             Tables.TABLE_RECIPE_TOPIC.updateElement(this.getWritableDatabase(), newSQLRecipeTopic);
@@ -265,18 +264,12 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
     }
 
     @Override
-    public void remove(SQLRecipeTopic newSQLRecipeTopic) {
-        Tables.TABLE_RECIPE_TOPIC.deleteElement(this.getWritableDatabase(), newSQLRecipeTopic);
-    }
-
-    @Override
-    public void remove(SQLTopic newSQLTopic) {
-        Tables.TABLE_TOPIC.deleteElement(this.getWritableDatabase(), newSQLTopic);
-    }
-
-    @Override
-    public void remove(SQLRecipeIngredient newSQLRecipeIngredient) {
-        Tables.TABLE_RECIPE_INGREDIENT.deleteElement(this.getWritableDatabase(),newSQLRecipeIngredient);
+    public void addOrUpdate(SQLIngredientPump newSQLIngredientPump) {
+        if(newSQLIngredientPump.isSaved() && newSQLIngredientPump.needsUpdate()){
+            Tables.TABLE_INGREDIENT_PUMP.updateElement(this.getWritableDatabase(), newSQLIngredientPump);
+        }else{
+            Tables.TABLE_INGREDIENT_PUMP.addElement(this.getWritableDatabase(), newSQLIngredientPump);
+        }
     }
 
     @Override
@@ -298,11 +291,6 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
     }
 
     @Override
-    public void remove(RecipeImageUrlElement recipeImageUrlElement) {
-        Tables.TABLE_RECIPE_URL.deleteElement(this.getWritableDatabase(),recipeImageUrlElement);
-    }
-
-    @Override
     public void addOrUpdate(IngredientImageUrlElement ingredientImageUrlElement) {
         if(ingredientImageUrlElement.isSaved() && ingredientImageUrlElement.needsUpdate()){
             Tables.TABLE_INGREDIENT_URL.updateElement(this.getWritableDatabase(), ingredientImageUrlElement);
@@ -311,10 +299,72 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
         }
     }
 
+
+
+    //REMOVE
+
+    @Override
+    public void remove(Ingredient ingredient) {
+        Tables.TABLE_INGREDIENT.deleteElement(this.getWritableDatabase(), ingredient.getID());
+    }
+
+    @Override
+    public void remove(Recipe recipe) {
+        Tables.TABLE_RECIPE.deleteElement(this.getWritableDatabase(), recipe.getID());
+    }
+
+    @Override
+    public void remove(Pump pump) {
+        Tables.TABLE_PUMP.deleteElement(this.getWritableDatabase(), pump.getID());
+        Tables.TABLE_INGREDIENT.setEmptyPumps(this.getWritableDatabase());
+        Tables.TABLE_RECIPE.setEmptyPumps(this.getWritableDatabase());
+    }
+
+    @Override
+    public void removeRecipe(long id) {
+        Tables.TABLE_RECIPE.deleteElement(this.getWritableDatabase(), id);
+    }
+
+    @Override
+    public void removeIngredient(long id) {
+        Tables.TABLE_INGREDIENT.deleteElement(this.getWritableDatabase(), id);
+    }
+
+    @Override
+    public void removePump(long id) {
+        Tables.TABLE_PUMP.deleteElement(this.getWritableDatabase(), id);
+    }
+
+    @Override
+    public void remove(SQLRecipeTopic newSQLRecipeTopic) {
+        Tables.TABLE_RECIPE_TOPIC.deleteElement(this.getWritableDatabase(), newSQLRecipeTopic);
+    }
+
+    @Override
+    public void remove(SQLTopic newSQLTopic) {
+        Tables.TABLE_TOPIC.deleteElement(this.getWritableDatabase(), newSQLTopic);
+    }
+
+    @Override
+    public void remove(SQLRecipeIngredient newSQLRecipeIngredient) {
+        Tables.TABLE_RECIPE_INGREDIENT.deleteElement(this.getWritableDatabase(),newSQLRecipeIngredient);
+    }
+
+    @Override
+    public void remove(SQLIngredientPump sqlIngredientPump) {
+        Tables.TABLE_INGREDIENT_PUMP.deleteElement(this.getWritableDatabase(), sqlIngredientPump);
+    }
+
+    @Override
+    public void remove(RecipeImageUrlElement recipeImageUrlElement) {
+        Tables.TABLE_RECIPE_URL.deleteElement(this.getWritableDatabase(),recipeImageUrlElement);
+    }
+
     @Override
     public void remove(IngredientImageUrlElement ingredientImageUrlElement) {
         Tables.TABLE_INGREDIENT_URL.deleteElement(this.getWritableDatabase(),ingredientImageUrlElement);
     }
+
 
 
     // Helper Over rides

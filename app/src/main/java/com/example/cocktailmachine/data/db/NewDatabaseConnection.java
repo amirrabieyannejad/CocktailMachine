@@ -6,6 +6,7 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.elements.IngredientImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
+import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
@@ -39,6 +40,33 @@ public interface NewDatabaseConnection {
     public static NewDatabaseConnection getDataBase(){
         return NewSQLDatabaseConnection.getSingleton();
     }
+
+
+    void emptyUpPumps();
+
+    void setUpPumps();
+
+
+
+    //LOAD
+
+    void loadBufferWithAvailable();
+
+    void loadEmpty();
+
+    List<? extends Recipe> loadAvailableRecipes();
+
+    List<? extends Ingredient> loadAvailableIngredients();
+
+
+
+    //CHECK
+
+    boolean checkavailablilityofallingredients(HashMap<Long, Integer> ingredients);
+
+
+
+    //GET
 
     /**
      * Get Ingredient with id. If current App-User has the privilege
@@ -82,23 +110,17 @@ public interface NewDatabaseConnection {
      */
     public Pump getPump(Long id);
 
-    void addOrUpdate(SQLIngredient ingredient);
+    List<? extends Ingredient> getAvailableIngredients();
 
-    void addOrUpdate(SQLRecipe recipe);
+    List<? extends Recipe> getAvailableRecipes();
 
-    public void remove(Ingredient ingredient);
+    List<String> getUrls(SQLIngredient newSQLIngredient);
 
-    public void remove(Recipe recipe);
+    List<String> getUrls(SQLRecipe newSQLRecipe);
 
-    public void remove(Pump pump);
+    List<Long> getTopics(SQLRecipe newSQLRecipe);
 
-    void loadBufferWithAvailable();
-
-    void loadEmpty();
-
-    List<? extends Recipe> loadAvailableRecipes();
-
-    List<? extends Ingredient> loadAvailableIngredients();
+    List<SQLRecipeIngredient> getPumpTimes(SQLRecipe newSQLRecipe);
 
     /**
      * Get recipes with regex in name.
@@ -120,9 +142,13 @@ public interface NewDatabaseConnection {
      */
     UserPrivilegeLevel getPrivilege();
 
-    boolean checkavailablilityofallingredients(HashMap<Long, Integer> ingredients);
-
     List<Pump> getPumps();
+
+
+
+
+
+    //REMOVE
 
     void removeRecipe(long id);
 
@@ -130,23 +156,13 @@ public interface NewDatabaseConnection {
 
     void removePump(long id);
 
-    List<? extends Ingredient> getAvailableIngredients();
 
-    List<? extends Recipe> getAvailableRecipes();
+    public void remove(Ingredient ingredient);
 
-    List<String> getUrls(SQLIngredient newSQLIngredient);
+    public void remove(Recipe recipe);
 
-    List<String> getUrls(SQLRecipe newSQLRecipe);
+    public void remove(Pump pump);
 
-    List<Long> getTopics(SQLRecipe newSQLRecipe);
-
-    void addOrUpdate(SQLTopic newSQLTopic);
-
-    void addOrUpdate(SQLPump newSQLPump);
-
-    List<SQLRecipeIngredient> getPumpTimes(SQLRecipe newSQLRecipe);
-
-    void addOrUpdate(SQLRecipeTopic newSQLRecipeTopic);
 
     void remove(SQLRecipeTopic newSQLRecipeTopic);
 
@@ -154,13 +170,35 @@ public interface NewDatabaseConnection {
 
     void remove(SQLRecipeIngredient newSQLRecipeIngredient);
 
+    void remove(SQLIngredientPump sqlIngredientPump);
+
+    void remove(IngredientImageUrlElement ingredientImageUrlElement);
+
+    void remove(RecipeImageUrlElement recipeImageUrlElement);
+
+
+
+
+
+
+    //ADD OR UPDATE
+
+    void addOrUpdate(SQLIngredient ingredient);
+
+    void addOrUpdate(SQLRecipe recipe);
+
+    void addOrUpdate(SQLRecipeTopic newSQLRecipeTopic);
+
+    void addOrUpdate(SQLIngredientPump newSQLIngredientPump);
+
     void addOrUpdate(SQLRecipeIngredient newSQLRecipeIngredient);
 
     void addOrUpdate(RecipeImageUrlElement recipeImageUrlElement);
 
-    void remove(RecipeImageUrlElement recipeImageUrlElement);
-
     void addOrUpdate(IngredientImageUrlElement ingredientImageUrlElement);
 
-    void remove(IngredientImageUrlElement ingredientImageUrlElement);
+    void addOrUpdate(SQLTopic newSQLTopic);
+
+    void addOrUpdate(SQLPump newSQLPump);
+
 }
