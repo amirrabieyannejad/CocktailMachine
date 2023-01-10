@@ -49,6 +49,17 @@ public class SQLIngredient extends DataBaseElement implements Ingredient {
     public SQLIngredient(long ID,
                          String name,
                          boolean alcoholic,
+                         int color) {
+        super(ID);
+        this.name = name;
+        this.alcoholic = alcoholic;
+        this.color = color;
+        this.loadUrls();
+    }
+
+    public SQLIngredient(long ID,
+                         String name,
+                         boolean alcoholic,
                          boolean available,
                          int fluidInMillimeters,
                          long pump,
