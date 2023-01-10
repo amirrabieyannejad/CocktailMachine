@@ -68,6 +68,8 @@ public interface NewDatabaseConnection {
 
     //GET
 
+    public List<SQLIngredientPump> getIngredientPumps();
+
     /**
      * Get Ingredient with id. If current App-User has the privilege
      * of an user, this returns the Ingredient, when the ingredient is available.
@@ -142,7 +144,7 @@ public interface NewDatabaseConnection {
      */
     UserPrivilegeLevel getPrivilege();
 
-    List<Pump> getPumps();
+    List<? extends Pump> getPumps();
 
 
 
