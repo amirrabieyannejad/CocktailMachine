@@ -30,6 +30,16 @@ public class SQLPump extends DataBaseElement implements Pump {
         this.bunker = new SQLIngredientPump(-1, this.getID(), ingredient.getID());
     }
 
+    @Override
+    public void empty() {
+        this.bunker = null;
+    }
+
+    @Override
+    public void fill(int milliliters) {
+        this.bunker.setFillLevel(milliliters);
+    }
+
     //General
     @Override
     public void setPumps() {
