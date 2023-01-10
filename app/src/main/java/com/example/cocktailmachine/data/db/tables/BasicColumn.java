@@ -147,6 +147,17 @@ public abstract class BasicColumn<T extends DataBaseElement> implements BaseColu
         return this.cursorToList(cursor);
     }
 
+    public List<T> getAllElements(SQLiteDatabase db){
+        Cursor cursor = db.query(this.getName(),
+                getColumns().toArray(new String[0]),
+                null,
+                null,
+                null,
+                null,
+                null);
+        return this.cursorToList(cursor);
+    }
+
     public List<T> getElementsLike(SQLiteDatabase db,
                                    String column_name,
                                    String likeThis)
