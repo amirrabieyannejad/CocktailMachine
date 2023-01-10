@@ -77,7 +77,7 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
         Tables.TABLE_INGREDIENT_PUMP.deleteTable();
         Tables.TABLE_INGREDIENT_PUMP.createTable();
         this.ingredientPumps = new ArrayList<>();
-        this.pumps.stream().forEach(p->p.empty());
+        this.pumps.forEach(Pump::empty);
     }
 
     @Override
@@ -104,13 +104,14 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
 
     @Override
     public List<? extends Recipe> loadAvailableRecipes() {
-        return Tables.TABLE_RECIPE.getAvailable(this.getReadableDatabase());
+        return Tables.TABLE_RECIPE.getAvailable(this.getReadableDatabase() );
     }
 
     @Override
     public List<? extends Ingredient> loadAvailableIngredients() {
        // return IngredientTable.
-        return Tables.TABLE_INGREDIENT.getAvailable(this.getReadableDatabase());
+        return Tables.TABLE_INGREDIENT.getElements(this.getReadableDatabase(),
+                this.getAvailableIngredientIDs());
     }
 
     private List<SQLIngredientPump> loadIngredientPumps() {
@@ -139,6 +140,13 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
 
 
     //GETTER
+
+    private List<Long> getAvailableIngredientIDs(){
+        return this.ingredientPumps
+                .stream().map(SQLIngredientPump::getIngredientID)
+                .collect(Collectors.toList());
+    }
+
     @Override
     public List<SQLIngredientPump> getIngredientPumps() {
         return this.ingredientPumps;
