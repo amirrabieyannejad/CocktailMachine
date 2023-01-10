@@ -4,6 +4,7 @@ import android.content.Context;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
+import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.elements.IngredientImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
@@ -112,6 +113,8 @@ public interface NewDatabaseConnection {
      */
     public Pump getPump(Long id);
 
+    public Topic getTopic(long id);
+
     List<? extends Ingredient> getAvailableIngredients();
 
     List<? extends Recipe> getAvailableRecipes();
@@ -120,7 +123,11 @@ public interface NewDatabaseConnection {
 
     List<String> getUrls(SQLRecipe newSQLRecipe);
 
-    List<Long> getTopics(SQLRecipe newSQLRecipe);
+    List<Topic> getTopics(SQLRecipe newSQLRecipe);
+
+    List<Topic> getTopics(Recipe recipe);
+
+    List<Topic> getTopics();
 
     List<SQLRecipeIngredient> getPumpTimes(SQLRecipe newSQLRecipe);
 

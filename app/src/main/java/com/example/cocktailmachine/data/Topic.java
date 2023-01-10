@@ -1,6 +1,9 @@
 package com.example.cocktailmachine.data;
 
+import com.example.cocktailmachine.data.db.NewDatabaseConnection;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
+
+import java.util.List;
 
 public interface Topic {
     /**
@@ -53,5 +56,17 @@ public interface Topic {
      */
     public static Topic makeNew(String name, String description){
         return new SQLTopic(name, description);
+    }
+
+    public static Topic getTopic(long id){
+        return NewDatabaseConnection.getDataBase().getTopic(long id);
+    }
+
+    public static List<Topic> getTopics(Recipe recipe){
+        return NewDatabaseConnection.getDataBase().getTopics(recipe);
+    }
+
+    public static List<Topic> getTopics(){
+        return NewDatabaseConnection.getDataBase().getTopics();
     }
 }

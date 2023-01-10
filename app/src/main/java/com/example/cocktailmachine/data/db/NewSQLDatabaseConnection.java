@@ -95,6 +95,7 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
         this.ingredientPumps = this.loadIngredientPumps();
         this.ingredients = this.loadAvailableIngredients();
         this.recipes = this.loadAvailableRecipes();
+        this.topics = this.loadTopics();
     }
 
     @Override
@@ -122,6 +123,10 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
     private List<SQLPump> loadPumps() {
         // return IngredientTable.
         return Tables.TABLE_PUMP.getAllElements(this.getReadableDatabase());
+    }
+
+    private List<? extends Topic> loadTopics() {
+        return Tables.TABLE_TOPIC.getAllElements(this.getReadableDatabase());
     }
 
     //CHECKER
@@ -219,10 +224,26 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
         return Tables.TABLE_RECIPE_URL.getUrls(this.getReadableDatabase(), newSQLRecipe.getID());
     }
 
+    private List<? extends Topic> getTopics(List<Long> t_ids) {
+        return Tables.TABLE_TOPIC.getElements(this.getReadableDatabase(), t_ids);
+    }
+
     @Override
-    public List<Long> getTopics(SQLRecipe newSQLRecipe) {
+    public List<Topic> getTopics(SQLRecipe newSQLRecipe) {
+        return (List<Topic>) this.getTopics(newSQLRecipe.getTopics());
+    }
+
+    @Override
+    public Topic getTopic(long id) {
         return null;
     }
+
+    @Override
+    public List<Topic> getTopics(Recipe recipe) {
+        return (List<Topic>) this.getTopics(recipe.getTopics());
+    }
+
+
 
     @Override
     public List<SQLRecipeIngredient> getPumpTimes(SQLRecipe newSQLRecipe) {
