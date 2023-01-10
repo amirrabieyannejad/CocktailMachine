@@ -61,6 +61,10 @@ public class SQLIngredientPump extends DataBaseElement{
         this.wasChanged();
     }
 
+    public void setFillLevel(int milliliters){
+        this.fillLevel = milliliters;
+    }
+
 
 
 
@@ -78,15 +82,14 @@ public class SQLIngredientPump extends DataBaseElement{
 
     private static List<SQLIngredientPump> getAvailableInstances(){
         //TODO
-        return null;
+        return NewDatabaseConnection.getDataBase().getIngredientPumps();
     }
 
-    public static SQLIngredientPump getInstanceWithPump(int pump){
-        Optional<SQLIngredientPump> o =  getAvailableInstances().stream().filter(ip-> ip.pump==pump).findFirst();
-        if(o.isPresent()){
-            return null;
-        }
-        return o.get();
+    public static SQLIngredientPump getInstanceWithPump(long pump){
+        return getAvailableInstances() != null ? getAvailableInstances().stream().filter(ip -> ip.pump == pump).findFirst().orElse(null) : null;
     }
 
+    public static SQLIngredientPump getInstanceWithIngredient(long ingredient){
+        return getAvailableInstances() != null ? getAvailableInstances().stream().filter(ip -> ip.ingredient == ingredient).findFirst().orElse(null) : null;
+    }
 }
