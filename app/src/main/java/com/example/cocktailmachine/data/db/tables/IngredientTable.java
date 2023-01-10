@@ -73,12 +73,12 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
             long id = cursor.getLong(cursor.getColumnIndexOrThrow(_ID));
             String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME_NAME));
             boolean alcoholic = 0 < cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NAME_ALCOHOLIC));
-            boolean available = 0 < cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NAME_AVAILABLE));
+            //boolean available = 0 < cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NAME_AVAILABLE));
             //int fluid = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NAME_FLUID_PUMPED_IN_MILLISECONDS));
             //long pump_id = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_NAME_PUMP_ID));
-            //int color = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NAME_COLOR));
+            int color = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NAME_COLOR));
             return new SQLIngredient(id, name,
-                    alcoholic, available, fluid, pump_id, color);
+                    alcoholic, color);
         }
 
         @Override
@@ -91,15 +91,6 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
             //cv.put(COLUMN_NAME_PUMP_ID, element.getPump().getID());
             cv.put(COLUMN_NAME_COLOR, element.getColor());
             return cv;
-        }
-
-        public List<SQLIngredient> getAvailable(SQLiteDatabase db){
-            try {
-                return this.getElementsWith(db, COLUMN_NAME_AVAILABLE, String.valueOf(1));
-            } catch (NoSuchColumnException e) {
-                e.printStackTrace();
-                return null;
-            }
         }
 
 }
