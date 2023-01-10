@@ -51,11 +51,11 @@ public class PumpTable extends BasicColumn<SQLPump> {
 
         @Override
         public SQLPump makeElement(Cursor cursor) {
-            Long i_id = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_NAME_INGREDIENT_ID));
+            long i_id = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_NAME_INGREDIENT_ID));
             int mlpims = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NAME_MILLILITERS_PUMPED_IN_MILLISECONDS));
-            Long id = cursor.getLong(cursor.getColumnIndexOrThrow(_ID));
+            long id = cursor.getLong(cursor.getColumnIndexOrThrow(_ID));
             SQLPump pump = new SQLPump(id, mlpims);
-            pump.setCurrentIngredient(id);
+            pump.setCurrentIngredient(i_id);
             return pump;
         }
 
