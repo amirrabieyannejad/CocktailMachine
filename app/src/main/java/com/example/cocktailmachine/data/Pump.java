@@ -44,6 +44,10 @@ public interface Pump {
         setCurrentIngredient(Ingredient.getIngredient(id));
     }
 
+    public void empty();
+
+    public void fill(int milliliters);
+
     /**
      * Deletes this instance in db and in buffer.
      */
@@ -75,7 +79,7 @@ public interface Pump {
      * @return pumps
      */
     public static List<Pump> getPumps(){
-          return NewDatabaseConnection.getDataBase().getPumps();
+          return (List<Pump>) NewDatabaseConnection.getDataBase().getPumps();
     }
 
     /**
