@@ -7,9 +7,7 @@ import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_LONG;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
-import com.example.cocktailmachine.data.db.elements.SQLPump;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +65,7 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_NAME_INGREDIENT_ID, element.getIngredientID());
         cv.put(COLUMN_NAME_PUMP_ID, element.getPumpID());
-        cv.put(COLUMN_NAME_FILL_LEVEL, element.getFluidInMillimeters());
+        cv.put(COLUMN_NAME_FILL_LEVEL, element.getFillLevel());
         return cv;
     }
 

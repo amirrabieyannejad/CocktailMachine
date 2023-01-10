@@ -1,6 +1,5 @@
 package com.example.cocktailmachine.data.db;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -118,7 +117,7 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
     public boolean checkavailablilityofallingredients(HashMap<Long, Integer> ingredients) {
         final List<Boolean> availables = new ArrayList<>();
         ingredients.forEach((id, time)->{
-            availables.add(this.getIngredient(id).getFluidInMilliliter()>time);
+            availables.add(this.getIngredient(id).getFillLevel()>time);
         });
         return availables.stream().reduce(true, (b1,b2)-> b1 && b2);
         //return false;

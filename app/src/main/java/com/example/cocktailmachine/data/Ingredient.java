@@ -58,7 +58,7 @@ public interface Ingredient {
      * Still available liquid/fluid in milliliter.
      * @return milliliter of ingredient
      */
-    public int getFluidInMilliliter();
+    public int getFillLevel();
 
     /**
      * Get Pump representative class, where the ingredient is within.

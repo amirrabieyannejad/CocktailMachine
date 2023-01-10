@@ -3,35 +3,33 @@ package com.example.cocktailmachine.data.db.elements;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.NeedsMoreIngredientException;
-import com.example.cocktailmachine.data.db.NewEmptyIngredientException;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class SQLIngredientPump extends DataBaseElement{
-    private int fluidInMillimeters;
+    private int fillLevel;
     private long pump;
     private long ingredient;
 
-    public SQLIngredientPump(int fluidInMillimeters, long pump, long ingredient) {
+    public SQLIngredientPump(int fillLevel, long pump, long ingredient) {
         super();
-        this.fluidInMillimeters = fluidInMillimeters;
+        this.fillLevel = fillLevel;
         this.pump = pump;
         this.ingredient = ingredient;
         this.save();
     }
 
-    public SQLIngredientPump(long id, int fluidInMillimeters, long pump, long ingredient) {
+    public SQLIngredientPump(long id, int fillLevel, long pump, long ingredient) {
         super(id);
-        this.fluidInMillimeters = fluidInMillimeters;
+        this.fillLevel = fillLevel;
         this.pump = pump;
         this.ingredient = ingredient;
         this.save();
     }
 
-    public int getFluidInMillimeters(){
-        return this.fluidInMillimeters;
+    public int getFillLevel(){
+        return this.fillLevel;
     }
 
     public Pump getPump(){
@@ -47,18 +45,18 @@ public class SQLIngredientPump extends DataBaseElement{
     public long getIngredientID() {return this.ingredient;}
 
     public boolean isPumpable(){
-        return this.fluidInMillimeters>0;
+        return this.fillLevel >0;
     }
 
     public boolean isPumpable(int milliliters){
-        return this.fluidInMillimeters>milliliters;
+        return this.fillLevel >milliliters;
     }
 
     public void pump(int millimeters) throws NeedsMoreIngredientException {
-        if(this.fluidInMillimeters - millimeters < this.getPump().getMillilitersPumpedInMilliseconds()){
+        if(this.fillLevel - millimeters < this.getPump().getMillilitersPumpedInMilliseconds()){
             throw new NeedsMoreIngredientException(Ingredient.getIngredient(this.ingredient));
         }
-        this.fluidInMillimeters = this.fluidInMillimeters - millimeters;
+        this.fillLevel = this.fillLevel - millimeters;
         this.wasChanged();
     }
 

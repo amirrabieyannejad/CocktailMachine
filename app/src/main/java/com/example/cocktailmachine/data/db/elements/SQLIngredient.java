@@ -4,7 +4,6 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.NeedsMoreIngredientException;
 import com.example.cocktailmachine.data.db.NewDatabaseConnection;
-import com.example.cocktailmachine.data.db.NewEmptyIngredientException;
 
 import java.util.List;
 
@@ -132,9 +131,9 @@ public class SQLIngredient extends DataBaseElement implements Ingredient {
     }
 
     @Override
-    public int getFluidInMilliliter() {
+    public int getFillLevel() {
         //return this.fluidInMillimeters;
-        return this.bunker.getFluidInMillimeters();
+        return this.bunker.getFillLevel();
     }
 
     @Override
