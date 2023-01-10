@@ -3,6 +3,7 @@ package com.example.cocktailmachine.data.db.elements;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.NeedsMoreIngredientException;
+import com.example.cocktailmachine.data.db.NewDatabaseConnection;
 
 import java.util.List;
 import java.util.Optional;
@@ -65,12 +66,13 @@ public class SQLIngredientPump extends DataBaseElement{
 
     @Override
     void save() {
-
+        NewDatabaseConnection.getDataBase().addOrUpdate(this);
+        this.wasSaved();
     }
 
     @Override
     void delete() {
-
+        NewDatabaseConnection.getDataBase().remove(this);
     }
 
 
