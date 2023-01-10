@@ -6,7 +6,9 @@ import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_LONG;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
+import com.example.cocktailmachine.data.db.NewDatabaseConnection;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 
 import java.util.ArrayList;
@@ -67,6 +69,10 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
         cv.put(COLUMN_NAME_PUMP_ID, element.getPumpID());
         cv.put(COLUMN_NAME_FILL_LEVEL, element.getFillLevel());
         return cv;
+    }
+
+    public void deletePump(SQLiteDatabase db, long pump){
+        //SQLIngredientPump ip = NewDatabaseConnection.getDataBase().
     }
 
 }
