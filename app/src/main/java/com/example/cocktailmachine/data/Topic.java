@@ -59,7 +59,7 @@ public interface Topic {
     }
 
     public static Topic getTopic(long id){
-        return NewDatabaseConnection.getDataBase().getTopic(long id);
+        return NewDatabaseConnection.getDataBase().getTopic(id);
     }
 
     public static List<Topic> getTopics(Recipe recipe){
