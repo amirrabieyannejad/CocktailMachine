@@ -111,7 +111,11 @@ public interface Recipe {
      * Remove Ingredient from Recipe.
      * @param ingredientId
      */
-    public void remove(long ingredientId);
+    public void removeIngredient(long ingredientId);
+
+    public void remove(Topic topic);
+
+    public void removeTopic(long topicId);
 
 
     //this Instance
