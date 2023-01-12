@@ -2,6 +2,7 @@ package com.example.cocktailmachine.data.db.elements;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
+import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.NewDatabaseConnection;
 
 import java.util.HashMap;
@@ -74,7 +75,7 @@ public class SQLRecipe extends DataBaseElement implements Recipe {
     }
 
     public void loadTopics(){
-        this.topics = NewDatabaseConnection.getDataBase().getTopics(this);
+        this.topics = NewDatabaseConnection.getDataBase().getTopicIDs(this);
     }
 
     public void loadPumpTime(){
@@ -181,15 +182,26 @@ public class SQLRecipe extends DataBaseElement implements Recipe {
 
     @Override
     public void remove(Ingredient ingredient) {
-        this.remove(ingredient.getID());
+        this.removeIngredient(ingredient.getID());
     }
 
     @Override
-    public void remove(long ingredientId) {
+    public void removeIngredient(long ingredientId) {
         this.pumpTimes.removeAll(this.pumpTimes.stream()
                 .filter(ri->ri.getIngredientID()==ingredientId)
                 .peek(SQLRecipeIngredient::delete)
                 .collect(Collectors.toList()));
+    }
+
+    @Override
+    public void remove(Topic topic) {
+        this.topics.remove(topic.getID());
+    }
+
+    @Override
+    public void removeTopic(long topicId) {
+        this.topics.remove(topicId);
+
     }
 
     @Override
