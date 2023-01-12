@@ -8,11 +8,14 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
 
@@ -78,4 +81,19 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
             return null;
         }
     }
+
+    public  List<SQLRecipeIngredient>  getAvailable(SQLiteDatabase db,
+                                                    List<? extends Recipe> recipes){
+        try {
+            return this.getElementsIn(db, COLUMN_NAME_RECIPE_ID,
+                    recipes.stream()
+                            .map(Recipe::getID)
+                            .collect(Collectors.toList()));
+        } catch (NoSuchColumnException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
 }
