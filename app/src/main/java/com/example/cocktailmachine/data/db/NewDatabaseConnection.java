@@ -125,6 +125,8 @@ public interface NewDatabaseConnection {
 
     List<Topic> getTopics(SQLRecipe newSQLRecipe);
 
+    List<Long> getTopicIDs(SQLRecipe newSQLRecipe);
+
     List<Topic> getTopics(Recipe recipe);
 
     List<Topic> getTopics();
