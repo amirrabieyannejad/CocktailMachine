@@ -38,6 +38,7 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
     private List<? extends Recipe> recipes;
     private List<? extends Topic> topics;
     private List<SQLIngredientPump> ingredientPumps;
+    private List<SQLRecipeIngredient> recipeIngredients;
 
     private static final Tables tables = new Tables();
 
@@ -96,6 +97,7 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
         this.ingredients = this.loadAvailableIngredients();
         this.recipes = this.loadAvailableRecipes();
         this.topics = this.loadTopics();
+        this.recipeIngredients = this.loadPumpTimes();
     }
 
     @Override
@@ -129,6 +131,11 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
         return Tables.TABLE_TOPIC.getAllElements(this.getReadableDatabase());
     }
 
+    private List<SQLRecipeIngredient> loadPumpTimes(){
+        return Tables.TABLE_RECIPE_INGREDIENT.getAvailable(this.getReadableDatabase(), this.recipes);
+
+    }
+
     //CHECKER
 
     @Override
@@ -144,7 +151,7 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
 
 
 
-    //GETTER
+    //GETTER //Not allowed to fetch from database !!!only!!! from buffer unless they are admins
 
     private List<Long> getAvailableIngredientIDs(){
         return this.ingredientPumps
@@ -157,7 +164,6 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
         return this.ingredientPumps;
     }
 
-
     @Override
     public List<? extends Pump> getPumps() {
         return this.pumps;
@@ -165,12 +171,12 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
 
     @Override
     public Pump getPump(Long id){
-        return this.pumps.stream().filter(p->p.getID()==id).collect(Collectors.toList()).get(0);
+        return this.pumps.stream().filter(p->p.getID()==id).findFirst().orElse(null);
     }
 
     @Override
     public Ingredient getIngredient(Long id) {
-        return this.ingredients.stream().filter(i->i.getID()==id).collect(Collectors.toList()).get(0);
+        return this.ingredients.stream().filter(i->i.getID()==id).findFirst().orElse(null);
     }
 
     @Override
@@ -180,7 +186,7 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
 
     @Override
     public Recipe getRecipe(Long id) {
-        return this.recipes.stream().filter(i->i.getID()==id).collect(Collectors.toList()).get(0);
+        return this.recipes.stream().filter(i->i.getID()==id).findFirst().orElse(null);
     }
 
     @Override
@@ -224,38 +230,46 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
         return Tables.TABLE_RECIPE_URL.getUrls(this.getReadableDatabase(), newSQLRecipe.getID());
     }
 
-    private List<? extends Topic> getTopics(List<Long> t_ids) {
-        return Tables.TABLE_TOPIC.getElements(this.getReadableDatabase(), t_ids);
+    private List<Topic> getTopics(List<Long> t_ids) {
+        //return Tables.TABLE_TOPIC.getElements(this.getReadableDatabase(), t_ids);
+        return this.topics.stream().filter(t -> t_ids.contains(t.getID())).collect(Collectors.toList());
     }
 
     @Override
     public List<Topic> getTopics(SQLRecipe newSQLRecipe) {
-        return (List<Topic>) this.getTopics(newSQLRecipe.getTopics());
+        return this.getTopics(newSQLRecipe.getTopics());
     }
 
     @Override
     public Topic getTopic(long id) {
-        return null;
+        return this.topics.stream().filter(t-> t.getID()==id).findFirst().orElse(null);
     }
 
     @Override
     public List<Topic> getTopics(Recipe recipe) {
-        return (List<Topic>) this.getTopics(recipe.getTopics());
+        return this.getTopics(recipe.getTopics());
     }
 
+    @Override
+    public List<Topic> getTopics() {
+        return (List<Topic>) this.topics;
+    }
 
+    @Override
+    public List<Long> getTopicIDs(SQLRecipe newSQLRecipe) {
+        return this.getTopics(newSQLRecipe).stream().map(Topic::getID).collect(Collectors.toList());
+    }
 
     @Override
     public List<SQLRecipeIngredient> getPumpTimes(SQLRecipe newSQLRecipe) {
-        return Tables.TABLE_RECIPE_INGREDIENT.getPumpTime(this.getReadableDatabase(), newSQLRecipe);
+        return this.recipeIngredients
+                .stream()
+                .filter(r->r.getRecipeID()==newSQLRecipe.getID())
+                .collect(Collectors.toList());
     }
 
 
-
-
     //ADD OR UPDATE
-
-
     public void addIngredientImageUrl(long ingredientId, String url) {
         // this.getWritableDatabase().
         Tables.TABLE_INGREDIENT_URL.addElement(this.getWritableDatabase(),ingredientId, url);
@@ -344,40 +358,46 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
 
 
 
-    //REMOVE
-
-    @Override
-    public void remove(Ingredient ingredient) {
-        Tables.TABLE_INGREDIENT.deleteElement(this.getWritableDatabase(), ingredient.getID());
-    }
-
-    @Override
-    public void remove(Recipe recipe) {
-        Tables.TABLE_RECIPE.deleteElement(this.getWritableDatabase(), recipe.getID());
-    }
-
-    @Override
-    public void remove(Pump pump) {
-        Tables.TABLE_PUMP.deleteElement(this.getWritableDatabase(), pump.getID());
-
-        Tables.TABLE_INGREDIENT_PUMP.deletePump(this.getWritableDatabase(), pump.getID());
-               // .deletePump(this.getWritableDatabase(), pump.getID());
-    }
-
+    //REMOVE in DB and buffer
     @Override
     public void removeRecipe(long id) {
         Tables.TABLE_RECIPE.deleteElement(this.getWritableDatabase(), id);
+        this.recipes.removeIf(i->i.getID()==id);
     }
 
     @Override
     public void removeIngredient(long id) {
         Tables.TABLE_INGREDIENT.deleteElement(this.getWritableDatabase(), id);
+        this.ingredients.removeIf(i->i.getID()==id);
+        this.ingredientPumps.removeIf(ip->ip.getIngredientID()== id);
     }
 
     @Override
     public void removePump(long id) {
         Tables.TABLE_PUMP.deleteElement(this.getWritableDatabase(), id);
+
+        Tables.TABLE_INGREDIENT_PUMP.deletePump(this.getWritableDatabase(), id);
+        // .deletePump(this.getWritableDatabase(), pump.getID());
+        this.pumps.removeIf(i->i.getID()== id);
+        this.ingredientPumps.removeIf(ip->ip.getPumpID()== id);
     }
+
+
+    @Override
+    public void remove(Ingredient ingredient) {
+        this.removeIngredient(ingredient.getID());
+    }
+
+    @Override
+    public void remove(Recipe recipe) {
+        this.removeRecipe(recipe.getID());
+    }
+
+    @Override
+    public void remove(Pump pump) {
+        this.removePump(pump.getID());
+    }
+
 
     @Override
     public void remove(SQLRecipeTopic newSQLRecipeTopic) {
@@ -387,6 +407,8 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
     @Override
     public void remove(SQLTopic newSQLTopic) {
         Tables.TABLE_TOPIC.deleteElement(this.getWritableDatabase(), newSQLTopic);
+        this.topics.removeIf(r->r.getID()==newSQLTopic.getID());
+        this.recipes.stream().peek(r -> r.removeTopic(newSQLTopic.getID()));
     }
 
     @Override
