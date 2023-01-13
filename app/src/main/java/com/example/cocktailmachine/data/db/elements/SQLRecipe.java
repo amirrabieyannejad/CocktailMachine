@@ -7,6 +7,7 @@ import com.example.cocktailmachine.data.db.NewDatabaseConnection;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class SQLRecipe extends DataBaseElement implements Recipe {
@@ -80,6 +81,12 @@ public class SQLRecipe extends DataBaseElement implements Recipe {
 
     public void loadPumpTime(){
         this.pumpTimes = NewDatabaseConnection.getDataBase().getPumpTimes(this);
+    }
+
+
+    @Override
+    public String getName() {
+        return this.name;
     }
 
     @Override
@@ -216,8 +223,48 @@ public class SQLRecipe extends DataBaseElement implements Recipe {
     }
 
     @Override
-    public String getName() {
-        return this.name;
+    public boolean equals(Recipe recipe) {
+        //basics
+        if(recipe.getID()!= this.getID()){
+            return false;
+
+        }
+        if(!Objects.equals(this.name, recipe.getName())){
+            return false;
+        }
+        if(recipe.isAlcoholic()!= this.alcoholic){
+            return false;
+        }
+        if(recipe.isAvailable()!=this.available){
+            return false;
+        }
+        //urls
+        if(!recipe.getImageUrls().containsAll(this.imageUrls)){
+            return false;
+        }
+        if(!this.imageUrls.containsAll(recipe.getImageUrls())){
+            return false;
+        }
+
+        //Topics
+        if(!this.topics.containsAll(recipe.getTopics())){
+            return false;
+        }
+        if(!recipe.getTopics().containsAll(this.topics)){
+            return false;
+        }
+
+        //ingredients and pump time
+        if(!this.getIngredientPumpTime().entrySet().containsAll(recipe.getIngredientPumpTime().entrySet())){
+            return false;
+        }
+        if(!this.getIngredientPumpTime().keySet().containsAll(recipe.getIngredientPumpTime().keySet())){
+            return false;
+        }
+        if(!recipe.getIngredientPumpTime().entrySet().containsAll(this.getIngredientPumpTime().entrySet())){
+            return false;
+        }
+        return recipe.getIngredientPumpTime().keySet().containsAll(this.getIngredientPumpTime().keySet());
     }
 
 
