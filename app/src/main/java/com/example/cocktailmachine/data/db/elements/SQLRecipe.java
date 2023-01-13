@@ -71,6 +71,7 @@ public class SQLRecipe extends DataBaseElement implements Recipe {
         this.addOrUpdateElements(ingredientPumpTimes);
     }
 
+    //LOADER
     public void loadUrls(){
         this.imageUrls = NewDatabaseConnection.getDataBase().getUrls(this);
     }
@@ -84,6 +85,7 @@ public class SQLRecipe extends DataBaseElement implements Recipe {
     }
 
 
+    //GETTER
     @Override
     public String getName() {
         return this.name;
@@ -154,6 +156,8 @@ public class SQLRecipe extends DataBaseElement implements Recipe {
         return this.getTopics();
     }
 
+
+    //ADDER
     public void add(Ingredient ingredient, int timeInMilliseconds) throws AlreadySetIngredientException {
         this.add(ingredient.getID(), timeInMilliseconds);
     }
@@ -177,6 +181,7 @@ public class SQLRecipe extends DataBaseElement implements Recipe {
                 .peek(pt -> pt.setPumpTime(timeInMilliseconds)).count() == 0){
             this.pumpTimes.add(new SQLRecipeIngredient(ingredientId, this.getID(), timeInMilliseconds));
         }
+        this.wasChanged();
     }
 
     public void addOrUpdateIDs(HashMap<Long, Integer> pumpTimes){
@@ -187,6 +192,25 @@ public class SQLRecipe extends DataBaseElement implements Recipe {
         pumpTimes.forEach(this::addOrUpdate);
     }
 
+    @Override
+    public void addOrUpdate(Topic topic) {
+        if(this.topics.contains(topic.getID())){
+            return;
+        }
+        this.topics.add(topic.getID());
+        this.wasChanged();
+    }
+
+    @Override
+    public void addOrUpdate(String imageUrls) {
+        if(this.imageUrls.contains(imageUrls)){
+            return;
+        }
+        this.imageUrls.add(imageUrls);
+        this.wasChanged();
+    }
+
+    //REMOVER
     @Override
     public void remove(Ingredient ingredient) {
         this.removeIngredient(ingredient.getID());
@@ -211,6 +235,7 @@ public class SQLRecipe extends DataBaseElement implements Recipe {
 
     }
 
+    //general
     @Override
     public void delete() {
         NewDatabaseConnection.getDataBase().remove(this);

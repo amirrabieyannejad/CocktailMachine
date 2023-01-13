@@ -102,6 +102,10 @@ public interface Recipe {
      */
     public void addOrUpdate(long ingredientId, int timeInMilliseconds);
 
+    public void addOrUpdate(Topic topic);
+
+    public void addOrUpdate(String imageUrls);
+
     /**
      * Remove Ingredient from Recipe.
      * @param ingredient
