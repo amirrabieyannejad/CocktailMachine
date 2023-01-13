@@ -191,4 +191,8 @@ public interface Recipe {
     }
 
 
+    //Objectwise
+    public boolean equals(Recipe recipe);
+
+
 }
