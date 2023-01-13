@@ -258,7 +258,7 @@ class Command(ABC):
 
     example = cls(**example_values)
 
-    out.append("json example:")
+    out.append("JSON example:")
     out.append("")
     out.append(f"    {example.json()}")
     if cls.retval:

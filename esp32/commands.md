@@ -17,14 +17,14 @@ The key associated with the user id is used to decrypt the "msg" field, which th
 ## General Commands
 
 ### test: dummy command that does nothing
-json example:
+JSON example:
 
     {"cmd": "test"}
 
 ### init_user: introduce yourself as a new user and receive your user id
 - name: str
 
-json example:
+JSON example:
 
     {"cmd": "init_user", "name": "test-user"}
 
@@ -35,7 +35,7 @@ json example:
 ### reset: reset the machine so it's ready to make another drink
 - user: User
 
-json example:
+JSON example:
 
     {"cmd": "reset", "user": 9650}
 
@@ -43,7 +43,7 @@ json example:
 - user: User
 - recipe: str
 
-json example:
+JSON example:
 
     {"cmd": "make_recipe", "user": 8858, "recipe": "radler"}
 
@@ -54,7 +54,7 @@ json example:
 - liquid: str
 - volume: float
 
-json example:
+JSON example:
 
     {"cmd": "add_liquid", "user": 2737, "liquid": "water", "volume": 30}
 
@@ -63,7 +63,7 @@ json example:
 - name: str
 - liquids: List[Tuple[str, float]]
 
-json example:
+JSON example:
 
     {"cmd": "define_recipe", "user": 4310, "name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}
 
@@ -72,21 +72,21 @@ json example:
 - liquid: str
 - volume: float
 
-json example:
+JSON example:
 
     {"cmd": "add_pump", "user": 4315, "liquid": "water", "volume": 1000}
 
 ### calibrate_pumps: calibrate all pumps
 - user: User
 
-json example:
+JSON example:
 
     {"cmd": "calibrate_pumps", "user": 8185}
 
 ### clean: clean machine
 - user: User
 
-json example:
+JSON example:
 
     {"cmd": "clean", "user": 8162}
 
