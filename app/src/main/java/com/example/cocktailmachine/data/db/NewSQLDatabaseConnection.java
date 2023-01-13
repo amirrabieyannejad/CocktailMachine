@@ -136,6 +136,15 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
 
     }
 
+    @Override
+    public Ingredient loadIngredient(long id) throws AccessDeniedException {
+        if(this.privilege!=UserPrivilegeLevel.Admin){
+            throw  new AccessDeniedException();
+        }
+        return Tables.TABLE_INGREDIENT.getElement(this.getReadableDatabase(), id);
+    }
+
+
     //CHECKER
 
     @Override

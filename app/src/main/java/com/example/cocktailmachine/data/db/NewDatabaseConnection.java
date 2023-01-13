@@ -59,6 +59,8 @@ public interface NewDatabaseConnection {
 
     List<? extends Ingredient> loadAvailableIngredients();
 
+    public Ingredient loadIngredient(long id) throws AccessDeniedException;
+
 
 
     //CHECK
