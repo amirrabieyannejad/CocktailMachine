@@ -61,6 +61,9 @@ public interface NewDatabaseConnection {
 
     public Ingredient loadIngredient(long id) throws AccessDeniedException;
 
+    public Recipe loadRecipe(long id) throws AccessDeniedException;
+
+    public Topic loadTopic(long id) throws AccessDeniedException;
 
 
     //CHECK

@@ -144,6 +144,21 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
         return Tables.TABLE_INGREDIENT.getElement(this.getReadableDatabase(), id);
     }
 
+    @Override
+    public Recipe loadRecipe(long id) throws AccessDeniedException {
+        if(this.privilege!=UserPrivilegeLevel.Admin){
+            throw  new AccessDeniedException();
+        }
+        return Tables.TABLE_RECIPE.getElement(this.getReadableDatabase(), id);
+    }
+
+    @Override
+    public Topic loadTopic(long id) throws AccessDeniedException {
+        if(this.privilege!=UserPrivilegeLevel.Admin){
+            throw  new AccessDeniedException();
+        }
+        return Tables.TABLE_TOPIC.getElement(this.getReadableDatabase(), id);
+    }
 
     //CHECKER
 
