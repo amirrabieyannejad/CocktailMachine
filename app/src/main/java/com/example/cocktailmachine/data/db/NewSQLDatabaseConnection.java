@@ -210,7 +210,14 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
 
     @Override
     public Recipe getRecipe(Long id) {
-        return this.recipes.stream().filter(i->i.getID()==id).findFirst().orElse(null);
+        Recipe recipe= this.recipes.stream().filter(i->i.getID()==id).findFirst().orElse(null);
+        if(recipe == null && this.privilege==UserPrivilegeLevel.Admin){
+            try {
+                return this.loadRecipe(id);
+            } catch (AccessDeniedException ignored) {
+            }
+        }
+        return recipe;
     }
 
     @Override
