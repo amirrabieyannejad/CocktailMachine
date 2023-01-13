@@ -200,7 +200,16 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
 
     @Override
     public Ingredient getIngredient(Long id) {
-        return this.ingredients.stream().filter(i->i.getID()==id).findFirst().orElse(null);
+        Ingredient ingredient = this.ingredients.stream().filter(i->i.getID()==id)
+                .findFirst().orElse(null);
+        if(ingredient==null&&this.privilege==UserPrivilegeLevel.Admin){
+            try {
+                return this.loadIngredient(id);
+            } catch (AccessDeniedException e) {
+                e.printStackTrace();
+            }
+        }
+        return ingredient;
     }
 
     @Override
@@ -273,7 +282,14 @@ public class NewSQLDatabaseConnection extends SQLiteOpenHelper implements NewDat
 
     @Override
     public Topic getTopic(long id) {
-        return this.topics.stream().filter(t-> t.getID()==id).findFirst().orElse(null);
+        Topic topic = this.topics.stream().filter(t-> t.getID()==id).findFirst().orElse(null);
+        if(this.privilege==UserPrivilegeLevel.Admin && topic==null){
+            try {
+                return this.loadTopic(id);
+            } catch (AccessDeniedException ignored) {
+            }
+        }
+        return topic;
     }
 
     @Override
