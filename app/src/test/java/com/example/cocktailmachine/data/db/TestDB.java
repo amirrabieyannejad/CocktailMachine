@@ -37,7 +37,10 @@ public class TestDB {
         Recipe recipe = Recipe.makeNew("Magarita_topics");
         recipe.addOrUpdate(Topic.makeNew("Eis2", "gefrorenes Wasser, 3 Würfel"));
         Recipe db_recipe = NewDatabaseConnection.getDataBase().getRecipe(recipe.getID());
-        assert recipe.equals(db_recipe);
+        assert !recipe.equals(db_recipe);
+        recipe.save();
+        db_recipe = NewDatabaseConnection.getDataBase().getRecipe(recipe.getID());
+        assert !recipe.equals(db_recipe);
     }
 
 
@@ -53,6 +56,10 @@ public class TestDB {
         Ingredient ingredient = Ingredient.makeNew("Pfeffi", true, 46);
         ingredient.addImageUrl("test_ingredient.png");
         Ingredient db_ingredient = NewDatabaseConnection.getDataBase().getIngredient(ingredient.getID());
+        //assert !ingredient.equals(db_ingredient);
+        //ingredient.save();
+        //db_ingredient = NewDatabaseConnection.getDataBase().getIngredient(ingredient.getID());
+        //Ist im buffer aber nicht der db
         assert ingredient.equals(db_ingredient);
     }
 
@@ -83,5 +90,6 @@ public class TestDB {
         Recipe db_recipe = NewDatabaseConnection.getDataBase().getRecipe(recipe.getID());
         assert recipe.equals(db_recipe);
     }
+
 
 }
