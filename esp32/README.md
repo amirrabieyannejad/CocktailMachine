@@ -16,7 +16,7 @@
 
 ## Bluetooth Server starten
 
-TODO, braucht bluepy, siehe requirements.txt
+TODO, siehe requirements.txt für die Abhängigkeiten
 
     ./simulation.py --bluetooth
 

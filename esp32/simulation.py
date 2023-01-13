@@ -286,7 +286,7 @@ class CmdTest(Command):
   desc = "dummy command that does nothing"
 
 @dataclass(frozen=True)
-class CmdReset(Command):
+class CmdReset(UserCommand):
   desc = "reset the machine so it's ready to make another drink"
 
 @dataclass(frozen=True)
