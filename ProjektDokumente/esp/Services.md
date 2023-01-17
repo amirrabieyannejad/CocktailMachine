@@ -42,15 +42,15 @@ Die ID ist also 100 und kann dann in anderen Befehlen mit angegeben werden.
 
 ## Status-Services
 
-### Pumpen
-- UUID des Service:    1a9a598a-17ce-3fcd-be03-40a48587d04e
-- UUID Characteristic: 15f04f4b-ada1-33dd-91bf-ec4b2f3b176c
+### Flüssigkeiten
+- UUID des Service:    17eed42a-f06b-3f58-9b26-60e78bccf857
+- UUID Characteristic: fc60afb0-2b00-3af2-877a-69ae6815ca2f
 
-Wert: Map aller verfügbaren Pumpen, welche Flüssigkeit sie enthalten und die Menge
+Wert: Map aller verfügbaren Flüssigkeiten und deren Menge
 
 Beispiel:
 
-    {"1": ["beer", 200], "2": ["beer", 1000], "3": ["lemonade", 2000], "4": ["orange juice", 2000]}
+    {"beer": 200, "lemonade": 2000, "orange juice": 2000}
 
 ### Zustand
 - UUID des Service:    addf5391-2030-3cf0-a64f-31d5156d7f00
@@ -70,7 +70,7 @@ Wert: Alle gespeicherten Rezepte und deren Namen.
 
 Beispiel:
 
-    {"radler": [["beer", 250], ["lemonade", 250]], "spezi": [["cola", 300], ["orange juice", 100]]}
+    [{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}, {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
 
 
 ### Cocktail

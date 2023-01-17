@@ -31,6 +31,7 @@ logging.basicConfig(level=logging.INFO, format='%(levelname)s %(asctime)s: %(mes
 
 class Server():
   queue:   List[Command]
+  values:  Dict[str, Value]
   state:   ServerState
   users:   Dict[User, str]
   admins:  Set[User]
@@ -38,12 +39,18 @@ class Server():
 
   pumps:   List[Pump]
   recipes: List[Recipe]
-  weight:  float
+  content: List[Tuple[Liquid, float]]
 
   def __init__(self):
     # start in init state
     self.state   = ServerState.ready
     self.queue   = []
+    self.values  = {
+      "state":    ValState(ServerState.init),
+      "liquids":  ValLiquids({}),
+      "recipes":  ValRecipes([]),
+      "cocktail": ValCocktail([]),
+    }
 
     # hardcore user 0 as admin
     self.admins  = {User(0)}
@@ -52,7 +59,13 @@ class Server():
 
     self.pumps   = []
     self.recipes = []
-    self.weight  = 0
+    self.content = []
+
+  def update_values(self):
+      self.values["state"].value    = self.state
+      self.values["liquids"].value  = self.liquids()
+      self.values["recipes"].value  = self.recipes
+      self.values["cocktail"].value = self.content
 
   def process_queue(self):
     self.state = ServerState.processing
@@ -60,6 +73,8 @@ class Server():
     while self.queue:
       cmd = self.queue.pop(0)
       ret = self.process(cmd)
+      self.update_values()
+
       # TODO return the return code
 
     self.state = ServerState.ready
@@ -103,12 +118,13 @@ class Server():
     # apply the pumping instructions
     for pump, vol in queue:
       used = pump.drain(vol)
-      self.weight += used
+      self.content.append((liquid, used))
 
     return True
 
   def reset(self):
-    self.weight = 0
+    self.content = []
+    self.state = ServerState.ready
 
   def add_admin(self, id: User):
     self.admins.add(id)
@@ -134,10 +150,8 @@ class Server():
     self.recipes.append(recipe)
 
   def show_status(self):
-    print("state:", self.state)
-    print("liquids:", self.liquids())
-    print("recipes:", self.recipes)
-    print("glass:", self.weight)
+    for name, val in self.values.items():
+      print(f"{name}: {val.value}")
 
 class ServerState(Enum):
   ready      = "ready"
@@ -146,12 +160,13 @@ class ServerState(Enum):
   cleaning   = "cleaning"
   refill     = "refill"
   stuck      = "stuck"
+  init       = "starting up"
 
 class ReturnCode(Enum):
   ok          = "ok"
   not_allowed = "not allowed"
-  unknowon    = "unknown"
-  empty       = "empty"
+  unknown     = "unknown command"
+  parse_error = "parse error"
 
 @dataclass(frozen=True)
 class User():
@@ -180,6 +195,43 @@ class Recipe():
   liquids: List[Tuple[Liquid, float]]
 
 #############################################################################
+
+# status values
+###############
+
+@dataclass
+class Value(ABC):
+  name:    ClassVar[str]
+  example: ClassVar[Dict[str, Any]] = {}
+  value:   Any
+
+  @classmethod
+  def uuid_service(cls) -> uuid.UUID:
+    return gen_uuid(f"status {cls.name}")
+
+  @classmethod
+  def uuid_characteristic(cls) -> uuid.UUID:
+    return gen_uuid(f"status {cls.name} value")
+
+@dataclass
+class ValState(Value):
+  value: ServerState
+  name = "operation"
+
+@dataclass
+class ValRecipes(Value):
+  value: List[Recipe]
+  name = "recipes"
+
+@dataclass
+class ValCocktail(Value):
+  value: List[Tuple[Liquid, float]]
+  name = "cocktail"
+
+@dataclass
+class ValLiquids(Value):
+  value: Dict[Liquid, float]
+  name = "liquids"
 
 # commands
 ##########
@@ -402,6 +454,8 @@ def main():
   ##################
 
   server = Server()
+  server.reset()
+  server.update_values()
 
   if args.bluetooth:
     start_bluetooth()
