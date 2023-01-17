@@ -89,13 +89,46 @@ class Server():
       # simple test command that does nothing
       return (ReturnCode.ok, {})
 
-    if isinstance(cmd, CmdInitUser):
+    elif isinstance(cmd, CmdInitUser):
       # initialize user
       user = self.init_user(cmd.name)
       return (ReturnCode.ok, {"user": user.id})
 
+    elif isinstance(cmd, CmdReset):
+      self.reset()
+      return (ReturnCode.ok, {})
+
+    elif isinstance(cmd, CmdMakeRecipe):
+      matches = [r for r in self.recipes if r.name == cmd.recipe]
+
+      if len(matches) > 0:
+        self.make_recipe(matches[0])
+        return (ReturnCode.ok, {})
+      else:
+        return (ReturnCode.unknown_recipe, {})
+
+    elif isinstance(cmd, CmdAddLiquid):
+      self.make_recipe(Recipe("", [(Liquid(cmd.liquid), cmd.volume)]))
+      return (ReturnCode.ok, {})
+
+    elif isinstance(cmd, CmdDefineRecipe):
+      self.add_recipe(Recipe(cmd.name, [(Liquid(l), v) for (l, v) in cmd.liquids]))
+      return (ReturnCode.ok, {})
+
+    elif isinstance(cmd, CmdAddPump):
+      self.add_pump(Pump(Liquid(cmd.liquid), cmd.volume))
+      return (ReturnCode.ok, {})
+
+    elif isinstance(cmd, CmdCalibratePumps):
+      self.calibrate()
+      return (ReturnCode.ok, {})
+
+    elif isinstance(cmd, CmdClean):
+      self.clean()
+      return (ReturnCode.ok, {})
+
     else:
-      raise Exception(f"unsupported command: {cmd}")
+      return (ReturnCode.unknown, {})
 
   def return_value(self, code: ReturnCode, value: Dict[str, Any]):
     ret: str
@@ -143,6 +176,12 @@ class Server():
     self.content = []
     self.state = ServerState.ready
 
+  def calibrate(self):
+    print("[TODO] calibrating... bzzzzz... done.")
+
+  def clean(self):
+    print("[TODO] cleaning... whirrrr... done.")
+
   def add_admin(self, id: User):
     self.admins.add(id)
 
@@ -180,10 +219,11 @@ class ServerState(Enum):
   init       = "starting up"
 
 class ReturnCode(Enum):
-  ok          = "ok"
-  not_allowed = "not allowed"
-  unknown     = "unknown command"
-  parse_error = "parse error"
+  ok             = "ok"
+  not_allowed    = "not allowed"
+  unknown        = "unknown command"
+  unknown_recipe = "unknown recipe"
+  parse_error    = "parse error"
 
 @dataclass(frozen=True)
 class User():
