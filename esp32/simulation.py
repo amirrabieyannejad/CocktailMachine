@@ -71,26 +71,43 @@ class Server():
     self.state = ServerState.processing
 
     while self.queue:
-      cmd = self.queue.pop(0)
-      ret = self.process(cmd)
+      cmd      = self.queue.pop(0)
+      ret, val = self.process(cmd)
       self.update_values()
-
-      # TODO return the return code
+      self.return_value(ret, val)
 
     self.state = ServerState.ready
+    self.update_values()
 
-  def process(self, cmd: Command) -> ReturnCode:
+  def process(self, cmd: Command) -> Tuple[ReturnCode, Dict[str, Any]]:
     is_admin = isinstance(cmd, UserCommand) and cmd.user in self.admins
 
     if not cmd.allowed(self.admins):
-      return ReturnCode.not_allowed
+      return (ReturnCode.not_allowed, {})
 
     if isinstance(cmd, CmdTest):
       # simple test command that does nothing
-      return ReturnCode.ok
+      return (ReturnCode.ok, {})
+
+    if isinstance(cmd, CmdInitUser):
+      # initialize user
+      user = self.init_user(cmd.name)
+      return (ReturnCode.ok, {"user": user.id})
 
     else:
       raise Exception(f"unsupported command: {cmd}")
+
+  def return_value(self, code: ReturnCode, value: Dict[str, Any]):
+    ret: str
+
+    if len(value) == 0:
+      ret = json.dumps(code.value)
+    else:
+      d = {"ret": code.value}
+      d.update(value)
+      ret = json.dumps(d)
+
+    print(f"--> {ret}")
 
   def make_recipe(self, recipe: Recipe) -> bool:
     if not recipe in self.recipes:
@@ -277,13 +294,13 @@ class Command(ABC):
   def from_json(cls, json_cmd: str) -> Command:
     parsed = json.loads(json_cmd)
     name   = parsed.pop("cmd")
-    parts  = [part[0].upper() + part[1:] for part in re.sub(r"([_])", r" \1", name).split()]
+    parts  = [part[0].upper() + part[1:] for part in re.sub(r"([_])", " ", name).split()]
     full   = "Cmd" + "".join(parts)
 
     try:
       cmd = globals()[full]
     except:
-      raise Exception(f"unsupported command: {cmd}")
+      raise Exception(f"unsupported command: {name}")
 
     if isinstance(cmd, UserCommand):
       try:
@@ -402,12 +419,13 @@ def start_bluetooth():
 def read_command() -> Optional[Command]:
   read = input("> ")
   try:
-    cmd  = Command.from_json(read)
+    cmd = Command.from_json(read)
+    return cmd
+
   except Exception as e:
-    logging.error(e)
+    logging.exception(e)
     return None
 
-  return cmd
 
 # misc
 ######
@@ -467,8 +485,10 @@ def main():
     try:
       cmd = read_command()
       if cmd:
-        server.process(cmd)
-        server.show_status()
+        server.queue.append(cmd)
+
+      server.process_queue()
+      server.show_status()
 
     except (KeyboardInterrupt, EOFError):
       exit(0)
