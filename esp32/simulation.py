@@ -12,6 +12,15 @@ import enum
 from enum import Enum, Flag
 import json
 
+# bluetooth
+from bless import (  # type: ignore
+  BlessServer,
+  BlessGATTCharacteristic,
+  GATTCharacteristicProperties,
+  GATTAttributePermissions
+)
+import asyncio
+
 # utilities
 import argparse
 import logging
@@ -41,6 +50,9 @@ class Server():
   recipes: List[Recipe]
   content: List[Tuple[Liquid, float]]
 
+  ble:     Optional[BlessServer] = None
+  trigger: asyncio.Event = asyncio.Event()
+
   def __init__(self):
     # start in init state
     self.state   = ServerState.ready
@@ -52,7 +64,7 @@ class Server():
       "cocktail": ValCocktail([]),
     }
 
-    # hardcore user 0 as admin
+    # hardcode user 0 as admin
     self.admins  = {User(0)}
     self.users   = {User(0): "admin"}
     self.next_id = 1
@@ -60,12 +72,6 @@ class Server():
     self.pumps   = []
     self.recipes = []
     self.content = []
-
-  def update_values(self):
-      self.values["state"].value    = self.state
-      self.values["liquids"].value  = self.liquids()
-      self.values["recipes"].value  = self.recipes
-      self.values["cocktail"].value = self.content
 
   def process_queue(self):
     self.state = ServerState.processing
@@ -209,6 +215,74 @@ class Server():
     for name, val in self.values.items():
       print(f"{name}: {val.value}")
 
+  def update_values(self):
+      self.values["state"].value    = self.state.value
+      self.values["liquids"].value  = self.liquids()
+      self.values["recipes"].value  = self.recipes
+      self.values["cocktail"].value = self.content
+
+      if self.ble:
+        for name, value in self.values.items():
+          uuid_service = str(value.__class__.uuid_service())
+          uuid_char    = str(value.__class__.uuid_characteristic())
+          new_value    = value.json()
+
+          char = self.ble.get_characteristic(uuid_char)
+          if char.value != new_value:
+            char.value = new_value
+            self.ble.update_value(uuid_service, uuid_char)
+
+  @classmethod
+  def read_char(cls, characteristic: BlessGATTCharacteristic, **kwargs) -> Any:
+    logging.debug(f"read: {characteristic.value}")
+    return characteristic.value
+
+  @classmethod
+  def write_char(cls, characteristic: BlessGATTCharacteristic, value: Any, **kwargs):
+    characteristic.value = value
+    logging.debug(f"wrote: {characteristic.value}")
+
+  async def start_bluetooth(self, loop):
+    # start server
+    self.ble = BlessServer(name=NAME, loop=loop)
+    self.ble.read_request_func  = Server.read_char
+    self.ble.write_request_func = Server.write_char
+
+    gatt: Dict = {
+      str(UUID): {
+        str(gen_uuid("base")): {
+          "Properties":  GATTCharacteristicProperties.read,
+          "Permissions": GATTAttributePermissions.readable,
+          "Value": None,
+        }
+      }
+    }
+
+    # status services
+    for name, value in self.values.items():
+      logging.info(f"adding service: {name}")
+      uuid_service = str(value.__class__.uuid_service())
+      uuid_char    = str(value.__class__.uuid_characteristic())
+
+      gatt[uuid_service] = {
+        uuid_char: {
+          "Properties": ( GATTCharacteristicProperties.read
+                        | GATTCharacteristicProperties.notify),
+          "Permissions": GATTAttributePermissions.readable,
+          "Value": value.json(),
+        }
+      }
+
+    await self.ble.add_gatt(gatt)
+    await self.ble.start()
+    logging.info("bluetooth ready")
+
+    await self.trigger.wait()
+
+  async def stop_bluetooth(self, loop):
+    if self.ble:
+      await self.ble.stop()
+
 class ServerState(Enum):
   ready      = "ready"
   processing = "processing"
@@ -269,6 +343,9 @@ class Value(ABC):
   @classmethod
   def uuid_characteristic(cls) -> uuid.UUID:
     return gen_uuid(f"status {cls.name} value")
+
+  def json(self) -> bytes:
+    return json.dumps(self.value, ensure_ascii=False).encode('utf8')
 
 @dataclass
 class ValState(Value):
@@ -385,7 +462,10 @@ class UserCommand(Command):
   def allowed(self, admins: Set[User]) -> bool:
     if not self.__class__.admin:
       return True
-    return self.user in admins
+    for u in admins:
+      if u == self.user:
+        return True
+    return False
 
 # supported commands
 ####################
@@ -450,11 +530,8 @@ class CmdInitUser(Command):
   example = {"name": "test-user"}
   retval  = {"user": 100}
 
-# ways to receive commands
-##################
-
-def start_bluetooth():
-  logging.info("[TODO] starting bluetooth")
+# misc
+######
 
 def read_command() -> Optional[Command]:
   read = input("> ")
@@ -465,10 +542,6 @@ def read_command() -> Optional[Command]:
   except Exception as e:
     logging.exception(e)
     return None
-
-
-# misc
-######
 
 def gen_uuid(name: str) -> uuid.UUID:
   return uuid.uuid3(UUID, name)
@@ -516,22 +589,28 @@ def main():
   server.update_values()
 
   if args.bluetooth:
-    start_bluetooth()
-
-  server.show_status()
-  logging.info("reading commands from STDIN")
-
-  while True:
+    logging.info("starting bluetooth")
+    loop = asyncio.new_event_loop()
     try:
-      cmd = read_command()
-      if cmd:
-        server.queue.append(cmd)
-
-      server.process_queue()
-      server.show_status()
-
-    except (KeyboardInterrupt, EOFError):
+      loop.run_until_complete(server.start_bluetooth(loop))
+    except KeyboardInterrupt:
+      loop.run_until_complete(server.stop_bluetooth(loop))
       exit(0)
+
+  else:
+    server.show_status()
+    logging.info("reading commands from STDIN")
+
+    while True:
+      try:
+        cmd = read_command()
+        if cmd:
+          server.queue.append(cmd)
+
+          server.process_queue()
+          server.show_status()
+      except (KeyboardInterrupt, EOFError):
+        exit(0)
 
 if __name__ == "__main__":
   main()
