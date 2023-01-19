@@ -31,8 +31,7 @@ async def main():
         for service in client.services:
           logging.info(f"service: {service}")
 
-            for char in service.characteristics:
-
+          for char in service.characteristics:
             if "read" in char.properties:
               try:
                 value = bytes(await client.read_gatt_char(char.uuid))
