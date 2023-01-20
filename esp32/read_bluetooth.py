@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 
 # bluetooth
-from bluepy import btle
-from bluepy.btle import Peripheral, Characteristic, UUID
+from bleak import BleakClient
 
 # utilities
 import argparse
+import asyncio
 import logging
+import platform
+import sys
 import time
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s %(asctime)s: %(message)s', datefmt='%y-%m-%d %H:%M:%S')
 
-def main():
+async def main():
   parser = argparse.ArgumentParser(
     prog = "Bluetooth LE reader",
     description = "Tool to read all characteristics of a Bluetooth LE server.")
@@ -21,32 +23,27 @@ def main():
 
   args = parser.parse_args()
 
-  peripheral = Peripheral()
-
   try:
-    peripheral.connect(args.address)
-
     while True:
       logging.info("--- scan started ---")
-      services = peripheral.getServices()
+      async with BleakClient(args.address) as client:
+        print("Services:")
+        for service in client.services:
+          logging.info(f"service: {service}")
 
-      for service in services:
-        logging.info(f"service: {service.uuid}")
-        chars = service.getCharacteristics()
-
-        for char in chars:
-          if char.supportsRead():
-            value = char.read().decode("ascii")
-            logging.info(f"read: {char.uuid} -> {value})")
+          for char in service.characteristics:
+            if "read" in char.properties:
+              try:
+                value = bytes(await client.read_gatt_char(char.uuid))
+                logging.info(f"read: {char.uuid} -> {value})")
+              except Exception as e:
+                logging.error(f"\t[Characteristic] {char} ({','.join(char.properties)}), Value: {e}")
 
       logging.info("--- scan complete ---")
       time.sleep(args.sleep)
 
   except KeyboardInterrupt:
-    pass
-
-  finally:
-    peripheral.disconnect()
+    exit(0)
 
 if __name__ == "__main__":
-  main()
+  asyncio.run(main())
