@@ -5,8 +5,7 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
-import com.example.cocktailmachine.data.db.elements.ImageUrlElement;
-import com.example.cocktailmachine.data.db.elements.RecipeImageUrlElement;
+import com.example.cocktailmachine.data.db.elements.SQLImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
@@ -157,9 +156,9 @@ public class Helper<T extends DataBaseElement> {
 
     //Statics
 
-    public static List<String> getUrls(List<? extends ImageUrlElement> urls){
+    public static List<String> getUrls(List<? extends SQLImageUrlElement> urls){
         List<String> res = new ArrayList<>();
-        for(ImageUrlElement u: urls){
+        for(SQLImageUrlElement u: urls){
             res.add(u.getUrl());
         }
         return res;
@@ -366,8 +365,8 @@ public class Helper<T extends DataBaseElement> {
         return new Helper<Topic>();
     }
 
-    public static Helper<ImageUrlElement> getImageUrlElementhelper(){
-        return new Helper<ImageUrlElement>();
+    public static Helper<SQLImageUrlElement> getImageUrlElementhelper(){
+        return new Helper<SQLImageUrlElement>();
     }
 
     public static Helper<Pump> getPumpHelper(){

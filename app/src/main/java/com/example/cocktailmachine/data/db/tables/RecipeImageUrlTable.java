@@ -2,8 +2,8 @@ package com.example.cocktailmachine.data.db.tables;
 
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.cocktailmachine.data.db.elements.ImageUrlElement;
-import com.example.cocktailmachine.data.db.elements.RecipeImageUrlElement;
+import com.example.cocktailmachine.data.db.elements.SQLImageUrlElement;
+import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 
 import java.util.List;
 
@@ -14,17 +14,17 @@ public class RecipeImageUrlTable extends ImageUrlTable{
     }
 
     @Override
-    public ImageUrlElement initializeElement(String url, long owner_id) {
-        return new RecipeImageUrlElement(url, owner_id);
+    public SQLImageUrlElement initializeElement(String url, long owner_id) {
+        return new SQLRecipeImageUrlElement(url, owner_id);
     }
 
     @Override
-    public ImageUrlElement initializeElement(long id, String url, long owner_id) {
-        return new RecipeImageUrlElement(id, url, owner_id);
+    public SQLImageUrlElement initializeElement(long id, String url, long owner_id) {
+        return new SQLRecipeImageUrlElement(id, url, owner_id);
     }
 
     @Override
-    public List<RecipeImageUrlElement> getElements(SQLiteDatabase db, long id) {
-        return (List<RecipeImageUrlElement>) super.getElements(db, id);
+    public List<SQLRecipeImageUrlElement> getElements(SQLiteDatabase db, long id) {
+        return (List<SQLRecipeImageUrlElement>) super.getElements(db, id);
     }
 }

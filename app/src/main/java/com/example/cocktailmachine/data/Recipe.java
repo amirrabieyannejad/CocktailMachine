@@ -4,7 +4,7 @@ package com.example.cocktailmachine.data;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
-import com.example.cocktailmachine.data.db.elements.RecipeImageUrlElement;
+import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
@@ -125,7 +125,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
     public void removeTopic(long topicId);
 
-    public void remove(RecipeImageUrlElement url);
+    public void remove(SQLRecipeImageUrlElement url);
 
     public void removeUrl(long urlId);
 

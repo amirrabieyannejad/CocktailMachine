@@ -11,8 +11,7 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.elements.ImageUrlElement;
-import com.example.cocktailmachine.data.db.elements.IngredientImageUrlElement;
+import com.example.cocktailmachine.data.db.elements.SQLIngredientImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
@@ -20,11 +19,9 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
-import com.example.cocktailmachine.data.db.elements.RecipeImageUrlElement;
-import com.example.cocktailmachine.data.db.tables.ImageUrlTable;
+import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.tables.Tables;
 import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
-import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -315,7 +312,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return Tables.TABLE_INGREDIENT_URL.getUrls(this.getReadableDatabase(), newSQLIngredient.getID());
     }
 
-    public List<IngredientImageUrlElement> getUrlElements(SQLIngredient newSQLIngredient)  {
+    public List<SQLIngredientImageUrlElement> getUrlElements(SQLIngredient newSQLIngredient)  {
         return Tables.TABLE_INGREDIENT_URL.getElements(this.getReadableDatabase(), newSQLIngredient.getID());
     }
 
@@ -323,7 +320,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return Tables.TABLE_RECIPE_URL.getUrls(this.getReadableDatabase(), newSQLRecipe.getID());
     }
 
-    public List<RecipeImageUrlElement> getUrlElements(SQLRecipe newSQLRecipe) {
+    public List<SQLRecipeImageUrlElement> getUrlElements(SQLRecipe newSQLRecipe) {
         return Tables.TABLE_RECIPE_URL.getElements(this.getReadableDatabase(), newSQLRecipe.getID());
     }
 
@@ -464,7 +461,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         this.recipeIngredients.add(recipeIngredient);
     }
 
-    public void addOrUpdate(RecipeImageUrlElement recipeImageUrlElement) {
+    public void addOrUpdate(SQLRecipeImageUrlElement recipeImageUrlElement) {
         if(recipeImageUrlElement.isSaved() && recipeImageUrlElement.needsUpdate()){
             Tables.TABLE_RECIPE_URL.updateElement(this.getWritableDatabase(), recipeImageUrlElement);
         }else{
@@ -472,7 +469,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         }
     }
 
-    public void addOrUpdate(IngredientImageUrlElement ingredientImageUrlElement) {
+    public void addOrUpdate(SQLIngredientImageUrlElement ingredientImageUrlElement) {
         if(ingredientImageUrlElement.isSaved() && ingredientImageUrlElement.needsUpdate()){
             Tables.TABLE_INGREDIENT_URL.updateElement(this.getWritableDatabase(), ingredientImageUrlElement);
         }else{
@@ -566,11 +563,11 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         this.ingredientPumps.remove(ingredientPump);
     }
 
-    public void remove(RecipeImageUrlElement recipeImageUrlElement) {
+    public void remove(SQLRecipeImageUrlElement recipeImageUrlElement) {
         Tables.TABLE_RECIPE_URL.deleteElement(this.getWritableDatabase(),recipeImageUrlElement);
     }
 
-    public void remove(IngredientImageUrlElement ingredientImageUrlElement) {
+    public void remove(SQLIngredientImageUrlElement ingredientImageUrlElement) {
         Tables.TABLE_INGREDIENT_URL.deleteElement(this.getWritableDatabase(),ingredientImageUrlElement);
     }
 

@@ -11,13 +11,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 
 import com.example.cocktailmachine.data.db.Helper;
-import com.example.cocktailmachine.data.db.elements.ImageUrlElement;
+import com.example.cocktailmachine.data.db.elements.SQLImageUrlElement;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class ImageUrlTable extends BasicColumn<ImageUrlElement>{
+public abstract class ImageUrlTable extends BasicColumn<SQLImageUrlElement>{
     public String TABLE_NAME;
     public static final String COLUMN_NAME_URL = "URL";
     public static final String COLUMN_NAME_OWNER_ID = "OwnerID";
@@ -55,7 +55,7 @@ public abstract class ImageUrlTable extends BasicColumn<ImageUrlElement>{
 
 
     @Override
-    public ImageUrlElement makeElement(Cursor cursor) {
+    public SQLImageUrlElement makeElement(Cursor cursor) {
         try {
             long id = cursor.getLong(cursor.getColumnIndexOrThrow(_ID));
             long iid = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_NAME_OWNER_ID));
@@ -68,7 +68,7 @@ public abstract class ImageUrlTable extends BasicColumn<ImageUrlElement>{
     }
 
     @Override
-    public ContentValues makeContentValues(ImageUrlElement element) {
+    public ContentValues makeContentValues(SQLImageUrlElement element) {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_NAME_OWNER_ID, element.getOwnerID());
         cv.put(COLUMN_NAME_URL, element.getUrl());
@@ -85,7 +85,7 @@ public abstract class ImageUrlTable extends BasicColumn<ImageUrlElement>{
 
     public List<String> getUrls(SQLiteDatabase db, long id) {
         try {
-            List<ImageUrlElement> urltable = this.getElementsWith(db, COLUMN_NAME_OWNER_ID, Long.toString(id));
+            List<SQLImageUrlElement> urltable = this.getElementsWith(db, COLUMN_NAME_OWNER_ID, Long.toString(id));
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 return urltable != null ? urltable.stream().map(imageUrlElement ->
@@ -105,7 +105,7 @@ public abstract class ImageUrlTable extends BasicColumn<ImageUrlElement>{
         return new ArrayList<>();
     }
 
-    public List<? extends ImageUrlElement> getElements(SQLiteDatabase db, long id) {
+    public List<? extends SQLImageUrlElement> getElements(SQLiteDatabase db, long id) {
         try {
             return this.getElementsWith(db, COLUMN_NAME_OWNER_ID, Long.toString(id));
 
@@ -119,7 +119,7 @@ public abstract class ImageUrlTable extends BasicColumn<ImageUrlElement>{
         this.addElement(db, this.initializeElement(url, owner_id));
     }
 
-    public abstract ImageUrlElement initializeElement(String url, long owner_id);
+    public abstract SQLImageUrlElement initializeElement(String url, long owner_id);
 
-    public abstract ImageUrlElement initializeElement(long id, String url, long owner_id);
+    public abstract SQLImageUrlElement initializeElement(long id, String url, long owner_id);
 }

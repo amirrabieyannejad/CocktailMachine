@@ -26,7 +26,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     //private HashMap<Long, Integer> ingredientPumpTime;
     private boolean alcoholic;
     private boolean available = false;
-    private List<RecipeImageUrlElement> imageUrls = new ArrayList<>();
+    private List<SQLRecipeImageUrlElement> imageUrls = new ArrayList<>();
     private List<Long> topics = new ArrayList<>();
     private List<SQLRecipeIngredient> pumpTimes = new ArrayList<>();
     private boolean loaded = false;
@@ -57,7 +57,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
                      HashMap<Long, Integer> ingredientPumpTimes,
                      boolean alcoholic,
                      boolean available,
-                     List<RecipeImageUrlElement> imageUrls,
+                     List<SQLRecipeImageUrlElement> imageUrls,
                      List<Long> topics) {
         super(ID);
         this.name = name;
@@ -73,7 +73,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
                      String name,
                      boolean alcoholic,
                      boolean available,
-                     List<RecipeImageUrlElement> imageUrls,
+                     List<SQLRecipeImageUrlElement> imageUrls,
                      List<Long> topics,
                      HashMap<Ingredient, Integer> ingredientPumpTimes) {
         super(ID);
@@ -174,7 +174,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     @Override
     public List<String> getImageUrls() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return this.imageUrls.stream().map(ImageUrlElement::getUrl).collect(Collectors.toList());
+            return this.imageUrls.stream().map(SQLImageUrlElement::getUrl).collect(Collectors.toList());
         }
         return Helper.getUrls(this.imageUrls);
     }
@@ -267,7 +267,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         if(this.getImageUrls().contains(imageUrls)){
             return;
         }
-        RecipeImageUrlElement urlElement = new RecipeImageUrlElement(imageUrls, this.getID());
+        SQLRecipeImageUrlElement urlElement = new SQLRecipeImageUrlElement(imageUrls, this.getID());
         this.imageUrls.add(urlElement);
         this.wasChanged();
     }
@@ -313,7 +313,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     }
 
     @Override
-    public void remove(RecipeImageUrlElement url) {
+    public void remove(SQLRecipeImageUrlElement url) {
         this.imageUrls.remove(url);
         try {
             url.delete();
@@ -334,7 +334,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
                         this.imageUrls.remove(url);
             });
         }else{
-            this.imageUrls = (List<RecipeImageUrlElement>) Helper.getImageUrlElementhelper().removeIfAndDeleteExtended(this.imageUrls, urlId);
+            this.imageUrls = (List<SQLRecipeImageUrlElement>) Helper.getImageUrlElementhelper().removeIfAndDeleteExtended(this.imageUrls, urlId);
         }
     }
 
@@ -347,7 +347,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     @Override
     public void save() throws NotInitializedDBException {
         DatabaseConnection.getDataBase().addOrUpdate(this);
-        for(RecipeImageUrlElement url: this.imageUrls) {
+        for(SQLRecipeImageUrlElement url: this.imageUrls) {
             DatabaseConnection.getDataBase().addOrUpdate(url);
         }
         this.wasSaved();

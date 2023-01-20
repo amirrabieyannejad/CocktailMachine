@@ -1,17 +1,17 @@
 package com.example.cocktailmachine.data.db.elements;
 
-public abstract class ImageUrlElement extends SQLDataBaseElement {
+public abstract class SQLImageUrlElement extends SQLDataBaseElement {
     private String url = "";
     private final long ownerID;
 
-    public ImageUrlElement(long ID, String url, long ingredientID) {
+    public SQLImageUrlElement(long ID, String url, long ingredientID) {
         super();
         this.setID(ID);
         this.url = url;
         this.ownerID = ingredientID;
     }
 
-    public ImageUrlElement(String url, long ownerID) {
+    public SQLImageUrlElement(String url, long ownerID) {
         super();
         this.url = url;
         this.ownerID = ownerID;
