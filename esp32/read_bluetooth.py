@@ -43,10 +43,7 @@ async def main():
       time.sleep(args.sleep)
 
   except KeyboardInterrupt:
-    pass
-
-  finally:
-    peripheral.disconnect()
+    exit(0)
 
 if __name__ == "__main__":
   asyncio.run(main())
