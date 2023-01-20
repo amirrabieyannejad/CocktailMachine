@@ -2,7 +2,7 @@
 
 # type annotations
 from __future__ import annotations
-from typing import ClassVar, Dict, Optional, List, Set, Any, Tuple
+from typing import ClassVar, Dict, Optional, List, Set, Any, Tuple, Union
 
 # datatypes
 from abc import ABC, abstractmethod
@@ -39,53 +39,63 @@ logging.basicConfig(level=logging.INFO, format='%(levelname)s %(asctime)s: %(mes
 ##############
 
 class Server():
-  queue:   List[Command]
-  values:  Dict[str, Value]
-  state:   ServerState
+  # status
+  values: Dict[str, Value]
+
+  # users
   users:   Dict[User, str]
   admins:  Set[User]
   next_id: int
 
+  # machine state
+  state:   ServerState
   pumps:   List[Pump]
   recipes: List[Recipe]
   content: List[Tuple[Liquid, float]]
 
-  ble:     Optional[BlessServer] = None
-  trigger: asyncio.Event = asyncio.Event()
+  # bluetooth
+  ble:              Optional[BlessServer] = None
+  trigger:          asyncio.Event = asyncio.Event()
+  command_services: Dict[str, CommandService]
+  characteristics:  Dict[BlessGATTCharacteristic, Union[Value, CommandService]]
 
   def __init__(self):
     # start in init state
-    self.state   = ServerState.ready
-    self.queue   = []
-    self.values  = {
-      "state":    ValState(ServerState.init),
-      "liquids":  ValLiquids({}),
-      "recipes":  ValRecipes([]),
-      "cocktail": ValCocktail([]),
-    }
+    self.state = ServerState.init
 
     # hardcode user 0 as admin
     self.admins  = {User(0)}
     self.users   = {User(0): "admin"}
     self.next_id = 1
 
+    # clear machine state
     self.pumps   = []
     self.recipes = []
     self.content = []
 
-  def process_queue(self):
+    self.values  = {
+      "state":    ValState(self.state),
+      "liquids":  ValLiquids(self.liquids()),
+      "recipes":  ValRecipes(self.recipes),
+      "cocktail": ValCocktail(self.content),
+    }
+    self.command_services = {
+      "commands": CommandService("commands", "message", "response"),
+    }
+
+  def process(self, cmd: Command):
+    logging.info(f"processing command: {cmd}")
+
     self.state = ServerState.processing
 
-    while self.queue:
-      cmd      = self.queue.pop(0)
-      ret, val = self.process(cmd)
-      self.update_values()
-      self.return_value(ret, val)
+    ret, val = self.apply_command(cmd)
+    self.update_values()
+    self.return_value(ret, val)
 
     self.state = ServerState.ready
     self.update_values()
 
-  def process(self, cmd: Command) -> Tuple[ReturnCode, Dict[str, Any]]:
+  def apply_command(self, cmd: Command) -> Tuple[ReturnCode, Dict[str, Any]]:
     is_admin = isinstance(cmd, UserCommand) and cmd.user in self.admins
 
     if not cmd.allowed(self.admins):
@@ -146,7 +156,10 @@ class Server():
       d.update(value)
       ret = json.dumps(d)
 
-    print(f"--> {ret}")
+    if self.ble:
+      self.send_response(ret, self.command_services["commands"])
+
+    logging.info(f"response: {ret}")
 
   def make_recipe(self, recipe: Recipe) -> bool:
     if not recipe in self.recipes:
@@ -183,10 +196,10 @@ class Server():
     self.state = ServerState.ready
 
   def calibrate(self):
-    print("[TODO] calibrating... bzzzzz... done.")
+    print("calibrating... bzzzzz... done.")
 
   def clean(self):
-    print("[TODO] cleaning... whirrrr... done.")
+    print("cleaning... whirrrr... done.")
 
   def add_admin(self, id: User):
     self.admins.add(id)
@@ -223,8 +236,8 @@ class Server():
 
       if self.ble:
         for name, value in self.values.items():
-          uuid_service = str(value.__class__.uuid_service())
-          uuid_char    = str(value.__class__.uuid_characteristic())
+          uuid_service = str(value.uuid_service())
+          uuid_char    = str(value.uuid_characteristic())
           new_value    = value.json()
 
           char = self.ble.get_characteristic(uuid_char)
@@ -232,22 +245,58 @@ class Server():
             char.value = new_value
             self.ble.update_value(uuid_service, uuid_char)
 
-  @classmethod
-  def read_char(cls, characteristic: BlessGATTCharacteristic, **kwargs) -> Any:
-    logging.debug(f"read: {characteristic.value}")
-    return characteristic.value
+  def read_char(self, characteristic: BlessGATTCharacteristic, **kwargs) -> Any:
+    try:
+      service = self.characteristics[characteristic]
 
-  @classmethod
-  def write_char(cls, characteristic: BlessGATTCharacteristic, value: Any, **kwargs):
-    characteristic.value = value
-    logging.debug(f"wrote: {characteristic.value}")
+      if isinstance(service, Value):
+        logging.info(f"read value {service.name}: {characteristic.value}")
+        return characteristic.value
+
+      elif isinstance(service, CommandService):
+        logging.info(f"read response: {characteristic.value}")
+        return characteristic.value
+
+      else:
+        raise Exception(f"unsupported type of characteristic: {characteristic}")
+
+    except KeyError:
+      # additional characteristics we don't really care about
+      return characteristic.value
+
+  def write_char(self, characteristic: BlessGATTCharacteristic, value: Any, **kwargs):
+    try:
+      service = self.characteristics[characteristic]
+
+      if isinstance(service, Value):
+        logging.error(f"attempted to write status service: {service.name}: {value}")
+        characteristic.value = value
+
+      elif isinstance(service, CommandService):
+        characteristic.value = value
+        logging.info(f"wrote message: {value}")
+
+        try:
+          cmd = Command.from_json(value)
+          self.process(cmd)
+        except Exception as e:
+          logging.exception(e)
+
+      else:
+        raise Exception(f"unsupported type of characteristic: {characteristic}")
+
+    except KeyError:
+      # additional characteristics we don't really care about
+      characteristic.value = value
+      logging.info(f"wrote: {characteristic.value}")
 
   async def start_bluetooth(self, loop):
     # start server
     self.ble = BlessServer(name=NAME, loop=loop)
-    self.ble.read_request_func  = Server.read_char
-    self.ble.write_request_func = Server.write_char
+    self.ble.read_request_func  = lambda char, **kwargs:        self.read_char(char, **kwargs)
+    self.ble.write_request_func = lambda char, value, **kwargs: self.write_char(char, value, **kwargs)
 
+    # build gatt
     gatt: Dict = {
       str(UUID): {
         str(gen_uuid("base")): {
@@ -260,9 +309,9 @@ class Server():
 
     # status services
     for name, value in self.values.items():
-      logging.info(f"adding service: {name}")
-      uuid_service = str(value.__class__.uuid_service())
-      uuid_char    = str(value.__class__.uuid_characteristic())
+      logging.info(f"adding status service: {name}")
+      uuid_service = str(value.uuid_service())
+      uuid_char    = str(value.uuid_characteristic())
 
       gatt[uuid_service] = {
         uuid_char: {
@@ -273,15 +322,67 @@ class Server():
         }
       }
 
+    # communication service
+    for name, com in self.command_services.items():
+      logging.info(f"adding communication service: {name}")
+      uuid_service  = str(com.uuid_service())
+      uuid_message  = str(com.uuid_message())
+      uuid_response = str(com.uuid_response())
+
+      gatt[uuid_service] = {
+        uuid_message: {
+          "Properties": GATTCharacteristicProperties.write,
+          "Permissions": GATTAttributePermissions.writeable,
+          "Value": None,
+        },
+        uuid_response: {
+          "Properties": ( GATTCharacteristicProperties.read
+                        | GATTCharacteristicProperties.notify),
+          "Permissions": GATTAttributePermissions.readable,
+          "Value": None,
+        }
+      }
+
     await self.ble.add_gatt(gatt)
+
+    # assemble a map from characteristic to its internal class
+    self.characteristics: Dict = {}
+
+    # status services
+    for value in self.values.values():
+      uuid_char = str(value.uuid_characteristic())
+      char = self.ble.get_characteristic(uuid_char)
+      self.characteristics[char] = value
+
+    for com in self.command_services.values():
+      uuid_message  = str(com.uuid_message())
+      uuid_response = str(com.uuid_response())
+
+      char_message  = self.ble.get_characteristic(uuid_message)
+      char_response = self.ble.get_characteristic(uuid_response)
+
+      self.characteristics[char_message]  = com
+      self.characteristics[char_response] = com
+
+    # start server
     await self.ble.start()
     logging.info("bluetooth ready")
 
+    # keep the server running unless there's an explicit exit
     await self.trigger.wait()
 
   async def stop_bluetooth(self, loop):
     if self.ble:
       await self.ble.stop()
+
+  def send_response(self, response: str, com: CommandService):
+    if self.ble:
+      uuid_service  = str(com.uuid_service())
+      uuid_response = str(com.uuid_response())
+
+      char = self.ble.get_characteristic(uuid_response)
+      char.value = response
+      self.ble.update_value(uuid_service, uuid_response)
 
 class ServerState(Enum):
   ready      = "ready"
@@ -336,13 +437,11 @@ class Value(ABC):
   example: ClassVar[Dict[str, Any]] = {}
   value:   Any
 
-  @classmethod
-  def uuid_service(cls) -> uuid.UUID:
-    return gen_uuid(f"status {cls.name}")
+  def uuid_service(self) -> uuid.UUID:
+    return gen_uuid(f"status {self.__class__.name}")
 
-  @classmethod
-  def uuid_characteristic(cls) -> uuid.UUID:
-    return gen_uuid(f"status {cls.name} value")
+  def uuid_characteristic(self) -> uuid.UUID:
+    return gen_uuid(f"status {self.__class__.name} value")
 
   def json(self) -> bytes:
     return json.dumps(self.value, ensure_ascii=False).encode('utf8')
@@ -466,6 +565,21 @@ class UserCommand(Command):
       if u == self.user:
         return True
     return False
+
+@dataclass
+class CommandService:
+  name:     str
+  message:  str
+  response: str
+
+  def uuid_service(self) -> uuid.UUID:
+    return gen_uuid(f"{self.name}")
+
+  def uuid_message(self) -> uuid.UUID:
+    return gen_uuid(f"{self.name} {self.message}")
+
+  def uuid_response(self) -> uuid.UUID:
+    return gen_uuid(f"{self.name} {self.response}")
 
 # supported commands
 ####################
@@ -605,9 +719,7 @@ def main():
       try:
         cmd = read_command()
         if cmd:
-          server.queue.append(cmd)
-
-          server.process_queue()
+          server.process(cmd)
           server.show_status()
       except (KeyboardInterrupt, EOFError):
         exit(0)
