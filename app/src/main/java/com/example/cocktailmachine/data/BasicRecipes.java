@@ -3,7 +3,7 @@ package com.example.cocktailmachine.data;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 
 public class BasicRecipes {
-    public static void loadMagarita() throws NotInitializedDBException {
+    public static void loadMargarita() throws NotInitializedDBException {
         /**
         8 cl   weißer Tequila
         4 cl   Orangenlikör (z.B. Cointreau)
@@ -18,7 +18,7 @@ public class BasicRecipes {
         Topic ice = Topic.makeNew(" Crushed Eis", "klein gehaktes Eis");
         ice.save();
 
-        Recipe magarita = Recipe.makeNew("Magarita");
+        Recipe magarita = Recipe.makeNew("Margarita");
         magarita.addOrUpdate(tequila, 8);
         magarita.addOrUpdate(orangenlikör, 4);
         magarita.addOrUpdate(limettensaft, 4);
