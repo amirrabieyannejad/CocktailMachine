@@ -1,11 +1,18 @@
 package com.example.cocktailmachine.data.db.elements;
 
-import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.NewDatabaseConnection;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-public class SQLTopic extends DataBaseElement implements Topic {
-    private String name;
-    private String description;
+import com.example.cocktailmachine.data.Topic;
+import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.NotInitializedDBException;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class SQLTopic extends SQLDataBaseElement implements Topic {
+    private String name = "";
+    private String description = "";
 
     public SQLTopic(long id, String name, String description) {
         super(id);
@@ -17,12 +24,16 @@ public class SQLTopic extends DataBaseElement implements Topic {
         super();
         this.name = name;
         this.description = description;
-        this.save();
     }
 
     @Override
     public long getID(){
         return super.getID();
+    }
+
+    @Override
+    public boolean isAvailable() {
+        return true;
     }
 
     @Override
@@ -49,13 +60,46 @@ public class SQLTopic extends DataBaseElement implements Topic {
 
 
     @Override
-    public void save() {
-        NewDatabaseConnection.getDataBase().addOrUpdate(this);
+    public void save() throws NotInitializedDBException {
+        DatabaseConnection.getDataBase().addOrUpdate(this);
         this.wasSaved();
     }
 
     @Override
-    public void delete() {
-        NewDatabaseConnection.getDataBase().remove(this);
+    public void delete() throws NotInitializedDBException{
+        DatabaseConnection.getDataBase().remove(this);
+    }
+
+    //Comparable
+
+    public JSONObject asJson(){
+        JSONObject json = new JSONObject();
+        try{
+            json.put("name", this.name);
+            json.put("description", this.description);
+            return json;
+        }catch (JSONException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if(obj instanceof Topic){
+            return this.compareTo((Topic) obj)==0;
+        }
+        return false;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return this.asJson().toString();
+    }
+
+    @Override
+    public int compareTo(Topic o) {
+        return Long.compare(this.getID(), o.getID());
     }
 }

@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.cocktailmachine.data.Recipe;
+import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 
@@ -67,9 +68,9 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
     @Override
     public ContentValues makeContentValues(SQLRecipeIngredient element) {
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_TYPE_RECIPE_ID, element.getRecipeID());
-        cv.put(COLUMN_TYPE_INGREDIENT_ID, element.getIngredientID());
-        cv.put(COLUMN_TYPE_PUMP_TIME, element.getPumpTime());
+        cv.put(COLUMN_NAME_RECIPE_ID, element.getRecipeID());
+        cv.put(COLUMN_NAME_INGREDIENT_ID, element.getIngredientID());
+        cv.put(COLUMN_NAME_PUMP_TIME, element.getPumpTime());
         return cv;
     }
 
@@ -85,10 +86,17 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
     public  List<SQLRecipeIngredient>  getAvailable(SQLiteDatabase db,
                                                     List<? extends Recipe> recipes){
         try {
+            List<Object> ids = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                ids = recipes.stream()
+                        .map(Recipe::getID)
+                        .collect(Collectors.toList());
+            }
+            else{
+                ids = Helper.getRecipeHelper().getIdsExtend(recipes);
+            }
             return this.getElementsIn(db, COLUMN_NAME_RECIPE_ID,
-                    recipes.stream()
-                            .map(Recipe::getID)
-                            .collect(Collectors.toList()));
+                    ids);
         } catch (NoSuchColumnException e) {
             e.printStackTrace();
             return null;

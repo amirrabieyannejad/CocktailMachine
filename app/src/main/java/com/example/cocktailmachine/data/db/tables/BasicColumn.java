@@ -3,16 +3,19 @@ package com.example.cocktailmachine.data.db.tables;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.provider.BaseColumns;
 
+import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
+import com.example.cocktailmachine.data.db.elements.SQLDataBaseElement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class BasicColumn<T extends DataBaseElement> implements BaseColumns {
+public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseColumns {
     public abstract String getName();
     public abstract List<String> getColumns();
     public abstract List<String> getColumnTypes();
@@ -31,12 +34,16 @@ public abstract class BasicColumn<T extends DataBaseElement> implements BaseColu
         String tablename = this.getName();
         HashMap<String, String> columns = this.getColumnsAndTypes();
         final StringBuilder res =  new StringBuilder( "CREATE TABLE "+tablename+"(");
-        columns.forEach((columnname, datatype) -> {
-            res.append(columnname);
-            res.append(" ");
-            res.append(datatype);
-            res.append(",");
-        });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            columns.forEach((columnname, datatype) -> {
+                res.append(columnname);
+                res.append(" ");
+                res.append(datatype);
+                res.append(",");
+            });
+        }else{
+            res.append(Helper.stringAppender(columns));
+        }
         res.deleteCharAt(res.length()-1);
         res.append(");");
         return res.toString();
@@ -84,7 +91,11 @@ public abstract class BasicColumn<T extends DataBaseElement> implements BaseColu
         }
         String ttype = getColumnsAndTypes().get(column_name);
 
-        return ll.stream().map(Object::toString).toArray(String[] ::new);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return ll.stream().map(Object::toString).toArray(String[] ::new);
+        }else{
+            return Helper.objToString(ll);
+        }
     }
 
     private String[] makeSelectionList(String column_name,
@@ -135,11 +146,18 @@ public abstract class BasicColumn<T extends DataBaseElement> implements BaseColu
 
     public List<T> getElements(SQLiteDatabase db,
                                List<Long> ids){
+        String selection = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            selection = "id in "+ids.stream()
+                    .map(Object::toString)
+                    .collect(Collectors.joining(", ", "(", ")"));
+        }else {
+            selection = "id in "+Helper.objToString(ids, "(", ", ", ")");
+        }
+
         Cursor cursor = db.query(this.getName(),
                 getColumns().toArray(new String[0]),
-                "id in "+ids.stream()
-                        .map(Object::toString)
-                        .collect(Collectors.joining(", ", "(", ")")),
+                selection,
                 null,
                 null,
                 null,
@@ -256,7 +274,7 @@ public abstract class BasicColumn<T extends DataBaseElement> implements BaseColu
                                                  List<? extends Object> ll,
                                                  String selectionOperator)
             throws NoSuchColumnException {
-        db.delete(getName(),
+        db.delete(this.getName(),
                 column_name+" "+selectionOperator+" ?",
                 makeSelectionList(column_name, ll));
     }
@@ -277,6 +295,18 @@ public abstract class BasicColumn<T extends DataBaseElement> implements BaseColu
                                     List<? extends Object> ll)
             throws NoSuchColumnException {
         deleteElementsSelectionOperators(db, column_name, ll, "NOT IN");
+    }
+
+    public void deleteElementsWith(SQLiteDatabase db,
+                                   String column_name,
+                                   String equalsThis)
+            throws NoSuchColumnException {
+        if(!getColumns().contains(column_name)){
+            throw new NoSuchColumnException(getName(), column_name);
+        }
+        db.delete(this.getName(),
+                column_name+" = "+equalsThis,
+                null);
     }
 
     //ADD

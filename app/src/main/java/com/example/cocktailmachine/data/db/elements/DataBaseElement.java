@@ -1,40 +1,23 @@
 package com.example.cocktailmachine.data.db.elements;
 
-public abstract class DataBaseElement {
-    private long ID;
-    private boolean saved = false;
-    private boolean changed = false;
+import com.example.cocktailmachine.data.db.NotInitializedDBException;
 
-    DataBaseElement(){}
-    DataBaseElement(long id){
-        this.ID = id;
-        this.wasSaved();
-    }
+public interface DataBaseElement {
+    public long getID();
 
-    public long getID(){
-        return this.ID;
-    }
-    public void setID(long id){
-        this.ID = id;
-    }
+    public void setID(long id);
 
-    public boolean isSaved(){
-        return this.saved;
-    }
+    public boolean isAvailable();
 
-    public boolean needsUpdate(){
-        return this.changed;
-    }
+    public boolean isSaved();
 
-    void wasSaved(){
-        this.saved = true;
-        this.changed = false;
-    }
+    public boolean needsUpdate();
 
-    void wasChanged(){
-        this.changed = true;
-    }
+    void wasSaved();
 
-    abstract void save();
-    abstract void delete();
+    void wasChanged();
+
+    public abstract void save() throws NotInitializedDBException;
+
+    public abstract void delete() throws NotInitializedDBException;
 }

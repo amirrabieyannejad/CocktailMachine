@@ -2,11 +2,12 @@ package com.example.cocktailmachine.data.db.elements;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
-import com.example.cocktailmachine.data.db.NewDatabaseConnection;
+import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.NotInitializedDBException;
 
-public class SQLPump extends DataBaseElement implements Pump {
-    private int millilitersPumpedInMilliseconds;
-    private SQLIngredientPump bunker;
+public class SQLPump extends SQLDataBaseElement implements Pump {
+    private int millilitersPumpedInMilliseconds = -1;
+    private SQLIngredientPump bunker = null;
 
     public SQLPump(long ID, int millilitersPumpedInMilliseconds) {
         super(ID);
@@ -26,7 +27,11 @@ public class SQLPump extends DataBaseElement implements Pump {
 
     @Override
     public void setCurrentIngredient(Ingredient ingredient) {
-        this.bunker.delete();
+        try {
+            this.bunker.delete();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+        }
         this.bunker = new SQLIngredientPump(-1, this.getID(), ingredient.getID());
     }
 
@@ -42,25 +47,35 @@ public class SQLPump extends DataBaseElement implements Pump {
 
     //General
     @Override
-    public void setPumps() {
+    public void setPumps() throws NotInitializedDBException{
         //TODO:????
-        NewDatabaseConnection.getDataBase().loadBufferWithAvailable();
+        DatabaseConnection.getDataBase().loadBufferWithAvailable();
     }
 
     @Override
-    public void setOverrideEmptyPumps(int numberOfPumps) {
-        NewDatabaseConnection.getDataBase().loadEmpty();
+    public void setOverrideEmptyPumps(int numberOfPumps) throws NotInitializedDBException {
+        DatabaseConnection.getDataBase().loadEmpty();
     }
 
 
     @Override
-    public void save() {
-        NewDatabaseConnection.getDataBase().addOrUpdate(this);
+    public boolean isAvailable() {
+        return true;
+    }
+
+    @Override
+    public void save() throws NotInitializedDBException {
+        DatabaseConnection.getDataBase().addOrUpdate(this);
         this.wasSaved();
     }
 
     @Override
-    public void delete() {
-        NewDatabaseConnection.getDataBase().remove(this);
+    public void delete() throws NotInitializedDBException {
+        DatabaseConnection.getDataBase().remove(this);
+    }
+
+    @Override
+    public int compareTo(Pump o) {
+        return Long.compare(this.getID(), o.getID());
     }
 }

@@ -7,6 +7,7 @@ import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_LONG;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
 
 import java.util.ArrayList;
@@ -55,7 +56,12 @@ public class PumpTable extends BasicColumn<SQLPump> {
             int mlpims = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NAME_MILLILITERS_PUMPED_IN_MILLISECONDS));
             long id = cursor.getLong(cursor.getColumnIndexOrThrow(_ID));
             SQLPump pump = new SQLPump(id, mlpims);
-            pump.setCurrentIngredient(i_id);
+            try {
+                pump.setCurrentIngredient(i_id);
+            } catch (NotInitializedDBException e) {
+                e.printStackTrace();
+                System.out.println("Should not happen.");
+            }
             return pump;
         }
 

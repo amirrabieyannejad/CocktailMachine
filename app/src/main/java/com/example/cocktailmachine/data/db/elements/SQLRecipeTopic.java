@@ -1,10 +1,11 @@
 package com.example.cocktailmachine.data.db.elements;
 
-import com.example.cocktailmachine.data.db.NewDatabaseConnection;
+import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.NotInitializedDBException;
 
-public class SQLRecipeTopic extends DataBaseElement {
-    private long recipeID;
-    private long topicID;
+public class SQLRecipeTopic extends SQLDataBaseElement {
+    private long recipeID = -1;
+    private long topicID = -1;
 
     public SQLRecipeTopic(long recipeID, long topicID) {
         super();
@@ -27,13 +28,18 @@ public class SQLRecipeTopic extends DataBaseElement {
     }
 
     @Override
-    void save() {
-        NewDatabaseConnection.getDataBase().addOrUpdate(this);
+    public boolean isAvailable() {
+        return true;
+    }
+
+    @Override
+    public void save() throws NotInitializedDBException {
+        DatabaseConnection.getDataBase().addOrUpdate(this);
         this.wasSaved();
     }
 
     @Override
-    void delete() {
-        NewDatabaseConnection.getDataBase().remove(this);
+    public void delete() throws NotInitializedDBException {
+        DatabaseConnection.getDataBase().remove(this);
     }
 }

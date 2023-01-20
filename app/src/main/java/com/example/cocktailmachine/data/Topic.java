@@ -1,11 +1,13 @@
 package com.example.cocktailmachine.data;
 
-import com.example.cocktailmachine.data.db.NewDatabaseConnection;
+import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
 
 import java.util.List;
 
-public interface Topic {
+public interface Topic extends Comparable<Topic>, DataBaseElement {
     /**
      * Get id.
      * @return id
@@ -37,15 +39,6 @@ public interface Topic {
      */
     public void setDescription(String description);
 
-    /**
-     * Deletes this instance in db and in buffer.
-     */
-    public void delete();
-
-    /**
-     * Saves to db.
-     */
-    public void save();
 
     /**
      * Make new topic instance with already given name and description.
@@ -58,15 +51,15 @@ public interface Topic {
         return new SQLTopic(name, description);
     }
 
-    public static Topic getTopic(long id){
-        return NewDatabaseConnection.getDataBase().getTopic(id);
+    public static Topic getTopic(long id) throws NotInitializedDBException {
+        return DatabaseConnection.getDataBase().getTopic(id);
     }
 
-    public static List<Topic> getTopics(Recipe recipe){
-        return NewDatabaseConnection.getDataBase().getTopics(recipe);
+    public static List<Topic> getTopics(Recipe recipe) throws NotInitializedDBException {
+        return DatabaseConnection.getDataBase().getTopics(recipe);
     }
 
-    public static List<Topic> getTopics(){
-        return NewDatabaseConnection.getDataBase().getTopics();
+    public static List<Topic> getTopics() throws NotInitializedDBException {
+        return DatabaseConnection.getDataBase().getTopics();
     }
 }

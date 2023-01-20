@@ -1,24 +1,27 @@
 package com.example.cocktailmachine.data.db.elements;
 
+import android.os.Build;
+
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
+import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.NeedsMoreIngredientException;
-import com.example.cocktailmachine.data.db.NewDatabaseConnection;
+import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.NotInitializedDBException;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-public class SQLIngredientPump extends DataBaseElement{
-    private int fillLevel;
-    private long pump;
-    private long ingredient;
+public class SQLIngredientPump extends SQLDataBaseElement {
+    private int fillLevel = -1;
+    private long pump = -1L;
+    private long ingredient = -1L;
 
     public SQLIngredientPump(int fillLevel, long pump, long ingredient) {
         super();
         this.fillLevel = fillLevel;
         this.pump = pump;
         this.ingredient = ingredient;
-        this.save();
     }
 
     public SQLIngredientPump(long id, int fillLevel, long pump, long ingredient) {
@@ -26,7 +29,6 @@ public class SQLIngredientPump extends DataBaseElement{
         this.fillLevel = fillLevel;
         this.pump = pump;
         this.ingredient = ingredient;
-        this.save();
     }
 
     public int getFillLevel(){
@@ -65,31 +67,53 @@ public class SQLIngredientPump extends DataBaseElement{
         this.fillLevel = milliliters;
     }
 
-
-
+    @Override
+    public boolean isAvailable() {
+        return false;
+    }
 
     @Override
-    void save() {
-        NewDatabaseConnection.getDataBase().addOrUpdate(this);
+    public void save() throws NotInitializedDBException {
+        DatabaseConnection.getDataBase().addOrUpdate(this);
         this.wasSaved();
     }
 
     @Override
-    void delete() {
-        NewDatabaseConnection.getDataBase().remove(this);
+    public void delete() throws NotInitializedDBException {
+        DatabaseConnection.getDataBase().remove(this);
     }
 
 
     private static List<SQLIngredientPump> getAvailableInstances(){
         //TODO
-        return NewDatabaseConnection.getDataBase().getIngredientPumps();
+        try {
+            return DatabaseConnection.getDataBase().getIngredientPumps();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
     public static SQLIngredientPump getInstanceWithPump(long pump){
-        return getAvailableInstances() != null ? getAvailableInstances().stream().filter(ip -> ip.pump == pump).findFirst().orElse(null) : null;
+        List<SQLIngredientPump> available = getAvailableInstances();
+        if(available != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                return available.stream().filter(ip -> ip.pump == pump).findFirst().orElse(null);
+            }
+            return Helper.getWithPumpID(available, pump);
+        }
+        return null;
     }
 
-    public static SQLIngredientPump getInstanceWithIngredient(long ingredient){
-        return getAvailableInstances() != null ? getAvailableInstances().stream().filter(ip -> ip.ingredient == ingredient).findFirst().orElse(null) : null;
+    public static SQLIngredientPump getInstanceWithIngredient(long ingredient) {
+
+        List<SQLIngredientPump> available = getAvailableInstances();
+        if (available != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                return available.stream().filter(ip -> ip.ingredient == ingredient).findFirst().orElse(null);
+            }
+            return Helper.getWithIngredientID(available, ingredient);
+        }
+        return null;
     }
 }

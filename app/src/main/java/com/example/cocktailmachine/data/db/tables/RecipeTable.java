@@ -1,6 +1,6 @@
 package com.example.cocktailmachine.data.db.tables;
 
-import static android.text.style.TtsSpan.TYPE_TEXT;
+import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_TEXT;
 import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_BOOLEAN;
 import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_ID;
 
@@ -8,6 +8,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 
 import java.util.ArrayList;
@@ -63,10 +64,8 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
         boolean alcoholic = 0 < cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NAME_ALCOHOLIC));
         boolean available = 0 < cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NAME_AVAILABLE));
 
-        SQLRecipe recipe = new SQLRecipe(id, name, alcoholic, available);
+        return new SQLRecipe(id, name, alcoholic, available);
 
-
-        return null;
     }
 
     @Override
@@ -78,7 +77,7 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
         return cv;
     }
 
-    public List<SQLRecipe> getAvailable(SQLiteDatabase db){
+    public List<? extends Recipe> getAvailable(SQLiteDatabase db){
         try {
             return this.getElementsWith(db, COLUMN_NAME_AVAILABLE, String.valueOf(1));
         } catch (NoSuchColumnException e) {

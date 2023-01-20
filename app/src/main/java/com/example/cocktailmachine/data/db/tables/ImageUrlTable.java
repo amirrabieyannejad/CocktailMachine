@@ -6,8 +6,11 @@ import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_TEXT;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 
+import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.elements.ImageUrlElement;
 
 import java.util.ArrayList;
@@ -53,10 +56,15 @@ public abstract class ImageUrlTable extends BasicColumn<ImageUrlElement>{
 
     @Override
     public ImageUrlElement makeElement(Cursor cursor) {
-        long id = cursor.getLong(cursor.getColumnIndexOrThrow(_ID));
-        long iid = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_NAME_OWNER_ID));
-        String url = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME_URL));
-        return this.initializeElement(id,url, iid);
+        try {
+            long id = cursor.getLong(cursor.getColumnIndexOrThrow(_ID));
+            long iid = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_NAME_OWNER_ID));
+            String url = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME_URL));
+            return this.initializeElement(id, url, iid);
+        }catch (CursorIndexOutOfBoundsException e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
@@ -67,15 +75,44 @@ public abstract class ImageUrlTable extends BasicColumn<ImageUrlElement>{
         return cv;
     }
 
-    public List<String> getUrls(SQLiteDatabase db, long id) {
-        List<ImageUrlElement> urltable = null;
+    public void deleteWithOwnerId(SQLiteDatabase db, long ownerID){
         try {
-            urltable = this.getElementsWith(db, COLUMN_NAME_OWNER_ID, Long.toString(id));
+            this.deleteElementsWith(db, COLUMN_NAME_OWNER_ID, String.valueOf(ownerID));
+        } catch (NoSuchColumnException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<String> getUrls(SQLiteDatabase db, long id) {
+        try {
+            List<ImageUrlElement> urltable = this.getElementsWith(db, COLUMN_NAME_OWNER_ID, Long.toString(id));
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                return urltable != null ? urltable.stream().map(imageUrlElement ->
+                    {
+                        if(imageUrlElement==null){
+                            return "";
+                        }
+                        return imageUrlElement.getUrl();
+                    }
+                    ).collect(Collectors.toList()) : null;
+            }
+            return urltable != null ? Helper.getUrls(urltable) : null;
 
         } catch (NoSuchColumnException e) {
             e.printStackTrace();
         }
-        return urltable != null ? urltable.stream().map(ImageUrlElement::getUrl).collect(Collectors.toList()) : null;
+        return new ArrayList<>();
+    }
+
+    public List<? extends ImageUrlElement> getElements(SQLiteDatabase db, long id) {
+        try {
+            return this.getElementsWith(db, COLUMN_NAME_OWNER_ID, Long.toString(id));
+
+        } catch (NoSuchColumnException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
     }
 
     public void addElement(SQLiteDatabase db, Long owner_id, String url){
@@ -83,5 +120,6 @@ public abstract class ImageUrlTable extends BasicColumn<ImageUrlElement>{
     }
 
     public abstract ImageUrlElement initializeElement(String url, long owner_id);
+
     public abstract ImageUrlElement initializeElement(long id, String url, long owner_id);
 }

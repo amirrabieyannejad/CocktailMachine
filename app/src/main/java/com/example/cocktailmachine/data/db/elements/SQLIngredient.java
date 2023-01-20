@@ -1,20 +1,30 @@
 package com.example.cocktailmachine.data.db.elements;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.NeedsMoreIngredientException;
-import com.example.cocktailmachine.data.db.NewDatabaseConnection;
+import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.NotInitializedDBException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class SQLIngredient extends DataBaseElement implements Ingredient {
-    private String name;
-    private List<String> imageUrls;
+public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
+    private String name = "";
+    private List<String> imageUrls = new ArrayList<>();
+    private boolean urlsLoaded = false;
     private boolean alcoholic;
-    private boolean available;
+    private boolean available = false;
     //private int fluidInMillimeters;
     //private long pump;
-    private int color;
+    private int color = -1;
 
     private SQLIngredientPump bunker;
 
@@ -26,6 +36,7 @@ public class SQLIngredient extends DataBaseElement implements Ingredient {
         //this.fluidInMillimeters = -1;
         //this.pump = -1L;
         this.bunker = null;
+        //this.loadUrls();
     }
 
     public SQLIngredient(String name,
@@ -41,8 +52,7 @@ public class SQLIngredient extends DataBaseElement implements Ingredient {
         //this.fluidInMillimeters = fluidInMillimeters;
         //this.pump = pump;
         this.color = color;
-        this.save();
-        this.wasSaved();
+        //this.loadUrls();
         this.bunker = new SQLIngredientPump(fluidInMillimeters, pump, this.getID());
     }
 
@@ -54,7 +64,7 @@ public class SQLIngredient extends DataBaseElement implements Ingredient {
         this.name = name;
         this.alcoholic = alcoholic;
         this.color = color;
-        this.loadUrls();
+        //this.loadUrls();
     }
 
     public SQLIngredient(long ID,
@@ -71,7 +81,7 @@ public class SQLIngredient extends DataBaseElement implements Ingredient {
         //this.fluidInMillimeters = fluidInMillimeters;
         //this.pump = pump;
         this.color = color;
-        this.loadUrls();
+        //this.loadUrls();
 
         this.bunker = new SQLIngredientPump(fluidInMillimeters, pump, this.getID());
     }
@@ -93,9 +103,20 @@ public class SQLIngredient extends DataBaseElement implements Ingredient {
         //this.fluidInMillimeters = fluidInMillimeters;
         //this.pump = pump;
         this.color = color;
-
+        //this.loadUrls();
         this.bunker = new SQLIngredientPump(fluidInMillimeters, pump, this.getID());
     }
+
+
+    //Loading
+    public void loadUrls() throws NotInitializedDBException{
+        this.imageUrls = DatabaseConnection.getDataBase().getUrls(this);
+        if(this.imageUrls == null){
+            this.imageUrls = new ArrayList<>();
+        }
+    }
+
+    //Getter
 
     public Ingredient getThis(){
         return this;
@@ -108,6 +129,13 @@ public class SQLIngredient extends DataBaseElement implements Ingredient {
 
     @Override
     public List<String> getImageUrls() {
+        if(!this.urlsLoaded) {
+            try {
+                this.loadUrls();
+            } catch (NotInitializedDBException e) {
+                e.printStackTrace();
+            }
+        }
         return this.imageUrls;
     }
 
@@ -128,20 +156,6 @@ public class SQLIngredient extends DataBaseElement implements Ingredient {
     }
 
     @Override
-    public void setPump(Long pump, int fluidInMillimeters) {
-        this.available = true;
-        //this.pump = pump;
-        //this.fluidInMillimeters = fluidInMillimeters;
-        Pump pp = NewDatabaseConnection.getDataBase().getPump(pump);
-        pp.setCurrentIngredient(this);
-        pp.save();
-        this.bunker = new SQLIngredientPump(fluidInMillimeters, pump, this.getID());
-        this.wasChanged();
-        this.save();
-        this.wasSaved();
-    }
-
-    @Override
     public int getFillLevel() {
         //return this.fluidInMillimeters;
         return this.bunker.getFillLevel();
@@ -157,6 +171,20 @@ public class SQLIngredient extends DataBaseElement implements Ingredient {
         return this.color;
     }
 
+    //Setter / Changer
+    @Override
+    public void setPump(Long pump, int fluidInMillimeters) {
+        this.available = true;
+        //this.pump = pump;
+        //this.fluidInMillimeters = fluidInMillimeters;
+
+        Pump pp = Pump.getPump(pump);
+        assert pp != null;
+        pp.setCurrentIngredient(this);
+        this.bunker = new SQLIngredientPump(fluidInMillimeters, pump, this.getID());
+        this.wasChanged();
+    }
+
     @Override
     public void pump(int millimeters) throws NeedsMoreIngredientException {
         //if(this.fluidInMillimeters - millimeters < this.getPump().getMillilitersPumpedInMilliseconds()){
@@ -167,26 +195,69 @@ public class SQLIngredient extends DataBaseElement implements Ingredient {
         try {
             this.bunker.pump(millimeters);
         } catch (NeedsMoreIngredientException e) {
+            e.printStackTrace();
             this.available = false;
             throw e;
         }
 
     }
 
+    //DB
     @Override
-    public void save() {
-        NewDatabaseConnection.getDataBase().addOrUpdate(this);
+    public void save() throws NotInitializedDBException {
+        DatabaseConnection.getDataBase().addOrUpdate(this);
         this.wasSaved();
     }
 
     @Override
-    public void delete() {
-        NewDatabaseConnection.getDataBase().remove(this);
+    public void delete() throws NotInitializedDBException {
+        DatabaseConnection.getDataBase().remove(this);
     }
 
-    public void loadUrls(){
-        this.imageUrls = NewDatabaseConnection.getDataBase().getUrls(this);
+    //Comparable
+
+    private JSONObject asJSON(){
+        JSONObject json = new JSONObject();
+        try {
+            json.put("ID", this.getID());
+            json.put("name", this.name);
+            json.put("color", this.color);
+            json.put("alcoholic", this.alcoholic);
+            json.put("available", this.available);
+            json.put("imageUrls", this.imageUrls.toString());
+            if(this.available) {
+                json.put("pumpID", this.bunker.getPumpID());
+            }
+            return json;
+        }catch (JSONException e){
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
 
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if(obj instanceof Ingredient){
+            return ((Ingredient) obj).getID()==this.getID();
+        }
+        return false;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        try {
+            return Objects.requireNonNull(this.asJSON()).toString();
+        }catch (NullPointerException e){
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    @Override
+    public int compareTo(Ingredient o) {
+        return Long.compare(this.getID(), o.getID());
+    }
 }

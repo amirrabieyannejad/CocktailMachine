@@ -1,6 +1,7 @@
 package com.example.cocktailmachine.data.db.elements;
 
-import com.example.cocktailmachine.data.db.NewDatabaseConnection;
+import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.NotInitializedDBException;
 
 public class IngredientImageUrlElement extends ImageUrlElement{
     public IngredientImageUrlElement(long ID, String url, long ingredientID) {
@@ -12,13 +13,17 @@ public class IngredientImageUrlElement extends ImageUrlElement{
     }
 
     @Override
-    void save() {
-        NewDatabaseConnection.getDataBase().addOrUpdate(this);
+    public void save() throws NotInitializedDBException {
+
+        DatabaseConnection.getDataBase().addOrUpdate(this);
         this.wasSaved();
     }
 
     @Override
-    void delete() {
-        NewDatabaseConnection.getDataBase().remove(this);
+    public void delete() throws NotInitializedDBException {
+
+        DatabaseConnection.getDataBase().remove(this);
     }
+
+
 }

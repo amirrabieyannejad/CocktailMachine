@@ -2,13 +2,16 @@ package com.example.cocktailmachine.data;
 
 
 import com.example.cocktailmachine.data.db.NeedsMoreIngredientException;
-import com.example.cocktailmachine.data.db.NewDatabaseConnection;
-import com.example.cocktailmachine.data.db.NewEmptyIngredientException;
+import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
+import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,7 +23,7 @@ import java.util.List;
  * It can be shown with an image.
  * The color is known.
  */
-public interface Ingredient {
+public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
 
     //Reminder: Only liquids!!!
 
@@ -85,20 +88,11 @@ public interface Ingredient {
     /**
      * Pump m milliliters.
      * @param millimeters m
-     * @throws NewEmptyIngredientException ingredient is empty.
+     * @throws NewlyEmptyIngredientException ingredient is empty.
      */
-    public void pump(int millimeters) throws NewEmptyIngredientException, NeedsMoreIngredientException;
+    public void pump(int millimeters) throws NewlyEmptyIngredientException, NeedsMoreIngredientException;
 
-    //db
-    /**
-     * Save this object to database.
-     */
-    public void save();
 
-    /**
-     * Delete this object including in the database.
-     */
-    public void delete();
 
     //general
     /**
@@ -106,8 +100,8 @@ public interface Ingredient {
      * Get all available ingredients.
      * @return List of ingredients.
      */
-    public static List<Ingredient> getIngredients(){
-        return (List<Ingredient>) NewDatabaseConnection.getDataBase().getAvailableIngredients();
+    public static List<Ingredient> getIngredientWithIds() throws NotInitializedDBException {
+        return (List<Ingredient>) DatabaseConnection.getDataBase().getAvailableIngredients();
     }
 
     /**
@@ -116,8 +110,13 @@ public interface Ingredient {
      * @param ingredientsIds k
      * @return List of ingredients.
      */
-    public static List<Ingredient> getIngredients(List<Long> ingredientsIds){
-        return NewDatabaseConnection.getDataBase().getIngredients(ingredientsIds);
+    public static List<Ingredient> getIngredientWithIds(List<Long> ingredientsIds) {
+        try {
+            return DatabaseConnection.getDataBase().getIngredients(ingredientsIds);
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
     /**
@@ -126,8 +125,13 @@ public interface Ingredient {
      * @param id k
      * @return
      */
-    public static Ingredient getIngredient(Long id){
-        return NewDatabaseConnection.getDataBase().getIngredient(id);
+    public static Ingredient getIngredient(Long id) {
+        try {
+            return DatabaseConnection.getDataBase().getIngredient(id);
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
@@ -170,6 +174,7 @@ public interface Ingredient {
         //TODO
         return null;
     }
+
 
 
 }

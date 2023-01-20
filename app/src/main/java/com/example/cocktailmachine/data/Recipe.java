@@ -1,7 +1,10 @@
 package com.example.cocktailmachine.data;
 
 
-import com.example.cocktailmachine.data.db.NewDatabaseConnection;
+import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.elements.DataBaseElement;
+import com.example.cocktailmachine.data.db.elements.RecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
@@ -9,10 +12,11 @@ import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredient
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public interface Recipe {
+public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     //Getter
 
     /**
@@ -121,6 +125,10 @@ public interface Recipe {
 
     public void removeTopic(long topicId);
 
+    public void remove(RecipeImageUrlElement url);
+
+    public void removeUrl(long urlId);
+
 
     //this Instance
 
@@ -131,15 +139,6 @@ public interface Recipe {
     }
 
 
-    /**
-     * Deletes this instance in db and in buffer.
-     */
-    public void delete();
-
-    /**
-     * Saves to db.
-     */
-    public void save();
 
     /**
      * Sends to CocktailMachine to get mixed.
@@ -162,8 +161,13 @@ public interface Recipe {
      * @param id id k
      * @return Recipe
      */
-    public static Recipe getRecipe(long id){
-        return NewDatabaseConnection.getDataBase().getRecipe(id);
+    public static Recipe getRecipe(long id) {
+        try {
+            return DatabaseConnection.getDataBase().getRecipe(id);
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
@@ -171,8 +175,8 @@ public interface Recipe {
      * Get available recipes.
      * @return list of recipes
      */
-    public static List<Recipe> getRecipes(){
-        return (List<Recipe>) NewDatabaseConnection.getDataBase().getAvailableRecipes();
+    public static List<Recipe> getRecipes() throws NotInitializedDBException {
+        return (List<Recipe>) DatabaseConnection.getDataBase().getAvailableRecipes();
     }
 
     /**
@@ -181,8 +185,13 @@ public interface Recipe {
      * @param ids list of ids k
      * @return list of recipes
      */
-    public static List<Recipe> getRecipes(List<Long> ids){
-        return (List<Recipe>) NewDatabaseConnection.getDataBase().getRecipes(ids);
+    public static List<Recipe> getRecipes(List<Long> ids) {
+        try {
+            return (List<Recipe>) DatabaseConnection.getDataBase().getRecipes(ids);
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
     /**
@@ -194,9 +203,6 @@ public interface Recipe {
         return new SQLRecipe(name);
     }
 
-
-    //Objectwise
-    public boolean equals(Recipe recipe);
 
 
 }

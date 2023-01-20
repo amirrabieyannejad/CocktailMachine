@@ -1,14 +1,16 @@
 package com.example.cocktailmachine.data;
 
 
-import com.example.cocktailmachine.data.db.NewDatabaseConnection;
+import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 
 import org.json.JSONObject;
 
 
 import java.util.List;
 
-public interface Pump {
+public interface Pump extends Comparable<Pump>, DataBaseElement {
     /**
      * Get Id.
      * @return
@@ -40,7 +42,7 @@ public interface Pump {
      * Update ingredient in pump.
      * @param id id of next ingredient
      */
-    public default void setCurrentIngredient(long id){
+    public default void setCurrentIngredient(long id) throws NotInitializedDBException {
         setCurrentIngredient(Ingredient.getIngredient(id));
     }
 
@@ -48,15 +50,7 @@ public interface Pump {
 
     public void fill(int milliliters);
 
-    /**
-     * Deletes this instance in db and in buffer.
-     */
-    public void delete();
 
-    /**
-     * Saves this object to db.
-     */
-    public void save();
 
 
     //general
@@ -65,21 +59,21 @@ public interface Pump {
      * Set up pumps with ingredients.
      * Load buffer with status quo from data base.
      */
-    public void setPumps();
+    public void setPumps() throws NotInitializedDBException;
 
     /**
      * Set up k empty pumps.
      * @param numberOfPumps k
      */
-    public void setOverrideEmptyPumps(int numberOfPumps);
+    public void setOverrideEmptyPumps(int numberOfPumps) throws NotInitializedDBException;
 
     /**
      * Static access to pumps.
      * Get available pumps.
      * @return pumps
      */
-    public static List<Pump> getPumps(){
-          return (List<Pump>) NewDatabaseConnection.getDataBase().getPumps();
+    public static List<Pump> getPumps() throws NotInitializedDBException {
+          return (List<Pump>) DatabaseConnection.getDataBase().getPumps();
     }
 
     /**
@@ -88,8 +82,13 @@ public interface Pump {
      * @param id pump id k
      * @return
      */
-    public static Pump getPump(long id){
-        return NewDatabaseConnection.getDataBase().getPump(id);
+    public static Pump getPump(long id) {
+        try {
+            return DatabaseConnection.getDataBase().getPump(id);
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public default JSONObject asMesssage(){

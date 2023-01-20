@@ -1,6 +1,6 @@
 package com.example.cocktailmachine.data.db.tables;
 
-import static android.text.style.TtsSpan.TYPE_TEXT;
+import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_TEXT;
 import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_ID;
 
 import android.content.ContentValues;

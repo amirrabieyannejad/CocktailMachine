@@ -1,8 +1,8 @@
 package com.example.cocktailmachine.data.db.elements;
 
-public abstract class ImageUrlElement extends DataBaseElement {
-    private String url;
-    private long ownerID;
+public abstract class ImageUrlElement extends SQLDataBaseElement {
+    private String url = "";
+    private final long ownerID;
 
     public ImageUrlElement(long ID, String url, long ingredientID) {
         super();
@@ -25,4 +25,8 @@ public abstract class ImageUrlElement extends DataBaseElement {
         return this.ownerID;
     }
 
+    @Override
+    public boolean isAvailable() {
+        return false;
+    }
 }
