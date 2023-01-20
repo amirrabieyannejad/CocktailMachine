@@ -17,7 +17,7 @@ public class BasicRecipes {
         limettensaft.save();
         Topic ice = Topic.makeNew(" Crushed Eis", "klein gehaktes Eis");
         ice.save();
-
+        
         Recipe magarita = Recipe.makeNew("Margarita");
         magarita.addOrUpdate(tequila, 8);
         magarita.addOrUpdate(orangenlikör, 4);
