@@ -61,7 +61,17 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
     public void fill(int volume);
 
-
+    /**
+     * {"beer": 200}
+     * @return
+     * @throws JSONException
+     */
+    public default JSONObject asMesssage() throws JSONException {
+        //TODO: asMessage: https://github.com/johannareidt/CocktailMachine/blob/main/ProjektDokumente/esp/Services.md
+        JSONObject json = new JSONObject();
+        json.put(this.getIngredientName(), this.getVolume());
+        return json;
+    }
 
 
     //general
@@ -70,9 +80,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * Set up pumps with ingredients.
      * Load buffer with status quo from data base.
      */
-    public static void loadFromPumps() throws NotInitializedDBException{
+    public static void loadFromDB() throws NotInitializedDBException{
         DatabaseConnection.getDataBase().loadBufferWithAvailable();
-
     }
 
 
@@ -84,17 +93,15 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     public static void setPumps(JSONObject json) throws NotInitializedDBException, JSONException {
         JSONArray names = json.names();
         if(names==null){
-            return;
+            throw new JSONException("Ingredient Names not readable!");
         }
         int l = names.length();
         List<Pump> pumps = setOverrideEmptyPumps(l);
-        int volume = 0;
-        Ingredient ig;
 
         for (int i = 0; i< l; i++){
             String n = names.optString(i, null);
-            volume = json.getInt(n);
-            ig = DatabaseConnection.getDataBase().getIngredientWithExact(n);
+            int volume = json.getInt(n);
+            Ingredient ig = DatabaseConnection.getDataBase().getIngredientWithExact(n);
             if(ig == null){
                 ig = Ingredient.makeNew(n);
                 ig.save();
@@ -112,7 +119,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * Set up pumps with ingredients.
      * Load buffer with status quo from data base.
      */
-    public static void updatePumpStatus(JSONObject json) throws JSONException, NewlyEmptyIngredientException, NotInitializedDBException {
+    public static void updatePumpStatus(JSONObject json) throws JSONException, NotInitializedDBException {
         List<Pump> pumps = DatabaseConnection.getDataBase().getPumps();
         JSONArray t_names = json.names();
         if(t_names == null){
@@ -216,15 +223,13 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     }
 
 
-    public default JSONObject asMesssage() throws JSONException {
-        //TODO: asMessage: https://github.com/johannareidt/CocktailMachine/blob/main/ProjektDokumente/esp/Services.md
-        JSONObject json = new JSONObject();
-        json.put(this.getIngredientName(), this.getVolume());
-        return json;
-    }
-
+    /**
+     *  {"beer": 200, "lemonade": 2000, "orange juice": 2000}
+     * @return {"beer": 200, "lemonade": 2000, "orange juice": 2000}
+     * @throws JSONException
+     * @throws NotInitializedDBException
+     */
     public static JSONObject getAllPumpsStatus() throws JSONException, NotInitializedDBException {
-
         JSONObject json = new JSONObject();
         List<Pump> pumps = Pump.getPumps();
         for(Pump p: pumps){
