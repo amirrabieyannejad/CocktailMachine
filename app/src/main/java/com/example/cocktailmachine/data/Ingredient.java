@@ -91,8 +91,6 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      */
     public void pump(int volume) throws NewlyEmptyIngredientException;
 
-
-
     //general
     /**
      * Static Access to ingredients.
@@ -196,13 +194,6 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
     public static Ingredient makeNew(String name){
         return new SQLIngredient(name);
     }
-
-    public default JSONObject asMessage(){
-        //TODO: https://github.com/johannareidt/CocktailMachine/blob/main/ProjektDokumente/esp/Services.md
-        //https://github.com/johannareidt/CocktailMachine/blob/main/ProjektDokumente/esp/Services.md
-        return null;
-    }
-
 
 
 }
