@@ -5,34 +5,34 @@ import android.os.Build;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.Helper;
-import com.example.cocktailmachine.data.db.NeedsMoreIngredientException;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SQLIngredientPump extends SQLDataBaseElement {
-    private int fillLevel = -1;
+    private int volume = -1;
     private long pump = -1L;
     private long ingredient = -1L;
 
-    public SQLIngredientPump(int fillLevel, long pump, long ingredient) {
+    public SQLIngredientPump(int volume, long pump, long ingredient) {
         super();
-        this.fillLevel = fillLevel;
+        this.volume = volume;
         this.pump = pump;
         this.ingredient = ingredient;
     }
 
-    public SQLIngredientPump(long id, int fillLevel, long pump, long ingredient) {
+    public SQLIngredientPump(long id, int volume, long pump, long ingredient) {
         super(id);
-        this.fillLevel = fillLevel;
+        this.volume = volume;
         this.pump = pump;
         this.ingredient = ingredient;
     }
 
-    public int getFillLevel(){
-        return this.fillLevel;
+    public int getVolume(){
+        return this.volume;
     }
 
     public Pump getPump(){
@@ -48,23 +48,23 @@ public class SQLIngredientPump extends SQLDataBaseElement {
     public long getIngredientID() {return this.ingredient;}
 
     public boolean isPumpable(){
-        return this.fillLevel >0;
+        return this.volume >0;
     }
 
-    public boolean isPumpable(int milliliters){
-        return this.fillLevel >milliliters;
+    public boolean isPumpable(int volume){
+        return this.volume >volume;
     }
 
-    public void pump(int millimeters) throws NeedsMoreIngredientException {
-        if(this.fillLevel - millimeters < this.getPump().getMillilitersPumpedInMilliseconds()){
-            throw new NeedsMoreIngredientException(Ingredient.getIngredient(this.ingredient));
+    public void pump(int volume) throws NewlyEmptyIngredientException {
+        if(this.volume - volume <= 0){
+            throw new NewlyEmptyIngredientException(Ingredient.getIngredient(this.ingredient));
         }
-        this.fillLevel = this.fillLevel - millimeters;
+        this.volume = this.volume - volume;
         this.wasChanged();
     }
 
-    public void setFillLevel(int milliliters){
-        this.fillLevel = milliliters;
+    public void setVolume(int volume){
+        this.volume = volume;
     }
 
     @Override

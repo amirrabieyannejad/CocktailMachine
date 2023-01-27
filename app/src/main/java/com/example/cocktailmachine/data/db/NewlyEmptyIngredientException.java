@@ -1,15 +1,15 @@
 package com.example.cocktailmachine.data.db;
 
-import com.example.cocktailmachine.data.db.elements.SQLIngredient;
+import com.example.cocktailmachine.data.Ingredient;
 
 public class NewlyEmptyIngredientException extends Exception{
-    public SQLIngredient newSQLIngredient;
-    public NewlyEmptyIngredientException(SQLIngredient newSQLIngredient) {
-        super(newSQLIngredient.asMessage().toString());
-        this.newSQLIngredient = newSQLIngredient;
+    public Ingredient ingredient;
+    public NewlyEmptyIngredientException(Ingredient ingredient) {
+        super(ingredient.asMessage().toString());
+        this.ingredient = ingredient;
     }
 
-    public SQLIngredient getIngredient() {
-        return newSQLIngredient;
+    public Ingredient getIngredient() {
+        return this.ingredient;
     }
 }

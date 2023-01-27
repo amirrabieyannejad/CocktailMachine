@@ -10,11 +10,14 @@ import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedExcept
 import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
 
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     //Getter
@@ -47,7 +50,15 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * Get ingredients ids and their associated pumptimes in milliseconds
      * @return hashmap ids, pump time
      */
-    public HashMap<Long, Integer> getIngredientPumpTime();
+    public HashMap<Long, Integer> getIngredientVolumes();
+
+    /**
+     * Get ingredients names and their associated pumptimes in milliseconds
+     * @return hashmap name, pump time
+     */
+    public List<Map.Entry<String, Integer>> getIngredientNameNVolumes();
+
+
 
     /**
      * Get specific pump time for ingredient with id k
@@ -56,7 +67,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @throws TooManyTimesSettedIngredientEcxception There are multiple times setted. only one time is allowed.
      * @throws NoSuchIngredientSettedException There is no such ingredient. The id is not known.
      */
-    public int getSpecificIngredientPumpTime(long ingredientId) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException;
+    public int getSpecificIngredientVolume(long ingredientId) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException;
 
     /**
      * Get specific pump time for ingredient k
@@ -65,7 +76,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @throws TooManyTimesSettedIngredientEcxception There are multiple times setted. only one time is allowed.
      * @throws NoSuchIngredientSettedException There is no such ingredient. The id is not known.
      */
-    public int getSpecificIngredientPumpTime(Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException;
+    public int getSpecificIngredientVolume(Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException;
 
     /**
      * Is alcoholic?
@@ -132,10 +143,26 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
     //this Instance
 
+    default JSONArray getLiquids(){
+        JSONArray json = new JSONArray();
+        for(Map.Entry<String, Integer> e:this.getIngredientNameNVolumes()){
+            JSONArray j = new JSONArray();
+            j.put(e.getKey());
+            j.put(e.getValue());
+            json.put(j);
+        }
+        return json;
+    }
 
-    public default JSONObject asMessage(){
-        //TODO
-        return new JSONObject();
+
+    public default JSONObject asMessage() throws JSONException {
+        //TODO: https://github.com/johannareidt/CocktailMachine/blob/main/ProjektDokumente/esp/Services.md
+
+        JSONObject json = new JSONObject();
+        json.put("name", this.getName());
+        json.put("liquids", this.getLiquids());
+        return json;
+
     }
 
 
@@ -154,6 +181,17 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
 
     //general
+
+    public static JSONArray getAllRecipesAsMessage() throws NotInitializedDBException, JSONException {
+        JSONArray json = new JSONArray();
+        for(Recipe r: getRecipes()){
+            json.put(r.asMessage());
+        }
+        return json;
+    }
+
+
+    public void setRecipes(JSONObject json) throws NotInitializedDBException;
 
     /**
      * Static access to recipes.
@@ -187,7 +225,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      */
     public static List<Recipe> getRecipes(List<Long> ids) {
         try {
-            return (List<Recipe>) DatabaseConnection.getDataBase().getRecipes(ids);
+            return DatabaseConnection.getDataBase().getRecipes(ids);
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
             return new ArrayList<>();

@@ -5,8 +5,8 @@ import androidx.annotation.Nullable;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
-import com.example.cocktailmachine.data.db.NeedsMoreIngredientException;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 
 import org.json.JSONException;
@@ -26,7 +26,16 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
     //private long pump;
     private int color = -1;
 
-    private SQLIngredientPump bunker;
+    private SQLIngredientPump ingredientPump;
+
+    public SQLIngredient(String name) {
+        this.name = name;
+        this.available = false;
+        //this.fluidInMillimeters = -1;
+        //this.pump = -1L;
+        this.ingredientPump = null;
+        //this.loadUrls();
+    }
 
     public SQLIngredient(String name, boolean alcoholic, int color) {
         this.name = name;
@@ -35,25 +44,25 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         this.available = false;
         //this.fluidInMillimeters = -1;
         //this.pump = -1L;
-        this.bunker = null;
+        this.ingredientPump = null;
         //this.loadUrls();
     }
 
     public SQLIngredient(String name,
                          boolean alcoholic,
                          boolean available,
-                         int fluidInMillimeters,
+                         int volume,
                          long pump,
                          int color){
         super();
         this.name = name;
         this.alcoholic = alcoholic;
         this.available = available;
-        //this.fluidInMillimeters = fluidInMillimeters;
+        //this.volume = volume;
         //this.pump = pump;
         this.color = color;
         //this.loadUrls();
-        this.bunker = new SQLIngredientPump(fluidInMillimeters, pump, this.getID());
+        this.ingredientPump = new SQLIngredientPump(volume, pump, this.getID());
     }
 
     public SQLIngredient(long ID,
@@ -71,19 +80,19 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
                          String name,
                          boolean alcoholic,
                          boolean available,
-                         int fluidInMillimeters,
+                         int volume,
                          long pump,
                          int color) {
         super(ID);
         this.name = name;
         this.alcoholic = alcoholic;
         this.available = available;
-        //this.fluidInMillimeters = fluidInMillimeters;
+        //this.volume = volume;
         //this.pump = pump;
         this.color = color;
         //this.loadUrls();
 
-        this.bunker = new SQLIngredientPump(fluidInMillimeters, pump, this.getID());
+        this.ingredientPump = new SQLIngredientPump(volume, pump, this.getID());
     }
 
     public SQLIngredient(long ID,
@@ -91,7 +100,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
                          List<String> imageUrls,
                          boolean alcoholic,
                          boolean available,
-                         int fluidInMillimeters,
+                         int volume,
                          long pump,
                          int color) {
         super();
@@ -100,11 +109,11 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         this.imageUrls = imageUrls;
         this.alcoholic = alcoholic;
         this.available = available;
-        //this.fluidInMillimeters = fluidInMillimeters;
+        //this.volume = volume;
         //this.pump = pump;
         this.color = color;
         //this.loadUrls();
-        this.bunker = new SQLIngredientPump(fluidInMillimeters, pump, this.getID());
+        this.ingredientPump = new SQLIngredientPump(volume, pump, this.getID());
     }
 
 
@@ -156,14 +165,14 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
     }
 
     @Override
-    public int getFillLevel() {
+    public int getVolume() {
         //return this.fluidInMillimeters;
-        return this.bunker.getFillLevel();
+        return this.ingredientPump.getVolume();
     }
 
     @Override
     public Pump getPump() {
-        return this.bunker.getPump();
+        return this.ingredientPump.getPump();
     }
 
     @Override
@@ -173,28 +182,28 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
 
     //Setter / Changer
     @Override
-    public void setPump(Long pump, int fluidInMillimeters) {
+    public void setPump(Long pump, int volume) {
         this.available = true;
         //this.pump = pump;
-        //this.fluidInMillimeters = fluidInMillimeters;
+        //this.volume = volume;
 
         Pump pp = Pump.getPump(pump);
         assert pp != null;
         pp.setCurrentIngredient(this);
-        this.bunker = new SQLIngredientPump(fluidInMillimeters, pump, this.getID());
+        this.ingredientPump = new SQLIngredientPump(volume, pump, this.getID());
         this.wasChanged();
     }
 
     @Override
-    public void pump(int millimeters) throws NeedsMoreIngredientException {
+    public void pump(int volume) throws NewlyEmptyIngredientException{
         //if(this.fluidInMillimeters - millimeters < this.getPump().getMillilitersPumpedInMilliseconds()){
         //    throw new NewEmptyIngredientException(this);
         //}
         //this.fluidInMillimeters = this.fluidInMillimeters - millimeters;
         //this.wasChanged();
         try {
-            this.bunker.pump(millimeters);
-        } catch (NeedsMoreIngredientException e) {
+            this.ingredientPump.pump(volume);
+        } catch (NewlyEmptyIngredientException e) {
             e.printStackTrace();
             this.available = false;
             throw e;
@@ -226,7 +235,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
             json.put("available", this.available);
             json.put("imageUrls", this.imageUrls.toString());
             if(this.available) {
-                json.put("pumpID", this.bunker.getPumpID());
+                json.put("pumpID", this.ingredientPump.getPumpID());
             }
             return json;
         }catch (JSONException e){

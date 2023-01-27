@@ -23,12 +23,12 @@ import java.util.stream.Collectors;
 public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     private String name = "";
     //private List<Long> ingredientIds;
-    //private HashMap<Long, Integer> ingredientPumpTime;
+    //private HashMap<Long, Integer> ingredientVolume;
     private boolean alcoholic;
     private boolean available = false;
     private List<SQLRecipeImageUrlElement> imageUrls = new ArrayList<>();
     private List<Long> topics = new ArrayList<>();
-    private List<SQLRecipeIngredient> pumpTimes = new ArrayList<>();
+    private List<SQLRecipeIngredient> ingredientVolumes = new ArrayList<>();
     private boolean loaded = false;
 
     public SQLRecipe(String name) {
@@ -54,7 +54,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
     public SQLRecipe(long ID,
                      String name,
-                     HashMap<Long, Integer> ingredientPumpTimes,
+                     HashMap<Long, Integer> ingredientVolumes,
                      boolean alcoholic,
                      boolean available,
                      List<SQLRecipeImageUrlElement> imageUrls,
@@ -65,7 +65,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         this.available = available;
         this.imageUrls = imageUrls;
         this.topics = topics;
-        this.addOrUpdateIDs(ingredientPumpTimes);
+        this.addOrUpdateIDs(ingredientVolumes);
         this.loaded = true;
     }
 
@@ -75,14 +75,14 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
                      boolean available,
                      List<SQLRecipeImageUrlElement> imageUrls,
                      List<Long> topics,
-                     HashMap<Ingredient, Integer> ingredientPumpTimes) {
+                     HashMap<Ingredient, Integer> ingredientVolumes) {
         super(ID);
         this.name = name;
         this.alcoholic = alcoholic;
         this.available = available;
         this.imageUrls = imageUrls;
         this.topics = topics;
-        this.addOrUpdateElements(ingredientPumpTimes);
+        this.addOrUpdateElements(ingredientVolumes);
         this.loaded = true;
     }
 
@@ -92,7 +92,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     private void load() throws NotInitializedDBException {
         this.imageUrls = DatabaseConnection.getDataBase().getUrlElements(this);
         this.topics = DatabaseConnection.getDataBase().getTopicIDs(this);
-        this.pumpTimes = DatabaseConnection.getDataBase().getPumpTimes(this);
+        this.ingredientVolumes = DatabaseConnection.getDataBase().getIngredientVolumes(this);
         this.loaded = true;
 
     }
@@ -107,12 +107,12 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     @Override
     public List<Long> getIngredientIds() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return this.pumpTimes
+            return this.ingredientVolumes
                     .stream()
                     .map(SQLRecipeIngredient::getIngredientID)
                     .collect(Collectors.toList());
         }
-        return Helper.getrecipeingredienthelper().getIds(this.pumpTimes);
+        return Helper.getrecipeingredienthelper().getIds(this.ingredientVolumes);
 
     }
 
@@ -122,24 +122,24 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     }
 
     @Override
-    public HashMap<Long, Integer> getIngredientPumpTime() {
+    public HashMap<Long, Integer> getIngredientVolumes() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return (HashMap<Long, Integer>)
-                    this.pumpTimes.stream()
+                    this.ingredientVolumes.stream()
                             .collect( Collectors
                                     .toMap(SQLRecipeIngredient::getID,
-                                            SQLRecipeIngredient::getPumpTime));
+                                            SQLRecipeIngredient::getVolume));
         }
-        return Helper.getrecipeingredienthelper().getIngredientPumpTime(this.pumpTimes);
+        return Helper.getrecipeingredienthelper().getIngredientVolumes(this.ingredientVolumes);
     }
 
     private List<SQLRecipeIngredient> getRecipeIngredient(long ingredientID)
             throws NoSuchIngredientSettedException, TooManyTimesSettedIngredientEcxception {
         List<SQLRecipeIngredient> res = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            res = this.pumpTimes.stream().filter(ri-> ri.getIngredientID()==ingredientID).collect(Collectors.toList());
+            res = this.ingredientVolumes.stream().filter(ri-> ri.getIngredientID()==ingredientID).collect(Collectors.toList());
         }else{
-            res = Helper.getrecipeingredienthelper().getWithIdAsList(this.pumpTimes, ingredientID);
+            res = Helper.getrecipeingredienthelper().getWithIdAsList(this.ingredientVolumes, ingredientID);
         }
         if(res.size()==0){
             throw new NoSuchIngredientSettedException(this, ingredientID);
@@ -150,15 +150,15 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     }
 
     @Override
-    public int getSpecificIngredientPumpTime(long ingredientId)
+    public int getSpecificIngredientVolume(long ingredientId)
             throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
-        return this.getRecipeIngredient(ingredientId).get(0).getPumpTime();
+        return this.getRecipeIngredient(ingredientId).get(0).getVolume();
     }
 
     @Override
-    public int getSpecificIngredientPumpTime(Ingredient ingredient)
+    public int getSpecificIngredientVolume(Ingredient ingredient)
             throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
-        return this.getSpecificIngredientPumpTime(ingredient.getID());
+        return this.getSpecificIngredientVolume(ingredient.getID());
     }
 
     @Override
@@ -203,7 +203,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         if(this.getIngredientIds().contains(ingredientId)){
             throw new AlreadySetIngredientException(this, ingredientId);
         }
-        this.pumpTimes.add(new SQLRecipeIngredient(ingredientId, this.getID(), timeInMilliseconds));
+        this.ingredientVolumes.add(new SQLRecipeIngredient(ingredientId, this.getID(), timeInMilliseconds));
     }
 
     @Override
@@ -221,28 +221,28 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     @Override
     public void addOrUpdate(long ingredientId, int timeInMilliseconds) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            if(this.pumpTimes.stream()
+            if(this.ingredientVolumes.stream()
                     .filter(pt -> pt.getIngredientID() == ingredientId)
-                    .peek(pt -> pt.setPumpTime(timeInMilliseconds)).count() == 0){
-                this.pumpTimes.add(new SQLRecipeIngredient(ingredientId, this.getID(), timeInMilliseconds));
+                    .peek(pt -> pt.setVolume(timeInMilliseconds)).count() == 0){
+                this.ingredientVolumes.add(new SQLRecipeIngredient(ingredientId, this.getID(), timeInMilliseconds));
             }
         }
         this.wasChanged();
     }
 
-    public void addOrUpdateIDs(HashMap<Long, Integer> pumpTimes){
+    public void addOrUpdateIDs(HashMap<Long, Integer> ingredientVolumes){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            pumpTimes.forEach(this::addOrUpdate);
+            ingredientVolumes.forEach(this::addOrUpdate);
         }else{
-            this.pumpTimes = Helper.updateWithIds(this.getID(), this.pumpTimes, pumpTimes);
+            this.ingredientVolumes = Helper.updateWithIds(this.getID(), this.ingredientVolumes, ingredientVolumes);
         }
     }
 
-    public void addOrUpdateElements(HashMap<Ingredient, Integer> pumpTimes){
+    public void addOrUpdateElements(HashMap<Ingredient, Integer> ingredientVolumes){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            pumpTimes.forEach(this::addOrUpdate);
+            ingredientVolumes.forEach(this::addOrUpdate);
         }else{
-            this.pumpTimes = Helper.updateWithIngredients(this.getID(), this.pumpTimes, pumpTimes);
+            this.ingredientVolumes = Helper.updateWithIngredients(this.getID(), this.ingredientVolumes, ingredientVolumes);
         }
     }
 
@@ -282,7 +282,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     public void removeIngredient(long ingredientId) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 
-            this.pumpTimes.removeAll(this.pumpTimes.stream()
+            this.ingredientVolumes.removeAll(this.ingredientVolumes.stream()
                     .filter(ri -> ri.getIngredientID() == ingredientId)
                     .peek(sqlRecipeIngredient -> {
                         try {
@@ -294,10 +294,10 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
                     .collect(Collectors.toList()));
 
         }else {
-            this.pumpTimes.removeAll(
+            this.ingredientVolumes.removeAll(
                     Helper.getrecipeingredienthelper()
                             .getDeleteWithIdAsList(
-                                    this.pumpTimes,
+                                    this.ingredientVolumes,
                                     ingredientId));
         }
     }

@@ -1,7 +1,6 @@
 package com.example.cocktailmachine.data;
 
 
-import com.example.cocktailmachine.data.db.NeedsMoreIngredientException;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
@@ -61,7 +60,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * Still available liquid/fluid in milliliter.
      * @return milliliter of ingredient
      */
-    public int getFillLevel();
+    public int getVolume();
 
     /**
      * Get Pump representative class, where the ingredient is within.
@@ -82,15 +81,15 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      */
     public void addImageUrl(String url);
 
-    public void setPump(Long pump, int fluidInMillimeters);
+    public void setPump(Long pump, int volume);
 
     //use
     /**
      * Pump m milliliters.
-     * @param millimeters m
+     * @param volume m
      * @throws NewlyEmptyIngredientException ingredient is empty.
      */
-    public void pump(int millimeters) throws NewlyEmptyIngredientException, NeedsMoreIngredientException;
+    public void pump(int volume) throws NewlyEmptyIngredientException;
 
 
 
@@ -135,13 +134,30 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
     }
 
     /**
+     * Static Access to ingredients.
+     * Get available ingredients with name k.
+     * @param name k
+     * @return
+     */
+    public static Ingredient getIngredient(String name) {
+        try {
+            return DatabaseConnection.getDataBase().getIngredientWithExact(name);
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+
+    /**
      * Static access to ingredients.
      * Make new instance.
      * Set up with direct link to pump.
      * @param name name
      * @param alcoholic alcoholic?
      * @param available available?
-     * @param fluidInMillimeters milliliter of ingredient in pump
+     * @param volume milliliter of ingredient in pump
      * @param pump pump id
      * @param color color in Integer representation
      * @return new Ingredient instance
@@ -149,10 +165,10 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
     public static Ingredient makeNew(String name,
                                      boolean alcoholic,
                                      boolean available,
-                                     int fluidInMillimeters,
+                                     int volume,
                                      long pump,
                                      int color){
-        return new SQLIngredient(name, alcoholic, available, fluidInMillimeters, pump, color);
+        return new SQLIngredient(name, alcoholic, available, volume, pump, color);
     }
 
     /**
@@ -170,8 +186,20 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
         return new SQLIngredient(name, alcoholic, color);
     }
 
+    /**
+     * Static access to ingredients.
+     * Make new instance.
+     * Set up without link to a pump.
+     * @param name name
+     * @return  new Ingredient instance
+     */
+    public static Ingredient makeNew(String name){
+        return new SQLIngredient(name);
+    }
+
     public default JSONObject asMessage(){
-        //TODO
+        //TODO: https://github.com/johannareidt/CocktailMachine/blob/main/ProjektDokumente/esp/Services.md
+        //https://github.com/johannareidt/CocktailMachine/blob/main/ProjektDokumente/esp/Services.md
         return null;
     }
 

@@ -101,10 +101,10 @@ public class Helper<T extends DataBaseElement> {
         return res;
     }
 
-    public HashMap<Long, Integer> getIngredientPumpTime(List<SQLRecipeIngredient> recipeIngredients){
+    public HashMap<Long, Integer> getIngredientVolumes(List<SQLRecipeIngredient> recipeIngredients){
         HashMap<Long, Integer> res = new HashMap<>();
         for(SQLRecipeIngredient ri :recipeIngredients) {
-            res.put(ri.getIngredientID(),ri.getPumpTime());
+            res.put(ri.getIngredientID(),ri.getVolume());
         }
         return res;
     }
@@ -247,8 +247,8 @@ public class Helper<T extends DataBaseElement> {
         for(SQLRecipeIngredient ri : old){
             if(updates.containsKey(ri.getID())){
                 try {
-                    int pumptime = updates.get(ri.getID());
-                    ri.setPumpTime(pumptime);
+                    int volume = updates.get(ri.getID());
+                    ri.setVolume(volume);
                     updates.remove(ri.getID());
                     ri.save();
                 }catch (NullPointerException e){
@@ -303,21 +303,20 @@ public class Helper<T extends DataBaseElement> {
         }
     }
 
-    public static boolean ingredientAvailable(HashMap<Long, Integer> ingredientPumpTime){
-        List<Long> ingredientIds = new ArrayList<>(ingredientPumpTime.keySet());
+    public static boolean ingredientAvailable(HashMap<Long, Integer> ingredientVolume){
+        List<Long> ingredientIds = new ArrayList<>(ingredientVolume.keySet());
         List<Ingredient> ingredients = null;
         try {
             ingredients = DatabaseConnection.getDataBase().getIngredients(ingredientIds);
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
+            return false;
         }
-        boolean res = true;
         for(Ingredient ingredient: ingredients){
             Long id = ingredient.getID();
             try {
-                int pumpTime = ingredientPumpTime.get(id);
-                res = res && ingredient.getFillLevel()>pumpTime;
-                if(!res){
+                int volume = ingredientVolume.get(id);
+                if(ingredient.getVolume()<=volume){
                     return false;
                 }
             }catch (NullPointerException ignored){
@@ -331,6 +330,16 @@ public class Helper<T extends DataBaseElement> {
         List<Ingredient> res = new ArrayList<>();
         for(Ingredient r: ingredients){
             if(r.getName().contains(needle)) {
+                res.add(r);
+            }
+        }
+        return res;
+    }
+
+    public static List<Ingredient> ingredientWitName(List<Ingredient> ingredients, String name){
+        List<Ingredient> res = new ArrayList<>();
+        for(Ingredient r: ingredients){
+            if(r.getName()==name) {
                 res.add(r);
             }
         }

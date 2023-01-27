@@ -105,18 +105,26 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     //LOAD
+
+    public void loadForSetUp() {
+        this.emptyUpPumps();
+        this.ingredients = this.loadAllAvailableIngredients();
+
+    }
+
+    private List<Ingredient> loadAllAvailableIngredients() {
+
+        List<? extends Ingredient> res = Tables.TABLE_INGREDIENT.getAllElements(this.getReadableDatabase());
+        return (List<Ingredient>) res;
+    }
+
     public void loadBufferWithAvailable() {
         this.pumps = this.loadPumps();
         this.ingredientPumps = this.loadIngredientPumps();
         this.ingredients = this.loadAvailableIngredients();
         this.recipes = this.loadAvailableRecipes();
         this.topics = this.loadTopics();
-        this.recipeIngredients = this.loadPumpTimes();
-    }
-
-    public void loadEmpty() {
-        this.setUpEmptyPumps();
-        this.loadAvailableIngredients();
+        this.recipeIngredients = this.loadIngredientVolumes();
     }
 
     public List<Recipe> loadAvailableRecipes() {
@@ -147,7 +155,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return (List<Topic>) res;
     }
 
-    private List<SQLRecipeIngredient> loadPumpTimes(){
+    private List<SQLRecipeIngredient> loadIngredientVolumes(){
         return Tables.TABLE_RECIPE_INGREDIENT.getAvailable(this.getReadableDatabase(), this.recipes);
 
     }
@@ -175,15 +183,15 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     //CHECKER
 
-    public boolean checkAvailabilityOfAllIngredients(HashMap<Long, Integer> ingredientPumpTime) {
+    public boolean checkAvailabilityOfAllIngredients(HashMap<Long, Integer> ingredientVolume) {
         final List<Boolean> availables = new ArrayList<>();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            ingredientPumpTime.forEach((id, time)->{
-                availables.add(this.getIngredient(id).getFillLevel()>time);
+            ingredientVolume.forEach((id, time)->{
+                availables.add(this.getIngredient(id).getVolume()>time);
             });
             return availables.stream().reduce(true, (b1,b2)-> b1 && b2);
         }
-        return Helper.ingredientAvailable(ingredientPumpTime);
+        return Helper.ingredientAvailable(ingredientVolume);
     }
 
 
@@ -289,6 +297,19 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return Helper.ingredientWithNeedleInName(this.ingredients, needle);
     }
 
+    public Ingredient getIngredientWithExact(String name) {
+        List<Ingredient> ingredients;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            ingredients =  this.ingredients.stream().filter(i->i.getName()==name).collect(Collectors.toList());
+        }else {
+            ingredients = Helper.ingredientWithNeedleInName(this.ingredients, name);
+        }
+        if(ingredients.isEmpty()){
+            return null;
+        }
+        return ingredients.get(0);
+    }
+
     public UserPrivilegeLevel getPrivilege() {
         return this.privilege;
     }
@@ -375,7 +396,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return Helper.gettopichelper().getIds(this.getTopics(newSQLRecipe));
     }
 
-    public List<SQLRecipeIngredient> getPumpTimes(SQLRecipe newSQLRecipe) {
+    public List<SQLRecipeIngredient> getIngredientVolumes(SQLRecipe newSQLRecipe) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.recipeIngredients
                     .stream()
@@ -534,6 +555,12 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         Tables.TABLE_PUMP.deleteElement(this.getWritableDatabase(), pump.getID());
         Tables.TABLE_INGREDIENT_PUMP.deletePump(this.getWritableDatabase(), pump.getID());
         this.pumps.remove(pump);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            this.ingredientPumps.removeIf(ip->ip.getPumpID()==pump.getID());
+        }else {
+            this.ingredientPumps = Helper.removeIfPumpID(this.ingredientPumps, pump.getID());
+        }
+
     }
 
 

@@ -6,20 +6,20 @@ import com.example.cocktailmachine.data.db.NotInitializedDBException;
 public class SQLRecipeIngredient extends SQLDataBaseElement {
     private long ingredientID = -1L;
     private long recipeID = -1L;
-    private int pumpTime = -1;
+    private int volume = -1;
 
-    public SQLRecipeIngredient(long ingredientID, long recipeID, int pumpTime) {
+    public SQLRecipeIngredient(long ingredientID, long recipeID, int volume) {
         super();
         this.ingredientID = ingredientID;
         this.recipeID = recipeID;
-        this.pumpTime = pumpTime;
+        this.volume = volume;
     }
 
-    public SQLRecipeIngredient(long id, long ingredientID, long recipeID, int pumpTime) {
+    public SQLRecipeIngredient(long id, long ingredientID, long recipeID, int volume) {
         super(id);
         this.ingredientID = ingredientID;
         this.recipeID = recipeID;
-        this.pumpTime = pumpTime;
+        this.volume = volume;
     }
 
     public long getIngredientID() {
@@ -30,12 +30,12 @@ public class SQLRecipeIngredient extends SQLDataBaseElement {
         return recipeID;
     }
 
-    public int getPumpTime() {
-        return pumpTime;
+    public int getVolume() {
+        return volume;
     }
 
-    public void setPumpTime(int pumpTime) {
-        this.pumpTime = pumpTime;
+    public void setVolume(int volume) {
+        this.volume = volume;
         this.wasChanged();
     }
 

@@ -19,12 +19,12 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
     public static final String TABLE_NAME = "IngredientPump";
     public static final String COLUMN_NAME_INGREDIENT_ID = "IngredientID";
     public static final String COLUMN_NAME_PUMP_ID = "PumpID";
-    public static final String COLUMN_NAME_FILL_LEVEL = "FillLevel";
+    public static final String COLUMN_NAME_VOLUME = "volume";
 
     public static final String COLUMN_TYPE_ID = TYPE_ID;
     public static final String COLUMN_TYPE_INGREDIENT_ID = TYPE_LONG;
     public static final String COLUMN_TYPE_PUMP_ID = TYPE_LONG;
-    public static final String COLUMN_TYPE_FILL_LEVEL = TYPE_INTEGER;
+    public static final String COLUMN_TYPE_VOLUME = TYPE_INTEGER;
 
     @Override
     public String getName() {
@@ -37,7 +37,7 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
         columns.add(this._ID);
         columns.add(COLUMN_NAME_PUMP_ID);
         columns.add(COLUMN_NAME_INGREDIENT_ID);
-        columns.add(COLUMN_NAME_FILL_LEVEL
+        columns.add(COLUMN_NAME_VOLUME
         );
         return columns;
     }
@@ -48,7 +48,7 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
         columns.add(COLUMN_TYPE_ID);
         columns.add(COLUMN_TYPE_INGREDIENT_ID);
         columns.add(COLUMN_TYPE_PUMP_ID);
-        columns.add(COLUMN_TYPE_FILL_LEVEL);
+        columns.add(COLUMN_TYPE_VOLUME);
         return columns;
     }
 
@@ -57,7 +57,7 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
         long this_id = cursor.getLong(cursor.getColumnIndexOrThrow(this._ID));
         long i_id = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_NAME_INGREDIENT_ID));
         long p_id = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_NAME_PUMP_ID));
-        int fill_level = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NAME_FILL_LEVEL));
+        int fill_level = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NAME_VOLUME));
         return new SQLIngredientPump(this_id, fill_level, p_id, i_id);
     }
 
@@ -66,7 +66,7 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_NAME_INGREDIENT_ID, element.getIngredientID());
         cv.put(COLUMN_NAME_PUMP_ID, element.getPumpID());
-        cv.put(COLUMN_NAME_FILL_LEVEL, element.getFillLevel());
+        cv.put(COLUMN_NAME_VOLUME, element.getVolume());
         return cv;
     }
 

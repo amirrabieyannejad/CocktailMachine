@@ -14,7 +14,6 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,11 +69,11 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_NAME_RECIPE_ID, element.getRecipeID());
         cv.put(COLUMN_NAME_INGREDIENT_ID, element.getIngredientID());
-        cv.put(COLUMN_NAME_PUMP_TIME, element.getPumpTime());
+        cv.put(COLUMN_NAME_PUMP_TIME, element.getVolume());
         return cv;
     }
 
-    public List<SQLRecipeIngredient> getPumpTime(SQLiteDatabase db, SQLRecipe recipe) {
+    public List<SQLRecipeIngredient> getIngredientVolumes(SQLiteDatabase db, SQLRecipe recipe) {
         try {
             return this.getElementsWith(db, COLUMN_TYPE_RECIPE_ID, Long.toString(recipe.getID()));
         } catch (NoSuchColumnException e) {

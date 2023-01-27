@@ -5,57 +5,55 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 
-public class SQLPump extends SQLDataBaseElement implements Pump {
-    private int millilitersPumpedInMilliseconds = -1;
-    private SQLIngredientPump bunker = null;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-    public SQLPump(long ID, int millilitersPumpedInMilliseconds) {
+public class SQLPump extends SQLDataBaseElement implements Pump {
+    private int minimumPumpVolume = -1;
+    private SQLIngredientPump ingredientPump = null;
+
+    public SQLPump(){
+        super();
+    }
+
+    public SQLPump(long ID, int minimumPumpVolume) {
         super(ID);
         this.wasSaved();
-        this.millilitersPumpedInMilliseconds = millilitersPumpedInMilliseconds;
+        this.minimumPumpVolume = minimumPumpVolume;
     }
 
     @Override
-    public int getMillilitersPumpedInMilliseconds() {
-        return this.millilitersPumpedInMilliseconds;
+    public int getMinimumPumpVolume() {
+        return this.minimumPumpVolume;
     }
 
     @Override
     public Ingredient getCurrentIngredient() {
-        return this.bunker.getIngredient();
+        return this.ingredientPump.getIngredient();
     }
 
     @Override
     public void setCurrentIngredient(Ingredient ingredient) {
         try {
-            this.bunker.delete();
+            this.ingredientPump.delete();
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
         }
-        this.bunker = new SQLIngredientPump(-1, this.getID(), ingredient.getID());
+        this.ingredientPump = new SQLIngredientPump(-1, this.getID(), ingredient.getID());
     }
 
     @Override
     public void empty() {
-        this.bunker = null;
+        this.ingredientPump = null;
     }
 
     @Override
-    public void fill(int milliliters) {
-        this.bunker.setFillLevel(milliliters);
+    public void fill(int volume) {
+        this.ingredientPump.setVolume(volume);
     }
 
     //General
-    @Override
-    public void setPumps() throws NotInitializedDBException{
-        //TODO:????
-        DatabaseConnection.getDataBase().loadBufferWithAvailable();
-    }
 
-    @Override
-    public void setOverrideEmptyPumps(int numberOfPumps) throws NotInitializedDBException {
-        DatabaseConnection.getDataBase().loadEmpty();
-    }
 
 
     @Override
