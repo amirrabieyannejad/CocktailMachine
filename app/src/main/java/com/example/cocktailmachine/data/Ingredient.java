@@ -195,5 +195,13 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
         return new SQLIngredient(name);
     }
 
+    public static Ingredient searchOrNew(String name){
+        Ingredient ingredient = Ingredient.getIngredient(name);
+        if(ingredient == null){
+            return Ingredient.makeNew(name);
+        }
+        return ingredient;
+    }
+
 
 }

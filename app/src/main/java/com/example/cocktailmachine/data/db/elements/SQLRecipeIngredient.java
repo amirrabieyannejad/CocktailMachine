@@ -1,5 +1,7 @@
 package com.example.cocktailmachine.data.db.elements;
 
+import com.example.cocktailmachine.data.Ingredient;
+import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 
@@ -24,6 +26,10 @@ public class SQLRecipeIngredient extends SQLDataBaseElement {
 
     public long getIngredientID() {
         return ingredientID;
+    }
+
+    public Ingredient getIngredient() {
+        return Ingredient.getIngredient(this.ingredientID);
     }
 
     public long getRecipeID() {

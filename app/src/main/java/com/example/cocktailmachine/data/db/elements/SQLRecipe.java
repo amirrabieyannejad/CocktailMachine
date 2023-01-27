@@ -6,18 +6,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.cocktailmachine.data.Ingredient;
+import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SQLRecipe extends SQLDataBaseElement implements Recipe {
@@ -133,6 +137,18 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         return Helper.getrecipeingredienthelper().getIngredientVolumes(this.ingredientVolumes);
     }
 
+    @Override
+    public List<Map.Entry<String, Integer>> getIngredientNameNVolumes() {
+        List<Map.Entry<String, Integer>> res = new ArrayList<>();
+        for(SQLRecipeIngredient ri:this.ingredientVolumes){
+            res.add(
+                    new AbstractMap.SimpleEntry<String, Integer>(
+                            ri.getIngredient().getName(),
+                            ri.getVolume()));
+        }
+        return res;
+    }
+
     private List<SQLRecipeIngredient> getRecipeIngredient(long ingredientID)
             throws NoSuchIngredientSettedException, TooManyTimesSettedIngredientEcxception {
         List<SQLRecipeIngredient> res = null;
@@ -207,7 +223,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     }
 
     @Override
-    public void addOrUpdate(Ingredient ingredient, int timeInMilliseconds) {
+    public void addOrUpdate(Ingredient ingredient, int volume) {
         if(ingredient.getID()==-1L){
             try {
                 ingredient.save();
@@ -215,16 +231,16 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
                 e.printStackTrace();
             }
         }
-        this.addOrUpdate(ingredient.getID(), timeInMilliseconds);
+        this.addOrUpdate(ingredient.getID(), volume);
     }
 
     @Override
-    public void addOrUpdate(long ingredientId, int timeInMilliseconds) {
+    public void addOrUpdate(long ingredientId, int volume) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if(this.ingredientVolumes.stream()
                     .filter(pt -> pt.getIngredientID() == ingredientId)
-                    .peek(pt -> pt.setVolume(timeInMilliseconds)).count() == 0){
-                this.ingredientVolumes.add(new SQLRecipeIngredient(ingredientId, this.getID(), timeInMilliseconds));
+                    .peek(pt -> pt.setVolume(volume)).count() == 0){
+                this.ingredientVolumes.add(new SQLRecipeIngredient(ingredientId, this.getID(), volume));
             }
         }
         this.wasChanged();
@@ -335,6 +351,28 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
             });
         }else{
             this.imageUrls = (List<SQLRecipeImageUrlElement>) Helper.getImageUrlElementhelper().removeIfAndDeleteExtended(this.imageUrls, urlId);
+        }
+    }
+
+    @Override
+    public void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException {
+        //[{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}, {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
+        for(int i=0; i<json.length(); i++){
+            JSONObject j = json.optJSONObject(i);
+            Recipe temp = Recipe.searchOrNew(j.optString("name", "Default"));
+            JSONArray a = j.optJSONArray("liquids");
+            if(a != null){
+                for(int l=0; l<a.length(); l++){
+                    JSONArray liq = a.optJSONArray(l);
+                    if(liq!=null){
+                        String name = a.getString(l);
+                        int volume = a.getInt(1);
+                        Ingredient ig = Ingredient.searchOrNew(name);
+                        temp.addOrUpdate(ig, volume);
+                    }
+                }
+            }
+            temp.save();
         }
     }
 

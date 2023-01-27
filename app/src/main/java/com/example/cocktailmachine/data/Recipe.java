@@ -107,15 +107,15 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     /**
      * Adds ingredient with quantity measured in needed pump time.
      * @param ingredient
-     * @param timeInMilliseconds
+     * @param volume
      */
-    public void addOrUpdate(Ingredient ingredient, int timeInMilliseconds);
+    public void addOrUpdate(Ingredient ingredient, int volume);
     /**
      * Adds ingredient with quantity measured in needed pump time.
      * @param ingredientId
-     * @param timeInMilliseconds
+     * @param volume
      */
-    public void addOrUpdate(long ingredientId, int timeInMilliseconds);
+    public void addOrUpdate(long ingredientId, int volume);
 
     public void addOrUpdate(Topic topic);
 
@@ -154,7 +154,6 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         return json;
     }
 
-
     public default JSONObject asMessage() throws JSONException {
         //TODO: https://github.com/johannareidt/CocktailMachine/blob/main/ProjektDokumente/esp/Services.md
 
@@ -164,8 +163,6 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         return json;
 
     }
-
-
 
     /**
      * Sends to CocktailMachine to get mixed.
@@ -191,7 +188,12 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     }
 
 
-    public void setRecipes(JSONObject json) throws NotInitializedDBException;
+    /**
+     * [{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}, {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
+     * @param json
+     * @throws NotInitializedDBException
+     */
+    public void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException;
 
     /**
      * Static access to recipes.
@@ -202,6 +204,15 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     public static Recipe getRecipe(long id) {
         try {
             return DatabaseConnection.getDataBase().getRecipe(id);
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Recipe getRecipe(String name){
+        try {
+            return DatabaseConnection.getDataBase().getRecipeWithExact(name);
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
             return null;
@@ -239,6 +250,14 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      */
     public static Recipe makeNew(String name){
         return new SQLRecipe(name);
+    }
+
+    public static Recipe searchOrNew(String name){
+        Recipe recipe = Recipe.getRecipe(name);
+        if(recipe == null){
+            return Recipe.makeNew(name);
+        }
+        return recipe;
     }
 
 }

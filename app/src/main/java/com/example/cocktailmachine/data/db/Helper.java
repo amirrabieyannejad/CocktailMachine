@@ -339,7 +339,7 @@ public class Helper<T extends DataBaseElement> {
     public static List<Ingredient> ingredientWitName(List<Ingredient> ingredients, String name){
         List<Ingredient> res = new ArrayList<>();
         for(Ingredient r: ingredients){
-            if(r.getName()==name) {
+            if(r.getName().equals(name)) {
                 res.add(r);
             }
         }
@@ -355,6 +355,18 @@ public class Helper<T extends DataBaseElement> {
         }
         return res;
     }
+
+    public static List<Recipe> recipesWithName(List<Recipe> recipes, String name){
+        List<Recipe> res = new ArrayList<>();
+        for(Recipe r: recipes){
+            if(r.getName().equals(name)) {
+                res.add(r);
+            }
+        }
+        return res;
+    }
+
+
 
     //get helpers
 

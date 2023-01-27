@@ -26,6 +26,7 @@ import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class DatabaseConnection extends SQLiteOpenHelper {
@@ -290,6 +291,20 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return Helper.recipesWithNeedleInName(this.recipes, needle);
     }
 
+    public Recipe getRecipeWithExact(String name) {
+        List<Recipe> recipes;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            recipes = this.recipes.stream().filter(i-> Objects.equals(i.getName(), name)).collect(Collectors.toList());
+        } else {
+            recipes = Helper.recipesWithNeedleInName(this.recipes, name);
+        }
+        if(recipes.isEmpty()){
+            return null;
+        }
+        return recipes.get(0);
+
+    }
+
     public List<Ingredient> getIngredientWith(String needle) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.ingredients.stream().filter(i->i.getName().contains(needle)).collect(Collectors.toList());
@@ -302,7 +317,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             ingredients =  this.ingredients.stream().filter(i->i.getName()==name).collect(Collectors.toList());
         }else {
-            ingredients = Helper.ingredientWithNeedleInName(this.ingredients, name);
+            ingredients = Helper.ingredientWitName(this.ingredients, name);
         }
         if(ingredients.isEmpty()){
             return null;
