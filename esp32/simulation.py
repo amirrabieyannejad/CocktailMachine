@@ -24,6 +24,7 @@ import asyncio
 # utilities
 import argparse
 import logging
+import platform
 import random
 import re
 import textwrap
@@ -707,7 +708,11 @@ def main():
 
   if args.bluetooth:
     logging.info("starting bluetooth")
-    loop = asyncio.new_event_loop()
+    if platform.system() == "Windows":
+      loop = asyncio.get_event_loop()
+    else:
+      loop = asyncio.new_event_loop()
+
     try:
       loop.run_until_complete(server.start_bluetooth(loop))
     except KeyboardInterrupt:
