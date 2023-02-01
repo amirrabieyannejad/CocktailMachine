@@ -157,7 +157,7 @@ class Server():
       ret = json.dumps(d)
 
     if self.ble:
-      self.send_response(ret, self.command_services["commands"])
+      self.send_response(ret.encode("utf8"), self.command_services["commands"])
 
     logging.info(f"response: {ret}")
 
@@ -264,20 +264,22 @@ class Server():
       # additional characteristics we don't really care about
       return characteristic.value
 
-  def write_char(self, characteristic: BlessGATTCharacteristic, value: Any, **kwargs):
+  def write_char(self, characteristic: BlessGATTCharacteristic, value: bytes, **kwargs):
     try:
       service = self.characteristics[characteristic]
 
       if isinstance(service, Value):
-        logging.error(f"attempted to write status service: {service.name}: {value}")
+        dec = value.decode("utf8")
+        logging.error(f"attempted to write status service: {service.name}: {dec}")
         characteristic.value = value
 
       elif isinstance(service, CommandService):
+        dec = value.decode("utf8")
         characteristic.value = value
-        logging.info(f"wrote message: {value}")
+        logging.info(f"wrote message: {dec}")
 
         try:
-          cmd = Command.from_json(value)
+          cmd = Command.from_json(dec)
           self.process(cmd)
         except Exception as e:
           logging.exception(e)
@@ -287,8 +289,9 @@ class Server():
 
     except KeyError:
       # additional characteristics we don't really care about
+      dec = value.decode("utf8")
       characteristic.value = value
-      logging.info(f"wrote: {characteristic.value}")
+      logging.info(f"wrote: {dec}")
 
   async def start_bluetooth(self, loop):
     # start server
@@ -375,7 +378,7 @@ class Server():
     if self.ble:
       await self.ble.stop()
 
-  def send_response(self, response: str, com: CommandService):
+  def send_response(self, response: bytes, com: CommandService):
     if self.ble:
       uuid_service  = str(com.uuid_service())
       uuid_response = str(com.uuid_response())
