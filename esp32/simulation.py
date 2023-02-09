@@ -280,8 +280,13 @@ class Server():
         logging.info(f"wrote message: {dec}")
 
         try:
-          cmd = Command.from_json(dec)
-          self.process(cmd)
+          ret, cmd = Command.from_json(dec)
+          if ret == ReturnCode.ok:
+            if cmd:
+              self.process(cmd)
+          else:
+            logging.error(f"error: {ret}")
+            self.return_value(ret, {})
         except Exception as e:
           logging.exception(e)
 
@@ -403,6 +408,7 @@ class ReturnCode(Enum):
   unknown        = "unknown command"
   unknown_recipe = "unknown recipe"
   parse_error    = "parse error"
+  missing_user   = "user missing"
 
 @dataclass(frozen=True)
 class User():
@@ -511,24 +517,29 @@ class Command(ABC):
 
   # load commands from json
   @classmethod
-  def from_json(cls, json_cmd: str) -> Command:
+  def from_json(cls, json_cmd: str) -> Tuple[ReturnCode, Optional[Command]]:
     parsed = json.loads(json_cmd)
     name   = parsed.pop("cmd")
     parts  = [part[0].upper() + part[1:] for part in re.sub(r"([_])", " ", name).split()]
     full   = "Cmd" + "".join(parts)
 
     try:
-      cmd = globals()[full]
+      cmd_class = globals()[full]
     except:
-      raise Exception(f"unsupported command: {name}")
+      return (ReturnCode.unknown, None)
 
-    if isinstance(cmd, UserCommand):
+    if isinstance(cmd_class, UserCommand):
       try:
         parsed["user"] = User(parsed["user"])
       except KeyError:
-        raise Exception("missing argument: user")
+        return (ReturnCode.missing_user, None)
 
-    return cmd(**parsed) # type: ignore # this is always a Command
+    try:
+      cmd = cmd_class(**parsed) # type: ignore # this is always a Command
+    except:
+      return (ReturnCode.parse_error, None)
+
+    return (ReturnCode.ok, cmd)
 
   @classmethod
   def description(cls) -> str:
@@ -654,7 +665,9 @@ class CmdInitUser(Command):
 def read_command() -> Optional[Command]:
   read = input("> ")
   try:
-    cmd = Command.from_json(read)
+    ret, cmd = Command.from_json(read)
+    if ret != ReturnCode.ok:
+      logging.error(f"error: {ret}")
     return cmd
 
   except Exception as e:
