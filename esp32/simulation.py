@@ -453,8 +453,11 @@ class Value(ABC):
   def uuid_characteristic(self) -> uuid.UUID:
     return gen_uuid(f"status {self.__class__.name} value")
 
+  def json_value(self) -> Any:
+    return self.value
+
   def json(self) -> bytes:
-    return json.dumps(self.value, ensure_ascii=False).encode('utf8')
+    return json.dumps(self.json_value(), ensure_ascii=False).encode('utf8')
 
 @dataclass
 class ValState(Value):
@@ -466,15 +469,24 @@ class ValRecipes(Value):
   value: List[Recipe]
   name = "recipes"
 
+  def json_value(self) -> List[Dict[str, List[Tuple[str, float]]]]:
+    return [dataclasses.asdict(r) for r in self.value]
+
 @dataclass
 class ValCocktail(Value):
   value: List[Tuple[Liquid, float]]
   name = "cocktail"
 
+  def json_value(self) -> List[Tuple[str, float]]:
+    return [(l.name, v) for (l, v) in self.value]
+
 @dataclass
 class ValLiquids(Value):
   value: Dict[Liquid, float]
   name = "liquids"
+
+  def json_value(self) -> Dict[str, float]:
+    return dict([(l.name, v) for (l, v) in self.value.items()])
 
 # commands
 ##########
