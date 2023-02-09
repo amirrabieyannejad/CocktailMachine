@@ -576,10 +576,10 @@ class UserCommand(Command):
   def allowed(self, admins: Set[User]) -> bool:
     if not self.__class__.admin:
       return True
-    for u in admins:
-      if u.id == self.user.id:
-        return True
-    return False
+    user = self.user
+    if isinstance(self.user, int):
+      user = User(self.user)
+    return user in admins
 
 @dataclass
 class CommandService:
