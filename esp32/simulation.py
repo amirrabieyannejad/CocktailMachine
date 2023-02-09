@@ -566,7 +566,7 @@ class UserCommand(Command):
     if not self.__class__.admin:
       return True
     for u in admins:
-      if u == self.user:
+      if u.id == self.user.id:
         return True
     return False
 
