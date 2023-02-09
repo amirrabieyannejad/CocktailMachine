@@ -285,7 +285,6 @@ class Server():
             if cmd:
               self.process(cmd)
           else:
-            logging.error(f"error: {ret}")
             self.return_value(ret, {})
         except Exception as e:
           logging.exception(e)
