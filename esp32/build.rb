@@ -8,7 +8,7 @@ opts = Optimist::options do
   opt :upload,  "upload to board"
   opt :monitor, "monitor serial output"
   opt :verbose, "verbose"
-  opt :profile, "board profile", default: "feather"
+  opt :profile, "board profile", default: "esp"
   opt :port,    "usb port to use", default: "/dev/ttyUSB0"
 end
 
