@@ -1,2 +1,9 @@
+# python
 /__pycache__
 /venv
+
+# arduino
+/debug.cfg
+/debug_custom.json
+/esp32.svd
+/out
