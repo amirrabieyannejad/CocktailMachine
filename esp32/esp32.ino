@@ -1,13 +1,17 @@
+// supported features
+// #define SD_CARD
+
 // general functionality
 #include <Arduino.h>
 #include <EEPROM.h>
 #include <SPI.h>
-#include <Wire.h>
 #include <sys/time.h>
 
 // sd card
+#if defined(SD_CARD)
 #include "FS.h"
 #include "SD.h"
+#endif
 
 // bluetooth
 #include <BLEDevice.h>
@@ -16,7 +20,9 @@
 BLEServer *ble_server;
 
 // pinout
+#if defined(SD_CARD)
 #define PIN_SDCARD_CS A5
+#endif
 
 // function declarations
 int64_t timestamp_ms(void);
@@ -42,21 +48,24 @@ void sleep_deep(uint64_t duration);
 #define info(msg)  log("[INFO]",  msg)
 #define error(msg) log("[ERROR]", msg)
 
+#if defined(LED_BUILTIN)
 void led_on(void);
 void led_off(void);
 void blink_leds(uint64_t on, uint64_t off);
+#endif
 
 void error_loop(void);
 
+#if defined(SD_CARD)
 bool sdcard_start(void);
 void sdcard_stop(void);
 bool sdcard_save(void);
+#endif
 
 // init
 
 void setup() {
   // setup serial communication
-  Wire.begin();
   Serial.begin(115200);
   while (!Serial) { sleep_idle(MS(10)); }
   sleep_idle(S(1)); // make sure we don't miss any output
@@ -69,6 +78,7 @@ void setup() {
 #endif
 
   // setup sd card
+#if defined(SD_CARD)
   if (!sdcard_start()) { error_loop(); }
 
   // we read the sd card to force the reader to actually access it
@@ -88,6 +98,7 @@ void setup() {
     }
     file = root.openNextFile();
   }
+#endif
 
   debug("ready");
 }
@@ -98,6 +109,7 @@ void loop() {
 }
 
 // sd card
+#if defined(SD_CARD)
 bool sdcard_start(void) {
   if (!SD.begin(PIN_SDCARD_CS)){
     error("failed to mount sdcard; maybe power is cut?");
@@ -129,17 +141,16 @@ bool sdcard_save(void) {
   file.print("[TODO]\n");
   file.close();
 
-#if defined(OUTPUT_DEBUG)
   uint64_t mb  	= 1024 * 1024;
   uint64_t used	= SD.usedBytes();
   uint64_t size	= SD.totalBytes();
   char out[50];
   snprintf(out, sizeof(out), "sd card: %lluMB / %lluMB used", used/mb, size/mb);
   debug(out);
-#endif
 
   return true;
 }
+#endif
 
 // utilities
 
@@ -172,27 +183,28 @@ void sleep_deep(uint64_t duration) {
 }
 
 // LEDs (if available on the chip)
-void led_on(void) {
 #if defined(LED_BUILTIN)
+void led_on(void) {
   digitalWrite(LED_BUILTIN, HIGH);
-#endif
 }
 
 void led_off(void) {
-#if defined(LED_BUILTIN)
   digitalWrite(LED_BUILTIN, LOW);
-#endif
 }
 
 void blink_leds(uint64_t on, uint64_t off) {
-#if defined(LED_BUILTIN)
   led_on(); 	sleep_idle(on);
   led_off();	sleep_idle(off);
-#endif
 }
+#endif
 
 void error_loop(void) {
   while(1) {
+#if defined(LED_BUILTIN)
     blink_leds(MS(100), MS(100));
+#else
+    log("[HALT]", "stop");
+    sleep_idle(MS(100));
+#endif
   }
 }
