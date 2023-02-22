@@ -28,6 +28,7 @@ if opts[:build]
   ].reject(&:nil?)
 
   system("arduino-cli", "compile", *args, *ARGV)
+  exit 1 unless $?.success?
 end
 
 if opts[:upload]
@@ -38,6 +39,7 @@ if opts[:upload]
   ].reject(&:nil?)
 
   system("arduino-cli", "upload", *args, *ARGV)
+  exit 1 unless $?.success?
 end
 
 if opts[:monitor]
@@ -47,4 +49,5 @@ if opts[:monitor]
   ].reject(&:nil?)
 
   system("arduino-cli", "monitor", *args, *ARGV)
+  exit 1 unless $?.success?
 end
