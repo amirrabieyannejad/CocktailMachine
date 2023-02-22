@@ -8,6 +8,7 @@
 
 // general functionality
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include <EEPROM.h>
 #include <SPI.h>
 #include <sys/time.h>
@@ -60,17 +61,30 @@ class BLECallback : public BLEServerCallbacks {
   void onDisconnect(BLEServer *server);
 };
 
-Status* all_status[5];
-Comm*   all_comm[2];
+// convenient grouping of all statuses / comms
+
+#define ID_BASE    	0
+#define ID_LIQUIDS 	1
+#define ID_STATE   	2
+#define ID_RECIPES 	3
+#define ID_COCKTAIL	4
+#define NUM_STATUS 	5
+
+#define ID_USER 	0
+#define ID_ADMIN	1
+#define NUM_COMM	2
+
+Status* all_status[NUM_STATUS];
+Comm*   all_comm[NUM_COMM];
 
 // UUIDs
 
 #define UUID_BASE         	"0f7742d4-ea2d-43c1-9b98-bb4186be905d"
 #define UUID_BASE_CHAR    	"c0605c38-3f94-33f6-ace6-7a5504544a80"
                           	
-#define UUID_COMM         	"dad995d1-f228-38ec-8b0f-593953973406"
-#define UUID_COMM_MSG     	"eb61e31a-f00b-335f-ad14-d654aac8353d"
-#define UUID_COMM_RES     	"06dc28ef-79a4-3245-85ce-a6921e35529d"
+#define UUID_USER         	"dad995d1-f228-38ec-8b0f-593953973406"
+#define UUID_USER_MSG     	"eb61e31a-f00b-335f-ad14-d654aac8353d"
+#define UUID_USER_RES     	"06dc28ef-79a4-3245-85ce-a6921e35529d"
                           	
 #define UUID_ADMIN        	"f94dd35e-4100-3ba7-bd2f-abc9659c82b1"
 #define UUID_ADMIN_MSG    	"41044979-6a5d-36be-b9f1-d4d49e3f5b73"
@@ -88,12 +102,28 @@ Comm*   all_comm[2];
 #define UUID_COCKTAIL     	"8a421a72-b9a0-342d-ab57-afa3d67149d1"
 #define UUID_COCKTAIL_CHAR	"7344136f-c552-3efc-b04f-a43793f16d43"
 
+// error codes
+typedef enum {
+  ok,
+  not_found,
+} retcode;
+
+typedef enum {
+  valid,
+  invalid,
+  too_big,
+  incomplete,
+} parse_error;
+
 // function declarations
+
+// various sleeps
 int64_t timestamp_ms(void);
 int64_t timestamp_usec(void);
 void sleep_idle(uint64_t duration);
 void sleep_light(uint64_t duration);
 void sleep_deep(uint64_t duration);
+void error_loop(void);
 
 // easier time constants
 #define USEC(n) (n)
@@ -102,6 +132,7 @@ void sleep_deep(uint64_t duration);
 #define MIN(n)  (n * 1000LL * 1000LL * 60LL)
 #define HOUR(n) (n * 1000LL * 1000LL * 60LL * 60)
 
+// debugging info
 #define log(level, msg)                         \
   do {                                          \
     Serial.print(level " ");                    \
@@ -112,22 +143,37 @@ void sleep_deep(uint64_t duration);
 #define info(msg)  log("[INFO]",  msg)
 #define error(msg) log("[ERROR]", msg)
 
+// led feedback (if possible)
 #if defined(LED_BUILTIN)
 void led_on(void);
 void led_off(void);
 void blink_leds(uint64_t on, uint64_t off);
 #endif
 
-void error_loop(void);
-
+// sdcard
 #if defined(SD_CARD)
 bool sdcard_start(void);
 void sdcard_stop(void);
 bool sdcard_save(void);
 #endif
 
+// bluetooth
 bool ble_start(void);
 void ble_stop(void);
+
+// command processing
+void process(const char *command);
+parse_error parse_command(const char *command, DynamicJsonDocument *json);
+
+// operations
+retcode make_recipe(const char *recipe);
+retcode reset(void);
+retcode calibrate(void);
+retcode clean(void);
+retcode add_admin(uint32_t id);
+retcode add_user(const char *name, uint32_t *id);
+retcode add_recipe(const char *recipe /*, ingredients */);
+retcode add_pump(uint32_t pin, const char *liquid, float volume);
 
 // init
 
@@ -177,8 +223,53 @@ void setup() {
 
 void loop() {
   // just wait
+  // process("{\"cmd\": \"test\"}");
+
   sleep_idle(MS(100));
 }
+
+// command processing
+void process(const char *command) {
+  DynamicJsonDocument json(100); // TODO capacity?
+  parse_error err = parse_command(command, &json);
+
+  if (err) {
+    // TODO error handling
+    return;
+  }
+
+  JsonObject obj = json.as<JsonObject>();
+  debug(obj.memoryUsage());
+}
+
+parse_error parse_command(const char *command, DynamicJsonDocument *json) {
+  debug("processing json:");
+  debug(command);
+
+  DeserializationError err = deserializeJson(*json, command);
+
+  // TODO check whether all arguments are present
+  // TODO make sure everything is the right type
+
+  switch (err.code()) {
+  case DeserializationError::Ok:
+    return valid;
+
+  case DeserializationError::EmptyInput:
+  case DeserializationError::IncompleteInput:
+  case DeserializationError::InvalidInput:
+    return invalid;
+
+  case DeserializationError::NoMemory:
+  case DeserializationError::TooDeep:
+    return too_big;
+
+  default:
+    return invalid;
+  }
+}
+
+
 
 // bluetooth
 bool ble_start(void) {
@@ -190,20 +281,20 @@ bool ble_start(void) {
   server->setCallbacks(new BLECallback());
 
   // init services
-  all_status[0] = new Status(server, UUID_BASE,    	UUID_BASE_CHAR,    	BLE_NAME);
-  all_status[1] = new Status(server, UUID_STATE,   	UUID_STATE_CHAR,   	"init");
-  all_status[2] = new Status(server, UUID_LIQUIDS, 	UUID_LIQUIDS_CHAR, 	"{}");
-  all_status[3] = new Status(server, UUID_RECIPES, 	UUID_RECIPES_CHAR, 	"{}");
-  all_status[4] = new Status(server, UUID_COCKTAIL,	UUID_COCKTAIL_CHAR,	"[]");
+  all_status[ID_BASE]    	= new Status(server, UUID_BASE,    	UUID_BASE_CHAR,    	BLE_NAME);
+  all_status[ID_STATE]   	= new Status(server, UUID_STATE,   	UUID_STATE_CHAR,   	"init");
+  all_status[ID_LIQUIDS] 	= new Status(server, UUID_LIQUIDS, 	UUID_LIQUIDS_CHAR, 	"{}");
+  all_status[ID_RECIPES] 	= new Status(server, UUID_RECIPES, 	UUID_RECIPES_CHAR, 	"{}");
+  all_status[ID_COCKTAIL]	= new Status(server, UUID_COCKTAIL,	UUID_COCKTAIL_CHAR,	"[]");
 
-  all_comm[0] = new Comm(server, UUID_COMM, 	UUID_COMM_MSG, 	UUID_COMM_RES);
-  all_comm[1] = new Comm(server, UUID_ADMIN,	UUID_ADMIN_MSG,	UUID_ADMIN_RES);
+  all_comm[ID_USER] 	= new Comm(server, UUID_USER, 	UUID_USER_MSG, 	UUID_USER_RES);
+  all_comm[ID_ADMIN]	= new Comm(server, UUID_ADMIN,	UUID_ADMIN_MSG,	UUID_ADMIN_RES);
 
   // advertise services
-  for (int i=0; i<(sizeof(all_status)/sizeof(all_status[0])); i++) {
+  for (int i=0; i<NUM_STATUS; i++) {
     all_status[i]->advertise();
   }
-  for (int i=0; i<(sizeof(all_comm)/sizeof(all_comm[0])); i++) {
+  for (int i=0; i<NUM_COMM; i++) {
     all_comm[i]->advertise();
   }
 
