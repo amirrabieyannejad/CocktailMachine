@@ -113,7 +113,103 @@ typedef enum {
   invalid,
   too_big,
   incomplete,
+  unknown_command,
 } parse_error;
+
+// commands
+class Command {
+public:
+  virtual retcode execute();
+};
+
+class CmdTest : public Command {
+  retcode execute();
+};
+
+class CmdInitUser : public Command {
+public:
+  const char *name;
+  CmdInitUser(const char *name) {
+    this->name = name;
+  }
+  retcode execute();
+};
+
+class CmdMakeRecipe : public Command {
+public:
+  const char *name;
+  CmdMakeRecipe(const char *name) {
+    this->name = name;
+  }
+  retcode execute();
+};
+
+class CmdAddLiquid : public Command {
+public:
+  uint32_t user;
+  const char *name;
+  CmdAddLiquid(uint32_t user, const char *name) {
+    this->user = user;
+    this->name = name;
+  }
+  retcode execute();
+};
+
+class CmdDefinePump : public Command {
+public:
+  uint32_t user;
+  const char *liquid;
+  // TODO
+  CmdDefinePump(uint32_t user, const char *liquid) {
+    this->user = user;
+    this->liquid = liquid;
+  }
+  retcode execute();
+};
+
+class CmdDefineRecipe : public Command {
+public:
+  uint32_t user;
+  const char *name;
+  // TODO
+  CmdDefineRecipe(uint32_t user, const char *name) {
+    this->user = user;
+    this->name = name;
+  }
+  retcode execute();
+};
+
+class CmdReset : public Command {
+public:
+  uint32_t user;
+  CmdReset(uint32_t user) {
+    this->user = user;
+  }
+  retcode execute();
+};
+
+class CmdClean : public Command {
+public:
+  uint32_t user;
+  CmdClean(uint32_t user) {
+    this->user = user;
+  }
+  retcode execute();
+};
+
+class CmdCalibratePumps : public Command {
+public:
+  uint32_t user;
+  CmdCalibratePumps(uint32_t user) {
+    this->user = user;
+  }
+  retcode execute();
+};
+
+typedef struct {
+  Command *command;
+  parse_error err;
+} parsed;
 
 // function declarations
 
@@ -162,18 +258,8 @@ bool ble_start(void);
 void ble_stop(void);
 
 // command processing
-void process(const char *command);
-parse_error parse_command(const char *command, DynamicJsonDocument *json);
-
-// operations
-retcode make_recipe(const char *recipe);
-retcode reset(void);
-retcode calibrate(void);
-retcode clean(void);
-retcode add_admin(uint32_t id);
-retcode add_user(const char *name, uint32_t *id);
-retcode add_recipe(const char *recipe /*, ingredients */);
-retcode add_pump(uint32_t pin, const char *liquid, float volume);
+void process(const char *json);
+parsed parse_command(const char *json);
 
 // init
 
@@ -223,53 +309,138 @@ void setup() {
 
 void loop() {
   // just wait
-  // process("{\"cmd\": \"test\"}");
+  process("{\"cmd\": \"test\"}");
 
   sleep_idle(MS(100));
 }
 
 // command processing
-void process(const char *command) {
-  DynamicJsonDocument json(100); // TODO capacity?
-  parse_error err = parse_command(command, &json);
+void process(const char *json) {
+  parsed p = parse_command(json);
 
-  if (err) {
+  if (p.err) {
     // TODO error handling
     return;
   }
 
-  JsonObject obj = json.as<JsonObject>();
-  debug(obj.memoryUsage());
+  // process command
+  if (p.command == NULL) {
+    error("command missing even though there wasn't a parse error");
+    return;
+  }
+  retcode ret = p.command->execute();
+
+  // cleanup
+  delete p.command;
+
+  // TODO handle return code
 }
 
-parse_error parse_command(const char *command, DynamicJsonDocument *json) {
+parsed parse_command(const char *json) {
   debug("processing json:");
-  debug(command);
+  debug(json);
 
-  DeserializationError err = deserializeJson(*json, command);
+  StaticJsonDocument<1000> doc; // TODO capacity?
+  DeserializationError err = deserializeJson(doc, json);
 
-  // TODO check whether all arguments are present
+  if (err) {
+    switch (err.code()) {
+    case DeserializationError::EmptyInput:
+    case DeserializationError::IncompleteInput:
+    case DeserializationError::InvalidInput:
+      return parsed{NULL, invalid};
+
+    case DeserializationError::NoMemory:
+    case DeserializationError::TooDeep:
+      return parsed{NULL, too_big};
+
+    default:
+      return parsed{NULL, invalid};
+    }
+  }
+
   // TODO make sure everything is the right type
 
-  switch (err.code()) {
-  case DeserializationError::Ok:
-    return valid;
+  // parse json document into command type
+  Command *cmd;
 
-  case DeserializationError::EmptyInput:
-  case DeserializationError::IncompleteInput:
-  case DeserializationError::InvalidInput:
-    return invalid;
+  const char *cmd_name = doc["cmd"];
+  if (!cmd_name) return parsed{NULL, incomplete};
 
-  case DeserializationError::NoMemory:
-  case DeserializationError::TooDeep:
-    return too_big;
+  if (!strcmp(cmd_name, "test")) {
+    cmd = new CmdTest();
 
-  default:
-    return invalid;
+  } else if (!strcmp(cmd_name, "init_user")) {
+    const char *name = doc["name"];
+    if (!name) return parsed{NULL, incomplete};
+
+    cmd = new CmdInitUser(name);
+
+  } else if (!strcmp(cmd_name, "add_liquid")) {
+    JsonVariant user = doc["user"];
+    if (user.isNull()) return parsed{NULL, incomplete};
+    const char *name = doc["name"];
+    if (!name) return parsed{NULL, incomplete};
+
+    cmd = new CmdAddLiquid(user.as<uint32_t>(), name);
+
+  } else if (!strcmp(cmd_name, "make_recipe")) {
+    const char *name = doc["name"];
+    if (!name) return parsed{NULL, incomplete};
+
+    cmd = new CmdMakeRecipe(name);
+
+  } else if (!strcmp(cmd_name, "define_recipe")) {
+    JsonVariant user = doc["user"];
+    if (user.isNull()) return parsed{NULL, incomplete};
+    const char *name = doc["name"];
+    if (!name) return parsed{NULL, incomplete};
+
+    cmd = new CmdDefineRecipe(user.as<uint32_t>(), name);
+
+  } else if (!strcmp(cmd_name, "define_pump")) {
+    JsonVariant user = doc["user"];
+    if (user.isNull()) return parsed{NULL, incomplete};
+    const char *liquid = doc["liquid"];
+    if (!liquid) return parsed{NULL, incomplete};
+
+    cmd = new CmdDefinePump(user.as<uint32_t>(), liquid);
+
+  } else if (!strcmp(cmd_name, "reset")) {
+    JsonVariant user = doc["user"];
+    if (user.isNull()) return parsed{NULL, incomplete};
+
+    cmd = new CmdReset(user.as<uint32_t>());
+
+  } else if (!strcmp(cmd_name, "clean")) {
+    JsonVariant user = doc["user"];
+    if (user.isNull()) return parsed{NULL, incomplete};
+
+    cmd = new CmdClean(user.as<uint32_t>());
+
+  } else if (!strcmp(cmd_name, "calibrate_pumps")) {
+    JsonVariant user = doc["user"];
+    if (user.isNull()) return parsed{NULL, incomplete};
+
+    cmd = new CmdCalibratePumps(user.as<uint32_t>());
+
+  } else {
+    return parsed{NULL, unknown_command};
   }
+
+  return parsed{cmd, valid};
 }
 
-
+// command logic
+retcode CmdTest::execute() { return ok; };
+retcode CmdInitUser::execute() { return ok; };
+retcode CmdMakeRecipe::execute() { return ok; };
+retcode CmdAddLiquid::execute() { return ok; };
+retcode CmdDefinePump::execute() { return ok; };
+retcode CmdDefineRecipe::execute() { return ok; };
+retcode CmdReset::execute() { return ok; };
+retcode CmdClean::execute() { return ok; };
+retcode CmdCalibratePumps::execute() { return ok; };
 
 // bluetooth
 bool ble_start(void) {
