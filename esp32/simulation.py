@@ -644,12 +644,12 @@ class CmdDefineRecipe(UserCommand):
   example = {"name": "radler", "liquids": [("beer", 250), ("lemonade", 250)]}
 
 @dataclass(frozen=True)
-class CmdAddPump(UserCommand):
+class CmdDefinePump(UserCommand):
   liquid: str
   volume: float
 
   admin   = True
-  desc    = "add given pump to device"
+  desc    = "define given pump on device"
   example = {"liquid": "water", "volume": 1000}
 
 @dataclass(frozen=True)

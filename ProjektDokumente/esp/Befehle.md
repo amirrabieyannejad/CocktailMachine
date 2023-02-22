@@ -51,14 +51,14 @@ JSON-Beispiel:
 
 ## Admin-Befehle
 
-### add_liquid: fügt Flüssigkeit zum Cocktail hinzu
+### define_liquid: fügt Flüssigkeit zum Cocktail hinzu
 - user: User
 - liquid: str
 - volume: float
 
 JSON-Beispiel:
 
-    {"cmd": "add_liquid", "user": 2737, "liquid": "water", "volume": 30}
+    {"cmd": "define_liquid", "user": 2737, "liquid": "water", "volume": 30}
 
 ### define_recipe: definiert ein neues Rezept oder ändert ein bestehendes Rezept
 - user: User
