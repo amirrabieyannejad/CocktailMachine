@@ -28,6 +28,16 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     }
 
     @Override
+    public String getIngredientName() {
+        return null;
+    }
+
+    @Override
+    public int getVolume() {
+        return 0;
+    }
+
+    @Override
     public Ingredient getCurrentIngredient() {
         return this.ingredientPump.getIngredient();
     }

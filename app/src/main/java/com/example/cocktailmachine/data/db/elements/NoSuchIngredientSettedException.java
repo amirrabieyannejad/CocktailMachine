@@ -5,9 +5,9 @@ public class NoSuchIngredientSettedException extends Exception {
         super("In Recipe"
                 +recipe.getName()
                 +" with id "
-                +Long.toString(recipe.getID())
+                + recipe.getID()
                 +" the Ingredient with id"
-                +Long.toString(ingredientID)
+                + ingredientID
                 +" was not found!!! ");
     }
 }

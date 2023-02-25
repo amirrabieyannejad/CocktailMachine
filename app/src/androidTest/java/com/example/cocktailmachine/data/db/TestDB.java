@@ -98,7 +98,7 @@ public class TestDB {
     @Test
     public void new_recipe(){
         Recipe recipe = Recipe.makeNew("Magarita");
-        System.out.println(recipe.toString());
+        System.out.println(recipe);
         try {
             recipe.save();
             System.out.println(DatabaseConnection.getDataBase().toString());
@@ -114,7 +114,7 @@ public class TestDB {
         if(db_recipe == null){
             System.out.println("db_recipe failed");
         }else {
-            System.out.println(db_recipe.toString());
+            System.out.println(db_recipe);
         }
         assert recipe.equals(db_recipe);
     }
@@ -122,7 +122,7 @@ public class TestDB {
     @Test
     public void new_topics(){
         Topic topic = Topic.makeNew("Eis", "gefrorenes Wasser");
-        System.out.println(topic.toString());
+        System.out.println(topic);
         Topic db_topic = null;
         try {
             topic.save();
@@ -133,7 +133,7 @@ public class TestDB {
         if(db_topic == null){
             System.out.println("db_topic failed");
         }else {
-            System.out.println(db_topic.toString());
+            System.out.println(db_topic);
         }
         assert topic.equals(db_topic);
     }
@@ -142,7 +142,7 @@ public class TestDB {
     public void recipe_add_topics(){
         Recipe recipe = Recipe.makeNew("Magarita_topics");
         recipe.addOrUpdate(Topic.makeNew("Eis2", "gefrorenes Wasser, 3 Würfel"));
-        System.out.println(recipe.toString());
+        System.out.println(recipe);
         Recipe db_recipe = null;
         try {
             recipe.save();
@@ -153,7 +153,7 @@ public class TestDB {
         if(db_recipe == null){
             System.out.println("db_recipe failed");
         }else {
-            System.out.println(db_recipe.toString());
+            System.out.println(db_recipe);
         }
         assert recipe.equals(db_recipe);
     }
@@ -162,7 +162,7 @@ public class TestDB {
     @Test
     public void new_ingredient(){
         Ingredient ingredient = Ingredient.makeNew("Kokosmilch", false, 67);
-        System.out.println(ingredient.toString());
+        System.out.println(ingredient);
         Ingredient db_ingredient = null;
         try {
             ingredient.save();
@@ -173,7 +173,7 @@ public class TestDB {
         if(db_ingredient == null){
             System.out.println("db_ingredient failed");
         }else {
-            System.out.println(db_ingredient.toString());
+            System.out.println(db_ingredient);
         }
         assert ingredient.equals(db_ingredient);
     }
@@ -183,7 +183,7 @@ public class TestDB {
         Ingredient ingredient = Ingredient.makeNew("Pfeffi", true, 46);
         ingredient.addImageUrl("test_ingredient.png");
 
-        System.out.println(ingredient.toString());
+        System.out.println(ingredient);
         Ingredient db_ingredient = null;
         try {
             ingredient.save();
@@ -194,7 +194,7 @@ public class TestDB {
         if(db_ingredient == null){
             System.out.println("db_ingredient failed");
         }else {
-            System.out.println(db_ingredient.toString());
+            System.out.println(db_ingredient);
         }
         assert ingredient.equals(db_ingredient);
         try {
@@ -211,7 +211,7 @@ public class TestDB {
                 Ingredient.makeNew("Wodka", true, 123),
                 3);
 
-        System.out.println(recipe.toString());
+        System.out.println(recipe);
         Recipe db_recipe = null;
         try {
             recipe.save();
@@ -222,7 +222,7 @@ public class TestDB {
         if(db_recipe == null){
             System.out.println("db_recipe failed");
         }else {
-            System.out.println(db_recipe.toString());
+            System.out.println(db_recipe);
         }
         assert recipe.equals(db_recipe);
     }
@@ -234,7 +234,7 @@ public class TestDB {
                 Ingredient.makeNew("Grapefruit-Saft", false, 324).getID(),
                 7);
 
-        System.out.println(recipe.toString());
+        System.out.println(recipe);
         Recipe db_recipe = null;
         try {
             recipe.save();
@@ -245,7 +245,7 @@ public class TestDB {
         if(db_recipe == null){
             System.out.println("db_recipe failed");
         }else {
-            System.out.println(db_recipe.toString());
+            System.out.println(db_recipe);
         }
         assert recipe.equals(db_recipe);
     }
@@ -255,7 +255,7 @@ public class TestDB {
         Recipe recipe = Recipe.makeNew("Magarita_url");
         recipe.addOrUpdate("test.png");
 
-        System.out.println(recipe.toString());
+        System.out.println(recipe);
         Recipe db_recipe = null;
         try {
             recipe.save();
@@ -266,7 +266,7 @@ public class TestDB {
         if(db_recipe == null){
             System.out.println("db_recipe failed");
         }else {
-            System.out.println(db_recipe.toString());
+            System.out.println(db_recipe);
         }
         assert recipe.equals(db_recipe);
     }
