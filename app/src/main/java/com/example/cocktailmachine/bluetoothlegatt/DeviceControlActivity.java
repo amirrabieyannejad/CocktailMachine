@@ -22,14 +22,12 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -40,7 +38,6 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.util.Pair;
@@ -63,6 +60,13 @@ public class DeviceControlActivity extends Activity {
 
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
+
+    // Communication UUID Wrappers
+    public final static String SERVICE_READ_WRITE =
+            "Communication Service";
+    public final static String CHARACTERISTIC_WRITE =
+            "Message Characteristic";
+
     // State UUID Wrappers
     public final static String SERVICE_READ_STATE =
             "State Service";
@@ -73,6 +77,7 @@ public class DeviceControlActivity extends Activity {
     public final static String CHARACTERISTIC_READ_LIQUIDS =
             "Liquids Characteristic";
     private BluetoothGatt mBluetoothGatt;
+
     // Recipes UUID Wrappers
     public final static String SERVICE_READ_RECIPES =
             "Recipes Service";
@@ -88,7 +93,7 @@ public class DeviceControlActivity extends Activity {
     private TextView mConnectionState;
     private TextView txtNotificationData;
 
-    private String mDeviceAddress ;
+    private String mDeviceAddress;
     private BluetoothLeService mBluetoothLeService;
     private EditText edtTxtUser;
     private EditText edtTxtRecipe;
@@ -181,7 +186,7 @@ public class DeviceControlActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.data_transfer);
         requestBlePermissions(this, PERMISSIONS_REQUEST_CODE);
-
+/*
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -200,12 +205,12 @@ public class DeviceControlActivity extends Activity {
             Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
             finish();
             return;
-        }
-       // final Intent intent = getIntent();
-        // String mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
-        //mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
-        String mDeviceName="Cocktail Machine";
-        mDeviceAddress = "69:58:12:62:66:94";
+        }*/
+       final Intent intent = getIntent();
+       String mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
+       mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
+       //String mDeviceName="Cocktail Machine";
+
 
         txtNotificationData = findViewById(R.id.txtNotificationData);
 
@@ -267,14 +272,7 @@ public class DeviceControlActivity extends Activity {
         });
         //Initiate User
         btnAddUser.setOnClickListener(v -> {
-            try {
-                String user = edtTxtUser.getText().toString();
-                //mDataField.setText(user);
-                mBluetoothLeService.initUser(user);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            getResponseValue();
         });
 
         // Reset the machine so that it can make a new cocktail
@@ -386,12 +384,12 @@ public class DeviceControlActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
+/*        // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
         // fire an intent to display a dialog asking the user to grant permission to enable it.
         if (!mBluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-        }
+        }*/
         registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
         if (mBluetoothLeService != null) {
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
@@ -459,13 +457,49 @@ public class DeviceControlActivity extends Activity {
             txtNotificationData.setText(data);
         });
     }
+    // Demonstrate how to read response characteristic form deice when through
+    // Characteristic "Message" one message deliver to device. This is response
+    // from received from app
+    private void getResponseValue() {
+        mGattCharacteristics = mBluetoothLeService.getBluetoothGattCharacteristic(SERVICE_READ_WRITE,BluetoothLeService.CHARACTERISTIC_READ);
+
+        if (mGattCharacteristics != null) {
+            Log.println(Log.ASSERT, TAG, "characteristic is not null: " + mGattCharacteristics.getStringValue(0));
+            final int charaProp = mGattCharacteristics.getProperties();
+            if ((charaProp | BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
+                // If there is an active notification on a characteristic, clear
+                // it first so it doesn't update the data field on the user interface.
+                if (mNotifyCharacteristic != null) {
+                    mBluetoothLeService.setCharacteristicNotification(
+                            mNotifyCharacteristic, false);
+                    mNotifyCharacteristic = null;
+                }
+                // from initUser
+                try {
+                    String user = edtTxtUser.getText().toString();
+                    //mDataField.setText(user);
+                    mBluetoothLeService.initUser(user);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                //txtReadCharacteristicData.setText("read Characteristic Value: " + mGattCharacteristics.getStringValue(0));
+            }
+            if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+                mNotifyCharacteristic = mGattCharacteristics;
+                mBluetoothLeService.setCharacteristicNotification(
+                        mGattCharacteristics, true);
+            }
+        } else {
+            Log.w(TAG, "Characteristic can't find");
+        }
+    }
 
     // Demonstrates how to iterate through the supported GATT Services/Characteristics.
     // In this sample, we populate the data structure that is bound to the ExpandableListView
     // on the UI.
-
     private void setCharacteristicReadValue(String server, String characteristic) {
-        mGattCharacteristics = mBluetoothLeService.readBluetoothGattCharacteristic(server, characteristic);
+        mGattCharacteristics = mBluetoothLeService.getBluetoothGattCharacteristic(server, characteristic);
         // refer to BluetoothGatt Class readCharacteristic(characteristic)
 
         if (mGattCharacteristics != null) {
@@ -492,6 +526,7 @@ public class DeviceControlActivity extends Activity {
             Log.w(TAG, "Characteristic can't find");
         }
     }
+
 
     private static IntentFilter makeGattUpdateIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();

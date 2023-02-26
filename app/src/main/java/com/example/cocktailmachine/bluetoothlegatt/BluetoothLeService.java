@@ -80,6 +80,8 @@ public class BluetoothLeService extends Service {
     public final static String CHARACTERISTIC_READ_LIQUIDS =
             "Liquids Characteristic";
 
+    public final static UUID UUID_MESSAGE_CHARACTERISTIC =
+            UUID.fromString(SampleGattAttributes.lookupUuid("Message Characteristic"));
     public final static UUID UUID_RECIPES_CHARACTERISTIC =
             UUID.fromString(SampleGattAttributes.lookupUuid("Recipes Characteristic"));
     public final static UUID UUID_COCKTAIL_CHARACTERISTIC =
@@ -152,7 +154,10 @@ public class BluetoothLeService extends Service {
         if (UUID_LIQUIDS_CHARACTERISTIC.equals(characteristic.getUuid()) ||
                 UUID_STATE_CHARACTERISTIC.equals(characteristic.getUuid()) ||
                 UUID_COCKTAIL_CHARACTERISTIC.equals(characteristic.getUuid())||
-                UUID_RECIPES_CHARACTERISTIC.equals(characteristic.getUuid())) {
+                UUID_RECIPES_CHARACTERISTIC.equals(characteristic.getUuid())||
+                UUID_MESSAGE_CHARACTERISTIC.equals(characteristic.getUuid())
+        ) {
+            System.out.println("UUID IS: "+ characteristic.getUuid().toString());
             // For all other profiles, writes the data formatted in HEX.
            //final byte[] data = characteristic.getValue();
             //if (data != null && data.length > 0) {
@@ -301,7 +306,7 @@ public class BluetoothLeService extends Service {
      * asynchronously through the {@code BluetoothGattCallback#onCharacteristicRead(android.bluetooth.BluetoothGatt, android.bluetooth.BluetoothGattCharacteristic, int)}
      * callback.
      *
-     * @param characteristic The characteristic to read from.
+     * @param characteristic The characteristic to read from it.
      */
     @SuppressLint("MissingPermission")
     public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
@@ -333,15 +338,28 @@ public class BluetoothLeService extends Service {
        if (UUID_LIQUIDS_CHARACTERISTIC.equals(characteristic.getUuid()) ||
                 UUID_STATE_CHARACTERISTIC.equals(characteristic.getUuid()) ||
                 UUID_COCKTAIL_CHARACTERISTIC.equals(characteristic.getUuid())||
-                UUID_RECIPES_CHARACTERISTIC.equals(characteristic.getUuid())) {
-            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
+                UUID_RECIPES_CHARACTERISTIC.equals(characteristic.getUuid())||
+               UUID_MESSAGE_CHARACTERISTIC.equals(characteristic.getUuid())
+       ) {
+           System.out.println("UUID IS: "+ characteristic.getUuid().toString());
+           BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
                     UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
             mBluetoothGatt.writeDescriptor(descriptor);
         }
     }
+
+    /**
+     * Read Characteristics from the device that have a value to read
+     * receive a message along with Read on {@code BluetoothGattCharacteristic} from to the Device.
+     * It will be use to read Services like: State, Recipes, Cocktail, Liquids
+     *  @param service receive specific Service
+     *  @param characteristic receive characteristic of Service
+     *
+     *  @return A {@code BluetoothGattCharacteristic} to read their Value
+     */
     @SuppressLint("MissingPermission")
-    public BluetoothGattCharacteristic readBluetoothGattCharacteristic(String service, String characteristic) {
+    public BluetoothGattCharacteristic getBluetoothGattCharacteristic(String service, String characteristic) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return null;
