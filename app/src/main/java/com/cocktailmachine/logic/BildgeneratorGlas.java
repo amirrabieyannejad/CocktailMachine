@@ -103,7 +103,7 @@ public class BildgeneratorGlas {
             for (int i = 0 ; i < numberSlots; i++){
                 Drawable myImage =  ResourcesCompat.getDrawable(res, listIdGlasFlüssigkeit[i+slotCounter], null);
                 myImage.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-                myImage.setColorFilter(ingredient.getColor(), PorterDuff.Mode.SRC_ATOP);
+                myImage.setColorFilter(ingredient.getColor(), PorterDuff.Mode.MULTIPLY);//MULTIPLY,SRC_IN,SRC_ATOP
                 myImage.draw(canvas);
             }
             slotCounter += numberSlots;
