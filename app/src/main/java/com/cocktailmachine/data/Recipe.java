@@ -1,6 +1,7 @@
 package com.cocktailmachine.data;
 
 
+import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
@@ -249,7 +250,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @return new recipe instance with given name. It is already saved in the database!
      */
     public static Recipe makeNew(String name){
-        return new SQLRecipe(name);
+        return (Recipe) new SQLRecipe(name);
     }
 
     public static Recipe searchOrNew(String name){

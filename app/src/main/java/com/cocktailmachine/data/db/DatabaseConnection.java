@@ -7,6 +7,8 @@ import android.os.Build;
 
 import androidx.annotation.Nullable;
 
+import com.cocktailmachine.data.Ingredient;
+import com.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;

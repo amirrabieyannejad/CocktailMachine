@@ -23,12 +23,21 @@ import com.cocktailmachine.data.Pump;
 import com.cocktailmachine.data.Recipe;
 import com.cocktailmachine.logic.BildgeneratorGlas;
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.data.Topic;
+import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
+import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
+import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class Grafik extends AppCompatActivity {
 
@@ -54,8 +63,23 @@ public class Grafik extends AppCompatActivity {
          **/
         Recipe recipe = new Recipe() {
             @Override
-            public long getId() {
+            public int compareTo(Recipe recipe) {
                 return 0;
+            }
+
+            @Override
+            public long getID() {
+                return 0;
+            }
+
+            @Override
+            public void setID(long id) {
+
+            }
+
+            @Override
+            public String getName() {
+                return null;
             }
 
             @Override
@@ -68,13 +92,23 @@ public class Grafik extends AppCompatActivity {
                 List<Ingredient> list = new LinkedList<>();
                 list.add(new Ingredient() {
                     @Override
+                    public int compareTo(Ingredient ingredient) {
+                        return 0;
+                    }
+
+                    @Override
                     public long getID() {
                         return 0;
                     }
 
                     @Override
+                    public void setID(long id) {
+
+                    }
+
+                    @Override
                     public String getName() {
-                        return null;
+                        return "ROT";
                     }
 
                     @Override
@@ -93,18 +127,38 @@ public class Grafik extends AppCompatActivity {
                     }
 
                     @Override
-                    public boolean isLiquid() {
-                        return true;
+                    public boolean isSaved() {
+                        return false;
                     }
 
                     @Override
-                    public void addImageUrl(String url) {
+                    public boolean needsUpdate() {
+                        return false;
+                    }
+
+                    @Override
+                    public void wasSaved() {
 
                     }
 
                     @Override
-                    public float getFluidInMilliliter() {
-                        return (float) 30;
+                    public void wasChanged() {
+
+                    }
+
+                    @Override
+                    public void save() throws NotInitializedDBException {
+
+                    }
+
+                    @Override
+                    public void delete() throws NotInitializedDBException {
+
+                    }
+
+                    @Override
+                    public int getVolume()  {
+                        return  30;
                     }
 
                     @Override
@@ -117,20 +171,42 @@ public class Grafik extends AppCompatActivity {
                         return null;
                     }
 
+
                     @Override
-                    public JSONObject asMessage() {
-                        return null;
+                    public void addImageUrl(String url) {
+
+                    }
+
+                    @Override
+                    public void setPump(Long pump, int volume) {
+
+                    }
+
+                    @Override
+                    public void pump(int volume) throws NewlyEmptyIngredientException {
+
                     }
                 });
+
                 list.add(new Ingredient() {
+                    @Override
+                    public int compareTo(Ingredient ingredient) {
+                        return 0;
+                    }
+
                     @Override
                     public long getID() {
                         return 0;
                     }
 
                     @Override
+                    public void setID(long id) {
+
+                    }
+
+                    @Override
                     public String getName() {
-                        return null;
+                        return "BLUE";
                     }
 
                     @Override
@@ -149,18 +225,38 @@ public class Grafik extends AppCompatActivity {
                     }
 
                     @Override
-                    public boolean isLiquid() {
-                        return true;
+                    public boolean isSaved() {
+                        return false;
                     }
 
                     @Override
-                    public void addImageUrl(String url) {
+                    public boolean needsUpdate() {
+                        return false;
+                    }
+
+                    @Override
+                    public void wasSaved() {
 
                     }
 
                     @Override
-                    public float getFluidInMilliliter() {
-                        return (float) 90;
+                    public void wasChanged() {
+
+                    }
+
+                    @Override
+                    public void save() throws NotInitializedDBException {
+
+                    }
+
+                    @Override
+                    public void delete() throws NotInitializedDBException {
+
+                    }
+
+                    @Override
+                    public int getVolume()  {
+                        return  90;
                     }
 
                     @Override
@@ -173,26 +269,141 @@ public class Grafik extends AppCompatActivity {
                         return null;
                     }
 
+
                     @Override
-                    public JSONObject asMessage() {
-                        return null;
+                    public void addImageUrl(String url) {
+
+                    }
+
+                    @Override
+                    public void setPump(Long pump, int volume) {
+
+                    }
+
+                    @Override
+                    public void pump(int volume) throws NewlyEmptyIngredientException {
+
                     }
                 });
+
+                list.add(new Ingredient() {
+                    @Override
+                    public int compareTo(Ingredient ingredient) {
+                        return 0;
+                    }
+
+                    @Override
+                    public long getID() {
+                        return 0;
+                    }
+
+                    @Override
+                    public void setID(long id) {
+
+                    }
+
+                    @Override
+                    public String getName() {
+                        return "ROT";
+                    }
+
+                    @Override
+                    public List<String> getImageUrls() {
+                        return null;
+                    }
+
+                    @Override
+                    public boolean isAlcoholic() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean isAvailable() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean isSaved() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean needsUpdate() {
+                        return false;
+                    }
+
+                    @Override
+                    public void wasSaved() {
+
+                    }
+
+                    @Override
+                    public void wasChanged() {
+
+                    }
+
+                    @Override
+                    public void save() throws NotInitializedDBException {
+
+                    }
+
+                    @Override
+                    public void delete() throws NotInitializedDBException {
+
+                    }
+
+                    @Override
+                    public int getVolume()  {
+                        return  30;
+                    }
+
+                    @Override
+                    public int getColor() {
+                        return Color.RED;
+                    }
+
+                    @Override
+                    public Pump getPump() {
+                        return null;
+                    }
+
+
+                    @Override
+                    public void addImageUrl(String url) {
+
+                    }
+
+                    @Override
+                    public void setPump(Long pump, int volume) {
+
+                    }
+
+                    @Override
+                    public void pump(int volume) throws NewlyEmptyIngredientException {
+
+                    }
+                });
+
                 return list;
             }
 
             @Override
-            public HashMap<Long, Integer> getIngredientPumpTime() {
+            public HashMap<Long, Integer> getIngredientVolumes() {
                 return null;
             }
 
             @Override
-            public int getSpecificIngredientPumpTime(long ingredientId) {
+            public List<Map.Entry<String, Integer>> getIngredientNameNVolumes() {
+                return null;
+            }
+
+            @Override
+            public int getSpecificIngredientVolume(long ingredientId) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
                 return 0;
             }
 
             @Override
-            public int getSpecificIngredientPumpTime(Ingredient ingredient) {
+            public int getSpecificIngredientVolume(Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
                 return 0;
             }
 
@@ -207,17 +418,62 @@ public class Grafik extends AppCompatActivity {
             }
 
             @Override
+            public boolean isSaved() {
+                return false;
+            }
+
+            @Override
+            public boolean needsUpdate() {
+                return false;
+            }
+
+            @Override
+            public void wasSaved() {
+
+            }
+
+            @Override
+            public void wasChanged() {
+
+            }
+
+            @Override
+            public void save() throws NotInitializedDBException {
+
+            }
+
+            @Override
+            public void delete() throws NotInitializedDBException {
+
+            }
+
+            @Override
             public List<String> getImageUrls() {
                 return null;
             }
 
             @Override
-            public void add(Ingredient ingredient, int timeInMilliseconds) {
+            public List<Long> getTopics() {
+                return null;
+            }
+
+            @Override
+            public void addOrUpdate(Ingredient ingredient, int volume) {
 
             }
 
             @Override
-            public void add(long ingredientId, int timeInMilliseconds) {
+            public void addOrUpdate(long ingredientId, int volume) {
+
+            }
+
+            @Override
+            public void addOrUpdate(Topic topic) {
+
+            }
+
+            @Override
+            public void addOrUpdate(String imageUrls) {
 
             }
 
@@ -227,30 +483,36 @@ public class Grafik extends AppCompatActivity {
             }
 
             @Override
-            public void remove(long ingredientId) {
+            public void removeIngredient(long ingredientId) {
 
             }
 
             @Override
-            public JSONObject asMessage() {
-                return null;
-            }
-
-            @Override
-            public void delete() {
+            public void remove(Topic topic) {
 
             }
 
             @Override
-            public void save() {
+            public void removeTopic(long topicId) {
 
             }
 
             @Override
-            public void send() {
+            public void remove(SQLRecipeImageUrlElement url) {
+
+            }
+
+            @Override
+            public void removeUrl(long urlId) {
+
+            }
+
+            @Override
+            public void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException {
 
             }
         };
+
 
         ImageView iv =(ImageView) findViewById(R.id.ivtest);
         iv.setImageBitmap(BildgeneratorGlas.bildgenerationGlas(this,recipe));
