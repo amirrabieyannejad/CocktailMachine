@@ -1,5 +1,6 @@
 // supported features
 // #define SD_CARD
+#define SIMULATE
 
 // pinout
 #if defined(SD_CARD)
@@ -20,8 +21,10 @@
 #endif
 
 // bluetooth
+#include <BLEAddress.h>
 #include <BLEDevice.h>
 #include <BLEServer.h>
+#include <BLEUtils.h>
 
 #define BLE_NAME "Cocktail Machine ESP32"
 
@@ -58,7 +61,9 @@ public:
 
 class BLECallback : public BLEServerCallbacks {
   void onConnect(BLEServer *server);
+  void onConnect(BLEServer *server, esp_ble_gatts_cb_param_t* param);
   void onDisconnect(BLEServer *server);
+  void onDisconnect(BLEServer *server, esp_ble_gatts_cb_param_t* param);
 };
 
 // convenient grouping of all statuses / comms
@@ -235,9 +240,20 @@ void error_loop(void);
     Serial.print(msg);                          \
     Serial.println();                           \
   } while(0)
+#define logf(level, msg, ...)                           \
+  do {                                                  \
+    Serial.print(level " ");                            \
+    Serial.printf(msg, __VA_ARGS__);                    \
+    Serial.println();                                   \
+  } while(0)
+
 #define debug(msg) log("[DEBUG]", msg)
 #define info(msg)  log("[INFO]",  msg)
 #define error(msg) log("[ERROR]", msg)
+
+#define debugf(msg, ...) logf("[DEBUG]", msg, __VA_ARGS__)
+#define infof(msg, ...)  logf("[INFO]",  msg, __VA_ARGS__)
+#define errorf(msg, ...) logf("[ERROR]", msg, __VA_ARGS__)
 
 // led feedback (if possible)
 #if defined(LED_BUILTIN)
@@ -291,9 +307,9 @@ void setup() {
   debug("sd card contents:");
   while(file){
     if(file.isDirectory()){
-      Serial.printf("[DEBUG]  DIR : %s\n", file.name());
+      debugf(" DIR : %s", file.name());
     } else {
-      Serial.printf("[DEBUG]  FILE: %16s  SIZE: %d\n", file.name(), file.size());
+      debugf(" FILE: %16s  SIZE: %d", file.name(), file.size());
     }
     file = root.openNextFile();
   }
@@ -309,7 +325,7 @@ void setup() {
 
 void loop() {
   // just wait
-  process("{\"cmd\": \"test\"}");
+  // process("{\"cmd\": \"test\"}");
 
   sleep_idle(MS(100));
 }
@@ -337,8 +353,7 @@ void process(const char *json) {
 }
 
 parsed parse_command(const char *json) {
-  debug("processing json:");
-  debug(json);
+  debugf("processing json: «%s»", json);
 
   StaticJsonDocument<1000> doc; // TODO capacity?
   DeserializationError err = deserializeJson(doc, json);
@@ -482,12 +497,22 @@ bool ble_start(void) {
 }
 
 void BLECallback::onConnect(BLEServer *server) {
-  debug("connected");
+  debug("client connected:");
+}
+
+void BLECallback::onConnect(BLEServer *server, esp_ble_gatts_cb_param_t* param) {
+  BLEAddress remote_addr(param->connect.remote_bda);
+  debug(remote_addr.toString().c_str());
 }
 
 void BLECallback::onDisconnect(BLEServer *server) {
-  debug("disconnected");
+  debug("client disconnected:");
   server->getAdvertising()->start();
+}
+
+void BLECallback::onDisconnect(BLEServer *server, esp_ble_gatts_cb_param_t* param) {
+  BLEAddress remote_addr(param->disconnect.remote_bda);
+  debug(remote_addr.toString().c_str());
 }
 
 Status::Status(BLEServer *server, const char *uuid_service, const char *uuid_char, const char *init_value) {
@@ -570,9 +595,7 @@ bool sdcard_save(void) {
   uint64_t mb  	= 1024 * 1024;
   uint64_t used	= SD.usedBytes();
   uint64_t size	= SD.totalBytes();
-  char out[50];
-  snprintf(out, sizeof(out), "sd card: %lluMB / %lluMB used", used/mb, size/mb);
-  debug(out);
+  debugf("sd card: %lluMB / %lluMB used", used/mb, size/mb);
 
   return true;
 }
