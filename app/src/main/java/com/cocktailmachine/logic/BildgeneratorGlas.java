@@ -79,22 +79,21 @@ public class BildgeneratorGlas {
     private Canvas erzeugeFlüssigkeitGlas(Context context, Canvas canvas, Recipe recipe){
         Resources res = context.getResources();
 
-        List<Ingredient> ingredientList = new LinkedList();
-        float sumLiquit = 0;
+
+        List<Ingredient> ingredientList = recipe.getIngredients();
+        int sumLiquit = 0;
         int animationSlots= listIdGlasFlüssigkeit.length;
         int slotCounter= 0;
 
         for (Ingredient ingredient : recipe.getIngredients()){
-            if (ingredient.isLiquid()){
-                ingredientList.add(ingredient);
-                sumLiquit += ingredient.getFluidInMilliliter();
-            }
+            recipe.getSpecificIngredientVolume(ingredient);
+            sumLiquit += ingredient.getVolume();
         }
 
         ingredientList.sort(new Comparator<Ingredient>() {
             @Override
             public int compare(Ingredient ingredient, Ingredient t1) {
-                return (int)(ingredient.getFluidInMilliliter()-t1.getFluidInMilliliter());
+                return (ingredient.getVolume()-t1.getVolume());
             }
         });
 

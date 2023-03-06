@@ -18,17 +18,27 @@ import android.graphics.drawable.VectorDrawable;
 import android.os.Bundle;
 import android.widget.ImageView;
 
+import com.cocktailmachine.data.BasicRecipes;
 import com.cocktailmachine.data.Ingredient;
 import com.cocktailmachine.data.Pump;
 import com.cocktailmachine.data.Recipe;
+import com.cocktailmachine.data.Topic;
+import com.cocktailmachine.data.db.NewlyEmptyIngredientException;
+import com.cocktailmachine.data.db.NotInitializedDBException;
+import com.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
+import com.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
+import com.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
 import com.cocktailmachine.logic.BildgeneratorGlas;
 import com.example.cocktailmachine.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class Grafik extends AppCompatActivity {
 
@@ -52,208 +62,23 @@ public class Grafik extends AppCompatActivity {
 
         //iv.draw(canvas);
          **/
-        Recipe recipe = new Recipe() {
-            @Override
-            public long getId() {
-                return 0;
-            }
 
-            @Override
-            public List<Long> getIngredientIds() {
-                return null;
-            }
 
-            @Override
-            public List<Ingredient> getIngredients() {
-                List<Ingredient> list = new LinkedList<>();
-                list.add(new Ingredient() {
-                    @Override
-                    public long getID() {
-                        return 0;
-                    }
+        Ingredient tequila = Ingredient.makeNew("Tequila", true, Color.RED);
+        Ingredient orangenlikör = Ingredient.makeNew("Orangenlikör", true, Color.YELLOW);
+        Ingredient limettensaft = Ingredient.makeNew("Limettensaft", false, Color.WHITE);
+        Topic ice = Topic.makeNew(" Crushed Eis", "klein gehaktes Eis");
 
-                    @Override
-                    public String getName() {
-                        return null;
-                    }
+        Recipe magarita = Recipe.makeNew("Margarita");
+        magarita.addOrUpdate(tequila, 8);
+        magarita.addOrUpdate(orangenlikör, 4);
+        magarita.addOrUpdate(limettensaft, 4);
+        magarita.addOrUpdate(ice);
 
-                    @Override
-                    public List<String> getImageUrls() {
-                        return null;
-                    }
 
-                    @Override
-                    public boolean isAlcoholic() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean isAvailable() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean isLiquid() {
-                        return true;
-                    }
-
-                    @Override
-                    public void addImageUrl(String url) {
-
-                    }
-
-                    @Override
-                    public float getFluidInMilliliter() {
-                        return (float) 30;
-                    }
-
-                    @Override
-                    public int getColor() {
-                        return Color.RED;
-                    }
-
-                    @Override
-                    public Pump getPump() {
-                        return null;
-                    }
-
-                    @Override
-                    public JSONObject asMessage() {
-                        return null;
-                    }
-                });
-                list.add(new Ingredient() {
-                    @Override
-                    public long getID() {
-                        return 0;
-                    }
-
-                    @Override
-                    public String getName() {
-                        return null;
-                    }
-
-                    @Override
-                    public List<String> getImageUrls() {
-                        return null;
-                    }
-
-                    @Override
-                    public boolean isAlcoholic() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean isAvailable() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean isLiquid() {
-                        return true;
-                    }
-
-                    @Override
-                    public void addImageUrl(String url) {
-
-                    }
-
-                    @Override
-                    public float getFluidInMilliliter() {
-                        return (float) 90;
-                    }
-
-                    @Override
-                    public int getColor() {
-                        return Color.BLUE;
-                    }
-
-                    @Override
-                    public Pump getPump() {
-                        return null;
-                    }
-
-                    @Override
-                    public JSONObject asMessage() {
-                        return null;
-                    }
-                });
-                return list;
-            }
-
-            @Override
-            public HashMap<Long, Integer> getIngredientPumpTime() {
-                return null;
-            }
-
-            @Override
-            public int getSpecificIngredientPumpTime(long ingredientId) {
-                return 0;
-            }
-
-            @Override
-            public int getSpecificIngredientPumpTime(Ingredient ingredient) {
-                return 0;
-            }
-
-            @Override
-            public boolean isAlcoholic() {
-                return false;
-            }
-
-            @Override
-            public boolean isAvailable() {
-                return false;
-            }
-
-            @Override
-            public List<String> getImageUrls() {
-                return null;
-            }
-
-            @Override
-            public void add(Ingredient ingredient, int timeInMilliseconds) {
-
-            }
-
-            @Override
-            public void add(long ingredientId, int timeInMilliseconds) {
-
-            }
-
-            @Override
-            public void remove(Ingredient ingredient) {
-
-            }
-
-            @Override
-            public void remove(long ingredientId) {
-
-            }
-
-            @Override
-            public JSONObject asMessage() {
-                return null;
-            }
-
-            @Override
-            public void delete() {
-
-            }
-
-            @Override
-            public void save() {
-
-            }
-
-            @Override
-            public void send() {
-
-            }
-        };
 
         ImageView iv =(ImageView) findViewById(R.id.ivtest);
-        iv.setImageBitmap(BildgeneratorGlas.bildgenerationGlas(this,recipe));
+        iv.setImageBitmap(BildgeneratorGlas.bildgenerationGlas(this,magarita));
         //iv.setImageBitmap(bm);
     }
 
