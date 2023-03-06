@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.data.db.elements;
+package com.cocktailmachine.data.db.elements;
 
 public abstract class SQLImageUrlElement extends SQLDataBaseElement {
     private String url = "";

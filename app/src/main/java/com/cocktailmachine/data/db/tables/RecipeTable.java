@@ -1,15 +1,15 @@
-package com.example.cocktailmachine.data.db.tables;
+package com.cocktailmachine.data.db.tables;
 
-import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_TEXT;
-import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_BOOLEAN;
-import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_ID;
+import static com.cocktailmachine.data.db.tables.Tables.TYPE_TEXT;
+import static com.cocktailmachine.data.db.tables.Tables.TYPE_BOOLEAN;
+import static com.cocktailmachine.data.db.tables.Tables.TYPE_ID;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.db.elements.SQLRecipe;
+import com.cocktailmachine.data.Recipe;
+import com.cocktailmachine.data.db.elements.SQLRecipe;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,8 +1,8 @@
-package com.example.cocktailmachine.data.db.tables;
+package com.cocktailmachine.data.db.tables;
 
-import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_ID;
-import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_LONG;
-import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_TEXT;
+import static com.cocktailmachine.data.db.tables.Tables.TYPE_ID;
+import static com.cocktailmachine.data.db.tables.Tables.TYPE_LONG;
+import static com.cocktailmachine.data.db.tables.Tables.TYPE_TEXT;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -10,8 +10,8 @@ import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 
-import com.example.cocktailmachine.data.db.Helper;
-import com.example.cocktailmachine.data.db.elements.SQLImageUrlElement;
+import com.cocktailmachine.data.db.Helper;
+import com.cocktailmachine.data.db.elements.SQLImageUrlElement;
 
 import java.util.ArrayList;
 import java.util.List;

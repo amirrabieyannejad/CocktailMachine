@@ -1,9 +1,9 @@
-package com.example.cocktailmachine.data.db.elements;
+package com.cocktailmachine.data.db.elements;
 
-import com.example.cocktailmachine.data.Ingredient;
-import com.example.cocktailmachine.data.Pump;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.cocktailmachine.data.Ingredient;
+import com.cocktailmachine.data.Pump;
+import com.cocktailmachine.data.db.DatabaseConnection;
+import com.cocktailmachine.data.db.NotInitializedDBException;
 
 public class SQLRecipeIngredient extends SQLDataBaseElement {
     private long ingredientID = -1L;

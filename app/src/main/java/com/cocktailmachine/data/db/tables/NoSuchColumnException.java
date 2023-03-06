@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.data.db.tables;
+package com.cocktailmachine.data.db.tables;
 
 public class NoSuchColumnException extends Exception{
     NoSuchColumnException(String tablename, String columnname){

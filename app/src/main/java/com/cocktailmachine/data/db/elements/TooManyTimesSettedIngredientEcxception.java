@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.data.db.elements;
+package com.cocktailmachine.data.db.elements;
 
 public class TooManyTimesSettedIngredientEcxception extends Exception {
     public TooManyTimesSettedIngredientEcxception(SQLRecipe recipe, long ingredientID) {

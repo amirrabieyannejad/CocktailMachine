@@ -1,6 +1,6 @@
-package com.example.cocktailmachine.data;
+package com.cocktailmachine.data;
 
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.cocktailmachine.data.db.NotInitializedDBException;
 
 public class BasicRecipes {
     public static void loadMargarita() throws NotInitializedDBException {

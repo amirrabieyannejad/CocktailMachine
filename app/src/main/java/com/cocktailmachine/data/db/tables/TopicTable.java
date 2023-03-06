@@ -1,12 +1,12 @@
-package com.example.cocktailmachine.data.db.tables;
+package com.cocktailmachine.data.db.tables;
 
-import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_TEXT;
-import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_ID;
+import static com.cocktailmachine.data.db.tables.Tables.TYPE_TEXT;
+import static com.cocktailmachine.data.db.tables.Tables.TYPE_ID;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import com.example.cocktailmachine.data.db.elements.SQLTopic;
+import com.cocktailmachine.data.db.elements.SQLTopic;
 
 import java.util.ArrayList;
 import java.util.List;

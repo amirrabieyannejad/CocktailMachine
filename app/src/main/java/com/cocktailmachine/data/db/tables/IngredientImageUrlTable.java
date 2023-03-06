@@ -1,10 +1,10 @@
-package com.example.cocktailmachine.data.db.tables;
+package com.cocktailmachine.data.db.tables;
 
 
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.cocktailmachine.data.db.elements.SQLImageUrlElement;
-import com.example.cocktailmachine.data.db.elements.SQLIngredientImageUrlElement;
+import com.cocktailmachine.data.db.elements.SQLImageUrlElement;
+import com.cocktailmachine.data.db.elements.SQLIngredientImageUrlElement;
 
 import java.util.List;
 

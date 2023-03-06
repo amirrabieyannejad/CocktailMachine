@@ -1,14 +1,13 @@
 package com.cocktailmachine.data;
 
 
-import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
-import com.example.cocktailmachine.data.db.elements.DataBaseElement;
-import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
-import com.example.cocktailmachine.data.db.elements.SQLRecipe;
-import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
-import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
+import com.cocktailmachine.data.db.DatabaseConnection;
+import com.cocktailmachine.data.db.NotInitializedDBException;
+import com.cocktailmachine.data.db.elements.DataBaseElement;
+import com.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
+import com.cocktailmachine.data.db.elements.SQLRecipe;
+import com.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
+import com.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
 
 
 import org.json.JSONArray;
@@ -250,7 +249,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @return new recipe instance with given name. It is already saved in the database!
      */
     public static Recipe makeNew(String name){
-        return (Recipe) new SQLRecipe(name);
+        return new SQLRecipe(name);
     }
 
     public static Recipe searchOrNew(String name){

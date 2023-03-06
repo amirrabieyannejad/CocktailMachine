@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.data.db.tables;
+package com.cocktailmachine.data.db.tables;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -6,9 +6,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.provider.BaseColumns;
 
-import com.example.cocktailmachine.data.db.Helper;
-import com.example.cocktailmachine.data.db.elements.DataBaseElement;
-import com.example.cocktailmachine.data.db.elements.SQLDataBaseElement;
+import com.cocktailmachine.data.db.Helper;
+import com.cocktailmachine.data.db.elements.DataBaseElement;
+import com.cocktailmachine.data.db.elements.SQLDataBaseElement;
 
 import java.util.ArrayList;
 import java.util.HashMap;

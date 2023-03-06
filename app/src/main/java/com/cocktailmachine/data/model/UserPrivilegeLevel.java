@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.data.model;
+package com.cocktailmachine.data.model;
 
 public enum UserPrivilegeLevel {
     User, Admin;

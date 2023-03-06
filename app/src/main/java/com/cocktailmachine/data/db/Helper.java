@@ -1,14 +1,14 @@
-package com.example.cocktailmachine.data.db;
+package com.cocktailmachine.data.db;
 
-import com.example.cocktailmachine.data.Ingredient;
-import com.example.cocktailmachine.data.Pump;
-import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.elements.DataBaseElement;
-import com.example.cocktailmachine.data.db.elements.SQLImageUrlElement;
-import com.example.cocktailmachine.data.db.elements.SQLIngredient;
-import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
-import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
+import com.cocktailmachine.data.Ingredient;
+import com.cocktailmachine.data.Pump;
+import com.cocktailmachine.data.Recipe;
+import com.cocktailmachine.data.Topic;
+import com.cocktailmachine.data.db.elements.DataBaseElement;
+import com.cocktailmachine.data.db.elements.SQLImageUrlElement;
+import com.cocktailmachine.data.db.elements.SQLIngredient;
+import com.cocktailmachine.data.db.elements.SQLIngredientPump;
+import com.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 
 import java.util.ArrayList;
 import java.util.HashMap;

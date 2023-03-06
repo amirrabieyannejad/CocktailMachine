@@ -1,14 +1,14 @@
-package com.example.cocktailmachine.data.db.tables;
+package com.cocktailmachine.data.db.tables;
 
-import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_ID;
-import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_INTEGER;
-import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_LONG;
+import static com.cocktailmachine.data.db.tables.Tables.TYPE_ID;
+import static com.cocktailmachine.data.db.tables.Tables.TYPE_INTEGER;
+import static com.cocktailmachine.data.db.tables.Tables.TYPE_LONG;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
+import com.cocktailmachine.data.db.elements.SQLIngredientPump;
 
 import java.util.ArrayList;
 import java.util.List;
