@@ -1,6 +1,6 @@
-package com.example.cocktailmachine.data.db.elements;
+package com.cocktailmachine.data.db.elements;
 
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.cocktailmachine.data.db.NotInitializedDBException;
 
 public abstract class SQLDataBaseElement implements DataBaseElement {
     private long ID = -1L;

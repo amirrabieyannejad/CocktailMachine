@@ -3,11 +3,11 @@ package com.cocktailmachine.data;
 
 import android.view.animation.ScaleAnimation;
 
-import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
-import com.example.cocktailmachine.data.db.elements.DataBaseElement;
-import com.example.cocktailmachine.data.db.elements.SQLPump;
+import com.cocktailmachine.data.db.DatabaseConnection;
+import com.cocktailmachine.data.db.NewlyEmptyIngredientException;
+import com.cocktailmachine.data.db.NotInitializedDBException;
+import com.cocktailmachine.data.db.elements.DataBaseElement;
+import com.cocktailmachine.data.db.elements.SQLPump;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -1,6 +1,6 @@
-package com.example.cocktailmachine.data.db;
+package com.cocktailmachine.data.db;
 
-import com.example.cocktailmachine.data.Ingredient;
+import com.cocktailmachine.data.Ingredient;
 
 public class NewlyEmptyIngredientException extends Exception{
     public Ingredient ingredient;

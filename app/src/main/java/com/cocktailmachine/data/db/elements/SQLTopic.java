@@ -1,11 +1,11 @@
-package com.example.cocktailmachine.data.db.elements;
+package com.cocktailmachine.data.db.elements;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.cocktailmachine.data.Topic;
+import com.cocktailmachine.data.db.DatabaseConnection;
+import com.cocktailmachine.data.db.NotInitializedDBException;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.data.db.tables;
+package com.cocktailmachine.data.db.tables;
 
 import java.util.ArrayList;
 import java.util.List;

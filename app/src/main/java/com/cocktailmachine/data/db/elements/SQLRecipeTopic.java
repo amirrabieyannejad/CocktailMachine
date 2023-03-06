@@ -1,7 +1,7 @@
-package com.example.cocktailmachine.data.db.elements;
+package com.cocktailmachine.data.db.elements;
 
-import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.cocktailmachine.data.db.DatabaseConnection;
+import com.cocktailmachine.data.db.NotInitializedDBException;
 
 public class SQLRecipeTopic extends SQLDataBaseElement {
     private long recipeID = -1;

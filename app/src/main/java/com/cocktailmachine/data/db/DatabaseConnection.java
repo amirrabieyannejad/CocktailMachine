@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.data.db;
+package com.cocktailmachine.data.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -7,21 +7,21 @@ import android.os.Build;
 
 import androidx.annotation.Nullable;
 
-import com.example.cocktailmachine.data.Ingredient;
-import com.example.cocktailmachine.data.Pump;
-import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.elements.SQLIngredientImageUrlElement;
-import com.example.cocktailmachine.data.db.elements.SQLIngredient;
-import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
-import com.example.cocktailmachine.data.db.elements.SQLPump;
-import com.example.cocktailmachine.data.db.elements.SQLRecipe;
-import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
-import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
-import com.example.cocktailmachine.data.db.elements.SQLTopic;
-import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
-import com.example.cocktailmachine.data.db.tables.Tables;
-import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
+import com.cocktailmachine.data.Ingredient;
+import com.cocktailmachine.data.Pump;
+import com.cocktailmachine.data.Recipe;
+import com.cocktailmachine.data.Topic;
+import com.cocktailmachine.data.db.elements.SQLIngredient;
+import com.cocktailmachine.data.db.elements.SQLIngredientImageUrlElement;
+import com.cocktailmachine.data.db.elements.SQLIngredientPump;
+import com.cocktailmachine.data.db.elements.SQLPump;
+import com.cocktailmachine.data.db.elements.SQLRecipe;
+import com.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
+import com.cocktailmachine.data.db.elements.SQLRecipeIngredient;
+import com.cocktailmachine.data.db.elements.SQLRecipeTopic;
+import com.cocktailmachine.data.db.elements.SQLTopic;
+import com.cocktailmachine.data.db.tables.Tables;
+import com.cocktailmachine.data.model.UserPrivilegeLevel;
 
 import java.util.ArrayList;
 import java.util.HashMap;

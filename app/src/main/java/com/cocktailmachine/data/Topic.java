@@ -1,9 +1,9 @@
-package com.example.cocktailmachine.data;
+package com.cocktailmachine.data;
 
-import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
-import com.example.cocktailmachine.data.db.elements.DataBaseElement;
-import com.example.cocktailmachine.data.db.elements.SQLTopic;
+import com.cocktailmachine.data.db.DatabaseConnection;
+import com.cocktailmachine.data.db.NotInitializedDBException;
+import com.cocktailmachine.data.db.elements.DataBaseElement;
+import com.cocktailmachine.data.db.elements.SQLTopic;
 
 import java.util.List;
 

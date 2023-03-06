@@ -1,9 +1,9 @@
-package com.example.cocktailmachine.data.db.elements;
+package com.cocktailmachine.data.db.elements;
 
-import com.example.cocktailmachine.data.Ingredient;
-import com.example.cocktailmachine.data.Pump;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.cocktailmachine.data.Ingredient;
+import com.cocktailmachine.data.Pump;
+import com.cocktailmachine.data.db.DatabaseConnection;
+import com.cocktailmachine.data.db.NotInitializedDBException;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,6 +25,18 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     @Override
     public int getMinimumPumpVolume() {
         return this.minimumPumpVolume;
+    }
+
+    @Override
+    public String getIngredientName() {
+        return getCurrentIngredient().getName();
+    }
+
+    @Override
+    public int getVolume() {
+        if (ingredientPump.equals(null))
+            return 0;
+        return getCurrentIngredient().getVolume();
     }
 
     @Override
