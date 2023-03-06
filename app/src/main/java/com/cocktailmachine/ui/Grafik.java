@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import com.cocktailmachine.data.Ingredient;
 import com.cocktailmachine.data.Pump;
 import com.cocktailmachine.data.Recipe;
+import com.cocktailmachine.data.db.NotInitializedDBException;
 import com.cocktailmachine.logic.BildgeneratorGlas;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Topic;
@@ -61,7 +62,13 @@ public class Grafik extends AppCompatActivity {
 
         //iv.draw(canvas);
          **/
-        Recipe recipe = new Recipe() {
+        List<Recipe> recipes= null;
+        try {
+            recipes = Recipe.getRecipes();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+        }
+        /**Recipe recipe = new Recipe() {
             @Override
             public int compareTo(Recipe recipe) {
                 return 0;
@@ -511,11 +518,11 @@ public class Grafik extends AppCompatActivity {
             public void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException {
 
             }
-        };
+        };**/
 
-
+        System.out.pri(recipes);
         ImageView iv =(ImageView) findViewById(R.id.ivtest);
-        iv.setImageBitmap(BildgeneratorGlas.bildgenerationGlas(this,recipe));
+        //iv.setImageBitmap(BildgeneratorGlas.bildgenerationGlas(this,recipe));
         //iv.setImageBitmap(bm);
     }
 
