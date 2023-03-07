@@ -12,7 +12,10 @@
 #include <ArduinoJson.h>
 #include <EEPROM.h>
 #include <SPI.h>
+#include <forward_list>
 #include <sys/time.h>
+
+using namespace std;
 
 // sd card
 #if defined(SD_CARD)
@@ -29,32 +32,28 @@
 #define BLE_NAME "Cocktail Machine ESP32"
 
 #define PROP_READ  (BLECharacteristic::PROPERTY_READ  | BLECharacteristic::PROPERTY_NOTIFY)
-#define PROP_WRITE (BLECharacteristic::PROPERTY_WRITE)
+#define PROP_WRITE (BLECharacteristic::PROPERTY_WRITE | BLECharacteristic::PROPERTY_NOTIFY)
 
 class Status {
-  BLEServer *server;
   BLEService *ble_service;
   BLECharacteristic *ble_char;
   const char *uuid_service;
   const char *uuid_char;
 
 public:
-  Status(BLEServer *server, const char *uuid_service, const char *uuid_char, const char *init_value);
+  Status(const char *uuid_service, const char *uuid_char, const char *init_value);
   void advertise();
   void update(const char *value);
 };
 
 class Comm {
-  BLEServer *server;
   BLEService *ble_service;
-  BLECharacteristic *ble_message;
-  BLECharacteristic *ble_response;
+  BLECharacteristic *ble_char;
   const char *uuid_service;
-  const char *uuid_message;
-  const char *uuid_response;
+  const char *uuid_char;
 
 public:
-  Comm(BLEServer *server, const char *uuid_service, const char *uuid_message, const char *uuid_response);
+  Comm(const char *uuid_service, const char *uuid_char);
   void advertise();
   void respond(const char *value);
 };
@@ -79,9 +78,6 @@ class BLECallback : public BLEServerCallbacks {
 #define ID_ADMIN	1
 #define NUM_COMM	2
 
-Status* all_status[NUM_STATUS];
-Comm*   all_comm[NUM_COMM];
-
 // UUIDs
 
 #define UUID_BASE         	"0f7742d4-ea2d-43c1-9b98-bb4186be905d"
@@ -89,12 +85,10 @@ Comm*   all_comm[NUM_COMM];
                           	
 #define UUID_USER         	"dad995d1-f228-38ec-8b0f-593953973406"
 #define UUID_USER_MSG     	"eb61e31a-f00b-335f-ad14-d654aac8353d"
-#define UUID_USER_RES     	"06dc28ef-79a4-3245-85ce-a6921e35529d"
                           	
 #define UUID_ADMIN        	"f94dd35e-4100-3ba7-bd2f-abc9659c82b1"
 #define UUID_ADMIN_MSG    	"41044979-6a5d-36be-b9f1-d4d49e3f5b73"
-#define UUID_ADMIN_RES    	"86608e6a-388a-3219-8f71-87270e2ad395"
-                          	
+
 #define UUID_LIQUIDS      	"17eed42a-f06b-3f58-9b26-60e78bccf857"
 #define UUID_LIQUIDS_CHAR 	"fc60afb0-2b00-3af2-877a-69ae6815ca2f"
                           	
@@ -122,6 +116,8 @@ typedef enum {
 } parse_error;
 
 // commands
+typedef uint32_t User;
+
 class Command {
 public:
   virtual retcode execute();
@@ -151,9 +147,9 @@ public:
 
 class CmdAddLiquid : public Command {
 public:
-  uint32_t user;
+  User user;
   const char *name;
-  CmdAddLiquid(uint32_t user, const char *name) {
+  CmdAddLiquid(User user, const char *name) {
     this->user = user;
     this->name = name;
   }
@@ -162,10 +158,10 @@ public:
 
 class CmdDefinePump : public Command {
 public:
-  uint32_t user;
+  User user;
   const char *liquid;
   // TODO
-  CmdDefinePump(uint32_t user, const char *liquid) {
+  CmdDefinePump(User user, const char *liquid) {
     this->user = user;
     this->liquid = liquid;
   }
@@ -174,10 +170,10 @@ public:
 
 class CmdDefineRecipe : public Command {
 public:
-  uint32_t user;
+  User user;
   const char *name;
   // TODO
-  CmdDefineRecipe(uint32_t user, const char *name) {
+  CmdDefineRecipe(User user, const char *name) {
     this->user = user;
     this->name = name;
   }
@@ -186,8 +182,8 @@ public:
 
 class CmdReset : public Command {
 public:
-  uint32_t user;
-  CmdReset(uint32_t user) {
+  User user;
+  CmdReset(User user) {
     this->user = user;
   }
   retcode execute();
@@ -195,8 +191,8 @@ public:
 
 class CmdClean : public Command {
 public:
-  uint32_t user;
-  CmdClean(uint32_t user) {
+  User user;
+  CmdClean(User user) {
     this->user = user;
   }
   retcode execute();
@@ -204,8 +200,8 @@ public:
 
 class CmdCalibratePumps : public Command {
 public:
-  uint32_t user;
-  CmdCalibratePumps(uint32_t user) {
+  User user;
+  CmdCalibratePumps(User user) {
     this->user = user;
   }
   retcode execute();
@@ -215,6 +211,46 @@ typedef struct {
   Command *command;
   parse_error err;
 } parsed;
+
+// machine parts
+
+class Pump {
+  const char *liquid;
+  float volume;
+  int pin;
+
+  Pump(const char *liquid, float volume, int pin);
+  retcode drain(float amount);
+  retcode refill(float volume);
+  retcode empty();
+};
+
+class Ingredient {
+  const char *name;
+  float amount;
+};
+
+class Recipe {
+  const char *name;
+  forward_list<Ingredient> ingredients;
+
+  Recipe(const char *name, forward_list<Ingredient> ingredients);
+  float total_volume();
+  retcode make(User user);
+};
+
+// global state
+
+BLEServer *ble_server;
+
+#define QUEUE_SIZE 100
+
+Status* all_status[NUM_STATUS];
+Comm*   all_comm[NUM_COMM];
+
+forward_list<Recipe> recipes;
+forward_list<Pump> pumps;
+Command* command_queue[QUEUE_SIZE];
 
 // function declarations
 
@@ -276,48 +312,65 @@ void ble_stop(void);
 // command processing
 void process(const char *json);
 parsed parse_command(const char *json);
+bool is_admin(User user);
 
 // init
 
 void setup() {
-  // setup serial communication
-  Serial.begin(115200);
-  while (!Serial) { sleep_idle(MS(10)); }
-  sleep_idle(S(1)); // make sure we don't miss any output
+  { // setup serial communication
+    Serial.begin(115200);
+    while (!Serial) { sleep_idle(MS(10)); }
+    sleep_idle(S(1)); // make sure we don't miss any output
 
-  info("Cocktail Machine v1 starting up");
+    info("Cocktail Machine v1 starting up");
+  }
 
-  // setup pins
+  { // setup pins
 #if defined(LED_BUILTIN)
-  pinMode(LED_BUILTIN, OUTPUT);
+    pinMode(LED_BUILTIN, OUTPUT);
 #endif
+  }
 
-  // setup sd card
 #if defined(SD_CARD)
-  if (!sdcard_start()) { error_loop(); }
+  { // setup sd card
+    if (!sdcard_start()) { error_loop(); }
 
-  // we read the sd card to force the reader to actually access it
-  File root = SD.open("/");
-  if(!root) {
-    error("failed to read SD card");
-    error_loop();
-  }
-
-  File file = root.openNextFile();
-  debug("sd card contents:");
-  while(file){
-    if(file.isDirectory()){
-      debugf(" DIR : %s", file.name());
-    } else {
-      debugf(" FILE: %16s  SIZE: %d", file.name(), file.size());
+    // we read the sd card to force the reader to actually access it
+    File root = SD.open("/");
+    if(!root) {
+      error("failed to read SD card");
+      error_loop();
     }
-    file = root.openNextFile();
+
+    File file = root.openNextFile();
+    debug("sd card contents:");
+    while(file){
+      if(file.isDirectory()){
+        debugf(" DIR : %s", file.name());
+      } else {
+        debugf(" FILE: %16s  SIZE: %d", file.name(), file.size());
+      }
+      file = root.openNextFile();
+    }
   }
 #endif
 
-  if (!ble_start()) {
-    error("failed to start ble");
-    error_loop();
+  { // initialize machine state
+    for (int i=0; i<QUEUE_SIZE; i++)	command_queue[i] = NULL;
+    for (int i=0; i<NUM_STATUS; i++)	all_status[i] = NULL;
+    for (int i=0; i<NUM_COMM; i++)  	all_comm[i] = NULL;
+
+    pumps.clear();
+    recipes.clear();
+
+    ble_server = NULL;
+  }
+
+  { // start bluetooth
+    if (!ble_start()) {
+      error("failed to start ble");
+      error_loop();
+    }
   }
 
   debug("ready");
@@ -461,20 +514,20 @@ retcode CmdCalibratePumps::execute() { return ok; };
 bool ble_start(void) {
   debug("starting ble");
   BLEDevice::init(BLE_NAME);
-  BLEServer *server = BLEDevice::createServer();
+  ble_server = BLEDevice::createServer();
 
   // setup callback
-  server->setCallbacks(new BLECallback());
+  ble_server->setCallbacks(new BLECallback());
 
   // init services
-  all_status[ID_BASE]    	= new Status(server, UUID_BASE,    	UUID_BASE_CHAR,    	BLE_NAME);
-  all_status[ID_STATE]   	= new Status(server, UUID_STATE,   	UUID_STATE_CHAR,   	"init");
-  all_status[ID_LIQUIDS] 	= new Status(server, UUID_LIQUIDS, 	UUID_LIQUIDS_CHAR, 	"{}");
-  all_status[ID_RECIPES] 	= new Status(server, UUID_RECIPES, 	UUID_RECIPES_CHAR, 	"{}");
-  all_status[ID_COCKTAIL]	= new Status(server, UUID_COCKTAIL,	UUID_COCKTAIL_CHAR,	"[]");
+  all_status[ID_BASE]    	= new Status(UUID_BASE,    	UUID_BASE_CHAR,    	BLE_NAME);
+  all_status[ID_STATE]   	= new Status(UUID_STATE,   	UUID_STATE_CHAR,   	"init");
+  all_status[ID_LIQUIDS] 	= new Status(UUID_LIQUIDS, 	UUID_LIQUIDS_CHAR, 	"{}");
+  all_status[ID_RECIPES] 	= new Status(UUID_RECIPES, 	UUID_RECIPES_CHAR, 	"{}");
+  all_status[ID_COCKTAIL]	= new Status(UUID_COCKTAIL,	UUID_COCKTAIL_CHAR,	"[]");
 
-  all_comm[ID_USER] 	= new Comm(server, UUID_USER, 	UUID_USER_MSG, 	UUID_USER_RES);
-  all_comm[ID_ADMIN]	= new Comm(server, UUID_ADMIN,	UUID_ADMIN_MSG,	UUID_ADMIN_RES);
+  all_comm[ID_USER] 	= new Comm(UUID_USER, 	UUID_USER_MSG);
+  all_comm[ID_ADMIN]	= new Comm(UUID_ADMIN,	UUID_ADMIN_MSG);
 
   // advertise services
   for (int i=0; i<NUM_STATUS; i++) {
@@ -485,7 +538,7 @@ bool ble_start(void) {
   }
 
   // start advertising
-  BLEAdvertising *adv = server->getAdvertising();
+  BLEAdvertising *adv = ble_server->getAdvertising();
   adv->setScanResponse(true);
   adv->setMinPreferred(0x06); // functions that help with iPhone connections issue
   adv->setMinPreferred(0x12);
@@ -515,12 +568,11 @@ void BLECallback::onDisconnect(BLEServer *server, esp_ble_gatts_cb_param_t* para
   debug(remote_addr.toString().c_str());
 }
 
-Status::Status(BLEServer *server, const char *uuid_service, const char *uuid_char, const char *init_value) {
+Status::Status(const char *uuid_service, const char *uuid_char, const char *init_value) {
   this->uuid_service	= uuid_service;
   this->uuid_char   	= uuid_char;
 
-  this->server     	= server;
-  this->ble_service	= server->createService(uuid_service);
+  this->ble_service	= ble_server->createService(uuid_service);
   this->ble_char   	= this->ble_service->createCharacteristic(uuid_char, PROP_READ);
 
   this->ble_char->setValue(init_value);
@@ -528,7 +580,7 @@ Status::Status(BLEServer *server, const char *uuid_service, const char *uuid_cha
 }
 
 void Status::advertise() {
-  BLEAdvertising *adv = this->server->getAdvertising();
+  BLEAdvertising *adv = ble_server->getAdvertising();
   adv->addServiceUUID(this->uuid_service);
 }
 
@@ -536,27 +588,24 @@ void Status::update(const char *value) {
   this->ble_char->setValue(value);
 }
 
-Comm::Comm(BLEServer *server, const char *uuid_service, const char *uuid_message, const char *uuid_response) {
-  this->uuid_service 	= uuid_service;
-  this->uuid_message 	= uuid_message;
-  this->uuid_response	= uuid_response;
+Comm::Comm(const char *uuid_service, const char *uuid_char) {
+  this->uuid_service	= uuid_service;
+  this->uuid_char   	= uuid_char;
 
-  this->server      	= server;
-  this->ble_service 	= server->createService(uuid_service);
-  this->ble_message 	= this->ble_service->createCharacteristic(uuid_message,  PROP_WRITE);
-  this->ble_response	= this->ble_service->createCharacteristic(uuid_response, PROP_READ);
+  this->ble_service	= ble_server->createService(uuid_service);
+  this->ble_char   	= this->ble_service->createCharacteristic(uuid_char, PROP_WRITE|PROP_READ);
 
-  this->ble_response->setValue("");
+  this->ble_char->setValue("");
   this->ble_service->start();
 }
 
 void Comm::advertise() {
-  BLEAdvertising *adv = this->server->getAdvertising();
+  BLEAdvertising *adv = ble_server->getAdvertising();
   adv->addServiceUUID(this->uuid_service);
 }
 
 void Comm::respond(const char *value) {
-  this->ble_response->setValue(value);
+  this->ble_char->setValue(value);
 }
 
 // sd card
