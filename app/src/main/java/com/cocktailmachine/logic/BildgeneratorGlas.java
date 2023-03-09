@@ -18,6 +18,8 @@ import androidx.core.content.res.ResourcesCompat;
 
 import com.cocktailmachine.data.Ingredient;
 import com.cocktailmachine.data.Recipe;
+import com.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
+import com.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.R;
 
 import java.util.Comparator;
@@ -76,7 +78,7 @@ public class BildgeneratorGlas {
     }
 
 
-    private Canvas erzeugeFlüssigkeitGlas(Context context, Canvas canvas, Recipe recipe){
+    private Canvas erzeugeFlüssigkeitGlas(Context context, Canvas canvas, Recipe recipe) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
         Resources res = context.getResources();
 
 
@@ -86,8 +88,9 @@ public class BildgeneratorGlas {
         int slotCounter= 0;
 
         for (Ingredient ingredient : recipe.getIngredients()){
-            recipe.getSpecificIngredientVolume(ingredient);
-            sumLiquit += ingredient.getVolume();
+
+            //recipe.getSpecificIngredientVolume(ingredient);
+            sumLiquit += recipe.getSpecificIngredientVolume(ingredient);
         }
 
         ingredientList.sort(new Comparator<Ingredient>() {
@@ -106,7 +109,7 @@ public class BildgeneratorGlas {
                 myImage.draw(canvas);
             }
             slotCounter += numberSlots;
-            sumLiquit -= ingredient.getFluidInMilliliter();
+           // sumLiquit -= ingredient.getFluidInMilliliter();
         }
 
         return canvas;
@@ -114,10 +117,11 @@ public class BildgeneratorGlas {
 
     private int getNumberOfSlots(float sumLiquit, int animationSlots, Ingredient ingredient){
         float liquitProSlot = sumLiquit/animationSlots;
-        if(liquitProSlot>ingredient.getFluidInMilliliter()){
-            return 1;
-        }
-        return (int) (ingredient.getFluidInMilliliter()/liquitProSlot);
+        //if(liquitProSlot>ingredient.getFluidInMilliliter()){
+        //    return 1;
+        //}
+        //return (int) (ingredient.getFluidInMilliliter()/liquitProSlot);
+        return 2;
     }
 
 

@@ -23,9 +23,12 @@ import com.cocktailmachine.data.Ingredient;
 import com.cocktailmachine.data.Pump;
 import com.cocktailmachine.data.Recipe;
 import com.cocktailmachine.data.Topic;
+import com.cocktailmachine.data.db.DatabaseConnection;
 import com.cocktailmachine.data.db.NewlyEmptyIngredientException;
 import com.cocktailmachine.data.db.NotInitializedDBException;
 import com.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
+import com.cocktailmachine.data.db.elements.SQLIngredient;
+import com.cocktailmachine.data.db.elements.SQLRecipe;
 import com.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
 import com.cocktailmachine.logic.BildgeneratorGlas;
@@ -64,18 +67,25 @@ public class Grafik extends AppCompatActivity {
          **/
 
 
-        Ingredient tequila = Ingredient.makeNew("Tequila", true, Color.RED);
-        Ingredient orangenlikör = Ingredient.makeNew("Orangenlikör", true, Color.YELLOW);
-        Ingredient limettensaft = Ingredient.makeNew("Limettensaft", false, Color.WHITE);
-        Topic ice = Topic.makeNew(" Crushed Eis", "klein gehaktes Eis");
+        Ingredient tequila = new SQLIngredient(1,"Tequila", true, Color.RED);
+        Ingredient orangenlikör = new SQLIngredient(2,"Orangenlikör", true, Color.YELLOW);
+        Ingredient limettensaft = new SQLIngredient(3,"Limettensaft", false, Color.WHITE);
 
-        Recipe magarita = Recipe.makeNew("Margarita");
+
+        Recipe magarita = new SQLRecipe("Margarita");
         magarita.addOrUpdate(tequila, 8);
         magarita.addOrUpdate(orangenlikör, 4);
         magarita.addOrUpdate(limettensaft, 4);
-        magarita.addOrUpdate(ice);
 
 
+        List<Recipe> recipes= null;
+        try {
+            recipes = Recipe.getRecipes();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(recipes);
 
         ImageView iv =(ImageView) findViewById(R.id.ivtest);
         iv.setImageBitmap(BildgeneratorGlas.bildgenerationGlas(this,magarita));

@@ -8,9 +8,10 @@ import android.content.Context;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import com.example.cocktailmachine.data.Ingredient;
-import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.Topic;
+import com.cocktailmachine.data.Ingredient;
+import com.cocktailmachine.data.Recipe;
+import com.cocktailmachine.data.Topic;
+import com.cocktailmachine.data.db.DatabaseConnection;
 
 import org.junit.After;
 import org.junit.Before;
