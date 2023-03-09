@@ -33,6 +33,12 @@ import com.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
 import com.cocktailmachine.logic.BildgeneratorGlas;
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.data.Topic;
+import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
+import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
+import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
 
 import org.json.JSONArray;
 import org.json.JSONException;

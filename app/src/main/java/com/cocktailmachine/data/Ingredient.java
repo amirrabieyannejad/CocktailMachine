@@ -8,8 +8,6 @@ import com.cocktailmachine.data.db.elements.DataBaseElement;
 import com.cocktailmachine.data.db.elements.SQLIngredient;
 
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -166,7 +164,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
                                      int volume,
                                      long pump,
                                      int color){
-        return new SQLIngredient(name, alcoholic, available, volume, pump, color);
+        return (Ingredient) new SQLIngredient(name, alcoholic, available, volume, pump, color);
     }
 
     /**
@@ -181,7 +179,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
     public static Ingredient makeNew(String name,
                                      boolean alcoholic,
                                      int color){
-        return new SQLIngredient(name, alcoholic, color);
+        return (Ingredient) new SQLIngredient(name, alcoholic, color);
     }
 
     /**
@@ -192,7 +190,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @return  new Ingredient instance
      */
     public static Ingredient makeNew(String name){
-        return new SQLIngredient(name);
+        return (Ingredient) new SQLIngredient(name);
     }
 
     public static Ingredient searchOrNew(String name){
