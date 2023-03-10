@@ -14,6 +14,7 @@
 #include <SPI.h>
 #include <forward_list>
 #include <sys/time.h>
+#include <unordered_map>
 
 using namespace std;
 
@@ -36,32 +37,42 @@ using namespace std;
 #define PROP_WRITE (BLECharacteristic::PROPERTY_WRITE)
 
 class Service {
+public:
   BLEService *ble_service;
   BLECharacteristic *ble_char;
   const char *uuid_service;
   const char *uuid_char;
 
-public:
-  Service(const char *uuid_service, const char *uuid_char, const char *init_value, const uint32_t props);
+  Service(const char *uuid_service, const char *uuid_char, const uint32_t props);
   void advertise();
-  void update(const char *value);
 };
 
 class Status : public Service {
 public:
   Status(const char *uuid_service, const char *uuid_char, const char *init_value);
+  void update(const char *value);
 };
 
 class Comm : public Service {
 public:
+  unordered_map<uint16_t, const char *> responses;
   Comm(const char *uuid_service, const char *uuid_char);
 };
 
-class BLECallback : public BLEServerCallbacks {
+class ServerCB : public BLEServerCallbacks {
   void onConnect(BLEServer *server);
-  void onConnect(BLEServer *server, esp_ble_gatts_cb_param_t* param);
+  void onConnect(BLEServer *server, esp_ble_gatts_cb_param_t *param);
   void onDisconnect(BLEServer *server);
-  void onDisconnect(BLEServer *server, esp_ble_gatts_cb_param_t* param);
+  void onDisconnect(BLEServer *server, esp_ble_gatts_cb_param_t *param);
+};
+
+class CommCB: public BLECharacteristicCallbacks {
+public:
+  Comm *comm;
+  CommCB(Comm *comm);
+
+  void onRead(BLECharacteristic  *ble_char, esp_ble_gatts_cb_param_t *param);
+  void onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *param);
 };
 
 // convenient grouping of all statuses / comms
@@ -87,7 +98,7 @@ class BLECallback : public BLEServerCallbacks {
                           	
 #define UUID_ADMIN        	"f94dd35e-4100-3ba7-bd2f-abc9659c82b1"
 #define UUID_ADMIN_MSG    	"41044979-6a5d-36be-b9f1-d4d49e3f5b73"
-
+                          	
 #define UUID_LIQUIDS      	"17eed42a-f06b-3f58-9b26-60e78bccf857"
 #define UUID_LIQUIDS_CHAR 	"fc60afb0-2b00-3af2-877a-69ae6815ca2f"
                           	
@@ -516,7 +527,7 @@ bool ble_start(void) {
   ble_server = BLEDevice::createServer();
 
   // setup callback
-  ble_server->setCallbacks(new BLECallback());
+  ble_server->setCallbacks(new ServerCB());
 
   // init services
   all_status[ID_BASE]    	= new Status(UUID_BASE,    	UUID_BASE_CHAR,    	BLE_NAME);
@@ -548,54 +559,106 @@ bool ble_start(void) {
   return true;
 }
 
-void BLECallback::onConnect(BLEServer *server) {
-  debug("client connected:");
-}
-
-void BLECallback::onConnect(BLEServer *server, esp_ble_gatts_cb_param_t* param) {
-  BLEAddress remote_addr(param->connect.remote_bda);
-  debug(remote_addr.toString().c_str());
-}
-
-void BLECallback::onDisconnect(BLEServer *server) {
-  debug("client disconnected:");
-  server->getAdvertising()->start();
-}
-
-void BLECallback::onDisconnect(BLEServer *server, esp_ble_gatts_cb_param_t* param) {
-  BLEAddress remote_addr(param->disconnect.remote_bda);
-  debug(remote_addr.toString().c_str());
-}
-
-Service::Service(const char *uuid_service, const char *uuid_char, const char *init_value, const uint32_t props) {
+Service::Service(const char *uuid_service, const char *uuid_char, const uint32_t props) {
   this->uuid_service	= uuid_service;
   this->uuid_char   	= uuid_char;
 
+  debugf("creating service: %s / %s", uuid_service, uuid_char);
   this->ble_service	= ble_server->createService(uuid_service);
   this->ble_char   	= this->ble_service->createCharacteristic(uuid_char, props);
 
   // add descriptor for notifications
   this->ble_char->addDescriptor(new BLE2902());
 
-  this->ble_char->setValue(init_value);
   this->ble_service->start();
 }
 
 void Service::advertise() {
+  debugf("advertising service: %s", this->uuid_service);
   BLEAdvertising *adv = ble_server->getAdvertising();
   adv->addServiceUUID(this->uuid_service);
 }
 
-void Service::update(const char *value) {
+Status::Status(const char *uuid_service, const char *uuid_char, const char *init_value)
+  : Service(uuid_service, uuid_char, PROP_READ) {
+  this->ble_char->setValue(init_value);
+}
+
+void Status::update(const char *value) {
   this->ble_char->setValue(value);
   this->ble_char->notify();
 }
 
-Status::Status(const char *uuid_service, const char *uuid_char, const char *init_value)
-  : Service(uuid_service, uuid_char, init_value, PROP_READ) {};
-
 Comm::Comm(const char *uuid_service, const char *uuid_char)
-  : Service(uuid_service, uuid_char, "", PROP_READ|PROP_WRITE) {};
+  : Service(uuid_service, uuid_char, PROP_READ|PROP_WRITE) {
+  this->ble_char->setCallbacks(new CommCB(this));
+  this->responses = {};
+}
+
+void ServerCB::onConnect(BLEServer *server) {
+  debug("client connected:");
+}
+
+void ServerCB::onConnect(BLEServer *server, esp_ble_gatts_cb_param_t* param) {
+  BLEAddress remote_addr(param->connect.remote_bda);
+  uint16_t id = param->connect.conn_id;
+
+  for (int i=0; i<NUM_COMM; i++) {
+    all_comm[i]->responses[id] = "";
+  }
+  debugf("  %s -> %d", remote_addr.toString().c_str(), id);
+}
+
+void ServerCB::onDisconnect(BLEServer *server) {
+  debug("client disconnected:");
+  server->getAdvertising()->start();
+}
+
+void ServerCB::onDisconnect(BLEServer *server, esp_ble_gatts_cb_param_t* param) {
+  BLEAddress remote_addr(param->disconnect.remote_bda);
+  uint16_t id = param->disconnect.conn_id;
+
+  for (int i=0; i<NUM_COMM; i++) {
+    all_comm[i]->responses.erase(id);
+  }
+  debugf("  %s -> %d", remote_addr.toString().c_str(), id);
+}
+
+CommCB::CommCB(Comm *comm) {
+  this->comm = comm;
+}
+
+void CommCB::onRead(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *param) {
+  if (this->comm->ble_char != ble_char) return; // different characteristic
+
+  uint16_t id = param->read.conn_id;
+
+  // we need to set the value for each active connection to multiplex properly,
+  // or default to a dummy value
+  const char *v;
+  if (this->comm->responses.count(id)) {
+    v = this->comm->responses[id];
+  } else {
+    v = "";
+  }
+
+  debugf("read: %d (%s) -> %s", id, ble_char->getUUID().toString().c_str(), v);
+  ble_char->setValue(v);
+}
+
+void CommCB::onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *param) {
+  if (this->comm->ble_char != ble_char) return; // different characteristic
+
+  uint16_t id = param->write.conn_id;
+  debugf("attempt to write: %d", id);
+
+  if (this->comm->responses.count(id)) {
+    const string v = ble_char->getValue();
+    // this->comm->responses[id];
+
+    debugf("write: %d (%s) -> %s", id, ble_char->getUUID().toString().c_str(), v);
+  }
+}
 
 // sd card
 #if defined(SD_CARD)
