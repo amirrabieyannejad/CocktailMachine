@@ -24,6 +24,7 @@ using namespace std;
 #endif
 
 // bluetooth
+#include <BLE2902.h>
 #include <BLEAddress.h>
 #include <BLEDevice.h>
 #include <BLEServer.h>
@@ -31,31 +32,29 @@ using namespace std;
 
 #define BLE_NAME "Cocktail Machine ESP32"
 
-#define PROP_READ  (BLECharacteristic::PROPERTY_READ  | BLECharacteristic::PROPERTY_NOTIFY)
-#define PROP_WRITE (BLECharacteristic::PROPERTY_WRITE | BLECharacteristic::PROPERTY_NOTIFY)
+#define PROP_READ  (BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY)
+#define PROP_WRITE (BLECharacteristic::PROPERTY_WRITE)
 
-class Status {
+class Service {
   BLEService *ble_service;
   BLECharacteristic *ble_char;
   const char *uuid_service;
   const char *uuid_char;
 
 public:
-  Status(const char *uuid_service, const char *uuid_char, const char *init_value);
+  Service(const char *uuid_service, const char *uuid_char, const char *init_value, const uint32_t props);
   void advertise();
   void update(const char *value);
 };
 
-class Comm {
-  BLEService *ble_service;
-  BLECharacteristic *ble_char;
-  const char *uuid_service;
-  const char *uuid_char;
+class Status : public Service {
+public:
+  Status(const char *uuid_service, const char *uuid_char, const char *init_value);
+};
 
+class Comm : public Service {
 public:
   Comm(const char *uuid_service, const char *uuid_char);
-  void advertise();
-  void respond(const char *value);
 };
 
 class BLECallback : public BLEServerCallbacks {
@@ -568,45 +567,35 @@ void BLECallback::onDisconnect(BLEServer *server, esp_ble_gatts_cb_param_t* para
   debug(remote_addr.toString().c_str());
 }
 
-Status::Status(const char *uuid_service, const char *uuid_char, const char *init_value) {
+Service::Service(const char *uuid_service, const char *uuid_char, const char *init_value, const uint32_t props) {
   this->uuid_service	= uuid_service;
   this->uuid_char   	= uuid_char;
 
   this->ble_service	= ble_server->createService(uuid_service);
-  this->ble_char   	= this->ble_service->createCharacteristic(uuid_char, PROP_READ);
+  this->ble_char   	= this->ble_service->createCharacteristic(uuid_char, props);
+
+  // add descriptor for notifications
+  this->ble_char->addDescriptor(new BLE2902());
 
   this->ble_char->setValue(init_value);
   this->ble_service->start();
 }
 
-void Status::advertise() {
+void Service::advertise() {
   BLEAdvertising *adv = ble_server->getAdvertising();
   adv->addServiceUUID(this->uuid_service);
 }
 
-void Status::update(const char *value) {
+void Service::update(const char *value) {
   this->ble_char->setValue(value);
+  this->ble_char->notify();
 }
 
-Comm::Comm(const char *uuid_service, const char *uuid_char) {
-  this->uuid_service	= uuid_service;
-  this->uuid_char   	= uuid_char;
+Status::Status(const char *uuid_service, const char *uuid_char, const char *init_value)
+  : Service(uuid_service, uuid_char, init_value, PROP_READ) {};
 
-  this->ble_service	= ble_server->createService(uuid_service);
-  this->ble_char   	= this->ble_service->createCharacteristic(uuid_char, PROP_WRITE|PROP_READ);
-
-  this->ble_char->setValue("");
-  this->ble_service->start();
-}
-
-void Comm::advertise() {
-  BLEAdvertising *adv = ble_server->getAdvertising();
-  adv->addServiceUUID(this->uuid_service);
-}
-
-void Comm::respond(const char *value) {
-  this->ble_char->setValue(value);
-}
+Comm::Comm(const char *uuid_service, const char *uuid_char)
+  : Service(uuid_service, uuid_char, "", PROP_READ|PROP_WRITE) {};
 
 // sd card
 #if defined(SD_CARD)
