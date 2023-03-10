@@ -1,29 +1,22 @@
-package com.cocktailmachine.logic;
+package com.example.cocktailmachine.logic;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.BlendModeColorFilter;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.VectorDrawable;
 
-import androidx.annotation.ColorInt;
 import androidx.core.content.res.ResourcesCompat;
 
-import com.cocktailmachine.data.Ingredient;
-import com.cocktailmachine.data.Recipe;
-import com.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
-import com.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.data.Ingredient;
+import com.example.cocktailmachine.data.Recipe;
+import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.R;
 
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 
 public class BildgeneratorGlas {
@@ -36,7 +29,7 @@ public class BildgeneratorGlas {
             R.drawable.glas_fluessigkeit17,R.drawable.glas_fluessigkeit18,R.drawable.glas_fluessigkeit19,R.drawable.glas_fluessigkeit20,
             R.drawable.glas_fluessigkeit21,R.drawable.glas_fluessigkeit22};
 
-    public static Bitmap bildgenerationGlas(Context context, Recipe recipe){
+    public static Bitmap bildgenerationGlas(Context context, Recipe recipe) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
 
         Bitmap bm = Bitmap.createBitmap(800,800,Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bm);
@@ -90,18 +83,24 @@ public class BildgeneratorGlas {
         for (Ingredient ingredient : recipe.getIngredients()){
 
             //recipe.getSpecificIngredientVolume(ingredient);
-            sumLiquit += recipe.getSpecificIngredientVolume(ingredient);
+            sumLiquit += recipe.getSpecificIngredientPumpTime(ingredient);
         }
 
         ingredientList.sort(new Comparator<Ingredient>() {
             @Override
             public int compare(Ingredient ingredient, Ingredient t1) {
-                return (ingredient.getVolume()-t1.getVolume());
+                try {
+                    return (recipe.getSpecificIngredientPumpTime(ingredient)-recipe.getSpecificIngredientPumpTime(t1));
+                } catch (TooManyTimesSettedIngredientEcxception e) {
+                    return(0);
+                } catch (NoSuchIngredientSettedException e) {
+                    return(0);
+                }
             }
         });
 
         for (Ingredient ingredient : ingredientList){
-            int numberSlots = this.getNumberOfSlots(sumLiquit,animationSlots-slotCounter,ingredient);
+            int numberSlots = this.getNumberOfSlots(sumLiquit,animationSlots-slotCounter,recipe, ingredient);
             for (int i = 0 ; i < numberSlots; i++){
                 Drawable myImage =  ResourcesCompat.getDrawable(res, listIdGlasFlüssigkeit[i+slotCounter], null);
                 myImage.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -109,19 +108,19 @@ public class BildgeneratorGlas {
                 myImage.draw(canvas);
             }
             slotCounter += numberSlots;
-           // sumLiquit -= ingredient.getFluidInMilliliter();
+            sumLiquit -= recipe.getSpecificIngredientPumpTime(ingredient);
         }
 
         return canvas;
     }
 
-    private int getNumberOfSlots(float sumLiquit, int animationSlots, Ingredient ingredient){
+    private int getNumberOfSlots(float sumLiquit, int animationSlots, Recipe recipe, Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
         float liquitProSlot = sumLiquit/animationSlots;
-        //if(liquitProSlot>ingredient.getFluidInMilliliter()){
-        //    return 1;
-        //}
-        //return (int) (ingredient.getFluidInMilliliter()/liquitProSlot);
-        return 2;
+        if(liquitProSlot>recipe.getSpecificIngredientPumpTime(ingredient)){
+            return 1;
+        }
+        return (int) (recipe.getSpecificIngredientPumpTime(ingredient)/liquitProSlot);
+
     }
 
 

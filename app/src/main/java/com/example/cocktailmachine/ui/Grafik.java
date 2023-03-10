@@ -1,9 +1,8 @@
-package com.cocktailmachine.ui;
+package com.example.cocktailmachine.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -14,40 +13,27 @@ import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.VectorDrawable;
 import android.os.Bundle;
 import android.widget.ImageView;
 
-import com.cocktailmachine.data.BasicRecipes;
-import com.cocktailmachine.data.Ingredient;
-import com.cocktailmachine.data.Pump;
-import com.cocktailmachine.data.Recipe;
-import com.cocktailmachine.data.Topic;
-import com.cocktailmachine.data.db.DatabaseConnection;
-import com.cocktailmachine.data.db.NewlyEmptyIngredientException;
-import com.cocktailmachine.data.db.NotInitializedDBException;
-import com.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
-import com.cocktailmachine.data.db.elements.SQLIngredient;
-import com.cocktailmachine.data.db.elements.SQLRecipe;
-import com.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
-import com.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
-import com.cocktailmachine.logic.BildgeneratorGlas;
-import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
-import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
-import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
-import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.example.cocktailmachine.data.Ingredient;
+import com.example.cocktailmachine.data.Pump;
+import com.example.cocktailmachine.data.Recipe;
+import com.example.cocktailmachine.data.Topic;
+import com.example.cocktailmachine.data.db.NeedsMoreIngredientException;
+import com.example.cocktailmachine.data.db.NewEmptyIngredientException;
+import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.elements.SQLIngredient;
+import com.example.cocktailmachine.data.db.elements.SQLRecipe;
+import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.logic.BildgeneratorGlas;
+import com.example.cocktailmachine.R;
+
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class Grafik extends AppCompatActivity {
 
@@ -72,7 +58,258 @@ public class Grafik extends AppCompatActivity {
         //iv.draw(canvas);
          **/
 
+        Recipe recipe = new Recipe() {
+            @Override
+            public long getID() {
+                return 0;
+            }
 
+            @Override
+            public String getName() {
+                return null;
+            }
+
+            @Override
+            public List<Long> getIngredientIds() {
+                return null;
+            }
+
+            @Override
+            public List<Ingredient> getIngredients() {
+                List<Ingredient> list = new LinkedList();
+                list.add(new Ingredient() {
+                    @Override
+                    public long getID() {
+                        return 1;
+                    }
+
+                    @Override
+                    public String getName() {
+                        return "ROT";
+                    }
+
+                    @Override
+                    public List<String> getImageUrls() {
+                        return null;
+                    }
+
+                    @Override
+                    public boolean isAlcoholic() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean isAvailable() {
+                        return false;
+                    }
+
+                    @Override
+                    public int getFillLevel() {
+                        return 0;
+                    }
+
+                    @Override
+                    public Pump getPump() {
+                        return null;
+                    }
+
+                    @Override
+                    public int getColor() {
+                        return Color.RED;
+                    }
+
+                    @Override
+                    public void addImageUrl(String url) {
+
+                    }
+
+                    @Override
+                    public void setPump(Long pump, int fluidInMillimeters) {
+
+                    }
+
+                    @Override
+                    public void pump(int millimeters) throws NewEmptyIngredientException, NeedsMoreIngredientException {
+
+                    }
+
+                    @Override
+                    public void save() {
+
+                    }
+
+                    @Override
+                    public void delete() {
+
+                    }
+                });
+                list.add(new Ingredient() {
+                    @Override
+                    public long getID() {
+                        return 2;
+                    }
+
+                    @Override
+                    public String getName() {
+                        return "Blau";
+                    }
+
+                    @Override
+                    public List<String> getImageUrls() {
+                        return null;
+                    }
+
+                    @Override
+                    public boolean isAlcoholic() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean isAvailable() {
+                        return false;
+                    }
+
+                    @Override
+                    public int getFillLevel() {
+                        return 0;
+                    }
+
+                    @Override
+                    public Pump getPump() {
+                        return null;
+                    }
+
+                    @Override
+                    public int getColor() {
+                        return Color.BLUE;
+                    }
+
+                    @Override
+                    public void addImageUrl(String url) {
+
+                    }
+
+                    @Override
+                    public void setPump(Long pump, int fluidInMillimeters) {
+
+                    }
+
+                    @Override
+                    public void pump(int millimeters) throws NewEmptyIngredientException, NeedsMoreIngredientException {
+
+                    }
+
+                    @Override
+                    public void save() {
+
+                    }
+
+                    @Override
+                    public void delete() {
+
+                    }
+                });
+                return list;
+            }
+
+            @Override
+            public HashMap<Long, Integer> getIngredientPumpTime() {
+                return null;
+            }
+
+            @Override
+            public int getSpecificIngredientPumpTime(long ingredientId) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
+                return 0;
+            }
+
+            @Override
+            public int getSpecificIngredientPumpTime(Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
+                if (ingredient.getID() == 1){
+                    return 30;
+                }
+                if (ingredient.getID() == 2){
+                    return 60;
+                }
+                return 80;
+            }
+
+            @Override
+            public boolean isAlcoholic() {
+                return false;
+            }
+
+            @Override
+            public boolean isAvailable() {
+                return false;
+            }
+
+            @Override
+            public List<String> getImageUrls() {
+                return null;
+            }
+
+            @Override
+            public List<Long> getTopics() {
+                return null;
+            }
+
+            @Override
+            public void addOrUpdate(Ingredient ingredient, int timeInMilliseconds) {
+
+            }
+
+            @Override
+            public void addOrUpdate(long ingredientId, int timeInMilliseconds) {
+
+            }
+
+            @Override
+            public void addOrUpdate(Topic topic) {
+
+            }
+
+            @Override
+            public void addOrUpdate(String imageUrls) {
+
+            }
+
+            @Override
+            public void remove(Ingredient ingredient) {
+
+            }
+
+            @Override
+            public void removeIngredient(long ingredientId) {
+
+            }
+
+            @Override
+            public void remove(Topic topic) {
+
+            }
+
+            @Override
+            public void removeTopic(long topicId) {
+
+            }
+
+            @Override
+            public void delete() {
+
+            }
+
+            @Override
+            public void save() {
+
+            }
+
+            @Override
+            public boolean equals(Recipe recipe) {
+                return false;
+            }
+        };
+
+        /**
         Ingredient tequila = new SQLIngredient(1,"Tequila", true, Color.RED);
         Ingredient orangenlikör = new SQLIngredient(2,"Orangenlikör", true, Color.YELLOW);
         Ingredient limettensaft = new SQLIngredient(3,"Limettensaft", false, Color.WHITE);
@@ -85,16 +322,18 @@ public class Grafik extends AppCompatActivity {
 
 
         List<Recipe> recipes= null;
-        try {
-            recipes = Recipe.getRecipes();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
+        recipes = Recipe.getRecipes();
 
         System.out.println(recipes);
-
+        **/
         ImageView iv =(ImageView) findViewById(R.id.ivtest);
-        iv.setImageBitmap(BildgeneratorGlas.bildgenerationGlas(this,magarita));
+        try {
+            iv.setImageBitmap(BildgeneratorGlas.bildgenerationGlas(this,recipe));
+        } catch (TooManyTimesSettedIngredientEcxception e) {
+            e.printStackTrace();
+        } catch (NoSuchIngredientSettedException e) {
+            e.printStackTrace();
+        }
         //iv.setImageBitmap(bm);
     }
 
