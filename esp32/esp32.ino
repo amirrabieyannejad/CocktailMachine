@@ -38,25 +38,21 @@ using namespace std;
 
 class Service {
 public:
-  BLEService *ble_service;
   BLECharacteristic *ble_char;
-  const char *uuid_service;
-  const char *uuid_char;
 
   Service(const char *uuid_service, const char *uuid_char, const uint32_t props);
-  void advertise();
 };
 
 class Status : public Service {
 public:
-  Status(const char *uuid_service, const char *uuid_char, const char *init_value);
+  Status(const char *uuid_char, const char *init_value);
   void update(const char *value);
 };
 
 class Comm : public Service {
 public:
   unordered_map<uint16_t, const char *> responses;
-  Comm(const char *uuid_service, const char *uuid_char);
+  Comm(const char *uuid_char);
 };
 
 class ServerCB : public BLEServerCallbacks {
@@ -90,26 +86,16 @@ public:
 
 // UUIDs
 
-#define UUID_BASE         	"0f7742d4-ea2d-43c1-9b98-bb4186be905d"
-#define UUID_BASE_CHAR    	"c0605c38-3f94-33f6-ace6-7a5504544a80"
-                          	
-#define UUID_USER         	"dad995d1-f228-38ec-8b0f-593953973406"
-#define UUID_USER_MSG     	"eb61e31a-f00b-335f-ad14-d654aac8353d"
-                          	
-#define UUID_ADMIN        	"f94dd35e-4100-3ba7-bd2f-abc9659c82b1"
-#define UUID_ADMIN_MSG    	"41044979-6a5d-36be-b9f1-d4d49e3f5b73"
-                          	
-#define UUID_LIQUIDS      	"17eed42a-f06b-3f58-9b26-60e78bccf857"
-#define UUID_LIQUIDS_CHAR 	"fc60afb0-2b00-3af2-877a-69ae6815ca2f"
-                          	
-#define UUID_STATE        	"addf5391-2030-3cf0-a64f-31d5156d7f00"
-#define UUID_STATE_CHAR   	"e9e4b3f2-fd3f-3b76-8688-088a0671843a"
-                          	
-#define UUID_RECIPES      	"8f0aec28-5985-335e-baa2-8e03ce08b513"
-#define UUID_RECIPES_CHAR 	"9ede6e03-f89b-3e52-bb15-5c6c72605f6c"
-                          	
-#define UUID_COCKTAIL     	"8a421a72-b9a0-342d-ab57-afa3d67149d1"
-#define UUID_COCKTAIL_CHAR	"7344136f-c552-3efc-b04f-a43793f16d43"
+#define UUID_STATUS         	"0f7742d4-ea2d-43c1-9b98-bb4186be905d"
+#define UUID_STATUS_BASE    	"c0605c38-3f94-33f6-ace6-7a5504544a80"
+#define UUID_STATUS_STATE   	"e9e4b3f2-fd3f-3b76-8688-088a0671843a"
+#define UUID_STATUS_LIQUIDS 	"fc60afb0-2b00-3af2-877a-69ae6815ca2f"
+#define UUID_STATUS_RECIPES 	"9ede6e03-f89b-3e52-bb15-5c6c72605f6c"
+#define UUID_STATUS_COCKTAIL	"7344136f-c552-3efc-b04f-a43793f16d43"
+                            	
+#define UUID_COMM           	"dad995d1-f228-38ec-8b0f-593953973406"
+#define UUID_COMM_USER      	"eb61e31a-f00b-335f-ad14-d654aac8353d"
+#define UUID_COMM_ADMIN     	"41044979-6a5d-36be-b9f1-d4d49e3f5b73"
 
 // error codes
 typedef enum {
@@ -530,25 +516,27 @@ bool ble_start(void) {
   ble_server->setCallbacks(new ServerCB());
 
   // init services
-  all_status[ID_BASE]    	= new Status(UUID_BASE,    	UUID_BASE_CHAR,    	BLE_NAME);
-  all_status[ID_STATE]   	= new Status(UUID_STATE,   	UUID_STATE_CHAR,   	"init");
-  all_status[ID_LIQUIDS] 	= new Status(UUID_LIQUIDS, 	UUID_LIQUIDS_CHAR, 	"{}");
-  all_status[ID_RECIPES] 	= new Status(UUID_RECIPES, 	UUID_RECIPES_CHAR, 	"{}");
-  all_status[ID_COCKTAIL]	= new Status(UUID_COCKTAIL,	UUID_COCKTAIL_CHAR,	"[]");
+  all_status[ID_BASE]    	= new Status(UUID_STATUS_BASE,    	BLE_NAME);
+  all_status[ID_STATE]   	= new Status(UUID_STATUS_STATE,   	"init");
+  all_status[ID_LIQUIDS] 	= new Status(UUID_STATUS_LIQUIDS, 	"{}");
+  all_status[ID_RECIPES] 	= new Status(UUID_STATUS_RECIPES, 	"{}");
+  all_status[ID_COCKTAIL]	= new Status(UUID_STATUS_COCKTAIL,	"[]");
 
-  all_comm[ID_USER] 	= new Comm(UUID_USER, 	UUID_USER_MSG);
-  all_comm[ID_ADMIN]	= new Comm(UUID_ADMIN,	UUID_ADMIN_MSG);
+  all_comm[ID_USER] 	= new Comm(UUID_COMM_USER);
+  all_comm[ID_ADMIN]	= new Comm(UUID_COMM_ADMIN);
 
-  // advertise services
-  for (int i=0; i<NUM_STATUS; i++) {
-    all_status[i]->advertise();
-  }
-  for (int i=0; i<NUM_COMM; i++) {
-    all_comm[i]->advertise();
-  }
-
-  // start advertising
+  // start and advertise services
   BLEAdvertising *adv = ble_server->getAdvertising();
+  const char *services[] = {UUID_STATUS, UUID_COMM};
+
+  for (int i=0; i<(sizeof(services)/sizeof(services[0])); i++) {
+    const char *uuid = services[i];
+    BLEService *s = ble_server->getServiceByUUID(uuid);
+
+    s->start();
+    adv->addServiceUUID(uuid);
+  }
+
   adv->setScanResponse(true);
   adv->setMinPreferred(0x06); // functions that help with iPhone connections issue
   adv->setMinPreferred(0x12);
@@ -560,27 +548,20 @@ bool ble_start(void) {
 }
 
 Service::Service(const char *uuid_service, const char *uuid_char, const uint32_t props) {
-  this->uuid_service	= uuid_service;
-  this->uuid_char   	= uuid_char;
-
   debugf("creating service: %s / %s", uuid_service, uuid_char);
-  this->ble_service	= ble_server->createService(uuid_service);
-  this->ble_char   	= this->ble_service->createCharacteristic(uuid_char, props);
+
+  BLEService* service = ble_server->getServiceByUUID(uuid_service);
+  if (service == NULL) {
+    service = ble_server->createService(uuid_service);
+  }
+  this->ble_char = service->createCharacteristic(uuid_char, props);
 
   // add descriptor for notifications
   this->ble_char->addDescriptor(new BLE2902());
-
-  this->ble_service->start();
 }
 
-void Service::advertise() {
-  debugf("advertising service: %s", this->uuid_service);
-  BLEAdvertising *adv = ble_server->getAdvertising();
-  adv->addServiceUUID(this->uuid_service);
-}
-
-Status::Status(const char *uuid_service, const char *uuid_char, const char *init_value)
-  : Service(uuid_service, uuid_char, PROP_READ) {
+Status::Status(const char *uuid_char, const char *init_value)
+  : Service(UUID_STATUS, uuid_char, PROP_READ) {
   this->ble_char->setValue(init_value);
 }
 
@@ -589,8 +570,8 @@ void Status::update(const char *value) {
   this->ble_char->notify();
 }
 
-Comm::Comm(const char *uuid_service, const char *uuid_char)
-  : Service(uuid_service, uuid_char, PROP_READ|PROP_WRITE) {
+Comm::Comm(const char *uuid_char)
+  : Service(UUID_COMM, uuid_char, PROP_READ|PROP_WRITE) {
   this->ble_char->setCallbacks(new CommCB(this));
   this->responses = {};
 }
