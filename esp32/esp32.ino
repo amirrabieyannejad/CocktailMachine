@@ -585,7 +585,7 @@ void ServerCB::onConnect(BLEServer *server, esp_ble_gatts_cb_param_t* param) {
   uint16_t id = param->connect.conn_id;
 
   for (int i=0; i<NUM_COMM; i++) {
-    all_comm[i]->responses[id] = "";
+    all_comm[i]->responses[id] = "ready";
   }
   debugf("  %s -> %d", remote_addr.toString().c_str(), id);
 }
@@ -610,8 +610,6 @@ CommCB::CommCB(Comm *comm) {
 }
 
 void CommCB::onRead(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *param) {
-  if (this->comm->ble_char != ble_char) return; // different characteristic
-
   uint16_t id = param->read.conn_id;
 
   // we need to set the value for each active connection to multiplex properly,
@@ -628,8 +626,6 @@ void CommCB::onRead(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *param
 }
 
 void CommCB::onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *param) {
-  if (this->comm->ble_char != ble_char) return; // different characteristic
-
   uint16_t id = param->write.conn_id;
   debugf("attempt to write: %d", id);
 
@@ -637,7 +633,7 @@ void CommCB::onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *para
     const string v = ble_char->getValue();
     // this->comm->responses[id];
 
-    debugf("write: %d (%s) -> %s", id, ble_char->getUUID().toString().c_str(), v);
+    debugf("write: %d (%s) -> %s", id, ble_char->getUUID().toString().c_str(), v.c_str());
   }
 }
 
