@@ -13,6 +13,7 @@
 #include <EEPROM.h>
 #include <SPI.h>
 #include <forward_list>
+#include <queue>
 #include <sys/time.h>
 #include <unordered_map>
 
@@ -109,6 +110,7 @@ typedef enum {
   too_big,
   incomplete,
   unknown_command,
+  missing_command,
 } parse_error;
 
 // commands
@@ -239,14 +241,13 @@ class Recipe {
 
 BLEServer *ble_server;
 
-#define QUEUE_SIZE 100
-
 Status* all_status[NUM_STATUS];
 Comm*   all_comm[NUM_COMM];
 
 forward_list<Recipe> recipes;
 forward_list<Pump> pumps;
-Command* command_queue[QUEUE_SIZE];
+
+queue<Command*> command_queue;
 
 // function declarations
 
@@ -306,8 +307,9 @@ bool ble_start(void);
 void ble_stop(void);
 
 // command processing
-void process(const char *json);
-parsed parse_command(const char *json);
+parse_error add_to_queue(const string json);
+retcode process(const string json);
+parsed parse_command(const string json);
 bool is_admin(User user);
 
 // init
@@ -352,10 +354,10 @@ void setup() {
 #endif
 
   { // initialize machine state
-    for (int i=0; i<QUEUE_SIZE; i++)	command_queue[i] = NULL;
     for (int i=0; i<NUM_STATUS; i++)	all_status[i] = NULL;
     for (int i=0; i<NUM_COMM; i++)  	all_comm[i] = NULL;
 
+    while (!command_queue.empty()) command_queue.pop();
     pumps.clear();
     recipes.clear();
 
@@ -380,28 +382,31 @@ void loop() {
 }
 
 // command processing
-void process(const char *json) {
+parse_error add_to_queue(const string json) {
   parsed p = parse_command(json);
-
-  if (p.err) {
-    // TODO error handling
-    return;
-  }
+  if (p.err) return p.err;
 
   // process command
   if (p.command == NULL) {
     error("command missing even though there wasn't a parse error");
-    return;
+    return missing_command;
   }
-  retcode ret = p.command->execute();
 
-  // cleanup
-  delete p.command;
-
-  // TODO handle return code
+  command_queue.push(p.command);
+  return valid;
 }
 
-parsed parse_command(const char *json) {
+retcode process(Command *command) {
+  // process command
+  retcode ret = command->execute();
+
+  // cleanup
+  delete command;
+
+  return ret;
+}
+
+parsed parse_command(const string json) {
   debugf("processing json: «%s»", json);
 
   StaticJsonDocument<1000> doc; // TODO capacity?
@@ -627,13 +632,14 @@ void CommCB::onRead(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *param
 
 void CommCB::onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *param) {
   uint16_t id = param->write.conn_id;
-  debugf("attempt to write: %d", id);
 
   if (this->comm->responses.count(id)) {
     const string v = ble_char->getValue();
-    // this->comm->responses[id];
 
     debugf("write: %d (%s) -> %s", id, ble_char->getUUID().toString().c_str(), v.c_str());
+
+    add_to_queue(v);
+    ble_char->setValue("processing");
   }
 }
 
