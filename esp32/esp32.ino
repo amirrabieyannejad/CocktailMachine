@@ -407,7 +407,7 @@ retcode process(Command *command) {
 }
 
 parsed parse_command(const string json) {
-  debugf("processing json: «%s»", json);
+  debugf("processing json: «%s»", json.c_str());
 
   StaticJsonDocument<1000> doc; // TODO capacity?
   DeserializationError err = deserializeJson(doc, json);
@@ -635,11 +635,45 @@ void CommCB::onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *para
 
   if (this->comm->responses.count(id)) {
     const string v = ble_char->getValue();
+    const char *ret;
 
     debugf("write: %d (%s) -> %s", id, ble_char->getUUID().toString().c_str(), v.c_str());
 
-    add_to_queue(v);
-    ble_char->setValue("processing");
+    parse_error err = add_to_queue(v);
+
+    switch (err) {
+    case valid:
+      ret = "processing";
+      break;
+    case invalid:
+      ret = "invalid";
+      break;
+    case too_big:
+      ret = "too big";
+      break;
+    case incomplete:
+      ret = "incomplete";
+      break;
+    case unknown_command:
+      ret = "unknown command";
+      break;
+    case missing_command:
+      ret = "missing command";
+      break;
+
+    default:
+      ret = "unknown error";
+      break;
+    }
+
+    debugf("parsed: %s", ret);
+
+    this->comm->responses[id] = ret;
+    // FIXME
+    // this->comm->respond(id, ret, err != valid);
+
+    ble_char->setValue(ret);
+    if (err) ble_char->notify(); // send notification in case of error
   }
 }
 
