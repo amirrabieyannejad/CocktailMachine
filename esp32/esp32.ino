@@ -699,6 +699,7 @@ bool ble_start(void) {
   adv->setMinPreferred(0x12);
   adv->start();
 
+  debugf("ble address: %s", BLEDevice::getAddress().toString().c_str());
   debug("ble ready");
 
   return true;
