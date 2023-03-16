@@ -105,6 +105,7 @@ public:
 typedef enum {
   ok,
   unsupported,
+  ret_user_id,
 } retcode;
 
 typedef enum {
@@ -120,6 +121,7 @@ typedef enum {
 const char *retcode_str[] = {
   "\"ok\"",
   "\"unsupported\"",
+  "\"<user id>\"",
 };
 
 const char *parse_error_str[] = {
@@ -135,14 +137,19 @@ const char *parse_error_str[] = {
 // commands
 typedef uint32_t User;
 
+typedef struct {
+  retcode ret;
+  User user;
+} Processed;
+
 class Command {
 public:
-  virtual retcode execute();
+  virtual Processed execute();
   virtual bool is_valid_comm(Comm *comm);
 };
 
 class CmdTest : public Command {
-  retcode execute();
+  Processed execute();
   bool is_valid_comm(Comm *comm);
 };
 
@@ -152,7 +159,7 @@ public:
   CmdInitUser(const char *name) {
     this->name = name;
   }
-  retcode execute();
+  Processed execute();
   bool is_valid_comm(Comm *comm);
 };
 
@@ -162,7 +169,7 @@ public:
   CmdMakeRecipe(const char *name) {
     this->name = name;
   }
-  retcode execute();
+  Processed execute();
   bool is_valid_comm(Comm *comm);
 };
 
@@ -174,7 +181,7 @@ public:
     this->user = user;
     this->name = name;
   }
-  retcode execute();
+  Processed execute();
   bool is_valid_comm(Comm *comm);
 };
 
@@ -187,7 +194,7 @@ public:
     this->user = user;
     this->liquid = liquid;
   }
-  retcode execute();
+  Processed execute();
   bool is_valid_comm(Comm *comm);
 };
 
@@ -200,7 +207,7 @@ public:
     this->user = user;
     this->name = name;
   }
-  retcode execute();
+  Processed execute();
   bool is_valid_comm(Comm *comm);
 };
 
@@ -213,7 +220,7 @@ public:
     this->user = user;
     this->name = name;
   }
-  retcode execute();
+  Processed execute();
   bool is_valid_comm(Comm *comm);
 };
 
@@ -225,7 +232,7 @@ public:
     this->user = user;
     this->name = name;
   }
-  retcode execute();
+  Processed execute();
   bool is_valid_comm(Comm *comm);
 };
 
@@ -235,7 +242,7 @@ public:
   CmdReset(User user) {
     this->user = user;
   }
-  retcode execute();
+  Processed execute();
   bool is_valid_comm(Comm *comm);
 };
 
@@ -245,7 +252,7 @@ public:
   CmdClean(User user) {
     this->user = user;
   }
-  retcode execute();
+  Processed execute();
   bool is_valid_comm(Comm *comm);
 };
 
@@ -255,7 +262,7 @@ public:
   CmdCalibratePumps(User user) {
     this->user = user;
   }
-  retcode execute();
+  Processed execute();
   bool is_valid_comm(Comm *comm);
 };
 
@@ -306,6 +313,8 @@ Comm*   all_comm[NUM_COMM];
 
 forward_list<Recipe> recipes;
 forward_list<Pump> pumps;
+forward_list<Ingredient> cocktail_queue;
+forward_list<Ingredient> cocktail;
 
 queue<Queued> command_queue;
 
@@ -368,9 +377,12 @@ void ble_stop(void);
 
 // command processing
 parse_error add_to_queue(const string json, uint16_t conn_id);
-retcode process(const string json);
+Processed process(const string json);
 Parsed parse_command(const string json);
 bool is_admin(User user);
+
+// machine logic
+Processed reset_machine(void);
 
 // init
 
@@ -420,6 +432,8 @@ void setup() {
     while (!command_queue.empty()) command_queue.pop();
     pumps.clear();
     recipes.clear();
+    cocktail_queue.clear();
+    cocktail.clear();
 
     ble_server = NULL;
   }
@@ -441,13 +455,27 @@ void loop() {
   while (!command_queue.empty()) {
     Queued q = command_queue.front();
     command_queue.pop();
-    retcode ret = process(q.command);
+    Processed p = process(q.command);
 
     // cleanup
     delete q.command;
 
+    // return message
+    const char *msg;
+
+    switch (p.ret) {
+    case ret_user_id:
+      // FIXME
+      msg = "{\"user\": -1}";
+      break;
+
+    default:
+      msg = retcode_str[p.ret];
+      break;
+    }
+
     // send response
-    q.comm->respond(q.conn_id, retcode_str[ret]);
+    q.comm->respond(q.conn_id, msg);
   }
 
   sleep_idle(MS(100));
@@ -476,9 +504,9 @@ parse_error add_to_queue(const string json, Comm *comm, uint16_t conn_id) {
   return valid;
 }
 
-retcode process(Command *command) {
+Processed process(Command *command) {
   // process command
-  retcode ret = command->execute();
+  Processed ret = command->execute();
 
   return ret;
 }
@@ -609,15 +637,31 @@ bool CmdClean::is_valid_comm(Comm *comm)         	{ return comm->is_id(ID_ADMIN)
 bool CmdDeleteRecipe::is_valid_comm(Comm *comm)  	{ return comm->is_id(ID_ADMIN); }
 
 // command logic
-retcode CmdTest::execute() { return ok; };
-retcode CmdInitUser::execute() { return ok; };
-retcode CmdMakeRecipe::execute() { return ok; };
-retcode CmdAddLiquid::execute() { return ok; };
-retcode CmdDefinePump::execute() { return ok; };
-retcode CmdDefineRecipe::execute() { return ok; };
-retcode CmdReset::execute() { return ok; };
-retcode CmdClean::execute() { return ok; };
-retcode CmdCalibratePumps::execute() { return ok; };
+Processed CmdTest::execute() { return {ok, -1}; };
+
+// TODO implement logic once we have the hardware
+Processed CmdCalibratePumps::execute() { return reset_machine(); };
+Processed CmdClean::execute() { return reset_machine(); };
+Processed CmdReset::execute() { return reset_machine(); };
+
+// FIXME
+Processed CmdInitUser::execute() { return {unsupported, -1}; };
+Processed CmdMakeRecipe::execute() { return {unsupported, -1}; };
+Processed CmdAddLiquid::execute() { return {unsupported, -1}; };
+Processed CmdDefinePump::execute() { return {unsupported, -1}; };
+Processed CmdDefineRecipe::execute() { return {unsupported, -1}; };
+Processed CmdEditRecipe::execute() { return {unsupported, -1}; };
+Processed CmdDeleteRecipe::execute() { return {unsupported, -1}; };
+
+Processed reset_machine(void) {
+  cocktail_queue.clear();
+  cocktail.clear();
+
+  // update status
+  all_status[ID_COCKTAIL]->update("[]");
+
+  return {ok, -1};
+}
 
 // bluetooth
 bool ble_start(void) {
