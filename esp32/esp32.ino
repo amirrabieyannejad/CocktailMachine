@@ -56,6 +56,7 @@ public:
   unordered_map<uint16_t, const char *> responses;
   Comm(const char *uuid_char);
   void respond(uint16_t id, const char *value);
+  bool is_id(int id);
 };
 
 class ServerCB : public BLEServerCallbacks {
@@ -103,6 +104,7 @@ public:
 // error codes
 typedef enum {
   ok,
+  unsupported,
 } retcode;
 
 typedef enum {
@@ -112,10 +114,12 @@ typedef enum {
   incomplete,
   unknown_command,
   missing_command,
+  wrong_comm,
 } parse_error;
 
 const char *retcode_str[] = {
   "\"ok\"",
+  "\"unsupported\"",
 };
 
 const char *parse_error_str[] = {
@@ -125,6 +129,7 @@ const char *parse_error_str[] = {
   "\"missing arguments\"",
   "\"unknown command\"",
   "\"missing command\"",
+  "\"wrong comm channel\"",
 };
 
 // commands
@@ -133,10 +138,12 @@ typedef uint32_t User;
 class Command {
 public:
   virtual retcode execute();
+  virtual bool is_valid_comm(Comm *comm);
 };
 
 class CmdTest : public Command {
   retcode execute();
+  bool is_valid_comm(Comm *comm);
 };
 
 class CmdInitUser : public Command {
@@ -146,6 +153,7 @@ public:
     this->name = name;
   }
   retcode execute();
+  bool is_valid_comm(Comm *comm);
 };
 
 class CmdMakeRecipe : public Command {
@@ -155,6 +163,7 @@ public:
     this->name = name;
   }
   retcode execute();
+  bool is_valid_comm(Comm *comm);
 };
 
 class CmdAddLiquid : public Command {
@@ -166,6 +175,7 @@ public:
     this->name = name;
   }
   retcode execute();
+  bool is_valid_comm(Comm *comm);
 };
 
 class CmdDefinePump : public Command {
@@ -178,6 +188,7 @@ public:
     this->liquid = liquid;
   }
   retcode execute();
+  bool is_valid_comm(Comm *comm);
 };
 
 class CmdDefineRecipe : public Command {
@@ -190,6 +201,32 @@ public:
     this->name = name;
   }
   retcode execute();
+  bool is_valid_comm(Comm *comm);
+};
+
+class CmdEditRecipe : public Command {
+public:
+  User user;
+  const char *name;
+  // TODO
+  CmdEditRecipe(User user, const char *name) {
+    this->user = user;
+    this->name = name;
+  }
+  retcode execute();
+  bool is_valid_comm(Comm *comm);
+};
+
+class CmdDeleteRecipe : public Command {
+public:
+  User user;
+  const char *name;
+  CmdDeleteRecipe(User user, const char *name) {
+    this->user = user;
+    this->name = name;
+  }
+  retcode execute();
+  bool is_valid_comm(Comm *comm);
 };
 
 class CmdReset : public Command {
@@ -199,6 +236,7 @@ public:
     this->user = user;
   }
   retcode execute();
+  bool is_valid_comm(Comm *comm);
 };
 
 class CmdClean : public Command {
@@ -208,6 +246,7 @@ public:
     this->user = user;
   }
   retcode execute();
+  bool is_valid_comm(Comm *comm);
 };
 
 class CmdCalibratePumps : public Command {
@@ -217,6 +256,7 @@ public:
     this->user = user;
   }
   retcode execute();
+  bool is_valid_comm(Comm *comm);
 };
 
 typedef struct {
@@ -418,12 +458,18 @@ parse_error add_to_queue(const string json, Comm *comm, uint16_t conn_id) {
   Parsed p = parse_command(json);
   if (p.err) return p.err;
 
-  // process command
   if (p.command == NULL) {
     error("command missing even though there wasn't a parse error");
     return missing_command;
   }
 
+  // enforce comm separation
+  if (!p.command->is_valid_comm(comm)) {
+    delete p.command; // cleanup
+    return wrong_comm;
+  }
+
+  // add to process queue
   Queued q = {p.command, comm, conn_id};
   command_queue.push(q);
 
@@ -459,8 +505,6 @@ Parsed parse_command(const string json) {
     }
   }
 
-  // TODO make sure everything is the right type
-
   // parse json document into command type
   Command *cmd;
 
@@ -491,6 +535,24 @@ Parsed parse_command(const string json) {
     cmd = new CmdMakeRecipe(name);
 
   } else if (!strcmp(cmd_name, "define_recipe")) {
+    JsonVariant user = doc["user"];
+    if (user.isNull()) return Parsed{NULL, incomplete};
+    const char *name = doc["name"];
+    if (!name) return Parsed{NULL, incomplete};
+    // TODO missing args
+
+    cmd = new CmdDefineRecipe(user.as<uint32_t>(), name);
+
+  } else if (!strcmp(cmd_name, "edit_recipe")) {
+    JsonVariant user = doc["user"];
+    if (user.isNull()) return Parsed{NULL, incomplete};
+    const char *name = doc["name"];
+    if (!name) return Parsed{NULL, incomplete};
+    // TODO missing args
+
+    cmd = new CmdDefineRecipe(user.as<uint32_t>(), name);
+
+  } else if (!strcmp(cmd_name, "delete_recipe")) {
     JsonVariant user = doc["user"];
     if (user.isNull()) return Parsed{NULL, incomplete};
     const char *name = doc["name"];
@@ -530,6 +592,21 @@ Parsed parse_command(const string json) {
 
   return Parsed{cmd, valid};
 }
+
+// user commands
+bool CmdTest::is_valid_comm(Comm *comm)        	{ return comm->is_id(ID_USER); }
+bool CmdInitUser::is_valid_comm(Comm *comm)    	{ return comm->is_id(ID_USER); }
+bool CmdReset::is_valid_comm(Comm *comm)       	{ return comm->is_id(ID_USER); }
+bool CmdMakeRecipe::is_valid_comm(Comm *comm)  	{ return comm->is_id(ID_USER); }
+bool CmdDefinePump::is_valid_comm(Comm *comm)  	{ return comm->is_id(ID_USER); }
+bool CmdDefineRecipe::is_valid_comm(Comm *comm)	{ return comm->is_id(ID_USER); }
+bool CmdEditRecipe::is_valid_comm(Comm *comm)  	{ return comm->is_id(ID_USER); }
+
+// admin commands
+bool CmdAddLiquid::is_valid_comm(Comm *comm)     	{ return comm->is_id(ID_ADMIN); }
+bool CmdCalibratePumps::is_valid_comm(Comm *comm)	{ return comm->is_id(ID_ADMIN); }
+bool CmdClean::is_valid_comm(Comm *comm)         	{ return comm->is_id(ID_ADMIN); }
+bool CmdDeleteRecipe::is_valid_comm(Comm *comm)  	{ return comm->is_id(ID_ADMIN); }
 
 // command logic
 retcode CmdTest::execute() { return ok; };
@@ -615,6 +692,10 @@ Comm::Comm(const char *uuid_char)
 void Comm::respond(const uint16_t id, const char *value) {
   this->responses[id] = value;
   this->ble_char->notify();
+}
+
+bool Comm::is_id(int id) {
+  return all_comm[id] == this;
 }
 
 void ServerCB::onConnect(BLEServer *server) {
