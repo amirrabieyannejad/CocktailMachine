@@ -52,8 +52,10 @@ public:
 
 class Comm : public Service {
 public:
+  // FIXME conn_id isn't stable across reconnections, so we should switch to MAC or something similar
   unordered_map<uint16_t, const char *> responses;
   Comm(const char *uuid_char);
+  void respond(uint16_t id, const char *value);
 };
 
 class ServerCB : public BLEServerCallbacks {
@@ -101,7 +103,6 @@ public:
 // error codes
 typedef enum {
   ok,
-  not_found,
 } retcode;
 
 typedef enum {
@@ -112,6 +113,19 @@ typedef enum {
   unknown_command,
   missing_command,
 } parse_error;
+
+const char *retcode_str[] = {
+  "\"ok\"",
+};
+
+const char *parse_error_str[] = {
+  "\"processing\"",
+  "\"invalid json\"",
+  "\"message too big\"",
+  "\"missing arguments\"",
+  "\"unknown command\"",
+  "\"missing command\"",
+};
 
 // commands
 typedef uint32_t User;
@@ -208,7 +222,13 @@ public:
 typedef struct {
   Command *command;
   parse_error err;
-} parsed;
+} Parsed;
+
+typedef struct {
+  Command *command;
+  Comm *comm;
+  uint16_t conn_id;
+} Queued;
 
 // machine parts
 
@@ -247,7 +267,7 @@ Comm*   all_comm[NUM_COMM];
 forward_list<Recipe> recipes;
 forward_list<Pump> pumps;
 
-queue<Command*> command_queue;
+queue<Queued> command_queue;
 
 // function declarations
 
@@ -307,9 +327,9 @@ bool ble_start(void);
 void ble_stop(void);
 
 // command processing
-parse_error add_to_queue(const string json);
+parse_error add_to_queue(const string json, uint16_t conn_id);
 retcode process(const string json);
-parsed parse_command(const string json);
+Parsed parse_command(const string json);
 bool is_admin(User user);
 
 // init
@@ -378,12 +398,24 @@ void loop() {
   // just wait
   // process("{\"cmd\": \"test\"}");
 
+  while (!command_queue.empty()) {
+    Queued q = command_queue.front();
+    command_queue.pop();
+    retcode ret = process(q.command);
+
+    // cleanup
+    delete q.command;
+
+    // send response
+    q.comm->respond(q.conn_id, retcode_str[ret]);
+  }
+
   sleep_idle(MS(100));
 }
 
 // command processing
-parse_error add_to_queue(const string json) {
-  parsed p = parse_command(json);
+parse_error add_to_queue(const string json, Comm *comm, uint16_t conn_id) {
+  Parsed p = parse_command(json);
   if (p.err) return p.err;
 
   // process command
@@ -392,7 +424,9 @@ parse_error add_to_queue(const string json) {
     return missing_command;
   }
 
-  command_queue.push(p.command);
+  Queued q = {p.command, comm, conn_id};
+  command_queue.push(q);
+
   return valid;
 }
 
@@ -400,13 +434,10 @@ retcode process(Command *command) {
   // process command
   retcode ret = command->execute();
 
-  // cleanup
-  delete command;
-
   return ret;
 }
 
-parsed parse_command(const string json) {
+Parsed parse_command(const string json) {
   debugf("processing json: «%s»", json.c_str());
 
   StaticJsonDocument<1000> doc; // TODO capacity?
@@ -417,14 +448,14 @@ parsed parse_command(const string json) {
     case DeserializationError::EmptyInput:
     case DeserializationError::IncompleteInput:
     case DeserializationError::InvalidInput:
-      return parsed{NULL, invalid};
+      return Parsed{NULL, invalid};
 
     case DeserializationError::NoMemory:
     case DeserializationError::TooDeep:
-      return parsed{NULL, too_big};
+      return Parsed{NULL, too_big};
 
     default:
-      return parsed{NULL, invalid};
+      return Parsed{NULL, invalid};
     }
   }
 
@@ -434,70 +465,70 @@ parsed parse_command(const string json) {
   Command *cmd;
 
   const char *cmd_name = doc["cmd"];
-  if (!cmd_name) return parsed{NULL, incomplete};
+  if (!cmd_name) return Parsed{NULL, incomplete};
 
   if (!strcmp(cmd_name, "test")) {
     cmd = new CmdTest();
 
   } else if (!strcmp(cmd_name, "init_user")) {
     const char *name = doc["name"];
-    if (!name) return parsed{NULL, incomplete};
+    if (!name) return Parsed{NULL, incomplete};
 
     cmd = new CmdInitUser(name);
 
   } else if (!strcmp(cmd_name, "add_liquid")) {
     JsonVariant user = doc["user"];
-    if (user.isNull()) return parsed{NULL, incomplete};
+    if (user.isNull()) return Parsed{NULL, incomplete};
     const char *name = doc["name"];
-    if (!name) return parsed{NULL, incomplete};
+    if (!name) return Parsed{NULL, incomplete};
 
     cmd = new CmdAddLiquid(user.as<uint32_t>(), name);
 
   } else if (!strcmp(cmd_name, "make_recipe")) {
     const char *name = doc["name"];
-    if (!name) return parsed{NULL, incomplete};
+    if (!name) return Parsed{NULL, incomplete};
 
     cmd = new CmdMakeRecipe(name);
 
   } else if (!strcmp(cmd_name, "define_recipe")) {
     JsonVariant user = doc["user"];
-    if (user.isNull()) return parsed{NULL, incomplete};
+    if (user.isNull()) return Parsed{NULL, incomplete};
     const char *name = doc["name"];
-    if (!name) return parsed{NULL, incomplete};
+    if (!name) return Parsed{NULL, incomplete};
 
     cmd = new CmdDefineRecipe(user.as<uint32_t>(), name);
 
   } else if (!strcmp(cmd_name, "define_pump")) {
     JsonVariant user = doc["user"];
-    if (user.isNull()) return parsed{NULL, incomplete};
+    if (user.isNull()) return Parsed{NULL, incomplete};
     const char *liquid = doc["liquid"];
-    if (!liquid) return parsed{NULL, incomplete};
+    if (!liquid) return Parsed{NULL, incomplete};
 
     cmd = new CmdDefinePump(user.as<uint32_t>(), liquid);
 
   } else if (!strcmp(cmd_name, "reset")) {
     JsonVariant user = doc["user"];
-    if (user.isNull()) return parsed{NULL, incomplete};
+    if (user.isNull()) return Parsed{NULL, incomplete};
 
     cmd = new CmdReset(user.as<uint32_t>());
 
   } else if (!strcmp(cmd_name, "clean")) {
     JsonVariant user = doc["user"];
-    if (user.isNull()) return parsed{NULL, incomplete};
+    if (user.isNull()) return Parsed{NULL, incomplete};
 
     cmd = new CmdClean(user.as<uint32_t>());
 
   } else if (!strcmp(cmd_name, "calibrate_pumps")) {
     JsonVariant user = doc["user"];
-    if (user.isNull()) return parsed{NULL, incomplete};
+    if (user.isNull()) return Parsed{NULL, incomplete};
 
     cmd = new CmdCalibratePumps(user.as<uint32_t>());
 
   } else {
-    return parsed{NULL, unknown_command};
+    return Parsed{NULL, unknown_command};
   }
 
-  return parsed{cmd, valid};
+  return Parsed{cmd, valid};
 }
 
 // command logic
@@ -581,6 +612,11 @@ Comm::Comm(const char *uuid_char)
   this->responses = {};
 }
 
+void Comm::respond(const uint16_t id, const char *value) {
+  this->responses[id] = value;
+  this->ble_char->notify();
+}
+
 void ServerCB::onConnect(BLEServer *server) {
   debug("client connected:");
 }
@@ -635,45 +671,20 @@ void CommCB::onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *para
 
   if (this->comm->responses.count(id)) {
     const string v = ble_char->getValue();
-    const char *ret;
 
     debugf("write: %d (%s) -> %s", id, ble_char->getUUID().toString().c_str(), v.c_str());
 
-    parse_error err = add_to_queue(v);
+    parse_error err = add_to_queue(v, this->comm, id);
+    const char *ret = parse_error_str[id];
 
-    switch (err) {
-    case valid:
-      ret = "processing";
-      break;
-    case invalid:
-      ret = "invalid";
-      break;
-    case too_big:
-      ret = "too big";
-      break;
-    case incomplete:
-      ret = "incomplete";
-      break;
-    case unknown_command:
-      ret = "unknown command";
-      break;
-    case missing_command:
-      ret = "missing command";
-      break;
+    debugf("Parsed: %s", ret);
 
-    default:
-      ret = "unknown error";
-      break;
+    if (err == valid) {
+      // response happens after processing, but set it to a temporary "processing"
+      this->comm->responses[id] = ret;
+    } else {
+      this->comm->respond(id, ret);
     }
-
-    debugf("parsed: %s", ret);
-
-    this->comm->responses[id] = ret;
-    // FIXME
-    // this->comm->respond(id, ret, err != valid);
-
-    ble_char->setValue(ret);
-    if (err) ble_char->notify(); // send notification in case of error
   }
 }
 
