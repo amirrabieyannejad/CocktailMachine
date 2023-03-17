@@ -7,17 +7,20 @@
 #define PIN_SDCARD_CS A5
 #endif
 
-// general functionality
-#include <Arduino.h>
-#include <ArduinoJson.h>
-#include <EEPROM.h>
-#include <SPI.h>
+// c++ standard library
 #include <forward_list>
 #include <queue>
 #include <sys/time.h>
 #include <unordered_map>
-
 using namespace std;
+
+// general chip functionality
+#include <Arduino.h>
+#include <EEPROM.h>
+#include <SPI.h>
+
+// json
+#include <ArduinoJson.h>
 
 // sd card
 #if defined(SD_CARD)
@@ -139,22 +142,26 @@ typedef struct {
 } Processed;
 
 struct Command {
-  static constexpr char *cmd_name = "<command>";
   virtual Processed execute();
+  virtual const char* cmd_name();
   virtual bool is_valid_comm(Comm *comm);
 };
 
-#define def_cmd(name)                             \
-  static constexpr char *cmd_name = name;         \
-  Processed execute() override;                   \
-  bool is_valid_comm(Comm *comm) override;
+#define def_cmd(name, channel)                                          \
+  static constexpr char *json_name = name;                              \
+  const char* cmd_name() override { return json_name; }                 \
+  Processed execute() override;                                         \
+  bool is_valid_comm(Comm *comm) override {                             \
+    return comm->is_id(ID_ ## channel);                                 \
+  }                                                                     \
+  // [the remaining methods, particularly the constructor, go here]
 
 struct CmdTest : public Command {
-  def_cmd("test");
+  def_cmd("test", USER);
 };
 
 struct CmdInitUser : public Command {
-  def_cmd("init_user");
+  def_cmd("init_user", USER);
   const char *name;
   CmdInitUser(const char *name) {
     this->name = name;
@@ -162,7 +169,7 @@ struct CmdInitUser : public Command {
 };
 
 struct CmdMakeRecipe : public Command {
-  def_cmd("make_recipe");
+  def_cmd("make_recipe", USER);
   const char *name;
   CmdMakeRecipe(const char *name) {
     this->name = name;
@@ -170,7 +177,7 @@ struct CmdMakeRecipe : public Command {
 };
 
 struct CmdAddLiquid : public Command {
-  def_cmd("add_liquid");
+  def_cmd("add_liquid", ADMIN);
   User user;
   const char *name;
   CmdAddLiquid(User user, const char *name) {
@@ -180,18 +187,19 @@ struct CmdAddLiquid : public Command {
 };
 
 struct CmdDefinePump : public Command {
-  def_cmd("define_pump");
+  def_cmd("define_pump", ADMIN);
   User user;
   const char *liquid;
-  // TODO
-  CmdDefinePump(User user, const char *liquid) {
+  float volume;
+  CmdDefinePump(User user, const char *liquid, const float volume) {
     this->user = user;
     this->liquid = liquid;
+    this->volume = volume;
   }
 };
 
 struct CmdDefineRecipe : public Command {
-  def_cmd("define_recipe");
+  def_cmd("define_recipe", USER);
   User user;
   const char *name;
   // TODO
@@ -202,7 +210,7 @@ struct CmdDefineRecipe : public Command {
 };
 
 struct CmdEditRecipe : public Command {
-  def_cmd("edit_recipe");
+  def_cmd("edit_recipe", USER);
   User user;
   const char *name;
   // TODO
@@ -213,7 +221,7 @@ struct CmdEditRecipe : public Command {
 };
 
 struct CmdDeleteRecipe : public Command {
-  def_cmd("delete_recipe");
+  def_cmd("delete_recipe", ADMIN);
   User user;
   const char *name;
   CmdDeleteRecipe(User user, const char *name) {
@@ -223,7 +231,7 @@ struct CmdDeleteRecipe : public Command {
 };
 
 struct CmdReset : public Command {
-  def_cmd("reset");
+  def_cmd("reset", USER);
   User user;
   CmdReset(User user) {
     this->user = user;
@@ -231,7 +239,7 @@ struct CmdReset : public Command {
 };
 
 struct CmdClean : public Command {
-  def_cmd("clean");
+  def_cmd("clean", ADMIN);
   User user;
   CmdClean(User user) {
     this->user = user;
@@ -239,7 +247,7 @@ struct CmdClean : public Command {
 };
 
 struct CmdCalibratePumps : public Command {
-  def_cmd("calibrate_pumps");
+  def_cmd("calibrate_pumps", ADMIN);
   User user;
   CmdCalibratePumps(User user) {
     this->user = user;
@@ -357,7 +365,6 @@ void ble_stop(void);
 
 // command processing
 parse_error add_to_queue(const string json, uint16_t conn_id);
-Processed process(const string json);
 Parsed parse_command(const string json);
 bool is_admin(User user);
 
@@ -435,7 +442,9 @@ void loop() {
   while (!command_queue.empty()) {
     Queued q = command_queue.front();
     command_queue.pop();
-    Processed p = process(q.command);
+
+    debugf("processing queue (#%d): %s (%d)", command_queue.size(), q.command->cmd_name(), q.conn_id);
+    Processed p = q.command->execute();
 
     // cleanup
     delete q.command;
@@ -477,18 +486,13 @@ parse_error add_to_queue(const string json, Comm *comm, uint16_t conn_id) {
     return wrong_comm;
   }
 
+  debugf("parsed, adding to queue: %d, %s", conn_id, p.command->cmd_name());
+
   // add to process queue
   Queued q = {p.command, comm, conn_id};
   command_queue.push(q);
 
   return valid;
-}
-
-Processed process(Command *command) {
-  // process command
-  Processed ret = command->execute();
-
-  return ret;
 }
 
 Parsed parse_command(const string json) {
@@ -516,83 +520,74 @@ Parsed parse_command(const string json) {
   // parse json document into command type
   Command *cmd;
 
+  // helper macros
+#define match_name(cls) (!strcmp(cmd_name, cls::json_name))
+
+#define parse_str(field)                        \
+  const char *field = doc[#field];              \
+  if (!field) return Parsed{NULL, incomplete};
+
+#define parse_num(field, type)                              \
+  JsonVariant j_##field = doc[#field];                      \
+  if (j_##field.isNull()) return Parsed{NULL, incomplete};  \
+  type field = j_##field.as<type>();
+
+#define parse_user() parse_num(user, uint32_t)
+
   const char *cmd_name = doc["cmd"];
   if (!cmd_name) return Parsed{NULL, incomplete};
 
-  if (!strcmp(cmd_name, "test")) {
+  if (match_name(CmdTest)) {
     cmd = new CmdTest();
 
-  } else if (!strcmp(cmd_name, "init_user")) {
-    const char *name = doc["name"];
-    if (!name) return Parsed{NULL, incomplete};
-
+  } else if (match_name(CmdInitUser)) {
+    parse_str(name);
     cmd = new CmdInitUser(name);
 
-  } else if (!strcmp(cmd_name, "add_liquid")) {
-    JsonVariant user = doc["user"];
-    if (user.isNull()) return Parsed{NULL, incomplete};
-    const char *name = doc["name"];
-    if (!name) return Parsed{NULL, incomplete};
+  } else if (match_name(CmdAddLiquid)) {
+    parse_user();
+    parse_str(name);
+    cmd = new CmdAddLiquid(user, name);
 
-    cmd = new CmdAddLiquid(user.as<uint32_t>(), name);
-
-  } else if (!strcmp(cmd_name, "make_recipe")) {
-    const char *name = doc["name"];
-    if (!name) return Parsed{NULL, incomplete};
-
+  } else if (match_name(CmdMakeRecipe)) {
+    parse_str(name);
     cmd = new CmdMakeRecipe(name);
 
-  } else if (!strcmp(cmd_name, "define_recipe")) {
-    JsonVariant user = doc["user"];
-    if (user.isNull()) return Parsed{NULL, incomplete};
-    const char *name = doc["name"];
-    if (!name) return Parsed{NULL, incomplete};
+  } else if (match_name(CmdDefineRecipe)) {
+    parse_user();
+    parse_str(name);
+    // TODO missing args
+    cmd = new CmdDefineRecipe(user, name);
+
+  } else if (match_name(CmdEditRecipe)) {
+    parse_user();
+    parse_str(name);
     // TODO missing args
 
-    cmd = new CmdDefineRecipe(user.as<uint32_t>(), name);
+    cmd = new CmdEditRecipe(user, name);
 
-  } else if (!strcmp(cmd_name, "edit_recipe")) {
-    JsonVariant user = doc["user"];
-    if (user.isNull()) return Parsed{NULL, incomplete};
-    const char *name = doc["name"];
-    if (!name) return Parsed{NULL, incomplete};
-    // TODO missing args
+  } else if (match_name(CmdDeleteRecipe)) {
+    parse_user();
+    parse_str(name);
+    cmd = new CmdDeleteRecipe(user, name);
 
-    cmd = new CmdDefineRecipe(user.as<uint32_t>(), name);
+  } else if (match_name(CmdDefinePump)) {
+    parse_user();
+    parse_str(liquid);
+    parse_num(volume, float);
+    cmd = new CmdDefinePump(user, liquid, volume);
 
-  } else if (!strcmp(cmd_name, "delete_recipe")) {
-    JsonVariant user = doc["user"];
-    if (user.isNull()) return Parsed{NULL, incomplete};
-    const char *name = doc["name"];
-    if (!name) return Parsed{NULL, incomplete};
+  } else if (match_name(CmdReset)) {
+    parse_user();
+    cmd = new CmdReset(user);
 
-    cmd = new CmdDefineRecipe(user.as<uint32_t>(), name);
+  } else if (match_name(CmdClean)) {
+    parse_user();
+    cmd = new CmdClean(user);
 
-  } else if (!strcmp(cmd_name, "define_pump")) {
-    JsonVariant user = doc["user"];
-    if (user.isNull()) return Parsed{NULL, incomplete};
-    const char *liquid = doc["liquid"];
-    if (!liquid) return Parsed{NULL, incomplete};
-
-    cmd = new CmdDefinePump(user.as<uint32_t>(), liquid);
-
-  } else if (!strcmp(cmd_name, "reset")) {
-    JsonVariant user = doc["user"];
-    if (user.isNull()) return Parsed{NULL, incomplete};
-
-    cmd = new CmdReset(user.as<uint32_t>());
-
-  } else if (!strcmp(cmd_name, "clean")) {
-    JsonVariant user = doc["user"];
-    if (user.isNull()) return Parsed{NULL, incomplete};
-
-    cmd = new CmdClean(user.as<uint32_t>());
-
-  } else if (!strcmp(cmd_name, "calibrate_pumps")) {
-    JsonVariant user = doc["user"];
-    if (user.isNull()) return Parsed{NULL, incomplete};
-
-    cmd = new CmdCalibratePumps(user.as<uint32_t>());
+  } else if (match_name(CmdCalibratePumps)) {
+    parse_user();
+    cmd = new CmdCalibratePumps(user);
 
   } else {
     return Parsed{NULL, unknown_command};
@@ -601,22 +596,9 @@ Parsed parse_command(const string json) {
   return Parsed{cmd, valid};
 }
 
-// user commands
-bool CmdTest::is_valid_comm(Comm *comm)        	{ return comm->is_id(ID_USER); }
-bool CmdInitUser::is_valid_comm(Comm *comm)    	{ return comm->is_id(ID_USER); }
-bool CmdReset::is_valid_comm(Comm *comm)       	{ return comm->is_id(ID_USER); }
-bool CmdMakeRecipe::is_valid_comm(Comm *comm)  	{ return comm->is_id(ID_USER); }
-bool CmdDefinePump::is_valid_comm(Comm *comm)  	{ return comm->is_id(ID_USER); }
-bool CmdDefineRecipe::is_valid_comm(Comm *comm)	{ return comm->is_id(ID_USER); }
-bool CmdEditRecipe::is_valid_comm(Comm *comm)  	{ return comm->is_id(ID_USER); }
-
-// admin commands
-bool CmdAddLiquid::is_valid_comm(Comm *comm)     	{ return comm->is_id(ID_ADMIN); }
-bool CmdCalibratePumps::is_valid_comm(Comm *comm)	{ return comm->is_id(ID_ADMIN); }
-bool CmdClean::is_valid_comm(Comm *comm)         	{ return comm->is_id(ID_ADMIN); }
-bool CmdDeleteRecipe::is_valid_comm(Comm *comm)  	{ return comm->is_id(ID_ADMIN); }
-
 // command logic
+#define RET(code) {code, -1} // default if no user is returned
+
 Processed CmdTest::execute() { return {ok, -1}; };
 
 // TODO implement logic once we have the hardware
@@ -625,13 +607,13 @@ Processed CmdClean::execute() { return reset_machine(); };
 Processed CmdReset::execute() { return reset_machine(); };
 
 // FIXME
-Processed CmdInitUser::execute() { return {unsupported, -1}; };
-Processed CmdMakeRecipe::execute() { return {unsupported, -1}; };
-Processed CmdAddLiquid::execute() { return {unsupported, -1}; };
-Processed CmdDefinePump::execute() { return {unsupported, -1}; };
-Processed CmdDefineRecipe::execute() { return {unsupported, -1}; };
-Processed CmdEditRecipe::execute() { return {unsupported, -1}; };
-Processed CmdDeleteRecipe::execute() { return {unsupported, -1}; };
+Processed CmdInitUser::execute() { return RET(unsupported); };
+Processed CmdMakeRecipe::execute() { return RET(unsupported); };
+Processed CmdAddLiquid::execute() { return RET(unsupported); };
+Processed CmdDefinePump::execute() { return RET(unsupported); };
+Processed CmdDefineRecipe::execute() { return RET(unsupported); };
+Processed CmdEditRecipe::execute() { return RET(unsupported); };
+Processed CmdDeleteRecipe::execute() { return RET(unsupported); };
 
 Processed reset_machine(void) {
   cocktail_queue.clear();
@@ -640,7 +622,7 @@ Processed reset_machine(void) {
   // update status
   all_status[ID_COCKTAIL]->update("[]");
 
-  return {ok, -1};
+  return RET(ok);
 }
 
 // bluetooth
@@ -715,6 +697,7 @@ Comm::Comm(const char *uuid_char)
 }
 
 void Comm::respond(const uint16_t id, const char *value) {
+  debugf("sending response to %d: %s", id, value);
   this->responses[id] = value;
   this->ble_char->notify();
 }
@@ -783,7 +766,7 @@ void CommCB::onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *para
     parse_error err = add_to_queue(v, this->comm, id);
     const char *ret = parse_error_str[id];
 
-    debugf("Parsed: %s", ret);
+    debugf("parsed: %s", ret);
 
     if (err == valid) {
       // response happens after processing, but set it to a temporary "processing"
