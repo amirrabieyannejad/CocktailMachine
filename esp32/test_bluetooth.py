@@ -70,7 +70,7 @@ async def test_run(client):
   await user({"cmd": "init_user", "name": "test-user"})
 
   # admin commands
-  await admin({"cmd": "reset", "user": 0})
+  await user({"cmd": "reset", "user": 0})
   await admin({"cmd": "calibrate_pumps", "user": 0})
   await admin({"cmd": "clean", "user": 0})
 
@@ -88,7 +88,7 @@ async def test_run(client):
   # make recipes
   await user({"cmd": "make_recipe", "user": 1, "recipe": "radler"})
   await admin({"cmd": "add_liquid", "user": 0, "liquid": "beer", "volume": 100})
-  await admin({"cmd": "reset", "user": 0})
+  await user({"cmd": "reset", "user": 0})
 
   await read_all_chars(client)
 

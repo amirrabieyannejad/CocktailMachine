@@ -41,6 +41,13 @@ using namespace std;
 #define PROP_READ  (BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY)
 #define PROP_WRITE (BLECharacteristic::PROPERTY_WRITE)
 
+// services
+typedef uint32_t User;
+
+struct Processed {
+  virtual const char* json();
+};
+
 struct Service {
   BLECharacteristic *ble_char;
   Service(const char *uuid_service, const char *uuid_char, const uint32_t props);
@@ -53,10 +60,10 @@ struct Status : Service {
 
 struct Comm : Service {
   // FIXME conn_id isn't stable across reconnections, so we should switch to MAC or something similar
-  unordered_map<uint16_t, const char *> responses;
+  unordered_map<uint16_t, Processed *> responses;
   Comm(const char *uuid_char);
 
-  void respond(uint16_t id, const char *value);
+  void respond(uint16_t id, Processed *ret);
   bool is_id(int id);
 };
 
@@ -101,53 +108,38 @@ struct CommCB: BLECharacteristicCallbacks {
 #define UUID_COMM_USER      	"eb61e31a-f00b-335f-ad14-d654aac8353d"
 #define UUID_COMM_ADMIN     	"41044979-6a5d-36be-b9f1-d4d49e3f5b73"
 
-// error codes
-typedef enum {
-  ok,
-  unsupported,
-  unauthorized,
-  ret_user_id,
-} retcode;
+// return codes
+#define def_ret(cls, msg)                                               \
+  struct cls : public Processed {                                       \
+    static constexpr char *_json = "\"" msg "\"";                       \
+    const char* json() override { return _json; }                       \
+  };
 
-typedef enum {
-  valid,
-  invalid,
-  too_big,
-  incomplete,
-  unknown_command,
-  missing_command,
-  wrong_comm,
-} parse_error;
+def_ret(Success,       	"ok");
+def_ret(Processing,    	"processing");
+def_ret(Ready,         	"ready");
+def_ret(Unsupported,   	"unsupported");
+def_ret(Unauthorized,  	"unauthorized");
+def_ret(Invalid,       	"invalid json");
+def_ret(TooBig,        	"message too big");
+def_ret(Incomplete,    	"missing arguments");
+def_ret(UnknownCommand,	"unknown command");
+def_ret(MissingCommand,	"command missing even though it parsed right");
+def_ret(WrongComm,     	"wrong comm channel");
 
-const char *retcode_str[] = {
-  "\"ok\"",
-  "\"unsupported\"",
-  "\"unauthorized\"",
-  "\"<user id>\"",
-};
-
-const char *parse_error_str[] = {
-  "\"processing\"",
-  "\"invalid json\"",
-  "\"message too big\"",
-  "\"missing arguments\"",
-  "\"unknown command\"",
-  "\"command missing even though it parsed right\"",
-  "\"wrong comm channel\"",
+struct RetUserID : Processed {
+  User user;
+  RetUserID(User user) : user(user) {}
+  const char* json() override {
+    char out [20];
+    snprintf(out, sizeof(out), "{\"user\": %d}", user);
+    return out;
+  }
 };
 
 // commands
-typedef uint32_t User;
-
-typedef struct {
-  retcode ret;
-  User user;
-} Processed;
-
-#define RET(code) Processed{code, -1} // default if no additional arguments are used
-
 struct Command {
-  virtual Processed execute();
+  virtual Processed* execute();
   virtual const char* cmd_name();
   virtual bool is_valid_comm(Comm *comm);
 };
@@ -155,7 +147,7 @@ struct Command {
 #define def_cmd(name, channel)                                          \
   static constexpr char *json_name = name;                              \
   const char* cmd_name() override { return json_name; }                 \
-  Processed execute() override;                                         \
+  Processed* execute() override;                                        \
   bool is_valid_comm(Comm *comm) override {                             \
     return comm->is_id(ID_ ## channel);                                 \
   }                                                                     \
@@ -173,15 +165,16 @@ struct CmdInitUser : public Command {
 
 struct CmdMakeRecipe : public Command {
   def_cmd("make_recipe", USER);
-  const char *name;
-  CmdMakeRecipe(const char *name) : name(name) {}
+  const char *recipe;
+  CmdMakeRecipe(const char *recipe) : recipe(recipe) {}
 };
 
 struct CmdAddLiquid : public Command {
   def_cmd("add_liquid", ADMIN);
   User user;
-  const char *name;
-  CmdAddLiquid(User user, const char *name) : user(user), name(name) {}
+  const char *liquid;
+  float volume;
+  CmdAddLiquid(User user, const char *liquid, float volume) : user(user), liquid(liquid), volume(volume) {}
 };
 
 struct CmdDefinePump : public Command {
@@ -240,16 +233,16 @@ struct CmdCalibratePumps : public Command {
   CmdCalibratePumps(User user) : user(user) {}
 };
 
-typedef struct {
+struct Parsed {
   Command *command;
-  parse_error err;
-} Parsed;
+  Processed *err;
+};
 
-typedef struct {
+struct Queued {
   Command *command;
   Comm *comm;
   uint16_t conn_id;
-} Queued;
+};
 
 // machine parts
 
@@ -259,9 +252,9 @@ struct Pump {
   int pin;
 
   Pump(const char *liquid, float volume, int pin);
-  retcode drain(float amount);
-  retcode refill(float volume);
-  retcode empty();
+  Processed* drain(float amount);
+  Processed* refill(float volume);
+  Processed* empty();
 };
 
 struct Ingredient {
@@ -275,7 +268,7 @@ struct Recipe {
 
   Recipe(const char *name, forward_list<Ingredient> ingredients);
   float total_volume();
-  retcode make(User user);
+  Processed* make(User user);
 };
 
 // global state
@@ -334,12 +327,12 @@ bool ble_start(void);
 void ble_stop(void);
 
 // command processing
-parse_error add_to_queue(const string json, uint16_t conn_id);
+Processed* add_to_queue(const string json, uint16_t conn_id);
 Parsed parse_command(const string json);
 bool is_admin(User user);
 
 // machine logic
-Processed reset_machine(void);
+Processed* reset_machine(void);
 
 // init
 
@@ -414,46 +407,32 @@ void loop() {
     command_queue.pop();
 
     debug("processing queue (#%d): %s (%d)", command_queue.size(), q.command->cmd_name(), q.conn_id);
-    Processed p = q.command->execute();
+    Processed* p = q.command->execute();
 
     // cleanup
     delete q.command;
 
-    // return message
-    const char *msg;
-
-    switch (p.ret) {
-    case ret_user_id:
-      // FIXME
-      msg = "{\"user\": -1}";
-      break;
-
-    default:
-      msg = retcode_str[p.ret];
-      break;
-    }
-
     // send response
-    q.comm->respond(q.conn_id, msg);
+    q.comm->respond(q.conn_id, p);
   }
 
   sleep_idle(MS(100));
 }
 
 // command processing
-parse_error add_to_queue(const string json, Comm *comm, uint16_t conn_id) {
+Processed* add_to_queue(const string json, Comm *comm, uint16_t conn_id) {
   Parsed p = parse_command(json);
   if (p.err) return p.err;
 
   if (p.command == NULL) {
     error("command missing even though there wasn't a parse error");
-    return missing_command;
+    return new MissingCommand();
   }
 
   // enforce comm separation
   if (!p.command->is_valid_comm(comm)) {
     delete p.command; // cleanup
-    return wrong_comm;
+    return new WrongComm();
   }
 
   debug("parsed, adding to queue: %d, %s", conn_id, p.command->cmd_name());
@@ -462,7 +441,7 @@ parse_error add_to_queue(const string json, Comm *comm, uint16_t conn_id) {
   Queued q = {p.command, comm, conn_id};
   command_queue.push(q);
 
-  return valid;
+  return NULL;
 }
 
 Parsed parse_command(const string json) {
@@ -476,14 +455,14 @@ Parsed parse_command(const string json) {
     case DeserializationError::EmptyInput:
     case DeserializationError::IncompleteInput:
     case DeserializationError::InvalidInput:
-      return Parsed{NULL, invalid};
+      return Parsed{NULL, new Invalid()};
 
     case DeserializationError::NoMemory:
     case DeserializationError::TooDeep:
-      return Parsed{NULL, too_big};
+      return Parsed{NULL, new TooBig()};
 
     default:
-      return Parsed{NULL, invalid};
+      return Parsed{NULL, new Invalid()};
     }
   }
 
@@ -493,13 +472,13 @@ Parsed parse_command(const string json) {
   // helper macros
 #define match_name(cls) (!strcmp(cmd_name, cls::json_name))
 
-#define parse_str(field)                        \
-  const char *field = doc[#field];              \
-  if (!field) return Parsed{NULL, incomplete};
+#define parse_str(field)                              \
+  const char *field = doc[#field];                    \
+  if (!field) return Parsed{NULL, new Incomplete()};
 
-#define parse_as(field, type)                               \
-  JsonVariant j_##field = doc[#field];                      \
-  if (j_##field.isNull()) return Parsed{NULL, incomplete};  \
+#define parse_as(field, type)                                     \
+  JsonVariant j_##field = doc[#field];                            \
+  if (j_##field.isNull()) return Parsed{NULL, new Incomplete()};  \
   type field = j_##field.as<type>();
 
 #define parse_as_default(field, type, def_val)                          \
@@ -512,7 +491,7 @@ Parsed parse_command(const string json) {
 #define parse_user()      	parse_as(user, uint32_t)
 
   const char *cmd_name = doc["cmd"];
-  if (!cmd_name) return Parsed{NULL, incomplete};
+  if (!cmd_name) return Parsed{NULL, new Incomplete()};
 
   if (match_name(CmdTest)) {
     cmd = new CmdTest();
@@ -523,12 +502,13 @@ Parsed parse_command(const string json) {
 
   } else if (match_name(CmdAddLiquid)) {
     parse_user();
-    parse_str(name);
-    cmd = new CmdAddLiquid(user, name);
+    parse_str(liquid);
+    parse_float(volume);
+    cmd = new CmdAddLiquid(user, liquid, volume);
 
   } else if (match_name(CmdMakeRecipe)) {
-    parse_str(name);
-    cmd = new CmdMakeRecipe(name);
+    parse_str(recipe);
+    cmd = new CmdMakeRecipe(recipe);
 
   } else if (match_name(CmdDefineRecipe)) {
     parse_user();
@@ -572,52 +552,52 @@ Parsed parse_command(const string json) {
     cmd = new CmdCalibratePumps(user);
 
   } else {
-    return Parsed{NULL, unknown_command};
+    return Parsed{NULL, new UnknownCommand()};
   }
 
-  return Parsed{cmd, valid};
+  return Parsed{cmd, NULL};
 }
 
 // command logic
-Processed CmdTest::execute() { return RET(ok); };
+Processed* CmdTest::execute() { return new Success(); };
 
-Processed CmdRestart::execute() {
+Processed* CmdRestart::execute() {
   if (is_admin(this->user)) {
     if (this->factory_reset) {
       // FIXME reset settings once the EEPROM is used
     }
     ESP.restart();
   }
-  return RET(unauthorized);
+  return new Unauthorized();
 }
 
 // TODO implement logic once we have the hardware
-Processed CmdCalibratePumps::execute() { return reset_machine(); };
-Processed CmdClean::execute() { return reset_machine(); };
-Processed CmdReset::execute() { return reset_machine(); };
+Processed* CmdCalibratePumps::execute() { return reset_machine(); };
+Processed* CmdClean::execute() { return reset_machine(); };
+Processed* CmdReset::execute() { return reset_machine(); };
 
 // FIXME
-Processed CmdInitUser::execute() { return RET(unsupported); };
-Processed CmdMakeRecipe::execute() { return RET(unsupported); };
-Processed CmdAddLiquid::execute() { return RET(unsupported); };
-Processed CmdDefinePump::execute() { return RET(unsupported); };
-Processed CmdDefineRecipe::execute() { return RET(unsupported); };
-Processed CmdEditRecipe::execute() { return RET(unsupported); };
-Processed CmdDeleteRecipe::execute() { return RET(unsupported); };
+Processed* CmdInitUser::execute()    	{ return new Unsupported(); };
+Processed* CmdMakeRecipe::execute()  	{ return new Unsupported(); };
+Processed* CmdAddLiquid::execute()   	{ return new Unsupported(); };
+Processed* CmdDefinePump::execute()  	{ return new Unsupported(); };
+Processed* CmdDefineRecipe::execute()	{ return new Unsupported(); };
+Processed* CmdEditRecipe::execute()  	{ return new Unsupported(); };
+Processed* CmdDeleteRecipe::execute()	{ return new Unsupported(); };
 
 bool is_admin(User user) {
   // TODO use roles etc
   return (user == 0);
 }
 
-Processed reset_machine(void) {
+Processed* reset_machine(void) {
   cocktail_queue.clear();
   cocktail.clear();
 
   // update status
   all_status[ID_COCKTAIL]->update("[]");
 
-  return RET(ok);
+  return new Success();
 }
 
 // bluetooth
@@ -691,9 +671,16 @@ Comm::Comm(const char *uuid_char)
   this->responses = {};
 }
 
-void Comm::respond(const uint16_t id, const char *value) {
-  debug("sending response to %d: %s", id, value);
-  this->responses[id] = value;
+void Comm::respond(const uint16_t id, Processed *ret) {
+  if (!ret) {
+    debug("tried to send empty respond");
+    return;
+  }
+
+
+  debug("sending response to %d: %s", id, ret->json());
+  delete this->responses[id];
+  this->responses[id] = ret;
   this->ble_char->notify();
 }
 
@@ -710,7 +697,7 @@ void ServerCB::onConnect(BLEServer *server, esp_ble_gatts_cb_param_t* param) {
   uint16_t id = param->connect.conn_id;
 
   for (int i=0; i<NUM_COMM; i++) {
-    all_comm[i]->responses[id] = "ready";
+    all_comm[i]->responses[id] = new Ready();
   }
   debug("  %s -> %d", remote_addr.toString().c_str(), id);
 }
@@ -741,7 +728,7 @@ void CommCB::onRead(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *param
   // or default to a dummy value
   const char *v;
   if (this->comm->responses.count(id)) {
-    v = this->comm->responses[id];
+    v = this->comm->responses[id]->json();
   } else {
     v = "";
   }
@@ -758,16 +745,14 @@ void CommCB::onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *para
 
     debug("write: %d (%s) -> %s", id, ble_char->getUUID().toString().c_str(), v.c_str());
 
-    parse_error err = add_to_queue(v, this->comm, id);
-    const char *ret = parse_error_str[id];
+    Processed *err = add_to_queue(v, this->comm, id);
 
-    debug("parsed: %s", ret);
-
-    if (err == valid) {
-      // response happens after processing, but set it to a temporary "processing"
-      this->comm->responses[id] = ret;
+    if (err) {
+      debug("failed to parse: %s", err->json());
+      this->comm->respond(id, err);
     } else {
-      this->comm->respond(id, ret);
+      debug("parsed, waiting for queue");
+      this->comm->responses[id] = new Processing();
     }
   }
 }
