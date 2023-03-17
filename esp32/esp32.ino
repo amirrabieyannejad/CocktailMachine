@@ -1,4 +1,5 @@
 // supported features
+#define CORE_DEBUG_LEVEL 4
 // #define SD_CARD
 #define SIMULATE
 
@@ -24,8 +25,8 @@ using namespace std;
 
 // sd card
 #if defined(SD_CARD)
-#include "FS.h"
-#include "SD.h"
+#include <FS.h>
+#include <SD.h>
 #endif
 
 // bluetooth
@@ -309,26 +310,10 @@ void error_loop(void);
 #define HOUR(n) (n * 1000LL * 1000LL * 60LL * 60)
 
 // debugging info
-#define log(level, msg)                         \
-  do {                                          \
-    Serial.print(level " ");                    \
-    Serial.print(msg);                          \
-    Serial.println();                           \
-  } while(0)
-#define logf(level, msg, ...)                           \
-  do {                                                  \
-    Serial.print(level " ");                            \
-    Serial.printf(msg, __VA_ARGS__);                    \
-    Serial.println();                                   \
-  } while(0)
-
-#define debug(msg) log("[DEBUG]", msg)
-#define info(msg)  log("[INFO]",  msg)
-#define error(msg) log("[ERROR]", msg)
-
-#define debugf(msg, ...) logf("[DEBUG]", msg, __VA_ARGS__)
-#define infof(msg, ...)  logf("[INFO]",  msg, __VA_ARGS__)
-#define errorf(msg, ...) logf("[ERROR]", msg, __VA_ARGS__)
+#define debug(...)	log_d(__VA_ARGS__)
+#define error(...)	log_e(__VA_ARGS__)
+#define info(...) 	log_i(__VA_ARGS__)
+#define warn(...) 	log_w(__VA_ARGS__)
 
 // led feedback (if possible)
 #if defined(LED_BUILTIN)
@@ -388,9 +373,9 @@ void setup() {
     debug("sd card contents:");
     while(file){
       if(file.isDirectory()){
-        debugf(" DIR : %s", file.name());
+        debug(" DIR : %s", file.name());
       } else {
-        debugf(" FILE: %16s  SIZE: %d", file.name(), file.size());
+        debug(" FILE: %16s  SIZE: %d", file.name(), file.size());
       }
       file = root.openNextFile();
     }
@@ -428,7 +413,7 @@ void loop() {
     Queued q = command_queue.front();
     command_queue.pop();
 
-    debugf("processing queue (#%d): %s (%d)", command_queue.size(), q.command->cmd_name(), q.conn_id);
+    debug("processing queue (#%d): %s (%d)", command_queue.size(), q.command->cmd_name(), q.conn_id);
     Processed p = q.command->execute();
 
     // cleanup
@@ -471,7 +456,7 @@ parse_error add_to_queue(const string json, Comm *comm, uint16_t conn_id) {
     return wrong_comm;
   }
 
-  debugf("parsed, adding to queue: %d, %s", conn_id, p.command->cmd_name());
+  debug("parsed, adding to queue: %d, %s", conn_id, p.command->cmd_name());
 
   // add to process queue
   Queued q = {p.command, comm, conn_id};
@@ -481,7 +466,7 @@ parse_error add_to_queue(const string json, Comm *comm, uint16_t conn_id) {
 }
 
 Parsed parse_command(const string json) {
-  debugf("processing json: «%s»", json.c_str());
+  debug("processing json: «%s»", json.c_str());
 
   StaticJsonDocument<1000> doc; // TODO capacity?
   DeserializationError err = deserializeJson(doc, json);
@@ -671,14 +656,14 @@ bool ble_start(void) {
   adv->setMinPreferred(0x12);
   adv->start();
 
-  debugf("ble address: %s", BLEDevice::getAddress().toString().c_str());
+  debug("ble address: %s", BLEDevice::getAddress().toString().c_str());
   debug("ble ready");
 
   return true;
 }
 
 Service::Service(const char *uuid_service, const char *uuid_char, const uint32_t props) {
-  debugf("creating service: %s / %s", uuid_service, uuid_char);
+  debug("creating service: %s / %s", uuid_service, uuid_char);
 
   BLEService* service = ble_server->getServiceByUUID(uuid_service);
   if (service == NULL) {
@@ -707,7 +692,7 @@ Comm::Comm(const char *uuid_char)
 }
 
 void Comm::respond(const uint16_t id, const char *value) {
-  debugf("sending response to %d: %s", id, value);
+  debug("sending response to %d: %s", id, value);
   this->responses[id] = value;
   this->ble_char->notify();
 }
@@ -727,7 +712,7 @@ void ServerCB::onConnect(BLEServer *server, esp_ble_gatts_cb_param_t* param) {
   for (int i=0; i<NUM_COMM; i++) {
     all_comm[i]->responses[id] = "ready";
   }
-  debugf("  %s -> %d", remote_addr.toString().c_str(), id);
+  debug("  %s -> %d", remote_addr.toString().c_str(), id);
 }
 
 void ServerCB::onDisconnect(BLEServer *server) {
@@ -742,7 +727,7 @@ void ServerCB::onDisconnect(BLEServer *server, esp_ble_gatts_cb_param_t* param) 
   for (int i=0; i<NUM_COMM; i++) {
     all_comm[i]->responses.erase(id);
   }
-  debugf("  %s -> %d", remote_addr.toString().c_str(), id);
+  debug("  %s -> %d", remote_addr.toString().c_str(), id);
 }
 
 CommCB::CommCB(Comm *comm) {
@@ -761,7 +746,7 @@ void CommCB::onRead(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *param
     v = "";
   }
 
-  debugf("read: %d (%s) -> %s", id, ble_char->getUUID().toString().c_str(), v);
+  debug("read: %d (%s) -> %s", id, ble_char->getUUID().toString().c_str(), v);
   ble_char->setValue(v);
 }
 
@@ -771,12 +756,12 @@ void CommCB::onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *para
   if (this->comm->responses.count(id)) {
     const string v = ble_char->getValue();
 
-    debugf("write: %d (%s) -> %s", id, ble_char->getUUID().toString().c_str(), v.c_str());
+    debug("write: %d (%s) -> %s", id, ble_char->getUUID().toString().c_str(), v.c_str());
 
     parse_error err = add_to_queue(v, this->comm, id);
     const char *ret = parse_error_str[id];
 
-    debugf("parsed: %s", ret);
+    debug("parsed: %s", ret);
 
     if (err == valid) {
       // response happens after processing, but set it to a temporary "processing"
@@ -823,7 +808,7 @@ bool sdcard_save(void) {
   uint64_t mb  	= 1024 * 1024;
   uint64_t used	= SD.usedBytes();
   uint64_t size	= SD.totalBytes();
-  debugf("sd card: %lluMB / %lluMB used", used/mb, size/mb);
+  debug("sd card: %lluMB / %lluMB used", used/mb, size/mb);
 
   return true;
 }
@@ -880,7 +865,7 @@ void error_loop(void) {
 #if defined(LED_BUILTIN)
     blink_leds(MS(100), MS(100));
 #else
-    log("[HALT]", "stop");
+    error("[HALT]");
     sleep_idle(MS(100));
 #endif
   }
