@@ -72,7 +72,30 @@ async def main():
     while True:
       logging.info("--- scan started ---")
       async with BleakClient(args.address) as client:
+        # basic commands
         await comm_msg(client, UUID_COMM_USER, j({"cmd": "test"}))
+        await comm_msg(client, UUID_COMM_USER, j({"cmd": "init_user", "name": "test-user"}))
+
+        # admin commands
+        await comm_msg(client, UUID_COMM_ADMIN, j({"cmd": "reset", "user": 0}))
+        await comm_msg(client, UUID_COMM_ADMIN, j({"cmd": "calibrate_pumps", "user": 0}))
+        await comm_msg(client, UUID_COMM_ADMIN, j({"cmd": "clean", "user": 0}))
+
+        # set up machine
+        await comm_msg(client, UUID_COMM_ADMIN, j({"cmd": "define_pump", "user": 0, "liquid": "water",    "volume": 1000, "slot": 1}))
+        await comm_msg(client, UUID_COMM_ADMIN, j({"cmd": "define_pump", "user": 0, "liquid": "beer",     "volume": 2000, "slot": 2}))
+        await comm_msg(client, UUID_COMM_ADMIN, j({"cmd": "define_pump", "user": 0, "liquid": "lemonade", "volume": 3000, "slot": 3}))
+
+        # define recipes
+        await comm_msg(client, UUID_COMM_USER, j({"cmd": "define_recipe", "user": 1, "name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}))
+        await comm_msg(client, UUID_COMM_USER, j({"cmd": "define_recipe", "user": 1, "name": "cheap beer", "liquids": [["beer", 250], ["water", 250]]}))
+        await comm_msg(client, UUID_COMM_USER, j({"cmd": "edit_recipe", "user": 1, "name": "cheap beer", "liquids": [["beer", 100], ["water", 400]]}))
+        await comm_msg(client, UUID_COMM_ADMIN, j({"cmd": "delete_recipe", "user": 1, "name": "cheap beer"}))
+
+        # make recipes
+        await comm_msg(client, UUID_COMM_USER, j({"cmd": "make_recipe", "user": 1, "recipe": "radler"}))
+        await comm_msg(client, UUID_COMM_ADMIN, j({"cmd": "add_liquid", "user": 0, "liquid": "beer", "volume": 100}))
+        await comm_msg(client, UUID_COMM_ADMIN, j({"cmd": "reset", "user": 0}))
 
         await read_all_chars(client)
 
