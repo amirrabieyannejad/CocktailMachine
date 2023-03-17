@@ -58,7 +58,7 @@ JSON-Beispiel:
 
 JSON-Beispiel:
 
-    {"cmd": "define_liquid", "user": 2737, "liquid": "water", "volume": 30}
+    {"cmd": "define_liquid", "user": 0, "liquid": "water", "volume": 30}
 
 ### define_recipe: definiert ein neues Rezept oder ändert ein bestehendes Rezept
 - user: User
@@ -67,7 +67,7 @@ JSON-Beispiel:
 
 JSON-Beispiel:
 
-    {"cmd": "define_recipe", "user": 4310, "name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}
+    {"cmd": "define_recipe", "user": 0, "name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}
 
 ### add_pump: fügt Pumpe zu ESP hinzu
 - user: User
@@ -76,19 +76,25 @@ JSON-Beispiel:
 
 JSON-Beispiel:
 
-    {"cmd": "add_pump", "user": 4315, "liquid": "water", "volume": 1000}
+    {"cmd": "add_pump", "user": 0, "liquid": "water", "volume": 1000}
 
 ### calibrate_pumps: kalibriert alle Pumpen
 - user: User
 
 JSON-Beispiel:
 
-    {"cmd": "calibrate_pumps", "user": 8185}
+    {"cmd": "calibrate_pumps", "user": 0}
 
 ### clean: reinigt die Maschine
 - user: User
 
 JSON-Beispiel:
 
-    {"cmd": "clean", "user": 8162}
+    {"cmd": "clean", "user": 0}
 
+### restart: startet die Maschine neu
+- user: User
+
+JSON-Beispiel:
+
+    {"cmd": "restart", "user": 0}

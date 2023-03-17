@@ -104,6 +104,7 @@ struct CommCB: BLECharacteristicCallbacks {
 typedef enum {
   ok,
   unsupported,
+  unauthorized,
   ret_user_id,
 } retcode;
 
@@ -120,6 +121,7 @@ typedef enum {
 const char *retcode_str[] = {
   "\"ok\"",
   "\"unsupported\"",
+  "\"unauthorized\"",
   "\"<user id>\"",
 };
 
@@ -129,7 +131,7 @@ const char *parse_error_str[] = {
   "\"message too big\"",
   "\"missing arguments\"",
   "\"unknown command\"",
-  "\"missing command\"",
+  "\"command missing even though it parsed right\"",
   "\"wrong comm channel\"",
 };
 
@@ -140,6 +142,8 @@ typedef struct {
   retcode ret;
   User user;
 } Processed;
+
+#define RET(code) Processed{code, -1} // default if no additional arguments are used
 
 struct Command {
   virtual Processed execute();
@@ -234,6 +238,14 @@ struct CmdReset : public Command {
   def_cmd("reset", USER);
   User user;
   CmdReset(User user) {
+    this->user = user;
+  }
+};
+
+struct CmdRestart : public Command {
+  def_cmd("restart", ADMIN);
+  User user;
+  CmdRestart(User user) {
     this->user = user;
   }
 };
@@ -581,6 +593,10 @@ Parsed parse_command(const string json) {
     parse_user();
     cmd = new CmdReset(user);
 
+  } else if (match_name(CmdRestart)) {
+    parse_user();
+    cmd = new CmdRestart(user);
+
   } else if (match_name(CmdClean)) {
     parse_user();
     cmd = new CmdClean(user);
@@ -597,9 +613,12 @@ Parsed parse_command(const string json) {
 }
 
 // command logic
-#define RET(code) {code, -1} // default if no user is returned
+Processed CmdTest::execute() { return RET(ok); };
 
-Processed CmdTest::execute() { return {ok, -1}; };
+Processed CmdRestart::execute() {
+  if (is_admin(this->user)) ESP.restart();
+  return RET(unauthorized);
+}
 
 // TODO implement logic once we have the hardware
 Processed CmdCalibratePumps::execute() { return reset_machine(); };
@@ -614,6 +633,11 @@ Processed CmdDefinePump::execute() { return RET(unsupported); };
 Processed CmdDefineRecipe::execute() { return RET(unsupported); };
 Processed CmdEditRecipe::execute() { return RET(unsupported); };
 Processed CmdDeleteRecipe::execute() { return RET(unsupported); };
+
+bool is_admin(User user) {
+  // TODO use roles etc
+  return (user == 0);
+}
 
 Processed reset_machine(void) {
   cocktail_queue.clear();
