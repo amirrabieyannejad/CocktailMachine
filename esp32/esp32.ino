@@ -37,37 +37,33 @@ using namespace std;
 #define PROP_READ  (BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY)
 #define PROP_WRITE (BLECharacteristic::PROPERTY_WRITE)
 
-class Service {
-public:
+struct Service {
   BLECharacteristic *ble_char;
-
   Service(const char *uuid_service, const char *uuid_char, const uint32_t props);
 };
 
-class Status : public Service {
-public:
+struct Status : Service {
   Status(const char *uuid_char, const char *init_value);
   void update(const char *value);
 };
 
-class Comm : public Service {
-public:
+struct Comm : Service {
   // FIXME conn_id isn't stable across reconnections, so we should switch to MAC or something similar
   unordered_map<uint16_t, const char *> responses;
   Comm(const char *uuid_char);
+
   void respond(uint16_t id, const char *value);
   bool is_id(int id);
 };
 
-class ServerCB : public BLEServerCallbacks {
+struct ServerCB : BLEServerCallbacks {
   void onConnect(BLEServer *server);
   void onConnect(BLEServer *server, esp_ble_gatts_cb_param_t *param);
   void onDisconnect(BLEServer *server);
   void onDisconnect(BLEServer *server, esp_ble_gatts_cb_param_t *param);
 };
 
-class CommCB: public BLECharacteristicCallbacks {
-public:
+struct CommCB: BLECharacteristicCallbacks {
   Comm *comm;
   CommCB(Comm *comm);
 
@@ -142,51 +138,49 @@ typedef struct {
   User user;
 } Processed;
 
-class Command {
-public:
+struct Command {
+  static constexpr char *cmd_name = "<command>";
   virtual Processed execute();
   virtual bool is_valid_comm(Comm *comm);
 };
 
-class CmdTest : public Command {
-  Processed execute();
-  bool is_valid_comm(Comm *comm);
+#define def_cmd(name)                             \
+  static constexpr char *cmd_name = name;         \
+  Processed execute() override;                   \
+  bool is_valid_comm(Comm *comm) override;
+
+struct CmdTest : public Command {
+  def_cmd("test");
 };
 
-class CmdInitUser : public Command {
-public:
+struct CmdInitUser : public Command {
+  def_cmd("init_user");
   const char *name;
   CmdInitUser(const char *name) {
     this->name = name;
   }
-  Processed execute();
-  bool is_valid_comm(Comm *comm);
 };
 
-class CmdMakeRecipe : public Command {
-public:
+struct CmdMakeRecipe : public Command {
+  def_cmd("make_recipe");
   const char *name;
   CmdMakeRecipe(const char *name) {
     this->name = name;
   }
-  Processed execute();
-  bool is_valid_comm(Comm *comm);
 };
 
-class CmdAddLiquid : public Command {
-public:
+struct CmdAddLiquid : public Command {
+  def_cmd("add_liquid");
   User user;
   const char *name;
   CmdAddLiquid(User user, const char *name) {
     this->user = user;
     this->name = name;
   }
-  Processed execute();
-  bool is_valid_comm(Comm *comm);
 };
 
-class CmdDefinePump : public Command {
-public:
+struct CmdDefinePump : public Command {
+  def_cmd("define_pump");
   User user;
   const char *liquid;
   // TODO
@@ -194,12 +188,10 @@ public:
     this->user = user;
     this->liquid = liquid;
   }
-  Processed execute();
-  bool is_valid_comm(Comm *comm);
 };
 
-class CmdDefineRecipe : public Command {
-public:
+struct CmdDefineRecipe : public Command {
+  def_cmd("define_recipe");
   User user;
   const char *name;
   // TODO
@@ -207,12 +199,10 @@ public:
     this->user = user;
     this->name = name;
   }
-  Processed execute();
-  bool is_valid_comm(Comm *comm);
 };
 
-class CmdEditRecipe : public Command {
-public:
+struct CmdEditRecipe : public Command {
+  def_cmd("edit_recipe");
   User user;
   const char *name;
   // TODO
@@ -220,50 +210,40 @@ public:
     this->user = user;
     this->name = name;
   }
-  Processed execute();
-  bool is_valid_comm(Comm *comm);
 };
 
-class CmdDeleteRecipe : public Command {
-public:
+struct CmdDeleteRecipe : public Command {
+  def_cmd("delete_recipe");
   User user;
   const char *name;
   CmdDeleteRecipe(User user, const char *name) {
     this->user = user;
     this->name = name;
   }
-  Processed execute();
-  bool is_valid_comm(Comm *comm);
 };
 
-class CmdReset : public Command {
-public:
+struct CmdReset : public Command {
+  def_cmd("reset");
   User user;
   CmdReset(User user) {
     this->user = user;
   }
-  Processed execute();
-  bool is_valid_comm(Comm *comm);
 };
 
-class CmdClean : public Command {
-public:
+struct CmdClean : public Command {
+  def_cmd("clean");
   User user;
   CmdClean(User user) {
     this->user = user;
   }
-  Processed execute();
-  bool is_valid_comm(Comm *comm);
 };
 
-class CmdCalibratePumps : public Command {
-public:
+struct CmdCalibratePumps : public Command {
+  def_cmd("calibrate_pumps");
   User user;
   CmdCalibratePumps(User user) {
     this->user = user;
   }
-  Processed execute();
-  bool is_valid_comm(Comm *comm);
 };
 
 typedef struct {
@@ -279,7 +259,7 @@ typedef struct {
 
 // machine parts
 
-class Pump {
+struct Pump {
   const char *liquid;
   float volume;
   int pin;
@@ -290,12 +270,12 @@ class Pump {
   retcode empty();
 };
 
-class Ingredient {
+struct Ingredient {
   const char *name;
   float amount;
 };
 
-class Recipe {
+struct Recipe {
   const char *name;
   forward_list<Ingredient> ingredients;
 

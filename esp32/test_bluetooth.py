@@ -58,48 +58,61 @@ async def comm_msg(client, uuid, message):
 def j(obj):
   return json.dumps(obj, ensure_ascii=False).encode('utf8')
 
+async def test_run(client):
+  async def user(obj):
+    await comm_msg(client, UUID_COMM_USER, j(obj))
+
+  async def admin(obj):
+    await comm_msg(client, UUID_COMM_ADMIN, j(obj))
+
+  # basic commands
+  await user({"cmd": "test"})
+  await user({"cmd": "init_user", "name": "test-user"})
+
+  # admin commands
+  await admin({"cmd": "reset", "user": 0})
+  await admin({"cmd": "calibrate_pumps", "user": 0})
+  await admin({"cmd": "clean", "user": 0})
+
+  # set up machine
+  await admin({"cmd": "define_pump", "user": 0, "liquid": "water",    "volume": 1000, "slot": 1})
+  await admin({"cmd": "define_pump", "user": 0, "liquid": "beer",     "volume": 2000, "slot": 2})
+  await admin({"cmd": "define_pump", "user": 0, "liquid": "lemonade", "volume": 3000, "slot": 3})
+
+  # define recipes
+  await user({"cmd": "define_recipe", "user": 1, "name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]})
+  await user({"cmd": "define_recipe", "user": 1, "name": "cheap beer", "liquids": [["beer", 250], ["water", 250]]})
+  await user({"cmd": "edit_recipe", "user": 1, "name": "cheap beer", "liquids": [["beer", 100], ["water", 400]]})
+  await admin({"cmd": "delete_recipe", "user": 1, "name": "cheap beer"})
+
+  # make recipes
+  await user({"cmd": "make_recipe", "user": 1, "recipe": "radler"})
+  await admin({"cmd": "add_liquid", "user": 0, "liquid": "beer", "volume": 100})
+  await admin({"cmd": "reset", "user": 0})
+
+  await read_all_chars(client)
+
 async def main():
   parser = argparse.ArgumentParser(
     prog = "Bluetooth LE reader",
     description = "Tool to read all characteristics of a Bluetooth LE server.")
 
-  parser.add_argument("-s", "--sleep", type=float, default=1, help="how long to wait between reads (in seconds)")
+  parser.add_argument("-r", "--repeat", type=bool, help="repeated runs")
+  parser.add_argument("-s", "--sleep", type=float, default=1, help="how long to wait between runs (in seconds)")
   parser.add_argument("address", help="MAC address of the BLE server")
 
   args = parser.parse_args()
 
   try:
-    while True:
-      logging.info("--- scan started ---")
+    runs = 0
+    while args.repeat or runs < 1:
+      runs += 1
+      logging.info(f"--- run started (#{runs}) ---")
+
       async with BleakClient(args.address) as client:
-        # basic commands
-        await comm_msg(client, UUID_COMM_USER, j({"cmd": "test"}))
-        await comm_msg(client, UUID_COMM_USER, j({"cmd": "init_user", "name": "test-user"}))
+        await test_run(client)
 
-        # admin commands
-        await comm_msg(client, UUID_COMM_ADMIN, j({"cmd": "reset", "user": 0}))
-        await comm_msg(client, UUID_COMM_ADMIN, j({"cmd": "calibrate_pumps", "user": 0}))
-        await comm_msg(client, UUID_COMM_ADMIN, j({"cmd": "clean", "user": 0}))
-
-        # set up machine
-        await comm_msg(client, UUID_COMM_ADMIN, j({"cmd": "define_pump", "user": 0, "liquid": "water",    "volume": 1000, "slot": 1}))
-        await comm_msg(client, UUID_COMM_ADMIN, j({"cmd": "define_pump", "user": 0, "liquid": "beer",     "volume": 2000, "slot": 2}))
-        await comm_msg(client, UUID_COMM_ADMIN, j({"cmd": "define_pump", "user": 0, "liquid": "lemonade", "volume": 3000, "slot": 3}))
-
-        # define recipes
-        await comm_msg(client, UUID_COMM_USER, j({"cmd": "define_recipe", "user": 1, "name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}))
-        await comm_msg(client, UUID_COMM_USER, j({"cmd": "define_recipe", "user": 1, "name": "cheap beer", "liquids": [["beer", 250], ["water", 250]]}))
-        await comm_msg(client, UUID_COMM_USER, j({"cmd": "edit_recipe", "user": 1, "name": "cheap beer", "liquids": [["beer", 100], ["water", 400]]}))
-        await comm_msg(client, UUID_COMM_ADMIN, j({"cmd": "delete_recipe", "user": 1, "name": "cheap beer"}))
-
-        # make recipes
-        await comm_msg(client, UUID_COMM_USER, j({"cmd": "make_recipe", "user": 1, "recipe": "radler"}))
-        await comm_msg(client, UUID_COMM_ADMIN, j({"cmd": "add_liquid", "user": 0, "liquid": "beer", "volume": 100}))
-        await comm_msg(client, UUID_COMM_ADMIN, j({"cmd": "reset", "user": 0}))
-
-        await read_all_chars(client)
-
-      logging.info("--- scan complete ---")
+      logging.info("--- run complete ---")
       time.sleep(args.sleep)
 
   except KeyboardInterrupt:
