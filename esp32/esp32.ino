@@ -245,8 +245,10 @@ struct CmdReset : public Command {
 struct CmdRestart : public Command {
   def_cmd("restart", ADMIN);
   User user;
-  CmdRestart(User user) {
+  bool factory_reset;
+  CmdRestart(User user, bool factory_reset) {
     this->user = user;
+    this->factory_reset = factory_reset;
   }
 };
 
@@ -539,12 +541,19 @@ Parsed parse_command(const string json) {
   const char *field = doc[#field];              \
   if (!field) return Parsed{NULL, incomplete};
 
-#define parse_num(field, type)                              \
+#define parse_as(field, type)                               \
   JsonVariant j_##field = doc[#field];                      \
   if (j_##field.isNull()) return Parsed{NULL, incomplete};  \
   type field = j_##field.as<type>();
 
-#define parse_user() parse_num(user, uint32_t)
+#define parse_as_default(field, type, def_val)                          \
+  JsonVariant j_##field = doc[#field];                                  \
+  type field = (j_##field.isNull()) ? def_val : j_##field.as<type>();
+
+#define parse_bool(field) 	parse_as(field, bool)
+#define parse_float(field)	parse_as(field, float)
+#define parse_opt(field)  	parse_as_default(field, bool, false)
+#define parse_user()      	parse_as(user, uint32_t)
 
   const char *cmd_name = doc["cmd"];
   if (!cmd_name) return Parsed{NULL, incomplete};
@@ -586,7 +595,7 @@ Parsed parse_command(const string json) {
   } else if (match_name(CmdDefinePump)) {
     parse_user();
     parse_str(liquid);
-    parse_num(volume, float);
+    parse_float(volume);
     cmd = new CmdDefinePump(user, liquid, volume);
 
   } else if (match_name(CmdReset)) {
@@ -595,7 +604,8 @@ Parsed parse_command(const string json) {
 
   } else if (match_name(CmdRestart)) {
     parse_user();
-    cmd = new CmdRestart(user);
+    parse_opt(factory_reset);
+    cmd = new CmdRestart(user, factory_reset);
 
   } else if (match_name(CmdClean)) {
     parse_user();
@@ -616,7 +626,12 @@ Parsed parse_command(const string json) {
 Processed CmdTest::execute() { return RET(ok); };
 
 Processed CmdRestart::execute() {
-  if (is_admin(this->user)) ESP.restart();
+  if (is_admin(this->user)) {
+    if (this->factory_reset) {
+      // FIXME reset settings once the EEPROM is used
+    }
+    ESP.restart();
+  }
   return RET(unauthorized);
 }
 

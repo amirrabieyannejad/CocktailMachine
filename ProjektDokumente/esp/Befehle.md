@@ -92,9 +92,14 @@ JSON-Beispiel:
 
     {"cmd": "clean", "user": 0}
 
-### restart: startet die Maschine neu
+### restart: startet die Maschine neu 
 - user: User
+- factory_reset: bool (optional)
+
+Falls `factory_reset` auf `true` gesetzt wird, werden auch alle Einstellungen gelöscht.
 
 JSON-Beispiel:
 
     {"cmd": "restart", "user": 0}
+    {"cmd": "restart", "user": 0, "factory_reset": true}
+
