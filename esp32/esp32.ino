@@ -167,27 +167,20 @@ struct CmdTest : public Command {
 struct CmdInitUser : public Command {
   def_cmd("init_user", USER);
   const char *name;
-  CmdInitUser(const char *name) {
-    this->name = name;
-  }
+  CmdInitUser(const char *name) : name(name) {}
 };
 
 struct CmdMakeRecipe : public Command {
   def_cmd("make_recipe", USER);
   const char *name;
-  CmdMakeRecipe(const char *name) {
-    this->name = name;
-  }
+  CmdMakeRecipe(const char *name) : name(name) {}
 };
 
 struct CmdAddLiquid : public Command {
   def_cmd("add_liquid", ADMIN);
   User user;
   const char *name;
-  CmdAddLiquid(User user, const char *name) {
-    this->user = user;
-    this->name = name;
-  }
+  CmdAddLiquid(User user, const char *name) : user(user), name(name) {}
 };
 
 struct CmdDefinePump : public Command {
@@ -195,11 +188,7 @@ struct CmdDefinePump : public Command {
   User user;
   const char *liquid;
   float volume;
-  CmdDefinePump(User user, const char *liquid, const float volume) {
-    this->user = user;
-    this->liquid = liquid;
-    this->volume = volume;
-  }
+  CmdDefinePump(User user, const char *liquid, const float volume) : user(user), liquid(liquid), volume(volume) {}
 };
 
 struct CmdDefineRecipe : public Command {
@@ -207,10 +196,7 @@ struct CmdDefineRecipe : public Command {
   User user;
   const char *name;
   // TODO
-  CmdDefineRecipe(User user, const char *name) {
-    this->user = user;
-    this->name = name;
-  }
+  CmdDefineRecipe(User user, const char *name) : user(user), name(name) {}
 };
 
 struct CmdEditRecipe : public Command {
@@ -218,54 +204,39 @@ struct CmdEditRecipe : public Command {
   User user;
   const char *name;
   // TODO
-  CmdEditRecipe(User user, const char *name) {
-    this->user = user;
-    this->name = name;
-  }
+  CmdEditRecipe(User user, const char *name) : user(user), name(name) {}
 };
 
 struct CmdDeleteRecipe : public Command {
   def_cmd("delete_recipe", ADMIN);
   User user;
   const char *name;
-  CmdDeleteRecipe(User user, const char *name) {
-    this->user = user;
-    this->name = name;
-  }
+  CmdDeleteRecipe(User user, const char *name) : user(user), name(name) {}
 };
 
 struct CmdReset : public Command {
   def_cmd("reset", USER);
   User user;
-  CmdReset(User user) {
-    this->user = user;
-  }
+  CmdReset(User user) : user(user) {}
 };
 
 struct CmdRestart : public Command {
   def_cmd("restart", ADMIN);
   User user;
   bool factory_reset;
-  CmdRestart(User user, bool factory_reset) {
-    this->user = user;
-    this->factory_reset = factory_reset;
-  }
+  CmdRestart(User user, bool factory_reset) : user(user), factory_reset(factory_reset) {}
 };
 
 struct CmdClean : public Command {
   def_cmd("clean", ADMIN);
   User user;
-  CmdClean(User user) {
-    this->user = user;
-  }
+  CmdClean(User user) : user(user) {}
 };
 
 struct CmdCalibratePumps : public Command {
   def_cmd("calibrate_pumps", ADMIN);
   User user;
-  CmdCalibratePumps(User user) {
-    this->user = user;
-  }
+  CmdCalibratePumps(User user) : user(user) {}
 };
 
 typedef struct {
@@ -563,7 +534,7 @@ Parsed parse_command(const string json) {
 
   } else if (match_name(CmdInitUser)) {
     parse_str(name);
-    cmd = new CmdInitUser(name);
+    cmd = new CmdInitUser{name};
 
   } else if (match_name(CmdAddLiquid)) {
     parse_user();
