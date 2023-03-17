@@ -1,10 +1,11 @@
 // supported features
+#define BLE_NAME "Cocktail Machine ESP32"
 #define CORE_DEBUG_LEVEL 4
-// #define SD_CARD
 #define SIMULATE
+// #define USE_SD_CARD
 
 // pinout
-#if defined(SD_CARD)
+#if defined(USE_SD_CARD)
 #define PIN_SDCARD_CS A5
 #endif
 
@@ -24,7 +25,7 @@ using namespace std;
 #include <ArduinoJson.h>
 
 // sd card
-#if defined(SD_CARD)
+#if defined(USE_SD_CARD)
 #include <FS.h>
 #include <SD.h>
 #endif
@@ -36,10 +37,11 @@ using namespace std;
 #include <BLEServer.h>
 #include <BLEUtils.h>
 
-#define BLE_NAME "Cocktail Machine ESP32"
-
-#define PROP_READ  (BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY)
-#define PROP_WRITE (BLECharacteristic::PROPERTY_WRITE)
+// debugging info
+#define debug(...)	log_d(__VA_ARGS__)
+#define error(...)	log_e(__VA_ARGS__)
+#define info(...) 	log_i(__VA_ARGS__)
+#define warn(...) 	log_w(__VA_ARGS__)
 
 // services
 typedef uint32_t User;
@@ -127,15 +129,20 @@ def_ret(UnknownCommand,	"unknown command");
 def_ret(MissingCommand,	"command missing even though it parsed right");
 def_ret(WrongComm,     	"wrong comm channel");
 
+#define BUF_SIZE 20
+
 struct RetUserID : Processed {
   User user;
   RetUserID(User user) : user(user) {}
+  static char out[BUF_SIZE]; // FIXME make this a string or something
+
   const char* json() override {
-    char out [20];
     snprintf(out, sizeof(out), "{\"user\": %d}", user);
+    debug("json: %s", out);
     return out;
   }
 };
+char RetUserID::out[BUF_SIZE];
 
 // commands
 struct Command {
@@ -284,6 +291,7 @@ forward_list<Ingredient> cocktail_queue;
 forward_list<Ingredient> cocktail;
 
 queue<Queued> command_queue;
+unordered_map<User, const char*> users;
 
 // function declarations
 
@@ -302,12 +310,6 @@ void error_loop(void);
 #define MIN(n)  (n * 1000LL * 1000LL * 60LL)
 #define HOUR(n) (n * 1000LL * 1000LL * 60LL * 60)
 
-// debugging info
-#define debug(...)	log_d(__VA_ARGS__)
-#define error(...)	log_e(__VA_ARGS__)
-#define info(...) 	log_i(__VA_ARGS__)
-#define warn(...) 	log_w(__VA_ARGS__)
-
 // led feedback (if possible)
 #if defined(LED_BUILTIN)
 void led_on(void);
@@ -316,7 +318,7 @@ void blink_leds(uint64_t on, uint64_t off);
 #endif
 
 // sdcard
-#if defined(SD_CARD)
+#if defined(USE_SD_CARD)
 bool sdcard_start(void);
 void sdcard_stop(void);
 bool sdcard_save(void);
@@ -351,7 +353,7 @@ void setup() {
 #endif
   }
 
-#if defined(SD_CARD)
+#if defined(USE_SD_CARD)
   { // setup sd card
     if (!sdcard_start()) { error_loop(); }
 
@@ -384,6 +386,9 @@ void setup() {
     recipes.clear();
     cocktail_queue.clear();
     cocktail.clear();
+
+    users.clear();
+    users[0] = "admin";
 
     ble_server = NULL;
   }
@@ -576,8 +581,12 @@ Processed* CmdCalibratePumps::execute() { return reset_machine(); };
 Processed* CmdClean::execute() { return reset_machine(); };
 Processed* CmdReset::execute() { return reset_machine(); };
 
-// FIXME
-Processed* CmdInitUser::execute()    	{ return new Unsupported(); };
+Processed* CmdInitUser::execute() {
+  User id = users.size();
+  users[id] = this->name;
+  return new RetUserID(id);
+}
+
 Processed* CmdMakeRecipe::execute()  	{ return new Unsupported(); };
 Processed* CmdAddLiquid::execute()   	{ return new Unsupported(); };
 Processed* CmdDefinePump::execute()  	{ return new Unsupported(); };
@@ -656,7 +665,9 @@ Service::Service(const char *uuid_service, const char *uuid_char, const uint32_t
 }
 
 Status::Status(const char *uuid_char, const char *init_value)
-  : Service(UUID_STATUS, uuid_char, PROP_READ) {
+  : Service(UUID_STATUS, uuid_char,
+            BLECharacteristic::PROPERTY_READ |
+            BLECharacteristic::PROPERTY_NOTIFY) {
   this->ble_char->setValue(init_value);
 }
 
@@ -666,7 +677,10 @@ void Status::update(const char *value) {
 }
 
 Comm::Comm(const char *uuid_char)
-  : Service(UUID_COMM, uuid_char, PROP_READ|PROP_WRITE) {
+  : Service(UUID_COMM, uuid_char,
+            BLECharacteristic::PROPERTY_READ  |
+            BLECharacteristic::PROPERTY_WRITE |
+            BLECharacteristic::PROPERTY_NOTIFY) {
   this->ble_char->setCallbacks(new CommCB(this));
   this->responses = {};
 }
@@ -676,7 +690,6 @@ void Comm::respond(const uint16_t id, Processed *ret) {
     debug("tried to send empty respond");
     return;
   }
-
 
   debug("sending response to %d: %s", id, ret->json());
   delete this->responses[id];
@@ -758,7 +771,7 @@ void CommCB::onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *para
 }
 
 // sd card
-#if defined(SD_CARD)
+#if defined(USE_SD_CARD)
 bool sdcard_start(void) {
   if (!SD.begin(PIN_SDCARD_CS)){
     error("failed to mount sdcard; maybe power is cut?");
