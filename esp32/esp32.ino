@@ -306,7 +306,7 @@ forward_list<Recipe> recipes;
 forward_list<Ingredient> cocktail;
 
 queue<Queued> command_queue;
-queue<Ingredient*> cocktail_queue;
+queue<Ingredient> cocktail_queue;
 
 unordered_map<User, const char*> users;
 
@@ -638,10 +638,12 @@ Processed* CmdDefinePump::execute() {
 }
 
 Processed* CmdAddLiquid::execute()   	{ return new Unsupported(); };
-Processed* CmdMakeRecipe::execute()  	{ return new Unsupported(); };
+
 Processed* CmdDefineRecipe::execute()	{ return new Unsupported(); };
 Processed* CmdEditRecipe::execute()  	{ return new Unsupported(); };
 Processed* CmdDeleteRecipe::execute()	{ return new Unsupported(); };
+
+Processed* CmdMakeRecipe::execute()	{ return new Unsupported(); };
 
 bool is_admin(User user) {
   // TODO use roles etc
@@ -703,7 +705,7 @@ void update_liquids() {
   // generate json output
   int remaining = liquids.size();
   String out = String('{');
-  for(const auto& pair : liquids) {
+  for(auto const &pair : liquids) {
     debug("  liquid: %s, vol: %.1f", pair.first, pair.second);
 
     out.concat('"');
@@ -719,7 +721,37 @@ void update_liquids() {
   all_status[ID_LIQUIDS]->update(out.c_str());
 }
 
-void update_recipes() {};
+void update_recipes() {
+  // generate json output
+  debug("updating recipes state");
+
+  String out = String('{');
+  for (auto r = recipes.begin(); r != recipes.end(); r++){
+    debug("  recipe: %s", r->name.c_str());
+
+    out.concat('"');
+    out.concat(r->name);
+    out.concat("\":[");
+
+    for (auto ing = r->ingredients.begin(); ing != r->ingredients.end(); ing++){
+      debug("    ingredient: %s, amount: %.1f", ing->name.c_str(), ing->amount);
+
+      out.concat("[\"");
+      out.concat(ing->name);
+      out.concat("\",");
+      out.concat(String(ing->amount, 1));
+      out.concat(']');
+
+      if (next(ing) != r->ingredients.end()) out.concat(',');
+    }
+    out.concat(']');
+
+    if (next(r) != recipes.end()) out.concat(',');
+  }
+  out.concat('}');
+
+  all_status[ID_RECIPES]->update(out.c_str());
+};
 
 void update_state(Processed *state) {
   // remove old state
