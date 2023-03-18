@@ -83,7 +83,7 @@ async def test_run(client):
   await user({"cmd": "define_recipe", "user": 1, "name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]})
   await user({"cmd": "define_recipe", "user": 1, "name": "cheap beer", "liquids": [["beer", 250], ["water", 250]]})
   await user({"cmd": "edit_recipe", "user": 1, "name": "cheap beer", "liquids": [["beer", 100], ["water", 400]]})
-  await admin({"cmd": "delete_recipe", "user": 1, "name": "cheap beer"})
+  await admin({"cmd": "delete_recipe", "user": 0, "name": "cheap beer"})
 
   # make recipes
   await user({"cmd": "make_recipe", "user": 1, "recipe": "radler"})

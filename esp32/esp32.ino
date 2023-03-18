@@ -55,13 +55,39 @@
 #define BUF_RESPONSE	100 	// max (json) response
 #define BUF_JSON    	1000	// max json input
 
-// services
+// machine parts
 typedef uint32_t User;
 
 struct Processed {
   virtual const String json();
 };
 
+struct Pump {
+  int32_t slot;
+  String liquid;
+  float volume;
+
+  Pump(int32_t slot, String liquid, float volume) : slot(slot), liquid(liquid), volume(volume) {};
+  Processed* drain(float amount);
+  Processed* refill(float volume);
+  Processed* empty();
+};
+
+struct Ingredient {
+  String name;
+  float amount;
+};
+
+struct Recipe {
+  String name;
+  std::forward_list<Ingredient> ingredients;
+
+  Recipe(String name, std::forward_list<Ingredient> ingredients) : name(name), ingredients(ingredients) {};
+  float total_volume();
+  Processed* make(User user);
+};
+
+// services
 struct Service {
   BLECharacteristic *ble_char;
   Service(const char *uuid_service, const char *uuid_char, const uint32_t props);
@@ -129,23 +155,25 @@ struct CommCB: BLECharacteristicCallbacks {
     const String json() override { return String(_json); }              \
   };
 
-def_ret(Success,       	"ok");
-def_ret(Processing,    	"processing");
-def_ret(Ready,         	"ready");
-def_ret(Pumping,       	"pumping");
-def_ret(Unsupported,   	"unsupported");
-def_ret(Unauthorized,  	"unauthorized");
-def_ret(Invalid,       	"invalid json");
-def_ret(TooBig,        	"message too big");
-def_ret(Incomplete,    	"missing arguments");
-def_ret(UnknownCommand,	"unknown command");
-def_ret(MissingCommand,	"command missing even though it parsed right");
-def_ret(WrongComm,     	"wrong comm channel");
-def_ret(InvalidSlot,   	"invalid pump slot");
-def_ret(InvalidVolume, 	"invalid volume");
-def_ret(Insufficient,  	"insufficient amounts of liquid available");
-def_ret(MissingLiquid, 	"liquid unavailable");
-def_ret(MissingRecipe, 	"recipe not found");
+def_ret(Success,           	"ok");
+def_ret(Processing,        	"processing");
+def_ret(Ready,             	"ready");
+def_ret(Pumping,           	"pumping");
+def_ret(Unsupported,       	"unsupported");
+def_ret(Unauthorized,      	"unauthorized");
+def_ret(Invalid,           	"invalid json");
+def_ret(TooBig,            	"message too big");
+def_ret(Incomplete,        	"missing arguments");
+def_ret(UnknownCommand,    	"unknown command");
+def_ret(MissingCommand,    	"command missing even though it parsed right");
+def_ret(WrongComm,         	"wrong comm channel");
+def_ret(InvalidSlot,       	"invalid pump slot");
+def_ret(InvalidVolume,     	"invalid volume");
+def_ret(Insufficient,      	"insufficient amounts of liquid available");
+def_ret(MissingLiquid,     	"liquid unavailable");
+def_ret(MissingRecipe,     	"recipe not found");
+def_ret(DuplicateRecipe,   	"recipe already exists");
+def_ret(MissingIngredients,	"missing ingredients");
 
 struct RetUserID : Processed {
   User user;
@@ -214,16 +242,18 @@ struct CmdDefineRecipe : public Command {
   def_cmd("define_recipe", USER);
   User user;
   String name;
-  // TODO
-  CmdDefineRecipe(User user, String name) : user(user), name(name) {}
+  std::forward_list<Ingredient> ingredients;
+  CmdDefineRecipe(User user, String name, std::forward_list<Ingredient> ingredients)
+    : user(user), name(name), ingredients(ingredients) {}
 };
 
 struct CmdEditRecipe : public Command {
   def_cmd("edit_recipe", USER);
   User user;
   String name;
-  // TODO
-  CmdEditRecipe(User user, String name) : user(user), name(name) {}
+  std::forward_list<Ingredient> ingredients;
+  CmdEditRecipe(User user, String name, std::forward_list<Ingredient> ingredients)
+    : user(user), name(name), ingredients(ingredients) {}
 };
 
 struct CmdDeleteRecipe : public Command {
@@ -267,33 +297,6 @@ struct Queued {
   Command *command;
   Comm *comm;
   uint16_t conn_id;
-};
-
-// machine parts
-
-struct Pump {
-  int32_t slot;
-  String liquid;
-  float volume;
-
-  Pump(int32_t slot, String liquid, float volume) : slot(slot), liquid(liquid), volume(volume) {};
-  Processed* drain(float amount);
-  Processed* refill(float volume);
-  Processed* empty();
-};
-
-struct Ingredient {
-  String name;
-  float amount;
-};
-
-struct Recipe {
-  String name;
-  std::forward_list<Ingredient> ingredients;
-
-  Recipe(String name, std::forward_list<Ingredient> ingredients) : name(name), ingredients(ingredients) {};
-  float total_volume();
-  Processed* make(User user);
 };
 
 // global state
@@ -503,11 +506,29 @@ Parsed parse_command(const String json) {
 
   // TODO pass the missing argument in Incomplete(field)
 
-#define parse_str(field)                              \
+#define parse_array(field)                                    \
+  JsonArray field = doc[#field];                              \
+  if (field.isNull()) return Parsed{NULL, new Incomplete()};
+
+#define parse_ingredients(array)                                        \
+  std::forward_list<Ingredient> ingredients = {};                       \
+  parse_array(array);                                                   \
+  for (JsonVariant _v : array) {                                        \
+    JsonArray _tuple = _v.as<JsonArray>();                              \
+    if (_tuple.isNull() || _tuple.size() != 2)                          \
+      return Parsed{NULL, new Incomplete()};                            \
+                                                                        \
+    String _name   	= String(_tuple[0].as<const char*>());             \
+    float _amount  	= _tuple[1].as<float>();                           \
+    Ingredient _ing	= Ingredient{_name, _amount};                      \
+                                                                        \
+    ingredients.push_front(_ing);                                       \
+  }
+
+#define parse_str(field)                                 \
   const char *_##field = doc[#field];                    \
   if (!_##field) return Parsed{NULL, new Incomplete()};  \
   const String field = String(_##field)
-
 
 #define parse_as(field, type)                                     \
   JsonVariant j_##field = doc[#field];                            \
@@ -547,15 +568,14 @@ Parsed parse_command(const String json) {
   } else if (match_name(CmdDefineRecipe)) {
     parse_user();
     parse_str(name);
-    // TODO missing args
-    cmd = new CmdDefineRecipe(user, name);
+    parse_ingredients(liquids);
+    cmd = new CmdDefineRecipe(user, name, ingredients);
 
   } else if (match_name(CmdEditRecipe)) {
     parse_user();
     parse_str(name);
-    // TODO missing args
-
-    cmd = new CmdEditRecipe(user, name);
+    parse_ingredients(liquids);
+    cmd = new CmdEditRecipe(user, name, ingredients);
 
   } else if (match_name(CmdDeleteRecipe)) {
     parse_user();
@@ -665,17 +685,54 @@ Processed* CmdAddLiquid::execute() {
 }
 
 Processed* CmdDefineRecipe::execute() {
-  return new Unsupported();
+  // make sure the recipe is unique
+  const String name = this->name;
+
+  for (auto const &r : recipes) {
+    if (r.name == name) return new DuplicateRecipe();
+  }
+
+  size_t num = 0;
+  for (auto const &it : this->ingredients) num += 1;
+
+  if (num < 1) return new MissingIngredients();
+
+  // add it
+  debug("adding recipe %s with %d ingredients", name, num);
+  Recipe r = Recipe(name, this->ingredients);
+  recipes.push_front(r);
+
+  return new Success();
 }
 
 Processed* CmdEditRecipe::execute() {
-  return new Unsupported();
+  // check ingredients
+  const String name = this->name;
+  size_t num = 0;
+  for (auto const &it : this->ingredients) num += 1;
+  if (num < 1) return new MissingIngredients();
+
+  debug("updating recipe %s with %d ingredients", name, num);
+
+  for (auto it = recipes.begin(); it != recipes.end(); it++) {
+    if (it->name == name) {
+      // FIXME memory leak?
+      it->ingredients = this->ingredients;
+      return new Success();
+    }
+  }
+  return new MissingRecipe();
 }
 
 Processed* CmdDeleteRecipe::execute() {
   if (!is_admin(this->user)) return new Unauthorized();
 
-  return new Unsupported();
+  const String name = this->name;
+
+  debug("deleting recipe %s", name);
+  recipes.remove_if([name](Recipe r){ return r.name == name; });
+
+  return new Success();
 }
 
 Processed* CmdMakeRecipe::execute() {
@@ -694,13 +751,13 @@ Processed* CmdMakeRecipe::execute() {
   debug("checking if recipe %s is possible", name.c_str());
 
   debug("  summing up all available liquids");
-  std::unordered_map<const char*, float> liquids = {};
+  std::unordered_map<std::string, float> liquids = {};
   for (int i=0; i<NUM_PUMPS; i++) {
     Pump *p = pumps[i];
     if (p == NULL) continue;
 
-    const char *liquid = p->liquid.c_str();
-    debug("    pump: %d, liquid: %s, vol: %.1f", p->slot, liquid, p->volume);
+    std::string liquid = p->liquid.c_str();
+    debug("    pump: %d, liquid: %s, vol: %.1f", p->slot, liquid.c_str(), p->volume);
 
     // update saved total
     float sum = liquids[liquid] + p->volume;
@@ -709,12 +766,12 @@ Processed* CmdMakeRecipe::execute() {
 
   debug("  checking necessary ingredients");
   for (auto ing = recipe->ingredients.begin(); ing != recipe->ingredients.end(); ing++) {
-    const char *liquid	= ing->name.c_str();
+    std::string liquid	= ing->name.c_str();
     float have        	= liquids[liquid];
     float need        	= ing->amount;
-    bool found        	= false;
+    bool found        	= liquids.count(liquid) > 0;
 
-    debug("    need %.1f / %.1f of %s", need, have, liquid);
+    debug("    need %.1f / %.1f of %s", need, have, liquid.c_str());
     if (!found)                     	return new MissingLiquid();
     if (have - need < LIQUID_CUTOFF)	return new Insufficient();
     liquids[liquid] = have - need; // update total
@@ -852,7 +909,7 @@ void update_cocktail() {
 }
 
 void update_liquids() {
-  std::unordered_map<const char*, float> liquids = {};
+  std::unordered_map<std::string, float> liquids = {};
 
   debug("updating liquid state");
 
@@ -861,8 +918,8 @@ void update_liquids() {
     Pump *p = pumps[i];
     if (p == NULL) continue;
 
-    const char *liquid = p->liquid.c_str();
-    debug("  pump: %d, liquid: %s, vol: %.1f", p->slot, liquid, p->volume);
+    std::string liquid = p->liquid.c_str();
+    debug("  pump: %d, liquid: %s, vol: %.1f", p->slot, liquid.c_str(), p->volume);
 
     // update saved total
     float sum = liquids[liquid] + p->volume;
@@ -873,10 +930,10 @@ void update_liquids() {
   int remaining = liquids.size();
   String out = String('{');
   for(auto const &pair : liquids) {
-    debug("  liquid: %s, vol: %.1f", pair.first, pair.second);
+    debug("  liquid: %s, vol: %.1f", pair.first.c_str(), pair.second);
 
     out.concat('"');
-    out.concat(pair.first);
+    out.concat(pair.first.c_str());
     out.concat("\":");
     out.concat(String(pair.second, 1));
 
@@ -1011,7 +1068,7 @@ void Comm::respond(const uint16_t id, Processed *ret) {
     return;
   }
 
-  debug("sending response to %d: %s", id, ret->json());
+  debug("sending response to %d: %s", id, ret->json().c_str());
   delete this->responses[id];
   this->responses[id] = ret;
   this->ble_char->notify();
