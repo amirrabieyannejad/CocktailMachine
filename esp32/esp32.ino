@@ -604,10 +604,22 @@ Processed* CmdRestart::execute() {
   return new Unauthorized();
 }
 
-// TODO implement logic once we have the hardware
-Processed* CmdCalibratePumps::execute() { return reset_machine(); };
-Processed* CmdClean::execute() { return reset_machine(); };
-Processed* CmdReset::execute() { return reset_machine(); };
+Processed* CmdCalibratePumps::execute() {
+  // TODO implement logic once we have the hardware
+  if (!is_admin(this->user)) return new Unauthorized();
+  return reset_machine();
+};
+
+Processed* CmdClean::execute() {
+  // TODO implement logic once we have the hardware
+  if (!is_admin(this->user)) return new Unauthorized();
+  return reset_machine();
+};
+
+Processed* CmdReset::execute() {
+  if (!is_admin(this->user)) return new Unauthorized();
+  return reset_machine();
+};
 
 Processed* CmdInitUser::execute() {
   User id = users.size();
@@ -616,6 +628,8 @@ Processed* CmdInitUser::execute() {
 }
 
 Processed* CmdDefinePump::execute() {
+  if (!is_admin(this->user)) return new Unauthorized();
+
   int32_t slot = this->slot;
   float volume = this->volume;
 
@@ -643,8 +657,34 @@ Processed* CmdDefinePump::execute() {
 }
 
 Processed* CmdAddLiquid::execute() {
-  String liquid	= this->liquid;
-  float need   	= this->volume;
+  if (!is_admin(this->user)) return new Unauthorized();
+
+  return add_liquid(this->liquid, this->volume);
+}
+
+Processed* CmdDefineRecipe::execute() {
+  return new Unsupported();
+};
+
+Processed* CmdEditRecipe::execute() {
+  return new Unsupported();
+};
+
+Processed* CmdDeleteRecipe::execute() {
+  if (!is_admin(this->user)) return new Unauthorized();
+
+  return new Unsupported();
+}
+
+Processed* CmdMakeRecipe::execute()	{ return new Unsupported(); };
+
+bool is_admin(User user) {
+  // TODO use roles etc
+  return (user == 0);
+}
+
+Processed* add_liquid(const String liquid, float amount) {
+  float need   	= amount;
   float have   	= 0;
 
   if (need < 0) {
@@ -700,17 +740,6 @@ Processed* CmdAddLiquid::execute() {
   }
 
   return new Success();
-}
-
-Processed* CmdDefineRecipe::execute()	{ return new Unsupported(); };
-Processed* CmdEditRecipe::execute()  	{ return new Unsupported(); };
-Processed* CmdDeleteRecipe::execute()	{ return new Unsupported(); };
-
-Processed* CmdMakeRecipe::execute()	{ return new Unsupported(); };
-
-bool is_admin(User user) {
-  // TODO use roles etc
-  return (user == 0);
 }
 
 Processed* reset_machine(void) {
