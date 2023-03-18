@@ -69,19 +69,16 @@ public class BluetoothLeService extends Service {
     // Communication UUID Wrappers
     public final static String SERVICE_READ_WRITE =
             "Communication Service";
-    public final static String CHARACTERISTIC_WRITE =
-            "Message Characteristic";
-    public final static String CHARACTERISTIC_READ =
-            "Response Characteristics";
+    public final static String CHARACTERISTIC_MESSAGE_USER =
+            "User Message Characteristic";
+    public final static String CHARACTERISTIC_MESSAGE_ADMIN =
+            "Admin Message Characteristic";
 
-    // Liquids UUID Wrappers
-    public final static String SERVICE_READ_LIQUIDS =
-            "Liquids Service";
-    public final static String CHARACTERISTIC_READ_LIQUIDS =
-            "Liquids Characteristic";
 
-    public final static UUID UUID_MESSAGE_CHARACTERISTIC =
-            UUID.fromString(SampleGattAttributes.lookupUuid("Message Characteristic"));
+    public final static UUID UUID_ADMIN_MESSAGE_CHARACTERISTIC =
+            UUID.fromString(SampleGattAttributes.lookupUuid("Admin Message Characteristic"));
+    public final static UUID UUID_USER_MESSAGE_CHARACTERISTIC =
+            UUID.fromString(SampleGattAttributes.lookupUuid("User Message Characteristic"));
     public final static UUID UUID_RECIPES_CHARACTERISTIC =
             UUID.fromString(SampleGattAttributes.lookupUuid("Recipes Characteristic"));
     public final static UUID UUID_COCKTAIL_CHARACTERISTIC =
@@ -155,19 +152,20 @@ public class BluetoothLeService extends Service {
                 UUID_STATE_CHARACTERISTIC.equals(characteristic.getUuid()) ||
                 UUID_COCKTAIL_CHARACTERISTIC.equals(characteristic.getUuid())||
                 UUID_RECIPES_CHARACTERISTIC.equals(characteristic.getUuid())||
-                UUID_MESSAGE_CHARACTERISTIC.equals(characteristic.getUuid())
+                UUID_ADMIN_MESSAGE_CHARACTERISTIC.equals(characteristic.getUuid())||
+                UUID_USER_MESSAGE_CHARACTERISTIC.equals(characteristic.getUuid())
         ) {
             System.out.println("UUID IS: "+ characteristic.getUuid().toString());
             // For all other profiles, writes the data formatted in HEX.
            //final byte[] data = characteristic.getValue();
             //if (data != null && data.length > 0) {
-                //final StringBuilder stringBuilder = new StringBuilder(data.length);
-                //for(byte byteChar : data)
-                  //  stringBuilder.append(String.format("%02X ", byteChar));
-                //intent.putExtra(EXTRA_DATA, new String(data) + "\n" + stringBuilder.toString());
-                //intent.putExtra(EXTRA_DATA, characteristic.getStringValue(0));
+            //  final StringBuilder stringBuilder = new StringBuilder(data.length);
+            //  for(byte byteChar : data)
+            //     stringBuilder.append(String.format("%02X ", byteChar));
+            //   intent.putExtra(EXTRA_DATA, new String(data) + "\n" + stringBuilder.toString());
                 intent.putExtra(EXTRA_DATA, characteristic.getStringValue(0));
-           // }
+
+            //}
             /*int flag = characteristic.getProperties();
             int format = -1;
             if ((flag & 0x01) != 0) {
@@ -339,13 +337,15 @@ public class BluetoothLeService extends Service {
                 UUID_STATE_CHARACTERISTIC.equals(characteristic.getUuid()) ||
                 UUID_COCKTAIL_CHARACTERISTIC.equals(characteristic.getUuid())||
                 UUID_RECIPES_CHARACTERISTIC.equals(characteristic.getUuid())||
-               UUID_MESSAGE_CHARACTERISTIC.equals(characteristic.getUuid())
-       ) {
+                UUID_ADMIN_MESSAGE_CHARACTERISTIC.equals(characteristic.getUuid())||
+                UUID_USER_MESSAGE_CHARACTERISTIC.equals(characteristic.getUuid())
+            ) {
            System.out.println("UUID IS: "+ characteristic.getUuid().toString());
            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
                     UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
             mBluetoothGatt.writeDescriptor(descriptor);
+           Log.w(TAG, "setCharacteristicNotification: " + descriptor.getValue().toString());
         }
     }
 
@@ -376,15 +376,21 @@ public class BluetoothLeService extends Service {
 
 
     @SuppressLint("MissingPermission")
-    public void writeCharacteristic(String value) {
-        /*check if the service is available on the device*/
+    public void writeCharacteristic(String value, Boolean admin) {
+        /* check if the service is available on the device */
         BluetoothGattService mCustomService = mBluetoothGatt.getService(UUID.fromString(SampleGattAttributes.lookupUuid(SERVICE_READ_WRITE)));
         if (mCustomService == null) {
             Log.w(TAG, "Custom BLE Service not found");
             return;
         }
-        /*get the characteristic from the service*/
-        BluetoothGattCharacteristic mWriteCharacteristic = mCustomService.getCharacteristic(UUID.fromString(SampleGattAttributes.lookupUuid(CHARACTERISTIC_WRITE)));
+        BluetoothGattCharacteristic mWriteCharacteristic;
+        /* get the characteristic from the service */
+        if (admin) {
+            mWriteCharacteristic = mCustomService.getCharacteristic(UUID.fromString(SampleGattAttributes.lookupUuid(CHARACTERISTIC_MESSAGE_ADMIN)));
+        } else {
+            mWriteCharacteristic = mCustomService.getCharacteristic(UUID.fromString(SampleGattAttributes.lookupUuid(CHARACTERISTIC_MESSAGE_USER)));
+        }
+
         mWriteCharacteristic.setValue(value);
         mWriteCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
         mCustomService.addCharacteristic(mWriteCharacteristic);
@@ -422,7 +428,7 @@ public class BluetoothLeService extends Service {
         jsonObject.put("cmd", "init_user");
         jsonObject.put("name", name);
         String payload = jsonObject.toString();
-        writeCharacteristic(payload);
+        writeCharacteristic(payload,false);
     }
 
     /**
@@ -440,7 +446,7 @@ public class BluetoothLeService extends Service {
         jsonObject.put("cmd", "reset");
         jsonObject.put("user", user);
         String payload = jsonObject.toString();
-        writeCharacteristic(payload);
+        writeCharacteristic(payload,false);
     }
 
     /**
@@ -459,7 +465,7 @@ public class BluetoothLeService extends Service {
         jsonObject.put("user", user);
         jsonObject.put("recipe", recipe);
         String payload = jsonObject.toString();
-        writeCharacteristic(payload);
+        writeCharacteristic(payload,false);
     }
 
     /**
@@ -479,7 +485,7 @@ public class BluetoothLeService extends Service {
         jsonObject.put("liquid", liquid);
         jsonObject.put("volume", volume);
         String payload = jsonObject.toString();
-        writeCharacteristic(payload);
+        writeCharacteristic(payload,true);
     }
 
     /**
@@ -514,7 +520,7 @@ public class BluetoothLeService extends Service {
         jsonObject.put("name", name);
         jsonObject.put("liquids", arrayLiquids);
         String payload = jsonObject.toString();
-        writeCharacteristic(payload);
+        writeCharacteristic(payload,true);
     }
 
     /**
@@ -534,7 +540,7 @@ public class BluetoothLeService extends Service {
         jsonObject.put("liquid", liquid);
         jsonObject.put("volume", volume);
         String payload = jsonObject.toString();
-        writeCharacteristic(payload);
+        writeCharacteristic(payload,true);
     }
 
 
@@ -553,7 +559,7 @@ public class BluetoothLeService extends Service {
         jsonObject.put("cmd", "calibrate_pumps");
         jsonObject.put("user", 0);
         String payload = jsonObject.toString();
-        writeCharacteristic(payload);
+        writeCharacteristic(payload,true);
     }
 
     /**
@@ -571,7 +577,7 @@ public class BluetoothLeService extends Service {
         jsonObject.put("cmd", "clean");
         jsonObject.put("user", 0);
         String payload = jsonObject.toString();
-        writeCharacteristic(payload);
+        writeCharacteristic(payload,true);
     }
 
 

@@ -64,29 +64,22 @@ public class DeviceControlActivity extends Activity {
     // Communication UUID Wrappers
     public final static String SERVICE_READ_WRITE =
             "Communication Service";
-    public final static String CHARACTERISTIC_WRITE =
-            "Message Characteristic";
 
     // State UUID Wrappers
     public final static String SERVICE_READ_STATE =
-            "State Service";
+            "Status Service";
     public final static String CHARACTERISTIC_READ_STATE =
             "State Characteristic";
-    public final static String SERVICE_READ_LIQUIDS =
-            "Liquids Service";
     public final static String CHARACTERISTIC_READ_LIQUIDS =
             "Liquids Characteristic";
     private BluetoothGatt mBluetoothGatt;
 
     // Recipes UUID Wrappers
-    public final static String SERVICE_READ_RECIPES =
-            "Recipes Service";
     public final static String CHARACTERISTIC_READ_RECIPES =
             "Recipes Characteristic";
 
     // Cocktail UUID Wrappers
-    public final static String SERVICE_READ_COCKTAIL =
-            "Cocktail Service";
+
     public final static String CHARACTERISTIC_READ_COCKTAIL =
             "Cocktail Characteristic";
 
@@ -98,6 +91,7 @@ public class DeviceControlActivity extends Activity {
     private EditText edtTxtUser;
     private EditText edtTxtRecipe;
     private EditText edtTxtLiquid;
+    private TextView txtReadCharacteristicData;
 
 
     private final String LIST_NAME = "NAME";
@@ -206,16 +200,16 @@ public class DeviceControlActivity extends Activity {
             finish();
             return;
         }*/
-       final Intent intent = getIntent();
-       String mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
-       mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
-       //String mDeviceName="Cocktail Machine";
+        final Intent intent = getIntent();
+        String mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
+        mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
+        //String mDeviceName="Cocktail Machine";
 
 
         txtNotificationData = findViewById(R.id.txtNotificationData);
 
         //getActionBar().setTitle(mDeviceName);
-       // getActionBar().setDisplayHomeAsUpEnabled(true);
+        // getActionBar().setDisplayHomeAsUpEnabled(true);
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
         mConnectionState = (TextView) findViewById(R.id.connection_state);
@@ -235,7 +229,7 @@ public class DeviceControlActivity extends Activity {
         edtTxtUser = findViewById(R.id.edtTxtUser);
         edtTxtRecipe = findViewById(R.id.edtTxtRecipe);
         edtTxtLiquid = findViewById(R.id.edtTxtLiquid);
-        TextView txtReadCharacteristicData = findViewById(R.id.txtReadCharacteristicData);
+        txtReadCharacteristicData = findViewById(R.id.txtReadCharacteristicData);
 
         EditText edtTxtVolume = findViewById(R.id.edtTxtVolume);
 
@@ -253,12 +247,12 @@ public class DeviceControlActivity extends Activity {
 
         // Read Current Cocktail
         btnReadCocktail.setOnClickListener(v -> {
-            setCharacteristicReadValue(SERVICE_READ_COCKTAIL, CHARACTERISTIC_READ_COCKTAIL);
+            setCharacteristicReadValue(SERVICE_READ_STATE, CHARACTERISTIC_READ_COCKTAIL);
         });
 
         //Read Liquids
         btnReadLiquids.setOnClickListener(v -> {
-            setCharacteristicReadValue(SERVICE_READ_LIQUIDS, CHARACTERISTIC_READ_LIQUIDS);
+            setCharacteristicReadValue(SERVICE_READ_STATE, CHARACTERISTIC_READ_LIQUIDS);
         });
 
         // Read State
@@ -268,11 +262,11 @@ public class DeviceControlActivity extends Activity {
 
         // Read saved Recipes from Device
         btnReadRecipes.setOnClickListener(v -> {
-            setCharacteristicReadValue(SERVICE_READ_RECIPES, CHARACTERISTIC_READ_RECIPES);
+            setCharacteristicReadValue(SERVICE_READ_STATE, CHARACTERISTIC_READ_RECIPES);
         });
         //Initiate User
         btnAddUser.setOnClickListener(v -> {
-            getResponseValue();
+            getResponseValue(false);
         });
 
         // Reset the machine so that it can make a new cocktail
@@ -396,6 +390,7 @@ public class DeviceControlActivity extends Activity {
             Log.d(TAG, "Connect request result=" + result);
         }
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // User chose not to enable Bluetooth.
@@ -404,7 +399,9 @@ public class DeviceControlActivity extends Activity {
             return;
         }
         super.onActivityResult(requestCode, resultCode, data);
-    }    @Override
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         unregisterReceiver(mGattUpdateReceiver);
@@ -454,17 +451,28 @@ public class DeviceControlActivity extends Activity {
 
     private void displayNotificationData(String data) {
         runOnUiThread(() -> {
-            txtNotificationData.setText(data);
+            txtNotificationData.setText("Notification Data: "+data);
         });
     }
+
     // Demonstrate how to read response characteristic form deice when through
     // Characteristic "Message" one message deliver to device. This is response
     // from received from app
-    private void getResponseValue() {
-        mGattCharacteristics = mBluetoothLeService.getBluetoothGattCharacteristic(SERVICE_READ_WRITE,BluetoothLeService.CHARACTERISTIC_READ);
+    private void getResponseValue(Boolean admin) {
+        // This should be change due to no more existences of Characteristic_read
+        // it will be replace to "User Message Characteristic"
+        // receive Notification from Server will be handled by given notify as broadcasts
+        if (admin) {
+            mGattCharacteristics = mBluetoothLeService.getBluetoothGattCharacteristic(
+                    SERVICE_READ_WRITE, BluetoothLeService.CHARACTERISTIC_MESSAGE_ADMIN);
+        } else {
+            mGattCharacteristics = mBluetoothLeService.getBluetoothGattCharacteristic(
+                    SERVICE_READ_WRITE, BluetoothLeService.CHARACTERISTIC_MESSAGE_USER);
+        }
 
         if (mGattCharacteristics != null) {
-            Log.println(Log.ASSERT, TAG, "characteristic is not null: " + mGattCharacteristics.getStringValue(0));
+            Log.println(Log.ASSERT, TAG, "characteristic is not null: " + mGattCharacteristics.
+                    getStringValue(0));
             final int charaProp = mGattCharacteristics.getProperties();
             if ((charaProp | BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
                 // If there is an active notification on a characteristic, clear
@@ -474,6 +482,7 @@ public class DeviceControlActivity extends Activity {
                             mNotifyCharacteristic, false);
                     mNotifyCharacteristic = null;
                 }
+
                 // from initUser
                 try {
                     String user = edtTxtUser.getText().toString();
@@ -483,12 +492,14 @@ public class DeviceControlActivity extends Activity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                //txtReadCharacteristicData.setText("read Characteristic Value: " + mGattCharacteristics.getStringValue(0));
+                txtReadCharacteristicData.setText("read Characteristic Value: " + mGattCharacteristics.getStringValue(0));
             }
             if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
                 mNotifyCharacteristic = mGattCharacteristics;
                 mBluetoothLeService.setCharacteristicNotification(
                         mGattCharacteristics, true);
+                setCharacteristicReadValue(BluetoothLeService.SERVICE_READ_WRITE,BluetoothLeService.CHARACTERISTIC_MESSAGE_USER);
+                //txtReadCharacteristicData.setText("read Characteristic Value: " + mGattCharacteristics.getStringValue(0));
             }
         } else {
             Log.w(TAG, "Characteristic can't find");
@@ -515,7 +526,7 @@ public class DeviceControlActivity extends Activity {
                 }
                 // refer to BluetoothGatt Class readCharacteristic(characteristic)
                 mBluetoothLeService.readCharacteristic(mGattCharacteristics);
-                //txtReadCharacteristicData.setText("read Characteristic Value: " + mGattCharacteristics.getStringValue(0));
+                txtReadCharacteristicData.setText("read Characteristic Value: " + mGattCharacteristics.getStringValue(0));
             }
             if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
                 mNotifyCharacteristic = mGattCharacteristics;
@@ -536,6 +547,7 @@ public class DeviceControlActivity extends Activity {
         intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
         return intentFilter;
     }
+
     public static void requestBlePermissions(Activity activity, int requestCode) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
             ActivityCompat.requestPermissions(activity, ANDROID_12_BLE_PERMISSIONS, requestCode);

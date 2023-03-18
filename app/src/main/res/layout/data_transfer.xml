@@ -189,12 +189,13 @@
         android:layout_height="wrap_content"
         android:text="@string/label_state"
         android:layout_marginBottom="10dp" />
+
     <TextView
         android:id="@+id/txtNotificationData"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/txt_notificationData"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginBottom="10dp"
+        android:text="@string/txt_notificationData" />
 
     <TextView
         android:id="@+id/txtReadCharacteristicData"
