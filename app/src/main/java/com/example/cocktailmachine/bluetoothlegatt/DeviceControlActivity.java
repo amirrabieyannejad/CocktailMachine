@@ -325,7 +325,7 @@ public class DeviceControlActivity extends Activity {
         btnAddLiquid.setOnClickListener(v -> {
             try {
                 float volume1 = Float.parseFloat(edtTxtVolume.getText().toString());
-                mBluetoothLeService.adminAddLiquid(edtTxtLiquid.getText().toString(), volume1);
+                mBluetoothLeService.adminDefineLiquid(edtTxtLiquid.getText().toString(), volume1);
                 //mBluetoothLeService.readCharacteristic();
             } catch (JSONException e) {
                 e.printStackTrace();

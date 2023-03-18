@@ -467,14 +467,14 @@ public class BluetoothLeService extends Service {
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      */
     @SuppressLint("MissingPermission")
-    public void adminAddLiquid(String liquid, float volume) throws JSONException {
+    public void adminDefineLiquid(String liquid, float volume) throws JSONException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "add_liquid");
+        jsonObject.put("cmd", "define_liquid");
         jsonObject.put("user", 0);
         jsonObject.put("liquid", liquid);
         jsonObject.put("volume", volume);
