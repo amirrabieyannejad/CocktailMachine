@@ -652,9 +652,9 @@ Processed* reset_machine(void) {
   cocktail.clear();
 
   // update machine state
+  update_cocktail();
   update_liquids();
   update_recipes();
-  update_cocktail();
   update_state(new Ready());
 
   return new Success();
@@ -663,7 +663,15 @@ Processed* reset_machine(void) {
 void update_cocktail() {};
 void update_liquids() {};
 void update_recipes() {};
-void update_state(Processed *state) {};
+
+void update_state(Processed *state) {
+  // remove old state
+  if (machine_state) delete machine_state;
+
+  machine_state = state;
+  all_status[ID_STATE]->update(state->json());
+}
+
 
 // bluetooth
 bool ble_start(void) {
@@ -676,7 +684,7 @@ bool ble_start(void) {
 
   // init services
   all_status[ID_BASE]    	= new Status(UUID_STATUS_BASE,    	BLE_NAME);
-  all_status[ID_STATE]   	= new Status(UUID_STATUS_STATE,   	"init");
+  all_status[ID_STATE]   	= new Status(UUID_STATUS_STATE,   	"\"init\">");
   all_status[ID_LIQUIDS] 	= new Status(UUID_STATUS_LIQUIDS, 	"{}");
   all_status[ID_RECIPES] 	= new Status(UUID_STATUS_RECIPES, 	"{}");
   all_status[ID_COCKTAIL]	= new Status(UUID_STATUS_COCKTAIL,	"[]");
