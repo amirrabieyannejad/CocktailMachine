@@ -6,6 +6,7 @@
 #define BLE_NAME "Cocktail Machine ESP32"	// bluetooth server name
 #define CORE_DEBUG_LEVEL 4               	// 1 = error; 3 = info ; 4 = debug
 #define NUM_PUMPS 10                     	// maximum number of supported pumps
+#define LIQUID_CUTOFF 0.1                	// minimum amount of liquid we round off
 
 // pinout
 #if defined(USE_SD_CARD)
@@ -13,11 +14,11 @@
 #endif
 
 // c++ standard library
+#include <algorithm>
 #include <forward_list>
 #include <queue>
 #include <sys/time.h>
 #include <unordered_map>
-using namespace std;
 
 // general chip functionality
 #include <Arduino.h>
@@ -58,7 +59,7 @@ using namespace std;
 typedef uint32_t User;
 
 struct Processed {
-  virtual const char* json();
+  virtual const String json();
 };
 
 struct Service {
@@ -73,7 +74,7 @@ struct Status : Service {
 
 struct Comm : Service {
   // FIXME conn_id isn't stable across reconnections, so we should switch to MAC or something similar
-  unordered_map<uint16_t, Processed *> responses;
+  std::unordered_map<uint16_t, Processed *> responses;
   Comm(const char *uuid_char);
 
   void respond(uint16_t id, Processed *ret);
@@ -125,12 +126,13 @@ struct CommCB: BLECharacteristicCallbacks {
 #define def_ret(cls, msg)                                               \
   struct cls : public Processed {                                       \
     static constexpr char *_json = "\"" msg "\"";                       \
-    const char* json() override { return _json; }                       \
+    const String json() override { return String(_json); }              \
   };
 
 def_ret(Success,       	"ok");
 def_ret(Processing,    	"processing");
 def_ret(Ready,         	"ready");
+def_ret(Pumping,       	"pumping");
 def_ret(Unsupported,   	"unsupported");
 def_ret(Unauthorized,  	"unauthorized");
 def_ret(Invalid,       	"invalid json");
@@ -141,16 +143,17 @@ def_ret(MissingCommand,	"command missing even though it parsed right");
 def_ret(WrongComm,     	"wrong comm channel");
 def_ret(InvalidSlot,   	"invalid pump slot");
 def_ret(InvalidVolume, 	"invalid volume");
+def_ret(Insufficient,  	"insufficient amounts of liquid available");
 
 struct RetUserID : Processed {
   User user;
   RetUserID(User user) : user(user) {}
   static char out[BUF_RESPONSE]; // FIXME make this a string or something
 
-  const char* json() override {
+  const String json() override {
     snprintf(out, sizeof(out), "{\"user\": %d}", user);
     debug("json: %s", out);
-    return out;
+    return String(out);
   }
 };
 char RetUserID::out[BUF_RESPONSE];
@@ -177,55 +180,55 @@ struct CmdTest : public Command {
 
 struct CmdInitUser : public Command {
   def_cmd("init_user", USER);
-  const char *name;
-  CmdInitUser(const char *name) : name(name) {}
+  String name;
+  CmdInitUser(String name) : name(name) {}
 };
 
 struct CmdMakeRecipe : public Command {
   def_cmd("make_recipe", USER);
-  const char *recipe;
-  CmdMakeRecipe(const char *recipe) : recipe(recipe) {}
+  String recipe;
+  CmdMakeRecipe(String recipe) : recipe(recipe) {}
 };
 
 struct CmdAddLiquid : public Command {
   def_cmd("add_liquid", ADMIN);
   User user;
-  const char *liquid;
+  String liquid;
   float volume;
-  CmdAddLiquid(User user, const char *liquid, float volume) : user(user), liquid(liquid), volume(volume) {}
+  CmdAddLiquid(User user, String liquid, float volume) : user(user), liquid(liquid), volume(volume) {}
 };
 
 struct CmdDefinePump : public Command {
   def_cmd("define_pump", ADMIN);
   User user;
   int32_t slot;
-  const char *liquid;
+  String liquid;
   float volume;
-  CmdDefinePump(User user, const int32_t slot, const char *liquid, const float volume) :
+  CmdDefinePump(User user, const int32_t slot, String liquid, const float volume) :
     user(user), slot(slot), liquid(liquid), volume(volume) {}
 };
 
 struct CmdDefineRecipe : public Command {
   def_cmd("define_recipe", USER);
   User user;
-  const char *name;
+  String name;
   // TODO
-  CmdDefineRecipe(User user, const char *name) : user(user), name(name) {}
+  CmdDefineRecipe(User user, String name) : user(user), name(name) {}
 };
 
 struct CmdEditRecipe : public Command {
   def_cmd("edit_recipe", USER);
   User user;
-  const char *name;
+  String name;
   // TODO
-  CmdEditRecipe(User user, const char *name) : user(user), name(name) {}
+  CmdEditRecipe(User user, String name) : user(user), name(name) {}
 };
 
 struct CmdDeleteRecipe : public Command {
   def_cmd("delete_recipe", ADMIN);
   User user;
-  const char *name;
-  CmdDeleteRecipe(User user, const char *name) : user(user), name(name) {}
+  String name;
+  CmdDeleteRecipe(User user, String name) : user(user), name(name) {}
 };
 
 struct CmdReset : public Command {
@@ -284,9 +287,9 @@ struct Ingredient {
 
 struct Recipe {
   String name;
-  forward_list<Ingredient> ingredients;
+  std::forward_list<Ingredient> ingredients;
 
-  Recipe(String name, forward_list<Ingredient> ingredients) : name(name), ingredients(ingredients) {};
+  Recipe(String name, std::forward_list<Ingredient> ingredients) : name(name), ingredients(ingredients) {};
   float total_volume();
   Processed* make(User user);
 };
@@ -302,13 +305,13 @@ Comm*   all_comm[NUM_COMM];
 
 Pump* pumps[NUM_PUMPS];
 
-forward_list<Recipe> recipes;
-forward_list<Ingredient> cocktail;
+std::forward_list<Recipe> recipes;
+std::forward_list<Ingredient> cocktail;
 
-queue<Queued> command_queue;
-queue<Ingredient> cocktail_queue;
+std::queue<Queued> command_queue;
+std::queue<Ingredient> cocktail_queue;
 
-unordered_map<User, const char*> users;
+std::unordered_map<User, String> users;
 
 // function declarations
 
@@ -346,8 +349,8 @@ bool ble_start(void);
 void ble_stop(void);
 
 // command processing
-Processed* add_to_queue(const string json, uint16_t conn_id);
-Parsed parse_command(const string json);
+Processed* add_to_queue(const String json, uint16_t conn_id);
+Parsed parse_command(const String json);
 bool is_admin(User user);
 
 // machine logic
@@ -444,7 +447,7 @@ void loop() {
 }
 
 // command processing
-Processed* add_to_queue(const string json, Comm *comm, uint16_t conn_id) {
+Processed* add_to_queue(const String json, Comm *comm, uint16_t conn_id) {
   Parsed p = parse_command(json);
   if (p.err) return p.err;
 
@@ -468,7 +471,7 @@ Processed* add_to_queue(const string json, Comm *comm, uint16_t conn_id) {
   return NULL;
 }
 
-Parsed parse_command(const string json) {
+Parsed parse_command(const String json) {
   debug("processing json: «%s»", json.c_str());
 
   StaticJsonDocument<BUF_JSON> doc;
@@ -499,17 +502,19 @@ Parsed parse_command(const string json) {
   // TODO pass the missing argument in Incomplete(field)
 
 #define parse_str(field)                              \
-  const char *field = doc[#field];                    \
-  if (!field) return Parsed{NULL, new Incomplete()};
+  const char *_##field = doc[#field];                    \
+  if (!_##field) return Parsed{NULL, new Incomplete()};  \
+  const String field = String(_##field)
+
 
 #define parse_as(field, type)                                     \
   JsonVariant j_##field = doc[#field];                            \
   if (j_##field.isNull()) return Parsed{NULL, new Incomplete()};  \
-  type field = j_##field.as<type>();
+  const type field = j_##field.as<type>();
 
 #define parse_as_default(field, type, def_val)                          \
   JsonVariant j_##field = doc[#field];                                  \
-  type field = (j_##field.isNull()) ? def_val : j_##field.as<type>();
+  const type field = (j_##field.isNull()) ? def_val : j_##field.as<type>();
 
 #define parse_bool(field) 	parse_as(field, bool)
 #define parse_float(field)	parse_as(field, float)
@@ -637,7 +642,65 @@ Processed* CmdDefinePump::execute() {
   return new Success();
 }
 
-Processed* CmdAddLiquid::execute()   	{ return new Unsupported(); };
+Processed* CmdAddLiquid::execute() {
+  String liquid	= this->liquid;
+  float need   	= this->volume;
+  float have   	= 0;
+
+  if (need < 0) {
+    return new InvalidVolume();
+  }
+
+  debug("attempting to add %.1f of %s to cocktail", need, liquid.c_str());
+
+  // check that we have enough liquid first
+  for (int i=0; i<NUM_PUMPS; i++) {
+    Pump *p = pumps[i];
+    if (p == NULL) continue;
+
+    if (p->liquid == liquid) {
+      debug("  in pump %d: %.1f", p->slot, p->volume);
+      have += p->volume;
+    }
+  }
+
+  if (have - need < LIQUID_CUTOFF) {
+    return new Insufficient();
+  }
+
+  update_state(new Pumping());
+
+  // add the liquid
+  float used = 0;
+  for (int i=0; i<NUM_PUMPS && need >= LIQUID_CUTOFF; i++) {
+    Pump *p = pumps[i];
+    if (p == NULL) continue;
+
+    if (p->liquid == liquid) {
+      debug("  need %.1f, using pump %d: %.1f", need, p->slot, p->volume);
+      float use = std::min(p->volume, need);
+      Processed *err = p->drain(use);
+      if (err) return err;
+      need -= use;
+      used += use;
+    }
+  }
+
+  // update cocktail state
+  cocktail.push_front(Ingredient{liquid, used});
+
+  // update state
+  update_liquids();
+  update_cocktail();
+  update_state(new Ready());
+
+  // shouldn't happen, but do a sanity check
+  if (need >= LIQUID_CUTOFF) {
+    return new Insufficient();
+  }
+
+  return new Success();
+}
 
 Processed* CmdDefineRecipe::execute()	{ return new Unsupported(); };
 Processed* CmdEditRecipe::execute()  	{ return new Unsupported(); };
@@ -663,6 +726,26 @@ Processed* reset_machine(void) {
   return new Success();
 }
 
+Processed* Pump::drain(float amount) {
+  if (amount < 0) return new InvalidVolume();
+  if (this->volume - amount < LIQUID_CUTOFF) return new Insufficient();
+
+  this->volume -= amount;
+  return NULL;
+}
+
+Processed* Pump::refill(float amount) {
+  if (amount < 0) return new InvalidVolume();
+
+  this->volume += amount;
+  return NULL;
+}
+
+Processed* Pump::empty() {
+  this->volume = 0;
+  return NULL;
+}
+
 void update_cocktail() {
   // generate json output
   debug("updating cocktail state");
@@ -685,7 +768,7 @@ void update_cocktail() {
 }
 
 void update_liquids() {
-  unordered_map<const char*, float> liquids = {};
+  std::unordered_map<const char*, float> liquids = {};
 
   debug("updating liquid state");
 
@@ -758,7 +841,7 @@ void update_state(Processed *state) {
   if (machine_state) delete machine_state;
 
   machine_state = state;
-  all_status[ID_STATE]->update(state->json());
+  all_status[ID_STATE]->update(state->json().c_str());
 }
 
 
@@ -773,7 +856,7 @@ bool ble_start(void) {
 
   // init services
   all_status[ID_BASE]    	= new Status(UUID_STATUS_BASE,    	BLE_NAME);
-  all_status[ID_STATE]   	= new Status(UUID_STATUS_STATE,   	"\"init\">");
+  all_status[ID_STATE]   	= new Status(UUID_STATUS_STATE,   	"\"init\"");
   all_status[ID_LIQUIDS] 	= new Status(UUID_STATUS_LIQUIDS, 	"{}");
   all_status[ID_RECIPES] 	= new Status(UUID_STATUS_RECIPES, 	"{}");
   all_status[ID_COCKTAIL]	= new Status(UUID_STATUS_COCKTAIL,	"[]");
@@ -892,26 +975,26 @@ void CommCB::onRead(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *param
 
   // we need to set the value for each active connection to multiplex properly,
   // or default to a dummy value
-  const char *v;
+  String value;
   if (this->comm->responses.count(id)) {
-    v = this->comm->responses[id]->json();
+    value = this->comm->responses[id]->json();
   } else {
-    v = "";
+    value = String("");
   }
 
-  debug("read: %d (%s) -> %s", id, ble_char->getUUID().toString().c_str(), v);
-  ble_char->setValue(v);
+  debug("read: %d (%s) -> %s", id, ble_char->getUUID().toString().c_str(), value.c_str());
+  ble_char->setValue(value.c_str());
 }
 
 void CommCB::onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *param) {
   uint16_t id = param->write.conn_id;
 
   if (this->comm->responses.count(id)) {
-    const string v = ble_char->getValue();
+    const std::string v = ble_char->getValue();
 
     debug("write: %d (%s) -> %s", id, ble_char->getUUID().toString().c_str(), v.c_str());
 
-    Processed *err = add_to_queue(v, this->comm, id);
+    Processed *err = add_to_queue(String(v.c_str()), this->comm, id);
 
     if (err) {
       debug("failed to parse: %s", err->json());
