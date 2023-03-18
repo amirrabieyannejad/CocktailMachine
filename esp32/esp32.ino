@@ -144,6 +144,8 @@ def_ret(WrongComm,     	"wrong comm channel");
 def_ret(InvalidSlot,   	"invalid pump slot");
 def_ret(InvalidVolume, 	"invalid volume");
 def_ret(Insufficient,  	"insufficient amounts of liquid available");
+def_ret(MissingLiquid, 	"liquid unavailable");
+def_ret(MissingRecipe, 	"recipe not found");
 
 struct RetUserID : Processed {
   User user;
@@ -664,11 +666,11 @@ Processed* CmdAddLiquid::execute() {
 
 Processed* CmdDefineRecipe::execute() {
   return new Unsupported();
-};
+}
 
 Processed* CmdEditRecipe::execute() {
   return new Unsupported();
-};
+}
 
 Processed* CmdDeleteRecipe::execute() {
   if (!is_admin(this->user)) return new Unauthorized();
@@ -676,7 +678,59 @@ Processed* CmdDeleteRecipe::execute() {
   return new Unsupported();
 }
 
-Processed* CmdMakeRecipe::execute()	{ return new Unsupported(); };
+Processed* CmdMakeRecipe::execute() {
+  // TODO use cocktail_queue
+
+  const String name = this->recipe;
+  const Recipe *recipe = NULL;
+  for (auto const &r : recipes) {
+    if (r.name == name) {
+      recipe = &r;
+      break;
+    }
+  }
+  if (!recipe) return new MissingRecipe();
+
+  debug("checking if recipe %s is possible", name.c_str());
+
+  debug("  summing up all available liquids");
+  std::unordered_map<const char*, float> liquids = {};
+  for (int i=0; i<NUM_PUMPS; i++) {
+    Pump *p = pumps[i];
+    if (p == NULL) continue;
+
+    const char *liquid = p->liquid.c_str();
+    debug("    pump: %d, liquid: %s, vol: %.1f", p->slot, liquid, p->volume);
+
+    // update saved total
+    float sum = liquids[liquid] + p->volume;
+    liquids[liquid] = sum;
+  }
+
+  debug("  checking necessary ingredients");
+  for (auto ing = recipe->ingredients.begin(); ing != recipe->ingredients.end(); ing++) {
+    const char *liquid	= ing->name.c_str();
+    float have        	= liquids[liquid];
+    float need        	= ing->amount;
+    bool found        	= false;
+
+    debug("    need %.1f / %.1f of %s", need, have, liquid);
+    if (!found)                     	return new MissingLiquid();
+    if (have - need < LIQUID_CUTOFF)	return new Insufficient();
+    liquids[liquid] = have - need; // update total
+  }
+
+  debug("making recipe %s", name.c_str());
+  for (auto ing = recipe->ingredients.begin(); ing != recipe->ingredients.end(); ing++) {
+    Processed *err = add_liquid(ing->name, ing->amount);
+    if (err) return err;
+  }
+
+  // update state
+  update_state(new Ready());
+
+  return new Success();
+};
 
 bool is_admin(User user) {
   // TODO use roles etc
@@ -694,19 +748,20 @@ Processed* add_liquid(const String liquid, float amount) {
   debug("attempting to add %.1f of %s to cocktail", need, liquid.c_str());
 
   // check that we have enough liquid first
+  bool found = false;
   for (int i=0; i<NUM_PUMPS; i++) {
     Pump *p = pumps[i];
     if (p == NULL) continue;
 
     if (p->liquid == liquid) {
+      found = true;
       debug("  in pump %d: %.1f", p->slot, p->volume);
       have += p->volume;
     }
   }
 
-  if (have - need < LIQUID_CUTOFF) {
-    return new Insufficient();
-  }
+  if (!found)                     	return new MissingLiquid();
+  if (have - need < LIQUID_CUTOFF)	return new Insufficient();
 
   update_state(new Pumping());
 
