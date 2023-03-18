@@ -1,8 +1,11 @@
 // supported features
-#define BLE_NAME "Cocktail Machine ESP32"
-#define CORE_DEBUG_LEVEL 4
-#define SIMULATE
-// #define USE_SD_CARD
+#define SIMULATE      	// simulate functionality instead of using real pumps?
+// #define USE_SD_CARD	// save data on SD card
+
+// general system settings
+#define BLE_NAME "Cocktail Machine ESP32"	// bluetooth server name
+#define CORE_DEBUG_LEVEL 4               	// 1 = error; 3 = info ; 4 = debug
+#define NUM_PUMPS 10                     	// maximum number of supported pumps
 
 // pinout
 #if defined(USE_SD_CARD)
@@ -42,6 +45,13 @@ using namespace std;
 #define error(...)	log_e(__VA_ARGS__)
 #define info(...) 	log_i(__VA_ARGS__)
 #define warn(...) 	log_w(__VA_ARGS__)
+
+// TODO avoid passing around char* everywhere,
+// and use either proper strings with memory management or pass buffers explicitly as needed
+
+// internal buffers
+#define BUF_RESPONSE	100
+#define BUF_JSON    	1000
 
 // services
 typedef uint32_t User;
@@ -129,12 +139,10 @@ def_ret(UnknownCommand,	"unknown command");
 def_ret(MissingCommand,	"command missing even though it parsed right");
 def_ret(WrongComm,     	"wrong comm channel");
 
-#define BUF_SIZE 20
-
 struct RetUserID : Processed {
   User user;
   RetUserID(User user) : user(user) {}
-  static char out[BUF_SIZE]; // FIXME make this a string or something
+  static char out[BUF_RESPONSE]; // FIXME make this a string or something
 
   const char* json() override {
     snprintf(out, sizeof(out), "{\"user\": %d}", user);
@@ -142,7 +150,7 @@ struct RetUserID : Processed {
     return out;
   }
 };
-char RetUserID::out[BUF_SIZE];
+char RetUserID::out[BUF_RESPONSE];
 
 // commands
 struct Command {
@@ -404,9 +412,6 @@ void setup() {
 }
 
 void loop() {
-  // just wait
-  // process("{\"cmd\": \"test\"}");
-
   while (!command_queue.empty()) {
     Queued q = command_queue.front();
     command_queue.pop();
@@ -420,8 +425,6 @@ void loop() {
     // send response
     q.comm->respond(q.conn_id, p);
   }
-
-  sleep_idle(MS(100));
 }
 
 // command processing
@@ -452,7 +455,7 @@ Processed* add_to_queue(const string json, Comm *comm, uint16_t conn_id) {
 Parsed parse_command(const string json) {
   debug("processing json: «%s»", json.c_str());
 
-  StaticJsonDocument<1000> doc; // TODO capacity?
+  StaticJsonDocument<BUF_JSON> doc;
   DeserializationError err = deserializeJson(doc, json);
 
   if (err) {
@@ -587,9 +590,9 @@ Processed* CmdInitUser::execute() {
   return new RetUserID(id);
 }
 
-Processed* CmdMakeRecipe::execute()  	{ return new Unsupported(); };
-Processed* CmdAddLiquid::execute()   	{ return new Unsupported(); };
 Processed* CmdDefinePump::execute()  	{ return new Unsupported(); };
+Processed* CmdAddLiquid::execute()   	{ return new Unsupported(); };
+Processed* CmdMakeRecipe::execute()  	{ return new Unsupported(); };
 Processed* CmdDefineRecipe::execute()	{ return new Unsupported(); };
 Processed* CmdEditRecipe::execute()  	{ return new Unsupported(); };
 Processed* CmdDeleteRecipe::execute()	{ return new Unsupported(); };
