@@ -138,6 +138,8 @@ def_ret(Incomplete,    	"missing arguments");
 def_ret(UnknownCommand,	"unknown command");
 def_ret(MissingCommand,	"command missing even though it parsed right");
 def_ret(WrongComm,     	"wrong comm channel");
+def_ret(InvalidSlot,   	"invalid pump slot");
+def_ret(InvalidVolume, 	"invalid volume");
 
 struct RetUserID : Processed {
   User user;
@@ -195,9 +197,11 @@ struct CmdAddLiquid : public Command {
 struct CmdDefinePump : public Command {
   def_cmd("define_pump", ADMIN);
   User user;
+  int32_t slot;
   const char *liquid;
   float volume;
-  CmdDefinePump(User user, const char *liquid, const float volume) : user(user), liquid(liquid), volume(volume) {}
+  CmdDefinePump(User user, const int32_t slot, const char *liquid, const float volume) :
+    user(user), slot(slot), liquid(liquid), volume(volume) {}
 };
 
 struct CmdDefineRecipe : public Command {
@@ -262,11 +266,11 @@ struct Queued {
 // machine parts
 
 struct Pump {
+  int32_t slot;
   const char *liquid;
   float volume;
-  int pin;
 
-  Pump(const char *liquid, float volume, int pin);
+  Pump(int32_t slot, const char *liquid, float volume) : slot(slot), liquid(liquid), volume(volume) {};
   Processed* drain(float amount);
   Processed* refill(float volume);
   Processed* empty();
@@ -290,15 +294,19 @@ struct Recipe {
 
 BLEServer *ble_server;
 
+Processed* machine_state;
+
 Status* all_status[NUM_STATUS];
 Comm*   all_comm[NUM_COMM];
 
+Pump* pumps[NUM_PUMPS];
+
 forward_list<Recipe> recipes;
-forward_list<Pump> pumps;
-forward_list<Ingredient> cocktail_queue;
 forward_list<Ingredient> cocktail;
 
 queue<Queued> command_queue;
+queue<Ingredient> cocktail_queue;
+
 unordered_map<User, const char*> users;
 
 // function declarations
@@ -343,6 +351,10 @@ bool is_admin(User user);
 
 // machine logic
 Processed* reset_machine(void);
+void update_cocktail(void);
+void update_liquids(void);
+void update_recipes(void);
+void update_state(Processed *state);
 
 // init
 
@@ -386,17 +398,20 @@ void setup() {
 #endif
 
   { // initialize machine state
-    for (int i=0; i<NUM_STATUS; i++)	all_status[i] = NULL;
-    for (int i=0; i<NUM_COMM; i++)  	all_comm[i] = NULL;
+    for (int i=0; i<NUM_STATUS; i++)	all_status[i]	= NULL;
+    for (int i=0; i<NUM_COMM; i++)  	all_comm[i]  	= NULL;
+    for (int i=0; i<NUM_PUMPS; i++) 	pumps[i]     	= NULL;
 
-    while (!command_queue.empty()) command_queue.pop();
-    pumps.clear();
+    while (!command_queue.empty()) 	command_queue.pop();
+    while (!cocktail_queue.empty())	cocktail_queue.pop();
+
     recipes.clear();
-    cocktail_queue.clear();
     cocktail.clear();
 
     users.clear();
     users[0] = "admin";
+
+    machine_state = new Ready();
 
     ble_server = NULL;
   }
@@ -480,6 +495,8 @@ Parsed parse_command(const string json) {
   // helper macros
 #define match_name(cls) (!strcmp(cmd_name, cls::json_name))
 
+  // TODO pass the missing argument in Incomplete(field)
+
 #define parse_str(field)                              \
   const char *field = doc[#field];                    \
   if (!field) return Parsed{NULL, new Incomplete()};
@@ -495,6 +512,7 @@ Parsed parse_command(const string json) {
 
 #define parse_bool(field) 	parse_as(field, bool)
 #define parse_float(field)	parse_as(field, float)
+#define parse_int(field)  	parse_as(field, int32_t)
 #define parse_opt(field)  	parse_as_default(field, bool, false)
 #define parse_user()      	parse_as(user, uint32_t)
 
@@ -540,7 +558,8 @@ Parsed parse_command(const string json) {
     parse_user();
     parse_str(liquid);
     parse_float(volume);
-    cmd = new CmdDefinePump(user, liquid, volume);
+    parse_int(slot);
+    cmd = new CmdDefinePump(user, slot, liquid, volume);
 
   } else if (match_name(CmdReset)) {
     parse_user();
@@ -590,7 +609,33 @@ Processed* CmdInitUser::execute() {
   return new RetUserID(id);
 }
 
-Processed* CmdDefinePump::execute()  	{ return new Unsupported(); };
+Processed* CmdDefinePump::execute() {
+  int32_t slot = this->slot;
+  float volume = this->volume;
+
+  if (slot < 0 || slot >= NUM_PUMPS) {
+    return new InvalidSlot();
+  }
+
+  if (volume < 0) {
+    return new InvalidVolume();
+  }
+
+  // clear out old pump
+  if (pumps[slot] != NULL) {
+    delete pumps[slot];
+  }
+
+  // save new pump
+  Pump *p = new Pump(slot, this->liquid, volume);
+  pumps[slot] = p;
+
+  // update machine state
+  update_liquids();
+
+  return new Success();
+}
+
 Processed* CmdAddLiquid::execute()   	{ return new Unsupported(); };
 Processed* CmdMakeRecipe::execute()  	{ return new Unsupported(); };
 Processed* CmdDefineRecipe::execute()	{ return new Unsupported(); };
@@ -603,14 +648,22 @@ bool is_admin(User user) {
 }
 
 Processed* reset_machine(void) {
-  cocktail_queue.clear();
+  while (!cocktail_queue.empty()) cocktail_queue.pop();
   cocktail.clear();
 
-  // update status
-  all_status[ID_COCKTAIL]->update("[]");
+  // update machine state
+  update_liquids();
+  update_recipes();
+  update_cocktail();
+  update_state(new Ready());
 
   return new Success();
 }
+
+void update_cocktail() {};
+void update_liquids() {};
+void update_recipes() {};
+void update_state(Processed *state) {};
 
 // bluetooth
 bool ble_start(void) {
