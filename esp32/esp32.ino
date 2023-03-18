@@ -50,8 +50,8 @@ using namespace std;
 // and use either proper strings with memory management or pass buffers explicitly as needed
 
 // internal buffers
-#define BUF_RESPONSE	100
-#define BUF_JSON    	1000
+#define BUF_RESPONSE	100 	// max (json) response
+#define BUF_JSON    	1000	// max json input
 
 // services
 typedef uint32_t User;
@@ -267,25 +267,25 @@ struct Queued {
 
 struct Pump {
   int32_t slot;
-  const char *liquid;
+  String liquid;
   float volume;
 
-  Pump(int32_t slot, const char *liquid, float volume) : slot(slot), liquid(liquid), volume(volume) {};
+  Pump(int32_t slot, String liquid, float volume) : slot(slot), liquid(liquid), volume(volume) {};
   Processed* drain(float amount);
   Processed* refill(float volume);
   Processed* empty();
 };
 
 struct Ingredient {
-  const char *name;
+  String name;
   float amount;
 };
 
 struct Recipe {
-  const char *name;
+  String name;
   forward_list<Ingredient> ingredients;
 
-  Recipe(const char *name, forward_list<Ingredient> ingredients);
+  Recipe(String name, forward_list<Ingredient> ingredients) : name(name), ingredients(ingredients) {};
   float total_volume();
   Processed* make(User user);
 };
@@ -661,7 +661,44 @@ Processed* reset_machine(void) {
 }
 
 void update_cocktail() {};
-void update_liquids() {};
+
+void update_liquids() {
+  unordered_map<const char*, float> liquids = {};
+
+  debug("updating liquid state");
+
+  // collect liquid data
+  for (int i=0; i<NUM_PUMPS; i++) {
+    Pump *p = pumps[i];
+    if (p == NULL) continue;
+
+    const char *liquid = p->liquid.c_str();
+    debug("  pump: %d, liquid: %s, vol: %.1f", p->slot, liquid, p->volume);
+
+    // update saved total
+    float sum = liquids[liquid] + p->volume;
+    liquids[liquid] = sum;
+  }
+
+  // generate json output
+  int remaining = liquids.size();
+  String out = String('{');
+  for(const auto& pair : liquids) {
+    debug("  liquid: %s, vol: %.1f", pair.first, pair.second);
+
+    out.concat('"');
+    out.concat(pair.first);
+    out.concat("\":");
+    out.concat(String(pair.second, 1));
+
+    remaining -= 1;
+    if (remaining) out.concat(',');
+  }
+  out.concat('}');
+
+  all_status[ID_LIQUIDS]->update(out.c_str());
+}
+
 void update_recipes() {};
 
 void update_state(Processed *state) {

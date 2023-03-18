@@ -51,7 +51,7 @@ JSON-Beispiel:
 
 ## Admin-Befehle
 
-### define_liquid: fügt Flüssigkeit zum Cocktail hinzu
+### add_liquid: fügt Flüssigkeit zum Cocktail hinzu
 - user: User
 - liquid: str
 - volume: float
@@ -69,14 +69,15 @@ JSON-Beispiel:
 
     {"cmd": "define_recipe", "user": 0, "name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}
 
-### add_pump: fügt Pumpe zu ESP hinzu
+### define_pump: fügt Pumpe zu ESP hinzu
 - user: User
 - liquid: str
 - volume: float
+- slot: int
 
 JSON-Beispiel:
 
-    {"cmd": "add_pump", "user": 0, "liquid": "water", "volume": 1000}
+    {"cmd": "add_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
 
 ### calibrate_pumps: kalibriert alle Pumpen
 - user: User
