@@ -305,7 +305,7 @@ forward_list<Recipe> recipes;
 forward_list<Ingredient> cocktail;
 
 queue<Queued> command_queue;
-queue<Ingredient> cocktail_queue;
+queue<Ingredient*> cocktail_queue;
 
 unordered_map<User, const char*> users;
 
@@ -660,7 +660,26 @@ Processed* reset_machine(void) {
   return new Success();
 }
 
-void update_cocktail() {};
+void update_cocktail() {
+  // generate json output
+  debug("updating cocktail state");
+
+  String out = String('[');
+  for (auto ing = cocktail.begin(); ing != cocktail.end(); ing++){
+    debug("  ingredient: %s, amount: %.1f", ing->name.c_str(), ing->amount);
+
+    out.concat("[\"");
+    out.concat(ing->name);
+    out.concat("\",");
+    out.concat(String(ing->amount, 1));
+    out.concat(']');
+
+    if (next(ing) != cocktail.end()) out.concat(',');
+  }
+  out.concat(']');
+
+  all_status[ID_COCKTAIL]->update(out.c_str());
+}
 
 void update_liquids() {
   unordered_map<const char*, float> liquids = {};
