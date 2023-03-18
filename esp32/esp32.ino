@@ -48,6 +48,7 @@ using namespace std;
 
 // TODO avoid passing around char* everywhere,
 // and use either proper strings with memory management or pass buffers explicitly as needed
+// SafeString might be a good library to solve this problem
 
 // internal buffers
 #define BUF_RESPONSE	100 	// max (json) response

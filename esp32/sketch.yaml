@@ -7,6 +7,7 @@ profiles:
         platform_index_url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
     libraries:
       - ArduinoJson (6.21.0)
+      - SafeString (4.1.25)
 
   # generic
   esp:
@@ -16,3 +17,4 @@ profiles:
         platform_index_url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
     libraries:
       - ArduinoJson (6.21.0)
+      - SafeString (4.1.25)
