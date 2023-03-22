@@ -77,7 +77,7 @@ JSON-Beispiel:
 
 JSON-Beispiel:
 
-    {"cmd": "add_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
+    {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
 
 ### calibrate_pumps: kalibriert alle Pumpen
 - user: User
