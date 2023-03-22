@@ -79,6 +79,15 @@ JSON-Beispiel:
 
     {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
 
+### refill_pump: füllt Pumpe auf
+- user: User
+- liquid: str
+- slot: int
+
+JSON-Beispiel:
+
+    {"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1}
+
 ### calibrate_pumps: kalibriert alle Pumpen
 - user: User
 
