@@ -221,7 +221,7 @@ struct CmdMakeRecipe : public Command {
 };
 
 struct CmdAddLiquid : public Command {
-  def_cmd("add_liquid", ADMIN);
+  def_cmd("add_liquid", USER);
   User user;
   String liquid;
   float volume;
@@ -679,8 +679,7 @@ Processed* CmdDefinePump::execute() {
 }
 
 Processed* CmdAddLiquid::execute() {
-  if (!is_admin(this->user)) return new Unauthorized();
-
+  // TODO only allowed for admin or the current user
   return add_liquid(this->liquid, this->volume);
 }
 

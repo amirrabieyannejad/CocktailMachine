@@ -49,8 +49,6 @@ JSON-Beispiel:
 
     {"cmd": "make_recipe", "user": 8858, "recipe": "radler"}
 
-## Admin-Befehle
-
 ### add_liquid: fügt Flüssigkeit zum Cocktail hinzu
 - user: User
 - liquid: str
@@ -59,6 +57,8 @@ JSON-Beispiel:
 JSON-Beispiel:
 
     {"cmd": "add_liquid", "user": 0, "liquid": "water", "volume": 30}
+
+## Admin-Befehle
 
 ### define_recipe: definiert ein neues Rezept oder ändert ein bestehendes Rezept
 - user: User
