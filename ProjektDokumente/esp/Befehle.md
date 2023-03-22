@@ -58,7 +58,7 @@ JSON-Beispiel:
 
 JSON-Beispiel:
 
-    {"cmd": "define_liquid", "user": 0, "liquid": "water", "volume": 30}
+    {"cmd": "add_liquid", "user": 0, "liquid": "water", "volume": 30}
 
 ### define_recipe: definiert ein neues Rezept oder ändert ein bestehendes Rezept
 - user: User
