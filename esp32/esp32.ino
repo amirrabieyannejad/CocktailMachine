@@ -1177,7 +1177,7 @@ void CommCB::onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *para
     Processed *err = add_to_queue(String(v.c_str()), this->comm, id);
 
     if (err) {
-      debug("failed to parse: %s", err->json());
+      debug("failed to parse: %s", err->json().c_str());
       this->comm->respond(id, err);
     } else {
       debug("parsed, waiting for queue");
