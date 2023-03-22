@@ -56,7 +56,7 @@
 #define BUF_JSON    	1000	// max json input
 
 // machine parts
-typedef uint32_t User;
+typedef int32_t User;
 
 struct Processed {
   virtual const String json();
@@ -543,7 +543,7 @@ Parsed parse_command(const String json) {
 #define parse_float(field)	parse_as(field, float)
 #define parse_int(field)  	parse_as(field, int32_t)
 #define parse_opt(field)  	parse_as_default(field, bool, false)
-#define parse_user()      	parse_as(user, uint32_t)
+#define parse_user()      	parse_as(user, int32_t)
 
   const char *cmd_name = doc["cmd"];
   if (!cmd_name) return Parsed{NULL, new Incomplete()};
