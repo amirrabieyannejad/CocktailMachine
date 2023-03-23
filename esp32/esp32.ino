@@ -743,6 +743,9 @@ Processed* CmdDefineRecipe::execute() {
   Recipe r = Recipe(name, this->ingredients);
   recipes.push_front(r);
 
+  // update state
+  update_recipes();
+
   return new Success();
 }
 
@@ -759,9 +762,15 @@ Processed* CmdEditRecipe::execute() {
     if (it->name == name) {
       // FIXME memory leak?
       it->ingredients = this->ingredients;
+
+      // update state
+      update_recipes();
+
       return new Success();
     }
   }
+
+
   return new MissingRecipe();
 }
 
@@ -772,6 +781,9 @@ Processed* CmdDeleteRecipe::execute() {
 
   debug("deleting recipe %s", name);
   recipes.remove_if([name](Recipe r){ return r.name == name; });
+
+  // update state
+  update_recipes();
 
   return new Success();
 }
