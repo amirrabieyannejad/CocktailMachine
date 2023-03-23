@@ -654,7 +654,6 @@ Processed* CmdClean::execute() {
 };
 
 Processed* CmdReset::execute() {
-  if (!is_admin(this->user)) return new Unauthorized();
   return reset_machine();
 };
 
