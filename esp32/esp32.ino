@@ -719,7 +719,10 @@ Processed* CmdRefillPump::execute() {
 
 Processed* CmdAddLiquid::execute() {
   // TODO only allowed for admin or the current user
-  return add_liquid(this->liquid, this->volume);
+  Processed *err = add_liquid(this->liquid, this->volume);
+  if (err) return err;
+
+  return new Success();
 }
 
 Processed* CmdDefineRecipe::execute() {
@@ -889,7 +892,7 @@ Processed* add_liquid(const String liquid, float amount) {
     return new Insufficient();
   }
 
-  return new Success();
+  return NULL;
 }
 
 Processed* reset_machine(void) {
