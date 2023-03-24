@@ -117,9 +117,13 @@ struct ServerCB : BLEServerCallbacks {
   void onDisconnect(BLEServer *server, esp_ble_gatts_cb_param_t *param);
 };
 
+struct StatusCB: BLECharacteristicCallbacks {
+  void onRead(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *param);
+};
+
 struct CommCB: BLECharacteristicCallbacks {
   Comm *comm;
-  CommCB(Comm *comm);
+  CommCB(Comm *comm) : comm(comm) {};
 
   void onRead(BLECharacteristic  *ble_char, esp_ble_gatts_cb_param_t *param);
   void onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *param);
@@ -1130,6 +1134,7 @@ Status::Status(const char *uuid_char, const char *init_value)
   : Service(UUID_STATUS, uuid_char,
             BLECharacteristic::PROPERTY_READ |
             BLECharacteristic::PROPERTY_NOTIFY) {
+  this->ble_char->setCallbacks(new StatusCB());
   this->ble_char->setValue(init_value);
 }
 
@@ -1192,8 +1197,11 @@ void ServerCB::onDisconnect(BLEServer *server, esp_ble_gatts_cb_param_t* param) 
   debug("  %s -> %d", remote_addr.toString().c_str(), id);
 }
 
-CommCB::CommCB(Comm *comm) {
-  this->comm = comm;
+void StatusCB::onRead(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *param) {
+  uint16_t id = param->read.conn_id;
+  std::string value = ble_char->getValue();
+
+  debug("read: %d (%s) -> %s", id, ble_char->getUUID().toString().c_str(), value.c_str());
 }
 
 void CommCB::onRead(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *param) {
