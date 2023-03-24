@@ -49,8 +49,6 @@ JSON-Beispiel:
 
     {"cmd": "make_recipe", "user": 8858, "recipe": "radler"}
 
-## Admin-Befehle
-
 ### add_liquid: fügt Flüssigkeit zum Cocktail hinzu
 - user: User
 - liquid: str
@@ -58,7 +56,9 @@ JSON-Beispiel:
 
 JSON-Beispiel:
 
-    {"cmd": "add_liquid", "user": 2737, "liquid": "water", "volume": 30}
+    {"cmd": "add_liquid", "user": 0, "liquid": "water", "volume": 30}
+
+## Admin-Befehle
 
 ### define_recipe: definiert ein neues Rezept oder ändert ein bestehendes Rezept
 - user: User
@@ -67,28 +67,49 @@ JSON-Beispiel:
 
 JSON-Beispiel:
 
-    {"cmd": "define_recipe", "user": 4310, "name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}
+    {"cmd": "define_recipe", "user": 0, "name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}
 
-### add_pump: fügt Pumpe zu ESP hinzu
+### define_pump: fügt Pumpe zu ESP hinzu
 - user: User
 - liquid: str
 - volume: float
+- slot: int
 
 JSON-Beispiel:
 
-    {"cmd": "add_pump", "user": 4315, "liquid": "water", "volume": 1000}
+    {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
+
+### refill_pump: füllt Pumpe auf
+- user: User
+- liquid: str
+- slot: int
+
+JSON-Beispiel:
+
+    {"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1}
 
 ### calibrate_pumps: kalibriert alle Pumpen
 - user: User
 
 JSON-Beispiel:
 
-    {"cmd": "calibrate_pumps", "user": 8185}
+    {"cmd": "calibrate_pumps", "user": 0}
 
 ### clean: reinigt die Maschine
 - user: User
 
 JSON-Beispiel:
 
-    {"cmd": "clean", "user": 8162}
+    {"cmd": "clean", "user": 0}
+
+### restart: startet die Maschine neu 
+- user: User
+- factory_reset: bool (optional)
+
+Falls `factory_reset` auf `true` gesetzt wird, werden auch alle Einstellungen gelöscht.
+
+JSON-Beispiel:
+
+    {"cmd": "restart", "user": 0}
+    {"cmd": "restart", "user": 0, "factory_reset": true}
 

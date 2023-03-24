@@ -1,0 +1,20 @@
+profiles:
+  # adafruit feather32 huzzah (main dev board)
+  feather:
+    fqbn: esp32:esp32:featheresp32
+    platforms:
+      - platform: esp32:esp32 (2.0.7)
+        platform_index_url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+    libraries:
+      - ArduinoJson (6.21.0)
+      - SafeString (4.1.25)
+
+  # generic
+  esp:
+    fqbn: esp32:esp32:esp32
+    platforms:
+      - platform: esp32:esp32 (2.0.7)
+        platform_index_url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+    libraries:
+      - ArduinoJson (6.21.0)
+      - SafeString (4.1.25)
