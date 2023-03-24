@@ -48,8 +48,6 @@ import com.example.cocktailmachine.R;
 import org.json.JSONException;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 
 /**
@@ -68,7 +66,7 @@ public class DeviceControlActivity extends Activity {
     private TextView mConnectionState;
     private TextView txtNotificationData;
 
-    private String mDeviceAddress;
+    private static final String DEVICE_ADDRESS = "54:43:B2:A9:32:26";
     private BluetoothLeService mBluetoothLeService;
     private EditText edtTxtUser;
     private EditText edtTxtRecipe;
@@ -110,7 +108,7 @@ public class DeviceControlActivity extends Activity {
                 finish();
             }
             // Automatically connects to the device upon successful start-up initialization.
-            mBluetoothLeService.connect(mDeviceAddress);
+            mBluetoothLeService.connect(DEVICE_ADDRESS);
         }
 
         @Override
@@ -162,20 +160,16 @@ public class DeviceControlActivity extends Activity {
         setContentView(R.layout.data_transfer);
         requestBlePermissions(this, PERMISSIONS_REQUEST_CODE);
         final Intent intent = getIntent();
-        String mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
-        // TODO: device address will not receive from Extra_intent anymore device Address will
-        //  directly called
-        //mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
-        mDeviceAddress = "54:43:B2:A9:32:26";
-        //String mDeviceName="Cocktail Machine";
-
-
+        //String mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
+       //mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
         txtNotificationData = findViewById(R.id.txtNotificationData);
 
         //getActionBar().setTitle(mDeviceName);
         // getActionBar().setDisplayHomeAsUpEnabled(true);
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+
+
         mConnectionState = findViewById(R.id.connection_state);
         Button btnAddUser = findViewById(R.id.btnAddUser);
         Button btnReset = findViewById(R.id.btnReset);
@@ -248,7 +242,6 @@ public class DeviceControlActivity extends Activity {
             }
             getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
                     BluetoothLeService.CHARACTERISTIC_MESSAGE_USER);
-
 
         });
 
@@ -455,8 +448,10 @@ public class DeviceControlActivity extends Activity {
         }*/
         registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
         if (mBluetoothLeService != null) {
-            final boolean result = mBluetoothLeService.connect(mDeviceAddress);
+            final boolean result = mBluetoothLeService.connect(DEVICE_ADDRESS);
             Log.d(TAG, "Connect request result=" + result);
+        } else {
+            Log.d(TAG, "Connecting failed!");
         }
     }
 
@@ -500,7 +495,7 @@ public class DeviceControlActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_connect:
-                mBluetoothLeService.connect(mDeviceAddress);
+                mBluetoothLeService.connect(DEVICE_ADDRESS);
                 return true;
             case R.id.menu_disconnect:
                 mBluetoothLeService.disconnect();
@@ -644,6 +639,7 @@ public class DeviceControlActivity extends Activity {
         else
             ActivityCompat.requestPermissions(activity, BLE_PERMISSIONS, requestCode);
     }
+
 
 
 }
