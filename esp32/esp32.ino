@@ -143,7 +143,6 @@ struct CommCB: BLECharacteristicCallbacks {
 #define UUID_STATUS         	"0f7742d4-ea2d-43c1-9b98-bb4186be905d"
 #define UUID_STATUS_BASE    	"c0605c38-3f94-33f6-ace6-7a5504544a80"
 #define UUID_STATUS_STATE   	"e9e4b3f2-fd3f-3b76-8688-088a0671843a"
-#define UUID_STATUS_PUMPS   	"9f719b67-1cc6-4ed8-8df3-f4edc235c519"
 #define UUID_STATUS_LIQUIDS 	"fc60afb0-2b00-3af2-877a-69ae6815ca2f"
 #define UUID_STATUS_RECIPES 	"9ede6e03-f89b-3e52-bb15-5c6c72605f6c"
 #define UUID_STATUS_COCKTAIL	"7344136f-c552-3efc-b04f-a43793f16d43"
