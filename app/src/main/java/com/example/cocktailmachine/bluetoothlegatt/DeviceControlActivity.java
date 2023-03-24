@@ -20,7 +20,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -30,6 +29,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Log;
@@ -38,6 +38,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.util.Pair;
@@ -47,6 +48,8 @@ import com.example.cocktailmachine.R;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 /**
@@ -61,27 +64,6 @@ public class DeviceControlActivity extends Activity {
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
 
-    // Communication UUID Wrappers
-    public final static String SERVICE_READ_WRITE =
-            "Communication Service";
-
-    // State UUID Wrappers
-    public final static String SERVICE_READ_STATE =
-            "Status Service";
-    public final static String CHARACTERISTIC_READ_STATE =
-            "State Characteristic";
-    public final static String CHARACTERISTIC_READ_LIQUIDS =
-            "Liquids Characteristic";
-    private BluetoothGatt mBluetoothGatt;
-
-    // Recipes UUID Wrappers
-    public final static String CHARACTERISTIC_READ_RECIPES =
-            "Recipes Characteristic";
-
-    // Cocktail UUID Wrappers
-
-    public final static String CHARACTERISTIC_READ_COCKTAIL =
-            "Cocktail Characteristic";
 
     private TextView mConnectionState;
     private TextView txtNotificationData;
@@ -91,7 +73,9 @@ public class DeviceControlActivity extends Activity {
     private EditText edtTxtUser;
     private EditText edtTxtRecipe;
     private EditText edtTxtLiquid;
+    private EditText edtTxtSlot;
     private TextView txtReadCharacteristicData;
+    private TextView edtTxtVolume;
 
 
     private final String LIST_NAME = "NAME";
@@ -154,8 +138,6 @@ public class DeviceControlActivity extends Activity {
                 updateConnectionState(R.string.disconnected);
                 invalidateOptionsMenu();
                 clearUI();
-            /*} else if (!BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
-                Toast.makeText(DeviceControlActivity.this, "Sevices has been dicoverd", Toast.LENGTH_SHORT).show();*/
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
                 updateConnectionState(R.string.data_available);
                 displayNotificationData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
@@ -170,7 +152,6 @@ public class DeviceControlActivity extends Activity {
     // list of supported characteristic features.
 
     private void clearUI() {
-        //mGattServicesList.setAdapter((SimpleExpandableListAdapter) null);
         txtNotificationData.setText(R.string.txt_notificationData);
     }
 
@@ -180,29 +161,12 @@ public class DeviceControlActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.data_transfer);
         requestBlePermissions(this, PERMISSIONS_REQUEST_CODE);
-/*
-        // Use this check to determine whether BLE is supported on the device.  Then you can
-        // selectively disable BLE-related features.
-        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
-            finish();
-        }
-
-        // Initializes a Bluetooth adapter.  For API level 18 and above, get a reference to
-        // BluetoothAdapter through BluetoothManager.
-        final BluetoothManager bluetoothManager =
-                (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        mBluetoothAdapter = bluetoothManager.getAdapter();
-
-        // Checks if Bluetooth is supported on the device.
-        if (mBluetoothAdapter == null) {
-            Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }*/
         final Intent intent = getIntent();
         String mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
-        mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
+        // TODO: device address will not receive from Extra_intent anymore device Address will
+        //  directly called
+        //mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
+        mDeviceAddress = "54:43:B2:A9:32:26";
         //String mDeviceName="Cocktail Machine";
 
 
@@ -212,26 +176,29 @@ public class DeviceControlActivity extends Activity {
         // getActionBar().setDisplayHomeAsUpEnabled(true);
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
-        mConnectionState = (TextView) findViewById(R.id.connection_state);
+        mConnectionState = findViewById(R.id.connection_state);
         Button btnAddUser = findViewById(R.id.btnAddUser);
         Button btnReset = findViewById(R.id.btnReset);
         Button btnClean = findViewById(R.id.btnClean);
-        Button btnAddPump = findViewById(R.id.btnAddPump);
+        Button btnDefinePump = findViewById(R.id.btnDefinePump);
         Button btnCalibrate = findViewById(R.id.btnCalibrate);
         Button btnMakeRecipe = findViewById(R.id.btnMakeRecipe);
         Button btnAddLiquid = findViewById(R.id.btnAddLiquid);
         Button btnDefineRecipe = findViewById(R.id.btnDefineRecipe);
-        Button btnReadLiquids = findViewById(R.id.btnReadLiquids);
+        Button btnReadPumpsVolume = findViewById(R.id.btnReadPumpsVolume);
         Button btnReadCocktail = findViewById(R.id.btnReadCocktail);
         Button btnReadRecipes = findViewById(R.id.btnReadRecipes);
+        Button btnEditRecipes = findViewById(R.id.btnEditRecipe);
         Button btnReadState = findViewById(R.id.btnReadState);
-
+        Button btnRefillPump = findViewById(R.id.btnRefillPump);
+        Button btnRestart = findViewById(R.id.btnRestart);
         edtTxtUser = findViewById(R.id.edtTxtUser);
         edtTxtRecipe = findViewById(R.id.edtTxtRecipe);
         edtTxtLiquid = findViewById(R.id.edtTxtLiquid);
+        edtTxtSlot = findViewById(R.id.edtTxtSlot);
         txtReadCharacteristicData = findViewById(R.id.txtReadCharacteristicData);
 
-        EditText edtTxtVolume = findViewById(R.id.edtTxtVolume);
+        edtTxtVolume = findViewById(R.id.edtTxtVolume);
 
         EditText edtTxtLiquid2 = findViewById(R.id.edtTxtLiquid2);
         EditText edtTxtVolume2 = findViewById(R.id.edtTxtVolume2);
@@ -247,99 +214,159 @@ public class DeviceControlActivity extends Activity {
 
         // Read Current Cocktail
         btnReadCocktail.setOnClickListener(v -> {
-            setCharacteristicReadValue(SERVICE_READ_STATE, CHARACTERISTIC_READ_COCKTAIL);
+            getCharacteristicValue(BluetoothLeService.SERVICE_READ_STATE,
+                    BluetoothLeService.CHARACTERISTIC_STATUS_COCKTAIL);
         });
 
-        //Read Liquids
-        btnReadLiquids.setOnClickListener(v -> {
-            setCharacteristicReadValue(SERVICE_READ_STATE, CHARACTERISTIC_READ_LIQUIDS);
+        //Read Pumps Volume
+        btnReadPumpsVolume.setOnClickListener(v -> {
+            getCharacteristicValue(BluetoothLeService.SERVICE_READ_STATE,
+                    BluetoothLeService.CHARACTERISTIC_STATUS_LIQUIDS);
         });
 
         // Read State
         btnReadState.setOnClickListener(v -> {
-            setCharacteristicReadValue(SERVICE_READ_STATE, CHARACTERISTIC_READ_STATE);
+            getCharacteristicValue(BluetoothLeService.SERVICE_READ_STATE,
+                    BluetoothLeService.CHARACTERISTIC_STATUS_STATE);
         });
 
         // Read saved Recipes from Device
         btnReadRecipes.setOnClickListener(v -> {
-            setCharacteristicReadValue(SERVICE_READ_STATE, CHARACTERISTIC_READ_RECIPES);
+            getCharacteristicValue(BluetoothLeService.SERVICE_READ_STATE,
+                    BluetoothLeService.CHARACTERISTIC_STATUS_RECIPES);
         });
-        //Initiate User
+        // register as a new user and receive a user ID
         btnAddUser.setOnClickListener(v -> {
-            getResponseValue(false);
+            //getResponseValue(false, "init_user");
+            // from initUser
+            try {
+                String user = edtTxtUser.getText().toString();
+                mBluetoothLeService.initUser(user);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
+                    BluetoothLeService.CHARACTERISTIC_MESSAGE_USER);
+
+
         });
 
         // Reset the machine so that it can make a new cocktail
         btnReset.setOnClickListener(v -> {
 
             try {
+                txtNotificationData.setText("get Notification...");
                 float userId = Float.parseFloat(edtTxtUser.getText().toString());
                 mBluetoothLeService.reset(userId);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
+                    BluetoothLeService.CHARACTERISTIC_MESSAGE_USER);
         });
+
         // Clean the machine
         btnClean.setOnClickListener(v -> {
 
             try {
+                txtNotificationData.setText("get Notification...");
                 mBluetoothLeService.adminClean();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
+                    BluetoothLeService.CHARACTERISTIC_MESSAGE_ADMIN);
         });
+        // restart the machine
+        btnRestart.setOnClickListener(v -> {
 
+            try {
+                txtNotificationData.setText("get Notification...");
+                // If factory_reset is set to true, all settings will also be deleted.
+                mBluetoothLeService.adminRestart(true);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
+                    BluetoothLeService.CHARACTERISTIC_MESSAGE_ADMIN);
+        });
         //Calibrate all pumps
         btnCalibrate.setOnClickListener(v -> {
             try {
+                txtNotificationData.setText("get Notification...");
                 mBluetoothLeService.adminCalibratePumps();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
+                    BluetoothLeService.CHARACTERISTIC_MESSAGE_ADMIN);
 
         });
 
-        // Add Pump
-        btnAddPump.setOnClickListener(v -> {
+        // Refill Pump
+        btnRefillPump.setOnClickListener(v -> {
             try {
+                txtNotificationData.setText("get Notification...");
                 float volume1 = Float.parseFloat(edtTxtVolume.getText().toString());
-                mBluetoothLeService.adminAddPump(edtTxtLiquid.getText().toString(), volume1);
-                /*if (mBluetoothLeService != null) {
-                    mBluetoothLeService.readCharacteristic();
-                } else {
-                    Log.w(TAG, "Something Wrong! Service has been stoped");
-                }*/
-
+                int volume2 = Integer.parseInt(edtTxtSlot.getText().toString());
+                mBluetoothLeService.adminRefillPump(edtTxtLiquid.getText().toString(),
+                        volume1, volume2);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
+                    BluetoothLeService.CHARACTERISTIC_MESSAGE_ADMIN);
+        });
+
+        // Add Pump
+        btnDefinePump.setOnClickListener(v -> {
+            try {
+                txtNotificationData.setText("get Notification...");
+                float volume1 = Float.parseFloat(edtTxtVolume.getText().toString());
+                int volume2 = Integer.parseInt(edtTxtSlot.getText().toString());
+                mBluetoothLeService.adminDefinePump(edtTxtLiquid.getText().toString(),
+                        volume1, volume2);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
+                    BluetoothLeService.CHARACTERISTIC_MESSAGE_ADMIN);
         });
 
         // Add Liquid
         btnAddLiquid.setOnClickListener(v -> {
             try {
+                txtNotificationData.setText("get Notification...");
                 float volume1 = Float.parseFloat(edtTxtVolume.getText().toString());
-                mBluetoothLeService.adminDefineLiquid(edtTxtLiquid.getText().toString(), volume1);
+                float userId = Float.parseFloat(edtTxtUser.getText().toString());
+                mBluetoothLeService.addLiquid(userId, edtTxtLiquid.getText().toString(), volume1);
                 //mBluetoothLeService.readCharacteristic();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
+            getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
+                    BluetoothLeService.CHARACTERISTIC_MESSAGE_USER);
         });
 
         // make Recipe mix the recipe
         btnMakeRecipe.setOnClickListener(v -> {
             try {
+                txtNotificationData.setText("get Notification...");
                 float userId = Float.parseFloat(edtTxtUser.getText().toString());
                 mBluetoothLeService.makeRecipe(userId, edtTxtRecipe.getText().toString());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
+                    BluetoothLeService.CHARACTERISTIC_MESSAGE_USER);
         });
 
-        // Define Recipe
+        // Define Recipe: defines a new recipe or changes an existing recipe
         btnDefineRecipe.setOnClickListener(v -> {
             try {
+                txtNotificationData.setText("get Notification...");
                 float volume1 = Float.parseFloat(edtTxtVolume.getText().toString());
                 ArrayList<Pair<String, Float>> liquids = new ArrayList<>();
                 liquids.add(new Pair<>(edtTxtLiquid.getText().toString(), volume1));
@@ -367,10 +394,52 @@ public class DeviceControlActivity extends Activity {
                     float volume5 = Float.parseFloat(edtTxtVolume5.getText().toString());
                     liquids.add(new Pair<>(edtTxtLiquid5.getText().toString(), volume5));
                 }
-                mBluetoothLeService.adminDefineRecipe(edtTxtRecipe.getText().toString(), liquids);
+                float userId = Float.parseFloat(edtTxtUser.getText().toString());
+                mBluetoothLeService.defineRecipe(userId, edtTxtRecipe.getText().toString(), liquids);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
+                    BluetoothLeService.CHARACTERISTIC_MESSAGE_USER);
+        });
+        // Edit Recipe: defines a new recipe or changes an existing recipe
+        btnEditRecipes.setOnClickListener(v -> {
+            try {
+                txtNotificationData.setText("get Notification...");
+                float volume1 = Float.parseFloat(edtTxtVolume.getText().toString());
+                ArrayList<Pair<String, Float>> liquids = new ArrayList<>();
+                liquids.add(new Pair<>(edtTxtLiquid.getText().toString(), volume1));
+                if (TextUtils.isEmpty(edtTxtVolume2.getText().toString())) {
+                    Log.w(TAG, "not filled");
+                } else {
+                    float volume2 = Float.parseFloat(edtTxtVolume2.getText().toString());
+                    liquids.add(new Pair<>(edtTxtLiquid2.getText().toString(), volume2));
+                }
+                if (TextUtils.isEmpty(edtTxtVolume3.getText().toString())) {
+                    Log.w(TAG, "not filled");
+                } else {
+                    float volume3 = Float.parseFloat(edtTxtVolume3.getText().toString());
+                    liquids.add(new Pair<>(edtTxtLiquid3.getText().toString(), volume3));
+                }
+                if (TextUtils.isEmpty(edtTxtVolume4.getText().toString())) {
+                    Log.w(TAG, "not filled");
+                } else {
+                    float volume4 = Float.parseFloat(edtTxtVolume4.getText().toString());
+                    liquids.add(new Pair<>(edtTxtLiquid4.getText().toString(), volume4));
+                }
+                if (TextUtils.isEmpty(edtTxtVolume5.getText().toString())) {
+                    Log.w(TAG, "not filled");
+                } else {
+                    float volume5 = Float.parseFloat(edtTxtVolume5.getText().toString());
+                    liquids.add(new Pair<>(edtTxtLiquid5.getText().toString(), volume5));
+                }
+                float userId = Float.parseFloat(edtTxtUser.getText().toString());
+                mBluetoothLeService.editRecipe(userId, edtTxtRecipe.getText().toString(), liquids);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
+                    BluetoothLeService.CHARACTERISTIC_MESSAGE_USER);
         });
     }
 
@@ -451,28 +520,51 @@ public class DeviceControlActivity extends Activity {
 
     private void displayNotificationData(String data) {
         runOnUiThread(() -> {
-            txtNotificationData.setText("Notification Data: "+data);
+
+            txtNotificationData.setText("Notification Data: " + data);
+            Toast.makeText(mBluetoothLeService, data, Toast.LENGTH_LONG).show();
         });
     }
 
     // Demonstrate how to read response characteristic form deice when through
     // Characteristic "Message" one message deliver to device. This is response
     // from received from app
-    private void getResponseValue(Boolean admin) {
+    private void getResponseValue(Boolean admin, String method) {
         // This should be change due to no more existences of Characteristic_read
-        // it will be replace to "User Message Characteristic"
+        // it will be replaced to "User Message Characteristic"
         // receive Notification from Server will be handled by given notify as broadcasts
         if (admin) {
             mGattCharacteristics = mBluetoothLeService.getBluetoothGattCharacteristic(
-                    SERVICE_READ_WRITE, BluetoothLeService.CHARACTERISTIC_MESSAGE_ADMIN);
+                    BluetoothLeService.SERVICE_READ_WRITE, BluetoothLeService.CHARACTERISTIC_MESSAGE_ADMIN);
+            Log.w(TAG, "Characteristic Admin ist activated  ");
         } else {
             mGattCharacteristics = mBluetoothLeService.getBluetoothGattCharacteristic(
-                    SERVICE_READ_WRITE, BluetoothLeService.CHARACTERISTIC_MESSAGE_USER);
+                    BluetoothLeService.SERVICE_READ_WRITE, BluetoothLeService.CHARACTERISTIC_MESSAGE_USER);
+            Log.w(TAG, "Characteristic User ist activated  ");
         }
 
         if (mGattCharacteristics != null) {
             Log.println(Log.ASSERT, TAG, "characteristic is not null: " + mGattCharacteristics.
                     getStringValue(0));
+
+
+            switch (method) {
+                case "init_user": {
+                    // from initUser
+                    try {
+                        String user = edtTxtUser.getText().toString();
+                        mBluetoothLeService.initUser(user);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+                case "define_pump": {
+
+                }
+                break;
+            }
             final int charaProp = mGattCharacteristics.getProperties();
             if ((charaProp | BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
                 // If there is an active notification on a characteristic, clear
@@ -482,24 +574,16 @@ public class DeviceControlActivity extends Activity {
                             mNotifyCharacteristic, false);
                     mNotifyCharacteristic = null;
                 }
-
-                // from initUser
-                try {
-                    String user = edtTxtUser.getText().toString();
-                    //mDataField.setText(user);
-                    mBluetoothLeService.initUser(user);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                txtReadCharacteristicData.setText("read Characteristic Value: " + mGattCharacteristics.getStringValue(0));
+                mBluetoothLeService.readCharacteristic(mGattCharacteristics);
             }
+
+
             if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
                 mNotifyCharacteristic = mGattCharacteristics;
                 mBluetoothLeService.setCharacteristicNotification(
                         mGattCharacteristics, true);
-                setCharacteristicReadValue(BluetoothLeService.SERVICE_READ_WRITE,BluetoothLeService.CHARACTERISTIC_MESSAGE_USER);
                 //txtReadCharacteristicData.setText("read Characteristic Value: " + mGattCharacteristics.getStringValue(0));
+
             }
         } else {
             Log.w(TAG, "Characteristic can't find");
@@ -509,10 +593,9 @@ public class DeviceControlActivity extends Activity {
     // Demonstrates how to iterate through the supported GATT Services/Characteristics.
     // In this sample, we populate the data structure that is bound to the ExpandableListView
     // on the UI.
-    private void setCharacteristicReadValue(String server, String characteristic) {
+    private void getCharacteristicValue(String server, String characteristic) {
         mGattCharacteristics = mBluetoothLeService.getBluetoothGattCharacteristic(server, characteristic);
         // refer to BluetoothGatt Class readCharacteristic(characteristic)
-
         if (mGattCharacteristics != null) {
             Log.println(Log.ASSERT, TAG, "characteristic is not null: " + mGattCharacteristics.getStringValue(0));
             final int charaProp = mGattCharacteristics.getProperties();
@@ -524,14 +607,21 @@ public class DeviceControlActivity extends Activity {
                             mNotifyCharacteristic, false);
                     mNotifyCharacteristic = null;
                 }
-                // refer to BluetoothGatt Class readCharacteristic(characteristic)
-                mBluetoothLeService.readCharacteristic(mGattCharacteristics);
-                txtReadCharacteristicData.setText("read Characteristic Value: " + mGattCharacteristics.getStringValue(0));
+
+
+                Handler handler = new Handler();
+                handler.postDelayed(() -> {
+                    mBluetoothLeService.readCharacteristic(mGattCharacteristics);
+                    }, 5000);
+
+
             }
             if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
                 mNotifyCharacteristic = mGattCharacteristics;
                 mBluetoothLeService.setCharacteristicNotification(
                         mGattCharacteristics, true);
+                // refer to BluetoothGatt Class readCharacteristic(characteristic)
+                txtReadCharacteristicData.setText("received Command:  " + mGattCharacteristics.getStringValue(0));
             }
         } else {
             Log.w(TAG, "Characteristic can't find");

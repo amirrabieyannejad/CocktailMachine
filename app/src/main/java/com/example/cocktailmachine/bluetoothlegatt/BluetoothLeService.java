@@ -30,8 +30,10 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.core.util.Pair;
 
@@ -39,8 +41,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 import java.util.ArrayList;
+
 import java.util.List;
+
 import java.util.UUID;
 
 /**
@@ -54,7 +59,6 @@ public class BluetoothLeService extends Service {
     private BluetoothAdapter mBluetoothAdapter;
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
-
     public final static String ACTION_GATT_CONNECTED =
             "com.example.bluetooth.le.ACTION_GATT_CONNECTED";
     public final static String ACTION_GATT_DISCONNECTED =
@@ -74,19 +78,33 @@ public class BluetoothLeService extends Service {
     public final static String CHARACTERISTIC_MESSAGE_ADMIN =
             "Admin Message Characteristic";
 
+    // STATUS Attribute UUID Wrappers
+    public final static String SERVICE_READ_STATE =
+            "Status Service";
+    public final static String CHARACTERISTIC_STATUS_STATE =
+            "Status State Characteristic";
+    public final static String CHARACTERISTIC_STATUS_LIQUIDS =
+            "Status Liquids Characteristic";
+    // Recipes UUID Wrappers
+    public final static String CHARACTERISTIC_STATUS_RECIPES =
+            "Status Recipes Characteristic";
+    // Cocktail UUID Wrappers
+    public final static String CHARACTERISTIC_STATUS_COCKTAIL =
+            "Status Cocktail Characteristic";
 
     public final static UUID UUID_ADMIN_MESSAGE_CHARACTERISTIC =
             UUID.fromString(SampleGattAttributes.lookupUuid("Admin Message Characteristic"));
     public final static UUID UUID_USER_MESSAGE_CHARACTERISTIC =
             UUID.fromString(SampleGattAttributes.lookupUuid("User Message Characteristic"));
-    public final static UUID UUID_RECIPES_CHARACTERISTIC =
-            UUID.fromString(SampleGattAttributes.lookupUuid("Recipes Characteristic"));
-    public final static UUID UUID_COCKTAIL_CHARACTERISTIC =
-            UUID.fromString(SampleGattAttributes.lookupUuid("Cocktail Characteristic"));
-    public final static UUID UUID_LIQUIDS_CHARACTERISTIC =
-            UUID.fromString(SampleGattAttributes.lookupUuid("Liquids Characteristic"));
-    public final static UUID UUID_STATE_CHARACTERISTIC =
-            UUID.fromString(SampleGattAttributes.lookupUuid("State Characteristic"));
+    public final static UUID UUID_STATUS_RECIPES_CHARACTERISTIC =
+            UUID.fromString(SampleGattAttributes.lookupUuid("Status Recipes Characteristic"));
+    public final static UUID UUID_STATUS_COCKTAIL_CHARACTERISTIC =
+            UUID.fromString(SampleGattAttributes.lookupUuid("Status Cocktail Characteristic"));
+    public final static UUID UUID_STATUS_LIQUIDS_CHARACTERISTIC =
+            UUID.fromString(SampleGattAttributes.
+                    lookupUuid("Status Liquids Characteristic"));
+    public final static UUID UUID_STATUS_STATE_CHARACTERISTIC =
+            UUID.fromString(SampleGattAttributes.lookupUuid("Status State Characteristic"));
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services discovered.
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
@@ -109,8 +127,39 @@ public class BluetoothLeService extends Service {
             }
         }
 
+
+        /*@Override
+        @SuppressLint("MissingPermission")
+        public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                Log.d(TAG, "Callback: Wrote GATT Descriptor successfully.");
+            } else {
+                Log.d(TAG, "Callback: Error writing GATT Descriptor: " + status);
+            }
+
+        }*/
+
         @Override
+        @SuppressLint("MissingPermission")
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+            /*super.onServicesDiscovered(gatt, status);
+            List<BluetoothGattService> services = getSupportedGattServices();
+            for (BluetoothGattService gattService : services) {
+                List<BluetoothGattCharacteristic> gattCharacteristics =
+                        gattService.getCharacteristics();
+                // Loops through available Characteristics.
+                for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
+                    BluetoothGattDescriptor descriptor = gattCharacteristic.getDescriptor(
+                            UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
+                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                    mBluetoothGatt.writeDescriptor(descriptor);
+                    Log.i(TAG, "characteristic:" + gattCharacteristic.getUuid() +
+                            "Descriptor:" + descriptor.getValue().toString());
+
+                    setCharacteristicNotification(gattCharacteristic, true);
+
+                }
+            }*/
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
             } else {
@@ -119,19 +168,28 @@ public class BluetoothLeService extends Service {
         }
 
         @Override
+        @SuppressLint("MissingPermission")
         public void onCharacteristicRead(BluetoothGatt gatt,
                                          BluetoothGattCharacteristic characteristic,
                                          int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
-
+                Log.d(TAG, "onCharacteristicRead: "+ characteristic.getStringValue(0));
+            } else {
+                Log.d(TAG, "onCharacteristicRead error: " + status);
             }
+
+
         }
 
         @Override
+        @SuppressLint("MissingPermission")
         public void onCharacteristicChanged(BluetoothGatt gatt,
                                             BluetoothGattCharacteristic characteristic) {
-            broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+            Handler handler = new Handler();
+            handler.postDelayed(() -> {
+                broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+            }, 1000);
 
         }
     };
@@ -140,45 +198,41 @@ public class BluetoothLeService extends Service {
         final Intent intent = new Intent(action);
         sendBroadcast(intent);
     }
+
     @SuppressLint("MissingPermission")
     private void broadcastUpdate(final String action,
                                  final BluetoothGattCharacteristic characteristic) {
         final Intent intent = new Intent(action);
 
-      // TODO: check the value of written characteristic
-      // if the characteristic is the characteristic that we are looking for
-      // then send it to activity through Intent -> EXTRA_DATA
-        if (UUID_LIQUIDS_CHARACTERISTIC.equals(characteristic.getUuid()) ||
-                UUID_STATE_CHARACTERISTIC.equals(characteristic.getUuid()) ||
-                UUID_COCKTAIL_CHARACTERISTIC.equals(characteristic.getUuid())||
-                UUID_RECIPES_CHARACTERISTIC.equals(characteristic.getUuid())||
-                UUID_ADMIN_MESSAGE_CHARACTERISTIC.equals(characteristic.getUuid())||
+        // if the characteristic is the characteristic that we are looking for
+        // then send it to activity through Intent -> EXTRA_DATA
+        if (UUID_STATUS_LIQUIDS_CHARACTERISTIC.equals(characteristic.getUuid()) ||
+                UUID_STATUS_STATE_CHARACTERISTIC.equals(characteristic.getUuid()) ||
+                UUID_STATUS_COCKTAIL_CHARACTERISTIC.equals(characteristic.getUuid()) ||
+                UUID_STATUS_RECIPES_CHARACTERISTIC.equals(characteristic.getUuid()) ||
+                UUID_ADMIN_MESSAGE_CHARACTERISTIC.equals(characteristic.getUuid()) ||
                 UUID_USER_MESSAGE_CHARACTERISTIC.equals(characteristic.getUuid())
         ) {
-            System.out.println("UUID IS: "+ characteristic.getUuid().toString());
+            System.out.println("UUID IS: " + characteristic.getUuid().toString());
             // For all other profiles, writes the data formatted in HEX.
-           //final byte[] data = characteristic.getValue();
-            //if (data != null && data.length > 0) {
-            //  final StringBuilder stringBuilder = new StringBuilder(data.length);
-            //  for(byte byteChar : data)
-            //     stringBuilder.append(String.format("%02X ", byteChar));
-            //   intent.putExtra(EXTRA_DATA, new String(data) + "\n" + stringBuilder.toString());
-                intent.putExtra(EXTRA_DATA, characteristic.getStringValue(0));
-
+           /* final byte[] data = characteristic.getValue();
+            if (data != null && data.length > 0) {
+                final StringBuilder stringBuilder = new StringBuilder(data.length);
+                for (byte byteChar : data)
+                    stringBuilder.append(String.format("%02X ", byteChar));
+                intent.putExtra(EXTRA_DATA, new String(data) + "\n" + stringBuilder.toString());
+            }*/
+            /*final byte[] data = characteristic.getValue();
+            String s = new String(data, StandardCharsets.UTF_8);
+            intent.putExtra(EXTRA_DATA, s);*/
+            //final String pin = characteristic.getStringValue(0);
+            //intent.putExtra(EXTRA_DATA, String.valueOf(pin));
+            intent.putExtra(EXTRA_DATA, characteristic.getStringValue(0));
+            Log.w("broadcastUpdate: ", "has been read");
             //}
-            /*int flag = characteristic.getProperties();
-            int format = -1;
-            if ((flag & 0x01) != 0) {
-                format = BluetoothGattCharacteristic.FORMAT_UINT16;
-                Log.d(TAG, "Heart rate format UINT16.");
-            } else {
-                format = BluetoothGattCharacteristic.FORMAT_UINT8;
-                Log.d(TAG, "Heart rate format UINT8.");
-            }
-            final int heartRate = characteristic.getIntValue(format, 1);
-            Log.d(TAG, String.format("Received heart rate: %d", heartRate));
-            intent.putExtra(EXTRA_DATA, String.valueOf(heartRate));*/
+
         }
+
         sendBroadcast(intent);
     }
 
@@ -254,10 +308,7 @@ public class BluetoothLeService extends Service {
             return mBluetoothGatt.connect();
         }
 
-         final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-        //TODO: Modify This: try to use name because address will be change continuously. At the end change this to the previous Code
-        //final BluetoothDevice device = mBluetoothAdapter.getName("PCRZ1241");
-
+        final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
 
         if (device == null) {
             Log.w(TAG, "Device not found.  Unable to connect.");
@@ -312,6 +363,7 @@ public class BluetoothLeService extends Service {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
+
         mBluetoothGatt.readCharacteristic(characteristic);
 
     }
@@ -321,31 +373,31 @@ public class BluetoothLeService extends Service {
      * Enables or disables notification on a give characteristic.
      *
      * @param characteristic Characteristic to act on.
-     * @param enabled        If true, enable notification.  False otherwise.
+     * @param enable        If true, enable notification.  False otherwise.
      */
     @SuppressLint("MissingPermission")
     public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
-                                              boolean enabled) {
+                                              boolean enable) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
-        mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
+        mBluetoothGatt.setCharacteristicNotification(characteristic, enable);
 
-        // Test
-       if (UUID_LIQUIDS_CHARACTERISTIC.equals(characteristic.getUuid()) ||
-                UUID_STATE_CHARACTERISTIC.equals(characteristic.getUuid()) ||
-                UUID_COCKTAIL_CHARACTERISTIC.equals(characteristic.getUuid())||
-                UUID_RECIPES_CHARACTERISTIC.equals(characteristic.getUuid())||
+
+       if (UUID_STATUS_LIQUIDS_CHARACTERISTIC.equals(characteristic.getUuid()) ||
+                UUID_STATUS_STATE_CHARACTERISTIC.equals(characteristic.getUuid()) ||
+                UUID_STATUS_COCKTAIL_CHARACTERISTIC.equals(characteristic.getUuid())||
+                UUID_STATUS_RECIPES_CHARACTERISTIC.equals(characteristic.getUuid())||
                 UUID_ADMIN_MESSAGE_CHARACTERISTIC.equals(characteristic.getUuid())||
                 UUID_USER_MESSAGE_CHARACTERISTIC.equals(characteristic.getUuid())
             ) {
            System.out.println("UUID IS: "+ characteristic.getUuid().toString());
            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
                     UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
-            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-            mBluetoothGatt.writeDescriptor(descriptor);
-           Log.w(TAG, "setCharacteristicNotification: " + descriptor.getValue().toString());
+           descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+           mBluetoothGatt.writeDescriptor(descriptor);
+           Log.w(TAG, "setCharacteristicNotification: " + BluetoothGattCharacteristic.PROPERTY_NOTIFY);
         }
     }
 
@@ -353,10 +405,10 @@ public class BluetoothLeService extends Service {
      * Read Characteristics from the device that have a value to read
      * receive a message along with Read on {@code BluetoothGattCharacteristic} from to the Device.
      * It will be use to read Services like: State, Recipes, Cocktail, Liquids
-     *  @param service receive specific Service
-     *  @param characteristic receive characteristic of Service
      *
-     *  @return A {@code BluetoothGattCharacteristic} to read their Value
+     * @param service        receive specific Service
+     * @param characteristic receive characteristic of Service
+     * @return A {@code BluetoothGattCharacteristic} to read their Value
      */
     @SuppressLint("MissingPermission")
     public BluetoothGattCharacteristic getBluetoothGattCharacteristic(String service, String characteristic) {
@@ -369,7 +421,7 @@ public class BluetoothLeService extends Service {
             Log.w(TAG, "Custom BLE Service not found");
             return null;
         }
-        /*get the characteristic from the service*/
+        /* get the characteristic from the service */
         BluetoothGattCharacteristic mReadCharacteristic = mCustomService.getCharacteristic(UUID.fromString(SampleGattAttributes.lookupUuid(characteristic)));
         return mReadCharacteristic;
     }
@@ -390,15 +442,16 @@ public class BluetoothLeService extends Service {
         } else {
             mWriteCharacteristic = mCustomService.getCharacteristic(UUID.fromString(SampleGattAttributes.lookupUuid(CHARACTERISTIC_MESSAGE_USER)));
         }
-
         mWriteCharacteristic.setValue(value);
         mWriteCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
         mCustomService.addCharacteristic(mWriteCharacteristic);
+
         if (mBluetoothGatt.writeCharacteristic(mWriteCharacteristic) == false) {
             Log.w(TAG, "Failed to write characteristic");
         }
 
     }
+
     /**
      * Retrieves a list of supported GATT services on the connected device. This should be
      * invoked only after {@code BluetoothGatt#discoverServices()} completes successfully.
@@ -412,9 +465,8 @@ public class BluetoothLeService extends Service {
     }
 
 
-
     /**
-     * initUser: initiate new user
+     * initUser: register as a new user and receive a user ID
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      */
     @SuppressLint("MissingPermission")
@@ -428,7 +480,7 @@ public class BluetoothLeService extends Service {
         jsonObject.put("cmd", "init_user");
         jsonObject.put("name", name);
         String payload = jsonObject.toString();
-        writeCharacteristic(payload,false);
+        writeCharacteristic(payload, false);
     }
 
     /**
@@ -446,7 +498,7 @@ public class BluetoothLeService extends Service {
         jsonObject.put("cmd", "reset");
         jsonObject.put("user", user);
         String payload = jsonObject.toString();
-        writeCharacteristic(payload,false);
+        writeCharacteristic(payload, false);
     }
 
     /**
@@ -465,7 +517,7 @@ public class BluetoothLeService extends Service {
         jsonObject.put("user", user);
         jsonObject.put("recipe", recipe);
         String payload = jsonObject.toString();
-        writeCharacteristic(payload,false);
+        writeCharacteristic(payload, false);
     }
 
     /**
@@ -473,38 +525,29 @@ public class BluetoothLeService extends Service {
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      */
     @SuppressLint("MissingPermission")
-    public void adminDefineLiquid(String liquid, float volume) throws JSONException {
+    public void addLiquid(float user,String liquid, float volume) throws JSONException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "define_liquid");
-        jsonObject.put("user", 0);
+        jsonObject.put("cmd", "add_liquid");
+        jsonObject.put("user", user);
         jsonObject.put("liquid", liquid);
         jsonObject.put("volume", volume);
         String payload = jsonObject.toString();
-        writeCharacteristic(payload,true);
+        writeCharacteristic(payload, false);
     }
 
     /**
      * define_recipe: defines a new recipe or changes an existing recipe
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
-     * ArrayList<Pair<String,Float>> liquids =new ArrayList<Pair<String,Float>>();
-     * liquids.add(new Pair<String,Float>("beer", 250F));
-     * liquids.add(new Pair<String,Float>("lemonade",300F));
-     * liquids.add(new Pair<String,Float>("water",450F));
-     * txtView = findViewById(R.id.txtResult);
-     * try {
-     * defineRecipe(2737,"radler",liquids);
-     * } catch (JSONException e) {
-     * e.printStackTrace();
-     * }
-     */
+      */
 
     @SuppressLint("MissingPermission")
-    public void adminDefineRecipe(String name, ArrayList<Pair<String, Float>> liquids) throws JSONException {
+    public void defineRecipe(float user,String name, ArrayList<Pair<String, Float>> liquids)
+            throws JSONException {
         JSONArray arrayLiquids = new JSONArray();
         int i = 0;
         for (Pair p : liquids) {
@@ -516,31 +559,76 @@ public class BluetoothLeService extends Service {
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "define_recipe");
-        jsonObject.put("user", 0);
+        jsonObject.put("user", user);
         jsonObject.put("name", name);
         jsonObject.put("liquids", arrayLiquids);
         String payload = jsonObject.toString();
-        writeCharacteristic(payload,true);
+        writeCharacteristic(payload, false);
+    }
+    /**
+     * edit_Recipe: edit an existing recipe
+     * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+      */
+    @SuppressLint("MissingPermission")
+    public void editRecipe(float user,String name, ArrayList<Pair<String, Float>> liquids)
+            throws JSONException {
+        JSONArray arrayLiquids = new JSONArray();
+        int i = 0;
+        for (Pair p : liquids) {
+            JSONArray arrayPair = new JSONArray();
+            arrayPair.put(i, p.first);
+            arrayPair.put(i + 1, p.second);
+            arrayLiquids.put(arrayPair);
+        }
+        // generate JSON Format
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cmd", "edit_recipe");
+        jsonObject.put("user", user);
+        jsonObject.put("name", name);
+        jsonObject.put("liquids", arrayLiquids);
+        String payload = jsonObject.toString();
+        writeCharacteristic(payload, false);
     }
 
     /**
-     * addPump: add new pump
+     * addPump: add a new pump to ESP
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      */
     @SuppressLint("MissingPermission")
-    public void adminAddPump( String liquid, float volume) throws JSONException {
+    public void adminDefinePump(String liquid, float volume, int slot) throws JSONException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
-        //generate JSON Format
+        // generate JSON Format
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "add_pump");
+        jsonObject.put("cmd", "define_pump");
         jsonObject.put("user", 0);
         jsonObject.put("liquid", liquid);
         jsonObject.put("volume", volume);
+        jsonObject.put("slot", slot);
         String payload = jsonObject.toString();
-        writeCharacteristic(payload,true);
+        writeCharacteristic(payload, true);
+    }
+    /**
+     * addPump: add a new pump to ESP
+     * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     */
+    @SuppressLint("MissingPermission")
+    public void adminRefillPump(String liquid, float volume, int slot) throws JSONException {
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized");
+            return;
+        }
+        // generate JSON Format
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cmd", "refill_pump");
+        jsonObject.put("user", 0);
+        jsonObject.put("liquid", liquid);
+        jsonObject.put("volume", volume);
+        jsonObject.put("slot", slot);
+        String payload = jsonObject.toString();
+        writeCharacteristic(payload, true);
     }
 
 
@@ -554,16 +642,36 @@ public class BluetoothLeService extends Service {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
-        //generate JSON Format
+        // generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "calibrate_pumps");
         jsonObject.put("user", 0);
         String payload = jsonObject.toString();
-        writeCharacteristic(payload,true);
+        writeCharacteristic(payload, true);
     }
 
     /**
-     * clean: cleans the machine
+     * restart: restart the machine
+     * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     */
+    @SuppressLint("MissingPermission")
+    public void adminRestart(Boolean restFactory) throws JSONException {
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized");
+            return;
+        }
+        // generate JSON Format
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cmd", "restart");
+        jsonObject.put("user", 0);
+        if (restFactory) {
+            jsonObject.put("factory_reset", true);
+        }
+        String payload = jsonObject.toString();
+        writeCharacteristic(payload, true);
+    }
+    /**
+     * Clean: Clean the machine
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      */
     @SuppressLint("MissingPermission")
@@ -572,13 +680,14 @@ public class BluetoothLeService extends Service {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
-        //generate JSON Format
+        // generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "clean");
         jsonObject.put("user", 0);
         String payload = jsonObject.toString();
-        writeCharacteristic(payload,true);
+        writeCharacteristic(payload, true);
     }
+
 
 
 }

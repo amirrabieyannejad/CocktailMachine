@@ -68,13 +68,16 @@
 
     <string name="btn_clean">Clean</string>
     <string name="btn_makeRecipe">Make Recipe</string>
-    <string name="btn_addPump">Add Pump</string>
+    <string name="btn_definePump">Define Pump</string>
     <string name="btn_defineRecipe">Define Recipe</string>
     <string name="btn_addLiquid">Add Liquid</string>
     <string name="btn_calibrate">Calibrate</string>
-    <string name="btn_ReadLiquids">Read Liquids</string>
+    <string name="btn_ReadPumpsVolume">Read Liquids</string>
     <string name="btn_ReadRecipes">Read Recipes</string>
     <string name="btn_ReadCocktail">Current Cocktail</string>
     <string name="btn_ReadStates">Read States</string>
-    <string name="txt">Calibrate</string>
+    <string name="txt_add_Slot">Add Slot</string>
+    <string name="btn_refillPump">Refill Pump</string>
+    <string name="btn_restart">Restart</string>
+    <string name="btn_editRecipe">Edit Recipe</string>
 </resources>

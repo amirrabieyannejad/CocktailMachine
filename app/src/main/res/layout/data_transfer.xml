@@ -53,6 +53,16 @@
         android:inputType="text"
         android:lines="2"
         android:layout_marginLeft="20dp" />
+
+        <EditText
+            android:id="@+id/edtTxtSlot"
+            android:layout_width="103dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/txt_add_Slot"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:lines="3"
+            android:layout_marginLeft="20dp"/>
         </LinearLayout>
     <LinearLayout
         android:id="@+id/LinearLayoutL2"
@@ -234,6 +244,12 @@
             android:layout_height="30dp"
             android:text="@string/btn_clean"
             android:textSize="11dp" />
+        <Button
+            android:id="@+id/btnRestart"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="@string/btn_restart"
+            android:textSize="11dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -259,10 +275,16 @@
             android:textSize="11dp" />
 
         <Button
-            android:id="@+id/btnAddPump"
+            android:id="@+id/btnDefinePump"
             android:layout_width="100dp"
             android:layout_height="30dp"
-            android:text="@string/btn_addPump"
+            android:text="@string/btn_definePump"
+            android:textSize="11dp" />
+        <Button
+            android:id="@+id/btnRefillPump"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="@string/btn_refillPump"
             android:textSize="11dp" />
 
     </LinearLayout>
@@ -288,6 +310,12 @@
             android:layout_height="30dp"
             android:text="@string/btn_defineRecipe"
             android:textSize="11dp" />
+        <Button
+            android:id="@+id/btnEditRecipe"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="@string/btn_editRecipe"
+            android:textSize="11dp" />
     </LinearLayout>
     <LinearLayout
         android:id="@+id/LinearLayout4"
@@ -297,10 +325,10 @@
         android:orientation="horizontal"
         android:layout_marginBottom="10dp">
         <Button
-            android:id="@+id/btnReadLiquids"
+            android:id="@+id/btnReadPumpsVolume"
             android:layout_width="100dp"
             android:layout_height="30dp"
-            android:text="@string/btn_ReadLiquids"
+            android:text="@string/btn_ReadPumpsVolume"
             android:textSize="11dp" />
         <Button
             android:id="@+id/btnReadCocktail"

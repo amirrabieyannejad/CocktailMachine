@@ -41,13 +41,13 @@ public class SampleGattAttributes {
         // Status Service and Characteristics
         attributes.put("Status Service", "0f7742d4-ea2d-43c1-9b98-bb4186be905d");
         // State Characteristics: The current state of the cocktail machine and what it does.
-        attributes.put("State Characteristic", "e9e4b3f2-fd3f-3b76-8688-088a0671843a");
+        attributes.put("Status State Characteristic", "e9e4b3f2-fd3f-3b76-8688-088a0671843a");
         // Recipes Characteristic: All saved recipes and their names.
-        attributes.put("Recipes Characteristic","9ede6e03-f89b-3e52-bb15-5c6c72605f6c");
+        attributes.put("Status Recipes Characteristic","9ede6e03-f89b-3e52-bb15-5c6c72605f6c");
         // Cocktail Characteristic: The content of the current cocktail being mixed.
-        attributes.put("Cocktail Characteristic","7344136f-c552-3efc-b04f-a43793f16d43");
-        // Liquids Characteristic: Map of all available liquids and their quantity
-        attributes.put("Liquids Characteristic", "fc60afb0-2b00-3af2-877a-69ae6815ca2f");
+        attributes.put("Status Cocktail Characteristic","7344136f-c552-3efc-b04f-a43793f16d43");
+        // Liquids Characteristic: Map of all available liquids im pumps and their volumes
+        attributes.put("Status Liquids Characteristic", "fc60afb0-2b00-3af2-877a-69ae6815ca2f");
 
 
 

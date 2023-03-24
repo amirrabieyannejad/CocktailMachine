@@ -219,8 +219,8 @@ public class DeviceScanActivity extends ListActivity {
 
     // Adapter for holding devices found through scanning.
     private class LeDeviceListAdapter extends BaseAdapter {
-        private ArrayList<BluetoothDevice> mLeDevices;
-        private LayoutInflater mInflator;
+        private final ArrayList<BluetoothDevice> mLeDevices;
+        private final LayoutInflater mInflator;
 
         public LeDeviceListAdapter() {
             super();
@@ -264,8 +264,8 @@ public class DeviceScanActivity extends ListActivity {
             if (view == null) {
                 view = mInflator.inflate(R.layout.listitem_device, null);
                 viewHolder = new ViewHolder();
-                viewHolder.deviceAddress = (TextView) view.findViewById(R.id.device_address);
-                viewHolder.deviceName = (TextView) view.findViewById(R.id.device_name);
+                viewHolder.deviceAddress = view.findViewById(R.id.device_address);
+                viewHolder.deviceName = view.findViewById(R.id.device_name);
                 view.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) view.getTag();
@@ -284,7 +284,7 @@ public class DeviceScanActivity extends ListActivity {
     }
 
     // Device scan callback.
-    private BluetoothAdapter.LeScanCallback mLeScanCallback =
+    private final BluetoothAdapter.LeScanCallback mLeScanCallback =
             new BluetoothAdapter.LeScanCallback() {
 
         @Override
