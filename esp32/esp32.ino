@@ -58,6 +58,9 @@
 // machine parts
 typedef int32_t User;
 
+#define USER_ADMIN  	= User(0);
+#define USER_UNKNOWN	= User(-1);
+
 struct Processed {
   virtual const String json();
 };
@@ -140,6 +143,7 @@ struct CommCB: BLECharacteristicCallbacks {
 #define UUID_STATUS         	"0f7742d4-ea2d-43c1-9b98-bb4186be905d"
 #define UUID_STATUS_BASE    	"c0605c38-3f94-33f6-ace6-7a5504544a80"
 #define UUID_STATUS_STATE   	"e9e4b3f2-fd3f-3b76-8688-088a0671843a"
+#define UUID_STATUS_PUMPS   	"9f719b67-1cc6-4ed8-8df3-f4edc235c519"
 #define UUID_STATUS_LIQUIDS 	"fc60afb0-2b00-3af2-877a-69ae6815ca2f"
 #define UUID_STATUS_RECIPES 	"9ede6e03-f89b-3e52-bb15-5c6c72605f6c"
 #define UUID_STATUS_COCKTAIL	"7344136f-c552-3efc-b04f-a43793f16d43"
@@ -313,6 +317,7 @@ struct Queued {
 BLEServer *ble_server;
 
 Processed* machine_state;
+User current_user;
 
 Status* all_status[NUM_STATUS];
 Comm*   all_comm[NUM_COMM];
@@ -944,6 +949,8 @@ void update_cocktail() {
   // generate json output
   debug("updating cocktail state");
 
+  // TODO include current user
+
   String out = String('[');
   for (auto ing = cocktail.begin(); ing != cocktail.end(); ing++){
     debug("  ingredient: %s, amount: %.1f", ing->name.c_str(), ing->amount);
@@ -964,24 +971,39 @@ void update_cocktail() {
 void update_liquids() {
   std::unordered_map<std::string, float> liquids = {};
 
-  debug("updating liquid state");
+  debug("updating pump state");
 
-  // collect liquid data
-  for (int i=0; i<NUM_PUMPS; i++) {
-    Pump *p = pumps[i];
-    if (p == NULL) continue;
+  // generate json output
+  bool prev 	= false;
+  String out	= String("{\"pumps\":{");
+  for(int i=0; i<NUM_PUMPS; i++) {
+    Pump *pump = pumps[i];
+    if (pump == NULL) continue;
 
-    std::string liquid = p->liquid.c_str();
-    debug("  pump: %d, liquid: %s, vol: %.1f", p->slot, liquid.c_str(), p->volume);
+    std::string liquid = pump->liquid.c_str();
+    debug("  pump: %d, liquid: %s, vol: %.1f", pump->slot, liquid.c_str(), pump->volume);
 
     // update saved total
-    float sum = liquids[liquid] + p->volume;
+    float sum = liquids[liquid] + pump->volume;
     liquids[liquid] = sum;
+
+    if (prev) out.concat(',');
+    out.concat('"');
+    out.concat(String(pump->slot));
+    out.concat("\":{\"liquid\":");
+    out.concat(pump->liquid);
+    out.concat("\",\"volume\":");
+    out.concat(String(pump->volume, 1));
+    out.concat('}');
+
+    prev = true;
   }
+
+  debug("updating liquid state");
+  out.concat("},\"liquids\":{");
 
   // generate json output
   int remaining = liquids.size();
-  String out = String('{');
   for(auto const &pair : liquids) {
     debug("  liquid: %s, vol: %.1f", pair.first.c_str(), pair.second);
 
@@ -993,9 +1015,12 @@ void update_liquids() {
     remaining -= 1;
     if (remaining) out.concat(',');
   }
-  out.concat('}');
+  out.concat("}}");
 
   all_status[ID_LIQUIDS]->update(out.c_str());
+}
+
+void update_pumps() {
 }
 
 void update_recipes() {

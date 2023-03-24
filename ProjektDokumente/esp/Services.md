@@ -44,6 +44,15 @@ Die ID ist also 100 und kann dann in anderen Befehlen mit angegeben werden.
 
 - UUID des Service: 0f7742d4-ea2d-43c1-9b98-bb4186be905d
 
+### Pumpen
+- UUID Characteristic: 9f719b67-1cc6-4ed8-8df3-f4edc235c519
+
+Wert: Map aller verfügbaren Pumpen und deren Füllstand
+
+Beispiel:
+
+    {"1": {"liquid": "lemonade", "volume": 200}}
+
 ### Flüssigkeiten
 - UUID Characteristic: fc60afb0-2b00-3af2-877a-69ae6815ca2f
 

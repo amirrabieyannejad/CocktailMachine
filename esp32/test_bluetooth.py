@@ -90,6 +90,9 @@ async def test_run(client):
   await user({"cmd": "add_liquid", "user": 1, "liquid": "beer", "volume": 100})
   await user({"cmd": "reset", "user": 0})
 
+  await user({"cmd": "make_recipe", "user": 1, "recipe": "radler"})
+  await user({"cmd": "add_liquid", "user": 1, "liquid": "beer", "volume": 100})
+
   # refill pump
   await admin({"cmd": "refill_pump", "user": 0, "volume": 5000, "slot": 1})
 
