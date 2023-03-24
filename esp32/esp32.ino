@@ -1111,7 +1111,15 @@ Service::Service(const char *uuid_service, const char *uuid_char, const uint32_t
 
   BLEService* service = ble_server->getServiceByUUID(uuid_service);
   if (service == NULL) {
-    service = ble_server->createService(uuid_service);
+    // each characteristic needs the following handles:
+    // - 1 for read
+    // - 1 for write
+    // - 1 for the BLE2902 notification characteristic
+    // additionally, each service needs a handle
+    // we add 1 handle just as a buffer :)
+
+    int num_handles = NUM_STATUS*2 + NUM_COMM*3 + 2 + 1;
+    service = ble_server->createService(BLEUUID(uuid_service), num_handles);
   }
   this->ble_char = service->createCharacteristic(uuid_char, props);
 
