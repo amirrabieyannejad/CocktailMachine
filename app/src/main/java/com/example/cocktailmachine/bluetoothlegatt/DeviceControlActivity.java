@@ -208,25 +208,25 @@ public class DeviceControlActivity extends Activity {
 
         // Read Current Cocktail
         btnReadCocktail.setOnClickListener(v -> {
-            getCharacteristicValue(BluetoothLeService.SERVICE_READ_STATE,
+            getCharacteristicValue(BluetoothLeService.SERVICE_STATUS_STATE,
                     BluetoothLeService.CHARACTERISTIC_STATUS_COCKTAIL);
         });
 
         //Read Pumps Volume
         btnReadPumpsVolume.setOnClickListener(v -> {
-            getCharacteristicValue(BluetoothLeService.SERVICE_READ_STATE,
+            getCharacteristicValue(BluetoothLeService.SERVICE_STATUS_STATE,
                     BluetoothLeService.CHARACTERISTIC_STATUS_LIQUIDS);
         });
 
-        // Read State
+        // Status State
         btnReadState.setOnClickListener(v -> {
-            getCharacteristicValue(BluetoothLeService.SERVICE_READ_STATE,
+            getCharacteristicValue(BluetoothLeService.SERVICE_STATUS_STATE,
                     BluetoothLeService.CHARACTERISTIC_STATUS_STATE);
         });
 
         // Read saved Recipes from Device
         btnReadRecipes.setOnClickListener(v -> {
-            getCharacteristicValue(BluetoothLeService.SERVICE_READ_STATE,
+            getCharacteristicValue(BluetoothLeService.SERVICE_STATUS_STATE,
                     BluetoothLeService.CHARACTERISTIC_STATUS_RECIPES);
         });
         // register as a new user and receive a user ID

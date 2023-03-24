@@ -33,7 +33,6 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.core.util.Pair;
 
@@ -79,7 +78,7 @@ public class BluetoothLeService extends Service {
             "Admin Message Characteristic";
 
     // STATUS Attribute UUID Wrappers
-    public final static String SERVICE_READ_STATE =
+    public final static String SERVICE_STATUS_STATE =
             "Status Service";
     public final static String CHARACTERISTIC_STATUS_STATE =
             "Status State Characteristic";
