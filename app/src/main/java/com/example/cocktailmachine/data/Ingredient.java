@@ -1,14 +1,16 @@
 package com.example.cocktailmachine.data;
 
 
-import com.example.cocktailmachine.data.db.NeedsMoreIngredientException;
-import com.example.cocktailmachine.data.db.NewDatabaseConnection;
-import com.example.cocktailmachine.data.db.NewEmptyIngredientException;
+import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
+import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,7 +22,7 @@ import java.util.List;
  * It can be shown with an image.
  * The color is known.
  */
-public interface Ingredient {
+public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
 
     //Reminder: Only liquids!!!
 
@@ -58,7 +60,7 @@ public interface Ingredient {
      * Still available liquid/fluid in milliliter.
      * @return milliliter of ingredient
      */
-    public int getFillLevel();
+    public int getVolume();
 
     /**
      * Get Pump representative class, where the ingredient is within.
@@ -84,21 +86,10 @@ public interface Ingredient {
     //use
     /**
      * Pump m milliliters.
-     * @param millimeters m
-     * @throws NewEmptyIngredientException ingredient is empty.
+     * @param volume m
+     * @throws NewlyEmptyIngredientException ingredient is empty.
      */
-    public void pump(int volume) throws NewEmptyIngredientException, NeedsMoreIngredientException;
-
-    //db
-    /**
-     * Save this object to database.
-     */
-    public void save();
-
-    /**
-     * Delete this object including in the database.
-     */
-    public void delete();
+    public void pump(int volume) throws NewlyEmptyIngredientException;
 
     //general
     /**
@@ -106,8 +97,8 @@ public interface Ingredient {
      * Get all available ingredients.
      * @return List of ingredients.
      */
-    public static List<Ingredient> getIngredients(){
-        return (List<Ingredient>) NewDatabaseConnection.getDataBase().getAvailableIngredients();
+    public static List<Ingredient> getIngredientWithIds() throws NotInitializedDBException {
+        return (List<Ingredient>) DatabaseConnection.getDataBase().getAvailableIngredients();
     }
 
     /**
@@ -116,8 +107,13 @@ public interface Ingredient {
      * @param ingredientsIds k
      * @return List of ingredients.
      */
-    public static List<Ingredient> getIngredients(List<Long> ingredientsIds){
-        return NewDatabaseConnection.getDataBase().getIngredients(ingredientsIds);
+    public static List<Ingredient> getIngredientWithIds(List<Long> ingredientsIds) {
+        try {
+            return DatabaseConnection.getDataBase().getIngredients(ingredientsIds);
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
     /**
@@ -126,9 +122,31 @@ public interface Ingredient {
      * @param id k
      * @return
      */
-    public static Ingredient getIngredient(Long id){
-        return NewDatabaseConnection.getDataBase().getIngredient(id);
+    public static Ingredient getIngredient(Long id) {
+        try {
+            return DatabaseConnection.getDataBase().getIngredient(id);
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
+
+    /**
+     * Static Access to ingredients.
+     * Get available ingredients with name k.
+     * @param name k
+     * @return
+     */
+    public static Ingredient getIngredient(String name) {
+        try {
+            return DatabaseConnection.getDataBase().getIngredientWithExact(name);
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
 
     /**
      * Static access to ingredients.
@@ -166,9 +184,23 @@ public interface Ingredient {
         return new SQLIngredient(name, alcoholic, color);
     }
 
-    public default JSONObject asMessage(){
-        //TODO
-        return null;
+    /**
+     * Static access to ingredients.
+     * Make new instance.
+     * Set up without link to a pump.
+     * @param name name
+     * @return  new Ingredient instance
+     */
+    public static Ingredient makeNew(String name){
+        return new SQLIngredient(name);
+    }
+
+    public static Ingredient searchOrNew(String name){
+        Ingredient ingredient = Ingredient.getIngredient(name);
+        if(ingredient == null){
+            return Ingredient.makeNew(name);
+        }
+        return ingredient;
     }
 
 
