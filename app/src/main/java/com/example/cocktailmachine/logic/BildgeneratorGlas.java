@@ -16,8 +16,12 @@ import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedExcept
 import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.R;
 
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class BildgeneratorGlas {
 
@@ -80,13 +84,46 @@ public class BildgeneratorGlas {
         int animationSlots= listIdGlasFlüssigkeit.length;
         int slotCounter= 0;
 
-        for (Ingredient ingredient : recipe.getIngredients()){
+        Map<Ingredient,Integer> proportionenFlüssigkeitenImGlas =
+                this.getProportionOfLiquidInCocktail(recipe,  ingredientList, animationSlots);
+
+        /**for (Ingredient ingredient : recipe.getIngredients()){
 
             //recipe.getSpecificIngredientVolume(ingredient);
             sumLiquit += recipe.getSpecificIngredientPumpTime(ingredient);
+        }*/
+
+
+        /**for (Ingredient ingredient : ingredientList){
+            int numberSlots = this.getNumberOfSlots(sumLiquit,animationSlots-slotCounter,recipe, ingredient);
+            for (int i = 0 ; i < numberSlots; i++){
+                Drawable myImage =  ResourcesCompat.getDrawable(res, listIdGlasFlüssigkeit[i+slotCounter], null);
+                myImage.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+                myImage.setColorFilter(ingredient.getColor(), PorterDuff.Mode.MULTIPLY);//MULTIPLY,SRC_IN,SRC_ATOP
+                myImage.draw(canvas);
+            }
+            slotCounter += numberSlots;
+            sumLiquit -= recipe.getSpecificIngredientPumpTime(ingredient);
+        }*/
+
+
+        for (Ingredient ingredient : ingredientList){
+            int numberSlots = proportionenFlüssigkeitenImGlas.get(ingredient);
+            for (int i = 0 ; i < numberSlots; i++){
+                Drawable myImage =  ResourcesCompat.getDrawable(res, listIdGlasFlüssigkeit[i+slotCounter], null);
+                myImage.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+                myImage.setColorFilter(ingredient.getColor(), PorterDuff.Mode.MULTIPLY);//MULTIPLY,SRC_IN,SRC_ATOP
+                myImage.draw(canvas);
+            }
+            slotCounter += numberSlots;
         }
 
-        ingredientList.sort(new Comparator<Ingredient>() {
+        return canvas;
+    }
+
+    private List<Ingredient> sortIngredientsAscending(Recipe recipe, List<Ingredient> ingredientList){
+        List<Ingredient> list = new LinkedList<>(ingredientList);
+        Collections.sort(list,new Comparator<Ingredient>() {
             @Override
             public int compare(Ingredient ingredient, Ingredient t1) {
                 try {
@@ -98,20 +135,7 @@ public class BildgeneratorGlas {
                 }
             }
         });
-
-        for (Ingredient ingredient : ingredientList){
-            int numberSlots = this.getNumberOfSlots(sumLiquit,animationSlots-slotCounter,recipe, ingredient);
-            for (int i = 0 ; i < numberSlots; i++){
-                Drawable myImage =  ResourcesCompat.getDrawable(res, listIdGlasFlüssigkeit[i+slotCounter], null);
-                myImage.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-                myImage.setColorFilter(ingredient.getColor(), PorterDuff.Mode.MULTIPLY);//MULTIPLY,SRC_IN,SRC_ATOP
-                myImage.draw(canvas);
-            }
-            slotCounter += numberSlots;
-            sumLiquit -= recipe.getSpecificIngredientPumpTime(ingredient);
-        }
-
-        return canvas;
+        return list;
     }
 
     private int getNumberOfSlots(float sumLiquit, int animationSlots, Recipe recipe, Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
@@ -121,6 +145,26 @@ public class BildgeneratorGlas {
         }
         return (int) (recipe.getSpecificIngredientPumpTime(ingredient)/liquitProSlot);
 
+    }
+
+    private Map<Ingredient,Integer> getProportionOfLiquidInCocktail(Recipe recipe, List<Ingredient> ingredientList,int animationSlots) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
+        int sumLiquit = 0;
+        int slotCounter= 0;
+
+        Map<Ingredient,Integer> outputMap = new HashMap<>();
+
+        for (Ingredient ingredient : recipe.getIngredients()){
+            sumLiquit += recipe.getSpecificIngredientPumpTime(ingredient);
+        }
+
+        for (Ingredient ingredient : ingredientList){
+            int numberSlots = this.getNumberOfSlots(sumLiquit,animationSlots-slotCounter,recipe, ingredient);
+            outputMap.put(ingredient,numberSlots);
+            slotCounter += numberSlots;
+            sumLiquit -= recipe.getSpecificIngredientPumpTime(ingredient);
+        }
+
+        return(outputMap);
     }
 
 

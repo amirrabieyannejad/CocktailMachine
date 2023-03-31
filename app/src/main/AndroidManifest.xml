@@ -12,7 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CocktailMachine"
         tools:targetApi="31">
-
+        <activity
+            android:name=".cocktailList"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <activity
             android:name="com.example.cocktailmachine.ui.Grafik"
             android:exported="true">
