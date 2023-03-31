@@ -20,7 +20,7 @@ public interface Pump {
      * aka minimum available pump size
      * @return minimum milliliters to be pumped
      */
-    public int getMillilitersPumpedInMilliseconds();
+    public int getVolume();
 
     /**
      * Return current ingredient set in pump.
@@ -46,7 +46,7 @@ public interface Pump {
 
     public void empty();
 
-    public void fill(int milliliters);
+    public void fill(int volume);
 
     /**
      * Deletes this instance in db and in buffer.

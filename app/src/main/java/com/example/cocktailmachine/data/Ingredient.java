@@ -79,7 +79,7 @@ public interface Ingredient {
      */
     public void addImageUrl(String url);
 
-    public void setPump(Long pump, int fluidInMillimeters);
+    public void setPump(Long pump, int volume);
 
     //use
     /**
@@ -87,7 +87,7 @@ public interface Ingredient {
      * @param millimeters m
      * @throws NewEmptyIngredientException ingredient is empty.
      */
-    public void pump(int millimeters) throws NewEmptyIngredientException, NeedsMoreIngredientException;
+    public void pump(int volume) throws NewEmptyIngredientException, NeedsMoreIngredientException;
 
     //db
     /**
@@ -137,7 +137,7 @@ public interface Ingredient {
      * @param name name
      * @param alcoholic alcoholic?
      * @param available available?
-     * @param fluidInMillimeters milliliter of ingredient in pump
+     * @param volume milliliter of ingredient in pump
      * @param pump pump id
      * @param color color in Integer representation
      * @return new Ingredient instance
@@ -145,10 +145,10 @@ public interface Ingredient {
     public static Ingredient makeNew(String name,
                                      boolean alcoholic,
                                      boolean available,
-                                     int fluidInMillimeters,
+                                     int volume,
                                      long pump,
                                      int color){
-        return new SQLIngredient(name, alcoholic, available, fluidInMillimeters, pump, color);
+        return new SQLIngredient(name, alcoholic, available, volume, pump, color);
     }
 
     /**

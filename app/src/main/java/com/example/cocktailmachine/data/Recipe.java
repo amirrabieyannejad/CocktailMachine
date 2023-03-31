@@ -92,15 +92,15 @@ public interface Recipe {
     /**
      * Adds ingredient with quantity measured in needed pump time.
      * @param ingredient
-     * @param timeInMilliseconds
+     * @param volume
      */
-    public void addOrUpdate(Ingredient ingredient, int timeInMilliseconds);
+    public void addOrUpdate(Ingredient ingredient, int volume);
     /**
      * Adds ingredient with quantity measured in needed pump time.
      * @param ingredientId
-     * @param timeInMilliseconds
+     * @param volume
      */
-    public void addOrUpdate(long ingredientId, int timeInMilliseconds);
+    public void addOrUpdate(long ingredientId, int volume);
 
     public void addOrUpdate(Topic topic);
 
