@@ -1,8 +1,13 @@
 package com.example.cocktailmachine.data;
 
+import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 
 public class BasicRecipes {
+    public static void loadTest(){
+        DatabaseConnection.initialize_singleton(null);
+    }
+
     public static void loadMargarita() throws NotInitializedDBException {
         /**
         8 cl   weißer Tequila

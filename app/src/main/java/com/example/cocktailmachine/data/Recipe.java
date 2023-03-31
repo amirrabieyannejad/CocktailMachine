@@ -58,8 +58,6 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      */
     public List<Map.Entry<String, Integer>> getIngredientNameNVolumes();
 
-
-
     /**
      * Get specific pump time for ingredient with id k
      * @param ingredientId ingredient id k

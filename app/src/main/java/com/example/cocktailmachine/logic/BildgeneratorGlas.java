@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 
 import androidx.core.content.res.ResourcesCompat;
 
@@ -16,6 +17,8 @@ import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedExcept
 import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.R;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -83,21 +86,36 @@ public class BildgeneratorGlas {
         for (Ingredient ingredient : recipe.getIngredients()){
 
             //recipe.getSpecificIngredientVolume(ingredient);
-            sumLiquit += recipe.getSpecificIngredientPumpTime(ingredient);
+            sumLiquit += recipe.getSpecificIngredientVolume(ingredient);
         }
 
-        ingredientList.sort(new Comparator<Ingredient>() {
-            @Override
-            public int compare(Ingredient ingredient, Ingredient t1) {
-                try {
-                    return (recipe.getSpecificIngredientPumpTime(ingredient)-recipe.getSpecificIngredientPumpTime(t1));
-                } catch (TooManyTimesSettedIngredientEcxception e) {
-                    return(0);
-                } catch (NoSuchIngredientSettedException e) {
-                    return(0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            ingredientList.sort(new Comparator<Ingredient>() {
+                @Override
+                public int compare(Ingredient ingredient, Ingredient t1) {
+                    try {
+                        return (recipe.getSpecificIngredientVolume(ingredient)-recipe.getSpecificIngredientVolume(t1));
+                    } catch (TooManyTimesSettedIngredientEcxception e) {
+                        return(0);
+                    } catch (NoSuchIngredientSettedException e) {
+                        return(0);
+                    }
                 }
-            }
-        });
+            });
+        }else{ //für api kleiner als 26
+            Collections.sort(ingredientList, new Comparator<Ingredient>() {
+                @Override
+                public int compare(Ingredient ingredient, Ingredient t1) {
+                    try {
+                        return (recipe.getSpecificIngredientVolume(ingredient)-recipe.getSpecificIngredientVolume(t1));
+                    } catch (TooManyTimesSettedIngredientEcxception e) {
+                        return(0);
+                    } catch (NoSuchIngredientSettedException e) {
+                        return(0);
+                    }
+                }
+            });
+        }
 
         for (Ingredient ingredient : ingredientList){
             int numberSlots = this.getNumberOfSlots(sumLiquit,animationSlots-slotCounter,recipe, ingredient);
@@ -108,7 +126,7 @@ public class BildgeneratorGlas {
                 myImage.draw(canvas);
             }
             slotCounter += numberSlots;
-            sumLiquit -= recipe.getSpecificIngredientPumpTime(ingredient);
+            sumLiquit -= recipe.getSpecificIngredientVolume(ingredient);
         }
 
         return canvas;
@@ -116,10 +134,10 @@ public class BildgeneratorGlas {
 
     private int getNumberOfSlots(float sumLiquit, int animationSlots, Recipe recipe, Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
         float liquitProSlot = sumLiquit/animationSlots;
-        if(liquitProSlot>recipe.getSpecificIngredientPumpTime(ingredient)){
+        if(liquitProSlot>recipe.getSpecificIngredientVolume(ingredient)){
             return 1;
         }
-        return (int) (recipe.getSpecificIngredientPumpTime(ingredient)/liquitProSlot);
+        return (int) (recipe.getSpecificIngredientVolume(ingredient)/liquitProSlot);
 
     }
 

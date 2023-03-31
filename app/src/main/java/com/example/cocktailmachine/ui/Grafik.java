@@ -17,23 +17,30 @@ import android.os.Bundle;
 import android.widget.ImageView;
 
 
+import com.example.cocktailmachine.data.BasicRecipes;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.NeedsMoreIngredientException;
-import com.example.cocktailmachine.data.db.NewEmptyIngredientException;
+import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
+import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
+import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
 import com.example.cocktailmachine.R;
 
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class Grafik extends AppCompatActivity {
 
@@ -60,8 +67,18 @@ public class Grafik extends AppCompatActivity {
 
         Recipe recipe = new Recipe() {
             @Override
+            public int compareTo(Recipe o) {
+                return 0;
+            }
+
+            @Override
             public long getID() {
                 return 0;
+            }
+
+            @Override
+            public void setID(long id) {
+
             }
 
             @Override
@@ -79,8 +96,18 @@ public class Grafik extends AppCompatActivity {
                 List<Ingredient> list = new LinkedList();
                 list.add(new Ingredient() {
                     @Override
+                    public int compareTo(Ingredient o) {
+                        return 0;
+                    }
+
+                    @Override
                     public long getID() {
                         return 1;
+                    }
+
+                    @Override
+                    public void setID(long id) {
+
                     }
 
                     @Override
@@ -104,7 +131,27 @@ public class Grafik extends AppCompatActivity {
                     }
 
                     @Override
-                    public int getFillLevel() {
+                    public boolean isSaved() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean needsUpdate() {
+                        return false;
+                    }
+
+                    @Override
+                    public void wasSaved() {
+
+                    }
+
+                    @Override
+                    public void wasChanged() {
+
+                    }
+
+                    @Override
+                    public int getVolume() {
                         return 0;
                     }
 
@@ -129,7 +176,7 @@ public class Grafik extends AppCompatActivity {
                     }
 
                     @Override
-                    public void pump(int millimeters) throws NewEmptyIngredientException, NeedsMoreIngredientException {
+                    public void pump(int millimeters) {
 
                     }
 
@@ -145,8 +192,18 @@ public class Grafik extends AppCompatActivity {
                 });
                 list.add(new Ingredient() {
                     @Override
+                    public int compareTo(Ingredient o) {
+                        return 0;
+                    }
+
+                    @Override
                     public long getID() {
                         return 2;
+                    }
+
+                    @Override
+                    public void setID(long id) {
+
                     }
 
                     @Override
@@ -170,7 +227,27 @@ public class Grafik extends AppCompatActivity {
                     }
 
                     @Override
-                    public int getFillLevel() {
+                    public boolean isSaved() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean needsUpdate() {
+                        return false;
+                    }
+
+                    @Override
+                    public void wasSaved() {
+
+                    }
+
+                    @Override
+                    public void wasChanged() {
+
+                    }
+
+                    @Override
+                    public int getVolume() {
                         return 0;
                     }
 
@@ -195,7 +272,7 @@ public class Grafik extends AppCompatActivity {
                     }
 
                     @Override
-                    public void pump(int millimeters) throws NewEmptyIngredientException, NeedsMoreIngredientException {
+                    public void pump(int millimeters)  {
 
                     }
 
@@ -213,17 +290,22 @@ public class Grafik extends AppCompatActivity {
             }
 
             @Override
-            public HashMap<Long, Integer> getIngredientPumpTime() {
+            public HashMap<Long, Integer> getIngredientVolumes() {
                 return null;
             }
 
             @Override
-            public int getSpecificIngredientPumpTime(long ingredientId) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
+            public List<Map.Entry<String, Integer>> getIngredientNameNVolumes() {
+                return null;
+            }
+
+            @Override
+            public int getSpecificIngredientVolume(long ingredientId) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
                 return 0;
             }
 
             @Override
-            public int getSpecificIngredientPumpTime(Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
+            public int getSpecificIngredientVolume(Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
                 if (ingredient.getID() == 1){
                     return 30;
                 }
@@ -241,6 +323,26 @@ public class Grafik extends AppCompatActivity {
             @Override
             public boolean isAvailable() {
                 return false;
+            }
+
+            @Override
+            public boolean isSaved() {
+                return false;
+            }
+
+            @Override
+            public boolean needsUpdate() {
+                return false;
+            }
+
+            @Override
+            public void wasSaved() {
+
+            }
+
+            @Override
+            public void wasChanged() {
+
             }
 
             @Override
@@ -294,6 +396,21 @@ public class Grafik extends AppCompatActivity {
             }
 
             @Override
+            public void remove(SQLRecipeImageUrlElement url) {
+
+            }
+
+            @Override
+            public void removeUrl(long urlId) {
+
+            }
+
+            @Override
+            public void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException {
+
+            }
+
+            @Override
             public void delete() {
 
             }
@@ -302,12 +419,10 @@ public class Grafik extends AppCompatActivity {
             public void save() {
 
             }
-
-            @Override
-            public boolean equals(Recipe recipe) {
-                return false;
-            }
         };
+
+        DatabaseConnection.initialize_singleton(this.getBaseContext());
+
 
         /**
         Ingredient tequila = new SQLIngredient(1,"Tequila", true, Color.RED);

@@ -8,6 +8,7 @@ import android.content.Context;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import com.example.cocktailmachine.data.BasicRecipes;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
@@ -271,5 +272,15 @@ public class TestDB {
         assert recipe.equals(db_recipe);
     }
 
-
+    @Test
+    public void loadTestRecipes() {
+        try {
+            BasicRecipes.loadMargarita();
+            Recipe magarita = Recipe.getRecipe("Margarita");
+            assertNotNull(magarita);
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            assert false;
+        }
+    }
 }

@@ -7,6 +7,7 @@ import android.os.Build;
 
 import androidx.annotation.Nullable;
 
+import com.example.cocktailmachine.data.BasicRecipes;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
@@ -50,6 +51,12 @@ public class DatabaseConnection extends SQLiteOpenHelper {
                 DatabaseConnection.factory,
                 DatabaseConnection.version);
         this.privilege = UserPrivilegeLevel.User;
+        try {
+            BasicRecipes.loadMargarita();
+            BasicRecipes.loadLongIslandIceTea();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+        }
     }
 
     private DatabaseConnection(@Nullable Context context, UserPrivilegeLevel privilege) {
@@ -57,6 +64,12 @@ public class DatabaseConnection extends SQLiteOpenHelper {
                 DatabaseConnection.factory,
                 DatabaseConnection.version);
         this.privilege = privilege;
+        try {
+            BasicRecipes.loadMargarita();
+            BasicRecipes.loadLongIslandIceTea();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+        }
     }
 
     static synchronized DatabaseConnection getSingleton() throws NotInitializedDBException {
@@ -70,11 +83,11 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return DatabaseConnection.getSingleton();
     }
 
-    static synchronized void initialize_singleton(Context context){
+    public static synchronized void initialize_singleton(Context context){
         DatabaseConnection.singleton = new DatabaseConnection(context);
     }
 
-    static synchronized void initialize_singleton(Context context, UserPrivilegeLevel privilege){
+    public static synchronized void initialize_singleton(Context context, UserPrivilegeLevel privilege){
         DatabaseConnection.singleton = new DatabaseConnection(context, privilege);
     }
 
