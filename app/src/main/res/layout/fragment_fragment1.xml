@@ -6,9 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".ui.singleCocktailChoice.fragment1">
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="577dp"
+        android:layout_height="367dp"
+        android:text="TextView"
+        android:textSize="96sp" />
+
     <ImageView
         android:id="@+id/imageCocktail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/glas_fluessigkeit07" />
+
 </FrameLayout>

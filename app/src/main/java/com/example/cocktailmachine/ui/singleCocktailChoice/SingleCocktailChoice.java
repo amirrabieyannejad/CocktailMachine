@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Ingredient;
+import com.example.cocktailmachine.data.Orientation;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
@@ -36,18 +37,18 @@ public class SingleCocktailChoice extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_cocktail_choice);
         fragment1 fragment  = fragment1.newInstance();
-        fragment.updateImage(getResources().getDrawable(R.drawable.glas2));
+        //fragment.updateImage(getResources().getDrawable(R.drawable.glas2));
         replaceFragment(fragment);
 
         // this is the view we will add the gesture detector to
-        //View myView = findViewById(R.id.imageCocktail);
+        View myView = findViewById(R.id.frameLayout);
 
         // get the gesture detector
         mDetector = new GestureDetector(this, new MyGestureListener());
 
         // Add a touch listener to the view
         // The touch listener passes all its events on to the gesture detector
-        //myView.setOnTouchListener(touchListener);
+        myView.setOnTouchListener(touchListener);
     }
 
     // This touch listener passes everything on to the gesture detector.
@@ -109,6 +110,7 @@ public class SingleCocktailChoice extends AppCompatActivity {
             Log.d("TAG", "onFling: ");
             Log.d("TAG", "onFling: "+velocityX);
             Log.d("TAG", "onFling: "+velocityY);
+            Log.d("TAG", "onFling: "+getOrientationFromVelocity(velocityX,velocityY));
             return true;
         }
     }
@@ -120,4 +122,20 @@ public class SingleCocktailChoice extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
+
+    public static Orientation getOrientationFromVelocity(float velocityX, float velocityY){
+        if(Math.abs(velocityX) >= Math.abs(velocityY)){
+            if(velocityX>0){
+                return(Orientation.RIGHT);
+            }else{
+                return(Orientation.LEFT) ;
+            }
+        }else{
+            if(velocityY>0){
+                return(Orientation.DOWN);
+            }else{
+                return (Orientation.TOP);
+            }
+        }
+    }
 }
