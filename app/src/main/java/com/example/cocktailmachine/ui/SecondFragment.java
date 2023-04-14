@@ -9,7 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.cocktailmachine.ui.databinding.FragmentSecondBinding;
+import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.databinding.FragmentSecondBinding;
+
 
 public class SecondFragment extends Fragment {
 
