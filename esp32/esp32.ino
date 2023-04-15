@@ -1,17 +1,15 @@
 // supported features
-#define SIMULATE      	// simulate functionality instead of using real pumps?
-// #define USE_SD_CARD	// save data on SD card
+#define SIMULATE	// simulate functionality instead of using real pumps?
 
 // general system settings
-#define BLE_NAME "Cocktail Machine ESP32"	// bluetooth server name
-#define CORE_DEBUG_LEVEL 4               	// 1 = error; 3 = info ; 4 = debug
-#define NUM_PUMPS 10                     	// maximum number of supported pumps
-#define LIQUID_CUTOFF 0.1                	// minimum amount of liquid we round off
+#define BLE_NAME        	"Cocktail Machine ESP32"	// bluetooth server name
+#define VERSION         	1                       	// version number (used for configs etc)
+#define CORE_DEBUG_LEVEL	4                       	// 1 = error; 3 = info ; 4 = debug
+#define NUM_PUMPS       	10                      	// maximum number of supported pumps
+#define LIQUID_CUTOFF   	0.1                     	// minimum amount of liquid we round off
 
 // pinout
-#if defined(USE_SD_CARD)
-#define PIN_SDCARD_CS A5
-#endif
+#define PIN_SDCARD_CS	A5 // FIXME
 
 // c++ standard library
 #include <algorithm>
@@ -29,10 +27,8 @@
 #include <ArduinoJson.h>
 
 // sd card
-#if defined(USE_SD_CARD)
 #include <FS.h>
 #include <SD.h>
-#endif
 
 // bluetooth
 #include <BLE2902.h>
@@ -317,6 +313,8 @@ struct Queued {
 
 // global state
 
+bool sdcard_available = false;
+
 BLEServer *ble_server;
 
 Processed* machine_state;
@@ -360,11 +358,10 @@ void blink_leds(uint64_t on, uint64_t off);
 #endif
 
 // sdcard
-#if defined(USE_SD_CARD)
+bool sdcard_setup(void);
 bool sdcard_start(void);
 void sdcard_stop(void);
 bool sdcard_save(void);
-#endif
 
 // bluetooth
 bool ble_start(void);
@@ -390,7 +387,7 @@ void setup() {
     while (!Serial) { sleep_idle(MS(10)); }
     sleep_idle(S(1)); // make sure we don't miss any output
 
-    info("Cocktail Machine v1 starting up");
+    info("Cocktail Machine v%d starting up", VERSION);
   }
 
   { // setup pins
@@ -399,29 +396,8 @@ void setup() {
 #endif
   }
 
-#if defined(USE_SD_CARD)
-  { // setup sd card
-    if (!sdcard_start()) { error_loop(); }
-
-    // we read the sd card to force the reader to actually access it
-    File root = SD.open("/");
-    if(!root) {
-      error("failed to read SD card");
-      error_loop();
-    }
-
-    File file = root.openNextFile();
-    debug("sd card contents:");
-    while(file){
-      if(file.isDirectory()){
-        debug(" DIR : %s", file.name());
-      } else {
-        debug(" FILE: %16s  SIZE: %d", file.name(), file.size());
-      }
-      file = root.openNextFile();
-    }
-  }
-#endif
+  // setup sd card
+  sdcard_start();
 
   { // initialize machine state
     for (int i=0; i<NUM_STATUS; i++)	all_status[i]	= NULL;
@@ -916,6 +892,7 @@ Processed* add_liquid(const String liquid, float amount) {
 }
 
 Processed* reset_machine(void) {
+  // TODO restart hardware modules, like the sd card reader?
   while (!cocktail_queue.empty()) cocktail_queue.pop();
   cocktail.clear();
 
@@ -1241,29 +1218,59 @@ void CommCB::onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *para
 }
 
 // sd card
-#if defined(USE_SD_CARD)
-bool sdcard_start(void) {
+bool sdcard_setup(void) {
   if (!SD.begin(PIN_SDCARD_CS)){
-    error("failed to mount sdcard; maybe power is cut?");
+    error("failed to load SD card reader");
     return false;
   }
-  debug("sdcard init");
+  debug("SD card init");
 
   uint8_t ct = SD.cardType();
   if(ct == CARD_NONE){
-    error("no card found");
+    error("no SD card found");
     return false;
+  }
+
+  // we read the sd card to force the reader to actually access it
+  File root = SD.open("/");
+  if(!root) {
+    error("failed to read SD card");
+    return false;
+  }
+
+  File file = root.openNextFile();
+  debug("SD card contents:");
+  while(file){
+    if(file.isDirectory()){
+      debug(" DIR : %s", file.name());
+    } else {
+      debug(" FILE: %16s  SIZE: %d", file.name(), file.size());
+    }
+    file = root.openNextFile();
   }
 
   return true;
 }
 
+bool sdcard_start(void) {
+  if (sdcard_available) sdcard_stop();
+
+  sdcard_available = sdcard_setup();
+  return sdcard_available;
+}
+
 void sdcard_stop(void) {
-  SD.end();
+  if (sdcard_available) SD.end();
 }
 
 bool sdcard_save(void) {
-  debug("saving state to sd card");
+  debug("saving state to SD card");
+
+  if (!sdcard_available) {
+    error("SD not available");
+    return false;
+  }
+
   File file = SD.open("/config.txt", FILE_WRITE);
   if (!file) {
     debug("failed to open config file");
@@ -1276,11 +1283,10 @@ bool sdcard_save(void) {
   uint64_t mb  	= 1024 * 1024;
   uint64_t used	= SD.usedBytes();
   uint64_t size	= SD.totalBytes();
-  debug("sd card: %lluMB / %lluMB used", used/mb, size/mb);
+  debug("SD card: %lluMB / %lluMB used", used/mb, size/mb);
 
   return true;
 }
-#endif
 
 // utilities
 
