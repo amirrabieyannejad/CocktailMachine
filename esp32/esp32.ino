@@ -20,8 +20,11 @@
 
 // general chip functionality
 #include <Arduino.h>
-#include <EEPROM.h>
+#include <Preferences.h>
 #include <SPI.h>
+
+// hash / encryption
+#include <mbedtls/md.h>
 
 // json
 #include <ArduinoJson.h>
@@ -311,6 +314,17 @@ struct Queued {
   uint16_t conn_id;
 };
 
+// crypto primitives
+mbedtls_md_context_t mbedtls_ctx;
+
+// MD5 is fast and fits in one BLE message
+mbedtls_md_type_t mbedtls_md_type = MBEDTLS_MD_MD5;
+#define DIGEST_SIZE (128 / 8)
+
+// SHA256 would be secure, but seems really waseful
+// mbedtls_md_type_t mbedtls_md_type = MBEDTLS_MD_SHA256;
+// #define DIGEST_SIZE (256 / 8)
+
 // global state
 
 bool sdcard_available = false;
@@ -332,6 +346,9 @@ std::queue<Queued> command_queue;
 std::queue<Ingredient> cocktail_queue;
 
 std::unordered_map<User, String> users;
+
+byte config_state[DIGEST_SIZE] = {0};
+Preferences preferences;
 
 // function declarations
 
@@ -356,6 +373,11 @@ void led_on(void);
 void led_off(void);
 void blink_leds(uint64_t on, uint64_t off);
 #endif
+
+// configs
+bool config_save(void);
+bool config_load(void);
+bool config_clear(void);
 
 // sdcard
 bool sdcard_setup(void);
@@ -395,6 +417,9 @@ void setup() {
     pinMode(LED_BUILTIN, OUTPUT);
 #endif
   }
+
+  // setup eeprom
+  preferences.begin("CoMa", false);
 
   // setup sd card
   sdcard_start();
@@ -619,6 +644,7 @@ Processed* CmdRestart::execute() {
   if (is_admin(this->user)) {
     if (this->factory_reset) {
       // FIXME reset settings once the EEPROM is used
+      config_clear();
     }
     ESP.restart();
   }
@@ -628,6 +654,8 @@ Processed* CmdRestart::execute() {
 Processed* CmdCalibratePumps::execute() {
   // TODO implement logic once we have the hardware
   if (!is_admin(this->user)) return new Unauthorized();
+
+  config_save();
   return reset_machine();
 };
 
@@ -644,6 +672,8 @@ Processed* CmdReset::execute() {
 Processed* CmdInitUser::execute() {
   User id = users.size();
   users[id] = this->name;
+
+  config_save();
   return new RetUserID(id);
 }
 
@@ -671,6 +701,7 @@ Processed* CmdDefinePump::execute() {
   pumps[slot] = p;
 
   // update machine state
+  config_save();
   update_liquids();
 
   return new Success();
@@ -696,6 +727,7 @@ Processed* CmdRefillPump::execute() {
   if (err) return err;
 
   // update machine state
+  config_save();
   update_liquids();
 
   return new Success();
@@ -705,7 +737,6 @@ Processed* CmdAddLiquid::execute() {
   // TODO only allowed for admin or the current user
   Processed *err = add_liquid(this->liquid, this->volume);
   if (err) return err;
-
   return new Success();
 }
 
@@ -728,6 +759,7 @@ Processed* CmdDefineRecipe::execute() {
   recipes.push_front(r);
 
   // update state
+  config_save();
   update_recipes();
 
   return new Success();
@@ -748,6 +780,7 @@ Processed* CmdEditRecipe::execute() {
       it->ingredients = this->ingredients;
 
       // update state
+      config_save();
       update_recipes();
 
       return new Success();
@@ -767,6 +800,7 @@ Processed* CmdDeleteRecipe::execute() {
   recipes.remove_if([name](Recipe r){ return r.name == name; });
 
   // update state
+  config_save();
   update_recipes();
 
   return new Success();
@@ -879,6 +913,7 @@ Processed* add_liquid(const String liquid, float amount) {
   cocktail.push_front(Ingredient{liquid, used});
 
   // update state
+  config_save();
   update_liquids();
   update_cocktail();
   update_state(new Ready());
@@ -1000,9 +1035,6 @@ void update_liquids() {
   all_status[ID_LIQUIDS]->update(out.c_str());
 }
 
-void update_pumps() {
-}
-
 void update_recipes() {
   // generate json output
   debug("updating recipes state");
@@ -1042,7 +1074,6 @@ void update_state(Processed *state) {
   machine_state = state;
   all_status[ID_STATE]->update(state->json().c_str());
 }
-
 
 // bluetooth
 bool ble_start(void) {
@@ -1217,7 +1248,63 @@ void CommCB::onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *para
   }
 }
 
+// configs
+
+bool config_save(void) {
+  char *config = "FIXME";
+  String hash = "";
+
+  { // update hash
+    const size_t len = strlen(config);
+    mbedtls_md_init(&mbedtls_ctx);
+    mbedtls_md_setup(&mbedtls_ctx, mbedtls_md_info_from_type(mbedtls_md_type), 0);
+    mbedtls_md_starts(&mbedtls_ctx);
+    mbedtls_md_update(&mbedtls_ctx, (const unsigned char *) config, len);
+    mbedtls_md_finish(&mbedtls_ctx, config_state);
+    mbedtls_md_free(&mbedtls_ctx);
+
+    for(int i= 0; i< sizeof(config_state); i++) {
+      hash += String(config_state[i], HEX);
+    }
+    debug("config update: %s", hash.c_str());
+  }
+
+  if (sdcard_available) { // save state to SD card
+    debug("saving state to SD card");
+
+    File file = SD.open("/config.txt", FILE_WRITE);
+    if (!file) {
+      debug("failed to open config file");
+      return false;
+    }
+
+    file.print(config);
+    file.close();
+
+    uint64_t mb  	= 1024 * 1024;
+    uint64_t used	= SD.usedBytes();
+    uint64_t size	= SD.totalBytes();
+    debug("SD card: %lluMB / %lluMB used", used/mb, size/mb);
+  }
+
+  { // save state to flash memory
+    preferences.putString("hash", hash);
+  }
+
+  return true;
+}
+
+bool config_load(void) {
+  return false;
+}
+
+bool config_clear(void) {
+  preferences.clear();
+  return false;
+}
+
 // sd card
+
 bool sdcard_setup(void) {
   if (!SD.begin(PIN_SDCARD_CS)){
     error("failed to load SD card reader");
@@ -1264,28 +1351,6 @@ void sdcard_stop(void) {
 }
 
 bool sdcard_save(void) {
-  debug("saving state to SD card");
-
-  if (!sdcard_available) {
-    error("SD not available");
-    return false;
-  }
-
-  File file = SD.open("/config.txt", FILE_WRITE);
-  if (!file) {
-    debug("failed to open config file");
-    return false;
-  }
-
-  file.print("[TODO]\n");
-  file.close();
-
-  uint64_t mb  	= 1024 * 1024;
-  uint64_t used	= SD.usedBytes();
-  uint64_t size	= SD.totalBytes();
-  debug("SD card: %lluMB / %lluMB used", used/mb, size/mb);
-
-  return true;
 }
 
 // utilities
