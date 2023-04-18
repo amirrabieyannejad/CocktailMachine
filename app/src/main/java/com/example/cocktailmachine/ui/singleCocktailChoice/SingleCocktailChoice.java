@@ -20,6 +20,7 @@ import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.logic.FlingAnalysis;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,15 +32,18 @@ import java.util.Map;
 public class SingleCocktailChoice extends AppCompatActivity {
 
     private GestureDetector mDetector;
+    private int counter = 0;
+    fragment1 fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_cocktail_choice);
-        fragment1 fragment  = fragment1.newInstance();
+        this.fragment = new fragment1();
         //fragment.updateImage(getResources().getDrawable(R.drawable.glas2));
-        replaceFragment(fragment);
 
+        replaceFragment(fragment);
+        //fragment.updateTextView(new Integer(this.counter).toString());
         // this is the view we will add the gesture detector to
         View myView = findViewById(R.id.frameLayout);
 
@@ -110,7 +114,17 @@ public class SingleCocktailChoice extends AppCompatActivity {
             Log.d("TAG", "onFling: ");
             Log.d("TAG", "onFling: "+velocityX);
             Log.d("TAG", "onFling: "+velocityY);
-            Log.d("TAG", "onFling: "+getOrientationFromVelocity(velocityX,velocityY));
+            Log.d("TAG", "onFling: "+ FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY));
+            if(FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY)==(Orientation.RIGHT)){
+                fragment1 fragment  = fragment1.newInstance();
+                fragment.updateTextView(""+(++counter));
+                replaceFragment(fragment);
+            }
+            if(FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY)==(Orientation.LEFT)){
+                fragment1 fragment  = fragment1.newInstance();
+                fragment.updateTextView(String.valueOf(""+(--counter)));
+                replaceFragment(fragment);
+            }
             return true;
         }
     }
