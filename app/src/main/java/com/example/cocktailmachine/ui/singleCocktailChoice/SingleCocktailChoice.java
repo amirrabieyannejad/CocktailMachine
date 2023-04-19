@@ -116,12 +116,12 @@ public class SingleCocktailChoice extends AppCompatActivity {
             Log.d("TAG", "onFling: "+velocityY);
             Log.d("TAG", "onFling: "+ FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY));
             if(FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY)==(Orientation.RIGHT)){
-                fragment1 fragment  = fragment1.newInstance();
+                //fragment1 fragment  = fragment1.newInstance();
                 fragment.updateTextView(""+(++counter));
                 replaceFragment(fragment);
             }
             if(FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY)==(Orientation.LEFT)){
-                fragment1 fragment  = fragment1.newInstance();
+                //fragment1 fragment  = fragment1.newInstance();
                 fragment.updateTextView(String.valueOf(""+(--counter)));
                 replaceFragment(fragment);
             }
@@ -132,6 +132,13 @@ public class SingleCocktailChoice extends AppCompatActivity {
     private void replaceFragment(Fragment fragment){
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        /*fragmentTransaction.setCustomAnimations(
+                R.anim.slide_in,  // enter
+                R.anim.fade_out,  // exit
+                R.anim.fade_in,   // popEnter
+                R.anim.slide_out  // popExit
+        );*/
+
         fragmentTransaction.replace(R.id.frameLayout,fragment);
         fragmentTransaction.commit();
     }

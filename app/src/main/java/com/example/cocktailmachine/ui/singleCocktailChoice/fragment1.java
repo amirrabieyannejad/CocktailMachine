@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.databinding.FragmentFragment1Binding;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -27,6 +28,8 @@ public class fragment1 extends Fragment implements FragmentListenerSingleCocktai
     Context context;
     private FragmentListenerSingleCocktailChoice listener;
 
+    FragmentFragment1Binding binding;
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -37,9 +40,6 @@ public class fragment1 extends Fragment implements FragmentListenerSingleCocktai
     private String mParam1;
     private String mParam2;
 
-    public fragment1() {
-        // Required empty public constructor
-    }
 
     /**
      * Use this factory method to create a new instance of
@@ -63,6 +63,7 @@ public class fragment1 extends Fragment implements FragmentListenerSingleCocktai
         fragment1 fragment = new fragment1();
         //Drawable drawable = context.getResources().getDrawable(R.drawable.glas2);
         //fragment.imageView.setImageDrawable(drawable);
+
         return fragment;
     }
 
@@ -72,8 +73,8 @@ public class fragment1 extends Fragment implements FragmentListenerSingleCocktai
 
     @Override
     public void updateTextView(String text){
-
-        this.textView.setText(text);
+        binding.textViewCocktail.setText(text);
+        //this.textView.setText(text);
     }
 
 
@@ -82,27 +83,29 @@ public class fragment1 extends Fragment implements FragmentListenerSingleCocktai
     public View onCreateView(LayoutInflater inflater,@Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        this.view =  inflater.inflate(R.layout.fragment_fragment1, container, false);
+        /*this.view =  inflater.inflate(R.layout.fragment_fragment1, container, false);
         this.imageView = this.view.findViewById(R.id.imageCocktail);
         this.textView = this.view.findViewById(R.id.textViewCocktail);
-        return this.view;
+        return this.view;*/
+        this.binding = FragmentFragment1Binding.inflate(getLayoutInflater());
+        return binding.getRoot();
     }
 
+
+
+    /*
     @Override
+
     public void onAttach(Context context) {
         super.onAttach(context);
-        /**if (context instanceof FragmentListenerSingleCocktailChoice) {
+        if (context instanceof FragmentListenerSingleCocktailChoice) {
             listener = (FragmentListenerSingleCocktailChoice) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement FragmentAListener");
-        }*/
+        }
     }
+    */
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        listener = null;
-    }
 
 }
