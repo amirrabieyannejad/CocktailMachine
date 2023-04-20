@@ -33,16 +33,23 @@ public class SingleCocktailChoice extends AppCompatActivity {
 
     private GestureDetector mDetector;
     private int counter = 0;
-    fragment1 fragment;
+    fragment1 fragment1;
+
+    FragmentManager fragmentManager;
+    FragmentTransaction fragmentTransaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_cocktail_choice);
-        this.fragment = new fragment1();
+
+        fragmentManager = getSupportFragmentManager();
+
+
+        this.fragment1 = new fragment1();
         //fragment.updateImage(getResources().getDrawable(R.drawable.glas2));
 
-        replaceFragment(fragment);
+        replaceFragment(fragment1);
         //fragment.updateTextView(new Integer(this.counter).toString());
         // this is the view we will add the gesture detector to
         View myView = findViewById(R.id.frameLayout);
@@ -53,6 +60,7 @@ public class SingleCocktailChoice extends AppCompatActivity {
         // Add a touch listener to the view
         // The touch listener passes all its events on to the gesture detector
         myView.setOnTouchListener(touchListener);
+
     }
 
     // This touch listener passes everything on to the gesture detector.
@@ -117,12 +125,13 @@ public class SingleCocktailChoice extends AppCompatActivity {
             Log.d("TAG", "onFling: "+ FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY));
             if(FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY)==(Orientation.RIGHT)){
                 //fragment1 fragment  = fragment1.newInstance();
-                fragment.updateTextView(""+(++counter));
-                replaceFragment(fragment);
+                fragment1.updateTextView(""+(++counter));
+                replaceFragment(fragment1);
             }
             if(FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY)==(Orientation.LEFT)){
                 //fragment1 fragment  = fragment1.newInstance();
-                fragment.updateTextView(String.valueOf(""+(--counter)));
+                fragment2 fragment = new fragment2();
+                //fragment.updateTextView(String.valueOf(""+(--counter)));
                 replaceFragment(fragment);
             }
             return true;
@@ -130,16 +139,15 @@ public class SingleCocktailChoice extends AppCompatActivity {
     }
 
     private void replaceFragment(Fragment fragment){
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        /*fragmentTransaction.setCustomAnimations(
-                R.anim.slide_in,  // enter
-                R.anim.fade_out,  // exit
-                R.anim.fade_in,   // popEnter
-                R.anim.slide_out  // popExit
-        );*/
 
-        fragmentTransaction.replace(R.id.frameLayout,fragment);
+        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setCustomAnimations(
+               R.anim.slide_in,  // enter
+                R.anim.fade_out  // popExit
+        );
+
+        fragmentTransaction.replace(R.id.frameLayout,fragment,"cocktail");
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 
