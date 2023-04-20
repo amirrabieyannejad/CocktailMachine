@@ -65,6 +65,9 @@ async def test_run(client):
   async def admin(obj):
     await comm_msg(client, UUID_COMM_ADMIN, j(obj))
 
+  # reset machine settings
+  await admin({"cmd": "factory_reset", "user": 0})
+
   # basic commands
   await user({"cmd": "test"})
   await user({"cmd": "init_user", "name": "test-user"})

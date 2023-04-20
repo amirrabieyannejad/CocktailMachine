@@ -14,6 +14,7 @@
 // c++ standard library
 #include <algorithm>
 #include <forward_list>
+#include <inttypes.h>
 #include <queue>
 #include <sys/time.h>
 #include <unordered_map>
@@ -22,9 +23,6 @@
 #include <Arduino.h>
 #include <Preferences.h>
 #include <SPI.h>
-
-// hash / encryption
-#include <mbedtls/md.h>
 
 // json
 #include <ArduinoJson.h>
@@ -287,8 +285,13 @@ struct CmdReset : public Command {
 struct CmdRestart : public Command {
   def_cmd("restart", ADMIN);
   User user;
-  bool factory_reset;
-  CmdRestart(User user, bool factory_reset) : user(user), factory_reset(factory_reset) {}
+  CmdRestart(User user) : user(user) {}
+};
+
+struct CmdFactoryReset : public Command {
+  def_cmd("factory_reset", ADMIN);
+  User user;
+  CmdFactoryReset(User user) : user(user) {}
 };
 
 struct CmdClean : public Command {
@@ -314,17 +317,6 @@ struct Queued {
   uint16_t conn_id;
 };
 
-// crypto primitives
-mbedtls_md_context_t mbedtls_ctx;
-
-// MD5 is fast and fits in one BLE message
-mbedtls_md_type_t mbedtls_md_type = MBEDTLS_MD_MD5;
-#define DIGEST_SIZE (128 / 8)
-
-// SHA256 would be secure, but seems really waseful
-// mbedtls_md_type_t mbedtls_md_type = MBEDTLS_MD_SHA256;
-// #define DIGEST_SIZE (256 / 8)
-
 // global state
 
 bool sdcard_available = false;
@@ -347,7 +339,7 @@ std::queue<Ingredient> cocktail_queue;
 
 std::unordered_map<User, String> users;
 
-byte config_state[DIGEST_SIZE] = {0};
+int64_t config_state = 0;
 Preferences preferences;
 
 // function declarations
@@ -449,6 +441,9 @@ void setup() {
       error_loop();
     }
   }
+
+  // try to load config
+  config_load();
 
   debug("ready");
 }
@@ -553,14 +548,9 @@ Parsed parse_command(const String json) {
   if (j_##field.isNull()) return Parsed{NULL, new Incomplete()};  \
   const type field = j_##field.as<type>();
 
-#define parse_as_default(field, type, def_val)                          \
-  JsonVariant j_##field = doc[#field];                                  \
-  const type field = (j_##field.isNull()) ? def_val : j_##field.as<type>();
-
 #define parse_bool(field) 	parse_as(field, bool)
 #define parse_float(field)	parse_as(field, float)
 #define parse_int(field)  	parse_as(field, int32_t)
-#define parse_opt(field)  	parse_as_default(field, bool, false)
 #define parse_user()      	parse_as(user, int32_t)
 
   const char *cmd_name = doc["cmd"];
@@ -619,8 +609,11 @@ Parsed parse_command(const String json) {
 
   } else if (match_name(CmdRestart)) {
     parse_user();
-    parse_opt(factory_reset);
-    cmd = new CmdRestart(user, factory_reset);
+    cmd = new CmdRestart(user);
+
+  } else if (match_name(CmdFactoryReset)) {
+    parse_user();
+    cmd = new CmdFactoryReset(user);
 
   } else if (match_name(CmdClean)) {
     parse_user();
@@ -641,14 +634,35 @@ Parsed parse_command(const String json) {
 Processed* CmdTest::execute() { return new Success(); };
 
 Processed* CmdRestart::execute() {
-  if (is_admin(this->user)) {
-    if (this->factory_reset) {
-      // FIXME reset settings once the EEPROM is used
-      config_clear();
-    }
-    ESP.restart();
+  if (!is_admin(this->user)) return new Unauthorized();
+
+  ESP.restart();
+}
+
+Processed* CmdFactoryReset::execute() {
+  if (!is_admin(this->user)) return new Unauthorized();
+
+  { // remove old configs
+    config_clear();
+    config_state = 0;
   }
-  return new Unauthorized();
+
+  { // reset settings
+    for (int i=0; i<NUM_PUMPS; i++) pumps[i]	= NULL;
+
+    while (!command_queue.empty()) 	command_queue.pop();
+    while (!cocktail_queue.empty())	cocktail_queue.pop();
+
+    recipes.clear();
+    cocktail.clear();
+
+    users.clear();
+    users[0] = "admin";
+
+    machine_state = new Ready();
+  }
+
+  return new Success();
 }
 
 Processed* CmdCalibratePumps::execute() {
@@ -1040,14 +1054,14 @@ void update_recipes() {
   debug("updating recipes state");
 
   String out = String('{');
-  for (auto r = recipes.begin(); r != recipes.end(); r++){
+  for (auto r = recipes.begin(); r != recipes.end(); r++) {
     debug("  recipe: %s", r->name.c_str());
 
     out.concat('"');
     out.concat(r->name);
     out.concat("\":[");
 
-    for (auto ing = r->ingredients.begin(); ing != r->ingredients.end(); ing++){
+    for (auto ing = r->ingredients.begin(); ing != r->ingredients.end(); ing++) {
       debug("    ingredient: %s, amount: %.1f", ing->name.c_str(), ing->amount);
 
       out.concat("[\"");
@@ -1251,33 +1265,18 @@ void CommCB::onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *para
 // configs
 
 bool config_save(void) {
-  char *config = "FIXME";
-  String hash = "";
-
-  { // update hash
-    const size_t len = strlen(config);
-    mbedtls_md_init(&mbedtls_ctx);
-    mbedtls_md_setup(&mbedtls_ctx, mbedtls_md_info_from_type(mbedtls_md_type), 0);
-    mbedtls_md_starts(&mbedtls_ctx);
-    mbedtls_md_update(&mbedtls_ctx, (const unsigned char *) config, len);
-    mbedtls_md_finish(&mbedtls_ctx, config_state);
-    mbedtls_md_free(&mbedtls_ctx);
-
-    for(int i= 0; i< sizeof(config_state); i++) {
-      hash += String(config_state[i], HEX);
-    }
-    debug("config update: %s", hash.c_str());
-  }
+  // current time of the config
+  config_state = timestamp_usec();
 
   if (sdcard_available) { // save state to SD card
+    char *config = "FIXME";
     debug("saving state to SD card");
 
-    File file = SD.open("/config.txt", FILE_WRITE);
+    File file = SD.open("/config.json", FILE_WRITE);
     if (!file) {
       debug("failed to open config file");
       return false;
     }
-
     file.print(config);
     file.close();
 
@@ -1288,14 +1287,136 @@ bool config_save(void) {
   }
 
   { // save state to flash memory
-    preferences.putString("hash", hash);
+    preferences.clear(); // always start fresh
+
+    // metadata
+    preferences.putUInt("version", VERSION);
+
+    { // pumps
+      char key[15];
+      preferences.putUInt("num_pumps", NUM_PUMPS);
+      for (int i=0; i<NUM_PUMPS; i++) {
+        Pump *p = pumps[i];
+        if (p == NULL) continue;
+        snprintf(key, sizeof(key), "pump_%d", i);
+        preferences.putBool(key, true);
+
+        snprintf(key, sizeof(key), "pump_%d/l", i);
+        preferences.putString(key, p->liquid);
+
+        snprintf(key, sizeof(key), "pump_%d/v", i);
+        preferences.putFloat(key, p->volume);
+      }
+    }
+
+    { // recipes
+      char key[15];
+      int num_recipes = 0;
+      for (auto const &r : recipes) {
+        snprintf(key, sizeof(key), "recipe_%d", num_recipes);
+        preferences.putString(key, r.name);
+
+        int num_ingredients = 0;
+        for (auto const &ing : r.ingredients) {
+          snprintf(key, sizeof(key), "recipe_%d/%d", num_recipes, num_ingredients);
+          preferences.putString(key, ing.name);
+
+          snprintf(key, sizeof(key), "recipe_%d/%d/v", num_recipes, num_ingredients);
+          preferences.putFloat(key, ing.amount);
+
+          num_ingredients += 1;
+        }
+
+        snprintf(key, sizeof(key), "recipe_%d/num", num_recipes);
+        preferences.putUInt(key, num_ingredients);
+
+        num_recipes += 1;
+      }
+      preferences.putUInt("num_recipes", num_recipes);
+    }
+
+    // final checksum
+    preferences.putLong64("state", config_state);
   }
 
+  debug("config saved: %" PRId64, config_state);
   return true;
 }
 
 bool config_load(void) {
-  return false;
+  { // check metadata
+    unsigned int version = preferences.getUInt("version", 0);
+    if (version != VERSION) {
+      warn("config version %d doesn't match current version %d", version, VERSION);
+      warn("discarding config");
+      config_clear();
+      return false;
+    }
+
+    int64_t state = preferences.getLong64("state", -1);
+    if (state == config_state) {
+      debug("config hasn't changed; skipping");
+      return true;
+    }
+    config_state = state;
+  }
+
+  { // pumps
+    for (int i=0; i<NUM_PUMPS; i++) pumps[i] = NULL; // clear old config
+
+    char key[15];
+    unsigned int num_pumps = preferences.getUInt("num_pumps", 0);
+    num_pumps = std::min(num_pumps, (unsigned int) NUM_PUMPS);
+
+    for (int i=0; i<num_pumps; i++) {
+      snprintf(key, sizeof(key), "pump_%d", i);
+      if (!preferences.getBool(key)) continue; // empty slot
+
+      snprintf(key, sizeof(key), "pump_%d/l", i);
+      String liquid = preferences.getString(key);
+
+      snprintf(key, sizeof(key), "pump_%d/v", i);
+      float volume = preferences.getFloat(key);
+      pumps[i] = new Pump(i, liquid, volume);
+    }
+  }
+
+  { // recipes
+    char key[15];
+    recipes.clear(); // clear old config
+
+    unsigned int num_recipes = preferences.getUInt("num_recipes", 0);
+    for (int i=0; i<num_recipes; i++) {
+      String name = preferences.getString(key);
+
+      std::forward_list<Ingredient> ingredients = {};
+
+      snprintf(key, sizeof(key), "recipe_%d/num", i);
+      int num_ingredients = preferences.getUInt(key, 0);
+
+      for (int j=0; j<num_ingredients; j++) {
+        snprintf(key, sizeof(key), "recipe_%d/%d", i, j);
+        String ing_name = preferences.getString(key);
+
+        snprintf(key, sizeof(key), "recipe_%d/%d/v", i, j);
+        float ing_amount = preferences.getFloat(key);
+
+        Ingredient ing = Ingredient{ing_name, ing_amount};
+        ingredients.push_front(ing);
+      }
+
+      Recipe r = Recipe(name, ingredients);
+      recipes.push_front(r);
+    }
+  }
+
+  debug("config loaded: %" PRId64, config_state);
+
+  // update machine state
+  update_liquids();
+  update_recipes();
+
+  return true;
 }
 
 bool config_clear(void) {
