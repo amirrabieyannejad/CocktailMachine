@@ -19,6 +19,7 @@ STATUS = {
   "base":     	"c0605c38-3f94-33f6-ace6-7a5504544a80",
   "state":    	"e9e4b3f2-fd3f-3b76-8688-088a0671843a",
   "liquids":  	"fc60afb0-2b00-3af2-877a-69ae6815ca2f",
+  "pumps":    	"1a9a598a-17ce-3fcd-be03-40a48587d04e",
   "recipes":  	"9ede6e03-f89b-3e52-bb15-5c6c72605f6c",
   "cocktail": 	"7344136f-c552-3efc-b04f-a43793f16d43",
   "timestamp":	"586b5706-5856-34e1-ad17-94f840298816",

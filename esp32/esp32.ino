@@ -130,12 +130,13 @@ struct CommCB: BLECharacteristicCallbacks {
 
 #define ID_BASE     	0
 #define ID_LIQUIDS  	1
-#define ID_STATE    	2
-#define ID_RECIPES  	3
-#define ID_COCKTAIL 	4
-#define ID_TIMESTAMP	5
-#define ID_USER     	6
-#define NUM_STATUS  	7
+#define ID_PUMPS    	2
+#define ID_STATE    	3
+#define ID_RECIPES  	4
+#define ID_COCKTAIL 	5
+#define ID_TIMESTAMP	6
+#define ID_USER     	7
+#define NUM_STATUS  	8
 
 #define ID_MSG_USER 	0
 #define ID_MSG_ADMIN	1
@@ -147,6 +148,7 @@ struct CommCB: BLECharacteristicCallbacks {
 #define UUID_STATUS_BASE     	"c0605c38-3f94-33f6-ace6-7a5504544a80"
 #define UUID_STATUS_STATE    	"e9e4b3f2-fd3f-3b76-8688-088a0671843a"
 #define UUID_STATUS_LIQUIDS  	"fc60afb0-2b00-3af2-877a-69ae6815ca2f"
+#define UUID_STATUS_PUMPS    	"1a9a598a-17ce-3fcd-be03-40a48587d04e"
 #define UUID_STATUS_RECIPES  	"9ede6e03-f89b-3e52-bb15-5c6c72605f6c"
 #define UUID_STATUS_COCKTAIL 	"7344136f-c552-3efc-b04f-a43793f16d43"
 #define UUID_STATUS_TIMESTAMP	"586b5706-5856-34e1-ad17-94f840298816"
@@ -994,8 +996,6 @@ void update_cocktail() {
   // generate json output
   debug("updating cocktail state");
 
-  // TODO include current user
-
   String out = String('[');
   for (auto ing = cocktail.begin(); ing != cocktail.end(); ing++){
     debug("  ingredient: %s, amount: %.1f", ing->name.c_str(), ing->amount);
@@ -1016,53 +1016,57 @@ void update_cocktail() {
 void update_liquids() {
   std::unordered_map<std::string, float> liquids = {};
 
-  debug("updating pump state");
+  {
+    debug("updating pump state");
 
-  // generate json output
-  bool prev 	= false;
-  String out	= String("{\"pumps\":{");
-  for(int i=0; i<NUM_PUMPS; i++) {
-    Pump *pump = pumps[i];
-    if (pump == NULL) continue;
+    bool prev 	= false;
+    String out	= String('{');
 
-    std::string liquid = pump->liquid.c_str();
-    debug("  pump: %d, liquid: %s, vol: %.1f", pump->slot, liquid.c_str(), pump->volume);
+    for(int i=0; i<NUM_PUMPS; i++) {
+      Pump *pump = pumps[i];
+      if (pump == NULL) continue;
 
-    // update saved total
-    float sum = liquids[liquid] + pump->volume;
-    liquids[liquid] = sum;
+      std::string liquid = pump->liquid.c_str();
+      debug("  pump: %d, liquid: %s, vol: %.1f", pump->slot, liquid.c_str(), pump->volume);
 
-    if (prev) out.concat(',');
-    out.concat('"');
-    out.concat(String(pump->slot));
-    out.concat("\":{\"liquid\":");
-    out.concat(pump->liquid);
-    out.concat("\",\"volume\":");
-    out.concat(String(pump->volume, 1));
+      // update saved total
+      float sum = liquids[liquid] + pump->volume;
+      liquids[liquid] = sum;
+
+      if (prev) out.concat(',');
+      out.concat('"');
+      out.concat(String(pump->slot));
+      out.concat("\":{\"liquid\":");
+      out.concat(pump->liquid);
+      out.concat("\",\"volume\":");
+      out.concat(String(pump->volume, 1));
+      out.concat('}');
+
+      prev = true;
+    }
+    out.concat('}');
+    all_status[ID_PUMPS]->update(out.c_str());
+  }
+
+  { debug("updating liquid state");
+    int remaining	= liquids.size();
+    String out   	= String('{');
+
+    for(auto const &pair : liquids) {
+      debug("  liquid: %s, vol: %.1f", pair.first.c_str(), pair.second);
+
+      out.concat('"');
+      out.concat(pair.first.c_str());
+      out.concat("\":");
+      out.concat(String(pair.second, 1));
+
+      remaining -= 1;
+      if (remaining) out.concat(',');
+    }
     out.concat('}');
 
-    prev = true;
+    all_status[ID_LIQUIDS]->update(out.c_str());
   }
-
-  debug("updating liquid state");
-  out.concat("},\"liquids\":{");
-
-  // generate json output
-  int remaining = liquids.size();
-  for(auto const &pair : liquids) {
-    debug("  liquid: %s, vol: %.1f", pair.first.c_str(), pair.second);
-
-    out.concat('"');
-    out.concat(pair.first.c_str());
-    out.concat("\":");
-    out.concat(String(pair.second, 1));
-
-    remaining -= 1;
-    if (remaining) out.concat(',');
-  }
-  out.concat("}}");
-
-  all_status[ID_LIQUIDS]->update(out.c_str());
 }
 
 void update_recipes() {
@@ -1130,6 +1134,7 @@ bool ble_start(void) {
   all_status[ID_BASE]     	= new Status(UUID_STATUS_BASE,     	BLE_NAME);
   all_status[ID_STATE]    	= new Status(UUID_STATUS_STATE,    	"\"init\"");
   all_status[ID_LIQUIDS]  	= new Status(UUID_STATUS_LIQUIDS,  	"{}");
+  all_status[ID_PUMPS]    	= new Status(UUID_STATUS_PUMPS,    	"{}");
   all_status[ID_RECIPES]  	= new Status(UUID_STATUS_RECIPES,  	"{}");
   all_status[ID_COCKTAIL] 	= new Status(UUID_STATUS_COCKTAIL, 	"[]");
   all_status[ID_TIMESTAMP]	= new Status(UUID_STATUS_TIMESTAMP,	"0");
