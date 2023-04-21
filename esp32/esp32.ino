@@ -90,7 +90,7 @@ struct Recipe {
 // services
 struct Service {
   BLECharacteristic *ble_char;
-  Service(const char *uuid_service, const char *uuid_char, const uint32_t props);
+  Service(const char *uuid_service, const char *uuid_char, const uint32_t props, const int num_chars);
 };
 
 struct Status : Service {
@@ -1161,19 +1161,20 @@ bool ble_start(void) {
   return true;
 }
 
-Service::Service(const char *uuid_service, const char *uuid_char, const uint32_t props) {
+
+Service::Service(const char *uuid_service, const char *uuid_char, const uint32_t props, const int num_chars) {
   debug("creating service: %s / %s", uuid_service, uuid_char);
 
   BLEService* service = ble_server->getServiceByUUID(uuid_service);
   if (service == NULL) {
-    // each characteristic needs the following handles:
-    // - 1 for read
-    // - 1 for write
-    // - 1 for the BLE2902 notification characteristic
-    // additionally, each service needs a handle
-    // we add 1 handle just as a buffer :)
+    /* nb: each characteristic needs the following handles:
+       - 1 for read
+       - 1 for write
+       - 1 for the BLE2902 notification characteristic
 
-    int num_handles = NUM_STATUS*2 + NUM_COMM*3 + 2 + 1;
+       additionally, each service needs a handle for itself
+    */
+    int num_handles = num_chars * 3 + 1;
     service = ble_server->createService(BLEUUID(uuid_service), num_handles);
   }
   this->ble_char = service->createCharacteristic(uuid_char, props);
@@ -1185,7 +1186,8 @@ Service::Service(const char *uuid_service, const char *uuid_char, const uint32_t
 Status::Status(const char *uuid_char, const char *init_value)
   : Service(UUID_STATUS, uuid_char,
             BLECharacteristic::PROPERTY_READ |
-            BLECharacteristic::PROPERTY_NOTIFY) {
+            BLECharacteristic::PROPERTY_NOTIFY,
+            NUM_STATUS) {
   this->ble_char->setCallbacks(new StatusCB());
   this->ble_char->setValue(init_value);
 }
@@ -1199,7 +1201,8 @@ Comm::Comm(const char *uuid_char)
   : Service(UUID_COMM, uuid_char,
             BLECharacteristic::PROPERTY_READ  |
             BLECharacteristic::PROPERTY_WRITE |
-            BLECharacteristic::PROPERTY_NOTIFY) {
+            BLECharacteristic::PROPERTY_NOTIFY,
+            NUM_COMM) {
   this->ble_char->setCallbacks(new CommCB(this));
   this->responses = {};
 }
