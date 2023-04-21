@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.Listen;
+package com.example.cocktailmachine.ui.listen;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.ui.Listen.placeholder.PlaceholderContent;
+import com.example.cocktailmachine.ui.listen.placeholder.PlaceholderContent;
 
 /**
  * A fragment representing a list of Items.

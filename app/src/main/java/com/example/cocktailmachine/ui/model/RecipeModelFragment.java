@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.items;
+package com.example.cocktailmachine.ui.model;
 
 import android.os.Bundle;
 

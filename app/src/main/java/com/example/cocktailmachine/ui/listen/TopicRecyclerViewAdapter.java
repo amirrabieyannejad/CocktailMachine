@@ -1,14 +1,13 @@
-package com.example.cocktailmachine.ui.Listen;
+package com.example.cocktailmachine.ui.listen;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.cocktailmachine.ui.Listen.placeholder.PlaceholderContent.PlaceholderItem;
-import com.example.cocktailmachine.ui.Listen.databinding.FragmentItemIngredientBinding;
+import com.example.cocktailmachine.ui.listen.placeholder.PlaceholderContent.PlaceholderItem;
+import com.example.cocktailmachine.ui.listen.databinding.FragmentItemTopicBinding;
 
 import java.util.List;
 
@@ -16,18 +15,18 @@ import java.util.List;
  * {@link RecyclerView.Adapter} that can display a {@link PlaceholderItem}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class IngredientRecyclerViewAdapter extends RecyclerView.Adapter<IngredientRecyclerViewAdapter.ViewHolder> {
+public class TopicRecyclerViewAdapter extends RecyclerView.Adapter<TopicRecyclerViewAdapter.ViewHolder> {
 
     private final List<PlaceholderItem> mValues;
 
-    public IngredientRecyclerViewAdapter(List<PlaceholderItem> items) {
+    public TopicRecyclerViewAdapter(List<PlaceholderItem> items) {
         mValues = items;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        return new ViewHolder(FragmentItemIngredientBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+        return new ViewHolder(FragmentItemTopicBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
 
     }
 
@@ -48,7 +47,7 @@ public class IngredientRecyclerViewAdapter extends RecyclerView.Adapter<Ingredie
         public final TextView mContentView;
         public PlaceholderItem mItem;
 
-        public ViewHolder(FragmentItemIngredientBinding binding) {
+        public ViewHolder(FragmentItemTopicBinding binding) {
             super(binding.getRoot());
             mIdView = binding.itemNumber;
             mContentView = binding.content;
