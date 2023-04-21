@@ -128,29 +128,33 @@ struct CommCB: BLECharacteristicCallbacks {
 
 // convenient grouping of all statuses / comms
 
-#define ID_BASE    	0
-#define ID_LIQUIDS 	1
-#define ID_STATE   	2
-#define ID_RECIPES 	3
-#define ID_COCKTAIL	4
-#define NUM_STATUS 	5
+#define ID_BASE     	0
+#define ID_LIQUIDS  	1
+#define ID_STATE    	2
+#define ID_RECIPES  	3
+#define ID_COCKTAIL 	4
+#define ID_TIMESTAMP	5
+#define ID_USER     	6
+#define NUM_STATUS  	7
 
-#define ID_USER 	0
-#define ID_ADMIN	1
-#define NUM_COMM	2
+#define ID_MSG_USER 	0
+#define ID_MSG_ADMIN	1
+#define NUM_COMM    	2
 
 // UUIDs
 
-#define UUID_STATUS         	"0f7742d4-ea2d-43c1-9b98-bb4186be905d"
-#define UUID_STATUS_BASE    	"c0605c38-3f94-33f6-ace6-7a5504544a80"
-#define UUID_STATUS_STATE   	"e9e4b3f2-fd3f-3b76-8688-088a0671843a"
-#define UUID_STATUS_LIQUIDS 	"fc60afb0-2b00-3af2-877a-69ae6815ca2f"
-#define UUID_STATUS_RECIPES 	"9ede6e03-f89b-3e52-bb15-5c6c72605f6c"
-#define UUID_STATUS_COCKTAIL	"7344136f-c552-3efc-b04f-a43793f16d43"
-                            	
-#define UUID_COMM           	"dad995d1-f228-38ec-8b0f-593953973406"
-#define UUID_COMM_USER      	"eb61e31a-f00b-335f-ad14-d654aac8353d"
-#define UUID_COMM_ADMIN     	"41044979-6a5d-36be-b9f1-d4d49e3f5b73"
+#define UUID_STATUS          	"0f7742d4-ea2d-43c1-9b98-bb4186be905d"
+#define UUID_STATUS_BASE     	"c0605c38-3f94-33f6-ace6-7a5504544a80"
+#define UUID_STATUS_STATE    	"e9e4b3f2-fd3f-3b76-8688-088a0671843a"
+#define UUID_STATUS_LIQUIDS  	"fc60afb0-2b00-3af2-877a-69ae6815ca2f"
+#define UUID_STATUS_RECIPES  	"9ede6e03-f89b-3e52-bb15-5c6c72605f6c"
+#define UUID_STATUS_COCKTAIL 	"7344136f-c552-3efc-b04f-a43793f16d43"
+#define UUID_STATUS_TIMESTAMP	"586b5706-5856-34e1-ad17-94f840298816"
+#define UUID_STATUS_USER     	"2ce478ea-8d6f-30ba-9ac6-2389c8d5b172"
+                             	
+#define UUID_COMM            	"dad995d1-f228-38ec-8b0f-593953973406"
+#define UUID_COMM_USER       	"eb61e31a-f00b-335f-ad14-d654aac8353d"
+#define UUID_COMM_ADMIN      	"41044979-6a5d-36be-b9f1-d4d49e3f5b73"
 
 // return codes
 #define def_ret(cls, msg)                                               \
@@ -204,7 +208,7 @@ struct Command {
   const char* cmd_name() override { return json_name; }                 \
   Processed* execute() override;                                        \
   bool is_valid_comm(Comm *comm) override {                             \
-    return comm->is_id(ID_ ## channel);                                 \
+    return comm->is_id(ID_MSG_ ## channel);                             \
   }                                                                     \
   // [the remaining methods, particularly the constructor, go here]
 
@@ -220,8 +224,9 @@ struct CmdInitUser : public Command {
 
 struct CmdMakeRecipe : public Command {
   def_cmd("make_recipe", USER);
+  User user;
   String recipe;
-  CmdMakeRecipe(String recipe) : recipe(recipe) {}
+  CmdMakeRecipe(User user, String recipe) : user(user), recipe(recipe) {}
 };
 
 struct CmdAddLiquid : public Command {
@@ -324,7 +329,7 @@ bool sdcard_available = false;
 BLEServer *ble_server;
 
 Processed* machine_state;
-User current_user;
+User current_user = -1;
 
 Status* all_status[NUM_STATUS];
 Comm*   all_comm[NUM_COMM];
@@ -392,6 +397,8 @@ void update_cocktail(void);
 void update_liquids(void);
 void update_recipes(void);
 void update_state(Processed *state);
+void update_timestamp(int64_t ts);
+void update_user(User user);
 
 // init
 
@@ -570,8 +577,9 @@ Parsed parse_command(const String json) {
     cmd = new CmdAddLiquid(user, liquid, volume);
 
   } else if (match_name(CmdMakeRecipe)) {
+    parse_user();
     parse_str(recipe);
-    cmd = new CmdMakeRecipe(recipe);
+    cmd = new CmdMakeRecipe(user, recipe);
 
   } else if (match_name(CmdDefineRecipe)) {
     parse_user();
@@ -642,12 +650,9 @@ Processed* CmdRestart::execute() {
 Processed* CmdFactoryReset::execute() {
   if (!is_admin(this->user)) return new Unauthorized();
 
-  { // remove old configs
-    config_clear();
-    config_state = 0;
-  }
-
   { // reset settings
+    config_clear();
+
     for (int i=0; i<NUM_PUMPS; i++) pumps[i]	= NULL;
 
     while (!command_queue.empty()) 	command_queue.pop();
@@ -658,9 +663,15 @@ Processed* CmdFactoryReset::execute() {
 
     users.clear();
     users[0] = "admin";
-
-    machine_state = new Ready();
   }
+
+  // update machine state
+  update_config_state(0);
+  update_cocktail();
+  update_recipes();
+  update_liquids();
+  update_state(new Ready());
+  update_user(-1);
 
   return new Success();
 }
@@ -715,8 +726,8 @@ Processed* CmdDefinePump::execute() {
   pumps[slot] = p;
 
   // update machine state
-  config_save();
   update_liquids();
+  config_save();
 
   return new Success();
 }
@@ -741,15 +752,15 @@ Processed* CmdRefillPump::execute() {
   if (err) return err;
 
   // update machine state
-  config_save();
   update_liquids();
+  config_save();
 
   return new Success();
 }
 
 Processed* CmdAddLiquid::execute() {
   // TODO only allowed for admin or the current user
-  Processed *err = add_liquid(this->liquid, this->volume);
+  Processed *err = add_liquid(this->user, this->liquid, this->volume);
   if (err) return err;
   return new Success();
 }
@@ -773,8 +784,8 @@ Processed* CmdDefineRecipe::execute() {
   recipes.push_front(r);
 
   // update state
-  config_save();
   update_recipes();
+  config_save();
 
   return new Success();
 }
@@ -794,8 +805,8 @@ Processed* CmdEditRecipe::execute() {
       it->ingredients = this->ingredients;
 
       // update state
-      config_save();
       update_recipes();
+      config_save();
 
       return new Success();
     }
@@ -814,8 +825,8 @@ Processed* CmdDeleteRecipe::execute() {
   recipes.remove_if([name](Recipe r){ return r.name == name; });
 
   // update state
-  config_save();
   update_recipes();
+  config_save();
 
   return new Success();
 }
@@ -863,12 +874,15 @@ Processed* CmdMakeRecipe::execute() {
   }
 
   debug("making recipe %s", name.c_str());
+  update_user(this->user);
+
   for (auto ing = recipe->ingredients.begin(); ing != recipe->ingredients.end(); ing++) {
-    Processed *err = add_liquid(ing->name, ing->amount);
+    Processed *err = add_liquid(this->user, ing->name, ing->amount);
     if (err) return err;
   }
 
   // update state
+  update_user(-1);
   update_state(new Ready());
 
   return new Success();
@@ -879,7 +893,7 @@ bool is_admin(User user) {
   return (user == 0);
 }
 
-Processed* add_liquid(const String liquid, float amount) {
+Processed* add_liquid(User user, const String liquid, float amount) {
   float need   	= amount;
   float have   	= 0;
 
@@ -905,6 +919,7 @@ Processed* add_liquid(const String liquid, float amount) {
   if (!found)                     	return new MissingLiquid();
   if (have - need < LIQUID_CUTOFF)	return new Insufficient();
 
+  update_user(user);
   update_state(new Pumping());
 
   // add the liquid
@@ -927,10 +942,11 @@ Processed* add_liquid(const String liquid, float amount) {
   cocktail.push_front(Ingredient{liquid, used});
 
   // update state
-  config_save();
+  update_user(-1);
   update_liquids();
   update_cocktail();
   update_state(new Ready());
+  config_save();
 
   // shouldn't happen, but do a sanity check
   if (need >= LIQUID_CUTOFF) {
@@ -1089,6 +1105,18 @@ void update_state(Processed *state) {
   all_status[ID_STATE]->update(state->json().c_str());
 }
 
+void update_config_state(int64_t ts) {
+  config_state = timestamp_usec();
+  String s = String(ts);
+  all_status[ID_TIMESTAMP]->update(s.c_str());
+}
+
+void update_user(User user) {
+  current_user = user;
+  String s = String(user);
+  all_status[ID_USER]->update(s.c_str());
+}
+
 // bluetooth
 bool ble_start(void) {
   debug("starting ble");
@@ -1099,14 +1127,16 @@ bool ble_start(void) {
   ble_server->setCallbacks(new ServerCB());
 
   // init services
-  all_status[ID_BASE]    	= new Status(UUID_STATUS_BASE,    	BLE_NAME);
-  all_status[ID_STATE]   	= new Status(UUID_STATUS_STATE,   	"\"init\"");
-  all_status[ID_LIQUIDS] 	= new Status(UUID_STATUS_LIQUIDS, 	"{}");
-  all_status[ID_RECIPES] 	= new Status(UUID_STATUS_RECIPES, 	"{}");
-  all_status[ID_COCKTAIL]	= new Status(UUID_STATUS_COCKTAIL,	"[]");
+  all_status[ID_BASE]     	= new Status(UUID_STATUS_BASE,     	BLE_NAME);
+  all_status[ID_STATE]    	= new Status(UUID_STATUS_STATE,    	"\"init\"");
+  all_status[ID_LIQUIDS]  	= new Status(UUID_STATUS_LIQUIDS,  	"{}");
+  all_status[ID_RECIPES]  	= new Status(UUID_STATUS_RECIPES,  	"{}");
+  all_status[ID_COCKTAIL] 	= new Status(UUID_STATUS_COCKTAIL, 	"[]");
+  all_status[ID_TIMESTAMP]	= new Status(UUID_STATUS_TIMESTAMP,	"0");
+  all_status[ID_USER]     	= new Status(UUID_STATUS_USER,     	"-1");
 
-  all_comm[ID_USER] 	= new Comm(UUID_COMM_USER);
-  all_comm[ID_ADMIN]	= new Comm(UUID_COMM_ADMIN);
+  all_comm[ID_MSG_USER] 	= new Comm(UUID_COMM_USER);
+  all_comm[ID_MSG_ADMIN]	= new Comm(UUID_COMM_ADMIN);
 
   // start and advertise services
   BLEAdvertising *adv = ble_server->getAdvertising();
@@ -1266,7 +1296,7 @@ void CommCB::onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *para
 
 bool config_save(void) {
   // current time of the config
-  config_state = timestamp_usec();
+  update_config_state(timestamp_usec());
 
   if (sdcard_available) { // save state to SD card
     char *config = "FIXME";
@@ -1358,7 +1388,7 @@ bool config_load(void) {
       debug("config hasn't changed; skipping");
       return true;
     }
-    config_state = state;
+    update_config_state(state);
   }
 
   { // pumps

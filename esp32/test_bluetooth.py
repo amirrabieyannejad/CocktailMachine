@@ -12,16 +12,18 @@ import platform
 import sys
 import time
 
-UUID_STATUS         	= "0f7742d4-ea2d-43c1-9b98-bb4186be905d"
-UUID_STATUS_BASE    	= "c0605c38-3f94-33f6-ace6-7a5504544a80"
-UUID_STATUS_STATE   	= "e9e4b3f2-fd3f-3b76-8688-088a0671843a"
-UUID_STATUS_LIQUIDS 	= "fc60afb0-2b00-3af2-877a-69ae6815ca2f"
-UUID_STATUS_RECIPES 	= "9ede6e03-f89b-3e52-bb15-5c6c72605f6c"
-UUID_STATUS_COCKTAIL	= "7344136f-c552-3efc-b04f-a43793f16d43"
-UUID_COMM           	= "dad995d1-f228-38ec-8b0f-593953973406"
-UUID_COMM_USER      	= "eb61e31a-f00b-335f-ad14-d654aac8353d"
-UUID_COMM_ADMIN     	= "41044979-6a5d-36be-b9f1-d4d49e3f5b73"
-UUID_NOTIFY         	= "00002902-0000-1000-8000-00805f9b34fb"
+UUID_COMM_USER 	= "eb61e31a-f00b-335f-ad14-d654aac8353d"
+UUID_COMM_ADMIN	= "41044979-6a5d-36be-b9f1-d4d49e3f5b73"
+
+STATUS = {
+  "base":     	"c0605c38-3f94-33f6-ace6-7a5504544a80",
+  "state":    	"e9e4b3f2-fd3f-3b76-8688-088a0671843a",
+  "liquids":  	"fc60afb0-2b00-3af2-877a-69ae6815ca2f",
+  "recipes":  	"9ede6e03-f89b-3e52-bb15-5c6c72605f6c",
+  "cocktail": 	"7344136f-c552-3efc-b04f-a43793f16d43",
+  "timestamp":	"586b5706-5856-34e1-ad17-94f840298816",
+  "user":     	"2ce478ea-8d6f-30ba-9ac6-2389c8d5b172",
+}
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s %(asctime)s: %(message)s', datefmt='%y-%m-%d %H:%M:%S')
 
@@ -35,9 +37,19 @@ async def read_all_chars(client):
       if "read" in char.properties:
         try:
           value = bytes(await client.read_gatt_char(char.uuid))
-          logging.info(f"  - read: {char.uuid} -> {value})")
+          logging.info(f"  - read: {char.uuid} -> {value.decode('utf-8')}")
         except Exception as e:
           logging.error(f"\t[Characteristic] {char} ({','.join(char.properties)}), Value: {e}")
+
+async def read_status(client):
+  logging.info("reading status...")
+
+  for char, uuid in STATUS.items():
+    try:
+      value = bytes(await client.read_gatt_char(uuid))
+      logging.info(f"  - {char} -> {value.decode('utf-8')}")
+    except Exception as e:
+      logging.error(f"\t{char} ({uuid}) -> {e}")
 
 async def comm_msg(client, uuid, message):
   notification_received = asyncio.Event()
@@ -67,6 +79,7 @@ async def test_run(client):
 
   # reset machine settings
   await admin({"cmd": "factory_reset", "user": 0})
+  await read_status(client)
 
   # basic commands
   await user({"cmd": "test"})
@@ -88,6 +101,8 @@ async def test_run(client):
   await user({"cmd": "edit_recipe", "user": 1, "name": "cheap beer", "liquids": [["beer", 100], ["water", 400]]})
   await admin({"cmd": "delete_recipe", "user": 0, "name": "cheap beer"})
 
+  await read_status(client)
+
   # make recipes
   await user({"cmd": "make_recipe", "user": 1, "recipe": "radler"})
   await user({"cmd": "add_liquid", "user": 1, "liquid": "beer", "volume": 100})
@@ -96,8 +111,11 @@ async def test_run(client):
   await user({"cmd": "make_recipe", "user": 1, "recipe": "radler"})
   await user({"cmd": "add_liquid", "user": 1, "liquid": "beer", "volume": 100})
 
+  await read_status(client)
+
   # refill pump
   await admin({"cmd": "refill_pump", "user": 0, "volume": 5000, "slot": 1})
+  await read_status(client)
 
   await read_all_chars(client)
 
