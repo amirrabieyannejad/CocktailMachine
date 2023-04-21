@@ -1106,7 +1106,7 @@ void update_state(Processed *state) {
 }
 
 void update_config_state(int64_t ts) {
-  config_state = timestamp_usec();
+  config_state = timestamp_ms();
   String s = String(ts);
   all_status[ID_TIMESTAMP]->update(s.c_str());
 }
@@ -1296,7 +1296,7 @@ void CommCB::onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *para
 
 bool config_save(void) {
   // current time of the config
-  update_config_state(timestamp_usec());
+  update_config_state(timestamp_ms());
 
   if (sdcard_available) { // save state to SD card
     char *config = "FIXME";
