@@ -7,9 +7,10 @@
     tools:context=".ui.singleCocktailChoice.fragment1">
 
     <TextView
-        android:id="@+id/textViewCocktail"
-        android:layout_width="577dp"
-        android:layout_height="367dp"
+        android:id="@+id/textViewCocktailFragment1"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginBottom="100dp"
         android:text="TextView"
         android:textSize="96sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageCocktail"
@@ -21,6 +22,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/glas_fluessigkeit07"
-        tools:layout_editor_absoluteX="80dp"
-        tools:layout_editor_absoluteY="506dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        tools:layout_editor_absoluteX="0dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

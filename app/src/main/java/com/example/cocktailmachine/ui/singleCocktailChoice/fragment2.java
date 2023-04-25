@@ -15,7 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.databinding.FragmentFragment1Binding;
+import com.example.cocktailmachine.databinding.FragmentFragment2Binding;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,7 +29,7 @@ public class fragment2 extends Fragment implements FragmentListenerSingleCocktai
     Context context;
     private FragmentListenerSingleCocktailChoice listener;
 
-    FragmentFragment1Binding binding;
+    FragmentFragment2Binding binding;
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -51,8 +51,8 @@ public class fragment2 extends Fragment implements FragmentListenerSingleCocktai
      * @return A new instance of fragment fragment1.
      */
     // TODO: Rename and change types and number of parameters
-    public static fragment1 newInstance(String param1, String param2) {
-        fragment1 fragment = new fragment1();
+    public static fragment2 newInstance(String param1, String param2) {
+        fragment2 fragment = new fragment2();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -74,7 +74,7 @@ public class fragment2 extends Fragment implements FragmentListenerSingleCocktai
 
     @Override
     public void updateTextView(String text){
-        binding.textViewCocktail.setText(text);
+        binding.textViewCocktailFragment2.setText(text);
         //this.textView.setText(text);
     }
 
@@ -88,7 +88,7 @@ public class fragment2 extends Fragment implements FragmentListenerSingleCocktai
         this.imageView = this.view.findViewById(R.id.imageCocktail);
         this.textView = this.view.findViewById(R.id.textViewCocktail);
         return this.view;*/
-        this.binding = FragmentFragment1Binding.inflate(getLayoutInflater());
+        this.binding = FragmentFragment2Binding.inflate(getLayoutInflater());
         return binding.getRoot();
     }
 

@@ -23,6 +23,12 @@ import com.example.cocktailmachine.databinding.FragmentFragment1Binding;
  * create an instance of this fragment.
  */
 public class fragment1 extends Fragment implements FragmentListenerSingleCocktailChoice {
+
+    private static final String COMMON_TAG = "CombinedLifeCycle";
+    private static final String FRAGMENT_NAME = fragment1.class.getSimpleName();
+
+    private static final String TAG = FRAGMENT_NAME;
+
     ImageView imageView;
     TextView textView;
     View view;
@@ -30,6 +36,8 @@ public class fragment1 extends Fragment implements FragmentListenerSingleCocktai
     private FragmentListenerSingleCocktailChoice listener;
 
     FragmentFragment1Binding binding;
+
+    String nameCocktail ="";
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -60,6 +68,16 @@ public class fragment1 extends Fragment implements FragmentListenerSingleCocktai
         return fragment;
     }
 
+    public static fragment1 newInstance(String string){
+        fragment1 fragment = new fragment1();
+        //Drawable drawable = context.getResources().getDrawable(R.drawable.glas2);
+        //fragment.imageView.setImageDrawable(drawable);
+        //fragment.updateTextView(string);
+        //
+        fragment.nameCocktail = string;
+        return fragment;
+    }
+
     public static fragment1 newInstance(){
         fragment1 fragment = new fragment1();
         //Drawable drawable = context.getResources().getDrawable(R.drawable.glas2);
@@ -74,7 +92,7 @@ public class fragment1 extends Fragment implements FragmentListenerSingleCocktai
 
     @Override
     public void updateTextView(String text){
-        binding.textViewCocktail.setText(text);
+        binding.textViewCocktailFragment1.setText(text);
         //this.textView.setText(text);
     }
 
@@ -84,12 +102,13 @@ public class fragment1 extends Fragment implements FragmentListenerSingleCocktai
     public View onCreateView(LayoutInflater inflater,@Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        /*this.view =  inflater.inflate(R.layout.fragment_fragment1, container, false);
+        this.view =  inflater.inflate(R.layout.fragment_fragment1, container, false);
         this.imageView = this.view.findViewById(R.id.imageCocktail);
-        this.textView = this.view.findViewById(R.id.textViewCocktail);
-        return this.view;*/
-        this.binding = FragmentFragment1Binding.inflate(getLayoutInflater());
-        return binding.getRoot();
+        this.textView = this.view.findViewById(R.id.textViewCocktailFragment1);
+        this.textView.setText(this.nameCocktail);
+        return this.view;
+        //this.binding = FragmentFragment1Binding.inflate(getLayoutInflater());
+        //return binding.getRoot();
     }
 
     @Override
