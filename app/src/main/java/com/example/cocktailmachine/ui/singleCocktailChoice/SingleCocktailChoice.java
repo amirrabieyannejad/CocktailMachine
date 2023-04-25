@@ -138,6 +138,8 @@ public class SingleCocktailChoice extends AppCompatActivity {
             Log.d("TAG", "onFling: "+velocityX);
             Log.d("TAG", "onFling: "+velocityY);
             Log.d("TAG", "onFling: "+ FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY));
+
+
             if(FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY)==(Orientation.RIGHT)){
                 //fragment1 fragment  = fragment1.newInstance();
                 /*if(++counter >= recipes.size()){
@@ -156,7 +158,7 @@ public class SingleCocktailChoice extends AppCompatActivity {
 
                 String newText = testData.get(counter);
                 f1 = fragment1.newInstance(newText);
-                replaceFragment(f1);
+                replaceFragmentWithOrientation(f1,Orientation.RIGHT);
 
                 //fragment.updateTextView(testData.get(counter));
                 //replaceFragment(fragment);
@@ -179,7 +181,11 @@ public class SingleCocktailChoice extends AppCompatActivity {
                     counter = testData.size()-1;
                 }
 
-                fragmentCounter++;
+                String newText = testData.get(counter);
+                f1 = fragment1.newInstance(newText);
+                replaceFragmentWithOrientation(f1,Orientation.LEFT);
+
+                /**fragmentCounter++;
                 if(fragmentCounter%2 == 0){
                     String newText = testData.get(counter);
                     f1 = fragment1.newInstance(newText);
@@ -194,7 +200,7 @@ public class SingleCocktailChoice extends AppCompatActivity {
                 }
 
                 //Fragment fragment = getRightFragment().testData.get(counter);
-                //replaceFragment(fragment);
+                //replaceFragment(fragment);*/
             }
             return true;
         }
