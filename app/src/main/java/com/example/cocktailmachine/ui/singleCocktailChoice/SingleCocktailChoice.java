@@ -28,8 +28,6 @@ public class SingleCocktailChoice extends AppCompatActivity {
     private int counter = 0;
     private int fragmentCounter = 0;
 
-    fragment1 f1;
-    fragment2 f2;
 
 
     FragmentManager fragmentManager;
@@ -60,7 +58,7 @@ public class SingleCocktailChoice extends AppCompatActivity {
         fragmentManager = getSupportFragmentManager();
 
 
-        f1 = fragment1.newInstance();
+        fragment1 f1 = fragment1.newInstance();
         //f2 = fragment2.newInstance();
         //fragment.updateImage(getResources().getDrawable(R.drawable.glas2));
 
@@ -139,69 +137,26 @@ public class SingleCocktailChoice extends AppCompatActivity {
             Log.d("TAG", "onFling: "+velocityY);
             Log.d("TAG", "onFling: "+ FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY));
 
+            Orientation flingOrientation = FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY);
+
 
             if(FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY)==(Orientation.RIGHT)){
-                //fragment1 fragment  = fragment1.newInstance();
-                /*if(++counter >= recipes.size()){
-                    counter = 0;
-                }
-
-                fragment1.updateTextView(recipes.get(counter).getName());
-                replaceFragment(fragment1);*/
-
                 //TODO Entfernung dieser Testzeilen
-
-                fragment1 fragment = new fragment1();
                 if(++counter >= testData.size()){
                     counter = 0;
                 }
-
-                String newText = testData.get(counter);
-                f1 = fragment1.newInstance(newText);
-                replaceFragmentWithOrientation(f1,Orientation.RIGHT);
-
-                //fragment.updateTextView(testData.get(counter));
-                //replaceFragment(fragment);
             }
-            if(FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY)==(Orientation.LEFT)){
-                /*if(--counter < recipes.size()){
-                    counter = recipes.size()-1;
-                }
-
-                //fragment1 fragment  = fragment1.newInstance();
-                fragment2 fragment = new fragment2();
-                //fragment.updateTextView(String.valueOf(""+(--counter)));
-                replaceFragment(fragment);
-                */
-
+            if(FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY)==(Orientation.LEFT)) {
                 //TODO Entfernung dieser Testzeilen
-
-
-                if(--counter < 0){
-                    counter = testData.size()-1;
+                if (--counter < 0) {
+                    counter = testData.size() - 1;
                 }
-
-                String newText = testData.get(counter);
-                f1 = fragment1.newInstance(newText);
-                replaceFragmentWithOrientation(f1,Orientation.LEFT);
-
-                /**fragmentCounter++;
-                if(fragmentCounter%2 == 0){
-                    String newText = testData.get(counter);
-                    f1 = fragment1.newInstance(newText);
-                    replaceFragment(f1);
-                    //f1.updateTextView(newText);
-                }else{
-                    f2 = fragment2.newInstance();
-                    replaceFragment(f2);
-                    //f2.updateTextView(testData.get(counter));
-
-                    //f2.updateTextView(testData.get(counter));
-                }
-
-                //Fragment fragment = getRightFragment().testData.get(counter);
-                //replaceFragment(fragment);*/
             }
+
+            String newText = testData.get(counter);
+            fragment1 fragment = fragment1.newInstance(newText);
+            replaceFragmentWithOrientation(fragment,flingOrientation);
+
             return true;
         }
     }

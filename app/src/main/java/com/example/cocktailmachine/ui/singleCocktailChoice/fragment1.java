@@ -114,8 +114,8 @@ public class fragment1 extends Fragment implements FragmentListenerSingleCocktai
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        TransitionInflater inflater = TransitionInflater.from(requireContext());
-        setEnterTransition(inflater.inflateTransition(R.transition.slide_right));
+        //TransitionInflater inflater = TransitionInflater.from(requireContext());
+        //setEnterTransition(inflater.inflateTransition(R.transition.slide_right));
 
     }
 
