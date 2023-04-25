@@ -211,11 +211,34 @@ public class SingleCocktailChoice extends AppCompatActivity {
     private void replaceFragment(Fragment fragment){
 
         fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.setCustomAnimations(
-               R.anim.slide_in,  // enter
-                R.anim.fade_out  // popExit
-        );
+        fragmentTransaction.replace(R.id.frameLayout,fragment,"cocktail");
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
 
+    private void replaceFragmentWithOrientation(Fragment fragment, Orientation orientation){
+
+        fragmentTransaction = fragmentManager.beginTransaction();
+
+        switch (orientation){
+            case RIGHT:
+                fragmentTransaction.setCustomAnimations(
+                        R.anim.slide_in_right,  // enter
+                        R.anim.fade_out  // popExit
+                );
+                break;
+            case LEFT:
+                fragmentTransaction.setCustomAnimations(
+                        R.anim.slide_in_left,  // enter
+                        R.anim.fade_out  // popExit
+                );
+                break;
+            default:
+                fragmentTransaction.setCustomAnimations(
+                        R.anim.fade_in,  // enter
+                        R.anim.fade_out  // popExit
+                );
+        }
         fragmentTransaction.replace(R.id.frameLayout,fragment,"cocktail");
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
