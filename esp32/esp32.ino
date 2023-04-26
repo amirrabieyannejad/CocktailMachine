@@ -1,15 +1,25 @@
-// supported features
-#define SIMULATE	// simulate functionality instead of using real pumps?
-
 // general system settings
-#define BLE_NAME        	"Cocktail Machine ESP32"	// bluetooth server name
-#define VERSION         	1                       	// version number (used for configs etc)
-#define CORE_DEBUG_LEVEL	4                       	// 1 = error; 3 = info ; 4 = debug
-#define NUM_PUMPS       	10                      	// maximum number of supported pumps
-#define LIQUID_CUTOFF   	0.1                     	// minimum amount of liquid we round off
+#define BLE_NAME             	"Cocktail Machine ESP32"	// bluetooth server name
+#define CORE_DEBUG_LEVEL     	4                       	// 1 = error; 3 = info ; 4 = debug
+const unsigned int VERSION   	= 2;                    	// version number (used for configs etc)
+const unsigned char MAX_PUMPS	= 9;                    	// maximum number of supported pumps
+const float LIQUID_CUTOFF    	= 0.1;                  	// minimum amount of liquid we round off
+
+// general chip functionality
+#include <Arduino.h>
+#include <Preferences.h>
+#include <SPI.h>
 
 // pinout
-#define PIN_SDCARD_CS	A5 // FIXME
+typedef const unsigned char Pin;
+Pin PIN_SDCARD_CS       	= T6;
+                        	
+Pin PIN_HX711_DOUT      	= T0;
+Pin PIN_HX711_SCK       	= SCK;
+                        	
+Pin PIN_BUILTIN_PUMP_EN 	= T9;
+Pin PIN_BUILTIN_PUMP_IN1	= T3;
+Pin PIN_BUILTIN_PUMP_IN2	= T8;
 
 // c++ standard library
 #include <algorithm>
@@ -18,11 +28,6 @@
 #include <queue>
 #include <sys/time.h>
 #include <unordered_map>
-
-// general chip functionality
-#include <Arduino.h>
-#include <Preferences.h>
-#include <SPI.h>
 
 // json
 #include <ArduinoJson.h>
@@ -62,15 +67,32 @@ struct Processed {
   virtual const String json();
 };
 
+struct PumpSlot {
+  Pin enable;
+  Pin in1;
+  Pin in2;
+
+  uint64_t time_init;
+  uint64_t time_per_100ml;
+  uint64_t time_reverse;
+
+  PumpSlot(Pin enable, Pin in1, Pin in2);
+  void run(uint64_t time, bool reverse);
+  void start(bool reverse);
+  void stop();
+};
+
 struct Pump {
-  int32_t slot;
+  PumpSlot *slot;
   String liquid;
   float volume;
 
-  Pump(int32_t slot, String liquid, float volume) : slot(slot), liquid(liquid), volume(volume) {};
+  Pump(PumpSlot *slot, String liquid, float volume) : slot(slot), liquid(liquid), volume(volume) {};
   Processed* drain(float amount);
   Processed* refill(float volume);
   Processed* empty();
+
+  void pump(float amount);
 };
 
 struct Ingredient {
@@ -336,7 +358,8 @@ User current_user = -1;
 Status* all_status[NUM_STATUS];
 Comm*   all_comm[NUM_COMM];
 
-Pump* pumps[NUM_PUMPS];
+PumpSlot* pump_slots[MAX_PUMPS];
+Pump* pumps[MAX_PUMPS];
 
 std::forward_list<Recipe> recipes;
 std::forward_list<Ingredient> cocktail;
@@ -388,6 +411,10 @@ bool sdcard_save(void);
 bool ble_start(void);
 void ble_stop(void);
 
+// scale
+float scale_weigh();
+void scale_calibrate();
+
 // command processing
 Processed* add_to_queue(const String json, uint16_t conn_id);
 Parsed parse_command(const String json);
@@ -399,7 +426,7 @@ void update_cocktail(void);
 void update_liquids(void);
 void update_recipes(void);
 void update_state(Processed *state);
-void update_timestamp(int64_t ts);
+void update_config_state(int64_t ts);
 void update_user(User user);
 
 // init
@@ -425,10 +452,21 @@ void setup() {
   // setup sd card
   sdcard_start();
 
+  { // setup pump slots
+    for (int i=0; i<MAX_PUMPS; i++)	pump_slots[i]	= NULL;
+    pump_slots[0] = new PumpSlot{
+      PIN_BUILTIN_PUMP_EN,
+      PIN_BUILTIN_PUMP_IN1,
+      PIN_BUILTIN_PUMP_IN2,
+    };
+
+    // TODO look for io expansion cards and add more slots as needed
+  }
+
   { // initialize machine state
     for (int i=0; i<NUM_STATUS; i++)	all_status[i]	= NULL;
     for (int i=0; i<NUM_COMM; i++)  	all_comm[i]  	= NULL;
-    for (int i=0; i<NUM_PUMPS; i++) 	pumps[i]     	= NULL;
+    for (int i=0; i<MAX_PUMPS; i++) 	pumps[i]     	= NULL;
 
     while (!command_queue.empty()) 	command_queue.pop();
     while (!cocktail_queue.empty())	cocktail_queue.pop();
@@ -655,7 +693,7 @@ Processed* CmdFactoryReset::execute() {
   { // reset settings
     config_clear();
 
-    for (int i=0; i<NUM_PUMPS; i++) pumps[i]	= NULL;
+    for (int i=0; i<MAX_PUMPS; i++) pumps[i]	= NULL;
 
     while (!command_queue.empty()) 	command_queue.pop();
     while (!cocktail_queue.empty())	cocktail_queue.pop();
@@ -710,7 +748,7 @@ Processed* CmdDefinePump::execute() {
   int32_t slot = this->slot;
   float volume = this->volume;
 
-  if (slot < 0 || slot >= NUM_PUMPS) {
+  if (slot < 0 || slot >= MAX_PUMPS) {
     return new InvalidSlot();
   }
 
@@ -724,7 +762,8 @@ Processed* CmdDefinePump::execute() {
   }
 
   // save new pump
-  Pump *p = new Pump(slot, this->liquid, volume);
+  PumpSlot *pump_slot = pump_slots[slot];
+  Pump *p = new Pump(pump_slot, this->liquid, volume);
   pumps[slot] = p;
 
   // update machine state
@@ -740,7 +779,7 @@ Processed* CmdRefillPump::execute() {
   int32_t slot = this->slot;
   float volume = this->volume;
 
-  if (slot < 0 || slot >= NUM_PUMPS || pumps[slot] == NULL) {
+  if (slot < 0 || slot >= MAX_PUMPS || pumps[slot] == NULL) {
     return new InvalidSlot();
   }
 
@@ -850,12 +889,12 @@ Processed* CmdMakeRecipe::execute() {
 
   debug("  summing up all available liquids");
   std::unordered_map<std::string, float> liquids = {};
-  for (int i=0; i<NUM_PUMPS; i++) {
+  for (int i=0; i<MAX_PUMPS; i++) {
     Pump *p = pumps[i];
     if (p == NULL) continue;
 
     std::string liquid = p->liquid.c_str();
-    debug("    pump: %d, liquid: %s, vol: %.1f", p->slot, liquid.c_str(), p->volume);
+    debug("    pump: %d, liquid: %s, vol: %.1f", i, liquid.c_str(), p->volume);
 
     // update saved total
     float sum = liquids[liquid] + p->volume;
@@ -907,13 +946,13 @@ Processed* add_liquid(User user, const String liquid, float amount) {
 
   // check that we have enough liquid first
   bool found = false;
-  for (int i=0; i<NUM_PUMPS; i++) {
+  for (int i=0; i<MAX_PUMPS; i++) {
     Pump *p = pumps[i];
     if (p == NULL) continue;
 
     if (p->liquid == liquid) {
       found = true;
-      debug("  in pump %d: %.1f", p->slot, p->volume);
+      debug("  in pump %d: %.1f", i, p->volume);
       have += p->volume;
     }
   }
@@ -926,12 +965,12 @@ Processed* add_liquid(User user, const String liquid, float amount) {
 
   // add the liquid
   float used = 0;
-  for (int i=0; i<NUM_PUMPS && need >= LIQUID_CUTOFF; i++) {
+  for (int i=0; i<MAX_PUMPS && need >= LIQUID_CUTOFF; i++) {
     Pump *p = pumps[i];
     if (p == NULL) continue;
 
     if (p->liquid == liquid) {
-      debug("  need %.1f, using pump %d: %.1f", need, p->slot, p->volume);
+      debug("  need %.1f, using pump %d: %.1f", need, i, p->volume);
       float use = std::min(p->volume, need);
       Processed *err = p->drain(use);
       if (err) return err;
@@ -976,6 +1015,7 @@ Processed* Pump::drain(float amount) {
   if (amount < 0) return new InvalidVolume();
   if (this->volume - amount < LIQUID_CUTOFF) return new Insufficient();
 
+  this->pump(amount);
   this->volume -= amount;
   return NULL;
 }
@@ -1022,12 +1062,12 @@ void update_liquids() {
     bool prev 	= false;
     String out	= String('{');
 
-    for(int i=0; i<NUM_PUMPS; i++) {
+    for(int i=0; i<MAX_PUMPS; i++) {
       Pump *pump = pumps[i];
       if (pump == NULL) continue;
 
       std::string liquid = pump->liquid.c_str();
-      debug("  pump: %d, liquid: %s, vol: %.1f", pump->slot, liquid.c_str(), pump->volume);
+      debug("  pump: %d, liquid: %s, vol: %.1f", i, liquid.c_str(), pump->volume);
 
       // update saved total
       float sum = liquids[liquid] + pump->volume;
@@ -1035,7 +1075,7 @@ void update_liquids() {
 
       if (prev) out.concat(',');
       out.concat('"');
-      out.concat(String(pump->slot));
+      out.concat(String(i));
       out.concat("\":{\"liquid\":");
       out.concat(pump->liquid);
       out.concat("\",\"volume\":");
@@ -1332,8 +1372,8 @@ bool config_save(void) {
 
     { // pumps
       char key[15];
-      preferences.putUInt("num_pumps", NUM_PUMPS);
-      for (int i=0; i<NUM_PUMPS; i++) {
+      preferences.putUInt("num_pumps", MAX_PUMPS);
+      for (int i=0; i<MAX_PUMPS; i++) {
         Pump *p = pumps[i];
         if (p == NULL) continue;
         snprintf(key, sizeof(key), "pump_%d", i);
@@ -1400,11 +1440,11 @@ bool config_load(void) {
   }
 
   { // pumps
-    for (int i=0; i<NUM_PUMPS; i++) pumps[i] = NULL; // clear old config
+    for (int i=0; i<MAX_PUMPS; i++) pumps[i] = NULL; // clear old config
 
     char key[15];
     unsigned int num_pumps = preferences.getUInt("num_pumps", 0);
-    num_pumps = std::min(num_pumps, (unsigned int) NUM_PUMPS);
+    num_pumps = std::min(num_pumps, (unsigned int) MAX_PUMPS);
 
     for (int i=0; i<num_pumps; i++) {
       snprintf(key, sizeof(key), "pump_%d", i);
@@ -1415,7 +1455,10 @@ bool config_load(void) {
 
       snprintf(key, sizeof(key), "pump_%d/v", i);
       float volume = preferences.getFloat(key);
-      pumps[i] = new Pump(i, liquid, volume);
+
+      PumpSlot *pump_slot = pump_slots[i];
+      // if (pump_slot == NULL) continue; // pump slot missing
+      pumps[i] = new Pump(pump_slot, liquid, volume);
     }
   }
 
@@ -1460,6 +1503,46 @@ bool config_load(void) {
 bool config_clear(void) {
   preferences.clear();
   return false;
+}
+
+// pumps
+PumpSlot::PumpSlot(Pin enable, Pin in1, Pin in2)
+  : enable(enable), in1(in1), in2(in2),
+    time_init(S(1)), time_per_100ml(S(30)), time_reverse(S(1))
+{
+  pinMode(enable, OUTPUT);
+  pinMode(in1, OUTPUT);
+  pinMode(in2, OUTPUT);
+}
+
+void PumpSlot::run(uint64_t time, bool reverse=false) {
+  this->start(reverse);
+  sleep_idle(time);
+  this->stop();
+}
+
+void PumpSlot::start(bool reverse=false) {
+  digitalWrite(this->in1, reverse ? HIGH : LOW);
+  digitalWrite(this->in2, reverse ? LOW  : HIGH);
+  digitalWrite(this->enable, HIGH);
+}
+
+void PumpSlot::stop() {
+  digitalWrite(this->in1, LOW);
+  digitalWrite(this->in2, LOW);
+  digitalWrite(this->enable, LOW);
+}
+
+void Pump::pump(float amount) {
+  PumpSlot *s = this->slot;
+  if (s == NULL) { // no pump connected, simulate operation
+    debug("pump would add: %.1f", amount);
+
+  } else { // run real pump
+    s->run(s->time_init);
+    s->run(std::round((amount / 100.0) * s->time_per_100ml));
+    s->run(s->time_reverse, true);
+  }
 }
 
 // sd card
