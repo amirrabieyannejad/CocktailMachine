@@ -119,4 +119,6 @@
     <string name="volumen">Volumen:</string>
     <string name="_30_ml">30 ml</string>
     <string name="minimales_pumpvolumen">minimales Pumpvolumen:</string>
+    <string name="item_desc">Desc igjöljgr</string>
+    <string name="item_name">Name rijih</string>
 </resources>

@@ -69,7 +69,7 @@ class ModelFragment extends Fragment {
             binding.textViewTitle.setText(
                     new StringBuilder()
                             .append("Pumpe: ")
-                            .append(pump.getID())
+                            .append(pump.getIngredientName())
                             .toString());
             binding.includePump.getRoot().setVisibility(View.VISIBLE);
             binding.includePump.textViewMinPumpVolume.setText(pump.getMinimumPumpVolume());
