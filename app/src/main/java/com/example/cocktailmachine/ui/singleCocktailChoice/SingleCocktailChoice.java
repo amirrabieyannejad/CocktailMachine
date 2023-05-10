@@ -139,6 +139,9 @@ public class SingleCocktailChoice extends AppCompatActivity {
 
             Orientation flingOrientation = FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY);
 
+            String oldText = testData.get(counter);
+            fragment1 oldFragment = fragment1.newInstance(oldText);
+            setSlideOutAnimationFragment(oldFragment,flingOrientation);
 
             if(FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY)==(Orientation.RIGHT)){
                 //TODO Entfernung dieser Testzeilen
@@ -217,6 +220,34 @@ public class SingleCocktailChoice extends AppCompatActivity {
     }
 
 
+    private void setSlideOutAnimationFragment(Fragment fragment, Orientation orientation){
+
+        fragmentTransaction = fragmentManager.beginTransaction();
+
+        switch (orientation){
+            case RIGHT:
+                fragmentTransaction.setCustomAnimations(
+                        R.anim.fade_in_fast,
+                        R.anim.slide_in_right  // enter
+                );
+                break;
+            case LEFT:
+                fragmentTransaction.setCustomAnimations(
+                        R.anim.fade_in_fast,
+                        R.anim.slide_in_left  // enter
+                );
+                break;
+            default:
+                fragmentTransaction.setCustomAnimations(
+                        R.anim.fade_in_fast,  // enter
+                        R.anim.fade_out  // popExit
+                );
+        }
+        fragmentTransaction.replace(R.id.frameLayout,fragment,"cocktail");
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
     public static Orientation getOrientationFromVelocity(float velocityX, float velocityY){
         if(Math.abs(velocityX) >= Math.abs(velocityY)){
             if(velocityX>0){
@@ -232,4 +263,6 @@ public class SingleCocktailChoice extends AppCompatActivity {
             }
         }
     }
+
+
 }
