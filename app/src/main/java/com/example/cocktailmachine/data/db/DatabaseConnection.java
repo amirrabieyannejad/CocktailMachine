@@ -7,6 +7,7 @@ import android.os.Build;
 
 import androidx.annotation.Nullable;
 
+import com.example.cocktailmachine.data.AdminRights;
 import com.example.cocktailmachine.data.BasicRecipes;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
@@ -35,7 +36,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     private static final String DBname = "DB";
     private static int version = 1;
     private static final SQLiteDatabase.CursorFactory factory = null;
-    private UserPrivilegeLevel privilege = UserPrivilegeLevel.User;
+    //private UserPrivilegeLevel privilege = UserPrivilegeLevel.User;
     private List<Pump> pumps = new ArrayList<>();
     private List<Ingredient> ingredients = new ArrayList<>();
     private List<Recipe> recipes = new ArrayList<>();
@@ -50,7 +51,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         super(context, DatabaseConnection.DBname,
                 DatabaseConnection.factory,
                 DatabaseConnection.version);
-        this.privilege = UserPrivilegeLevel.User;
+        //this.privilege = UserPrivilegeLevel.User;
         try {
             BasicRecipes.loadMargarita();
             BasicRecipes.loadLongIslandIceTea();
@@ -63,7 +64,8 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         super(context, DatabaseConnection.DBname,
                 DatabaseConnection.factory,
                 DatabaseConnection.version);
-        this.privilege = privilege;
+        //this.privilege = privilege;
+        AdminRights.setUserPrivilegeLevel(privilege);
         try {
             BasicRecipes.loadMargarita();
             BasicRecipes.loadLongIslandIceTea();
@@ -175,21 +177,21 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public Ingredient loadIngredient(long id) throws AccessDeniedException {
-        if(this.privilege!=UserPrivilegeLevel.Admin){
+        if(!AdminRights.isAdmin()){
             throw  new AccessDeniedException();
         }
         return Tables.TABLE_INGREDIENT.getElement(this.getReadableDatabase(), id);
     }
 
     public Recipe loadRecipe(long id) throws AccessDeniedException {
-        if(this.privilege!=UserPrivilegeLevel.Admin){
+        if(!AdminRights.isAdmin()){
             throw  new AccessDeniedException();
         }
         return Tables.TABLE_RECIPE.getElement(this.getReadableDatabase(), id);
     }
 
     public Topic loadTopic(long id) throws AccessDeniedException {
-        if(this.privilege!=UserPrivilegeLevel.Admin){
+        if(!AdminRights.isAdmin()){
             throw  new AccessDeniedException();
         }
         return Tables.TABLE_TOPIC.getElement(this.getReadableDatabase(), id);
@@ -247,7 +249,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
             Helper<Ingredient> h = Helper.getIngredientHelper();
             ingredient = h.getWithId(this.ingredients, id);
         }
-        if(ingredient==null&&this.privilege==UserPrivilegeLevel.Admin){
+        if(ingredient==null&&AdminRights.isAdmin()){
             try {
                 return this.loadIngredient(id);
             } catch (AccessDeniedException e) {
@@ -277,7 +279,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
                 }
             }
         }
-        if(recipe == null && this.privilege==UserPrivilegeLevel.Admin){
+        if(recipe == null && AdminRights.isAdmin()){
             try {
                 return this.loadRecipe(id);
             } catch (AccessDeniedException e) {
@@ -338,9 +340,6 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return ingredients.get(0);
     }
 
-    public UserPrivilegeLevel getPrivilege() {
-        return this.privilege;
-    }
 
 
     public List<? extends Ingredient> getAvailableIngredients() {
@@ -399,7 +398,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         }else{
             topic = Helper.gettopichelper().getWithId(this.topics, id);
         }
-        if(this.privilege==UserPrivilegeLevel.Admin && topic==null){
+        if(AdminRights.isAdmin() && topic==null){
             try {
                 return this.loadTopic(id);
             } catch (AccessDeniedException e) {
