@@ -3,6 +3,7 @@ package com.example.cocktailmachine.ui;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -441,14 +442,35 @@ public class Grafik extends AppCompatActivity {
 
         System.out.println(recipes);
         **/
+
+        Context context = this;
+
         ImageView iv =(ImageView) findViewById(R.id.ivtest);
-        try {
-            iv.setImageBitmap(BildgeneratorGlas.bildgenerationGlas(this,recipe));
-        } catch (TooManyTimesSettedIngredientEcxception e) {
-            e.printStackTrace();
-        } catch (NoSuchIngredientSettedException e) {
-            e.printStackTrace();
-        }
+
+        ValueAnimator animation = ValueAnimator.ofFloat(0f, 1f);
+        animation.setDuration(10);
+
+        animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator updatedAnimation) {
+                float animatedValue = (float)updatedAnimation.getAnimatedValue();
+
+                try {
+                    iv.setImageBitmap(BildgeneratorGlas.bildgenerationGlas(context,recipe,animatedValue));
+                } catch (TooManyTimesSettedIngredientEcxception e) {
+                    e.printStackTrace();
+                } catch (NoSuchIngredientSettedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        animation.start();
+
+
+
+
+
         //iv.setImageBitmap(bm);
     }
 
