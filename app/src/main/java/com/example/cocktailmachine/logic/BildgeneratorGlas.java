@@ -165,7 +165,7 @@ public class BildgeneratorGlas {
             @Override
             public int compare(Ingredient ingredient, Ingredient t1) {
                 try {
-                    return (recipe.getSpecificIngredientPumpTime(ingredient)-recipe.getSpecificIngredientPumpTime(t1));
+                    return (recipe.getSpecificIngredientVolume(ingredient)-recipe.getSpecificIngredientVolume(t1));
                 } catch (TooManyTimesSettedIngredientEcxception e) {
                     return(0);
                 } catch (NoSuchIngredientSettedException e) {
@@ -178,10 +178,10 @@ public class BildgeneratorGlas {
 
     private int getNumberOfSlots(float sumLiquit, int animationSlots, Recipe recipe, Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
         float liquitProSlot = sumLiquit/animationSlots;
-        if(liquitProSlot>recipe.getSpecificIngredientPumpTime(ingredient)){
+        if(liquitProSlot>recipe.getSpecificIngredientVolume(ingredient)){
             return 1;
         }
-        return (int) (recipe.getSpecificIngredientPumpTime(ingredient)/liquitProSlot);
+        return (int) (recipe.getSpecificIngredientVolume(ingredient)/liquitProSlot);
 
     }
 
@@ -193,14 +193,14 @@ public class BildgeneratorGlas {
         Map<Ingredient,Integer> outputMap = new HashMap<>();
 
         for (Ingredient ingredient : recipe.getIngredients()){
-            sumLiquit += recipe.getSpecificIngredientPumpTime(ingredient);
+            sumLiquit += recipe.getSpecificIngredientVolume(ingredient);
         }
 
         for (Ingredient ingredient : newIngredientList){
             int numberSlots = this.getNumberOfSlots(sumLiquit,animationSlots-slotCounter,recipe, ingredient);
             outputMap.put(ingredient,numberSlots);
             slotCounter += numberSlots;
-            sumLiquit -= recipe.getSpecificIngredientPumpTime(ingredient);
+            sumLiquit -= recipe.getSpecificIngredientVolume(ingredient);
         }
 
         return(outputMap);
