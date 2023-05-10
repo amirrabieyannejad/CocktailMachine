@@ -114,4 +114,9 @@
     <string name="show_if_available_or_not">show if available or not</string>
     <string name="nicht_verf_gbar">nicht verfügbar</string>
     <string name="alkholisch">alkoholisch</string>
+    <string name="ingredient_name">Ingredient name</string>
+    <string name="zutat">Zutat:</string>
+    <string name="volumen">Volumen:</string>
+    <string name="_30_ml">30 ml</string>
+    <string name="minimales_pumpvolumen">minimales Pumpvolumen:</string>
 </resources>
