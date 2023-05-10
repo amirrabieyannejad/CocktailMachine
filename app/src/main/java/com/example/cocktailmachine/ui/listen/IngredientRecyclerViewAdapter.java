@@ -6,14 +6,13 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.cocktailmachine.databinding.FragmentItemIngredientBinding;
 import com.example.cocktailmachine.ui.listen.placeholder.PlaceholderContent.PlaceholderItem;
-import com.example.cocktailmachine.ui.listen.databinding.FragmentItemIngredientBinding;
 
 import java.util.List;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link PlaceholderItem}.
- * TODO: Replace the implementation with code for your data type.
  */
 public class IngredientRecyclerViewAdapter extends RecyclerView.Adapter<IngredientRecyclerViewAdapter.ViewHolder> {
 

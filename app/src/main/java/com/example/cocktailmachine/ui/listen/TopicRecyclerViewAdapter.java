@@ -6,9 +6,8 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.cocktailmachine.databinding.FragmentItemTopicBinding;
 import com.example.cocktailmachine.ui.listen.placeholder.PlaceholderContent.PlaceholderItem;
-import com.example.cocktailmachine.ui.listen.databinding.FragmentItemTopicBinding;
-
 import java.util.List;
 
 /**

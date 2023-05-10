@@ -6,8 +6,8 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.cocktailmachine.databinding.FragmentItemRecipeBinding;
 import com.example.cocktailmachine.ui.listen.placeholder.PlaceholderContent.PlaceholderItem;
-import com.example.cocktailmachine.ui.listen.databinding.FragmentItemRecipeBinding;
 
 import java.util.List;
 
@@ -33,7 +33,6 @@ public class RecipeRecyclerViewAdapter extends RecyclerView.Adapter<RecipeRecycl
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
         holder.mContentView.setText(mValues.get(position).content);
     }
 
@@ -43,13 +42,11 @@ public class RecipeRecyclerViewAdapter extends RecyclerView.Adapter<RecipeRecycl
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public final TextView mIdView;
         public final TextView mContentView;
         public PlaceholderItem mItem;
 
         public ViewHolder(FragmentItemRecipeBinding binding) {
             super(binding.getRoot());
-            mIdView = binding.itemNumber;
             mContentView = binding.content;
         }
 
