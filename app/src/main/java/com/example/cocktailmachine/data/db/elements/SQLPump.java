@@ -69,7 +69,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
 
     @Override
     public boolean isAvailable() {
-        return true;
+        return (this.getVolume()-this.minimumPumpVolume)>0;
     }
 
     @Override
