@@ -20,28 +20,49 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
+        <TextView
+            android:id="@+id/textView_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/large_text"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/include_pump"
+            layout="@layout/layout_pump"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            tools:visibility="gone" />
+
         <include
             android:id="@+id/include_available"
             layout="@layout/layout_available"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp" />
 
         <include
             android:id="@+id/include_not_available"
             layout="@layout/layout_not_available"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp" />
 
         <include
+            android:id="@+id/include_alcoholic"
             layout="@layout/layout_alcoholic"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp" />
 
-        <TextView
-            android:id="@+id/textView_description"
+        <include
+            android:id="@+id/include_ingredient_admin"
+            layout="@layout/layout_ingredient_admin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/large_text"
-            android:visibility="gone" />
+            android:layout_margin="8dp"
+            tools:visibility="gone" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
