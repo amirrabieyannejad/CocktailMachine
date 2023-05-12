@@ -120,8 +120,8 @@ public class fragment1 extends Fragment implements FragmentListenerSingleCocktai
                              @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         this.view =  inflater.inflate(R.layout.fragment_fragment1, container, false);
-        this.imageView = this.view.findViewById(R.id.imageCocktail);
-        this.imageView.setImageBitmap(this.imageCocktail);
+        //this.imageView = this.view.findViewById(R.id.imageCocktail);
+        //this.imageView.setImageBitmap(this.imageCocktail);
         this.textView = this.view.findViewById(R.id.textViewCocktailFragment1);
         this.textView.setText(this.nameCocktail);
         return this.view;
