@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.SingeltonTestdata;
 import com.example.cocktailmachine.data.Orientation;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
@@ -33,7 +34,11 @@ public class SingleCocktailChoice extends AppCompatActivity {
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
 
-    List<Recipe> recipes;
+
+    SingeltonTestdata singeltonCocktail = SingeltonTestdata.getSingelton();
+    List<Recipe> recipes = new LinkedList();
+
+
 
     List<String> testData;
 
@@ -46,6 +51,10 @@ public class SingleCocktailChoice extends AppCompatActivity {
         testData.add("a");
         testData.add("b");
         testData.add("c");
+
+
+        recipes.add(singeltonCocktail.getRecipe());
+        recipes.add(singeltonCocktail.getRecipe2());
 
         //load List of available recipes
        /* try {

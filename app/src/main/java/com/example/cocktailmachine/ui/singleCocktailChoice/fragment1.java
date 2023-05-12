@@ -1,6 +1,7 @@
 package com.example.cocktailmachine.ui.singleCocktailChoice;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
@@ -15,7 +16,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.data.Recipe;
+import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.databinding.FragmentFragment1Binding;
+import com.example.cocktailmachine.logic.BildgeneratorGlas;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,6 +43,7 @@ public class fragment1 extends Fragment implements FragmentListenerSingleCocktai
     FragmentFragment1Binding binding;
 
     String nameCocktail ="";
+    Bitmap imageCocktail = null;
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -78,6 +84,17 @@ public class fragment1 extends Fragment implements FragmentListenerSingleCocktai
         return fragment;
     }
 
+    public static fragment1 newInstance(Recipe recipe) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
+        fragment1 fragment = new fragment1();
+        //Drawable drawable = context.getResources().getDrawable(R.drawable.glas2);
+        //fragment.imageView.setImageDrawable(drawable);
+        //fragment.updateTextView(string);
+        //
+        fragment.nameCocktail = recipe.getName();
+        fragment.imageCocktail = BildgeneratorGlas.bildgenerationGlas(fragment.context, recipe);
+        return fragment;
+    }
+
     public static fragment1 newInstance(){
         fragment1 fragment = new fragment1();
         //Drawable drawable = context.getResources().getDrawable(R.drawable.glas2);
@@ -104,6 +121,7 @@ public class fragment1 extends Fragment implements FragmentListenerSingleCocktai
         // Inflate the layout for this fragment
         this.view =  inflater.inflate(R.layout.fragment_fragment1, container, false);
         this.imageView = this.view.findViewById(R.id.imageCocktail);
+        this.imageView.setImageBitmap(this.imageCocktail);
         this.textView = this.view.findViewById(R.id.textViewCocktailFragment1);
         this.textView.setText(this.nameCocktail);
         return this.view;

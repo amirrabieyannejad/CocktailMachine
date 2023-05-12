@@ -1,73 +1,86 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<<<<<<< Original<?xml version="1.0" encoding="utf-8"?><manifest xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools">
 
-    <application
-        android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.CocktailMachine"
-        tools:targetApi="21">
-
-
-        <activity
-            android:name=".MainActivity"
-            android:exported="false"
-            android:label="@string/title_activity_main"
-            android:theme="@style/Theme.CocktailMachine.NoActionBar">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-
-        <activity
-            android:name=".cocktailList"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-
-        <activity
-            android:name=".ui.singleCocktailChoice.SingleCocktailChoice"
-            android:exported="true">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-
-        <activity
-            android:name="com.example.cocktailmachine.ui.Grafik"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-
-        <activity
-            android:name=".Grafik"
-            android:exported="true">
+<application
+    android:allowBackup="true"
+    android:dataExtractionRules="@xml/data_extraction_rules"
+    android:fullBackupContent="@xml/backup_rules"
+    android:icon="@mipmap/ic_launcher"
+    android:label="@string/app_name"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    android:supportsRtl="true"
+    android:theme="@style/Theme.CocktailMachine"
+    tools:targetApi="21">
 
 
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+    <activity
+        android:name=".MainActivity"
+        android:exported="false"
+        android:label="@string/title_activity_main"
+        android:theme="@style/Theme.CocktailMachine.NoActionBar">
+        <meta-data
+            android:name="android.app.lib_name"
+            android:value="" />
+    </activity>
 
-        <activity
-            android:name=".login.LoginActivity"
-            android:exported="true"
-            android:label="@string/app_name" />
-    </application>
+    <activity
+        android:name=".cocktailList"
+        android:exported="false">
+        <meta-data
+            android:name="android.app.lib_name"
+            android:value="" />
+    </activity>
 
-</manifest>
+    <activity
+        android:name=".ui.singleCocktailChoice.SingleCocktailChoice"
+        android:exported="true">
+        <meta-data
+            android:name="android.app.lib_name"
+            android:value="" />
+    </activity>
+
+    <activity
+        android:name="com.example.cocktailmachine.ui.Grafik"
+        android:exported="true">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+
+        <meta-data
+            android:name="android.app.lib_name"
+            android:value="" />
+    </activity>
+
+    <activity
+        android:name=".Grafik"
+        android:exported="true">
+
+
+        <meta-data
+            android:name="android.app.lib_name"
+            android:value="" />
+    </activity>
+
+    <activity
+        android:name=".login.LoginActivity"
+        android:exported="true"
+        android:label="@string/app_name" />
+</application>
+
+</manifest>=======
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<application>
+    <activity
+        android:name="com.example.cocktailmachine.ui.Menue"
+        android:exported="false"
+
+        >
+        <meta-data
+            android:name="android.app.lib_name"
+            android:value="" />
+    </activity>
+</application>
+</manifest>>>>>>>> Added
