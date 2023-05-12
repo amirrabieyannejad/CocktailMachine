@@ -18,66 +18,33 @@
         android:orientation="vertical">
 
       <ImageView
-          android:id="@+id/imageViewButtonAllProjects"
           android:layout_width="150dp"
           android:layout_height="150dp"
           android:layout_margin="30dp"
-          android:contentDescription="Show all projects"
-          android:onClick="alleProjekteFiltern"
+          android:contentDescription="Show one avalable Cocktail"
+          android:onClick="openSingelCocktailView"
           app:srcCompat="@drawable/ic_list" />
 
       <ImageView
-          android:id="@+id/imageViewButtonAddProject"
           android:layout_width="150dp"
           android:layout_height="150dp"
           android:layout_margin="30dp"
-          android:contentDescription="Show add new Project"
-          android:onClick="addProject"
+          android:contentDescription=""
           app:srcCompat="@drawable/ic_list_add" />
 
-      <ImageView
-          android:id="@+id/imageViewButtonMyAccount"
-          android:layout_width="150dp"
-          android:layout_height="150dp"
-          android:layout_margin="30dp"
-          android:contentDescription="Show my Account"
-          android:onClick="detailEinesUsers"
-          app:srcCompat="@drawable/ic_bild_icon_nuter" />
 
       <ImageView
-          android:id="@+id/imageViewButtonAddUseer"
-          android:layout_width="150dp"
-          android:layout_height="150dp"
-          android:layout_margin="30dp"
-          android:contentDescription="Show add new user"
-          android:onClick="inviteUser"
-          app:srcCompat="@drawable/ic_bild_icon_nuter_hinzufuegen" />
-
-      <ImageView
-          android:id="@+id/imageViewButtonToAllUsers"
-          android:layout_width="150dp"
-          android:layout_height="150dp"
-          android:layout_margin="30dp"
-          android:contentDescription="Show all Users"
-          android:onClick="userList"
-          app:srcCompat="@drawable/ic_bild_icon_alle_nuterer_anzeigen" />
-
-      <ImageView
-          android:id="@+id/imageViewButtonEinstellungen"
           android:layout_width="150dp"
           android:layout_height="150dp"
           android:layout_margin="30dp"
           android:contentDescription="Settings"
-          android:onClick="enterSettings"
           app:srcCompat="@drawable/ic_options" />
 
       <ImageView
-          android:id="@+id/imageViewButtonLogout"
           android:layout_width="150dp"
           android:layout_height="150dp"
           android:layout_margin="30dp"
           android:contentDescription="Logout"
-          android:onClick="logout"
           app:srcCompat="@drawable/ic_logout_icon" />
 
     </LinearLayout>

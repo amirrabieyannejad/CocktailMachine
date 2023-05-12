@@ -1,7 +1,13 @@
 package com.example.cocktailmachine.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+
+import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice;
 
 public class Menue extends AppCompatActivity {
 
@@ -9,5 +15,14 @@ public class Menue extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menue);
+    }
+
+
+
+
+    public void openSingelCocktailView(View view){
+        Intent success = new Intent(this, SingleCocktailChoice.class);
+        startActivity(success);
+
     }
 }
