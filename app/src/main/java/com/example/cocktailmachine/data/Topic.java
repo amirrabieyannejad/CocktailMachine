@@ -62,4 +62,5 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
     public static List<Topic> getTopics() throws NotInitializedDBException {
         return DatabaseConnection.getDataBase().getTopics();
     }
+
 }

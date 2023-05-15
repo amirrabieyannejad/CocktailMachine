@@ -34,8 +34,34 @@ public class RowViews {
         }
     }
 
-    public static abstract class RowView extends RecyclerView.ViewHolder {
+    public static RecipeRowView getRecipeInstance(View view){
+        return new RecipeRowView(view);
+    }
 
+    public static IngredientRowView getIngredientInstance(View view){
+        return new IngredientRowView(view);
+    }
+
+    public static TopicRowView gettopicInstance(View view){
+        return new TopicRowView(view);
+    }
+
+    public static PumpRowView getpumpInstance(View view){
+        return new PumpRowView(view);
+    }
+
+    public static RecipeIngredientRowView getrecipeIngredientInstance(View view){
+        return new RecipeIngredientRowView(view);
+    }
+
+    public static RecipeTopicRowView getrecipeTopicInstance(View view){
+        return new RecipeTopicRowView(view);
+    }
+
+
+
+
+    public static abstract class RowView extends RecyclerView.ViewHolder {
 
         private CheckBox checkBox;
         private TextView name;
@@ -83,6 +109,7 @@ public class RowViews {
                 }
             }
             checkBox.setVisibility(View.GONE);
+            checkBox.setChecked(false);
             name.setOnLongClickListener(longClickListener);
             desc.setOnLongClickListener(longClickListener);
         }
@@ -103,7 +130,7 @@ public class RowViews {
             super(itemView);
         }
 
-        void setRecipe(Recipe recipe){
+        public void setRecipe(Recipe recipe){
             this.recipe = recipe;
             super.setName(recipe.getName());
         }
@@ -127,7 +154,7 @@ public class RowViews {
             super(itemView);
         }
 
-        void setTopic(Topic topic){
+        public void setTopic(Topic topic){
             this.topic = topic;
             super.setName(topic.getName());
         }
@@ -152,7 +179,7 @@ public class RowViews {
             super(itemView);
         }
 
-        void setRecipeTopic(Recipe recipe, Topic topic){
+        public void setRecipeTopic(Recipe recipe, Topic topic){
             this.recipe = recipe;
             this.topic = topic;
             super.setName(this.topic.getName());
@@ -176,7 +203,7 @@ public class RowViews {
             super(itemView);
         }
 
-        void setIngredient(Ingredient ingredient){
+        public void setIngredient(Ingredient ingredient){
             this.ingredient = ingredient;
             super.setName(ingredient.getName());
         }
@@ -202,7 +229,7 @@ public class RowViews {
             super(itemView);
         }
 
-        void setIngredientVolume(Recipe recipe, Ingredient ingredient,int volume){
+        public void setIngredientVolume(Recipe recipe, Ingredient ingredient,int volume){
             this.recipe = recipe;
             this.ingredient = ingredient;
             this.volume = volume;
@@ -228,7 +255,7 @@ public class RowViews {
             super(itemView);
         }
 
-        void setIngredient(Pump pump){
+        public void setIngredient(Pump pump){
             this.pump = pump;
             super.setName("Pumpe "+pump.getIngredientName());
         }
