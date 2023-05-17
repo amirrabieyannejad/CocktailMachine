@@ -52,12 +52,6 @@ public class DatabaseConnection extends SQLiteOpenHelper {
                 DatabaseConnection.factory,
                 DatabaseConnection.version);
         //this.privilege = UserPrivilegeLevel.User;
-        try {
-            BasicRecipes.loadMargarita();
-            BasicRecipes.loadLongIslandIceTea();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
     }
 
     private DatabaseConnection(@Nullable Context context, UserPrivilegeLevel privilege) {
@@ -66,12 +60,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
                 DatabaseConnection.version);
         //this.privilege = privilege;
         AdminRights.setUserPrivilegeLevel(privilege);
-        try {
-            BasicRecipes.loadMargarita();
-            BasicRecipes.loadLongIslandIceTea();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
+
     }
 
     static synchronized DatabaseConnection getSingleton() throws NotInitializedDBException {
@@ -87,10 +76,22 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     public static synchronized void initialize_singleton(Context context){
         DatabaseConnection.singleton = new DatabaseConnection(context);
+        try {
+            BasicRecipes.loadMargarita();
+            BasicRecipes.loadLongIslandIceTea();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+        }
     }
 
     public static synchronized void initialize_singleton(Context context, UserPrivilegeLevel privilege){
         DatabaseConnection.singleton = new DatabaseConnection(context, privilege);
+        try {
+            BasicRecipes.loadMargarita();
+            BasicRecipes.loadLongIslandIceTea();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+        }
     }
 
     private static synchronized boolean is_initialized(){

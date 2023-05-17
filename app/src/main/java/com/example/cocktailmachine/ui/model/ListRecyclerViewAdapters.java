@@ -3,8 +3,10 @@ package com.example.cocktailmachine.ui.model;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocktailmachine.R;
@@ -28,6 +30,13 @@ public class ListRecyclerViewAdapters  {
         public ListRecyclerViewAdapter(RowViews.RowType type) {
             this.type = type;
         }
+
+        public LinearLayoutManager getManager(android.content.Context getContext){
+            LinearLayoutManager llm = new LinearLayoutManager(getContext);
+            llm.setOrientation(LinearLayoutManager.VERTICAL);
+            return llm;
+        }
+
         public abstract void loadDelete();
 
         public abstract void finishDelete();
@@ -354,7 +363,6 @@ public class ListRecyclerViewAdapters  {
 
 
     }
-
 
     public static class RecipeTopicListRecyclerViewAdapter extends ListRecyclerViewAdapter<RowViews.RecipeTopicRowView> {
         private List<Topic> data;

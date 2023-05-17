@@ -17,7 +17,7 @@
             android:layout_margin="8dp"
             android:text="@string/title"
             android:textColor="@android:color/primary_text_light"
-            android:textSize="20sp"
+            android:textSize="34sp"
             android:textStyle="bold" />
 
         <TextView
@@ -63,6 +63,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            tools:visibility="gone" />
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/include_ingredients"
+            layout="@layout/layout_name_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp" />
+
+        <include
+            android:id="@+id/include_topics"
+            layout="@layout/layout_name_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

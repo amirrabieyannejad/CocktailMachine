@@ -69,6 +69,12 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
     public Pump getPump();
 
     /**
+     * Get Pump representative class, where the ingredient is within.
+     * @return pump
+     */
+    public Long getPumpId();
+
+    /**
      * Get fluid color.
      * @return Integer representative of color
      */

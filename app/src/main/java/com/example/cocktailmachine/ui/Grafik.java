@@ -14,6 +14,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 
 
@@ -64,7 +65,7 @@ public class Grafik extends AppCompatActivity {
 
         //iv.draw(canvas);
          **/
-
+/*
         Recipe recipe = new Recipe() {
             @Override
             public int compareTo(Recipe o) {
@@ -421,7 +422,21 @@ public class Grafik extends AppCompatActivity {
             }
         };
 
+ */
+
         DatabaseConnection.initialize_singleton(this.getBaseContext());
+        try {
+            BasicRecipes.loadMargarita();
+            BasicRecipes.loadLongIslandIceTea();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            Log.i("Grafik","Should not happen");
+        }
+
+        Recipe recipe = Recipe.getRecipe("Margarita");
+        if(recipe == null){
+            Log.i("Grafik", "should not happen");
+        }
 
 
         /**

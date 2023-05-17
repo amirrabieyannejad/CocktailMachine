@@ -21,6 +21,7 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.databinding.FragmentModelBinding;
+import com.example.cocktailmachine.ui.FirstFragment;
 import com.example.cocktailmachine.ui.SecondFragment;
 
 class ModelFragment extends Fragment {
@@ -42,6 +43,8 @@ class ModelFragment extends Fragment {
         binding.includeAlcoholic.getRoot().setVisibility(View.GONE);
         binding.includePump.getRoot().setVisibility(View.GONE);
         binding.includeIngredientAdmin.getRoot().setVisibility(View.GONE);
+        binding.includeIngredients.getRoot().setVisibility(View.GONE);
+        binding.includeTopics.getRoot().setVisibility(View.GONE);
         switch (type){
             case "TOPIC":setTopic(id);
             case "INGREDIENT":setIngredient(id);
@@ -88,6 +91,7 @@ class ModelFragment extends Fragment {
     private void setIngredient(Long id){
         ingredient = Ingredient.getIngredient(id);
         if (ingredient != null) {
+            binding.textViewTitle.setText(ingredient.getName());
             if(ingredient.isAlcoholic()){
                 binding.includeAlcoholic.getRoot().setVisibility(View.VISIBLE);
             }if(ingredient.isAvailable()){
@@ -98,7 +102,27 @@ class ModelFragment extends Fragment {
             if(AdminRights.isAdmin()){
                 binding.includeIngredientAdmin.getRoot().setVisibility(View.VISIBLE);
                 binding.includeIngredientAdmin.textViewIngredientVolume.setText(ingredient.getVolume());
+                binding.includeIngredientAdmin.getRoot().setOnClickListener(v -> {
+                    Bundle b = new Bundle();
+                    b.putString("Type","PUMP");
+                    b.putLong("ID", ingredient.getPumpId());
+                    NavHostFragment.findNavController(ModelFragment.this)
+                            .navigate(R.id.action_modelFragment_self, b);
+                });
             }
+            ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter ingredientListAdapter =
+                    new ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter(recipe.getID());
+            binding.includeIngredients.textViewNameListTitle.setText("Zutaten");
+            binding.includeIngredients.recylerViewNames.setLayoutManager(ingredientListAdapter.getManager(this.getContext()));
+            binding.includeIngredients.recylerViewNames.setAdapter(ingredientListAdapter);
+            binding.includeIngredients.getRoot().setVisibility(View.VISIBLE);
+
+            ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter topicListAdapter =
+                    new ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter(recipe.getID());
+            binding.includeTopics.textViewNameListTitle.setText("Servierempfehlungen");
+            binding.includeTopics.recylerViewNames.setLayoutManager(topicListAdapter.getManager(this.getContext()));
+            binding.includeTopics.recylerViewNames.setAdapter(topicListAdapter);
+            binding.includeTopics.getRoot().setVisibility(View.VISIBLE);
 
         }else{
             error();
@@ -109,7 +133,14 @@ class ModelFragment extends Fragment {
     private void setRecipe(Long id){
         recipe = Recipe.getRecipe(id);
         if(recipe != null){
-
+            binding.textViewTitle.setText(recipe.getName());
+            if(recipe.isAlcoholic()){
+                binding.includeAlcoholic.getRoot().setVisibility(View.VISIBLE);
+            }if(recipe.isAvailable()){
+                binding.includeAvailable.getRoot().setVisibility(View.VISIBLE);
+            }else{
+                binding.includeNotAvailable.getRoot().setVisibility(View.VISIBLE);
+            }
         }else{
             error();
         }

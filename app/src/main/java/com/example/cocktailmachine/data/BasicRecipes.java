@@ -1,5 +1,7 @@
 package com.example.cocktailmachine.data;
 
+import android.graphics.Color;
+
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 
@@ -29,6 +31,19 @@ public class BasicRecipes {
         magarita.addOrUpdate(limettensaft, 4);
         magarita.addOrUpdate(ice);
         magarita.save();
+    }
+
+    public static void loadTequila(){
+
+        Ingredient tequila = Ingredient.makeNew("Tequila", true, Color.RED);
+        Ingredient orangenlikör = Ingredient.makeNew("Orangenlikör", true, Color.YELLOW);
+        Ingredient limettensaft = Ingredient.makeNew("Limettensaft", false, Color.WHITE);
+
+
+        Recipe magarita = Recipe.makeNew("Margarita");
+        magarita.addOrUpdate(tequila, 8);
+        magarita.addOrUpdate(orangenlikör, 4);
+        magarita.addOrUpdate(limettensaft, 4);
     }
 
     public static void loadLongIslandIceTea() throws NotInitializedDBException{

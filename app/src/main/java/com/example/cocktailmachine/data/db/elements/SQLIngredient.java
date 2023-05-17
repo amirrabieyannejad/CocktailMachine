@@ -176,6 +176,11 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
     }
 
     @Override
+    public Long getPumpId() {
+        return this.ingredientPump.getPumpID();
+    }
+
+    @Override
     public int getColor() {
         return this.color;
     }
