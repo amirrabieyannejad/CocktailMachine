@@ -99,6 +99,8 @@ public class RowViews {
             desc.setOnLongClickListener(null);
         }
 
+
+
         private void finishDelete(){
             if(checkBox.isChecked()){
                 try {

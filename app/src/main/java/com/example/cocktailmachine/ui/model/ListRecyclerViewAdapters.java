@@ -55,9 +55,22 @@ public class ListRecyclerViewAdapters  {
             this.putIds(ids);
         }
 
+/*
+        public RecipeListRecyclerViewAdapter(List<Recipe> recipes) {
+            super(RowViews.RowType.recipe);
+            this.recipes = recipes;
+        }
+
+ */
+
         public RecipeListRecyclerViewAdapter() {
             super(RowViews.RowType.recipe);
             this.putIds();
+        }
+
+
+        public void replaceRecipes(List<Recipe> recipes){
+            this.recipes = recipes;
         }
 
         @NonNull
@@ -106,6 +119,80 @@ public class ListRecyclerViewAdapters  {
             return;
         }
     }
+
+    public static class RecipeDeleteListRecyclerViewAdapter extends ListRecyclerViewAdapter<RowViews.RecipeRowView> {
+        private List<Recipe> recipes;
+
+        public RecipeDeleteListRecyclerViewAdapter(List<Long> ids) {
+            super(RowViews.RowType.recipe);
+            this.putIds(ids);
+        }
+
+/*
+        public RecipeListRecyclerViewAdapter(List<Recipe> recipes) {
+            super(RowViews.RowType.recipe);
+            this.recipes = recipes;
+        }
+
+ */
+
+        public RecipeDeleteListRecyclerViewAdapter() {
+            super(RowViews.RowType.recipe);
+            this.putIds();
+        }
+
+
+        public void replaceRecipes(List<Recipe> recipes){
+            this.recipes = recipes;
+        }
+
+        @NonNull
+        @Override
+        public RowViews.RecipeRowView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.layout_name_list, parent, false);
+            return RowViews.getRecipeInstance(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull RowViews.RecipeRowView holder, int position) {
+            holder.setRecipe(recipes.get(position));
+        }
+
+        @Override
+        public int getItemCount() {
+            return recipes.size();
+        }
+
+
+        public void loadDelete(){
+
+        }
+
+        public void finishDelete(){
+
+        }
+
+        @Override
+        public void putIds(List<Long> ids) {
+            recipes = Recipe.getRecipes(ids);
+        }
+
+        @Override
+        public void putIds() {
+            try {
+                recipes = Recipe.getRecipes();
+            } catch (NotInitializedDBException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void putRecipe(Long id) {
+            return;
+        }
+    }
+
 
     public static class TopicListRecyclerViewAdapter extends ListRecyclerViewAdapter<RowViews.TopicRowView> {
         private List<Topic> topics;

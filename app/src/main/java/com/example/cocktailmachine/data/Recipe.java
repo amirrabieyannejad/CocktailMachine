@@ -228,6 +228,15 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
     /**
      * Static access to recipes.
+     * Get all saved recipes.
+     * @return list of recipes
+     */
+    public static List<Recipe> getAllRecipes() throws NotInitializedDBException {
+        return (List<Recipe>) DatabaseConnection.getDataBase().getRecipes();
+    }
+
+    /**
+     * Static access to recipes.
      * Get available recipes with id in list of ids k
      * @param ids list of ids k
      * @return list of recipes

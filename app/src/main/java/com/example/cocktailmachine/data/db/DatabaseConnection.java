@@ -350,6 +350,14 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return Helper.getIngredientHelper().getAvailable(this.ingredients);
     }
 
+    public List<? extends Recipe> getRecipes() {
+        if (AdminRights.isAdmin()) {
+            return this.recipes;
+        }
+        return this.getAvailableRecipes();
+    }
+
+
     public List<? extends Recipe> getAvailableRecipes() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.recipes.stream().filter(Recipe::isAvailable).collect(Collectors.toList());
