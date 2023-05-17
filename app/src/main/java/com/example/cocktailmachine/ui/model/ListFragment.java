@@ -53,7 +53,6 @@ class ListFragment extends Fragment {
         set(recyclerViewAdapter, "Serviervorschläge");
     }
 
-
     private void setPumps(){
         ListRecyclerViewAdapters.PumpListRecyclerViewAdapter recyclerViewAdapter =
                 new ListRecyclerViewAdapters.PumpListRecyclerViewAdapter();

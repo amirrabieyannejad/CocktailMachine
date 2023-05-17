@@ -1,11 +1,13 @@
 package com.example.cocktailmachine.ui.model;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocktailmachine.R;
@@ -16,6 +18,7 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 
 public class RowViews {
+    private static final String TAG = "RowViews";
 
     public static enum RowType{
         recipe, topic, ingredient,pump, recipeIngredient, recipeTopic;
@@ -63,24 +66,21 @@ public class RowViews {
 
     public static abstract class RowView extends RecyclerView.ViewHolder {
 
+        private ConstraintLayout layout;
         private CheckBox checkBox;
         private TextView name;
         private TextView desc;
-        private View.OnLongClickListener longClickListener;
+
+        //private View.OnLongClickListener longClickListener;
+
+        protected Recipe recipe;
 
         RowView(@NonNull View itemView) {
             super(itemView);
+            layout = itemView.findViewById(R.id.constraintLayout_item);
             checkBox = itemView.findViewById(R.id.checkBox_item);
             name = itemView.findViewById(R.id.textView_item_name);
             desc = itemView.findViewById(R.id.textView_item_desc);
-
-            longClickListener = v -> {
-                loadDelete();
-                return true;
-            };
-
-            name.setOnLongClickListener(longClickListener);
-            desc.setOnLongClickListener(longClickListener);
         }
 
         void setName(String name){
@@ -92,16 +92,38 @@ public class RowViews {
             this.desc.setVisibility(View.VISIBLE);
         }
 
-        private void loadDelete(){
+        public void loadCheck(){
             checkBox.setVisibility(View.VISIBLE);
-
-            name.setOnLongClickListener(null);
-            desc.setOnLongClickListener(null);
         }
 
+        public void setRecipe(Long recipe_id){
+            setRecipe(Recipe.getRecipe(recipe_id));
+        }
 
+        public void setRecipe(Recipe recipe){
+            this.recipe = recipe;
+        }
 
-        private void finishDelete(){
+        void finishAdd(){
+            if(checkBox.isChecked()){
+                try {
+                    add();
+                } catch (NotInitializedDBException e) {
+                    e.printStackTrace();
+                    error();
+                }
+            }else{
+                try {
+                    delete();
+                } catch (NotInitializedDBException e) {
+                    e.printStackTrace();
+                    error();
+                }
+            }
+            checkBox.setVisibility(View.GONE);
+        }
+
+        public void finishDelete(){
             if(checkBox.isChecked()){
                 try {
                     delete();
@@ -112,8 +134,22 @@ public class RowViews {
             }
             checkBox.setVisibility(View.GONE);
             checkBox.setChecked(false);
-            name.setOnLongClickListener(longClickListener);
-            desc.setOnLongClickListener(longClickListener);
+        }
+
+        public void addListener(View.OnClickListener listener){
+            layout.setOnClickListener(listener);
+        }
+
+        public void deleteListener(){
+            layout.setOnClickListener(null);
+        }
+
+        public void addLongListener(View.OnLongClickListener listener){
+            layout.setOnLongClickListener(listener);
+        }
+
+        public void deleteLongListener(){
+            layout.setOnLongClickListener(null);
         }
 
         private void error(){
@@ -122,7 +158,7 @@ public class RowViews {
 
         abstract void delete() throws NotInitializedDBException;
 
-        abstract long getId();
+        abstract void add() throws NotInitializedDBException;
     }
 
     public static class RecipeRowView extends RowView {
@@ -142,10 +178,13 @@ public class RowViews {
         }
 
         @Override
-        long getId() {
-            return this.recipe.getID();
+        void add() throws NotInitializedDBException {
+            error();
         }
 
+        private void error(){
+            Log.i(TAG, "should not reach");
+        }
 
     }
 
@@ -166,22 +205,24 @@ public class RowViews {
         void delete() throws NotInitializedDBException {
             this.topic.delete();
         }
+
         @Override
-        long getId() {
-            return this.topic.getID();
+        void add() throws NotInitializedDBException {
+            if(super.recipe!= null) {
+                super.recipe.addOrUpdate(topic);
+            }
         }
     }
 
     public static class RecipeTopicRowView extends RowView {
         //HashMap<Long, Integer>
-        private Recipe recipe;
         private Topic topic;
 
         RecipeTopicRowView(@NonNull View itemView) {
             super(itemView);
         }
 
-        public void setRecipeTopic(Recipe recipe, Topic topic){
+        public void setTopic(Topic topic){
             this.recipe = recipe;
             this.topic = topic;
             super.setName(this.topic.getName());
@@ -192,9 +233,13 @@ public class RowViews {
         void delete() throws NotInitializedDBException {
             this.recipe.remove(topic);
         }
+
         @Override
-        long getId() {
-            return this.topic.getID();
+        void add() throws NotInitializedDBException {
+            Log.i(TAG, "should not reach");
+            if(super.recipe!= null) {
+                super.recipe.addOrUpdate(topic);
+            }
         }
     }
 
@@ -215,15 +260,16 @@ public class RowViews {
         void delete() throws NotInitializedDBException {
             this.ingredient.delete();
         }
+
         @Override
-        long getId() {
-            return this.ingredient.getID();
+        void add() throws NotInitializedDBException {
+            if(super.recipe!= null) {
+                super.recipe.addOrUpdate(ingredient, -1);
+            }
         }
     }
 
     public static class RecipeIngredientRowView extends RowView {
-        //HashMap<Long, Integer>
-        private Recipe recipe;
         private Ingredient ingredient;
         private int volume;
 
@@ -231,7 +277,7 @@ public class RowViews {
             super(itemView);
         }
 
-        public void setIngredientVolume(Recipe recipe, Ingredient ingredient,int volume){
+        public void setIngredientVolume(Ingredient ingredient,int volume){
             this.recipe = recipe;
             this.ingredient = ingredient;
             this.volume = volume;
@@ -239,14 +285,16 @@ public class RowViews {
             super.setDesc(this.volume+" ml");
         }
 
-
         @Override
         void delete() throws NotInitializedDBException {
             this.recipe.remove(ingredient);
         }
+
         @Override
-        long getId() {
-            return this.ingredient.getID();
+        void add() throws NotInitializedDBException {
+            if(super.recipe!= null) {
+                super.recipe.addOrUpdate(ingredient, volume);
+            }
         }
     }
 
@@ -267,9 +315,10 @@ public class RowViews {
         void delete() throws NotInitializedDBException {
             this.pump.delete();
         }
+
         @Override
-        long getId() {
-            return this.pump.getID();
+        void add() throws NotInitializedDBException {
+            Log.i(TAG, "should not reach");
         }
     }
 }

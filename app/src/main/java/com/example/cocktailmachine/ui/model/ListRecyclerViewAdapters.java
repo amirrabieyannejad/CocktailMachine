@@ -18,6 +18,7 @@ import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListRecyclerViewAdapters  {
@@ -26,6 +27,9 @@ public class ListRecyclerViewAdapters  {
 
     public abstract static class ListRecyclerViewAdapter<E extends RowViews.RowView> extends RecyclerView.Adapter<E> {
         private RowViews.RowType type;
+        private boolean lock = false;
+        private List<E> views = new ArrayList<>();
+        protected Recipe recipe=null;
 
         public ListRecyclerViewAdapter(RowViews.RowType type) {
             this.type = type;
@@ -37,14 +41,62 @@ public class ListRecyclerViewAdapters  {
             return llm;
         }
 
-        public abstract void loadDelete();
+        public boolean loadDelete(){
+            if(!lock){
+                lock = true;
+                for (RowViews.RowView view: views) {
+                    view.loadCheck();
+                    view.deleteLongListener();
+                }
+                return true;
+            }
+            return false;
+        }
 
-        public abstract void finishDelete();
+        public boolean loadAdd(){
+            if(!lock && recipe!=null ){
+                lock = true;
+                for (RowViews.RowView view: views) {
+                    view.loadCheck();
+                    view.deleteLongListener();
+                }
+                return true;
+            }
+            return false;
+        }
+
+        public void finishDelete(){
+            for (RowViews.RowView view: views) {
+                view.finishDelete();
+            }
+            lock = false;
+        }
+
+        public void finishAdd(){
+            for (RowViews.RowView view: views) {
+                view.finishAdd();
+                view.addLongListener(v -> loadDelete());
+            }
+            lock = false;
+        }
+
+        protected E addRowView(E view){
+            view.addLongListener(v -> loadDelete());
+            views.add(view);
+            return view;
+        }
 
         public abstract void putIds(List<Long> ids);
+
         public abstract void putIds();
 
-        public abstract void putRecipe(Long id);
+        public void putRecipe(Long id){
+            this.recipe = Recipe.getRecipe(id);
+        }
+
+        public void putRecipe(Recipe recipe){
+            this.recipe = recipe;
+        }
     }
 
     public static class RecipeListRecyclerViewAdapter extends ListRecyclerViewAdapter<RowViews.RecipeRowView> {
@@ -78,7 +130,7 @@ public class ListRecyclerViewAdapters  {
         public RowViews.RecipeRowView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.layout_name_list, parent, false);
-            return RowViews.getRecipeInstance(view);
+            return addRowView(RowViews.getRecipeInstance(view));
         }
 
         @Override
@@ -89,15 +141,6 @@ public class ListRecyclerViewAdapters  {
         @Override
         public int getItemCount() {
             return recipes.size();
-        }
-
-
-        public void loadDelete(){
-
-        }
-
-        public void finishDelete(){
-
         }
 
         @Override
@@ -113,86 +156,7 @@ public class ListRecyclerViewAdapters  {
                 e.printStackTrace();
             }
         }
-
-        @Override
-        public void putRecipe(Long id) {
-            return;
-        }
     }
-
-    public static class RecipeDeleteListRecyclerViewAdapter extends ListRecyclerViewAdapter<RowViews.RecipeRowView> {
-        private List<Recipe> recipes;
-
-        public RecipeDeleteListRecyclerViewAdapter(List<Long> ids) {
-            super(RowViews.RowType.recipe);
-            this.putIds(ids);
-        }
-
-/*
-        public RecipeListRecyclerViewAdapter(List<Recipe> recipes) {
-            super(RowViews.RowType.recipe);
-            this.recipes = recipes;
-        }
-
- */
-
-        public RecipeDeleteListRecyclerViewAdapter() {
-            super(RowViews.RowType.recipe);
-            this.putIds();
-        }
-
-
-        public void replaceRecipes(List<Recipe> recipes){
-            this.recipes = recipes;
-        }
-
-        @NonNull
-        @Override
-        public RowViews.RecipeRowView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.layout_name_list, parent, false);
-            return RowViews.getRecipeInstance(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull RowViews.RecipeRowView holder, int position) {
-            holder.setRecipe(recipes.get(position));
-        }
-
-        @Override
-        public int getItemCount() {
-            return recipes.size();
-        }
-
-
-        public void loadDelete(){
-
-        }
-
-        public void finishDelete(){
-
-        }
-
-        @Override
-        public void putIds(List<Long> ids) {
-            recipes = Recipe.getRecipes(ids);
-        }
-
-        @Override
-        public void putIds() {
-            try {
-                recipes = Recipe.getRecipes();
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void putRecipe(Long id) {
-            return;
-        }
-    }
-
 
     public static class TopicListRecyclerViewAdapter extends ListRecyclerViewAdapter<RowViews.TopicRowView> {
         private List<Topic> topics;
@@ -211,7 +175,7 @@ public class ListRecyclerViewAdapters  {
         public RowViews.TopicRowView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.layout_name_list, parent, false);
-            return RowViews.gettopicInstance(view);
+            return addRowView(RowViews.gettopicInstance(view));
         }
 
         @Override
@@ -222,15 +186,6 @@ public class ListRecyclerViewAdapters  {
         @Override
         public int getItemCount() {
             return topics.size();
-        }
-
-
-        public void loadDelete(){
-
-        }
-
-        public void finishDelete(){
-
         }
 
         @Override
@@ -253,8 +208,19 @@ public class ListRecyclerViewAdapters  {
 
         @Override
         public void putRecipe(Long id) {
+            super.putRecipe(id);
             try {
-                topics = Topic.getTopics(Recipe.getRecipe(id));
+                topics = Topic.getTopics(super.recipe);
+            } catch (NotInitializedDBException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void putRecipe(Recipe recipe) {
+            super.putRecipe(recipe);
+            try {
+                topics = Topic.getTopics(super.recipe);
             } catch (NotInitializedDBException e) {
                 e.printStackTrace();
             }
@@ -276,7 +242,7 @@ public class ListRecyclerViewAdapters  {
         public RowViews.PumpRowView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.layout_name_list, parent, false);
-            return RowViews.getpumpInstance(view);
+            return addRowView(RowViews.getpumpInstance(view));
         }
 
         @Override
@@ -287,15 +253,6 @@ public class ListRecyclerViewAdapters  {
         @Override
         public int getItemCount() {
             return pumps.size();
-        }
-
-
-        public void loadDelete(){
-
-        }
-
-        public void finishDelete(){
-
         }
 
         @Override
@@ -314,11 +271,6 @@ public class ListRecyclerViewAdapters  {
             } catch (NotInitializedDBException e) {
                 e.printStackTrace();
             }
-        }
-
-        @Override
-        public void putRecipe(Long id) {
-
         }
     }
 
@@ -339,7 +291,7 @@ public class ListRecyclerViewAdapters  {
         public RowViews.IngredientRowView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.layout_name_list, parent, false);
-            return RowViews.getIngredientInstance(view);
+            return addRowView(RowViews.getIngredientInstance(view));
         }
 
         @Override
@@ -350,15 +302,6 @@ public class ListRecyclerViewAdapters  {
         @Override
         public int getItemCount() {
             return data.size();
-        }
-
-
-        public void loadDelete(){
-
-        }
-
-        public void finishDelete(){
-
         }
 
         @Override
@@ -378,14 +321,20 @@ public class ListRecyclerViewAdapters  {
 
         @Override
         public void putRecipe(Long id) {
+            super.putRecipe(id);
             data = Recipe.getRecipe(id).getIngredients();
+        }
+
+        @Override
+        public void putRecipe(Recipe recipe) {
+            super.putRecipe(recipe);
+            data = super.recipe.getIngredients();
         }
 
     }
 
     public static class RecipeIngredientListRecyclerViewAdapter extends ListRecyclerViewAdapter<RowViews.RecipeIngredientRowView> {
         private List<Ingredient> data;
-        private Recipe recipe;
 
         public RecipeIngredientListRecyclerViewAdapter(Long id) {
             super(RowViews.RowType.recipeIngredient);
@@ -397,13 +346,14 @@ public class ListRecyclerViewAdapters  {
         public RowViews.RecipeIngredientRowView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.layout_name_list, parent, false);
-            return RowViews.getrecipeIngredientInstance(view);
+            return addRowView(RowViews.getrecipeIngredientInstance(view));
         }
 
         @Override
         public void onBindViewHolder(@NonNull RowViews.RecipeIngredientRowView holder, int position) {
             try {
-                holder.setIngredientVolume(recipe, data.get(position), recipe.getSpecificIngredientVolume(data.get(position)));
+                holder.setRecipe(recipe);
+                holder.setIngredientVolume(data.get(position), recipe.getSpecificIngredientVolume(data.get(position)));
             } catch (TooManyTimesSettedIngredientEcxception e) {
                 e.printStackTrace();
             } catch (NoSuchIngredientSettedException e) {
@@ -414,15 +364,6 @@ public class ListRecyclerViewAdapters  {
         @Override
         public int getItemCount() {
             return data.size();
-        }
-
-
-        public void loadDelete(){
-
-        }
-
-        public void finishDelete(){
-
         }
 
         @Override
@@ -444,8 +385,14 @@ public class ListRecyclerViewAdapters  {
 
         @Override
         public void putRecipe(Long id) {
-            recipe = Recipe.getRecipe(id);
-            data = recipe.getIngredients();
+            super.putRecipe(id);
+            data = super.recipe.getIngredients();
+        }
+
+        @Override
+        public void putRecipe(Recipe recipe) {
+            super.putRecipe(recipe);
+            data = super.recipe.getIngredients();
         }
 
 
@@ -453,7 +400,6 @@ public class ListRecyclerViewAdapters  {
 
     public static class RecipeTopicListRecyclerViewAdapter extends ListRecyclerViewAdapter<RowViews.RecipeTopicRowView> {
         private List<Topic> data;
-        private Recipe recipe;
 
         public RecipeTopicListRecyclerViewAdapter(Long id) {
             super(RowViews.RowType.recipeIngredient);
@@ -465,27 +411,18 @@ public class ListRecyclerViewAdapters  {
         public RowViews.RecipeTopicRowView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.layout_name_list, parent, false);
-            return RowViews.getrecipeTopicInstance(view);
+            return addRowView(RowViews.getrecipeTopicInstance(view));
         }
 
         @Override
         public void onBindViewHolder(@NonNull RowViews.RecipeTopicRowView holder, int position) {
-            holder.setRecipeTopic(recipe, data.get(position));
-
+            holder.setRecipe(recipe);
+            holder.setTopic(data.get(position));
         }
 
         @Override
         public int getItemCount() {
             return data.size();
-        }
-
-
-        public void loadDelete(){
-
-        }
-
-        public void finishDelete(){
-
         }
 
         @Override
@@ -509,7 +446,17 @@ public class ListRecyclerViewAdapters  {
 
         @Override
         public void putRecipe(Long id) {
-            recipe = Recipe.getRecipe(id);
+            super.putRecipe(id);
+            try {
+                data = Topic.getTopics(recipe);
+            } catch (NotInitializedDBException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void putRecipe(Recipe recipe) {
+            super.putRecipe(recipe);
             try {
                 data = Topic.getTopics(recipe);
             } catch (NotInitializedDBException e) {
