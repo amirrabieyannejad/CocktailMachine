@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
@@ -21,12 +23,17 @@ class ListFragment extends Fragment {
     private FragmentListBinding binding;
     private static final String TAG = "ListFragment";
 
+    private ListRecyclerViewAdapters.ListRecyclerViewAdapter recyclerViewAdapter = null;
+
+
     private void setUP(String type, Long recipe_id){
         switch (type){
             case "AvailableRecipes": error();
             case "AllRecipes": error();
             case "Topics": setTopics(recipe_id);
             case "Ingredients": setIngredients(recipe_id);
+            case "AddTopics": setAddTopics(recipe_id);
+            case "AddIngredients": setAddIngredients(recipe_id);
             case "Pumps": error();
         }
     }
@@ -37,44 +44,60 @@ class ListFragment extends Fragment {
             case "AllRecipes": setAllRecipes();
             case "Topics": setTopics();
             case "Ingredients": setIngredients();
+            case "AddTopics": error();
+            case "AddIngredients": error();
             case "Pumps": setPumps();
         }
     }
 
-    private void setIngredients(Long recipe_id){
-        ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter recyclerViewAdapter =
+    private void setAddIngredients(Long recipe_id){
+        recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter(recipe_id);
-        set(recyclerViewAdapter, "Zutaten");
+        recyclerViewAdapter.loadAdd();
+        set( "Zutaten hinzufügen");
+    }
+
+    private void setAddTopics(Long recipe_id){
+        recyclerViewAdapter =
+                new ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter(recipe_id);
+        recyclerViewAdapter.loadAdd();
+        set( "Serviervorschläge hinzufügen");
+    }
+
+    private void setIngredients(Long recipe_id){
+        recyclerViewAdapter =
+                new ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter(recipe_id);
+        set( "Zutaten");
     }
 
     private void setTopics(Long recipe_id){
-        ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter recyclerViewAdapter =
+        recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter(recipe_id);
-        set(recyclerViewAdapter, "Serviervorschläge");
+        set("Serviervorschläge");
     }
 
     private void setPumps(){
-        ListRecyclerViewAdapters.PumpListRecyclerViewAdapter recyclerViewAdapter =
+        recyclerViewAdapter =
                 new ListRecyclerViewAdapters.PumpListRecyclerViewAdapter();
-        set(recyclerViewAdapter, "Pumpen");
+        set( "Pumpen");
     }
 
     private void setIngredients(){
-        ListRecyclerViewAdapters.IngredientListRecyclerViewAdapter recyclerViewAdapter =
+        recyclerViewAdapter =
                 new ListRecyclerViewAdapters.IngredientListRecyclerViewAdapter();
-        set(recyclerViewAdapter, "Zutaten");
+        set( "Zutaten");
     }
 
     private void setTopics(){
-        ListRecyclerViewAdapters.TopicListRecyclerViewAdapter recyclerViewAdapter =
+        recyclerViewAdapter =
                 new ListRecyclerViewAdapters.TopicListRecyclerViewAdapter();
-        set(recyclerViewAdapter, "Serviervorschläge");
+        set("Serviervorschläge");
     }
 
     private void setAvailableRecipes(){
-        ListRecyclerViewAdapters.RecipeListRecyclerViewAdapter recyclerViewAdapter =
+        recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeListRecyclerViewAdapter();
-        set(recyclerViewAdapter, "Rezepte");
+        set( "Rezepte");
     }
 
     private void setAllRecipes(){
@@ -85,14 +108,51 @@ class ListFragment extends Fragment {
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
         }
-        set(recyclerViewAdapter, "Rezepte (Administrator)");
+        this.recyclerViewAdapter = recyclerViewAdapter;
+        set("Rezepte (Administrator)");
     }
 
-    private void set(ListRecyclerViewAdapters.ListRecyclerViewAdapter adapter, String title){
+    private void set(String title){
         binding.includeList.textViewNameListTitle.setText(title);
-        binding.includeList.recylerViewNames.setLayoutManager(adapter.getManager(this.getContext()));
-        binding.includeList.recylerViewNames.setAdapter(adapter);
+        binding.includeList.recylerViewNames.setLayoutManager(this.recyclerViewAdapter.getManager(this.getContext()));
+        binding.includeList.recylerViewNames.setAdapter(this.recyclerViewAdapter);
         binding.includeList.getRoot().setVisibility(View.VISIBLE);
+    }
+
+    private void reload(){}
+
+    private void setButtons(){
+        binding.includeList.imageButtonListDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(recyclerViewAdapter.isCurrentlyDeleting()){
+                    recyclerViewAdapter.finishDelete();
+                    reload();
+                }else{
+                    if(recyclerViewAdapter.isCurrentlyAdding()){
+                        Toast.makeText(getContext(), "Kein Löschen möglich!", Toast.LENGTH_SHORT);
+                    }else {
+                        recyclerViewAdapter.loadDelete();
+                    }
+                }
+            }
+        });
+
+        binding.includeList.imageButtonListEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(recyclerViewAdapter.isCurrentlyAdding()){
+                    recyclerViewAdapter.finishAdd();
+                    reload();
+                }else{
+                    if(recyclerViewAdapter.isCurrentlyDeleting()){
+                        Toast.makeText(getContext(), "Kein Editieren möglich!", Toast.LENGTH_SHORT);
+                    }else {
+                        recyclerViewAdapter.loadAdd();
+                    }
+                }
+            }
+        });
     }
 
     @Nullable

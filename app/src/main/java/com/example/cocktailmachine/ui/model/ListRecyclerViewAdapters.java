@@ -22,12 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListRecyclerViewAdapters  {
-
-
-
     public abstract static class ListRecyclerViewAdapter<E extends RowViews.RowView> extends RecyclerView.Adapter<E> {
         private RowViews.RowType type;
         private boolean lock = false;
+        private boolean add = false;
+        private boolean delete = false;
         private List<E> views = new ArrayList<>();
         protected Recipe recipe=null;
 
@@ -41,9 +40,18 @@ public class ListRecyclerViewAdapters  {
             return llm;
         }
 
+        public boolean isCurrentlyDeleting(){
+            return delete;
+        }
+
+        public boolean isCurrentlyAdding(){
+            return add;
+        }
+
         public boolean loadDelete(){
             if(!lock){
                 lock = true;
+                delete = true;
                 for (RowViews.RowView view: views) {
                     view.loadCheck();
                     view.deleteLongListener();
@@ -53,16 +61,15 @@ public class ListRecyclerViewAdapters  {
             return false;
         }
 
-        public boolean loadAdd(){
+        public void loadAdd(){
             if(!lock && recipe!=null ){
                 lock = true;
+                add = true;
                 for (RowViews.RowView view: views) {
                     view.loadCheck();
                     view.deleteLongListener();
                 }
-                return true;
             }
-            return false;
         }
 
         public void finishDelete(){
@@ -70,6 +77,7 @@ public class ListRecyclerViewAdapters  {
                 view.finishDelete();
             }
             lock = false;
+            delete = false;
         }
 
         public void finishAdd(){
@@ -78,6 +86,7 @@ public class ListRecyclerViewAdapters  {
                 view.addLongListener(v -> loadDelete());
             }
             lock = false;
+            add = false;
         }
 
         protected E addRowView(E view){
