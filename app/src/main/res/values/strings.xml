@@ -1,3 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2013 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
 <resources>
     <string name="app_name">CocktailMachine</string>
     <!-- Strings related to login -->
@@ -121,4 +136,62 @@
     <string name="minimales_pumpvolumen">minimales Pumpvolumen:</string>
     <string name="item_desc">Desc igjöljgr</string>
     <string name="item_name">Name rijih</string>
+    <string name="welcome">Cocktail Machine</string>
+    <string name="ble_not_supported">BLE is not supported</string>
+    <string name="label_data">Data:</string>
+    <string name="label_device_address">Device address:</string>
+    <string name="label_state">State:</string>
+    <string name="txt_notificationData">No Notification</string>
+    <string name="txt_ReadCharacteristicData">No Characteristic Value</string>
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="title_devices">BLE Device Scan</string>
+    <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
+    <string name="data_available">Data is available</string>
+    <string name="unknown_device">Unknown device</string>
+    <string name="unknown_characteristic">Unknown characteristic</string>
+    <string name="unknown_service">Unknown service</string>
+    <string name="no_data">No Data</string>
+
+    <!-- Menu items -->
+    <string name="menu_connect">Connect</string>
+    <string name="menu_disconnect">Disconnect</string>
+    <string name="menu_scan">Scan</string>
+    <string name="menu_stop">Stop</string>
+    <string name="add_recipe">add Recipe here</string>
+    <string name="add_liquid">add Liquid here</string>
+    <string name="add_volume">add Volume here</string>
+
+    <string name="add_liquid2">add Liquid2 here</string>
+    <string name="add_volume2">add Volume2 here</string>
+
+    <string name="add_liquid3">add Liquid3 here</string>
+    <string name="add_volume3">add Volume3 here</string>
+
+    <string name="add_liquid4">add Liquid4 here</string>
+    <string name="add_volume4">add Volume4 here</string>
+
+    <string name="add_liquid5">add Liquid5 here</string>
+    <string name="add_volume5">add Volume5 here</string>
+
+    <string name="add_user">add user name here</string>
+    <string name="btn_addUser">aad User</string>
+
+    <string name="btn_reset">Reset</string>
+
+    <string name="btn_clean">Clean</string>
+    <string name="btn_makeRecipe">Make Recipe</string>
+    <string name="btn_definePump">Define Pump</string>
+    <string name="btn_defineRecipe">Define Recipe</string>
+    <string name="btn_addLiquid">Add Liquid</string>
+    <string name="btn_calibrate">Calibrate</string>
+    <string name="btn_ReadPumpsVolume">Read Liquids</string>
+    <string name="btn_ReadRecipes">Read Recipes</string>
+    <string name="btn_ReadCocktail">Current Cocktail</string>
+    <string name="btn_ReadStates">Read States</string>
+    <string name="txt_add_Slot">Add Slot</string>
+    <string name="btn_refillPump">Refill Pump</string>
+    <string name="btn_restart">Restart</string>
+    <string name="btn_editRecipe">Edit Recipe</string>
+
 </resources>

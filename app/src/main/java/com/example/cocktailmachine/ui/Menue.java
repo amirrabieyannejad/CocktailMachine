@@ -25,4 +25,10 @@ public class Menue extends AppCompatActivity {
         startActivity(success);
 
     }
+
+    public void exit(View view){
+        Intent success = new Intent(this, Grafik.class);
+        startActivity(success);
+
+    }
 }
