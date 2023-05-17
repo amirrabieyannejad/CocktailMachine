@@ -136,7 +136,6 @@
     <string name="minimales_pumpvolumen">minimales Pumpvolumen:</string>
     <string name="item_desc">Desc igjöljgr</string>
     <string name="item_name">Name rijih</string>
-    <string name="welcome">Cocktail Machine</string>
     <string name="ble_not_supported">BLE is not supported</string>
     <string name="label_data">Data:</string>
     <string name="label_device_address">Device address:</string>
