@@ -173,13 +173,6 @@ public class SingleCocktailChoice extends AppCompatActivity {
         }
     }
 
-    private Fragment getRightFragment(){
-        fragmentCounter++;
-        if(fragmentCounter%2 == 0){
-            return(new fragment1());
-        }
-        return (new fragment2());
-    }
 
     private void replaceFragment(Fragment fragment){
 
