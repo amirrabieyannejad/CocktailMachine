@@ -55,6 +55,7 @@ public class GlassFillFragment extends Fragment {
                              Bundle savedInstanceState) {
         this.view =  inflater.inflate(R.layout.fragment_glass_fill, container, false);
         this.textView = this.view.findViewById(R.id.textViewCocktail);
+        this.textView.setText(this.text);
         this.imageView = this.view.findViewById(R.id.imageCocktail);
         this.imageView.setImageBitmap(this.image);
         return this.view;
