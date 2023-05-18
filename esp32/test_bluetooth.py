@@ -92,9 +92,9 @@ async def test_run(client):
   await admin({"cmd": "clean", "user": 0})
 
   # set up machine
-  await admin({"cmd": "define_pump", "user": 0, "liquid": "water",    "volume": 1000, "slot": 0})
-  await admin({"cmd": "define_pump", "user": 0, "liquid": "beer",     "volume": 2000, "slot": 1})
-  await admin({"cmd": "define_pump", "user": 0, "liquid": "lemonade", "volume": 3000, "slot": 2})
+  await admin({"cmd": "define_pump", "user": 0, "liquid": "water",    "volume": 1000, "slot": 1})
+  await admin({"cmd": "define_pump", "user": 0, "liquid": "beer",     "volume": 2000, "slot": 2})
+  await admin({"cmd": "define_pump", "user": 0, "liquid": "lemonade", "volume": 3000, "slot": 3})
 
   # define recipes
   await user({"cmd": "define_recipe", "user": 1, "name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]})
@@ -118,7 +118,7 @@ async def test_run(client):
   await user({"cmd": "add_liquid", "user": 1, "volume": 10, "liquid": "water"})
   await user({"cmd": "add_liquid", "user": 1, "volume": 10, "liquid": "beer"})
   await user({"cmd": "add_liquid", "user": 1, "volume": 10, "liquid": "water"})
-  await admin({"cmd": "refill_pump", "user": 0, "volume": 5000, "slot": 0})
+  await admin({"cmd": "refill_pump", "user": 0, "volume": 5000, "slot": 1})
   await read_status(client)
 
   await read_all_chars(client)

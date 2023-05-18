@@ -1,14 +1,15 @@
 // general system settings
 #define BLE_NAME             	"Cocktail Machine ESP32"	// bluetooth server name
 #define CORE_DEBUG_LEVEL     	4                       	// 1 = error; 3 = info ; 4 = debug
-const unsigned int VERSION   	= 2;                    	// version number (used for configs etc)
-const unsigned char MAX_PUMPS	= 9;                    	// maximum number of supported pumps
+const unsigned int VERSION   	= 3;                    	// version number (used for configs etc)
+const unsigned char MAX_PUMPS	= 1 + 2*8;              	// maximum number of supported pumps;
 const float LIQUID_CUTOFF    	= 0.1;                  	// minimum amount of liquid we round off
 
 // general chip functionality
 #include <Arduino.h>
 #include <Preferences.h>
 #include <SPI.h>
+#include <Wire.h>
 
 // pinout
 typedef const unsigned char Pin;
@@ -17,9 +18,12 @@ Pin PIN_SDCARD_CS       	= T6;
 Pin PIN_HX711_DOUT      	= T0;
 Pin PIN_HX711_SCK       	= SCK;
                         	
-Pin PIN_BUILTIN_PUMP_EN 	= T9;
-Pin PIN_BUILTIN_PUMP_IN1	= T3;
-Pin PIN_BUILTIN_PUMP_IN2	= T8;
+Pin PIN_SDA             	= 14;
+Pin PIN_SCL             	= 32;
+                        	
+Pin PIN_BUILTIN_PUMP_EN 	= 15;
+Pin PIN_BUILTIN_PUMP_IN1	= 33;
+Pin PIN_BUILTIN_PUMP_IN2	= 27;
 
 // c++ standard library
 #include <algorithm>
@@ -36,6 +40,12 @@ Pin PIN_BUILTIN_PUMP_IN2	= T8;
 #include <FS.h>
 #include <SD.h>
 
+// scale
+#include <HX711.h>
+
+// IO extension cards
+#include <PCF8574.h>
+
 // bluetooth
 #include <BLE2902.h>
 #include <BLEAddress.h>
@@ -48,6 +58,13 @@ Pin PIN_BUILTIN_PUMP_IN2	= T8;
 #define error(...)	log_e(__VA_ARGS__)
 #define info(...) 	log_i(__VA_ARGS__)
 #define warn(...) 	log_w(__VA_ARGS__)
+
+// easier time constants
+#define USEC(n) (n)
+#define MS(n)   (n * 1000LL)
+#define S(n)    (n * 1000LL * 1000LL)
+#define MIN(n)  (n * 1000LL * 1000LL * 60LL)
+#define HOUR(n) (n * 1000LL * 1000LL * 60LL * 60)
 
 // TODO avoid passing around char* everywhere,
 // and use either proper strings with memory management or pass buffers explicitly as needed
@@ -71,15 +88,9 @@ struct PumpSlot {
   Pin enable;
   Pin in1;
   Pin in2;
+  PCF8574 *pcf;
 
-  uint64_t time_init;
-  uint64_t time_per_100ml;
-  uint64_t time_reverse;
-
-  PumpSlot(Pin enable, Pin in1, Pin in2);
-  void run(uint64_t time, bool reverse);
-  void start(bool reverse);
-  void stop();
+  PumpSlot(PCF8574 *pcf,  Pin enable, Pin in1, Pin in2);
 };
 
 struct Pump {
@@ -87,12 +98,24 @@ struct Pump {
   String liquid;
   float volume;
 
-  Pump(PumpSlot *slot, String liquid, float volume) : slot(slot), liquid(liquid), volume(volume) {};
+  uint64_t time_init;
+  uint64_t time_per_100ml;
+  uint64_t time_reverse;
+
+  Pump(PumpSlot *slot, String liquid, float volume)
+    : slot(slot), liquid(liquid), volume(volume),
+      time_init(S(1)), time_per_100ml(S(30)), time_reverse(S(1)) {};
+
   Processed* drain(float amount);
   Processed* refill(float volume);
   Processed* empty();
 
+  void run(uint64_t time, bool reverse);
+  void start(bool reverse);
+  void stop();
   void pump(float amount);
+
+  bool calibrate(uint64_t time1, uint64_t time2, float volume1, float volume2);
 };
 
 struct Ingredient {
@@ -329,10 +352,55 @@ struct CmdClean : public Command {
   CmdClean(User user) : user(user) {}
 };
 
-struct CmdCalibratePumps : public Command {
-  def_cmd("calibrate_pumps", ADMIN);
+struct CmdRunPump : public Command {
+  def_cmd("run_pump", ADMIN);
   User user;
-  CmdCalibratePumps(User user) : user(user) {}
+  int32_t slot;
+  uint64_t time;
+  CmdRunPump(User user, int32_t slot, uint64_t time) : user(user), slot(slot), time(time) {}
+};
+
+struct CmdCalibratePump : public Command {
+  def_cmd("calibrate_pump", ADMIN);
+  User user;
+  int32_t slot;
+  uint64_t time1;
+  uint64_t time2;
+  float volume1;
+  float volume2;
+  CmdCalibratePump(User user, int32_t slot, uint64_t time1, uint64_t time2 ,float volume1, float volume2)
+    : user(user), slot(slot), time1(time1), time2(time2), volume1(volume1), volume2(volume2) {}
+};
+
+struct CmdSetPumpTimes : public Command {
+  def_cmd("set_pump_times", ADMIN);
+  User user;
+  int32_t slot;
+  uint64_t time_init;
+  uint64_t time_per_100ml;
+  uint64_t time_reverse;
+  CmdSetPumpTimes(User user, int32_t slot, uint64_t time_init, uint64_t time_per_100ml, uint64_t time_reverse)
+    : user(user), slot(slot), time_init(time_init), time_per_100ml(time_per_100ml), time_reverse(time_reverse) {}
+};
+
+struct CmdCalibrateScale : public Command {
+  def_cmd("calibrate_scale", ADMIN);
+  User user;
+  float weight;
+  CmdCalibrateScale(User user, float weight) : user(user), weight(weight) {}
+};
+
+struct CmdSetScaleFactor : public Command {
+  def_cmd("set_scale_factor", ADMIN);
+  User user;
+  float factor;
+  CmdSetScaleFactor(User user, float factor) : user(user), factor(factor) {}
+};
+
+struct CmdTareScale : public Command {
+  def_cmd("tare_scale", ADMIN);
+  User user;
+  CmdTareScale(User user) : user(user) {}
 };
 
 struct Parsed {
@@ -348,29 +416,31 @@ struct Queued {
 
 // global state
 
+int64_t config_state = 0;
+Preferences preferences;
+
 bool sdcard_available = false;
 
-BLEServer *ble_server;
-
-Processed* machine_state;
-User current_user = -1;
-
-Status* all_status[NUM_STATUS];
-Comm*   all_comm[NUM_COMM];
+bool scale_available  = false;
+HX711 scale;
 
 PumpSlot* pump_slots[MAX_PUMPS];
 Pump* pumps[MAX_PUMPS];
 
-std::forward_list<Recipe> recipes;
-std::forward_list<Ingredient> cocktail;
+Processed* machine_state;
 
-std::queue<Queued> command_queue;
-std::queue<Ingredient> cocktail_queue;
-
+User current_user = -1;
 std::unordered_map<User, String> users;
 
-int64_t config_state = 0;
-Preferences preferences;
+BLEServer *ble_server;
+Status* all_status[NUM_STATUS];
+Comm*   all_comm[NUM_COMM];
+
+std::forward_list<Recipe>     recipes;
+std::forward_list<Ingredient> cocktail;
+
+std::queue<Queued>     command_queue;
+std::queue<Ingredient> cocktail_queue;
 
 // function declarations
 
@@ -381,13 +451,6 @@ void sleep_idle(uint64_t duration);
 void sleep_light(uint64_t duration);
 void sleep_deep(uint64_t duration);
 void error_loop(void);
-
-// easier time constants
-#define USEC(n) (n)
-#define MS(n)   (n * 1000LL)
-#define S(n)    (n * 1000LL * 1000LL)
-#define MIN(n)  (n * 1000LL * 1000LL * 60LL)
-#define HOUR(n) (n * 1000LL * 1000LL * 60LL * 60)
 
 // led feedback (if possible)
 #if defined(LED_BUILTIN)
@@ -413,7 +476,7 @@ void ble_stop(void);
 
 // scale
 float scale_weigh();
-void scale_calibrate();
+void scale_calibrate(float weight);
 
 // command processing
 Processed* add_to_queue(const String json, uint16_t conn_id);
@@ -432,6 +495,8 @@ void update_user(User user);
 // init
 
 void setup() {
+  Wire.begin(PIN_SDA, PIN_SCL);
+
   { // setup serial communication
     Serial.begin(115200);
     while (!Serial) { sleep_idle(MS(10)); }
@@ -454,13 +519,46 @@ void setup() {
 
   { // setup pump slots
     for (int i=0; i<MAX_PUMPS; i++)	pump_slots[i]	= NULL;
-    pump_slots[0] = new PumpSlot{
+    int used_slots = 0;
+    pump_slots[used_slots++] = new PumpSlot{
+      NULL,
       PIN_BUILTIN_PUMP_EN,
       PIN_BUILTIN_PUMP_IN1,
       PIN_BUILTIN_PUMP_IN2,
     };
 
-    // TODO look for io expansion cards and add more slots as needed
+    for(int i=0; i<8; i++) {
+      int address = 0x20 + i;
+      PCF8574 *pcf = new PCF8574(address);
+
+      if (pcf->begin() && pcf->isConnected()) {
+        info("found extension card at address 0x%x, adding 2 pump slots", address);
+        pump_slots[used_slots++] = new PumpSlot{pcf, 0, 1, 2};
+        pump_slots[used_slots++] = new PumpSlot{pcf, 3, 4, 5};
+      } else {
+        delete pcf;
+        continue;
+      }
+    }
+    info("total pump slots: %d/%d", used_slots, MAX_PUMPS);
+  }
+
+  { // setup scale
+    scale.begin(PIN_HX711_DOUT, PIN_HX711_SCK);
+
+    if (scale.wait_ready_timeout(1000, 1)) {
+      // sanity check in case nothing is connected
+      if (scale.read() == 0.0) {
+        error("scale returned implausible value, assuming it's disconnected");
+      } else {
+        scale_available = true;
+        info("scale initialized");
+      }
+    }
+
+    if (!scale_available) {
+      error("scale not found");
+    }
   }
 
   { // initialize machine state
@@ -595,10 +693,11 @@ Parsed parse_command(const String json) {
   if (j_##field.isNull()) return Parsed{NULL, new Incomplete()};  \
   const type field = j_##field.as<type>();
 
-#define parse_bool(field) 	parse_as(field, bool)
-#define parse_float(field)	parse_as(field, float)
-#define parse_int(field)  	parse_as(field, int32_t)
-#define parse_user()      	parse_as(user, int32_t)
+#define parse_bool(field)  	parse_as(field, bool)
+#define parse_float(field) 	parse_as(field, float)
+#define parse_int32(field) 	parse_as(field, int32_t)
+#define parse_uint64(field)	parse_as(field, uint64_t)
+#define parse_user()       	parse_as(user, int32_t)
 
   const char *cmd_name = doc["cmd"];
   if (!cmd_name) return Parsed{NULL, new Incomplete()};
@@ -642,13 +741,13 @@ Parsed parse_command(const String json) {
     parse_user();
     parse_str(liquid);
     parse_float(volume);
-    parse_int(slot);
+    parse_int32(slot);
     cmd = new CmdDefinePump(user, slot, liquid, volume);
 
   } else if (match_name(CmdRefillPump)) {
     parse_user();
     parse_float(volume);
-    parse_int(slot);
+    parse_int32(slot);
     cmd = new CmdRefillPump(user, slot, volume);
 
   } else if (match_name(CmdReset)) {
@@ -667,9 +766,42 @@ Parsed parse_command(const String json) {
     parse_user();
     cmd = new CmdClean(user);
 
-  } else if (match_name(CmdCalibratePumps)) {
+  } else if (match_name(CmdRunPump)) {
     parse_user();
-    cmd = new CmdCalibratePumps(user);
+    parse_int32(slot);
+    parse_uint64(time);
+    cmd = new CmdRunPump(user, slot, time);
+
+  } else if (match_name(CmdCalibratePump)) {
+    parse_user();
+    parse_int32(slot);
+    parse_uint64(time1);
+    parse_uint64(time2);
+    parse_float(volume1);
+    parse_float(volume2);
+    cmd = new CmdCalibratePump(user, slot, time1, time2, volume1, volume2);
+
+  } else if (match_name(CmdSetPumpTimes)) {
+    parse_user();
+    parse_int32(slot);
+    parse_uint64(time_init);
+    parse_uint64(time_per_100ml);
+    parse_uint64(time_reverse);
+    cmd = new CmdSetPumpTimes(user, slot, time_init, time_per_100ml, time_reverse);
+
+  } else if (match_name(CmdTareScale)) {
+    parse_user();
+    cmd = new CmdTareScale(user);
+
+  } else if (match_name(CmdCalibrateScale)) {
+    parse_user();
+    parse_float(weight);
+    cmd = new CmdCalibrateScale(user, weight);
+
+  } else if (match_name(CmdSetScaleFactor)) {
+    parse_user();
+    parse_float(factor);
+    cmd = new CmdSetScaleFactor(user, factor);
 
   } else {
     return Parsed{NULL, new UnknownCommand()};
@@ -716,18 +848,54 @@ Processed* CmdFactoryReset::execute() {
   return new Success();
 }
 
-Processed* CmdCalibratePumps::execute() {
-  // TODO implement logic once we have the hardware
+Processed* CmdRunPump::execute() {
+  // FIXME implement
+  if (!is_admin(this->user)) return new Unauthorized();
+
+  return new Unsupported();
+};
+
+Processed* CmdCalibratePump::execute() {
+  // FIXME implement
   if (!is_admin(this->user)) return new Unauthorized();
 
   config_save();
-  return reset_machine();
+  return new Unsupported();
+};
+
+Processed* CmdSetPumpTimes::execute() {
+  // FIXME implement
+  if (!is_admin(this->user)) return new Unauthorized();
+
+  config_save();
+  return new Unsupported();
+};
+
+Processed* CmdCalibrateScale::execute() {
+  // FIXME implement
+  if (!is_admin(this->user)) return new Unauthorized();
+
+  return new Unsupported();
+};
+
+Processed* CmdTareScale::execute() {
+  // FIXME implement
+  if (!is_admin(this->user)) return new Unauthorized();
+
+  return new Unsupported();
+};
+
+Processed* CmdSetScaleFactor::execute() {
+  // FIXME implement
+  if (!is_admin(this->user)) return new Unauthorized();
+
+  return new Unsupported();
 };
 
 Processed* CmdClean::execute() {
-  // TODO implement logic once we have the hardware
+  // FIXME implement
   if (!is_admin(this->user)) return new Unauthorized();
-  return reset_machine();
+  return new Unsupported();
 };
 
 Processed* CmdReset::execute() {
@@ -1506,42 +1674,57 @@ bool config_clear(void) {
 }
 
 // pumps
-PumpSlot::PumpSlot(Pin enable, Pin in1, Pin in2)
-  : enable(enable), in1(in1), in2(in2),
-    time_init(S(1)), time_per_100ml(S(30)), time_reverse(S(1))
+PumpSlot::PumpSlot(PCF8574 *pcf, Pin enable, Pin in1, Pin in2)
+  : pcf(pcf), enable(enable), in1(in1), in2(in2)
 {
-  pinMode(enable, OUTPUT);
-  pinMode(in1, OUTPUT);
-  pinMode(in2, OUTPUT);
+  if (pcf == NULL) {
+    pinMode(enable,	OUTPUT);
+    pinMode(in1,   	OUTPUT);
+    pinMode(in2,   	OUTPUT);
+  }
 }
 
-void PumpSlot::run(uint64_t time, bool reverse=false) {
+void Pump::run(uint64_t time, bool reverse=false) {
   this->start(reverse);
   sleep_idle(time);
   this->stop();
 }
 
-void PumpSlot::start(bool reverse=false) {
-  digitalWrite(this->in1, reverse ? HIGH : LOW);
-  digitalWrite(this->in2, reverse ? LOW  : HIGH);
-  digitalWrite(this->enable, HIGH);
+void Pump::start(bool reverse=false) {
+  PumpSlot *slot = this->slot;
+  if (slot->pcf == NULL) {
+    digitalWrite(slot->in1, reverse ? HIGH : LOW);
+    digitalWrite(slot->in2, reverse ? LOW  : HIGH);
+    digitalWrite(slot->enable, HIGH);
+  } else {
+    slot->pcf->write(slot->in1, reverse ? HIGH : LOW);
+    slot->pcf->write(slot->in2, reverse ? LOW  : HIGH);
+    slot->pcf->write(slot->enable, HIGH);
+  }
 }
 
-void PumpSlot::stop() {
-  digitalWrite(this->in1, LOW);
-  digitalWrite(this->in2, LOW);
-  digitalWrite(this->enable, LOW);
+void Pump::stop() {
+  PumpSlot *slot = this->slot;
+  if (slot->pcf == NULL) {
+    digitalWrite(slot->in1, LOW);
+    digitalWrite(slot->in2, LOW);
+    digitalWrite(slot->enable, LOW);
+  } else {
+    slot->pcf->write(slot->in1, LOW);
+    slot->pcf->write(slot->in2, LOW);
+    slot->pcf->write(slot->enable, LOW);
+  }
 }
 
 void Pump::pump(float amount) {
-  PumpSlot *s = this->slot;
-  if (s == NULL) { // no pump connected, simulate operation
+  PumpSlot *slot = this->slot;
+  if (slot == NULL) { // no pump connected, simulate operation
     debug("pump would add: %.1f", amount);
 
   } else { // run real pump
-    s->run(s->time_init);
-    s->run(std::round((amount / 100.0) * s->time_per_100ml));
-    s->run(s->time_reverse, true);
+    this->run(this->time_init);
+    this->run(std::round((amount / 100.0) * this->time_per_100ml));
+    this->run(this->time_reverse, true);
   }
 }
 
