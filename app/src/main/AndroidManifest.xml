@@ -56,13 +56,6 @@
         android:theme="@style/Theme.CocktailMachine"
         tools:targetApi="21">
         <activity
-            android:name=".FillAnimation"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
             android:name="com.example.cocktailmachine.ui.MainActivity"
             android:exported="false"
             android:label="@string/title_activity_main"
@@ -80,6 +73,13 @@
         </activity>
         <activity
             android:name="com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice"
+            android:exported="true">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name="com.example.cocktailmachine.ui.fillAnimation.FillAnimation"
             android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
