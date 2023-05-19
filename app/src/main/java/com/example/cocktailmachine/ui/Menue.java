@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
 import com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice;
 
@@ -29,6 +30,13 @@ public class Menue extends AppCompatActivity {
 
     public void openGlassFillAnimationView(View view){
         Intent success = new Intent(this, FillAnimation.class);
+        startActivity(success);
+
+    }
+
+
+    public void openDeviceScan(View view){
+        Intent success = new Intent(this, DeviceScanActivity.class);
         startActivity(success);
 
     }
