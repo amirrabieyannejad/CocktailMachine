@@ -76,8 +76,8 @@ typedef uint64_t dur_t;
 // machine parts
 typedef int32_t User;
 
-#define USER_ADMIN  	= User(0);
-#define USER_UNKNOWN	= User(-1);
+#define USER_ADMIN  	User(0)
+#define USER_UNKNOWN	User(-1)
 
 struct Processed {
   virtual const String json();
@@ -1022,7 +1022,12 @@ Processed* CmdRefillPump::execute() {
 }
 
 Processed* CmdAddLiquid::execute() {
-  // TODO only allowed for admin or the current user
+  // only allowed for admin or the current user
+  if (current_user != USER_UNKNOWN &&
+      current_user != this->user &&
+      !is_admin(this->user))
+    return new Unauthorized();
+
   Processed *err = add_liquid(this->user, this->liquid, this->volume);
   if (err) return err;
   return new Success();
@@ -1153,7 +1158,7 @@ Processed* CmdMakeRecipe::execute() {
 
 bool is_admin(User user) {
   // TODO use roles etc
-  return (user == 0);
+  return (user == USER_ADMIN);
 }
 
 Processed* add_liquid(User user, const String liquid, float amount) {
