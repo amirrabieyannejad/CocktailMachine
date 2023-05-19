@@ -2,7 +2,7 @@
 
 ## Allgemein
 
-- Name: Cocktail Machine ESP32 (Simulator)
+- Name: Cocktail Machine ESP32
 - UUID des Namens: c0605c38-3f94-33f6-ace6-7a5504544a80
 
 Der ESP nutzt kein Pairing. Stattdessen wird jedem Benutzer eine User-ID zugewiesen, die dann bei den Befehlen mit angegeben werden muss. 
