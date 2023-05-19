@@ -34,7 +34,7 @@ public class FillAnimation extends AppCompatActivity {
         Recipe recipe = SingeltonTestdata.getSingelton().getRecipe();
         Bitmap image = null;
         try {
-            image = BildgeneratorGlas.bildgenerationGlas(this,recipe);
+            image = BildgeneratorGlas.bildgenerationGlas(this,recipe,(float)0.5);
         } catch (TooManyTimesSettedIngredientEcxception e) {
             e.printStackTrace();
         } catch (NoSuchIngredientSettedException e) {
