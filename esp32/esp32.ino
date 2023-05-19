@@ -1,7 +1,7 @@
 // general system settings
 #define BLE_NAME             	"Cocktail Machine ESP32"	// bluetooth server name
 #define CORE_DEBUG_LEVEL     	4                       	// 1 = error; 3 = info ; 4 = debug
-const unsigned int VERSION   	= 3;                    	// version number (used for configs etc)
+const unsigned int VERSION   	= 4;                    	// version number (used for configs etc)
 const unsigned char MAX_PUMPS	= 1 + 4*8;              	// maximum number of supported pumps;
 const float LIQUID_CUTOFF    	= 0.1;                  	// minimum amount of liquid we round off
 
@@ -99,6 +99,10 @@ struct Pump {
   dur_t time_init;
   dur_t time_reverse;
   float rate;
+
+  Pump(PumpSlot *slot, String liquid, float volume, dur_t time_init, dur_t time_reverse, float rate)
+    : slot(slot), liquid(liquid), volume(volume),
+      time_init(time_init), time_reverse(time_reverse), rate(rate) {};
 
   Pump(PumpSlot *slot, String liquid, float volume)
     : slot(slot), liquid(liquid), volume(volume),
@@ -828,11 +832,14 @@ Processed* CmdFactoryReset::execute() {
   if (!is_admin(this->user)) return new Unauthorized();
 
   { // reset settings
-    // FIXME calibration data
-
     config_clear();
 
     for (int i=0; i<MAX_PUMPS; i++) pumps[i]	= NULL;
+
+    if (scale_available) {
+      scale.set_offset(0);
+      scale.set_scale(1.0);
+    }
 
     while (!command_queue.empty()) 	command_queue.pop();
     while (!cocktail_queue.empty())	cocktail_queue.pop();
@@ -1592,7 +1599,10 @@ bool config_save(void) {
     // metadata
     preferences.putUInt("version", VERSION);
 
-    // FIXME calibration data
+    if (scale_available) { // scale
+      preferences.putFloat("scale/t", scale.get_offset());
+      preferences.putFloat("scale/f", scale.get_scale());
+    }
 
     { // pumps
       char key[15];
@@ -1608,6 +1618,15 @@ bool config_save(void) {
 
         snprintf(key, sizeof(key), "pump_%d/v", i);
         preferences.putFloat(key, p->volume);
+
+        snprintf(key, sizeof(key), "pump_%d/ti", i);
+        preferences.putULong64(key, p->time_init);
+
+        snprintf(key, sizeof(key), "pump_%d/tr", i);
+        preferences.putULong64(key, p->time_reverse);
+
+        snprintf(key, sizeof(key), "pump_%d/rt", i);
+        preferences.putFloat(key, p->rate);
       }
     }
 
@@ -1663,7 +1682,12 @@ bool config_load(void) {
     update_config_state(state);
   }
 
-  // FIXME calibration data
+  if (scale_available) { // scale
+    float tare = preferences.getFloat("scale/t");
+    float factor = preferences.getFloat("scale/f");
+    scale.set_scale(factor);
+    scale.set_offset(tare);
+  }
 
   { // pumps
     for (int i=0; i<MAX_PUMPS; i++) pumps[i] = NULL; // clear old config
@@ -1682,9 +1706,18 @@ bool config_load(void) {
       snprintf(key, sizeof(key), "pump_%d/v", i);
       float volume = preferences.getFloat(key);
 
+      snprintf(key, sizeof(key), "pump_%d/ti", i);
+      time_t time_init = preferences.getULong64(key);
+
+      snprintf(key, sizeof(key), "pump_%d/tr", i);
+      time_t time_reverse = preferences.getULong64(key);
+
+      snprintf(key, sizeof(key), "pump_%d/rt", i);
+      float rate = preferences.getFloat(key);
+
       PumpSlot *pump_slot = pump_slots[i];
       // if (pump_slot == NULL) continue; // pump slot missing
-      pumps[i] = new Pump(pump_slot, liquid, volume);
+      pumps[i] = new Pump(pump_slot, liquid, volume, time_init, time_reverse, rate);
     }
   }
 
