@@ -2,7 +2,7 @@
 #define BLE_NAME             	"Cocktail Machine ESP32"	// bluetooth server name
 #define CORE_DEBUG_LEVEL     	4                       	// 1 = error; 3 = info ; 4 = debug
 const unsigned int VERSION   	= 3;                    	// version number (used for configs etc)
-const unsigned char MAX_PUMPS	= 1 + 2*8;              	// maximum number of supported pumps;
+const unsigned char MAX_PUMPS	= 1 + 4*8;              	// maximum number of supported pumps;
 const float LIQUID_CUTOFF    	= 0.1;                  	// minimum amount of liquid we round off
 
 // general chip functionality
@@ -21,7 +21,6 @@ Pin PIN_HX711_SCK       	= SCK;
 Pin PIN_SDA             	= 14;
 Pin PIN_SCL             	= 32;
                         	
-Pin PIN_BUILTIN_PUMP_EN 	= 15;
 Pin PIN_BUILTIN_PUMP_IN1	= 33;
 Pin PIN_BUILTIN_PUMP_IN2	= 27;
 
@@ -60,11 +59,11 @@ Pin PIN_BUILTIN_PUMP_IN2	= 27;
 #define warn(...) 	log_w(__VA_ARGS__)
 
 // easier time constants
-#define USEC(n) (n)
-#define MS(n)   (n * 1000LL)
-#define S(n)    (n * 1000LL * 1000LL)
-#define MIN(n)  (n * 1000LL * 1000LL * 60LL)
-#define HOUR(n) (n * 1000LL * 1000LL * 60LL * 60)
+typedef uint64_t dur_t;
+#define MS(n)   ((time_t) (n))
+#define S(n)    ((time_t) (MS(n)  * 1000LL))
+#define MIN(n)  ((time_t) (S(n)   * 60LL))
+#define HOUR(n) ((time_t) (MIN(N) * 60LL))
 
 // TODO avoid passing around char* everywhere,
 // and use either proper strings with memory management or pass buffers explicitly as needed
@@ -85,12 +84,11 @@ struct Processed {
 };
 
 struct PumpSlot {
-  Pin enable;
   Pin in1;
   Pin in2;
   PCF8574 *pcf;
 
-  PumpSlot(PCF8574 *pcf,  Pin enable, Pin in1, Pin in2);
+  PumpSlot(PCF8574 *pcf, Pin in1, Pin in2);
 };
 
 struct Pump {
@@ -98,24 +96,24 @@ struct Pump {
   String liquid;
   float volume;
 
-  uint64_t time_init;
-  uint64_t time_per_100ml;
-  uint64_t time_reverse;
+  dur_t time_init;
+  dur_t time_reverse;
+  float rate;
 
   Pump(PumpSlot *slot, String liquid, float volume)
     : slot(slot), liquid(liquid), volume(volume),
-      time_init(S(1)), time_per_100ml(S(30)), time_reverse(S(1)) {};
+      time_init(MS(1)), time_reverse(MS(1)), rate(1.0) {};
 
   Processed* drain(float amount);
   Processed* refill(float volume);
   Processed* empty();
 
-  void run(uint64_t time, bool reverse);
+  void run(dur_t time, bool reverse);
   void start(bool reverse);
   void stop();
   void pump(float amount);
 
-  bool calibrate(uint64_t time1, uint64_t time2, float volume1, float volume2);
+  Processed* calibrate(dur_t time1, dur_t time2, float volume1, float volume2);
 };
 
 struct Ingredient {
@@ -210,6 +208,7 @@ struct CommCB: BLECharacteristicCallbacks {
     const String json() override { return String(_json); }              \
   };
 
+// FIXME check that cocktail states are correct when making stuff
 def_ret(Success,           	"ok");
 def_ret(Processing,        	"processing");
 def_ret(Ready,             	"ready");
@@ -224,11 +223,15 @@ def_ret(MissingCommand,    	"command missing even though it parsed right");
 def_ret(WrongComm,         	"wrong comm channel");
 def_ret(InvalidSlot,       	"invalid pump slot");
 def_ret(InvalidVolume,     	"invalid volume");
+def_ret(InvalidWeight,     	"invalid weight");
+def_ret(InvalidTimes,      	"invalid times");
 def_ret(Insufficient,      	"insufficient amounts of liquid available");
 def_ret(MissingLiquid,     	"liquid unavailable");
 def_ret(MissingRecipe,     	"recipe not found");
 def_ret(DuplicateRecipe,   	"recipe already exists");
 def_ret(MissingIngredients,	"missing ingredients");
+def_ret(ScaleError,        	"scale error");
+def_ret(InvalidCalibration,	"invalid calibration data");
 
 struct RetUserID : Processed {
   User user;
@@ -356,19 +359,19 @@ struct CmdRunPump : public Command {
   def_cmd("run_pump", ADMIN);
   User user;
   int32_t slot;
-  uint64_t time;
-  CmdRunPump(User user, int32_t slot, uint64_t time) : user(user), slot(slot), time(time) {}
+  dur_t time;
+  CmdRunPump(User user, int32_t slot, dur_t time) : user(user), slot(slot), time(time) {}
 };
 
 struct CmdCalibratePump : public Command {
   def_cmd("calibrate_pump", ADMIN);
   User user;
   int32_t slot;
-  uint64_t time1;
-  uint64_t time2;
+  dur_t time1;
+  dur_t time2;
   float volume1;
   float volume2;
-  CmdCalibratePump(User user, int32_t slot, uint64_t time1, uint64_t time2 ,float volume1, float volume2)
+  CmdCalibratePump(User user, int32_t slot, dur_t time1, dur_t time2 ,float volume1, float volume2)
     : user(user), slot(slot), time1(time1), time2(time2), volume1(volume1), volume2(volume2) {}
 };
 
@@ -376,11 +379,12 @@ struct CmdSetPumpTimes : public Command {
   def_cmd("set_pump_times", ADMIN);
   User user;
   int32_t slot;
-  uint64_t time_init;
-  uint64_t time_per_100ml;
-  uint64_t time_reverse;
-  CmdSetPumpTimes(User user, int32_t slot, uint64_t time_init, uint64_t time_per_100ml, uint64_t time_reverse)
-    : user(user), slot(slot), time_init(time_init), time_per_100ml(time_per_100ml), time_reverse(time_reverse) {}
+  dur_t time_init;
+  dur_t time_reverse;
+  float rate;
+
+  CmdSetPumpTimes(User user, int32_t slot, dur_t time_init, dur_t time_reverse, float rate)
+    : user(user), slot(slot), time_init(time_init), time_reverse(time_reverse), rate(rate) {}
 };
 
 struct CmdCalibrateScale : public Command {
@@ -416,7 +420,7 @@ struct Queued {
 
 // global state
 
-int64_t config_state = 0;
+time_t config_state = 0;
 Preferences preferences;
 
 bool sdcard_available = false;
@@ -445,18 +449,17 @@ std::queue<Ingredient> cocktail_queue;
 // function declarations
 
 // various sleeps
-int64_t timestamp_ms(void);
-int64_t timestamp_usec(void);
-void sleep_idle(uint64_t duration);
-void sleep_light(uint64_t duration);
-void sleep_deep(uint64_t duration);
+time_t timestamp_ms(void);
+void sleep_idle(dur_t duration);
+void sleep_light(dur_t duration);
+void sleep_deep(dur_t duration);
 void error_loop(void);
 
 // led feedback (if possible)
 #if defined(LED_BUILTIN)
 void led_on(void);
 void led_off(void);
-void blink_leds(uint64_t on, uint64_t off);
+void blink_leds(dur_t on, dur_t off);
 #endif
 
 // configs
@@ -476,7 +479,9 @@ void ble_stop(void);
 
 // scale
 float scale_weigh();
-void scale_calibrate(float weight);
+Processed* scale_calibrate(float weight);
+Processed* scale_tare();
+Processed* scale_set_factor(float factor);
 
 // command processing
 Processed* add_to_queue(const String json, uint16_t conn_id);
@@ -489,7 +494,7 @@ void update_cocktail(void);
 void update_liquids(void);
 void update_recipes(void);
 void update_state(Processed *state);
-void update_config_state(int64_t ts);
+void update_config_state(time_t ts);
 void update_user(User user);
 
 // init
@@ -522,7 +527,6 @@ void setup() {
     int used_slots = 0;
     pump_slots[used_slots++] = new PumpSlot{
       NULL,
-      PIN_BUILTIN_PUMP_EN,
       PIN_BUILTIN_PUMP_IN1,
       PIN_BUILTIN_PUMP_IN2,
     };
@@ -532,9 +536,10 @@ void setup() {
       PCF8574 *pcf = new PCF8574(address);
 
       if (pcf->begin() && pcf->isConnected()) {
-        info("found extension card at address 0x%x, adding 2 pump slots", address);
-        pump_slots[used_slots++] = new PumpSlot{pcf, 0, 1, 2};
-        pump_slots[used_slots++] = new PumpSlot{pcf, 3, 4, 5};
+        info("found extension card at address 0x%x", address);
+        for (int j=0; j<8; j+=2) {
+          pump_slots[used_slots++] = new PumpSlot{pcf, j, j+1};
+        }
       } else {
         delete pcf;
         continue;
@@ -693,11 +698,11 @@ Parsed parse_command(const String json) {
   if (j_##field.isNull()) return Parsed{NULL, new Incomplete()};  \
   const type field = j_##field.as<type>();
 
-#define parse_bool(field)  	parse_as(field, bool)
-#define parse_float(field) 	parse_as(field, float)
-#define parse_int32(field) 	parse_as(field, int32_t)
-#define parse_uint64(field)	parse_as(field, uint64_t)
-#define parse_user()       	parse_as(user, int32_t)
+#define parse_bool(field)    	parse_as(field, bool)
+#define parse_float(field)   	parse_as(field, float)
+#define parse_int32(field)   	parse_as(field, int32_t)
+#define parse_duration(field)	parse_as(field, dur_t)
+#define parse_user()         	parse_as(user,  int32_t)
 
   const char *cmd_name = doc["cmd"];
   if (!cmd_name) return Parsed{NULL, new Incomplete()};
@@ -769,14 +774,14 @@ Parsed parse_command(const String json) {
   } else if (match_name(CmdRunPump)) {
     parse_user();
     parse_int32(slot);
-    parse_uint64(time);
+    parse_duration(time);
     cmd = new CmdRunPump(user, slot, time);
 
   } else if (match_name(CmdCalibratePump)) {
     parse_user();
     parse_int32(slot);
-    parse_uint64(time1);
-    parse_uint64(time2);
+    parse_duration(time1);
+    parse_duration(time2);
     parse_float(volume1);
     parse_float(volume2);
     cmd = new CmdCalibratePump(user, slot, time1, time2, volume1, volume2);
@@ -784,10 +789,10 @@ Parsed parse_command(const String json) {
   } else if (match_name(CmdSetPumpTimes)) {
     parse_user();
     parse_int32(slot);
-    parse_uint64(time_init);
-    parse_uint64(time_per_100ml);
-    parse_uint64(time_reverse);
-    cmd = new CmdSetPumpTimes(user, slot, time_init, time_per_100ml, time_reverse);
+    parse_duration(time_init);
+    parse_duration(time_reverse);
+    parse_float(rate);
+    cmd = new CmdSetPumpTimes(user, slot, time_init, time_reverse, rate);
 
   } else if (match_name(CmdTareScale)) {
     parse_user();
@@ -823,6 +828,8 @@ Processed* CmdFactoryReset::execute() {
   if (!is_admin(this->user)) return new Unauthorized();
 
   { // reset settings
+    // FIXME calibration data
+
     config_clear();
 
     for (int i=0; i<MAX_PUMPS; i++) pumps[i]	= NULL;
@@ -849,47 +856,87 @@ Processed* CmdFactoryReset::execute() {
 }
 
 Processed* CmdRunPump::execute() {
-  // FIXME implement
   if (!is_admin(this->user)) return new Unauthorized();
 
-  return new Unsupported();
+  int32_t slot  = this->slot;
+  dur_t time = this->time;
+  if (slot < 0 || slot >= MAX_PUMPS || pumps[slot] == NULL) {
+    return new InvalidSlot();
+  }
+  Pump *p = pumps[slot];
+
+  debug("running pump %d for %dms", slot, time);
+  update_user(user);
+  update_state(new Pumping());
+  p->run(time, false);
+
+  // nb: this will always fuck up our internal data unless the pump is already calibrated,
+  // so you should refill the pump afterwards
+
+  float volume = time * p->rate;
+  cocktail.push_front(Ingredient{"<calibration>", volume});
+  p->volume = std::max(p->volume - volume, 0.0f);
+
+  update_user(-1);
+  update_liquids();
+  update_cocktail();
+  update_state(new Ready());
+  config_save();
+
+  return new Success();
 };
 
 Processed* CmdCalibratePump::execute() {
-  // FIXME implement
   if (!is_admin(this->user)) return new Unauthorized();
 
-  config_save();
-  return new Unsupported();
+  int32_t slot = this->slot;
+  if (slot < 0 || slot >= MAX_PUMPS || pumps[slot] == NULL) {
+    return new InvalidSlot();
+  }
+  Pump *p = pumps[slot];
+
+  return p->calibrate(this->time1, this->time2, this->volume1, this->volume2);
 };
 
 Processed* CmdSetPumpTimes::execute() {
-  // FIXME implement
   if (!is_admin(this->user)) return new Unauthorized();
 
+  int32_t slot = this->slot;
+  if (slot < 0 || slot >= MAX_PUMPS || pumps[slot] == NULL) {
+    return new InvalidSlot();
+  }
+  Pump *p = pumps[slot];
+
+  p->time_init    = this->time_init;
+  p->time_reverse = this->time_reverse;
+  p->rate         = this->rate;
   config_save();
-  return new Unsupported();
+
+  return new Success();
 };
 
 Processed* CmdCalibrateScale::execute() {
-  // FIXME implement
   if (!is_admin(this->user)) return new Unauthorized();
 
-  return new Unsupported();
+  Processed *err = scale_calibrate(this->weight);
+  if (err) return err;
+  return new Success();
 };
 
 Processed* CmdTareScale::execute() {
-  // FIXME implement
   if (!is_admin(this->user)) return new Unauthorized();
 
-  return new Unsupported();
+  Processed *err = scale_tare();
+  if (err) return err;
+  return new Success();
 };
 
 Processed* CmdSetScaleFactor::execute() {
-  // FIXME implement
   if (!is_admin(this->user)) return new Unauthorized();
 
-  return new Unsupported();
+  Processed *err = scale_set_factor(this->factor);
+  if (err) return err;
+  return new Success();
 };
 
 Processed* CmdClean::execute() {
@@ -1128,6 +1175,10 @@ Processed* add_liquid(User user, const String liquid, float amount) {
   if (!found)                     	return new MissingLiquid();
   if (have - need < LIQUID_CUTOFF)	return new Insufficient();
 
+  // tare the scale if the cocktail is empty
+  Processed *err = scale_tare();
+  if (err) return err;
+
   update_user(user);
   update_state(new Pumping());
 
@@ -1170,6 +1221,9 @@ Processed* reset_machine(void) {
   while (!cocktail_queue.empty()) cocktail_queue.pop();
   cocktail.clear();
 
+  Processed *err = scale_tare();
+  if (err) return err;
+
   // update machine state
   update_cocktail();
   update_liquids();
@@ -1205,7 +1259,7 @@ void update_cocktail() {
   debug("updating cocktail state");
 
   String out = String('[');
-  for (auto ing = cocktail.begin(); ing != cocktail.end(); ing++){
+  for (auto ing = cocktail.begin(); ing != cocktail.end(); ing++) {
     debug("  ingredient: %s, amount: %.1f", ing->name.c_str(), ing->amount);
 
     out.concat("[\"");
@@ -1317,7 +1371,7 @@ void update_state(Processed *state) {
   all_status[ID_STATE]->update(state->json().c_str());
 }
 
-void update_config_state(int64_t ts) {
+void update_config_state(time_t ts) {
   config_state = timestamp_ms();
   String s = String(ts);
   all_status[ID_TIMESTAMP]->update(s.c_str());
@@ -1538,6 +1592,8 @@ bool config_save(void) {
     // metadata
     preferences.putUInt("version", VERSION);
 
+    // FIXME calibration data
+
     { // pumps
       char key[15];
       preferences.putUInt("num_pumps", MAX_PUMPS);
@@ -1599,13 +1655,15 @@ bool config_load(void) {
       return false;
     }
 
-    int64_t state = preferences.getLong64("state", -1);
+    time_t state = preferences.getLong64("state", -1);
     if (state == config_state) {
       debug("config hasn't changed; skipping");
       return true;
     }
     update_config_state(state);
   }
+
+  // FIXME calibration data
 
   { // pumps
     for (int i=0; i<MAX_PUMPS; i++) pumps[i] = NULL; // clear old config
@@ -1674,58 +1732,132 @@ bool config_clear(void) {
 }
 
 // pumps
-PumpSlot::PumpSlot(PCF8574 *pcf, Pin enable, Pin in1, Pin in2)
-  : pcf(pcf), enable(enable), in1(in1), in2(in2)
+PumpSlot::PumpSlot(PCF8574 *pcf, Pin in1, Pin in2)
+  : pcf(pcf), in1(in1), in2(in2)
 {
   if (pcf == NULL) {
-    pinMode(enable,	OUTPUT);
-    pinMode(in1,   	OUTPUT);
-    pinMode(in2,   	OUTPUT);
+    pinMode(in1, OUTPUT);
+    pinMode(in2, OUTPUT);
   }
 }
 
-void Pump::run(uint64_t time, bool reverse=false) {
+void Pump::run(dur_t time, bool reverse=false) {
+  if (this->slot == NULL) return; // simulation
+
   this->start(reverse);
   sleep_idle(time);
   this->stop();
 }
 
 void Pump::start(bool reverse=false) {
+  if (this->slot == NULL) return; // simulation
+
   PumpSlot *slot = this->slot;
   if (slot->pcf == NULL) {
     digitalWrite(slot->in1, reverse ? HIGH : LOW);
     digitalWrite(slot->in2, reverse ? LOW  : HIGH);
-    digitalWrite(slot->enable, HIGH);
   } else {
     slot->pcf->write(slot->in1, reverse ? HIGH : LOW);
     slot->pcf->write(slot->in2, reverse ? LOW  : HIGH);
-    slot->pcf->write(slot->enable, HIGH);
   }
 }
 
 void Pump::stop() {
+  if (this->slot == NULL) return; // simulation
+
   PumpSlot *slot = this->slot;
   if (slot->pcf == NULL) {
     digitalWrite(slot->in1, LOW);
     digitalWrite(slot->in2, LOW);
-    digitalWrite(slot->enable, LOW);
   } else {
     slot->pcf->write(slot->in1, LOW);
     slot->pcf->write(slot->in2, LOW);
-    slot->pcf->write(slot->enable, LOW);
   }
 }
 
 void Pump::pump(float amount) {
+  if (this->slot == NULL) return; // simulation
+
   PumpSlot *slot = this->slot;
   if (slot == NULL) { // no pump connected, simulate operation
     debug("pump would add: %.1f", amount);
 
   } else { // run real pump
     this->run(this->time_init);
-    this->run(std::round((amount / 100.0) * this->time_per_100ml));
+    this->run(std::round(amount * this->rate));
     this->run(this->time_reverse, true);
   }
+}
+
+Processed* Pump::calibrate(dur_t time1, dur_t time2, float volume1, float volume2) {
+  if (volume1 <= 0.0 || volume2 <= 0.0)	return new InvalidVolume();
+  if (volume1 == volume2)              	return new InvalidVolume();
+  if (time1 == time2)                  	return new InvalidTimes();
+
+  float vol_diff  = volume1 - volume2;
+  float time_diff = (float) time1 - (float) time2;
+  float rate = vol_diff / time_diff;
+  debug("calibration raw data: %0.1f, %0.1f, %f", vol_diff, time_diff, rate);
+
+  if (rate <= 0.0) return new InvalidCalibration();
+
+  this->rate = rate;
+  debug("rate: %f", rate);
+
+  float init1 = std::round((float) time1 - (volume1 / rate));
+  float init2 = std::round((float) time2 - (volume2 / rate));
+
+  // check for implausible results
+  if (std::abs(init1 - init2) > S(1)) return new InvalidCalibration();
+
+  dur_t init = std::round((init1 + init2) / 2.0);
+  this->time_init = init;
+  this->time_reverse = init; // TODO should this be different?
+  debug("time init: %d, reverse: %d", time_init, time_reverse);
+
+  config_save();
+  return new Success();
+}
+
+// scale
+float scale_weigh() {
+  if (!scale_available) {
+    float weight = 0.0;
+    for (auto ing = cocktail.begin(); ing != cocktail.end(); ing++) {
+      weight += ing->amount;
+    }
+    return weight;
+  }
+
+  // TODO maybe use a different read command or times value?
+  float weight = scale.read_median();
+  return weight;
+}
+
+Processed* scale_calibrate(float weight) {
+  if (!scale_available) return NULL;
+
+  if (weight <= 0.0) return new InvalidWeight();
+
+  scale.calibrate_scale(weight);
+  config_save();
+  return NULL;
+}
+
+Processed* scale_tare() {
+  if (!scale_available) return NULL;
+
+  scale.tare();
+  config_save();
+  return NULL;
+}
+
+Processed* scale_set_factor(float factor) {
+  if (!scale_available) return NULL;
+
+  scale.set_scale(factor);
+  config_save();
+  return NULL;
 }
 
 // sd card
@@ -1781,30 +1913,24 @@ bool sdcard_save(void) {
 // utilities
 
 // current time since startup
-int64_t timestamp_ms() {
+time_t timestamp_ms() {
   struct timeval tv;
   gettimeofday(&tv, NULL);
   return tv.tv_sec * 1000LL + (tv.tv_usec / 1000LL);
 }
 
-int64_t timestamp_usec() {
-  struct timeval tv;
-  gettimeofday(&tv, NULL);
-  return tv.tv_sec * 1000LL * 1000LL + tv.tv_usec;
-}
-
 // three different sleep modes
-void sleep_idle(uint64_t duration) {
-  delay(duration / 1000LL);
+void sleep_idle(dur_t duration) {
+  delay(duration);
 }
 
-void sleep_light(uint64_t duration) {
-  esp_sleep_enable_timer_wakeup(duration);
+void sleep_light(dur_t duration) {
+  esp_sleep_enable_timer_wakeup(duration * 1000LL);
   esp_light_sleep_start();
 }
 
-void sleep_deep(uint64_t duration) {
-  esp_sleep_enable_timer_wakeup(duration);
+void sleep_deep(dur_t duration) {
+  esp_sleep_enable_timer_wakeup(duration * 1000LL);
   esp_deep_sleep_start();
 }
 
@@ -1818,7 +1944,7 @@ void led_off(void) {
   digitalWrite(LED_BUILTIN, LOW);
 }
 
-void blink_leds(uint64_t on, uint64_t off) {
+void blink_leds(dur_t on, dur_t off) {
   led_on(); 	sleep_idle(on);
   led_off();	sleep_idle(off);
 }
