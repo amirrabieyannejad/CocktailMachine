@@ -35,6 +35,12 @@ public class Menue extends AppCompatActivity {
     }
 
 
+    public void openGrafik(View view){
+        Intent success = new Intent(this, Grafik.class);
+        startActivity(success);
+
+    }
+
     public void openDeviceScan(View view){
         Intent success = new Intent(this, DeviceScanActivity.class);
         startActivity(success);

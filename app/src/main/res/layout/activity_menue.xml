@@ -38,8 +38,16 @@
           android:layout_width="150dp"
           android:layout_height="150dp"
           android:layout_margin="30dp"
-          android:contentDescription="Settings"
+          android:contentDescription="FindBluetooth"
           android:onClick="openDeviceScan"
+          app:srcCompat="@drawable/ic_find_bluetooth" />
+
+      <ImageView
+          android:layout_width="150dp"
+          android:layout_height="150dp"
+          android:layout_margin="30dp"
+          android:contentDescription="Settings"
+          android:onClick="openGrafik"
           app:srcCompat="@drawable/ic_options" />
 
       <ImageView
