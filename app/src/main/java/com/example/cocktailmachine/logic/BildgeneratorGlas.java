@@ -145,7 +145,8 @@ public class BildgeneratorGlas {
         for (Ingredient ingredient : ingredientList){
             int numberSlots = proportionenFlüssigkeitenImGlas.get(ingredient);
             for (int i = 0 ; i < numberSlots; i++){
-                if((slotCounter+(i+1))/animationSlots>filling){
+                float progressOfAnimatmation = (float)(slotCounter+(i+1))/animationSlots;
+                if(progressOfAnimatmation>filling){
                     return(canvas);
                 }
                 Drawable myImage =  ResourcesCompat.getDrawable(res, listIdGlasFlüssigkeit[i+slotCounter], null);
