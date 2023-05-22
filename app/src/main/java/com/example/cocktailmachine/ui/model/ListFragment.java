@@ -161,6 +161,12 @@ public class ListFragment extends Fragment {
 
     }
 
+    private void error(){
+        Log.i(TAG, "error");
+        NavHostFragment.findNavController(ListFragment.this)
+                .navigate(R.id.action_listFragment_to_mainActivity);
+    }
+
 
     /*
     private void setButtons(){
@@ -208,28 +214,30 @@ public class ListFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView");
         binding = FragmentListBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        Log.i(TAG, "onViewCreated");
+        super.onViewCreated(view, savedInstanceState);
+
         activity = (MainActivity) getActivity();
         if(savedInstanceState != null) {
-            Log.i(TAG, "savedInstanceState != null");
+            Log.i(TAG, "onViewCreated: savedInstanceState != null");
+            Log.i(TAG, "onViewCreated: savedInstanceState"+savedInstanceState);
             String type = savedInstanceState.getString("Type");
             if(savedInstanceState.containsKey("Recipe_ID")){
-                Log.i(TAG, "savedInstanceState has Recipe_ID");
+                Log.i(TAG, "onViewCreated: savedInstanceState has Recipe_ID");
                 Long id = savedInstanceState.getLong("Recipe_ID");
                 setUP(type, id);
             }else{
-                Log.i(TAG, "savedInstanceState has no Recipe_ID");
+                Log.i(TAG, "onViewCreated: savedInstanceState has no Recipe_ID");
                 setUP(type);
             }
         }else{
             Log.i(TAG, "savedInstanceState == null");
             setUP("AvailableRecipes");
         }
-        return binding.getRoot();
-    }
-
-    private void error(){
-        Log.i(TAG, "error");
-        NavHostFragment.findNavController(ListFragment.this)
-                .navigate(R.id.action_listFragment_to_mainActivity);
     }
 }

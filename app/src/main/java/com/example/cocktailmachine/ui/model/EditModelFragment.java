@@ -108,14 +108,16 @@ public class EditModelFragment extends Fragment {
         });
     }
 
-
-
-    private void error(){
+    private void setUpNew(String type){
 
     }
 
 
-
+    private void error(){
+        Log.i(TAG, "error");
+        NavHostFragment.findNavController(EditModelFragment.this)
+                .navigate(R.id.action_modelFragment_to_mainActivity);
+    }
 
 
     @Nullable
@@ -127,6 +129,13 @@ public class EditModelFragment extends Fragment {
 
         Log.i(TAG, "onCreateView");
         binding = FragmentEditModelBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        Log.i(TAG, "onViewCreated");
+        super.onViewCreated(view, savedInstanceState);
         activity = (MainActivity) getActivity();
 
         if(savedInstanceState != null) {
@@ -145,6 +154,5 @@ public class EditModelFragment extends Fragment {
             error();
         }
         setFAB();
-        return binding.getRoot();
     }
 }

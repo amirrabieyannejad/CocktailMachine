@@ -198,6 +198,7 @@ public class ModelFragment extends Fragment {
         Log.i(TAG, "error");
         NavHostFragment.findNavController(ModelFragment.this)
                 .navigate(R.id.action_modelFragment_to_mainActivity);
+        return;
     }
 
 
@@ -208,13 +209,21 @@ public class ModelFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView");
         binding = FragmentModelBinding.inflate(inflater, container, false);
+
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        Log.i(TAG, "onViewCreated");
+        super.onViewCreated(view, savedInstanceState);
         if(savedInstanceState != null) {
+            Log.i(TAG, "onViewCreated: "+ savedInstanceState);
             String type = savedInstanceState.getString("Type");
             Long id = savedInstanceState.getLong("ID");
             setUP(type, id);
         }else{
             error();
         }
-        return binding.getRoot();
     }
 }
