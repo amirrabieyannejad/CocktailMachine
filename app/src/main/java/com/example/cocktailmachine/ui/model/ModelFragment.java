@@ -22,11 +22,15 @@ import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.databinding.FragmentModelBinding;
 import com.example.cocktailmachine.ui.FirstFragment;
+import com.example.cocktailmachine.ui.MainActivity;
 import com.example.cocktailmachine.ui.SecondFragment;
 
 public class ModelFragment extends Fragment {
     private FragmentModelBinding binding;
+    private MainActivity activity;
     private static final String TAG = "ModelFragment";
+    private ModelType type;
+    private Long id;
 
     private Topic topic;
     private Ingredient ingredient;
@@ -42,7 +46,7 @@ public class ModelFragment extends Fragment {
 
 
 
-    private void setUP(String type, Long id){
+    private void setUP(){
         Log.i(TAG, "setUP: "+type+" "+id.toString());
         binding.textViewDescription.setVisibility(View.GONE);
         binding.includeAvailable.getRoot().setVisibility(View.GONE);
@@ -53,16 +57,19 @@ public class ModelFragment extends Fragment {
         binding.includeIngredientAdmin.getRoot().setVisibility(View.GONE);
         binding.includeIngredients.getRoot().setVisibility(View.GONE);
         binding.includeTopics.getRoot().setVisibility(View.GONE);
-        switch (ModelType.valueOf(type)){
-            case TOPIC:setTopic(id);return;
-            case INGREDIENT:setIngredient(id);return;
-            case PUMP:setPump(id);return;
-            case RECIPE: setRecipe(id);return;
+
+        setFAB();
+
+        switch (type){
+            case TOPIC:setTopic();return;
+            case INGREDIENT:setIngredient();return;
+            case PUMP:setPump();return;
+            case RECIPE: setRecipe();return;
             default: error();return;
         }
     }
 
-    private void setTopic(Long id){
+    private void setTopic(){
         Log.i(TAG, "setTopic: "+id.toString());
         try {
             topic = Topic.getTopic(id);
@@ -75,7 +82,7 @@ public class ModelFragment extends Fragment {
         }
     }
 
-    private void setPump(Long id){
+    private void setPump(){
         Log.i(TAG, "setPump: "+id.toString());
         pump = Pump.getPump(id);
         if(pump != null) {
@@ -98,7 +105,7 @@ public class ModelFragment extends Fragment {
         }
     }
 
-    private void setIngredient(Long id){
+    private void setIngredient(){
         Log.i(TAG, "setIngredient: "+id.toString());
         ingredient = Ingredient.getIngredient(id);
         if (ingredient != null) {
@@ -141,7 +148,7 @@ public class ModelFragment extends Fragment {
 
     }
 
-    private void setRecipe(Long id){
+    private void setRecipe(){
         Log.i(TAG, "setRecipe: "+id.toString());
         recipe = Recipe.getRecipe(id);
         if(recipe != null){
@@ -193,12 +200,27 @@ public class ModelFragment extends Fragment {
     }
 
 
-
     private void error(){
         Log.i(TAG, "error");
         NavHostFragment.findNavController(ModelFragment.this)
                 .navigate(R.id.action_modelFragment_to_mainActivity);
         return;
+    }
+
+    private void setFAB(){
+        activity.setFAB(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle b = new Bundle();
+                b.putString("Type", type.name());
+                b.putLong("ID", id);
+
+                NavHostFragment
+                        .findNavController(ModelFragment.this)
+                        .navigate(R.id.action_modelFragment_to_editModelFragment,
+                                b);
+            }
+        }, R.drawable.ic_edit);
     }
 
 
@@ -209,7 +231,7 @@ public class ModelFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView");
         binding = FragmentModelBinding.inflate(inflater, container, false);
-
+        activity = (MainActivity) getActivity();
         return binding.getRoot();
     }
 
@@ -220,8 +242,9 @@ public class ModelFragment extends Fragment {
         if(savedInstanceState != null) {
             Log.i(TAG, "onViewCreated: "+ savedInstanceState);
             String type = savedInstanceState.getString("Type");
-            Long id = savedInstanceState.getLong("ID");
-            setUP(type, id);
+            this.type = ModelType.valueOf(type);
+            id = savedInstanceState.getLong("ID");
+            setUP();
         }else{
             error();
         }
