@@ -54,11 +54,11 @@ public class ModelFragment extends Fragment {
         binding.includeIngredients.getRoot().setVisibility(View.GONE);
         binding.includeTopics.getRoot().setVisibility(View.GONE);
         switch (ModelType.valueOf(type)){
-            case TOPIC:setTopic(id);
-            case INGREDIENT:setIngredient(id);
-            case PUMP:setPump(id);
-            case RECIPE: setRecipe(id);
-            default: error();
+            case TOPIC:setTopic(id);return;
+            case INGREDIENT:setIngredient(id);return;
+            case PUMP:setPump(id);return;
+            case RECIPE: setRecipe(id);return;
+            default: error();return;
         }
     }
 

@@ -32,26 +32,28 @@ public class ListFragment extends Fragment {
     private void setUP(String type, Long recipe_id){
         Log.i(TAG, "setUP: "+type+" "+recipe_id.toString());
         switch (type){
-            case "AvailableRecipes": error();
-            case "AllRecipes": error();
-            case "Topics": setTopics(recipe_id);
-            case "Ingredients": setIngredients(recipe_id);
-            case "AddTopics": setAddTopics(recipe_id);
-            case "AddIngredients": setAddIngredients(recipe_id);
-            case "Pumps": error();
+            case "AvailableRecipes":
+            case "AllRecipes":
+            case "Pumps":
+                error();return;
+            case "Topics": setTopics(recipe_id);return;
+            case "Ingredients": setIngredients(recipe_id);return;
+            case "AddTopics": setAddTopics(recipe_id);return;
+            case "AddIngredients": setAddIngredients(recipe_id);return;
         }
     }
 
     private void setUP(String type){
         Log.i(TAG, "setUP: "+type);
         switch (type){
-            case "AvailableRecipes": setAvailableRecipes();
-            case "AllRecipes": setAllRecipes();
-            case "Topics": setTopics();
-            case "Ingredients": setIngredients();
-            case "AddTopics": error();
-            case "AddIngredients": error();
-            case "Pumps": setPumps();
+            case "AvailableRecipes": setAvailableRecipes(); return;
+            case "AllRecipes": setAllRecipes();return;
+            case "Topics": setTopics();return;
+            case "Ingredients": setIngredients();return;
+            case "AddTopics":
+            case "AddIngredients":
+                error();return;
+            case "Pumps": setPumps();return;
         }
     }
 
@@ -197,14 +199,18 @@ public class ListFragment extends Fragment {
         Log.i(TAG, "onCreateView");
         binding = FragmentListBinding.inflate(inflater, container, false);
         if(savedInstanceState != null) {
+            Log.i(TAG, "savedInstanceState != null");
             String type = savedInstanceState.getString("Type");
             if(savedInstanceState.containsKey("Recipe_ID")){
+                Log.i(TAG, "savedInstanceState has Recipe_ID");
                 Long id = savedInstanceState.getLong("Recipe_ID");
                 setUP(type, id);
             }else{
+                Log.i(TAG, "savedInstanceState has no Recipe_ID");
                 setUP(type);
             }
         }else{
+            Log.i(TAG, "savedInstanceState == null");
             setUP("AvailableRecipes");
         }
         return binding.getRoot();

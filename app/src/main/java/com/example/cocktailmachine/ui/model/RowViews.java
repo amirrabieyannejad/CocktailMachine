@@ -82,6 +82,9 @@ public class RowViews {
         RowView(@NonNull View itemView) {
             super(itemView);
             layout = itemView.findViewById(R.id.constraintLayout_item);
+            if(layout == null){
+                Log.i(TAG, "layout is null");
+            }
             checkBox = itemView.findViewById(R.id.checkBox_item);
             name = itemView.findViewById(R.id.textView_item_name);
             desc = itemView.findViewById(R.id.textView_item_desc);
@@ -175,6 +178,9 @@ public class RowViews {
 
         public void addLongListener(View.OnLongClickListener listener){
             this.longClickListener = listener;
+            if(layout == null){
+                Log.i(TAG, "HERE HERE, layout is null");
+            }
             layout.setOnLongClickListener(listener);
         }
 
