@@ -24,7 +24,7 @@ import com.example.cocktailmachine.databinding.FragmentModelBinding;
 import com.example.cocktailmachine.ui.FirstFragment;
 import com.example.cocktailmachine.ui.SecondFragment;
 
-class ModelFragment extends Fragment {
+public class ModelFragment extends Fragment {
     private FragmentModelBinding binding;
     private static final String TAG = "ModelFragment";
 
@@ -32,6 +32,9 @@ class ModelFragment extends Fragment {
     private Ingredient ingredient;
     private Pump pump;
     private Recipe recipe;
+
+    public ModelFragment(){
+    }
 
     protected static enum ModelType{
         TOPIC, INGREDIENT, PUMP,RECIPE

@@ -19,14 +19,18 @@ import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.databinding.FragmentListBinding;
 import com.example.cocktailmachine.databinding.FragmentModelBinding;
 
-class ListFragment extends Fragment {
+public class ListFragment extends Fragment {
     private FragmentListBinding binding;
     private static final String TAG = "ListFragment";
+
+    public ListFragment(){
+    }
 
     private ListRecyclerViewAdapters.ListRecyclerViewAdapter recyclerViewAdapter = null;
 
 
     private void setUP(String type, Long recipe_id){
+        Log.i(TAG, "setUP: "+type+" "+recipe_id.toString());
         switch (type){
             case "AvailableRecipes": error();
             case "AllRecipes": error();
@@ -39,6 +43,7 @@ class ListFragment extends Fragment {
     }
 
     private void setUP(String type){
+        Log.i(TAG, "setUP: "+type);
         switch (type){
             case "AvailableRecipes": setAvailableRecipes();
             case "AllRecipes": setAllRecipes();
@@ -51,6 +56,7 @@ class ListFragment extends Fragment {
     }
 
     private void setAddIngredients(Long recipe_id){
+        Log.i(TAG, "setAddIngredients: "+recipe_id.toString());
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter(recipe_id);
         recyclerViewAdapter.loadAdd();
@@ -58,49 +64,57 @@ class ListFragment extends Fragment {
     }
 
     private void setAddTopics(Long recipe_id){
+        Log.i(TAG, "setAddTopics: "+recipe_id.toString());
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter(recipe_id);
         recyclerViewAdapter.loadAdd();
-        set( "Serviervorschläge hinzufügen");
+        set("Serviervorschläge hinzufügen");
     }
 
     private void setIngredients(Long recipe_id){
+        Log.i(TAG, "setIngredients: "+recipe_id.toString());
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter(recipe_id);
         set( "Zutaten");
     }
 
     private void setTopics(Long recipe_id){
+        Log.i(TAG, "setTopics: "+recipe_id.toString());
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter(recipe_id);
         set("Serviervorschläge");
     }
 
     private void setPumps(){
+        Log.i(TAG, "setPumps");
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.PumpListRecyclerViewAdapter();
         set( "Pumpen");
     }
 
     private void setIngredients(){
+        Log.i(TAG, "setIngredients");
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.IngredientListRecyclerViewAdapter();
         set( "Zutaten");
     }
 
     private void setTopics(){
+        Log.i(TAG, "setTopics");
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.TopicListRecyclerViewAdapter();
         set("Serviervorschläge");
     }
 
     private void setAvailableRecipes(){
+        Log.i(TAG, "setAvailableRecipes");
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeListRecyclerViewAdapter();
         set( "Rezepte");
     }
 
     private void setAllRecipes(){
+        Log.i(TAG, "setAllRecipes");
         ListRecyclerViewAdapters.RecipeListRecyclerViewAdapter recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeListRecyclerViewAdapter();
         try {
@@ -113,6 +127,7 @@ class ListFragment extends Fragment {
     }
 
     private void set(String title){
+        Log.i(TAG, "set: "+title);
         /*
         binding.includeList.textViewNameListTitle.setText(title);
         binding.includeList.recylerViewNames.setLayoutManager(this.recyclerViewAdapter.getManager(this.getContext()));
@@ -134,8 +149,6 @@ class ListFragment extends Fragment {
                 binding.includeList.imageButtonListEdit);
         binding.includeList.getRoot().setVisibility(View.VISIBLE);
     }
-
-    private void reload(){}
 
     /*
     private void setButtons(){
@@ -198,6 +211,7 @@ class ListFragment extends Fragment {
     }
 
     private void error(){
+        Log.i(TAG, "error");
         NavHostFragment.findNavController(ListFragment.this)
                 .navigate(R.id.action_listFragment_to_mainActivity);
     }
