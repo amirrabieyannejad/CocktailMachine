@@ -15,11 +15,14 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Recipe;
+import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.databinding.FragmentListBinding;
 import com.example.cocktailmachine.databinding.FragmentModelBinding;
+import com.example.cocktailmachine.ui.MainActivity;
 
 public class ListFragment extends Fragment {
+    private MainActivity activity;
     private FragmentListBinding binding;
     private static final String TAG = "ListFragment";
 
@@ -154,8 +157,7 @@ public class ListFragment extends Fragment {
         binding.includeList.getRoot().setVisibility(View.VISIBLE);
     }
 
-    //fab
-    private void setFab(){
+    private void setTopicFAB(){
 
     }
 
@@ -206,6 +208,7 @@ public class ListFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView");
         binding = FragmentListBinding.inflate(inflater, container, false);
+        activity = (MainActivity) getActivity();
         if(savedInstanceState != null) {
             Log.i(TAG, "savedInstanceState != null");
             String type = savedInstanceState.getString("Type");

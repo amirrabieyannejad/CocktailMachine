@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.model.ModelFragment">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,18 +22,11 @@
             android:id="@+id/textView_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:layout_margin="8dp"
+            android:layout_marginTop="16dp"
             android:text="@string/large_text"
             android:visibility="gone" />
 
-        <include
-            android:id="@+id/include_pump"
-            layout="@layout/layout_pump"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:visibility="gone" />
 
         <include
             android:id="@+id/include_available"
@@ -59,6 +50,11 @@
             android:layout_margin="8dp" />
 
         <include
+            layout="@layout/layout_pump"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <include
             android:id="@+id/include_ingredient_admin"
             layout="@layout/layout_ingredient_admin"
             android:layout_width="match_parent"
@@ -79,5 +75,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp" />
+
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
