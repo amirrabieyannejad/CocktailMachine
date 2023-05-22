@@ -55,4 +55,24 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, appBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
+    public void setFAB(View.OnClickListener listener) {
+        binding.fab.setOnClickListener(listener);
+        binding.fab.setVisibility(View.VISIBLE);
+    }
+
+    public void invisibleFAB(){
+        binding.fab.setVisibility(View.GONE);
+    }
+
+    public void setToolBar(String title){
+        binding.toolbar.setTitle(title);
+    }
+
+    public void invisibleToolBar(){
+        binding.toolbar.setVisibility(View.GONE);
+    }
+
+
+
 }

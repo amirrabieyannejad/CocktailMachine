@@ -57,6 +57,8 @@ public class ListFragment extends Fragment {
         }
     }
 
+    //lists
+
     private void setAddIngredients(Long recipe_id){
         Log.i(TAG, "setAddIngredients: "+recipe_id.toString());
         recyclerViewAdapter =
@@ -151,6 +153,12 @@ public class ListFragment extends Fragment {
                 binding.includeList.imageButtonListEdit);
         binding.includeList.getRoot().setVisibility(View.VISIBLE);
     }
+
+    //fab
+    private void setFab(){
+
+    }
+
 
     /*
     private void setButtons(){
