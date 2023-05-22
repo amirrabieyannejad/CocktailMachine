@@ -44,8 +44,6 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     private List<SQLIngredientPump> ingredientPumps = new ArrayList<>();
     private List<SQLRecipeIngredient> recipeIngredients = new ArrayList<>();
 
-    private static final Tables tables = new Tables();
-
 
     private DatabaseConnection(@Nullable Context context) {
         super(context, DatabaseConnection.DBname,

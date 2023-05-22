@@ -29,24 +29,33 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
 
     @Override
     public String getIngredientName() {
-        return this.ingredientPump.getIngredient().getName();
-        //return null;
+        if(this.ingredientPump!=null) {
+            return this.ingredientPump.getIngredient().getName();
+        }
+        return "Keine Zutat";
     }
 
     @Override
     public int getVolume() {
-        return this.ingredientPump.getVolume();
+        if(this.ingredientPump!=null) {
+            return this.ingredientPump.getVolume();
+        }
+        return -1;
     }
 
     @Override
     public Ingredient getCurrentIngredient() {
-        return this.ingredientPump.getIngredient();
+        if(this.ingredientPump!=null) {
+            return this.ingredientPump.getIngredient();
+        }return null;
     }
 
     @Override
     public void setCurrentIngredient(Ingredient ingredient) {
         try {
-            this.ingredientPump.delete();
+            if(this.ingredientPump!=null) {
+                this.ingredientPump.delete();
+            }
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
         }
@@ -60,7 +69,9 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
 
     @Override
     public void fill(int volume) {
-        this.ingredientPump.setVolume(volume);
+        if(this.ingredientPump!=null) {
+            this.ingredientPump.setVolume(volume);
+        }
     }
 
     //General
