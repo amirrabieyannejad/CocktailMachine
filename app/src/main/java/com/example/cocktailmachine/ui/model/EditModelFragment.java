@@ -36,74 +36,51 @@ public class EditModelFragment extends Fragment {
 
     public EditModelFragment(){}
 
-
     private void setFAB(){
+        //TODO: if change just save
+        //TODO: else goto model
         activity.setFAB(v -> {
+            Bundle b = new Bundle();
             if(recipe != null){
-                Bundle b = new Bundle();
                 try {
                     recipe.save();
 
                     b.putString("Type", ModelFragment.ModelType.RECIPE.name());
                     b.putLong("ID", recipe.getID());
-                    NavHostFragment
-                            .findNavController(EditModelFragment.this)
-                            .navigate(R.id.action_modelFragment_self,
-                                    b);
-                    return;
+
                 } catch (NotInitializedDBException e) {
                     e.printStackTrace();
-                    return;
                 }
             }else if(topic != null){
-                Bundle b = new Bundle();
                 try {
                     topic.save();
 
                     b.putString("Type", ModelFragment.ModelType.TOPIC.name());
                     b.putLong("ID", topic.getID());
-                    NavHostFragment
-                            .findNavController(EditModelFragment.this)
-                            .navigate(R.id.action_modelFragment_self,
-                                    b);
-                    return;
                 } catch (NotInitializedDBException e) {
                     e.printStackTrace();
-                    return;
                 }
             }else if(ingredient != null){
-                Bundle b = new Bundle();
                 try {
                     ingredient.save();
-
                     b.putString("Type", ModelFragment.ModelType.INGREDIENT.name());
                     b.putLong("ID", ingredient.getID());
-                    NavHostFragment
-                            .findNavController(EditModelFragment.this)
-                            .navigate(R.id.action_modelFragment_self,
-                                    b);
-                    return;
                 } catch (NotInitializedDBException e) {
                     e.printStackTrace();
-                    return;
                 }
             }else if(pump != null){
-                Bundle b = new Bundle();
                 try {
                     pump.save();
-
                     b.putString("Type", ModelFragment.ModelType.INGREDIENT.name());
                     b.putLong("ID", pump.getID());
-                    NavHostFragment
-                            .findNavController(EditModelFragment.this)
-                            .navigate(R.id.action_modelFragment_self,
-                                    b);
-                    return;
                 } catch (NotInitializedDBException e) {
                     e.printStackTrace();
-                    return;
                 }
             }
+            NavHostFragment
+                    .findNavController(EditModelFragment.this)
+                    .navigate(R.id.action_editModelFragment_to_modelFragment,
+                            b);
         },
                 R.drawable.ic_save);
     }

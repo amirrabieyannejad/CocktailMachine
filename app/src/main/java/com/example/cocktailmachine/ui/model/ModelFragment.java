@@ -208,18 +208,15 @@ public class ModelFragment extends Fragment {
     }
 
     private void setFAB(){
-        activity.setFAB(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle b = new Bundle();
-                b.putString("Type", type.name());
-                b.putLong("ID", id);
+        activity.setFAB(v -> {
+            Bundle b = new Bundle();
+            b.putString("Type", type.name());
+            b.putLong("ID", id);
 
-                NavHostFragment
-                        .findNavController(ModelFragment.this)
-                        .navigate(R.id.action_modelFragment_to_editModelFragment,
-                                b);
-            }
+            NavHostFragment
+                    .findNavController(ModelFragment.this)
+                    .navigate(R.id.action_modelFragment_to_editModelFragment,
+                            b);
         }, R.drawable.ic_edit);
     }
 
