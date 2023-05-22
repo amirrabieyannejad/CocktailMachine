@@ -43,6 +43,7 @@ public class ModelFragment extends Fragment {
 
 
     private void setUP(String type, Long id){
+        Log.i(TAG, "setUP: "+type+" "+id.toString());
         binding.textViewDescription.setVisibility(View.GONE);
         binding.includeAvailable.getRoot().setVisibility(View.GONE);
         binding.includeNotAvailable.getRoot().setVisibility(View.GONE);
@@ -62,6 +63,7 @@ public class ModelFragment extends Fragment {
     }
 
     private void setTopic(Long id){
+        Log.i(TAG, "setTopic: "+id.toString());
         try {
             topic = Topic.getTopic(id);
             binding.textViewTitle.setText(topic.getName());
@@ -74,6 +76,7 @@ public class ModelFragment extends Fragment {
     }
 
     private void setPump(Long id){
+        Log.i(TAG, "setPump: "+id.toString());
         pump = Pump.getPump(id);
         if(pump != null) {
             binding.textViewTitle.setText(
@@ -96,6 +99,7 @@ public class ModelFragment extends Fragment {
     }
 
     private void setIngredient(Long id){
+        Log.i(TAG, "setIngredient: "+id.toString());
         ingredient = Ingredient.getIngredient(id);
         if (ingredient != null) {
             binding.textViewTitle.setText(ingredient.getName());
@@ -138,6 +142,7 @@ public class ModelFragment extends Fragment {
     }
 
     private void setRecipe(Long id){
+        Log.i(TAG, "setRecipe: "+id.toString());
         recipe = Recipe.getRecipe(id);
         if(recipe != null){
             binding.textViewTitle.setText(recipe.getName());
@@ -190,6 +195,7 @@ public class ModelFragment extends Fragment {
 
 
     private void error(){
+        Log.i(TAG, "error");
         NavHostFragment.findNavController(ModelFragment.this)
                 .navigate(R.id.action_modelFragment_to_mainActivity);
     }
@@ -200,7 +206,6 @@ public class ModelFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
         Log.i(TAG, "onCreateView");
         binding = FragmentModelBinding.inflate(inflater, container, false);
         if(savedInstanceState != null) {

@@ -1,6 +1,7 @@
 package com.example.cocktailmachine.ui.model;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -10,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ListLayout {
+    private static final String TAG = "ListLayout";
 
     protected static void set(
             //Title
@@ -23,6 +25,7 @@ public class ListLayout {
             ImageButton imageButtonListEdit
 
     ){
+        Log.i(TAG, "set");
         setTitle(textViewNameListTitle, title);
         setRecyclerView(recylerViewNames, getContext, adapter, fragment);
         setButtons(adapter, getContext,imageButtonListDelete, imageButtonListEdit);
@@ -32,13 +35,14 @@ public class ListLayout {
     private static void setTitle(
             TextView textViewNameListTitle,
             String title){
-
+        Log.i(TAG, "setTitle");
         textViewNameListTitle.setText(title);
     }
 
     private static void setRecyclerView(RecyclerView recylerViewNames, Context getContext,
                                  ListRecyclerViewAdapters.ListRecyclerViewAdapter adapter,
                                  Fragment fragment){
+        Log.i(TAG, "setRecyclerView");
         recylerViewNames.setLayoutManager(adapter.getManager(getContext));
         recylerViewNames.setAdapter(adapter);
         adapter.addGoToModelListener(fragment);
@@ -50,6 +54,7 @@ public class ListLayout {
             Context getContext,
             ImageButton imageButtonListDelete,
             ImageButton imageButtonListEdit){
+        Log.i(TAG, "setButtons");
         imageButtonListDelete.setOnClickListener(v -> {
             if(adapter.isCurrentlyDeleting()){
                 adapter.finishDelete();
@@ -64,7 +69,6 @@ public class ListLayout {
                 }
             }
         });
-
         imageButtonListEdit.setOnClickListener(v -> {
             if(adapter.isCurrentlyAdding()){
                 adapter.finishAdd();
