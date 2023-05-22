@@ -118,6 +118,9 @@ class ListFragment extends Fragment {
         binding.includeList.recylerViewNames.setAdapter(this.recyclerViewAdapter);
         binding.includeList.getRoot().setVisibility(View.VISIBLE);
         setButtons();
+        if(recyclerViewAdapter!=null) {
+            recyclerViewAdapter.addGoToModelListener(this);
+        }
     }
 
     private void reload(){}

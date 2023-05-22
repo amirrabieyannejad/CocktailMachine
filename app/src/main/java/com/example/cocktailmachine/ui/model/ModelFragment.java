@@ -33,6 +33,10 @@ class ModelFragment extends Fragment {
     private Pump pump;
     private Recipe recipe;
 
+    protected static enum ModelType{
+        TOPIC, INGREDIENT, PUMP,RECIPE
+    }
+
 
 
     private void setUP(String type, Long id){
@@ -45,11 +49,11 @@ class ModelFragment extends Fragment {
         binding.includeIngredientAdmin.getRoot().setVisibility(View.GONE);
         binding.includeIngredients.getRoot().setVisibility(View.GONE);
         binding.includeTopics.getRoot().setVisibility(View.GONE);
-        switch (type){
-            case "TOPIC":setTopic(id);
-            case "INGREDIENT":setIngredient(id);
-            case "PUMP":setPump(id);
-            case "RECIPE": setRecipe(id);
+        switch (ModelType.valueOf(type)){
+            case TOPIC:setTopic(id);
+            case INGREDIENT:setIngredient(id);
+            case PUMP:setPump(id);
+            case RECIPE: setRecipe(id);
             default: error();
         }
     }
@@ -141,6 +145,11 @@ class ModelFragment extends Fragment {
             }else{
                 binding.includeNotAvailable.getRoot().setVisibility(View.VISIBLE);
             }
+            
+
+
+
+
         }else{
             error();
         }

@@ -3,9 +3,11 @@ package com.example.cocktailmachine.ui.model;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,6 +19,7 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.ui.SecondFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +58,7 @@ public class ListRecyclerViewAdapters  {
                 for (RowViews.RowView view: views) {
                     view.loadCheck();
                     view.deleteLongListener();
+                    view.deleteListener();
                 }
                 return true;
             }
@@ -68,6 +72,7 @@ public class ListRecyclerViewAdapters  {
                 for (RowViews.RowView view: views) {
                     view.loadCheck();
                     view.deleteLongListener();
+                    view.deleteListener();
                 }
             }
         }
@@ -83,10 +88,16 @@ public class ListRecyclerViewAdapters  {
         public void finishAdd(){
             for (RowViews.RowView view: views) {
                 view.finishAdd();
-                view.addLongListener(v -> loadDelete());
+                //view.addLongListener(v -> loadDelete());
             }
             lock = false;
             add = false;
+        }
+
+        void addGoToModelListener(Fragment fragment){
+            for(RowViews.RowView view: views){
+                view.addGoToListener(fragment);
+            }
         }
 
         protected E addRowView(E view){
@@ -184,7 +195,7 @@ public class ListRecyclerViewAdapters  {
         public RowViews.TopicRowView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.layout_name_list, parent, false);
-            return addRowView(RowViews.gettopicInstance(view));
+            return addRowView(RowViews.getTopicInstance(view));
         }
 
         @Override
@@ -251,7 +262,7 @@ public class ListRecyclerViewAdapters  {
         public RowViews.PumpRowView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.layout_name_list, parent, false);
-            return addRowView(RowViews.getpumpInstance(view));
+            return addRowView(RowViews.getPumpInstance(view));
         }
 
         @Override
@@ -355,7 +366,7 @@ public class ListRecyclerViewAdapters  {
         public RowViews.RecipeIngredientRowView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.layout_name_list, parent, false);
-            return addRowView(RowViews.getrecipeIngredientInstance(view));
+            return addRowView(RowViews.getRecipeIngredientInstance(view));
         }
 
         @Override
@@ -420,7 +431,7 @@ public class ListRecyclerViewAdapters  {
         public RowViews.RecipeTopicRowView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.layout_name_list, parent, false);
-            return addRowView(RowViews.getrecipeTopicInstance(view));
+            return addRowView(RowViews.getRecipeTopicInstance(view));
         }
 
         @Override

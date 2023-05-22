@@ -1,5 +1,6 @@
 package com.example.cocktailmachine.ui.model;
 
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
@@ -8,6 +9,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocktailmachine.R;
@@ -16,11 +19,12 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.ui.SecondFragment;
 
 public class RowViews {
     private static final String TAG = "RowViews";
 
-    public static enum RowType{
+    public enum RowType{
         recipe, topic, ingredient,pump, recipeIngredient, recipeTopic;
     }
 
@@ -45,19 +49,19 @@ public class RowViews {
         return new IngredientRowView(view);
     }
 
-    public static TopicRowView gettopicInstance(View view){
+    public static TopicRowView getTopicInstance(View view){
         return new TopicRowView(view);
     }
 
-    public static PumpRowView getpumpInstance(View view){
+    public static PumpRowView getPumpInstance(View view){
         return new PumpRowView(view);
     }
 
-    public static RecipeIngredientRowView getrecipeIngredientInstance(View view){
+    public static RecipeIngredientRowView getRecipeIngredientInstance(View view){
         return new RecipeIngredientRowView(view);
     }
 
-    public static RecipeTopicRowView getrecipeTopicInstance(View view){
+    public static RecipeTopicRowView getRecipeTopicInstance(View view){
         return new RecipeTopicRowView(view);
     }
 
@@ -65,13 +69,13 @@ public class RowViews {
 
 
     public static abstract class RowView extends RecyclerView.ViewHolder {
-
         private ConstraintLayout layout;
         private CheckBox checkBox;
         private TextView name;
         private TextView desc;
 
-        //private View.OnLongClickListener longClickListener;
+        private View.OnLongClickListener longClickListener;
+        private View.OnClickListener listener;
 
         protected Recipe recipe;
 
@@ -121,6 +125,8 @@ public class RowViews {
                 }
             }
             checkBox.setVisibility(View.GONE);
+            loadListener();
+            loadLongListener();
         }
 
         public void finishDelete(){
@@ -134,9 +140,32 @@ public class RowViews {
             }
             checkBox.setVisibility(View.GONE);
             checkBox.setChecked(false);
+            loadListener();
+            loadLongListener();
+        }
+
+        abstract Bundle getGoToModelBundle();
+
+        void addGoToListener(Fragment fragment){
+            if(fragment instanceof ModelFragment) {
+                addListener(v -> NavHostFragment
+                        .findNavController(fragment)
+                        .navigate(R.id.action_modelFragment_self,
+                                getGoToModelBundle()));
+            }else if(fragment instanceof ListFragment) {
+                addListener(v -> NavHostFragment
+                        .findNavController(fragment)
+                        .navigate(R.id.action_listFragment_to_modelFragment,
+                                getGoToModelBundle()));
+            }
         }
 
         public void addListener(View.OnClickListener listener){
+            this.listener = listener;
+            layout.setOnClickListener(listener);
+        }
+
+        public void loadListener(){
             layout.setOnClickListener(listener);
         }
 
@@ -145,7 +174,12 @@ public class RowViews {
         }
 
         public void addLongListener(View.OnLongClickListener listener){
+            this.longClickListener = listener;
             layout.setOnLongClickListener(listener);
+        }
+
+        public void loadLongListener(){
+            layout.setOnLongClickListener(longClickListener);
         }
 
         public void deleteLongListener(){
@@ -162,8 +196,6 @@ public class RowViews {
     }
 
     public static class RecipeRowView extends RowView {
-        private Recipe recipe;
-
         RecipeRowView(@NonNull View itemView) {
             super(itemView);
         }
@@ -171,6 +203,14 @@ public class RowViews {
         public void setRecipe(Recipe recipe){
             this.recipe = recipe;
             super.setName(recipe.getName());
+        }
+
+        @Override
+        Bundle getGoToModelBundle() {
+            Bundle b = new Bundle();
+            b.putString("Type", ModelFragment.ModelType.RECIPE.toString());
+            b.putLong("ID", recipe.getID());
+            return b;
         }
 
         void delete() throws NotInitializedDBException{
@@ -193,6 +233,14 @@ public class RowViews {
 
         TopicRowView(@NonNull View itemView) {
             super(itemView);
+        }
+
+        @Override
+        Bundle getGoToModelBundle() {
+            Bundle b = new Bundle();
+            b.putString("Type", ModelFragment.ModelType.TOPIC.toString());
+            b.putLong("ID", topic.getID());
+            return b;
         }
 
         public void setTopic(Topic topic){
@@ -220,6 +268,14 @@ public class RowViews {
 
         RecipeTopicRowView(@NonNull View itemView) {
             super(itemView);
+        }
+
+        @Override
+        Bundle getGoToModelBundle() {
+            Bundle b = new Bundle();
+            b.putString("Type", ModelFragment.ModelType.TOPIC.toString());
+            b.putLong("ID", topic.getID());
+            return b;
         }
 
         public void setTopic(Topic topic){
@@ -250,6 +306,14 @@ public class RowViews {
             super(itemView);
         }
 
+        @Override
+        Bundle getGoToModelBundle() {
+            Bundle b = new Bundle();
+            b.putString("Type", ModelFragment.ModelType.INGREDIENT.toString());
+            b.putLong("ID", ingredient.getID());
+            return b;
+        }
+
         public void setIngredient(Ingredient ingredient){
             this.ingredient = ingredient;
             super.setName(ingredient.getName());
@@ -275,6 +339,14 @@ public class RowViews {
 
         RecipeIngredientRowView(@NonNull View itemView) {
             super(itemView);
+        }
+
+        @Override
+        Bundle getGoToModelBundle() {
+            Bundle b = new Bundle();
+            b.putString("Type", ModelFragment.ModelType.INGREDIENT.toString());
+            b.putLong("ID", ingredient.getID());
+            return b;
         }
 
         public void setIngredientVolume(Ingredient ingredient,int volume){
@@ -303,6 +375,14 @@ public class RowViews {
 
         PumpRowView(@NonNull View itemView) {
             super(itemView);
+        }
+
+        @Override
+        Bundle getGoToModelBundle() {
+            Bundle b = new Bundle();
+            b.putString("Type", ModelFragment.ModelType.PUMP.toString());
+            b.putLong("ID", pump.getID());
+            return b;
         }
 
         public void setIngredient(Pump pump){
