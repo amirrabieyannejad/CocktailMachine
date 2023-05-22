@@ -32,83 +32,129 @@ public class EditModelFragment extends Fragment {
     private Ingredient ingredient;
     private Pump pump;
 
+    private ModelFragment.ModelType type;
+
     public EditModelFragment(){}
 
 
     private void setFAB(){
-        activity.setFAB(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(recipe != null){
-                    Bundle b = new Bundle();
-                    try {
-                        recipe.save();
+        activity.setFAB(v -> {
+            if(recipe != null){
+                Bundle b = new Bundle();
+                try {
+                    recipe.save();
 
-                        b.putString("Type", ModelFragment.ModelType.RECIPE.name());
-                        b.putLong("ID", recipe.getID());
-                        NavHostFragment
-                                .findNavController(EditModelFragment.this)
-                                .navigate(R.id.action_modelFragment_self,
-                                        b);
-                        return;
-                    } catch (NotInitializedDBException e) {
-                        e.printStackTrace();
-                        return;
-                    }
-                }else if(topic != null){
-                    Bundle b = new Bundle();
-                    try {
-                        topic.save();
+                    b.putString("Type", ModelFragment.ModelType.RECIPE.name());
+                    b.putLong("ID", recipe.getID());
+                    NavHostFragment
+                            .findNavController(EditModelFragment.this)
+                            .navigate(R.id.action_modelFragment_self,
+                                    b);
+                    return;
+                } catch (NotInitializedDBException e) {
+                    e.printStackTrace();
+                    return;
+                }
+            }else if(topic != null){
+                Bundle b = new Bundle();
+                try {
+                    topic.save();
 
-                        b.putString("Type", ModelFragment.ModelType.TOPIC.name());
-                        b.putLong("ID", topic.getID());
-                        NavHostFragment
-                                .findNavController(EditModelFragment.this)
-                                .navigate(R.id.action_modelFragment_self,
-                                        b);
-                        return;
-                    } catch (NotInitializedDBException e) {
-                        e.printStackTrace();
-                        return;
-                    }
-                }else if(ingredient != null){
-                    Bundle b = new Bundle();
-                    try {
-                        ingredient.save();
+                    b.putString("Type", ModelFragment.ModelType.TOPIC.name());
+                    b.putLong("ID", topic.getID());
+                    NavHostFragment
+                            .findNavController(EditModelFragment.this)
+                            .navigate(R.id.action_modelFragment_self,
+                                    b);
+                    return;
+                } catch (NotInitializedDBException e) {
+                    e.printStackTrace();
+                    return;
+                }
+            }else if(ingredient != null){
+                Bundle b = new Bundle();
+                try {
+                    ingredient.save();
 
-                        b.putString("Type", ModelFragment.ModelType.INGREDIENT.name());
-                        b.putLong("ID", ingredient.getID());
-                        NavHostFragment
-                                .findNavController(EditModelFragment.this)
-                                .navigate(R.id.action_modelFragment_self,
-                                        b);
-                        return;
-                    } catch (NotInitializedDBException e) {
-                        e.printStackTrace();
-                        return;
-                    }
-                }else if(pump != null){
-                    Bundle b = new Bundle();
-                    try {
-                        pump.save();
+                    b.putString("Type", ModelFragment.ModelType.INGREDIENT.name());
+                    b.putLong("ID", ingredient.getID());
+                    NavHostFragment
+                            .findNavController(EditModelFragment.this)
+                            .navigate(R.id.action_modelFragment_self,
+                                    b);
+                    return;
+                } catch (NotInitializedDBException e) {
+                    e.printStackTrace();
+                    return;
+                }
+            }else if(pump != null){
+                Bundle b = new Bundle();
+                try {
+                    pump.save();
 
-                        b.putString("Type", ModelFragment.ModelType.INGREDIENT.name());
-                        b.putLong("ID", pump.getID());
-                        NavHostFragment
-                                .findNavController(EditModelFragment.this)
-                                .navigate(R.id.action_modelFragment_self,
-                                        b);
-                        return;
-                    } catch (NotInitializedDBException e) {
-                        e.printStackTrace();
-                        return;
-                    }
+                    b.putString("Type", ModelFragment.ModelType.INGREDIENT.name());
+                    b.putLong("ID", pump.getID());
+                    NavHostFragment
+                            .findNavController(EditModelFragment.this)
+                            .navigate(R.id.action_modelFragment_self,
+                                    b);
+                    return;
+                } catch (NotInitializedDBException e) {
+                    e.printStackTrace();
+                    return;
                 }
             }
-        });
+        },
+                R.drawable.ic_save);
     }
 
-    private void setUpNew(String type){
+    private void setUpNew(){
+        switch (type){
+            case PUMP: setUpNewPump();return;
+            case TOPIC:setUpNewTopic();return;
+            case RECIPE:setUpNewRecipe();return;
+            case INGREDIENT:setUpNewIngredient();return;
+        }
+    }
+
+    private void setUpNewIngredient() {
+
+    }
+
+    private void setUpNewRecipe() {
+
+    }
+
+    private void setUpNewTopic() {
+
+    }
+
+    private void setUpNewPump(){
+        pump = Pump.makeNew();
+    }
+
+    private void setUpEdit( Long id){
+        switch (type){
+            case PUMP: setUpEditPump();return;
+            case TOPIC:setUpEditTopic();return;
+            case RECIPE:setUpEditRecipe();return;
+            case INGREDIENT:setUpEditIngredient();return;
+        }
+    }
+
+    private void setUpEditIngredient() {
+
+    }
+
+    private void setUpEditRecipe() {
+
+    }
+
+    private void setUpEditTopic() {
+
+    }
+
+    private void setUpEditPump() {
 
     }
 
@@ -141,13 +187,14 @@ public class EditModelFragment extends Fragment {
         if(savedInstanceState != null) {
             Log.i(TAG, "savedInstanceState != null");
             String type = savedInstanceState.getString("Type");
+            this.type = ModelFragment.ModelType.valueOf(type);
             if(savedInstanceState.containsKey("ID")){
                 Log.i(TAG, "savedInstanceState has ID -> Edit");
                 Long id = savedInstanceState.getLong("ID");
-                setUpEdit(type, id);
+                setUpEdit( id);
             }else{
                 Log.i(TAG, "savedInstanceState has no ID -> New");
-                setUpNew(type);
+                setUpNew();
             }
         }else{
             Log.i(TAG, "savedInstanceState == null");

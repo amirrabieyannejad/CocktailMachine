@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.data.AdminRights;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
@@ -83,6 +84,7 @@ public class ListFragment extends Fragment {
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter(recipe_id);
         set( "Zutaten");
+        setFAB(ModelFragment.ModelType.INGREDIENT);
     }
 
     private void setTopics(Long recipe_id){
@@ -90,6 +92,7 @@ public class ListFragment extends Fragment {
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter(recipe_id);
         set("Serviervorschläge");
+        setFAB(ModelFragment.ModelType.TOPIC);
     }
 
     private void setPumps(){
@@ -97,6 +100,7 @@ public class ListFragment extends Fragment {
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.PumpListRecyclerViewAdapter();
         set( "Pumpen");
+        setFAB(ModelFragment.ModelType.PUMP);
     }
 
     private void setIngredients(){
@@ -104,6 +108,7 @@ public class ListFragment extends Fragment {
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.IngredientListRecyclerViewAdapter();
         set( "Zutaten");
+        setFAB(ModelFragment.ModelType.INGREDIENT);
     }
 
     private void setTopics(){
@@ -111,6 +116,8 @@ public class ListFragment extends Fragment {
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.TopicListRecyclerViewAdapter();
         set("Serviervorschläge");
+
+        setFAB(ModelFragment.ModelType.TOPIC);
     }
 
     private void setAvailableRecipes(){
@@ -118,6 +125,7 @@ public class ListFragment extends Fragment {
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeListRecyclerViewAdapter();
         set( "Rezepte");
+        setFAB(ModelFragment.ModelType.RECIPE);
     }
 
     private void setAllRecipes(){
@@ -131,6 +139,7 @@ public class ListFragment extends Fragment {
         }
         this.recyclerViewAdapter = recyclerViewAdapter;
         set("Rezepte (Administrator)");
+        setFAB(ModelFragment.ModelType.RECIPE);
     }
 
     private void set(String title){
@@ -157,8 +166,16 @@ public class ListFragment extends Fragment {
         binding.includeList.getRoot().setVisibility(View.VISIBLE);
     }
 
-    private void setTopicFAB(){
-
+    private void setFAB(ModelFragment.ModelType type){
+        activity.setFAB(v -> {
+            Bundle b = new Bundle();
+            b.putString("Type", type.name());
+            NavHostFragment
+                    .findNavController(
+                            ListFragment.this)
+                    .navigate(R.id.action_listFragment_to_editModelFragment,
+                            b);
+        }, R.drawable.ic_add);
     }
 
     private void error(){

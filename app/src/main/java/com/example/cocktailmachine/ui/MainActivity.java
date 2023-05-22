@@ -6,6 +6,8 @@ import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.databinding.ActivityMainBinding;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
@@ -56,8 +58,9 @@ public class MainActivity extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
-    public void setFAB(View.OnClickListener listener) {
+    public void setFAB(View.OnClickListener listener, @DrawableRes int drawable) {
         binding.fab.setOnClickListener(listener);
+        binding.fab.setImageResource(drawable);
         binding.fab.setVisibility(View.VISIBLE);
     }
 
