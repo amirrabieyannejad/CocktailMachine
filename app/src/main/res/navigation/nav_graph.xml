@@ -39,6 +39,9 @@
         <action
             android:id="@+id/action_modelFragment_to_mainActivity"
             app:destination="@id/mainActivity" />
+        <action
+            android:id="@+id/action_modelFragment_to_editModelFragment"
+            app:destination="@id/editModelFragment" />
     </fragment>
     <activity
         android:id="@+id/mainActivity"
@@ -56,5 +59,17 @@
         <action
             android:id="@+id/action_listFragment_to_mainActivity"
             app:destination="@id/mainActivity" />
+        <action
+            android:id="@+id/action_listFragment_to_editModelFragment"
+            app:destination="@id/editModelFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editModelFragment"
+        android:name="com.example.cocktailmachine.ui.model.EditModelFragment"
+        android:label="fragment_edit_model"
+        tools:layout="@layout/fragment_edit_model" >
+        <action
+            android:id="@+id/action_editModelFragment_to_modelFragment"
+            app:destination="@id/modelFragment" />
     </fragment>
 </navigation>
