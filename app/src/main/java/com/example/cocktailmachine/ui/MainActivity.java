@@ -2,6 +2,7 @@ package com.example.cocktailmachine.ui;
 
 import android.os.Bundle;
 
+import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.databinding.ActivityMainBinding;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -27,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
+        DatabaseConnection.initialize_singleton(this);
+
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());

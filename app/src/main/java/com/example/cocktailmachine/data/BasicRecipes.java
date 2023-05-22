@@ -31,6 +31,19 @@ public class BasicRecipes {
         magarita.addOrUpdate(limettensaft, 4);
         magarita.addOrUpdate(ice);
         magarita.save();
+
+        Pump t_p = Pump.makeNew();
+        t_p.setCurrentIngredient(tequila);
+        t_p.fill(100);
+        t_p.save();
+        Pump o_p = Pump.makeNew();
+        o_p.setCurrentIngredient(orangenlikör);
+        o_p.fill(100);
+        o_p.save();
+        Pump l_p = Pump.makeNew();
+        l_p.setCurrentIngredient(limettensaft);
+        l_p.fill(100);
+        l_p.save();
     }
 
     public static void loadTequila(){
@@ -84,5 +97,34 @@ public class BasicRecipes {
         magarita.addOrUpdate(cola, 25);
         magarita.addOrUpdate(ice);
         magarita.save();
+
+        Pump t_p = Pump.makeNew();
+        t_p.setCurrentIngredient(tequila);
+        t_p.fill(100);
+        t_p.save();
+        Pump o_p = Pump.makeNew();
+        o_p.setCurrentIngredient(orangenlikör);
+        o_p.fill(100);
+        o_p.save();
+        Pump l_p = Pump.makeNew();
+        l_p.setCurrentIngredient(limettensaft);
+        l_p.fill(100);
+        l_p.save();
+        Pump w_p = Pump.makeNew();
+        w_p.setCurrentIngredient(wodka);
+        w_p.fill(100);
+        w_p.save();
+        Pump r_p = Pump.makeNew();
+        r_p.setCurrentIngredient(rum);
+        r_p.fill(100);
+        r_p.save();
+        Pump c_p = Pump.makeNew();
+        c_p.setCurrentIngredient(cola);
+        c_p.fill(100);
+        c_p.save();
+        Pump z_p = Pump.makeNew();
+        z_p.setCurrentIngredient(zuckersirup);
+        z_p.fill(100);
+        z_p.save();
     }
 }
