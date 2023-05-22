@@ -361,6 +361,11 @@ public class ListRecyclerViewAdapters  {
             this.putRecipe(id);
         }
 
+        public RecipeIngredientListRecyclerViewAdapter(Recipe recipe) {
+            super(RowViews.RowType.recipeIngredient);
+            this.putRecipe(recipe);
+        }
+
         @NonNull
         @Override
         public RowViews.RecipeIngredientRowView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -424,6 +429,10 @@ public class ListRecyclerViewAdapters  {
         public RecipeTopicListRecyclerViewAdapter(Long id) {
             super(RowViews.RowType.recipeIngredient);
             this.putRecipe(id);
+        }
+        public RecipeTopicListRecyclerViewAdapter(Recipe recipe) {
+            super(RowViews.RowType.recipeIngredient);
+            this.putRecipe(recipe);
         }
 
         @NonNull

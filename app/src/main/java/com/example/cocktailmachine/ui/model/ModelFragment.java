@@ -145,6 +145,35 @@ class ModelFragment extends Fragment {
             }else{
                 binding.includeNotAvailable.getRoot().setVisibility(View.VISIBLE);
             }
+
+            binding.includeIngredients.textViewNameListTitle.setText("Zutaten");
+
+            ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter ingredientAdapter
+                    = new ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter(recipe);
+
+            ListLayout.set(binding.includeIngredients.textViewNameListTitle,
+                    "Zutaten",
+                    binding.includeIngredients.recylerViewNames,
+                    this.getContext(),
+                    ingredientAdapter,
+                    this,
+                    binding.includeIngredients.imageButtonListDelete,
+                    binding.includeIngredients.imageButtonListEdit);
+            binding.includeIngredients.getRoot().setVisibility(View.VISIBLE);
+
+            ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter topicAdapter
+                    = new ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter(recipe);
+
+            ListLayout.set(binding.includeTopics.textViewNameListTitle,
+                    "Serviervorschläge",
+                    binding.includeTopics.recylerViewNames,
+                    this.getContext(),
+                    topicAdapter,
+                    this,
+                    binding.includeTopics.imageButtonListDelete,
+                    binding.includeTopics.imageButtonListEdit);
+            binding.includeTopics.getRoot().setVisibility(View.VISIBLE);
+
             
 
 

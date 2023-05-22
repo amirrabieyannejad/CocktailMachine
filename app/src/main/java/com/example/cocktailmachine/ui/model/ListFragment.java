@@ -113,6 +113,7 @@ class ListFragment extends Fragment {
     }
 
     private void set(String title){
+        /*
         binding.includeList.textViewNameListTitle.setText(title);
         binding.includeList.recylerViewNames.setLayoutManager(this.recyclerViewAdapter.getManager(this.getContext()));
         binding.includeList.recylerViewNames.setAdapter(this.recyclerViewAdapter);
@@ -121,10 +122,22 @@ class ListFragment extends Fragment {
         if(recyclerViewAdapter!=null) {
             recyclerViewAdapter.addGoToModelListener(this);
         }
+
+         */
+        ListLayout.set(binding.includeList.textViewNameListTitle,
+                title,
+                binding.includeList.recylerViewNames,
+                this.getContext(),
+                this.recyclerViewAdapter,
+                this,
+                binding.includeList.imageButtonListDelete,
+                binding.includeList.imageButtonListEdit);
+        binding.includeList.getRoot().setVisibility(View.VISIBLE);
     }
 
     private void reload(){}
 
+    /*
     private void setButtons(){
         binding.includeList.imageButtonListDelete.setOnClickListener(v -> {
             if(recyclerViewAdapter.isCurrentlyDeleting()){
@@ -160,6 +173,8 @@ class ListFragment extends Fragment {
             }
         });
     }
+
+     */
 
     @Nullable
     @Override
