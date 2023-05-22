@@ -110,6 +110,10 @@ public class EditModelFragment extends Fragment {
 
 
 
+    private void error(){
+
+    }
+
 
 
 
@@ -138,8 +142,9 @@ public class EditModelFragment extends Fragment {
             }
         }else{
             Log.i(TAG, "savedInstanceState == null");
-            setUp("Recipe");
+            error();
         }
+        setFAB();
         return binding.getRoot();
     }
 }
