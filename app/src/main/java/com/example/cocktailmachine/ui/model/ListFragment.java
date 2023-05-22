@@ -117,39 +117,42 @@ class ListFragment extends Fragment {
         binding.includeList.recylerViewNames.setLayoutManager(this.recyclerViewAdapter.getManager(this.getContext()));
         binding.includeList.recylerViewNames.setAdapter(this.recyclerViewAdapter);
         binding.includeList.getRoot().setVisibility(View.VISIBLE);
+        setButtons();
     }
 
     private void reload(){}
 
     private void setButtons(){
-        binding.includeList.imageButtonListDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(recyclerViewAdapter.isCurrentlyDeleting()){
-                    recyclerViewAdapter.finishDelete();
-                    reload();
-                }else{
-                    if(recyclerViewAdapter.isCurrentlyAdding()){
-                        Toast.makeText(getContext(), "Kein Löschen möglich!", Toast.LENGTH_SHORT);
-                    }else {
-                        recyclerViewAdapter.loadDelete();
-                    }
+        binding.includeList.imageButtonListDelete.setOnClickListener(v -> {
+            if(recyclerViewAdapter.isCurrentlyDeleting()){
+                recyclerViewAdapter.finishDelete();
+                reload();
+            }else{
+                if(recyclerViewAdapter.isCurrentlyAdding()){
+                    Toast.makeText(
+                            getContext(),
+                            "Kein Löschen möglich!",
+                            Toast.LENGTH_SHORT)
+                            .show();
+                }else {
+                    recyclerViewAdapter.loadDelete();
                 }
             }
         });
 
-        binding.includeList.imageButtonListEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(recyclerViewAdapter.isCurrentlyAdding()){
-                    recyclerViewAdapter.finishAdd();
-                    reload();
-                }else{
-                    if(recyclerViewAdapter.isCurrentlyDeleting()){
-                        Toast.makeText(getContext(), "Kein Editieren möglich!", Toast.LENGTH_SHORT);
-                    }else {
-                        recyclerViewAdapter.loadAdd();
-                    }
+        binding.includeList.imageButtonListEdit.setOnClickListener(v -> {
+            if(recyclerViewAdapter.isCurrentlyAdding()){
+                recyclerViewAdapter.finishAdd();
+                reload();
+            }else{
+                if(recyclerViewAdapter.isCurrentlyDeleting()){
+                    Toast.makeText(
+                            getContext(),
+                            "Kein Editieren möglich!",
+                            Toast.LENGTH_SHORT)
+                            .show();
+                }else {
+                    recyclerViewAdapter.loadAdd();
                 }
             }
         });
