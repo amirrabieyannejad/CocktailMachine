@@ -1,6 +1,8 @@
 package com.example.cocktailmachine.data;
 
 
+import androidx.annotation.ColorInt;
+
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
@@ -78,6 +80,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * Get fluid color.
      * @return Integer representative of color
      */
+    @ColorInt
     public int getColor();
 
     //Setter
@@ -88,6 +91,11 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
     public void addImageUrl(String url);
 
     public void setPump(Long pump, int volume);
+
+
+    public void setColor(@ColorInt int color);
+
+    public void setAlcoholic(boolean alcoholic);
 
     //use
     /**

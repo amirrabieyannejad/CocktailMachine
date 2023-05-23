@@ -1,5 +1,7 @@
 package com.example.cocktailmachine.ui.model;
 
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -7,6 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
@@ -22,6 +26,13 @@ import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.databinding.FragmentEditModelBinding;
 import com.example.cocktailmachine.databinding.FragmentListBinding;
 import com.example.cocktailmachine.ui.MainActivity;
+import com.mrudultora.colorpicker.ColorPickerPopUp;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.IntFunction;
+import java.util.stream.Collectors;
 
 public class EditModelFragment extends Fragment {
     private FragmentEditModelBinding binding;
@@ -29,10 +40,10 @@ public class EditModelFragment extends Fragment {
     private static final String TAG = "EditModelFragment";
 
     //data
-    private Recipe recipe;
-    private Topic topic;
-    private Ingredient ingredient;
-    private Pump pump;
+    private Recipe recipe = null;
+    private Topic topic = null;
+    private Ingredient ingredient = null;
+    private Pump pump = null;
 
     private boolean saved=false;
     private boolean old=false;
@@ -55,17 +66,42 @@ public class EditModelFragment extends Fragment {
         old = true;
         switch (type){
             case PUMP:
+                pump = Pump.makeNew();
+                pump.setCurrentIngredient(ingredient);
+                pump.fill(Integer.parseInt(
+                        binding
+                                .includeNewPump
+                                .includeNewPumpFillEmpty
+                                .editTextPumpFillEmptyVolume
+                                .getText().toString()));
+                setUpEditPump();
+                return;
             case TOPIC:
                 topic = Topic.makeNew(
-                        binding.includeName.editTextEditText.getText().toString(),
-                        binding.editTextTopic.getText().toString());
+                        binding
+                                .includeName
+                                .editTextEditText
+                                .getText().toString(),
+                        binding
+                                .editTextTopic
+                                .getText()
+                                .toString());
                 return;
             case RECIPE:
                 recipe = Recipe.makeNew(
-                        binding.includeName.editTextEditText.getText().toString());
+                        binding
+                                .includeName
+                                .editTextEditText
+                                .getText().toString());
                 setUpEditRecipe();
                 return;
             case INGREDIENT:
+                ingredient = Ingredient.makeNew(
+                        binding
+                                .includeName
+                                .editTextEditText
+                                .getText().toString());
+                setUpEditIngredient();
         }
     }
 
@@ -126,7 +162,35 @@ public class EditModelFragment extends Fragment {
     }
 
     private void setUpNewIngredient() {
+        binding.includeName.textViewEditText.setText("Zutat");
+        binding.includeName.editTextEditText.setHint("bspw. Tequila");
+        binding.includeName.editTextEditText.addTextChangedListener(textWatcher);
+        /*
+        binding.layoutIngredient.setVisibility(View.VISIBLE);
+        binding.layoutPickColor.setOnClickListener(v -> {
+            ColorPickerPopUp colorPickerPopUp = new ColorPickerPopUp(activity);	// Pass the context.
+            colorPickerPopUp.setShowAlpha(true)			// By default show alpha is true.
+                    .setDefaultColor(Color.GREEN)
+                    .setDialogTitle("Wähle eine Farbe!")
+                    .setOnPickColorListener(new ColorPickerPopUp.OnPickColorListener() {
+                        @Override
+                        public void onColorPicked(int color) {
+                            //handle the use of color
+                            saveNew();
+                            ingredient.setColor(color);
+                            binding.imageButtonGlassColor.setBackgroundColor(color);
+                        }
 
+                        @Override
+                        public void onCancel() {
+                            colorPickerPopUp.dismissDialog();	// Dismiss the dialog.
+                        }
+                    })
+                    .show();
+        });
+        binding.checkBoxAlcoholic.setChecked(false);
+
+         */
     }
 
     private void setUpNewRecipe() {
@@ -156,10 +220,52 @@ public class EditModelFragment extends Fragment {
     }
 
     private void setUpNewPump(){
-        pump = Pump.makeNew();
+        binding.includeNewPump.getRoot().setVisibility(View.VISIBLE);
+        binding.includeNewPump.includeNewPumpFillEmpty.editTextPumpFillEmptyVolume.addTextChangedListener(textWatcher);
+        binding.includeNewPump.includeNewPumpFillEmpty.imageButtonEmpty.setOnClickListener(v -> {
+            binding.includeNewPump.includeNewPumpFillEmpty.editTextPumpFillEmptyVolume.setText(null);
+        });
+        final List<Ingredient> ingredients;
+        List<Ingredient> temp = new ArrayList<>();
+        String[] ingredientNames = new String[0];
+        try {
+            temp = Ingredient.getIngredientWithIds();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+        }
+        ingredients = temp;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            ingredientNames = ingredients
+                    .stream()
+                    .map(Ingredient::getName)
+                    .toArray(String[]::new);
+        }else{
+            List<String> names = new ArrayList<>();
+            for(Ingredient ingredient: ingredients){
+                names.add(ingredient.getName());
+            }
+            ingredientNames = names.toArray(new String[0]);
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                activity,//);
+                //this,
+                android.R.layout.simple_spinner_item,
+                ingredientNames);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.includeNewPump.spinnerNewPump.setAdapter(adapter);
+        binding.includeNewPump.spinnerNewPump.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ingredient = ingredients.get(position);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
     }
 
-    private void setUpEdit( Long id){
+    private void setUpEdit(Long id){
         switch (type){
             case PUMP: setUpEditPump();return;
             case TOPIC:setUpEditTopic();return;
@@ -169,7 +275,32 @@ public class EditModelFragment extends Fragment {
     }
 
     private void setUpEditIngredient() {
+        binding.includeName.textViewEditText.setText("Zutat");
+        binding.includeName.editTextEditText.setHint("bspw. Tequila");
+        binding.includeName.editTextEditText.setText(ingredient.getName());
+        binding.includeName.editTextEditText.addTextChangedListener(textWatcher);
+        binding.layoutIngredient.setVisibility(View.VISIBLE);
+        binding.layoutPickColor.setOnClickListener(v -> {
+            ColorPickerPopUp colorPickerPopUp = new ColorPickerPopUp(activity);	// Pass the context.
+            colorPickerPopUp.setShowAlpha(true)			// By default show alpha is true.
+                    .setDefaultColor(ingredient.getColor())
+                    .setDialogTitle("Wähle eine Farbe!")
+                    .setOnPickColorListener(new ColorPickerPopUp.OnPickColorListener() {
+                        @Override
+                        public void onColorPicked(int color) {
+                            // handle the use of color
+                            ingredient.setColor(color);
+                            binding.imageButtonGlassColor.setBackgroundColor(color);
+                        }
 
+                        @Override
+                        public void onCancel() {
+                            colorPickerPopUp.dismissDialog();	// Dismiss the dialog.
+                        }
+                    })
+                    .show();
+        });
+        binding.checkBoxAlcoholic.setChecked(ingredient.isAlcoholic());
     }
 
     private void setUpEditRecipe() {
@@ -187,7 +318,58 @@ public class EditModelFragment extends Fragment {
     }
 
     private void setUpEditPump() {
-
+        binding.includeNewPump.getRoot().setVisibility(View.VISIBLE);
+        binding.includeNewPump.includeNewPumpFillEmpty.editTextPumpFillEmptyVolume.addTextChangedListener(textWatcher);
+        binding.includeNewPump.includeNewPumpFillEmpty.imageButtonEmpty.setOnClickListener(v -> {
+            binding.includeNewPump.includeNewPumpFillEmpty.editTextPumpFillEmptyVolume.setText(null);
+        });
+        final List<Ingredient> ingredients;
+        List<Ingredient> temp = new ArrayList<>();
+        String[] ingredientNames;
+        try {
+            temp = Ingredient.getIngredientWithIds();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+        }
+        ingredients = temp;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            ingredientNames = ingredients
+                    .stream()
+                    .map(Ingredient::getName)
+                    .toArray(String[]::new);
+        }else{
+            List<String> names = new ArrayList<>();
+            for(Ingredient ingredient: ingredients){
+                names.add(ingredient.getName());
+            }
+            ingredientNames = names.toArray(new String[0]);
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                activity,//);
+                //this,
+                android.R.layout.simple_spinner_item,
+                ingredientNames);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.includeNewPump.spinnerNewPump.setAdapter(adapter);
+        binding.includeNewPump.spinnerNewPump.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ingredient = ingredients.get(position);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+        if(pump.getCurrentIngredient()!= null) {
+            int position = 0;
+            String in_name = pump.getIngredientName();
+            for(int i = 0; i< ingredientNames.length; i++){
+                if(Objects.equals(in_name, ingredientNames[i])){
+                    position = i;
+                }
+            }
+            binding.includeNewPump.spinnerNewPump.setSelection(position);
+        }
     }
 
 

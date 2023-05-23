@@ -1,5 +1,7 @@
 package com.example.cocktailmachine.data.db.elements;
 
+import android.graphics.Color;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -24,7 +26,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
     private boolean available = false;
     //private int fluidInMillimeters;
     //private long pump;
-    private int color = -1;
+    private int color = Color.GREEN;
 
     private SQLIngredientPump ingredientPump;
 
@@ -197,6 +199,16 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         pp.setCurrentIngredient(this);
         this.ingredientPump = new SQLIngredientPump(volume, pump, this.getID());
         this.wasChanged();
+    }
+
+    @Override
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+    @Override
+    public void setAlcoholic(boolean alcoholic) {
+        this.alcoholic = alcoholic;
     }
 
     @Override

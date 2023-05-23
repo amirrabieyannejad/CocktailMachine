@@ -5,6 +5,7 @@
     android:id="@+id/layout_edit_model"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:maxHeight="48dp"
     tools:context=".ui.model.EditModelFragment">
 
     <LinearLayout
@@ -34,16 +35,45 @@
             android:id="@+id/layout_ingredient"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <CheckBox
-                android:id="@+id/checkBox"
+                android:id="@+id/checkBox_alcoholic"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:text="ist alkoholisch"
                 android:textColor="@color/design_default_color_on_secondary"
                 android:textSize="16sp" />
+
+            <LinearLayout
+                android:id="@+id/layout_pick_color"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:padding="8dp">
+
+                <ImageButton
+                    android:id="@+id/imageButton_glass_color"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="glass"
+                    android:maxWidth="48dp"
+                    android:maxHeight="48dp"
+                    android:src="@drawable/ic_glass"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <TextView
+                    android:id="@+id/textView_pick_a_color"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:paddingStart="8dp"
+                    android:text="Wähle eine Farbe!" />
+            </LinearLayout>
+
         </LinearLayout>
 
         <LinearLayout
@@ -67,6 +97,13 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp" />
         </LinearLayout>
+
+        <include
+            android:id="@+id/include_new_pump"
+            layout="@layout/layout_new_pump"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
