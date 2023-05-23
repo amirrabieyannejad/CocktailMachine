@@ -6,24 +6,35 @@
     android:layout_height="match_parent"
     tools:context=".ui.singleCocktailChoice.fragment1">
 
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/textViewCocktailFragment1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <ImageView
+            android:id="@+id/imageCocktail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_singel_choice_cocktail" />
+
+    </LinearLayout>
+
     <TextView
         android:id="@+id/textViewCocktailFragment1"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginBottom="100dp"
-        android:text="TextView"
-        android:textSize="96sp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageCocktail"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageView
-        android:id="@+id/imageCocktail"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/glas_fluessigkeit07"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/swipe"
+        android:textSize="96sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        tools:layout_editor_absoluteX="0dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

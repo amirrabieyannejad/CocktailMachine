@@ -66,8 +66,8 @@ public class SingleCocktailChoice extends AppCompatActivity {
         //initialise Fragment Manager
         fragmentManager = getSupportFragmentManager();
 
-
-        fragment1 f1 = fragment1.newInstance();
+        String startMassage = getResources().getString(R.string.swipe);
+        fragment1 f1 = fragment1.newInstance(startMassage);
         //f2 = fragment2.newInstance();
         //fragment.updateImage(getResources().getDrawable(R.drawable.glas2));
 

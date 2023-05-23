@@ -192,4 +192,7 @@
     <string name="btn_restart">Restart</string>
     <string name="btn_editRecipe">Edit Recipe</string>
 
+
+    <string name="swipe">S W I P E</string>
+
 </resources>

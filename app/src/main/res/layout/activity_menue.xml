@@ -22,7 +22,6 @@
           android:layout_height="150dp"
           android:layout_margin="30dp"
           android:contentDescription="Show one avalable Cocktail"
-          android:onClick="openSingelCocktailView"
           app:srcCompat="@drawable/ic_list" />
 
       <ImageView
@@ -39,6 +38,7 @@
           android:layout_height="150dp"
           android:layout_margin="30dp"
           android:contentDescription=""
+          android:onClick="openSingelCocktailView"
           app:srcCompat="@drawable/ic_single_cocktail_choice_2" />
 
       <ImageView
