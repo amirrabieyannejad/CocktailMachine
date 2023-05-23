@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId "com.example.cocktailmachine"
         minSdk 21
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -59,6 +59,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
     implementation 'androidx.navigation:navigation-fragment:2.5.3'
     implementation 'androidx.navigation:navigation-ui:2.5.3'
+    implementation 'com.github.mrudultora:Colorpicker:1.2.0'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'com.android.support.test:testing-support-lib:0.1'
     testImplementation 'com.android.support.test:testing-support-lib:0.1'
