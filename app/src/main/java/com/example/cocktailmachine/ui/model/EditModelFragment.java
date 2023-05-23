@@ -1,6 +1,8 @@
 package com.example.cocktailmachine.ui.model;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,60 +34,89 @@ public class EditModelFragment extends Fragment {
     private Ingredient ingredient;
     private Pump pump;
 
+    private boolean saved=false;
+    private boolean old=false;
+    private Bundle b;
+    private TextWatcher textWatcher;
+
     private ModelFragment.ModelType type;
 
     public EditModelFragment(){}
 
-    private void setFAB(){
-        //TODO: if change just save
-        //TODO: else goto model
-        activity.setFAB(v -> {
-            Bundle b = new Bundle();
-            if(recipe != null){
-                try {
-                    recipe.save();
+    private void setGoToFAB(){
+        activity.setFAB(v -> NavHostFragment
+                .findNavController(EditModelFragment.this)
+                .navigate(R.id.action_editModelFragment_to_modelFragment,
+                        b),
+                R.drawable.ic_check);
+    }
 
-                    b.putString("Type", ModelFragment.ModelType.RECIPE.name());
-                    b.putLong("ID", recipe.getID());
+    private void saveNew(){
+        old = true;
+        switch (type){
+            case PUMP:
+            case TOPIC:
+                topic = Topic.makeNew(
+                        binding.includeName.editTextEditText.getText().toString(),
+                        binding.editTextTopic.getText().toString());
+                return;
+            case RECIPE:
+                recipe = Recipe.makeNew(
+                        binding.includeName.editTextEditText.getText().toString());
+                setUpEditRecipe();
+                return;
+            case INGREDIENT:
+        }
+    }
 
-                } catch (NotInitializedDBException e) {
-                    e.printStackTrace();
-                }
-            }else if(topic != null){
-                try {
-                    topic.save();
-
-                    b.putString("Type", ModelFragment.ModelType.TOPIC.name());
-                    b.putLong("ID", topic.getID());
-                } catch (NotInitializedDBException e) {
-                    e.printStackTrace();
-                }
-            }else if(ingredient != null){
-                try {
+    private void save(){
+        b = new Bundle();
+        saved = true;
+        try {
+            switch (type){
+                case INGREDIENT:
                     ingredient.save();
                     b.putString("Type", ModelFragment.ModelType.INGREDIENT.name());
                     b.putLong("ID", ingredient.getID());
-                } catch (NotInitializedDBException e) {
-                    e.printStackTrace();
-                }
-            }else if(pump != null){
-                try {
+                    return;
+                case RECIPE:
+                    recipe.save();
+                    b.putString("Type", ModelFragment.ModelType.RECIPE.name());
+                    b.putLong("ID", recipe.getID());
+                    return;
+                case TOPIC:
+                    topic.save();
+                    b.putString("Type", ModelFragment.ModelType.TOPIC.name());
+                    b.putLong("ID", topic.getID());
+                    return;
+                case PUMP:
                     pump.save();
                     b.putString("Type", ModelFragment.ModelType.INGREDIENT.name());
                     b.putLong("ID", pump.getID());
-                } catch (NotInitializedDBException e) {
-                    e.printStackTrace();
-                }
+                    return;
             }
-            NavHostFragment
-                    .findNavController(EditModelFragment.this)
-                    .navigate(R.id.action_editModelFragment_to_modelFragment,
-                            b);
-        },
-                R.drawable.ic_save);
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            saved = false;
+            return;
+        }
+    }
+
+    private void setSaveFAB(){
+        activity.setFAB(v -> {
+            if(old){
+                save();
+            }else{
+                saveNew();
+            }
+            if(saved) {
+                setGoToFAB();
+            }
+        }, R.drawable.ic_save);
     }
 
     private void setUpNew(){
+        old = false;
         switch (type){
             case PUMP: setUpNewPump();return;
             case TOPIC:setUpNewTopic();return;
@@ -99,11 +130,29 @@ public class EditModelFragment extends Fragment {
     }
 
     private void setUpNewRecipe() {
-
+        binding.includeName.textViewEditText.setText("Rezept");
+        binding.includeName.editTextEditText.setHint("bspw. Magarita");
+        binding.includeName.editTextEditText.addTextChangedListener(textWatcher);
+        binding.layoutRecipe.setVisibility(View.GONE);
+        //binding.includeEditRecipeTopics.includeList.textViewNameListTitle.setText("");
+        /*
+        ListLayout.set(binding.includeEditRecipeTopics.includeList.textViewNameListTitle,
+                "Serviervorschläge",
+                binding.includeEditRecipeTopics.includeList.recylerViewNames,
+                this.getContext(),
+                ListRecyclerViewAdapters.,
+                EditModelFragment.this,
+                binding.includeEditRecipeTopics.includeList.imageButtonListDelete,
+                binding.includeEditRecipeTopics.includeList.imageButtonListEdit);
+         */
     }
 
     private void setUpNewTopic() {
-
+        binding.includeName.textViewEditText.setText("Serviervorschlag");
+        binding.includeName.editTextEditText.setHint("bspw. Limettensirup");
+        binding.includeName.editTextEditText.addTextChangedListener(textWatcher);
+        binding.editTextTopic.addTextChangedListener(textWatcher);
+        binding.editTextTopic.setVisibility(View.VISIBLE);
     }
 
     private void setUpNewPump(){
@@ -128,7 +177,13 @@ public class EditModelFragment extends Fragment {
     }
 
     private void setUpEditTopic() {
-
+        binding.includeName.textViewEditText.setText("Serviervorschlag");
+        binding.includeName.editTextEditText.setHint("bspw. Limettensirup");
+        binding.includeName.editTextEditText.setText(topic.getName());
+        binding.includeName.editTextEditText.addTextChangedListener(textWatcher);
+        binding.editTextTopic.setText(topic.getDescription());
+        binding.editTextTopic.addTextChangedListener(textWatcher);
+        binding.editTextTopic.setVisibility(View.VISIBLE);
     }
 
     private void setUpEditPump() {
@@ -161,6 +216,27 @@ public class EditModelFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         activity = (MainActivity) getActivity();
 
+        textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(saved){
+                    saved = false;
+                    setSaveFAB();
+                }
+            }
+        };
+
+
         if(savedInstanceState != null) {
             Log.i(TAG, "savedInstanceState != null");
             String type = savedInstanceState.getString("Type");
@@ -177,6 +253,6 @@ public class EditModelFragment extends Fragment {
             Log.i(TAG, "savedInstanceState == null");
             error();
         }
-        setFAB();
+        setSaveFAB();
     }
 }
