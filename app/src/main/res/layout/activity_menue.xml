@@ -39,7 +39,7 @@
           android:layout_height="150dp"
           android:layout_margin="30dp"
           android:contentDescription=""
-          app:srcCompat="@drawable/ic_single_choice_cocktail_lage_lines" />
+          app:srcCompat="@drawable/ic_single_cocktail_choice_2" />
 
       <ImageView
           android:layout_width="150dp"
