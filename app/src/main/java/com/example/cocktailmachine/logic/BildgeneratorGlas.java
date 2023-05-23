@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 
 import androidx.core.content.res.ResourcesCompat;
 
@@ -17,8 +16,6 @@ import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedExcept
 import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.R;
 
-import java.util.Collections;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -48,7 +45,7 @@ public class BildgeneratorGlas {
         glasHintereDarstellung.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         glasHintereDarstellung.draw(canvas);
 
-        canvas = new BildgeneratorGlas().erzeugeFlüssigkeitGlas(context,canvas,recipe,(float)1);
+        canvas = new BildgeneratorGlas().generateLiquidGlass(context,canvas,recipe,(float)1);
 
         Drawable glasFordereDarstellung =  ResourcesCompat.getDrawable(res, R.drawable.glas_fordere_darstellung, null);
         glasFordereDarstellung.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -95,7 +92,7 @@ public class BildgeneratorGlas {
         }
 
 
-        canvas = new BildgeneratorGlas().erzeugeFlüssigkeitGlas(context,canvas,recipe,filling);
+        canvas = new BildgeneratorGlas().generateLiquidGlass(context,canvas,recipe,filling);
 
         Drawable glasFordereDarstellung =  ResourcesCompat.getDrawable(res, R.drawable.glas_fordere_darstellung, null);
         glasFordereDarstellung.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -125,7 +122,7 @@ public class BildgeneratorGlas {
     }
 
 
-    private Canvas erzeugeFlüssigkeitGlas(Context context, Canvas canvas, Recipe recipe,Float filling) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
+    private Canvas generateLiquidGlass(Context context, Canvas canvas, Recipe recipe, Float filling) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
 
         if (filling > 1){
             filling = (float)1;
