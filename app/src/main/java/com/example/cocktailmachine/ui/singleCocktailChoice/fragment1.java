@@ -27,7 +27,7 @@ import com.example.cocktailmachine.logic.BildgeneratorGlas;
  * Use the {@link fragment1#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class fragment1 extends Fragment implements FragmentListenerSingleCocktailChoice {
+public class fragment1 extends Fragment  {
 
     private static final String COMMON_TAG = "CombinedLifeCycle";
     private static final String FRAGMENT_NAME = fragment1.class.getSimpleName();
@@ -107,11 +107,11 @@ public class fragment1 extends Fragment implements FragmentListenerSingleCocktai
         imageView.setImageDrawable(drawable);
     }
 
-    @Override
+  /**  @Override
     public void updateTextView(String text){
         binding.textViewCocktailFragment1.setText(text);
         //this.textView.setText(text);
-    }
+    }*/
 
 
     @Nullable

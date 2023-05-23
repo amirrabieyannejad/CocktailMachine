@@ -22,7 +22,7 @@ import com.example.cocktailmachine.databinding.FragmentFragment2Binding;
  * Use the {@link fragment2#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class fragment2 extends Fragment implements FragmentListenerSingleCocktailChoice {
+public class fragment2 extends Fragment {
     ImageView imageView;
     TextView textView;
     View view;
@@ -72,11 +72,11 @@ public class fragment2 extends Fragment implements FragmentListenerSingleCocktai
         imageView.setImageDrawable(drawable);
     }
 
-    @Override
+    /**@Override
     public void updateTextView(String text){
         binding.textViewCocktailFragment2.setText(text);
         //this.textView.setText(text);
-    }
+    }*/
 
 
     @Nullable

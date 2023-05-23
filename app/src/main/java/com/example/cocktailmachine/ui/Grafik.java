@@ -113,7 +113,7 @@ public class Grafik extends AppCompatActivity {
         ImageView iv =(ImageView) findViewById(R.id.ivtest);
 
         ValueAnimator animation = ValueAnimator.ofFloat(0f, 1f);
-        animation.setDuration(10);
+        animation.setDuration(10000);
 
         Recipe finalRecipe = SingeltonTestdata.getSingelton().getRecipe();
         System.out.println("Die Farbe ist = " + finalRecipe.getIngredients());
@@ -121,6 +121,7 @@ public class Grafik extends AppCompatActivity {
             @Override
             public void onAnimationUpdate(ValueAnimator updatedAnimation) {
                 float animatedValue = (float)updatedAnimation.getAnimatedValue();
+                System.out.println(animatedValue);
 
                 try {
                     iv.setImageBitmap(BildgeneratorGlas.bildgenerationGlas(context, finalRecipe,animatedValue));
