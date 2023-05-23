@@ -267,10 +267,21 @@ public class EditModelFragment extends Fragment {
 
     private void setUpEdit(Long id){
         switch (type){
-            case PUMP: setUpEditPump();return;
-            case TOPIC:setUpEditTopic();return;
-            case RECIPE:setUpEditRecipe();return;
-            case INGREDIENT:setUpEditIngredient();return;
+            case PUMP:
+                pump = Pump.getPump(id);
+                setUpEditPump();
+                return;
+            case TOPIC:
+                topic = Topic.getTopic(id);
+                setUpEditTopic();return;
+            case RECIPE:
+                recipe = Recipe.getRecipe(id);
+                setUpEditRecipe();
+                return;
+            case INGREDIENT:
+                ingredient = Ingredient.getIngredient(id);
+                setUpEditIngredient();
+                return;
         }
     }
 
