@@ -196,7 +196,6 @@ public class EditModelFragment extends Fragment {
     private void setUpNewRecipe() {
         binding.includeName.textViewEditText.setText("Rezept");
         binding.includeName.editTextEditText.setHint("bspw. Magarita");
-        binding.includeName.editTextEditText.addTextChangedListener(textWatcher);
         binding.layoutRecipe.setVisibility(View.GONE);
         //binding.includeEditRecipeTopics.includeList.textViewNameListTitle.setText("");
         /*
@@ -209,6 +208,7 @@ public class EditModelFragment extends Fragment {
                 binding.includeEditRecipeTopics.includeList.imageButtonListDelete,
                 binding.includeEditRecipeTopics.includeList.imageButtonListEdit);
          */
+        //TODO
     }
 
     private void setUpNewTopic() {
@@ -315,7 +315,7 @@ public class EditModelFragment extends Fragment {
     }
 
     private void setUpEditRecipe() {
-
+        //TODO
     }
 
     private void setUpEditTopic() {
