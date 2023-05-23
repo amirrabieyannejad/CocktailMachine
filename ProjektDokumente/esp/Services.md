@@ -88,12 +88,12 @@ Wert: Der Inhalt des aktuellen Cocktails, der gemischt wird.
 
 Beispiel:
 
-    [["beer", 250], ["lemonade", 250]]
+    {"weight": 500.0, "content": [["beer", 250], ["lemonade", 250]]}
 
 ### Aktueller Benutzer
 - UUID Characteristic: 2ce478ea-8d6f-30ba-9ac6-2389c8d5b172
 
-Wert: der aktuelle Benutzer, für den ein Cocktail gemacht wird 
+Wert: der aktuelle Benutzer, für den ein Cocktail gemacht wird oder bereit steht
 
 Wenn kein Benutzer aktiv ist, ist der Wert `-1`.
 

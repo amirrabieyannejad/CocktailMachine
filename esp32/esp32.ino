@@ -213,10 +213,12 @@ struct CommCB: BLECharacteristicCallbacks {
   };
 
 // FIXME check that cocktail states are correct when making stuff
+def_ret(Init,              	"init");
 def_ret(Success,           	"ok");
 def_ret(Processing,        	"processing");
 def_ret(Ready,             	"ready");
 def_ret(Pumping,           	"pumping");
+def_ret(Done,              	"cocktail done");
 def_ret(Unsupported,       	"unsupported");
 def_ret(Unauthorized,      	"unauthorized");
 def_ret(Invalid,           	"invalid json");
@@ -498,8 +500,7 @@ Processed* add_to_queue(const String json, uint16_t conn_id);
 Parsed parse_command(const String json);
 bool is_admin(User user);
 
-// machine logic
-Processed* reset_machine(void);
+// update machine state
 void update_cocktail(void);
 void update_liquids(void);
 void update_recipes(void);
@@ -590,7 +591,7 @@ void setup() {
     users.clear();
     users[0] = "admin";
 
-    machine_state = new Ready();
+    machine_state = new Init();
 
     ble_server = NULL;
   }
@@ -604,6 +605,13 @@ void setup() {
 
   // try to load config
   config_load();
+
+  // update all states
+  update_liquids();
+  update_recipes();
+  update_cocktail();
+  update_user(USER_UNKNOWN);
+  update_state(new Ready());
 
   debug("ready");
 }
@@ -894,10 +902,9 @@ Processed* CmdRunPump::execute() {
   cocktail.push_front(Ingredient{"<calibration>", volume});
   p->volume = std::max(p->volume - volume, 0.0f);
 
-  update_user(-1);
   update_liquids();
   update_cocktail();
-  update_state(new Ready());
+  update_state(new Done());
   config_save();
 
   return new Success();
@@ -990,7 +997,20 @@ Processed* CmdAbort::execute() {
 };
 
 Processed* CmdReset::execute() {
-  return reset_machine();
+  // TODO restart hardware modules, like the sd card reader?
+  while (!cocktail_queue.empty()) cocktail_queue.pop();
+  cocktail.clear();
+
+  Processed *err = scale_tare();
+  if (err) return err;
+
+  // update machine state
+  update_cocktail();
+  update_liquids();
+  update_recipes();
+  update_state(new Ready());
+
+  return new Success();
 };
 
 Processed* CmdInitUser::execute() {
@@ -1187,8 +1207,7 @@ Processed* CmdMakeRecipe::execute() {
   }
 
   // update state
-  update_user(-1);
-  update_state(new Ready());
+  update_state(new Done());
 
   return new Success();
 };
@@ -1251,10 +1270,9 @@ Processed* add_liquid(User user, const String liquid, float amount) {
   cocktail.push_front(Ingredient{liquid, used});
 
   // update state
-  update_user(-1);
   update_liquids();
   update_cocktail();
-  update_state(new Ready());
+  update_state(new Done());
   config_save();
 
   // shouldn't happen, but do a sanity check
@@ -1263,23 +1281,6 @@ Processed* add_liquid(User user, const String liquid, float amount) {
   }
 
   return NULL;
-}
-
-Processed* reset_machine(void) {
-  // TODO restart hardware modules, like the sd card reader?
-  while (!cocktail_queue.empty()) cocktail_queue.pop();
-  cocktail.clear();
-
-  Processed *err = scale_tare();
-  if (err) return err;
-
-  // update machine state
-  update_cocktail();
-  update_liquids();
-  update_recipes();
-  update_state(new Ready());
-
-  return new Success();
 }
 
 Processed* Pump::drain(float amount) {
@@ -1307,7 +1308,12 @@ void update_cocktail() {
   // generate json output
   debug("updating cocktail state");
 
-  String out = String('[');
+  float weight = scale_weigh();
+
+  String out = String("{\"weight\":");
+  out.concat(String(weight, 1));
+
+  out.concat(",\"content\":[");
   for (auto ing = cocktail.begin(); ing != cocktail.end(); ing++) {
     debug("  ingredient: %s, amount: %.1f", ing->name.c_str(), ing->amount);
 
@@ -1319,7 +1325,7 @@ void update_cocktail() {
 
     if (next(ing) != cocktail.end()) out.concat(',');
   }
-  out.concat(']');
+  out.concat("]}");
 
   all_status[ID_COCKTAIL]->update(out.c_str());
 }
@@ -1413,11 +1419,19 @@ void update_recipes() {
 };
 
 void update_state(Processed *state) {
+  if (state == NULL) {
+    error("invalid state");
+    error_loop();
+  }
+
+  String json = state->json();
+  debug("updating machine state: %s", json.c_str());
+
   // remove old state
   if (machine_state) delete machine_state;
 
   machine_state = state;
-  all_status[ID_STATE]->update(state->json().c_str());
+  all_status[ID_STATE]->update(json.c_str());
 }
 
 void update_config_state(time_t ts) {
@@ -1581,7 +1595,8 @@ void CommCB::onRead(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *param
   // we need to set the value for each active connection to multiplex properly,
   // or default to a dummy value
   String value;
-  if (this->comm->responses.count(id)) {
+  if (this->comm->responses.
+      count(id)) {
     value = this->comm->responses[id]->json();
   } else {
     value = String("");
