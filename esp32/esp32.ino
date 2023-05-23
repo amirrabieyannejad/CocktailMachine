@@ -218,6 +218,7 @@ def_ret(Success,           	"ok");
 def_ret(Processing,        	"processing");
 def_ret(Ready,             	"ready");
 def_ret(Pumping,           	"pumping");
+def_ret(Mixing,            	"mixing");
 def_ret(Done,              	"cocktail done");
 def_ret(Unsupported,       	"unsupported");
 def_ret(Unauthorized,      	"unauthorized");
@@ -455,8 +456,7 @@ Comm*   all_comm[NUM_COMM];
 std::forward_list<Recipe>     recipes;
 std::forward_list<Ingredient> cocktail;
 
-std::queue<Queued>     command_queue;
-std::queue<Ingredient> cocktail_queue;
+std::queue<Queued> command_queue;
 
 // function declarations
 
@@ -583,7 +583,6 @@ void setup() {
     for (int i=0; i<MAX_PUMPS; i++) 	pumps[i]     	= NULL;
 
     while (!command_queue.empty()) 	command_queue.pop();
-    while (!cocktail_queue.empty())	cocktail_queue.pop();
 
     recipes.clear();
     cocktail.clear();
@@ -617,7 +616,7 @@ void setup() {
 }
 
 void loop() {
-  while (!command_queue.empty()) {
+  if (!command_queue.empty()) {
     Queued q = command_queue.front();
     command_queue.pop();
 
@@ -859,8 +858,7 @@ Processed* CmdFactoryReset::execute() {
       scale.set_scale(1.0);
     }
 
-    while (!command_queue.empty()) 	command_queue.pop();
-    while (!cocktail_queue.empty())	cocktail_queue.pop();
+    while (!command_queue.empty()) command_queue.pop();
 
     recipes.clear();
     cocktail.clear();
@@ -875,7 +873,7 @@ Processed* CmdFactoryReset::execute() {
   update_recipes();
   update_liquids();
   update_state(new Ready());
-  update_user(-1);
+  update_user(USER_UNKNOWN);
 
   return new Success();
 }
@@ -977,9 +975,7 @@ Processed* CmdAbort::execute() {
     return new Unauthorized();
 
   // TODO stop active pumps
-
-  // abort remaining cocktail
-  while (!cocktail_queue.empty()) cocktail_queue.pop();
+  // TODO abort remaining cocktail
 
   // update machine state
   update_cocktail();
@@ -998,7 +994,6 @@ Processed* CmdAbort::execute() {
 
 Processed* CmdReset::execute() {
   // TODO restart hardware modules, like the sd card reader?
-  while (!cocktail_queue.empty()) cocktail_queue.pop();
   cocktail.clear();
 
   Processed *err = scale_tare();
@@ -1008,6 +1003,7 @@ Processed* CmdReset::execute() {
   update_cocktail();
   update_liquids();
   update_recipes();
+  update_user(USER_UNKNOWN);
   update_state(new Ready());
 
   return new Success();
@@ -1080,14 +1076,16 @@ Processed* CmdRefillPump::execute() {
 
 Processed* CmdAddLiquid::execute() {
   // only allowed for admin or the current user
-  if (current_user != USER_UNKNOWN &&
-      current_user != this->user &&
-      !is_admin(this->user))
-    return new Unauthorized();
+  if (current_user == this->user ||
+      current_user == USER_UNKNOWN ||
+      is_admin(this->user)) {
+    Processed *err = add_liquid(this->user, this->liquid, this->volume);
+    if (err) return err;
+    return new Success();
 
-  Processed *err = add_liquid(this->user, this->liquid, this->volume);
-  if (err) return err;
-  return new Success();
+  } else {
+    return new Unauthorized();
+  }
 }
 
 Processed* CmdDefineRecipe::execute() {
@@ -1157,8 +1155,6 @@ Processed* CmdDeleteRecipe::execute() {
 }
 
 Processed* CmdMakeRecipe::execute() {
-  // TODO use cocktail_queue
-
   const String name = this->recipe;
   const Recipe *recipe = NULL;
   for (auto const &r : recipes) {
@@ -1200,15 +1196,17 @@ Processed* CmdMakeRecipe::execute() {
 
   debug("making recipe %s", name.c_str());
   update_user(this->user);
+  update_state(new Mixing());
 
   for (auto ing = recipe->ingredients.begin(); ing != recipe->ingredients.end(); ing++) {
     Processed *err = add_liquid(this->user, ing->name, ing->amount);
-    if (err) return err;
+    if (err) {
+      update_state(new Done());
+      return err;
+    }
   }
 
-  // update state
   update_state(new Done());
-
   return new Success();
 };
 
