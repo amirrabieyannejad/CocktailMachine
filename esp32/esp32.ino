@@ -335,6 +335,12 @@ struct CmdDeleteRecipe : public Command {
   CmdDeleteRecipe(User user, String name) : user(user), name(name) {}
 };
 
+struct CmdAbort : public Command {
+  def_cmd("abort", USER);
+  User user;
+  CmdAbort(User user) : user(user) {}
+};
+
 struct CmdReset : public Command {
   def_cmd("reset", USER);
   User user;
@@ -759,6 +765,10 @@ Parsed parse_command(const String json) {
     parse_int32(slot);
     cmd = new CmdRefillPump(user, slot, volume);
 
+  } else if (match_name(CmdAbort)) {
+    parse_user();
+    cmd = new CmdAbort(user);
+
   } else if (match_name(CmdReset)) {
     parse_user();
     cmd = new CmdReset(user);
@@ -950,6 +960,33 @@ Processed* CmdClean::execute() {
   // FIXME implement
   if (!is_admin(this->user)) return new Unauthorized();
   return new Unsupported();
+};
+
+Processed* CmdAbort::execute() {
+  // only allowed for admin or the current user
+  if (current_user != USER_UNKNOWN &&
+      current_user != this->user &&
+      !is_admin(this->user))
+    return new Unauthorized();
+
+  // TODO stop active pumps
+
+  // abort remaining cocktail
+  while (!cocktail_queue.empty()) cocktail_queue.pop();
+
+  // update machine state
+  update_cocktail();
+  update_liquids();
+  update_recipes();
+
+  if (cocktail.empty()) {
+    update_state(new Ready());
+    update_user(USER_UNKNOWN);
+  } else {
+    update_state(new Done());
+  }
+
+  return new Success();
 };
 
 Processed* CmdReset::execute() {

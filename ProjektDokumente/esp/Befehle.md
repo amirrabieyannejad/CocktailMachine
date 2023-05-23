@@ -34,6 +34,13 @@ JSON-Beispiel:
 
 ## User-Befehle
 
+### abort: bricht das aktuelle Rezept ab
+- user: User
+
+JSON-Beispiel:
+
+    {"cmd": "reset", "user": 483}
+
 ### reset: die Maschine zurücksetzen, damit sie einen neuen Cocktail machen kann
 - user: User
 
