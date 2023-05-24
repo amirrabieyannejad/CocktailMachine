@@ -1,5 +1,7 @@
 package com.example.cocktailmachine.ui.model;
 
+import android.nfc.Tag;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -110,6 +112,10 @@ public class ListRecyclerViewAdapters  {
 
         public abstract void putIds();
 
+        public ListRecyclerViewAdapter() {
+            super();
+        }
+
         public void putRecipe(Long id){
             this.recipe = Recipe.getRecipe(id);
         }
@@ -121,6 +127,7 @@ public class ListRecyclerViewAdapters  {
 
     public static class RecipeListRecyclerViewAdapter extends ListRecyclerViewAdapter<RowViews.RecipeRowView> {
         private List<Recipe> recipes;
+        private static final String TAG = "RecipeListRecyclerViewA";
 
         public RecipeListRecyclerViewAdapter(List<Long> ids) {
             super(RowViews.RowType.recipe);
@@ -137,7 +144,12 @@ public class ListRecyclerViewAdapters  {
 
         public RecipeListRecyclerViewAdapter() {
             super(RowViews.RowType.recipe);
+            Log.i(TAG, "constructor");
             this.putIds();
+            Log.i(TAG, "recipes");
+            for(Recipe r: recipes){
+                Log.i(TAG, "Rezept: "+r.getName());
+            }
         }
 
 

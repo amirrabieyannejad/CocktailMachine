@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 public class DatabaseConnection extends SQLiteOpenHelper {
     private static DatabaseConnection singleton = null;
     private static final String DBname = "DB";
+    private static final String TAG = "DatabaseConnection";
     private static int version = 1;
     private static final SQLiteDatabase.CursorFactory factory = null;
     //private UserPrivilegeLevel privilege = UserPrivilegeLevel.User;
@@ -75,20 +77,26 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     public static synchronized void initialize_singleton(Context context){
         DatabaseConnection.singleton = new DatabaseConnection(context);
         try {
+            Log.i(TAG, "initialize_singleton: start loading");
             BasicRecipes.loadMargarita();
             BasicRecipes.loadLongIslandIceTea();
+            Log.i(TAG, "initialize_singleton: finished loading");
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
+            Log.i(TAG, "initialize_singleton: NotInitializedDBException");
         }
     }
 
     public static synchronized void initialize_singleton(Context context, UserPrivilegeLevel privilege){
         DatabaseConnection.singleton = new DatabaseConnection(context, privilege);
         try {
+            Log.i(TAG, "initialize_singleton: start loading");
             BasicRecipes.loadMargarita();
             BasicRecipes.loadLongIslandIceTea();
+            Log.i(TAG, "initialize_singleton: finished loading");
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
+            Log.i(TAG, "initialize_singleton: NotInitializedDBException");
         }
     }
 

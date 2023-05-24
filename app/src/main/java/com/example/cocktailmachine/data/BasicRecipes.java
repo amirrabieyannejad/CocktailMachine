@@ -1,16 +1,20 @@
 package com.example.cocktailmachine.data;
 
 import android.graphics.Color;
+import android.util.Log;
 
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 
 public class BasicRecipes {
+    private static final String TAG = "BasicRecipes";
+
     public static void loadTest(){
         DatabaseConnection.initialize_singleton(null);
     }
 
     public static void loadMargarita() throws NotInitializedDBException {
+        Log.i(TAG,"loadMargarita");
         /**
         8 cl   weißer Tequila
         4 cl   Orangenlikör (z.B. Cointreau)
@@ -44,9 +48,11 @@ public class BasicRecipes {
         l_p.setCurrentIngredient(limettensaft);
         l_p.fill(100);
         l_p.save();
+        Log.i(TAG,"loadMargarita finished");
     }
 
     public static void loadTequila(){
+        Log.i(TAG,"loadTequila");
 
         Ingredient tequila = Ingredient.makeNew("Tequila", true, Color.RED);
         Ingredient orangenlikör = Ingredient.makeNew("Orangenlikör", true, Color.YELLOW);
@@ -57,9 +63,11 @@ public class BasicRecipes {
         magarita.addOrUpdate(tequila, 8);
         magarita.addOrUpdate(orangenlikör, 4);
         magarita.addOrUpdate(limettensaft, 4);
+        Log.i(TAG,"loadTequila finished");
     }
 
     public static void loadLongIslandIceTea() throws NotInitializedDBException{
+        Log.i(TAG,"loadLongIslandIceTea");
         /**
          *
          2 cl Rum
@@ -126,5 +134,6 @@ public class BasicRecipes {
         z_p.setCurrentIngredient(zuckersirup);
         z_p.fill(100);
         z_p.save();
+        Log.i(TAG,"loadLongIslandIceTea finished");
     }
 }

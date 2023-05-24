@@ -22,7 +22,7 @@ public class ListFragment extends Fragment {
     private FragmentListBinding binding;
     private static final String TAG = "ListFragment";
 
-    private String local_type = "AvailableRecipes";
+    private String local_type = "AllRecipes";
     private ModelFragment.ModelType type;
 
     public ListFragment(){
@@ -243,7 +243,7 @@ public class ListFragment extends Fragment {
         activity = (MainActivity) getActivity();
 
         Bundle args = getArguments();
-        if(savedInstanceState != null) {
+        if(args != null) {
             Log.i(TAG, "onViewCreated: getArguments != null");
             Log.i(TAG, "onViewCreated: getArguments: "+args);
             local_type = args.getString("Type");

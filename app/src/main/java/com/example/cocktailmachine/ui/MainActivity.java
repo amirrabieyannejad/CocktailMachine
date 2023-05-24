@@ -2,8 +2,10 @@ package com.example.cocktailmachine.ui;
 
 import android.os.Bundle;
 
+import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMainBinding;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -24,6 +26,8 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.cocktailmachine.R;
 
+import org.json.JSONException;
+
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration appBarConfiguration;
@@ -33,13 +37,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
-        DatabaseConnection.initialize_singleton(this);
+        DatabaseConnection.initialize_singleton(this, UserPrivilegeLevel.Admin);
         try {
             DatabaseConnection.getDataBase();
-            Log.i(TAG, "onCreate: DataBase is initialized: true");
+            Log.i(TAG, "onCreate: DataBase is initialized");
+            Log.i(TAG, Recipe.getAllRecipesAsMessage().toString());
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
-            Log.e(TAG, "onCreate: DataBase is initialized: false");
+            Log.e(TAG, "onCreate: DataBase is not initialized");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e(TAG, "onCreate:  Json didnt work");
         }
         super.onCreate(savedInstanceState);
 

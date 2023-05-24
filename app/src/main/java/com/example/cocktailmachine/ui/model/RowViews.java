@@ -186,8 +186,9 @@ public class RowViews {
             this.longClickListener = listener;
             if(layout == null){
                 Log.i(TAG, "HERE HERE, layout is null");
+            }else {
+                layout.setOnLongClickListener(listener);
             }
-            layout.setOnLongClickListener(listener);
         }
 
         public void loadLongListener(){
