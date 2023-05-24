@@ -3,13 +3,16 @@ package com.example.cocktailmachine.ui;
 import android.os.Bundle;
 
 import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.databinding.ActivityMainBinding;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
 
@@ -31,23 +34,37 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
         DatabaseConnection.initialize_singleton(this);
-
+        try {
+            DatabaseConnection.getDataBase();
+            Log.i(TAG, "onCreate: DataBase is initialized: true");
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            Log.e(TAG, "onCreate: DataBase is initialized: false");
+        }
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
+        Log.i(TAG, "onCreate: binding set");
         setContentView(binding.getRoot());
+        Log.i(TAG, "onCreate: setContentView");
 
         setSupportActionBar(binding.toolbar);
+        Log.i(TAG, "onCreate: setSupportActionBar");
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
+        Log.i(TAG, "onCreate: setupActionBarWithNavController");
+        /*
         binding.fab.setOnClickListener(view -> Snackbar.make(
                         view,
                         "Replace with your own action",
                         Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show());
+
+         */
+        Log.i(TAG,"onCreate finished");
     }
 
     @Override
@@ -59,9 +76,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setFAB(View.OnClickListener listener, @DrawableRes int drawable) {
-        binding.fab.setOnClickListener(listener);
-        binding.fab.setImageResource(drawable);
-        binding.fab.setVisibility(View.VISIBLE);
+        if(binding.fab == null){
+            Log.i(TAG, "fab is null");
+        }else {
+            binding.fab.setOnClickListener(listener);
+            binding.fab.setImageResource(drawable);
+            binding.fab.setVisibility(View.VISIBLE);
+        }
     }
 
     public void invisibleFAB(){

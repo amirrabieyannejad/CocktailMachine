@@ -58,7 +58,6 @@ public class ModelFragment extends Fragment {
         binding.includeIngredients.getRoot().setVisibility(View.GONE);
         binding.includeTopics.getRoot().setVisibility(View.GONE);
 
-        setFAB();
 
         switch (type){
             case TOPIC:setTopic();return;
@@ -231,14 +230,26 @@ public class ModelFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Log.i(TAG, "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
-        if(savedInstanceState != null) {
-            Log.i(TAG, "onViewCreated: "+ savedInstanceState);
-            String type = savedInstanceState.getString("Type");
-            this.type = ModelType.valueOf(type);
-            id = savedInstanceState.getLong("ID");
+
+        Bundle args = getArguments();
+
+        if(args != null) {
+            Log.i(TAG, "onViewCreated:getArguments!=null: "+ args);
+            type = ModelType.valueOf(args.getString("Type"));
+            id = args.getLong("ID");
+            Log.i(TAG, "onViewCreated:type: "+ type);
+            Log.i(TAG, "onViewCreated:type: "+ id);
             setUP();
         }else{
+            Log.i(TAG, "onViewCreated:getArguments==null ");
             error();
         }
+    }
+
+    @Override
+    public void onStart() {
+        Log.i(TAG, "onViewCreated");
+        super.onStart();
+        setFAB();
     }
 }

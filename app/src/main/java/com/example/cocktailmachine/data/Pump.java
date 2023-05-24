@@ -203,8 +203,13 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * Get available pumps.
      * @return pumps
      */
-    public static List<Pump> getPumps() throws NotInitializedDBException {
-          return DatabaseConnection.getDataBase().getPumps();
+    public static List<Pump> getPumps() {
+        try {
+            return DatabaseConnection.getDataBase().getPumps();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
     /**

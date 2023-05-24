@@ -277,20 +277,12 @@ public class ListRecyclerViewAdapters  {
 
         @Override
         public void putIds(List<Long> ids) {
-            try {
-                pumps = Pump.getPumps();
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-            }
+            pumps = Pump.getPumps();
         }
 
         @Override
         public void putIds() {
-            try {
-                pumps = Pump.getPumps();
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-            }
+            pumps = Pump.getPumps();
         }
     }
 

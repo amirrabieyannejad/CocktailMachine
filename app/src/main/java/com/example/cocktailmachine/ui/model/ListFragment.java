@@ -5,8 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
@@ -14,12 +12,9 @@ import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.data.AdminRights;
 import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.databinding.FragmentListBinding;
-import com.example.cocktailmachine.databinding.FragmentModelBinding;
 import com.example.cocktailmachine.ui.MainActivity;
 
 public class ListFragment extends Fragment {
@@ -27,15 +22,18 @@ public class ListFragment extends Fragment {
     private FragmentListBinding binding;
     private static final String TAG = "ListFragment";
 
+    private String local_type = "AvailableRecipes";
+    private ModelFragment.ModelType type;
+
     public ListFragment(){
     }
 
     private ListRecyclerViewAdapters.ListRecyclerViewAdapter recyclerViewAdapter = null;
 
 
-    private void setUP(String type, Long recipe_id){
-        Log.i(TAG, "setUP: "+type+" "+recipe_id.toString());
-        switch (type){
+    private void setUP(Long recipe_id){
+        Log.i(TAG, "setUP: "+ local_type +" "+recipe_id.toString());
+        switch (local_type){
             case "AvailableRecipes":
             case "AllRecipes":
             case "Pumps":
@@ -47,9 +45,9 @@ public class ListFragment extends Fragment {
         }
     }
 
-    private void setUP(String type){
-        Log.i(TAG, "setUP: "+type);
-        switch (type){
+    private void setUP(){
+        Log.i(TAG, "setUP: "+ local_type);
+        switch (local_type){
             case "AvailableRecipes": setAvailableRecipes(); return;
             case "AllRecipes": setAllRecipes();return;
             case "Topics": setTopics();return;
@@ -65,6 +63,7 @@ public class ListFragment extends Fragment {
 
     private void setAddIngredients(Long recipe_id){
         Log.i(TAG, "setAddIngredients: "+recipe_id.toString());
+        type = ModelFragment.ModelType.INGREDIENT;
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter(recipe_id);
         recyclerViewAdapter.loadAdd();
@@ -73,6 +72,7 @@ public class ListFragment extends Fragment {
 
     private void setAddTopics(Long recipe_id){
         Log.i(TAG, "setAddTopics: "+recipe_id.toString());
+        type = ModelFragment.ModelType.TOPIC;
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter(recipe_id);
         recyclerViewAdapter.loadAdd();
@@ -84,52 +84,51 @@ public class ListFragment extends Fragment {
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter(recipe_id);
         set( "Zutaten");
-        setFAB(ModelFragment.ModelType.INGREDIENT);
     }
 
     private void setTopics(Long recipe_id){
         Log.i(TAG, "setTopics: "+recipe_id.toString());
+        type = ModelFragment.ModelType.TOPIC;
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter(recipe_id);
         set("Serviervorschläge");
-        setFAB(ModelFragment.ModelType.TOPIC);
     }
 
     private void setPumps(){
         Log.i(TAG, "setPumps");
+        type = ModelFragment.ModelType.PUMP;
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.PumpListRecyclerViewAdapter();
         set( "Pumpen");
-        setFAB(ModelFragment.ModelType.PUMP);
     }
 
     private void setIngredients(){
         Log.i(TAG, "setIngredients");
+        type = ModelFragment.ModelType.INGREDIENT;
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.IngredientListRecyclerViewAdapter();
         set( "Zutaten");
-        setFAB(ModelFragment.ModelType.INGREDIENT);
     }
 
     private void setTopics(){
         Log.i(TAG, "setTopics");
+        type = ModelFragment.ModelType.TOPIC;
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.TopicListRecyclerViewAdapter();
         set("Serviervorschläge");
-
-        setFAB(ModelFragment.ModelType.TOPIC);
     }
 
     private void setAvailableRecipes(){
         Log.i(TAG, "setAvailableRecipes");
+        type = ModelFragment.ModelType.RECIPE;
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeListRecyclerViewAdapter();
         set( "Rezepte");
-        setFAB(ModelFragment.ModelType.RECIPE);
     }
 
     private void setAllRecipes(){
         Log.i(TAG, "setAllRecipes");
+        type = ModelFragment.ModelType.RECIPE;
         ListRecyclerViewAdapters.RecipeListRecyclerViewAdapter recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeListRecyclerViewAdapter();
         try {
@@ -139,7 +138,6 @@ public class ListFragment extends Fragment {
         }
         this.recyclerViewAdapter = recyclerViewAdapter;
         set("Rezepte (Administrator)");
-        setFAB(ModelFragment.ModelType.RECIPE);
     }
 
     private void set(String title){
@@ -166,11 +164,13 @@ public class ListFragment extends Fragment {
         binding.includeList.getRoot().setVisibility(View.VISIBLE);
     }
 
-    private void setFAB(ModelFragment.ModelType type){
+    private void setFAB(){
         Log.i(TAG, "setFAB: "+type.name());
         activity.setFAB(v -> {
+            Log.i(TAG, "setFAB: clicked: list to edit: "+type.name());
             Bundle b = new Bundle();
             b.putString("Type", type.name());
+            Log.i(TAG, "setFAB: clicked: b: "+b);
             NavHostFragment
                     .findNavController(
                             ListFragment.this)
@@ -241,21 +241,32 @@ public class ListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         activity = (MainActivity) getActivity();
+
+        Bundle args = getArguments();
         if(savedInstanceState != null) {
-            Log.i(TAG, "onViewCreated: savedInstanceState != null");
-            Log.i(TAG, "onViewCreated: savedInstanceState"+savedInstanceState);
-            String type = savedInstanceState.getString("Type");
-            if(savedInstanceState.containsKey("Recipe_ID")){
-                Log.i(TAG, "onViewCreated: savedInstanceState has Recipe_ID");
-                Long id = savedInstanceState.getLong("Recipe_ID");
-                setUP(type, id);
+            Log.i(TAG, "onViewCreated: getArguments != null");
+            Log.i(TAG, "onViewCreated: getArguments: "+args);
+            local_type = args.getString("Type");
+            if(args.containsKey("Recipe_ID")){
+                Log.i(TAG, "onViewCreated: getArguments has Recipe_ID");
+                Long id = args.getLong("Recipe_ID");
+                setUP(id);
             }else{
-                Log.i(TAG, "onViewCreated: savedInstanceState has no Recipe_ID");
-                setUP(type);
+                Log.i(TAG, "onViewCreated: getArguments has no Recipe_ID");
+                setUP();
             }
         }else{
-            Log.i(TAG, "savedInstanceState == null");
-            setUP("AvailableRecipes");
+            Log.i(TAG, "onViewCreated: getArguments == null");
+            setUP();
+        }
+    }
+
+    @Override
+    public void onStart() {
+        Log.i(TAG, "onViewCreated");
+        super.onStart();
+        if(!local_type.contains("Add")) {
+            setFAB();
         }
     }
 }

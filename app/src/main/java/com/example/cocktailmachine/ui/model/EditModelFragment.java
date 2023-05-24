@@ -494,20 +494,22 @@ public class EditModelFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         activity = (MainActivity) getActivity();
 
-        if(savedInstanceState != null) {
-            Log.i(TAG, "savedInstanceState != null");
-            String type = savedInstanceState.getString("Type");
+        Bundle args = getArguments();
+        if(args != null) {
+            Log.i(TAG, "onViewCreated: getArguments != null");
+            Log.i(TAG, "onViewCreated: getArguments"+args);
+            String type = args.getString("Type");
             this.type = ModelFragment.ModelType.valueOf(type);
-            if(savedInstanceState.containsKey("ID")){
-                Log.i(TAG, "savedInstanceState has ID -> Edit");
-                Long id = savedInstanceState.getLong("ID");
+            if(args.containsKey("ID")){
+                Log.i(TAG, "onViewCreated: getArguments has ID -> Edit");
+                Long id = args.getLong("ID");
                 setUpEdit( id);
             }else{
-                Log.i(TAG, "savedInstanceState has no ID -> New");
+                Log.i(TAG, "onViewCreated: getArguments has no ID -> New");
                 setUpNew();
             }
         }else{
-            Log.i(TAG, "savedInstanceState == null");
+            Log.i(TAG, "onViewCreated: getArguments == null");
             error();
         }
         setSaveFAB();
