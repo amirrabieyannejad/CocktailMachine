@@ -352,8 +352,7 @@ public class EditModelFragment extends Fragment {
                 recipe.setName(s.toString());
             }
         });
-        binding.layoutRecipe.setVisibility(View.VISIBLE
-        );
+        binding.layoutRecipe.setVisibility(View.VISIBLE);
     }
 
     private void setUpEditTopic() {
@@ -494,8 +493,6 @@ public class EditModelFragment extends Fragment {
         Log.i(TAG, "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
         activity = (MainActivity) getActivity();
-
-
 
         if(savedInstanceState != null) {
             Log.i(TAG, "savedInstanceState != null");

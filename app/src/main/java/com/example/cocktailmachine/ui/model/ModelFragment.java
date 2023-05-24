@@ -71,15 +71,10 @@ public class ModelFragment extends Fragment {
 
     private void setTopic(){
         Log.i(TAG, "setTopic: "+id.toString());
-        try {
-            topic = Topic.getTopic(id);
-            binding.textViewTitle.setText(topic.getName());
-            binding.textViewDescription.setText(topic.getDescription());
-            binding.textViewDescription.setVisibility(View.VISIBLE);
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            error();
-        }
+        topic = Topic.getTopic(id);
+        binding.textViewTitle.setText(topic.getName());
+        binding.textViewDescription.setText(topic.getDescription());
+        binding.textViewDescription.setVisibility(View.VISIBLE);
     }
 
     private void setPump(){

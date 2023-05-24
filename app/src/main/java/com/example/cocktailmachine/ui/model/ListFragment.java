@@ -167,6 +167,7 @@ public class ListFragment extends Fragment {
     }
 
     private void setFAB(ModelFragment.ModelType type){
+        Log.i(TAG, "setFAB: "+type.name());
         activity.setFAB(v -> {
             Bundle b = new Bundle();
             b.putString("Type", type.name());

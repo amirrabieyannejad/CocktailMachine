@@ -151,15 +151,21 @@ public class RowViews {
 
         void addGoToListener(Fragment fragment){
             if(fragment instanceof ModelFragment) {
-                addListener(v -> NavHostFragment
+                addListener(v -> {
+                    Log.i(TAG, "goto: ModelFragment");
+                    NavHostFragment
                         .findNavController(fragment)
                         .navigate(R.id.action_modelFragment_self,
-                                getGoToModelBundle()));
+                                getGoToModelBundle());
+                });
             }else if(fragment instanceof ListFragment) {
-                addListener(v -> NavHostFragment
+                addListener(v -> {
+                    Log.i(TAG, "goto: ListFragment");
+                    NavHostFragment
                         .findNavController(fragment)
                         .navigate(R.id.action_listFragment_to_modelFragment,
-                                getGoToModelBundle()));
+                                getGoToModelBundle());
+                });
             }
         }
 

@@ -56,30 +56,38 @@ public class ListLayout {
             ImageButton imageButtonListEdit){
         Log.i(TAG, "setButtons");
         imageButtonListDelete.setOnClickListener(v -> {
+            Log.i(TAG,"delete: imageButtonListDelete clicked");
             if(adapter.isCurrentlyDeleting()){
+                Log.i(TAG,"delete: isCurrentlyAdding, finishDelete");
                 adapter.finishDelete();
             }else{
                 if(adapter.isCurrentlyAdding()){
+                    Log.i(TAG,"delete: isCurrentlyDeleting, Toast");
                     Toast.makeText(getContext,
                                     "Kein Löschen möglich!",
                                     Toast.LENGTH_SHORT)
                             .show();
                 }else {
+                    Log.i(TAG,"delete: noadding/deleting, loadDelete");
                     adapter.loadDelete();
                 }
             }
         });
         imageButtonListEdit.setOnClickListener(v -> {
+            Log.i(TAG,"edit: imageButtonListEdit clicked");
             if(adapter.isCurrentlyAdding()){
+                Log.i(TAG,"edit: isCurrentlyAdding, finishAdd");
                 adapter.finishAdd();
             }else{
                 if(adapter.isCurrentlyDeleting()){
+                    Log.i(TAG,"edit: isCurrentlyDeleting, Toast");
                     Toast.makeText(
                                     getContext,
                                     "Kein Editieren möglich!",
                                     Toast.LENGTH_SHORT)
                             .show();
                 }else {
+                    Log.i(TAG,"edit: noadding/deleting, loadAdd");
                     adapter.loadAdd();
                 }
             }
