@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
@@ -48,7 +49,6 @@ public class EditModelFragment extends Fragment {
     private boolean saved=false;
     private boolean old=false;
     private Bundle b;
-    private TextWatcher textWatcher;
 
     private ModelFragment.ModelType type;
 
@@ -164,7 +164,6 @@ public class EditModelFragment extends Fragment {
     private void setUpNewIngredient() {
         binding.includeName.textViewEditText.setText("Zutat");
         binding.includeName.editTextEditText.setHint("bspw. Tequila");
-        binding.includeName.editTextEditText.addTextChangedListener(textWatcher);
         /*
         binding.layoutIngredient.setVisibility(View.VISIBLE);
         binding.layoutPickColor.setOnClickListener(v -> {
@@ -214,26 +213,17 @@ public class EditModelFragment extends Fragment {
     private void setUpNewTopic() {
         binding.includeName.textViewEditText.setText("Serviervorschlag");
         binding.includeName.editTextEditText.setHint("bspw. Limettensirup");
-        binding.includeName.editTextEditText.addTextChangedListener(textWatcher);
-        binding.editTextTopic.addTextChangedListener(textWatcher);
         binding.editTextTopic.setVisibility(View.VISIBLE);
     }
 
     private void setUpNewPump(){
         binding.includeNewPump.getRoot().setVisibility(View.VISIBLE);
-        binding.includeNewPump.includeNewPumpFillEmpty.editTextPumpFillEmptyVolume.addTextChangedListener(textWatcher);
         binding.includeNewPump.includeNewPumpFillEmpty.imageButtonEmpty.setOnClickListener(v -> {
             binding.includeNewPump.includeNewPumpFillEmpty.editTextPumpFillEmptyVolume.setText(null);
         });
         final List<Ingredient> ingredients;
-        List<Ingredient> temp = new ArrayList<>();
         String[] ingredientNames = new String[0];
-        try {
-            temp = Ingredient.getIngredientWithIds();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
-        ingredients = temp;
+        ingredients = Ingredient.getIngredientWithIds();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             ingredientNames = ingredients
                     .stream()
@@ -289,7 +279,24 @@ public class EditModelFragment extends Fragment {
         binding.includeName.textViewEditText.setText("Zutat");
         binding.includeName.editTextEditText.setHint("bspw. Tequila");
         binding.includeName.editTextEditText.setText(ingredient.getName());
-        binding.includeName.editTextEditText.addTextChangedListener(textWatcher);
+        binding.includeName.editTextEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                saved = false;
+                setSaveFAB();
+                ingredient.setName(s.toString());
+            }
+        });
         binding.layoutIngredient.setVisibility(View.VISIBLE);
         binding.layoutPickColor.setOnClickListener(v -> {
             ColorPickerPopUp colorPickerPopUp = new ColorPickerPopUp(activity);	// Pass the context.
@@ -302,6 +309,9 @@ public class EditModelFragment extends Fragment {
                             // handle the use of color
                             ingredient.setColor(color);
                             binding.imageButtonGlassColor.setBackgroundColor(color);
+
+                            saved = false;
+                            setSaveFAB();
                         }
 
                         @Override
@@ -312,37 +322,113 @@ public class EditModelFragment extends Fragment {
                     .show();
         });
         binding.checkBoxAlcoholic.setChecked(ingredient.isAlcoholic());
+        binding.checkBoxAlcoholic.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            saved = false;
+            setSaveFAB();
+            ingredient.setAlcoholic(true);
+        });
     }
 
     private void setUpEditRecipe() {
         //TODO
+
+        binding.includeName.textViewEditText.setText("Rezept");
+        binding.includeName.editTextEditText.setHint("bspw. Magarita");
+        binding.includeName.editTextEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                saved = false;
+                setSaveFAB();
+                recipe.setName(s.toString());
+            }
+        });
+        binding.layoutRecipe.setVisibility(View.VISIBLE
+        );
     }
 
     private void setUpEditTopic() {
         binding.includeName.textViewEditText.setText("Serviervorschlag");
         binding.includeName.editTextEditText.setHint("bspw. Limettensirup");
         binding.includeName.editTextEditText.setText(topic.getName());
-        binding.includeName.editTextEditText.addTextChangedListener(textWatcher);
+        binding.includeName.editTextEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                saved = false;
+                setSaveFAB();
+                topic.setName(s.toString());
+            }
+        });
         binding.editTextTopic.setText(topic.getDescription());
-        binding.editTextTopic.addTextChangedListener(textWatcher);
+        binding.editTextTopic.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                saved = false;
+                setSaveFAB();
+                topic.setDescription(s.toString());
+            }
+        });
         binding.editTextTopic.setVisibility(View.VISIBLE);
     }
 
     private void setUpEditPump() {
         binding.includeNewPump.getRoot().setVisibility(View.VISIBLE);
-        binding.includeNewPump.includeNewPumpFillEmpty.editTextPumpFillEmptyVolume.addTextChangedListener(textWatcher);
+        binding.includeNewPump.includeNewPumpFillEmpty.editTextPumpFillEmptyVolume.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                saved = false;
+                setSaveFAB();
+                pump.fill(Integer.parseInt(s.toString()));
+            }
+        });
         binding.includeNewPump.includeNewPumpFillEmpty.imageButtonEmpty.setOnClickListener(v -> {
             binding.includeNewPump.includeNewPumpFillEmpty.editTextPumpFillEmptyVolume.setText(null);
+            saved = false;
+            setSaveFAB();
+            pump.empty();
         });
         final List<Ingredient> ingredients;
-        List<Ingredient> temp = new ArrayList<>();
         String[] ingredientNames;
-        try {
-            temp = Ingredient.getIngredientWithIds();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
-        ingredients = temp;
+        ingredients = Ingredient.getIngredientWithIds();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             ingredientNames = ingredients
                     .stream()
@@ -365,7 +451,7 @@ public class EditModelFragment extends Fragment {
         binding.includeNewPump.spinnerNewPump.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                ingredient = ingredients.get(position);
+                pump.setCurrentIngredient(ingredients.get(position));
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -409,25 +495,6 @@ public class EditModelFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         activity = (MainActivity) getActivity();
 
-        textWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if(saved){
-                    saved = false;
-                    setSaveFAB();
-                }
-            }
-        };
 
 
         if(savedInstanceState != null) {

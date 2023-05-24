@@ -212,6 +212,12 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
     }
 
     @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+
+    @Override
     public void pump(int volume) throws NewlyEmptyIngredientException{
         //if(this.fluidInMillimeters - millimeters < this.getPump().getMillilitersPumpedInMilliseconds()){
         //    throw new NewEmptyIngredientException(this);

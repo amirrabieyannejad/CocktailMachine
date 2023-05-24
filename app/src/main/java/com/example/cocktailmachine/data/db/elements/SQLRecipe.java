@@ -200,6 +200,11 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         return this.getTopics();
     }
 
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
 
     //ADDER
     public void add(Ingredient ingredient, int timeInMilliseconds)

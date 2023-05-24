@@ -101,6 +101,9 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     public List<Long> getTopics();
 
 
+    //bASIC CHANGER
+    public void setName(String name);
+
     //Ingredient Changer
     /**
      * Adds ingredient with quantity measured in needed pump time.

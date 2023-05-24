@@ -355,8 +355,7 @@ public class RowViews {
             return b;
         }
 
-        public void setIngredientVolume(Ingredient ingredient,int volume){
-            this.recipe = recipe;
+        public void setIngredientVolume(Ingredient ingredient, int volume){
             this.ingredient = ingredient;
             this.volume = volume;
             super.setName(this.ingredient.getName());

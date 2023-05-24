@@ -97,6 +97,9 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
 
     public void setAlcoholic(boolean alcoholic);
 
+
+    void setName(String name);
+
     //use
     /**
      * Pump m milliliters.
@@ -111,8 +114,13 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * Get all available ingredients.
      * @return List of ingredients.
      */
-    public static List<Ingredient> getIngredientWithIds() throws NotInitializedDBException {
-        return (List<Ingredient>) DatabaseConnection.getDataBase().getAvailableIngredients();
+    public static List<Ingredient> getIngredientWithIds() {
+        try {
+            return (List<Ingredient>) DatabaseConnection.getDataBase().getAvailableIngredients();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
     /**

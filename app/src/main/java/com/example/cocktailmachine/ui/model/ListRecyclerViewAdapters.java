@@ -332,11 +332,7 @@ public class ListRecyclerViewAdapters  {
 
         @Override
         public void putIds() {
-            try {
-                data  = Ingredient.getIngredientWithIds();
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-            }
+            data  = Ingredient.getIngredientWithIds();
         }
 
         @Override
@@ -394,13 +390,10 @@ public class ListRecyclerViewAdapters  {
         @Override
         public void putIds(List<Long> ids) {
             if(ids==null){
-                try {
-                    data  = Ingredient.getIngredientWithIds();
-                } catch (NotInitializedDBException e) {
-                    e.printStackTrace();
-                }
+                data  = Ingredient.getIngredientWithIds();
             }else{
-                data = Ingredient.getIngredientWithIds(ids);}
+                data = Ingredient.getIngredientWithIds(ids);
+            }
         }
 
         @Override
