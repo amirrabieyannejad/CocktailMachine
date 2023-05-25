@@ -39,7 +39,7 @@ JSON-Beispiel:
 
 JSON-Beispiel:
 
-    {"cmd": "reset", "user": 483}
+    {"cmd": "abort", "user": 483}
 
 ### reset: die Maschine zurücksetzen, damit sie einen neuen Cocktail machen kann
 - user: User
@@ -65,8 +65,6 @@ JSON-Beispiel:
 
     {"cmd": "add_liquid", "user": 0, "liquid": "water", "volume": 30}
 
-## Admin-Befehle
-
 ### define_recipe: definiert ein neues Rezept oder ändert ein bestehendes Rezept
 - user: User
 - name: str
@@ -75,6 +73,8 @@ JSON-Beispiel:
 JSON-Beispiel:
 
     {"cmd": "define_recipe", "user": 0, "name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}
+
+## Admin-Befehle
 
 ### define_pump: fügt Pumpe zu ESP hinzu
 - user: User
