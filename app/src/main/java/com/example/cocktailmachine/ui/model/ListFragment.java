@@ -158,7 +158,7 @@ public class ListFragment extends Fragment {
                 binding.includeList.recylerViewNames,
                 this.getContext(),
                 this.recyclerViewAdapter,
-                this,
+                ListFragment.this,
                 binding.includeList.imageButtonListDelete,
                 binding.includeList.imageButtonListEdit);
         binding.includeList.getRoot().setVisibility(View.VISIBLE);

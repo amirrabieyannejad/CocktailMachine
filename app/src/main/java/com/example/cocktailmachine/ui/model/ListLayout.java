@@ -27,8 +27,17 @@ public class ListLayout {
     ){
         Log.i(TAG, "set");
         setTitle(textViewNameListTitle, title);
-        setRecyclerView(recylerViewNames, getContext, adapter, fragment);
-        setButtons(adapter, getContext,imageButtonListDelete, imageButtonListEdit);
+        if(adapter.getItemCount()>0) {
+            Log.i(TAG, "set: list with "+adapter.getItemCount()+" items");
+            setRecyclerView(recylerViewNames, getContext, adapter, fragment);
+            setButtons(adapter, getContext, imageButtonListDelete, imageButtonListEdit);
+        }else{
+            //The list is empty.
+            Log.i(TAG, "set: empty list");
+            recylerViewNames.setVisibility(View.GONE);
+            imageButtonListDelete.setVisibility(View.GONE);
+            imageButtonListEdit.setVisibility(View.GONE);
+        }
 
     }
 

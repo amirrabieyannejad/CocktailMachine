@@ -8,7 +8,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,7 +18,6 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
-import com.example.cocktailmachine.ui.SecondFragment;
 
 public class RowViews {
     private static final String TAG = "RowViews";
@@ -69,7 +67,7 @@ public class RowViews {
 
 
     public static abstract class RowView extends RecyclerView.ViewHolder {
-        private ConstraintLayout layout;
+
         private CheckBox checkBox;
         private TextView name;
         private TextView desc;
@@ -81,13 +79,18 @@ public class RowViews {
 
         RowView(@NonNull View itemView) {
             super(itemView);
-            layout = itemView.findViewById(R.id.constraintLayout_item);
-            if(layout == null){
-                Log.i(TAG, "layout is null");
-            }
             checkBox = itemView.findViewById(R.id.checkBox_item);
+            if(checkBox == null){
+                Log.i(TAG, "checkBox is null");
+            }
             name = itemView.findViewById(R.id.textView_item_name);
+            if(name == null){
+                Log.i(TAG, "name is null");
+            }
             desc = itemView.findViewById(R.id.textView_item_desc);
+            if(desc == null){
+                Log.i(TAG, "desc is null");
+            }
         }
 
         void setName(String name){
@@ -171,32 +174,32 @@ public class RowViews {
 
         public void addListener(View.OnClickListener listener){
             this.listener = listener;
-            layout.setOnClickListener(listener);
+            super.itemView.setOnClickListener(listener);
         }
 
         public void loadListener(){
-            layout.setOnClickListener(listener);
+            super.itemView.setOnClickListener(listener);
         }
 
         public void deleteListener(){
-            layout.setOnClickListener(null);
+            super.itemView.setOnClickListener(null);
         }
 
         public void addLongListener(View.OnLongClickListener listener){
             this.longClickListener = listener;
-            if(layout == null){
-                Log.i(TAG, "HERE HERE, layout is null");
+            if(super.itemView == null){
+                Log.i(TAG, "HERE HERE, super.itemView is null");
             }else {
-                layout.setOnLongClickListener(listener);
+                super.itemView.setOnLongClickListener(listener);
             }
         }
 
         public void loadLongListener(){
-            layout.setOnLongClickListener(longClickListener);
+            super.itemView.setOnLongClickListener(longClickListener);
         }
 
         public void deleteLongListener(){
-            layout.setOnLongClickListener(null);
+            super.itemView.setOnLongClickListener(null);
         }
 
         private void error(){

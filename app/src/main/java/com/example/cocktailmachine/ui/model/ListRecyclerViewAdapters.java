@@ -131,7 +131,12 @@ public class ListRecyclerViewAdapters  {
 
         public RecipeListRecyclerViewAdapter(List<Long> ids) {
             super(RowViews.RowType.recipe);
+            Log.i(TAG, "constructor");
             this.putIds(ids);
+            Log.i(TAG, "recipes");
+            for(Recipe r: recipes){
+                Log.i(TAG, "Rezept: "+r.getName());
+            }
         }
 
 /*
@@ -162,6 +167,7 @@ public class ListRecyclerViewAdapters  {
         public RowViews.RecipeRowView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.layout_name_list, parent, false);
+
             return addRowView(RowViews.getRecipeInstance(view));
         }
 
