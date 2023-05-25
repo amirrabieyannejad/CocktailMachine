@@ -61,12 +61,15 @@ public class DeviceControlActivity extends Activity {
 
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
-
+    private String mDeviceName;
+    private String mDeviceAddress;
 
     private TextView mConnectionState;
     private TextView txtNotificationData;
 
-    private static final String DEVICE_ADDRESS = "54:43:B2:A9:32:26";
+    // at the very first launch we need to choose ESP Device, that mean we need an Activity
+    // for Device Scanning and transfer MAC_Address to DeviceControl Activity
+    //private static final String DEVICE_ADDRESS = "54:43:B2:A9:32:26";
     private BluetoothLeService mBluetoothLeService;
     private EditText edtTxtUser;
     private EditText edtTxtRecipe;
@@ -108,7 +111,7 @@ public class DeviceControlActivity extends Activity {
                 finish();
             }
             // Automatically connects to the device upon successful start-up initialization.
-            mBluetoothLeService.connect(DEVICE_ADDRESS);
+            mBluetoothLeService.connect(mDeviceAddress);
         }
 
         @Override
@@ -160,8 +163,8 @@ public class DeviceControlActivity extends Activity {
         setContentView(R.layout.data_transfer);
         requestBlePermissions(this, PERMISSIONS_REQUEST_CODE);
         final Intent intent = getIntent();
-        //String mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
-       //mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
+        mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
+        mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
         txtNotificationData = findViewById(R.id.txtNotificationData);
 
         //getActionBar().setTitle(mDeviceName);
@@ -448,7 +451,7 @@ public class DeviceControlActivity extends Activity {
         }*/
         registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
         if (mBluetoothLeService != null) {
-            final boolean result = mBluetoothLeService.connect(DEVICE_ADDRESS);
+            final boolean result = mBluetoothLeService.connect(mDeviceAddress);
             Log.d(TAG, "Connect request result=" + result);
         } else {
             Log.d(TAG, "Connecting failed!");
@@ -495,7 +498,7 @@ public class DeviceControlActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_connect:
-                mBluetoothLeService.connect(DEVICE_ADDRESS);
+                mBluetoothLeService.connect(mDeviceAddress);
                 return true;
             case R.id.menu_disconnect:
                 mBluetoothLeService.disconnect();
