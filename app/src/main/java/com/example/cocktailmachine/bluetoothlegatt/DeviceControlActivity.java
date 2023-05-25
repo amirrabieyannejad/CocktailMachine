@@ -287,14 +287,15 @@ public class DeviceControlActivity extends Activity {
             getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
                     BluetoothLeService.CHARACTERISTIC_MESSAGE_ADMIN);
         });
-        //Calibrate all pumps
+        //Calibrate  pump
         btnCalibrate.setOnClickListener(v -> {
-            try {
+/*            try {
                 txtNotificationData.setText("get Notification...");
-                mBluetoothLeService.adminCalibratePumps();
+                // TODO change the parameter
+                //mBluetoothLeService.adminCalibratePump();
             } catch (JSONException e) {
                 e.printStackTrace();
-            }
+            }*/
             getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
                     BluetoothLeService.CHARACTERISTIC_MESSAGE_ADMIN);
 
@@ -305,9 +306,8 @@ public class DeviceControlActivity extends Activity {
             try {
                 txtNotificationData.setText("get Notification...");
                 float volume1 = Float.parseFloat(edtTxtVolume.getText().toString());
-                int volume2 = Integer.parseInt(edtTxtSlot.getText().toString());
-                mBluetoothLeService.adminRefillPump(edtTxtLiquid.getText().toString(),
-                        volume1, volume2);
+                int slot = Integer.parseInt(edtTxtSlot.getText().toString());
+                mBluetoothLeService.adminRefillPump(volume1, slot);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
