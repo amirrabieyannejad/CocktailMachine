@@ -499,6 +499,23 @@ public class BluetoothLeService extends Service {
         String payload = jsonObject.toString();
         writeCharacteristic(payload, false);
     }
+    /**
+     * reset: Cancels the current recipe
+     * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     */
+    @SuppressLint("MissingPermission")
+    public void abort(float user) throws JSONException {
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized");
+            return;
+        }
+        //generate JSON Format
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cmd", "abort");
+        jsonObject.put("user", user);
+        String payload = jsonObject.toString();
+        writeCharacteristic(payload, false);
+    }
 
     /**
      * make_recipe: mixes the recipe
