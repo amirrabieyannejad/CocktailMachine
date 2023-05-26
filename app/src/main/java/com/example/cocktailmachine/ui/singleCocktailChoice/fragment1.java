@@ -38,7 +38,6 @@ public class fragment1 extends Fragment  {
     TextView textView;
     View view;
     Context context;
-    private FragmentListenerSingleCocktailChoice listener;
 
     FragmentFragment1Binding binding;
 

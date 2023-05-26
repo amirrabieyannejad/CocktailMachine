@@ -27,7 +27,6 @@ public class fragment2 extends Fragment {
     TextView textView;
     View view;
     Context context;
-    private FragmentListenerSingleCocktailChoice listener;
 
     FragmentFragment2Binding binding;
 
