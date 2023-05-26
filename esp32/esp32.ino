@@ -1,7 +1,7 @@
 // general system settings
 #define BLE_NAME             	"Cocktail Machine ESP32"	// bluetooth server name
 #define CORE_DEBUG_LEVEL     	4                       	// 1 = error; 3 = info ; 4 = debug
-const unsigned int VERSION   	= 4;                    	// version number (used for configs etc)
+const unsigned int VERSION   	= 5;                    	// version number (used for configs etc)
 const unsigned char MAX_PUMPS	= 1 + 4*8;              	// maximum number of supported pumps;
 const float LIQUID_CUTOFF    	= 0.1;                  	// minimum amount of liquid we round off
 
@@ -31,6 +31,7 @@ Pin PIN_BUILTIN_PUMP_IN2	= 27;
 #include <queue>
 #include <sys/time.h>
 #include <unordered_map>
+#include <unordered_set>
 
 // json
 #include <ArduinoJson.h>
@@ -72,6 +73,7 @@ typedef uint64_t dur_t;
 // internal buffers
 #define BUF_RESPONSE	100 	// max (json) response
 #define BUF_JSON    	1000	// max json input
+#define BUF_PREF_KEY	15  	// max key length of preferences, defined by ESP32 stdlib
 
 // machine parts
 typedef int32_t User;
@@ -128,8 +130,9 @@ struct Ingredient {
 struct Recipe {
   String name;
   std::forward_list<Ingredient> ingredients;
+  bool can_make;
 
-  Recipe(String name, std::forward_list<Ingredient> ingredients) : name(name), ingredients(ingredients) {};
+  Recipe(String name, std::forward_list<Ingredient> ingredients) : name(name), ingredients(ingredients), can_make(false) {};
   float total_volume();
   Processed* make(User user);
 };
@@ -507,6 +510,8 @@ void update_recipes(void);
 void update_state(Processed *state);
 void update_config_state(time_t ts);
 void update_user(User user);
+void update_all_possible_recipes();
+void update_possible_recipes(String liquid);
 
 // init
 
@@ -901,9 +906,9 @@ Processed* CmdRunPump::execute() {
   p->volume = std::max(p->volume - volume, 0.0f);
 
   update_liquids();
+  update_possible_recipes(p->liquid);
   update_cocktail();
   update_state(new Done());
-  config_save();
 
   return new Success();
 };
@@ -1001,8 +1006,6 @@ Processed* CmdReset::execute() {
 
   // update machine state
   update_cocktail();
-  update_liquids();
-  update_recipes();
   update_user(USER_UNKNOWN);
   update_state(new Ready());
 
@@ -1043,7 +1046,7 @@ Processed* CmdDefinePump::execute() {
 
   // update machine state
   update_liquids();
-  config_save();
+  update_config_state(timestamp_ms());
 
   return new Success();
 }
@@ -1069,7 +1072,7 @@ Processed* CmdRefillPump::execute() {
 
   // update machine state
   update_liquids();
-  config_save();
+  update_possible_recipes(p->liquid);
 
   return new Success();
 }
@@ -1108,7 +1111,6 @@ Processed* CmdDefineRecipe::execute() {
 
   // update state
   update_recipes();
-  config_save();
 
   return new Success();
 }
@@ -1129,7 +1131,6 @@ Processed* CmdEditRecipe::execute() {
 
       // update state
       update_recipes();
-      config_save();
 
       return new Success();
     }
@@ -1149,7 +1150,6 @@ Processed* CmdDeleteRecipe::execute() {
 
   // update state
   update_recipes();
-  config_save();
 
   return new Success();
 }
@@ -1270,8 +1270,8 @@ Processed* add_liquid(User user, const String liquid, float amount) {
   // update state
   update_liquids();
   update_cocktail();
+  update_possible_recipes(liquid);
   update_state(new Done());
-  config_save();
 
   // shouldn't happen, but do a sanity check
   if (need >= LIQUID_CUTOFF) {
@@ -1382,19 +1382,24 @@ void update_liquids() {
 
     all_status[ID_LIQUIDS]->update(out.c_str());
   }
+
+  config_save();
 }
 
 void update_recipes() {
   // generate json output
   debug("updating recipes state");
 
+  // update can_make state of all recipes
+  update_all_possible_recipes();
+
   String out = String('{');
   for (auto r = recipes.begin(); r != recipes.end(); r++) {
-    debug("  recipe: %s", r->name.c_str());
+    debug("  recipe: %s (can make: %s)", r->name.c_str(), r->can_make ? "yes" : "no");
 
     out.concat('"');
     out.concat(r->name);
-    out.concat("\":[");
+    out.concat("\":{\"ingredients\":[");
 
     for (auto ing = r->ingredients.begin(); ing != r->ingredients.end(); ing++) {
       debug("    ingredient: %s, amount: %.1f", ing->name.c_str(), ing->amount);
@@ -1407,13 +1412,18 @@ void update_recipes() {
 
       if (next(ing) != r->ingredients.end()) out.concat(',');
     }
-    out.concat(']');
+    out.concat("],\"can_make\":");
+    out.concat(r->can_make ? "true" : "false");
+    out.concat('}');
 
     if (next(r) != recipes.end()) out.concat(',');
   }
   out.concat('}');
 
   all_status[ID_RECIPES]->update(out.c_str());
+
+  update_config_state(timestamp_ms());
+  config_save();
 };
 
 void update_state(Processed *state) {
@@ -1442,6 +1452,56 @@ void update_user(User user) {
   current_user = user;
   String s = String(user);
   all_status[ID_USER]->update(s.c_str());
+}
+
+void update_all_possible_recipes() {
+  // calculate total liquids
+  std::unordered_set<std::string> liquids = {};
+  for(int i=0; i<MAX_PUMPS; i++) {
+    Pump *pump = pumps[i];
+    if (pump == NULL) continue;
+
+    std::string liquid = pump->liquid.c_str();
+    liquids.insert(liquid);
+  }
+
+  for (auto const &liquid : liquids) {
+    update_possible_recipes(String(liquid.c_str()));
+  }
+}
+
+void update_possible_recipes(String liquid) {
+  bool updated = false;
+
+  // calculate the total available
+  float have = 0;
+  for (int i=0; i<MAX_PUMPS; i++) {
+    Pump *p = pumps[i];
+    if (p == NULL) continue;
+    have += p->volume;
+  }
+
+  // adjust recipes
+  for (auto &recipe : recipes) {
+    float need = 0;
+    for (auto const &ing : recipe.ingredients) {
+      if (ing.name == liquid) {
+        need += ing.amount;
+      }
+    }
+    if (need > 0) {
+      bool can_make = (have - need < LIQUID_CUTOFF);
+      if (recipe.can_make != can_make) {
+        updated = true;
+        recipe.can_make = can_make;
+      }
+    }
+  }
+
+  if (updated) {
+    update_config_state(timestamp_ms());
+    config_save();
+  }
 }
 
 // bluetooth
@@ -1627,9 +1687,6 @@ void CommCB::onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *para
 // configs
 
 bool config_save(void) {
-  // current time of the config
-  update_config_state(timestamp_ms());
-
   if (sdcard_available) { // save state to SD card
     char *config = "FIXME";
     debug("saving state to SD card");
@@ -1660,7 +1717,7 @@ bool config_save(void) {
     }
 
     { // pumps
-      char key[15];
+      char key[BUF_PREF_KEY];
       preferences.putUInt("num_pumps", MAX_PUMPS);
       for (int i=0; i<MAX_PUMPS; i++) {
         Pump *p = pumps[i];
@@ -1686,7 +1743,7 @@ bool config_save(void) {
     }
 
     { // recipes
-      char key[15];
+      char key[BUF_PREF_KEY];
       int num_recipes = 0;
       for (auto const &r : recipes) {
         snprintf(key, sizeof(key), "recipe_%d", num_recipes);
@@ -1747,7 +1804,7 @@ bool config_load(void) {
   { // pumps
     for (int i=0; i<MAX_PUMPS; i++) pumps[i] = NULL; // clear old config
 
-    char key[15];
+    char key[BUF_PREF_KEY];
     unsigned int num_pumps = preferences.getUInt("num_pumps", 0);
     num_pumps = std::min(num_pumps, (unsigned int) MAX_PUMPS);
 
@@ -1777,11 +1834,12 @@ bool config_load(void) {
   }
 
   { // recipes
-    char key[15];
+    char key[BUF_PREF_KEY];
     recipes.clear(); // clear old config
 
     unsigned int num_recipes = preferences.getUInt("num_recipes", 0);
     for (int i=0; i<num_recipes; i++) {
+      snprintf(key, sizeof(key), "recipe_%d", i);
       String name = preferences.getString(key);
 
       std::forward_list<Ingredient> ingredients = {};
