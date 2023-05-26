@@ -499,6 +499,23 @@ public class BluetoothLeService extends Service {
         String payload = jsonObject.toString();
         writeCharacteristic(payload, false);
     }
+    /**
+     * reset: Cancels the current recipe
+     * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     */
+    @SuppressLint("MissingPermission")
+    public void abort(float user) throws JSONException {
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized");
+            return;
+        }
+        //generate JSON Format
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cmd", "abort");
+        jsonObject.put("user", user);
+        String payload = jsonObject.toString();
+        writeCharacteristic(payload, false);
+    }
 
     /**
      * make_recipe: mixes the recipe
@@ -614,7 +631,7 @@ public class BluetoothLeService extends Service {
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      */
     @SuppressLint("MissingPermission")
-    public void adminRefillPump(String liquid, float volume, int slot) throws JSONException {
+    public void adminRefillPump(float volume, int slot) throws JSONException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
@@ -623,27 +640,101 @@ public class BluetoothLeService extends Service {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "refill_pump");
         jsonObject.put("user", 0);
-        jsonObject.put("liquid", liquid);
         jsonObject.put("volume", volume);
         jsonObject.put("slot", slot);
         String payload = jsonObject.toString();
         writeCharacteristic(payload, true);
     }
 
-
     /**
-     * calibratePumps: calibrate all pumps
+     * addPump: Runs the pump for a certain time. The time is given in milliseconds.
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      */
+    // TODO add to DeviceControlActivity
     @SuppressLint("MissingPermission")
-    public void adminCalibratePumps() throws JSONException {
+    public void adminRunPump(int slot, int time) throws JSONException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
         // generate JSON Format
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "calibrate_pumps");
+        jsonObject.put("cmd", "run_pump");
+        jsonObject.put("user", 0);
+        jsonObject.put("slot", slot);
+        jsonObject.put("time", time);
+        String payload = jsonObject.toString();
+        writeCharacteristic(payload, true);
+    }
+
+    /**
+     * calibratePump: For calibration, two measured values must be available for which the pump
+     * has been running for a different time. This is then used to calculate the flow rate and
+     * the pump rate. The times are given in milliseconds and the liquids in millilitres.
+     * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     */
+    // TODO add to DeviceControlActivity
+    @SuppressLint("MissingPermission")
+    public void adminCalibratePump(int slot, int time1, int time2, float volume1, float volume2) throws JSONException {
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized");
+            return;
+        }
+        // generate JSON Format
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cmd", "calibrate_pump");
+        jsonObject.put("user", 0);
+        jsonObject.put("slot", slot);
+        jsonObject.put("time1", time1);
+        jsonObject.put("time2", time2);
+        jsonObject.put("volume1", volume1);
+        jsonObject.put("volume2", volume2);
+
+        String payload = jsonObject.toString();
+        writeCharacteristic(payload, true);
+    }
+
+    /**
+     * set_pump_times: sets the calibration values for a pumptime_init is the lead time
+     * and time_init is the return time in milliseconds. Normally these values should be similar
+     * or the same. The rate is given in mL/ms.
+     * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     */
+    // TODO add to DeviceControlActivity
+    @SuppressLint("MissingPermission")
+    public void adminSetPumpTimes(int slot, int timeInit, int timeReverse, float rate) throws
+            JSONException {
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized");
+            return;
+        }
+        // generate JSON Format
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cmd", "set_pump_times");
+        jsonObject.put("user", 0);
+        jsonObject.put("slot", slot);
+        jsonObject.put("time_init", timeInit);
+        jsonObject.put("time_reverse", timeReverse);
+        jsonObject.put("rate", rate);
+
+        String payload = jsonObject.toString();
+        writeCharacteristic(payload, true);
+    }
+
+    /**
+     * tare_scale: Tares the scale
+     * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     */
+    // TODO add to DeviceControlActivity
+    @SuppressLint("MissingPermission")
+    public void adminTareScale() throws JSONException {
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized");
+            return;
+        }
+        //generate JSON Format
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cmd", "tare_scale");
         jsonObject.put("user", 0);
         String payload = jsonObject.toString();
         writeCharacteristic(payload, true);
