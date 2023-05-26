@@ -215,7 +215,6 @@ struct CommCB: BLECharacteristicCallbacks {
     const String json() override { return String(_json); }              \
   };
 
-// FIXME check that cocktail states are correct when making stuff
 def_ret(Init,              	"init");
 def_ret(Success,           	"ok");
 def_ret(Processing,        	"processing");
