@@ -12,16 +12,19 @@ import platform
 import sys
 import time
 
-UUID_STATUS         	= "0f7742d4-ea2d-43c1-9b98-bb4186be905d"
-UUID_STATUS_BASE    	= "c0605c38-3f94-33f6-ace6-7a5504544a80"
-UUID_STATUS_STATE   	= "e9e4b3f2-fd3f-3b76-8688-088a0671843a"
-UUID_STATUS_LIQUIDS 	= "fc60afb0-2b00-3af2-877a-69ae6815ca2f"
-UUID_STATUS_RECIPES 	= "9ede6e03-f89b-3e52-bb15-5c6c72605f6c"
-UUID_STATUS_COCKTAIL	= "7344136f-c552-3efc-b04f-a43793f16d43"
-UUID_COMM           	= "dad995d1-f228-38ec-8b0f-593953973406"
-UUID_COMM_USER      	= "eb61e31a-f00b-335f-ad14-d654aac8353d"
-UUID_COMM_ADMIN     	= "41044979-6a5d-36be-b9f1-d4d49e3f5b73"
-UUID_NOTIFY         	= "00002902-0000-1000-8000-00805f9b34fb"
+UUID_COMM_USER 	= "eb61e31a-f00b-335f-ad14-d654aac8353d"
+UUID_COMM_ADMIN	= "41044979-6a5d-36be-b9f1-d4d49e3f5b73"
+
+STATUS = {
+  "base":     	"c0605c38-3f94-33f6-ace6-7a5504544a80",
+  "state":    	"e9e4b3f2-fd3f-3b76-8688-088a0671843a",
+  "liquids":  	"fc60afb0-2b00-3af2-877a-69ae6815ca2f",
+  "pumps":    	"1a9a598a-17ce-3fcd-be03-40a48587d04e",
+  "recipes":  	"9ede6e03-f89b-3e52-bb15-5c6c72605f6c",
+  "cocktail": 	"7344136f-c552-3efc-b04f-a43793f16d43",
+  "timestamp":	"586b5706-5856-34e1-ad17-94f840298816",
+  "user":     	"2ce478ea-8d6f-30ba-9ac6-2389c8d5b172",
+}
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s %(asctime)s: %(message)s', datefmt='%y-%m-%d %H:%M:%S')
 
@@ -35,9 +38,19 @@ async def read_all_chars(client):
       if "read" in char.properties:
         try:
           value = bytes(await client.read_gatt_char(char.uuid))
-          logging.info(f"  - read: {char.uuid} -> {value})")
+          logging.info(f"  - read: {char.uuid} -> {value.decode('utf-8')}")
         except Exception as e:
           logging.error(f"\t[Characteristic] {char} ({','.join(char.properties)}), Value: {e}")
+
+async def read_status(client):
+  logging.info("reading status...")
+
+  for char, uuid in STATUS.items():
+    try:
+      value = bytes(await client.read_gatt_char(uuid))
+      logging.info(f"  - {char} -> {value.decode('utf-8')}")
+    except Exception as e:
+      logging.error(f"\t{char} ({uuid}) -> {e}")
 
 async def comm_msg(client, uuid, message):
   notification_received = asyncio.Event()
@@ -65,36 +78,79 @@ async def test_run(client):
   async def admin(obj):
     await comm_msg(client, UUID_COMM_ADMIN, j(obj))
 
+  # reset machine settings
+  await admin({"cmd": "factory_reset", "user": 0})
+  await read_status(client)
+
   # basic commands
   await user({"cmd": "test"})
   await user({"cmd": "init_user", "name": "test-user"})
 
   # admin commands
-  await user({"cmd": "reset", "user": 0})
-  await admin({"cmd": "calibrate_pumps", "user": 0})
+  await user({"cmd": "reset",  "user": 0})
   await admin({"cmd": "clean", "user": 0})
 
-  # set up machine
+  # calibrate scale (with arbitrary values)
+  await admin({"cmd": "tare_scale", "user": 0})
+  await admin({"cmd": "calibrate_scale",  "user": 0, "weight": 100})
+  await admin({"cmd": "set_scale_factor", "user": 0, "factor": 1.0})
+
+  # set up pumps
   await admin({"cmd": "define_pump", "user": 0, "liquid": "water",    "volume": 1000, "slot": 1})
   await admin({"cmd": "define_pump", "user": 0, "liquid": "beer",     "volume": 2000, "slot": 2})
-  await admin({"cmd": "define_pump", "user": 0, "liquid": "lemonade", "volume": 3000, "slot": 3})
+  await admin({"cmd": "define_pump", "user": 0, "liquid": "lemonade", "volume": 3000, "slot": 7})
+
+  # calibrate pumps
+  await admin({"cmd": "run_pump", "user": 0, "slot": 1, "time": 1 * 1000})
+  await admin({"cmd": "run_pump", "user": 0, "slot": 2, "time": 1 * 1000})
+  await admin({"cmd": "run_pump", "user": 0, "slot": 7, "time": 1 * 1000})
+
+  await admin({"cmd": "calibrate_pump", "user": 0, "slot": 1,
+               "time1": 10 * 1000, "volume1": 5.0,
+               "time2": 20 * 1000, "volume2": 15.0})
+  await admin({"cmd": "set_pump_times", "user": 0, "slot": 2,
+               "time_init": 1000, "time_reverse": 1000, "rate": 1.0})
+  await admin({"cmd": "set_pump_times", "user": 0, "slot": 7,
+               "time_init": 0, "time_reverse": 0, "rate": 0.0})
+
+    # refill and reset pumps
+  await admin({"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1})
+  await user({"cmd": "reset", "user": 0})
+  await read_status(client)
 
   # define recipes
-  await user({"cmd": "define_recipe", "user": 1, "name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]})
-  await user({"cmd": "define_recipe", "user": 1, "name": "cheap beer", "liquids": [["beer", 250], ["water", 250]]})
-  await user({"cmd": "edit_recipe", "user": 1, "name": "cheap beer", "liquids": [["beer", 100], ["water", 400]]})
+  await user({"cmd":  "define_recipe", "user": 1, "name": "radler",     "liquids": [["beer", 250], ["lemonade", 250]]})
+  await user({"cmd":  "define_recipe", "user": 1, "name": "cheap beer", "liquids": [["beer", 250], ["water", 250]]})
+  await user({"cmd":  "edit_recipe",   "user": 1, "name": "cheap beer", "liquids": [["beer", 100], ["water", 400]]})
   await admin({"cmd": "delete_recipe", "user": 0, "name": "cheap beer"})
+
+  await read_status(client)
+
+    # test all pumps
+  await user({"cmd": "reset", "user": 0})
+  await user({"cmd": "add_liquid", "user": 1, "liquid": "water",    "volume": 100})
+  await user({"cmd": "add_liquid", "user": 1, "liquid": "beer",     "volume": 100})
+  await user({"cmd": "add_liquid", "user": 1, "liquid": "lemonade", "volume": 100})
+
+  await user({"cmd": "reset", "user": 0})
+  await read_status(client)
 
   # make recipes
   await user({"cmd": "make_recipe", "user": 1, "recipe": "radler"})
-  await user({"cmd": "add_liquid", "user": 1, "liquid": "beer", "volume": 100})
+  await user({"cmd": "add_liquid",  "user": 1, "liquid": "beer", "volume": 100})
   await user({"cmd": "reset", "user": 0})
 
   await user({"cmd": "make_recipe", "user": 1, "recipe": "radler"})
-  await user({"cmd": "add_liquid", "user": 1, "liquid": "beer", "volume": 100})
+  await user({"cmd": "add_liquid",  "user": 1, "liquid": "beer", "volume": 100})
+
+  await read_status(client)
 
   # refill pump
+  await user({"cmd":  "add_liquid", "user": 1, "volume": 10, "liquid": "water"})
+  await user({"cmd":  "add_liquid", "user": 1, "volume": 10, "liquid": "beer"})
+  await user({"cmd":  "add_liquid", "user": 1, "volume": 10, "liquid": "water"})
   await admin({"cmd": "refill_pump", "user": 0, "volume": 5000, "slot": 1})
+  await read_status(client)
 
   await read_all_chars(client)
 
