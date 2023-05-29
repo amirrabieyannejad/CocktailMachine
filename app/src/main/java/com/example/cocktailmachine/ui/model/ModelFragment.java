@@ -88,15 +88,25 @@ public class ModelFragment extends Fragment {
                             .append("Pumpe: ")
                             .append(pump.getIngredientName())
                             .toString());
-            activity.getLayoutInflater().inflate(R.layout.layout_pump, null);
+
+            //activity.getLayoutInflater().inflate(R.layout.layout_pump, null);
             binding.includePump.getRoot().setVisibility(View.VISIBLE);
+            View.OnClickListener listener = v -> {
+                Bundle b = new Bundle();
+                b.putString("Type", ModelType.INGREDIENT.name());
+                b.putLong("ID", pump.getCurrentIngredient().getID());
+                NavHostFragment
+                        .findNavController(ModelFragment.this)
+                        .navigate(R.id.action_modelFragment_self,
+                                b);
+            };
+
             binding.includePump.textViewMinPumpVolume
-            //((TextView)activity.findViewById(R.id.textView_min_pump_volume))
                     .setText(String.valueOf(pump.getMinimumPumpVolume()));
-            //((TextView)activity.findViewById(R.id.textView_pump_volume))
+            binding.includePump.textViewPumpIngredientName.setOnClickListener(listener);
+            binding.textViewTitle.setOnClickListener(listener);
             binding.includePump.textViewPumpVolume
                     .setText(String.valueOf(pump.getVolume()));
-            //((TextView)activity.findViewById(R.id.textView_pump_ingredient_name))
             binding.includePump.textViewPumpIngredientName
                     .setText(pump.getIngredientName());
             if (pump.isAvailable()) {
