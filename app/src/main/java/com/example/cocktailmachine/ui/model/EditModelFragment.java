@@ -493,6 +493,9 @@ public class EditModelFragment extends Fragment {
         Log.i(TAG, "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
         activity = (MainActivity) getActivity();
+        if (activity != null) {
+            Objects.requireNonNull(activity.getSupportActionBar()).setTitle("");
+        }
 
         Bundle args = getArguments();
         if(args != null) {

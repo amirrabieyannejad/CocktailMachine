@@ -25,6 +25,8 @@ import com.example.cocktailmachine.ui.FirstFragment;
 import com.example.cocktailmachine.ui.MainActivity;
 import com.example.cocktailmachine.ui.SecondFragment;
 
+import java.util.Objects;
+
 public class ModelFragment extends Fragment {
     private FragmentModelBinding binding;
     private MainActivity activity;
@@ -222,7 +224,6 @@ public class ModelFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView");
         binding = FragmentModelBinding.inflate(inflater, container, false);
-        activity = (MainActivity) getActivity();
         return binding.getRoot();
     }
 
@@ -230,7 +231,10 @@ public class ModelFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Log.i(TAG, "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
-
+        activity = (MainActivity) getActivity();
+        if (activity != null) {
+            Objects.requireNonNull(activity.getSupportActionBar()).setTitle("");
+        }
         Bundle args = getArguments();
 
         if(args != null) {

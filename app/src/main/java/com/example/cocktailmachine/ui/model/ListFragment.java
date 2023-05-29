@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,6 +17,8 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.databinding.FragmentListBinding;
 import com.example.cocktailmachine.ui.MainActivity;
+
+import java.util.Objects;
 
 public class ListFragment extends Fragment {
     private MainActivity activity;
@@ -241,6 +244,9 @@ public class ListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         activity = (MainActivity) getActivity();
+        if (activity != null) {
+            Objects.requireNonNull(activity.getSupportActionBar()).setTitle("");
+        }
 
         Bundle args = getArguments();
         if(args != null) {

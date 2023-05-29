@@ -79,15 +79,18 @@ public class RowViews {
 
         RowView(@NonNull View itemView) {
             super(itemView);
-            checkBox = itemView.findViewById(R.id.checkBox_item);
+            if(itemView == null){
+                Log.i(TAG, "itemView is null");
+            }
+            checkBox = (CheckBox) itemView.findViewById(R.id.checkBox_item);
             if(checkBox == null){
                 Log.i(TAG, "checkBox is null");
             }
-            name = itemView.findViewById(R.id.textView_item_name);
+            name = (TextView) itemView.findViewById(R.id.textView_item_name);
             if(name == null){
                 Log.i(TAG, "name is null");
             }
-            desc = itemView.findViewById(R.id.textView_item_desc);
+            desc = (TextView) itemView.findViewById(R.id.textView_item_desc);
             if(desc == null){
                 Log.i(TAG, "desc is null");
             }
