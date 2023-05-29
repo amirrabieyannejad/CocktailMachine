@@ -225,8 +225,13 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * Get available recipes.
      * @return list of recipes
      */
-    public static List<Recipe> getRecipes() throws NotInitializedDBException {
-        return (List<Recipe>) DatabaseConnection.getDataBase().getAvailableRecipes();
+    public static List<Recipe> getRecipes() {
+        try {
+            return (List<Recipe>) DatabaseConnection.getDataBase().getAvailableRecipes();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
     /**

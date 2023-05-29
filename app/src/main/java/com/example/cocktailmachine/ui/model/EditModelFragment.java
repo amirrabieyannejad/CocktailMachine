@@ -152,25 +152,25 @@ public class EditModelFragment extends Fragment {
                     ingredient.save();
                     b.putString("Type", ModelFragment.ModelType.INGREDIENT.name());
                     b.putLong("ID", ingredient.getID());
-                    Log.i(TAG,"Bundle"+b);
+                    Log.i(TAG,"saved "+b);
                     return;
                 case RECIPE:
                     recipe.save();
                     b.putString("Type", ModelFragment.ModelType.RECIPE.name());
                     b.putLong("ID", recipe.getID());
-                    Log.i(TAG,"Bundle"+b);
+                    Log.i(TAG,"saved "+b);
                     return;
                 case TOPIC:
                     topic.save();
                     b.putString("Type", ModelFragment.ModelType.TOPIC.name());
                     b.putLong("ID", topic.getID());
-                    Log.i(TAG,"Bundle"+b);
+                    Log.i(TAG,"saved "+b);
                     return;
                 case PUMP:
                     pump.save();
                     b.putString("Type", ModelFragment.ModelType.INGREDIENT.name());
                     b.putLong("ID", pump.getID());
-                    Log.i(TAG,"Bundle"+b);
+                    Log.i(TAG,"saved "+b);
                     return;
             }
         } catch (NotInitializedDBException e) {

@@ -32,7 +32,9 @@ import java.util.List;
 
 public class ListRecyclerViewAdapters  {
     public abstract static class ListRecyclerViewAdapter<E extends RowViews.RowView> extends RecyclerView.Adapter<E> {
+
         RowViews.RowType type;
+        private static final String TAG = "ListRecyclerViewAdapter";
         private boolean lock = false;
         private List<E> views = new ArrayList<>();
         protected Recipe recipe=null;
@@ -48,6 +50,12 @@ public class ListRecyclerViewAdapters  {
             LinearLayoutManager llm = new LinearLayoutManager(getContext);
             llm.setOrientation(LinearLayoutManager.VERTICAL);
             return llm;
+        }
+
+        public void reload(){
+            Log.i(TAG, "reload");
+            putIds();
+            notifyDataSetChanged();
         }
 
         public boolean isCurrentlyDeleting(){
@@ -217,11 +225,7 @@ public class ListRecyclerViewAdapters  {
 
         @Override
         public void putIds() {
-            try {
-                recipes = Recipe.getRecipes();
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-            }
+            recipes = Recipe.getRecipes();
         }
     }
 
@@ -421,7 +425,7 @@ public class ListRecyclerViewAdapters  {
 
         @Override
         public void putIds() {
-
+            data = super.recipe.getIngredients();
         }
 
         @Override
@@ -477,7 +481,7 @@ public class ListRecyclerViewAdapters  {
 
         @Override
         public void putIds() {
-            data  = Topic.getTopics();
+            data  = Topic.getTopics(super.recipe);
         }
 
         @Override

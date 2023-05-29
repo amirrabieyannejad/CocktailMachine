@@ -276,4 +276,11 @@ public class ListFragment extends Fragment {
             Objects.requireNonNull(activity.getSupportActionBar()).setTitle("");
         }
     }
+
+    @Override
+    public void onResume() {
+        Log.i(TAG,"onResum");
+        super.onResume();
+        recyclerViewAdapter.reload();
+    }
 }

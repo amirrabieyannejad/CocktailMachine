@@ -468,7 +468,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     public void addOrUpdate(SQLRecipe recipe) {
         if(recipe.isSaved() && recipe.needsUpdate()){
-            //this.recipes.remove(recipe);
+            this.recipes.remove(recipe);
             Tables.TABLE_RECIPE.updateElement(this.getWritableDatabase(), recipe);
         }else{
             recipe.setID(Tables.TABLE_RECIPE.addElement(this.getWritableDatabase(), recipe));
@@ -478,7 +478,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     public void addOrUpdate(SQLTopic topic) {
         if(topic.isSaved() && topic.needsUpdate()){
-            //this.topics.remove(topic);
+            this.topics.remove(topic);
             Tables.TABLE_TOPIC.updateElement(this.getWritableDatabase(), topic);
         }else{
             topic.setID(Tables.TABLE_TOPIC.addElement(this.getWritableDatabase(), topic));
@@ -489,7 +489,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     public void addOrUpdate(SQLPump pump) {
         if(pump.isSaved() && pump.needsUpdate()){
             Tables.TABLE_PUMP.updateElement(this.getWritableDatabase(), pump);
-            //this.pumps.remove(pump);
+            this.pumps.remove(pump);
         }else{
             pump.setID(Tables.TABLE_PUMP.addElement(this.getWritableDatabase(), pump));
         }
