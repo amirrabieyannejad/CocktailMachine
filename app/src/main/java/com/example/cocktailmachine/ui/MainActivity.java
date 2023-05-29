@@ -202,6 +202,7 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "successfullLogin" );
         this.menu.findItem(R.id.action_admin_login).setVisible(false);
         this.menu.findItem(R.id.action_admin_logout).setVisible(true);
+        this.menu.findItem(R.id.action_pumps).setVisible(true);
         AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.Admin);
     }
 
@@ -210,14 +211,16 @@ public class MainActivity extends AppCompatActivity {
         AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.User);
         this.menu.findItem(R.id.action_admin_login).setVisible(true);
         this.menu.findItem(R.id.action_admin_logout).setVisible(false);
+        this.menu.findItem(R.id.action_pumps).setVisible(false);
     }
+
     private static class LoginView extends View{
         private final TextView t;
         private final EditText e;
-        public LoginView(MainActivity activity) {
-            super(activity);
-            t = (TextView) activity.findViewById(R.id.textView_edit_text);
-            e = (EditText) activity.findViewById(R.id.editText_edit_text);
+        public LoginView(Context context) {
+            super(context);
+            t = (TextView) findViewById(R.id.textView_edit_text);
+            e = (EditText) findViewById(R.id.editText_edit_text);
             t.setText("Passwort: ");
             e.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
 

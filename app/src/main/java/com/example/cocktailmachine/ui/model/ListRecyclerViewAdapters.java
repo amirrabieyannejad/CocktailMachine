@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -195,8 +196,7 @@ public class ListRecyclerViewAdapters  {
         @Override
         public RowViews.RecipeRowView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.layout_name_list, parent, false);
-
+                    .inflate(R.layout.item_name, parent, false);
             return addRowView(RowViews.getRecipeInstance(view));
         }
 
