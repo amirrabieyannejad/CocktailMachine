@@ -5,6 +5,7 @@ import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface Topic extends Comparable<Topic>, DataBaseElement {
@@ -64,8 +65,14 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
         return DatabaseConnection.getDataBase().getTopics(recipe);
     }
 
-    public static List<Topic> getTopics() throws NotInitializedDBException {
-        return DatabaseConnection.getDataBase().getTopics();
+    public static List<Topic> getTopics(){
+
+        try {
+            return DatabaseConnection.getDataBase().getTopics();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
 }

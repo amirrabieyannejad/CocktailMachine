@@ -31,7 +31,7 @@ import java.util.List;
 
 public class ListRecyclerViewAdapters  {
     public abstract static class ListRecyclerViewAdapter<E extends RowViews.RowView> extends RecyclerView.Adapter<E> {
-        private RowViews.RowType type;
+        RowViews.RowType type;
         private boolean lock = false;
         private List<E> views = new ArrayList<>();
         protected Recipe recipe=null;

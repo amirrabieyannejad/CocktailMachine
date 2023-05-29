@@ -1,5 +1,7 @@
 package com.example.cocktailmachine.ui.model;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -353,6 +355,54 @@ public class EditModelFragment extends Fragment {
             }
         });
         binding.layoutRecipe.setVisibility(View.VISIBLE);
+
+        ListLayout.set(binding.includeEditRecipeTopics.includeList.textViewNameListTitle,
+                "Serviervorschläge",
+                binding.includeEditRecipeTopics.includeList.recylerViewNames,
+                this.getContext(),
+                new ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter(recipe),
+                EditModelFragment.this,
+                binding.includeEditRecipeTopics.includeList.imageButtonListDelete,
+                binding.includeEditRecipeTopics.includeList.imageButtonListEdit);
+
+        binding.includeEditRecipeIngredients.imageButton.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle("Wähle neue Zutaten!");
+            builder.setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            List<Ingredient> ingredients = Ingredient.getIngredientWithIds();
+            ingredients.removeAll(recipe.getIngredients());
+            String[] temp = new String[ingredients.size()];
+            boolean[] tempB = new boolean[ingredients.size()];
+            for(int i = 0; i < ingredients.size(); i++){
+                temp[i] = ingredients.get(i).getName();
+                tempB[i] = false;
+            }
+            List<Ingredient> chosen = new ArrayList<>();
+            builder.setMultiChoiceItems(
+                    temp,
+                    tempB,
+                    (DialogInterface.OnMultiChoiceClickListener) (dialog, which, isChecked) -> {
+                        if(isChecked){
+                            chosen.add(ingredients.get(which));
+                        }else{
+                            chosen.remove(ingredients.get(which));
+                        }
+                    });
+            builder.setPositiveButton("Weiter", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    for(Ingredient i:chosen) {
+                        recipe.addOrUpdate(i, -1);
+                    }
+                }
+            });
+
+        });
     }
 
     private void setUpEditTopic() {
