@@ -163,6 +163,7 @@ public class RowViews {
         abstract Bundle getGoToModelBundle();
 
         void addGoToListener(Fragment fragment){
+            Log.i(TAG, "goToListener");
             if(fragment instanceof ModelFragment) {
                 addListener(v -> {
                     Log.i(TAG, "goto: ModelFragment");
@@ -183,34 +184,52 @@ public class RowViews {
         }
 
         public void addListener(View.OnClickListener listener){
+            Log.i(TAG, "addListener");
             this.listener = listener;
             super.itemView.setOnClickListener(listener);
+            this.name.setOnClickListener(listener);
+            this.desc.setOnClickListener(listener);
         }
 
         public void loadListener(){
+            Log.i(TAG, "loadListener");
             super.itemView.setOnClickListener(listener);
+            this.name.setOnClickListener(listener);
+            this.desc.setOnClickListener(listener);
         }
 
         public void deleteListener(){
+            Log.i(TAG, "deleteListener");
             super.itemView.setOnClickListener(null);
+            this.name.setOnClickListener(null);
+            this.desc.setOnClickListener(null);
         }
 
         public void addLongListener(View.OnLongClickListener listener){
+            Log.i(TAG, "addLongListener");
             this.longClickListener = listener;
             if(super.itemView == null){
                 Log.i(TAG, "HERE HERE, super.itemView is null");
             }else {
-                super.itemView.setOnLongClickListener(listener);
+                loadLongListener();
             }
         }
 
         public void loadLongListener(){
+            Log.i(TAG, "loadLongListener");
             super.itemView.setOnLongClickListener(longClickListener);
+            this.name.setOnLongClickListener(longClickListener);
+            this.desc.setOnLongClickListener(longClickListener);
         }
 
         public void deleteLongListener(){
+            Log.i(TAG, "deleteLongListener");
             super.itemView.setOnLongClickListener(null);
+            this.name.setOnLongClickListener(null);
+            this.desc.setOnLongClickListener(null);
         }
+
+
 
 
 

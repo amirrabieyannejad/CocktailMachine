@@ -112,16 +112,32 @@ public class ListRecyclerViewAdapters  {
         }
 
         void addGoToModelListener(Fragment fragment){
+            Log.i(TAG, "addGoToModelListener");
             for(RowViews.RowView view: views){
                 view.addGoToListener(fragment);
             }
         }
 
         protected E addRowView(E view){
+
             view.addLongListener(
                     v1 -> {
                         AlertDialog.Builder builder = new AlertDialog.Builder(view.itemView.getContext());
-                        builder.setMessage("Möchten Sie dises Rezept wirklich löschen?");
+                        String typus = "";
+                        if(type== RowViews.RowType.pump){
+                            typus="diese Pumpe";
+                        }else if(type== RowViews.RowType.ingredient){
+                            typus="diese Zutat";
+                        }else if(type== RowViews.RowType.recipeIngredient){
+                            typus="diese Zutat aus dem Rezept";
+                        }else if(type== RowViews.RowType.recipeTopic){
+                            typus="diesen Serviervorschlag zu dem Rezept";
+                        }else if(type== RowViews.RowType.topic){
+                            typus="diesen Serviervorschlag";
+                        }else if(type== RowViews.RowType.recipe){
+                            typus="dieses Rezept";
+                        }
+                        builder.setMessage("Möchten Sie "+typus+" wirklich löschen?");
                         builder.setTitle("Warnung");
                         builder.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
                             @Override
@@ -142,8 +158,11 @@ public class ListRecyclerViewAdapters  {
                                 dialog.dismiss();
                             }
                         });
+                        builder.show();
                         return false;
                     });
+
+
             views.add(view);
             return view;
         }

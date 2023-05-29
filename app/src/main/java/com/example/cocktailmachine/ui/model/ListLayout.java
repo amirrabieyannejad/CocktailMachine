@@ -63,9 +63,9 @@ public class ListLayout {
                                  ListRecyclerViewAdapters.ListRecyclerViewAdapter adapter,
                                  Fragment fragment){
         Log.i(TAG, "setRecyclerView");
+        adapter.addGoToModelListener(fragment);
         recylerViewNames.setLayoutManager(adapter.getManager(getContext));
         recylerViewNames.setAdapter(adapter);
-        adapter.addGoToModelListener(fragment);
     }
 
 
