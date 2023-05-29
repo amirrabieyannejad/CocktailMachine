@@ -14,18 +14,26 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.data.AdminRights;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
+import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.databinding.FragmentEditModelBinding;
 import com.example.cocktailmachine.databinding.FragmentListBinding;
 import com.example.cocktailmachine.ui.MainActivity;
@@ -393,15 +401,35 @@ public class EditModelFragment extends Fragment {
                             chosen.remove(ingredients.get(which));
                         }
                     });
-            builder.setPositiveButton("Weiter", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    for(Ingredient i:chosen) {
-                        recipe.addOrUpdate(i, -1);
-                    }
+            builder.setPositiveButton("Weiter", (dialog, which) -> {
+                for(Ingredient i:chosen) {
+                    recipe.addOrUpdate(i, -1);
                 }
             });
 
+        });
+        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        binding.includeEditRecipeIngredients.recyclerViewVolumeEdit.setLayoutManager(llm);
+        binding.includeEditRecipeIngredients.recyclerViewVolumeEdit.setAdapter(
+                new RecyclerView.Adapter<EditRowViewHolder>() {
+            @NonNull
+            @Override
+            public EditRowViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(activity)
+                        .inflate(R.layout.layout_volume_list, parent, false);
+                return new EditRowViewHolder(view, recipe, activity);
+            }
+
+            @Override
+            public void onBindViewHolder(@NonNull EditRowViewHolder holder, int position) {
+                holder.setIngredient(position);
+            }
+
+            @Override
+            public int getItemCount() {
+                return recipe.getIngredients().size();
+            }
         });
     }
 
@@ -566,5 +594,64 @@ public class EditModelFragment extends Fragment {
             error();
         }
         setSaveFAB();
+    }
+
+    static class EditRowViewHolder extends RecyclerView.ViewHolder {
+        private final Recipe recipe;
+        private Ingredient ingredient;
+        private int volume;
+        private final TextView name;
+        private final EditText vol;
+        private MainActivity activity;
+
+        public EditRowViewHolder(@NonNull View itemView, Recipe recipe, MainActivity activity) {
+            super(itemView);
+            this.recipe = recipe;
+            this.activity = activity;
+            name = (TextView) this.activity.findViewById(R.id.textView_edit_text);
+            vol = (EditText) this.activity.findViewById(R.id.editText_edit_text);
+
+        }
+
+        void setIngredient(int position){
+            this.ingredient = recipe.getIngredients().get(position);
+            try {
+                this.volume = this.recipe.getSpecificIngredientVolume(ingredient);
+            } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
+                e.printStackTrace();
+                this.recipe.remove(ingredient);
+                this.volume = -1;
+                this.recipe.addOrUpdate(ingredient, this.volume);
+                try {
+                    this.recipe.save();
+                } catch (NotInitializedDBException ex) {
+                    ex.printStackTrace();
+                    DatabaseConnection.initialize_singleton(activity, AdminRights.getUserPrivilegeLevel());
+                }
+            }
+            name.setText(ingredient.getName());
+            if(volume > 0){
+                this.vol.setText(String.valueOf(this.volume));
+            }
+
+            View.OnLongClickListener longClickListener = new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                    builder.setMessage("Möchten Sie dises Zutat wirklich aus dem Rezept löschen?");
+                    builder.setTitle("Warnung");
+                    builder.setPositiveButton("Ja", (dialog, which) -> {
+                        recipe.remove(ingredient);
+                        dialog.dismiss();
+                    });
+                    builder.setNegativeButton("Nein", (dialog, which) -> dialog.dismiss());
+                    return false;
+                }
+            };
+            name.setOnLongClickListener(longClickListener);
+            vol.setOnLongClickListener(longClickListener);
+
+        }
     }
 }
