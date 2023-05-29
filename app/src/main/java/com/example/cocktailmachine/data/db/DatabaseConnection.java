@@ -460,7 +460,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
             Tables.TABLE_INGREDIENT.updateElement(this.getWritableDatabase(), ingredient);
             this.ingredients.remove(ingredient);
         }else{
-            Tables.TABLE_INGREDIENT.addElement(this.getWritableDatabase(), ingredient);
+            ingredient.setID(Tables.TABLE_INGREDIENT.addElement(this.getWritableDatabase(), ingredient));
         }
         this.ingredients.add(ingredient);
 
@@ -468,20 +468,20 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     public void addOrUpdate(SQLRecipe recipe) {
         if(recipe.isSaved() && recipe.needsUpdate()){
+            //this.recipes.remove(recipe);
             Tables.TABLE_RECIPE.updateElement(this.getWritableDatabase(), recipe);
-            this.recipes.remove(recipe);
         }else{
-            Tables.TABLE_RECIPE.addElement(this.getWritableDatabase(), recipe);
+            recipe.setID(Tables.TABLE_RECIPE.addElement(this.getWritableDatabase(), recipe));
         }
         this.recipes.add(recipe);
     }
 
     public void addOrUpdate(SQLTopic topic) {
         if(topic.isSaved() && topic.needsUpdate()){
+            //this.topics.remove(topic);
             Tables.TABLE_TOPIC.updateElement(this.getWritableDatabase(), topic);
-            this.topics.remove(topic);
         }else{
-            Tables.TABLE_TOPIC.addElement(this.getWritableDatabase(), topic);
+            topic.setID(Tables.TABLE_TOPIC.addElement(this.getWritableDatabase(), topic));
         }
         this.topics.add(topic);
     }
@@ -489,9 +489,9 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     public void addOrUpdate(SQLPump pump) {
         if(pump.isSaved() && pump.needsUpdate()){
             Tables.TABLE_PUMP.updateElement(this.getWritableDatabase(), pump);
-            this.pumps.remove(pump);
+            //this.pumps.remove(pump);
         }else{
-            Tables.TABLE_PUMP.addElement(this.getWritableDatabase(), pump);
+            pump.setID(Tables.TABLE_PUMP.addElement(this.getWritableDatabase(), pump));
         }
         this.pumps.add(pump);
     }
@@ -500,16 +500,16 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         if(recipeTopic.isSaved() && recipeTopic.needsUpdate()){
             Tables.TABLE_RECIPE_TOPIC.updateElement(this.getWritableDatabase(), recipeTopic);
         }else{
-            Tables.TABLE_RECIPE_TOPIC.addElement(this.getWritableDatabase(), recipeTopic);
+            recipeTopic.setID(Tables.TABLE_RECIPE_TOPIC.addElement(this.getWritableDatabase(), recipeTopic));
         }
     }
 
     public void addOrUpdate(SQLIngredientPump ingredientPump) {
         if(ingredientPump.isSaved() && ingredientPump.needsUpdate()){
             Tables.TABLE_INGREDIENT_PUMP.updateElement(this.getWritableDatabase(), ingredientPump);
-            this.ingredientPumps.remove(ingredientPump);
+            //this.ingredientPumps.remove(ingredientPump);
         }else{
-            Tables.TABLE_INGREDIENT_PUMP.addElement(this.getWritableDatabase(), ingredientPump);
+            ingredientPump.setID(Tables.TABLE_INGREDIENT_PUMP.addElement(this.getWritableDatabase(), ingredientPump));
         }
         this.ingredientPumps.add(ingredientPump);
     }
@@ -517,9 +517,9 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     public void addOrUpdate(SQLRecipeIngredient recipeIngredient) {
         if(recipeIngredient.isSaved() && recipeIngredient.needsUpdate()){
             Tables.TABLE_RECIPE_INGREDIENT.updateElement(this.getWritableDatabase(), recipeIngredient);
-            this.recipeIngredients.remove(recipeIngredient);
+            //this.recipeIngredients.remove(recipeIngredient);
         }else{
-            Tables.TABLE_RECIPE_INGREDIENT.addElement(this.getWritableDatabase(), recipeIngredient);
+            recipeIngredient.setID(Tables.TABLE_RECIPE_INGREDIENT.addElement(this.getWritableDatabase(), recipeIngredient));
         }
         this.recipeIngredients.add(recipeIngredient);
     }
@@ -528,7 +528,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         if(recipeImageUrlElement.isSaved() && recipeImageUrlElement.needsUpdate()){
             Tables.TABLE_RECIPE_URL.updateElement(this.getWritableDatabase(), recipeImageUrlElement);
         }else{
-            Tables.TABLE_RECIPE_URL.addElement(this.getWritableDatabase(), recipeImageUrlElement);
+            recipeImageUrlElement.setID(Tables.TABLE_RECIPE_URL.addElement(this.getWritableDatabase(), recipeImageUrlElement));
         }
     }
 
@@ -536,7 +536,8 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         if(ingredientImageUrlElement.isSaved() && ingredientImageUrlElement.needsUpdate()){
             Tables.TABLE_INGREDIENT_URL.updateElement(this.getWritableDatabase(), ingredientImageUrlElement);
         }else{
-            Tables.TABLE_INGREDIENT_URL.addElement(this.getWritableDatabase(), ingredientImageUrlElement);
+            ingredientImageUrlElement.setID(
+                    Tables.TABLE_INGREDIENT_URL.addElement(this.getWritableDatabase(), ingredientImageUrlElement));
         }
     }
 

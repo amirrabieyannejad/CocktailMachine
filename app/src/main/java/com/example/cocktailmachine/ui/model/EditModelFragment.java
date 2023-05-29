@@ -73,45 +73,67 @@ public class EditModelFragment extends Fragment {
     }
 
     private void saveNew(){
+        b = new Bundle();
         old = true;
-        switch (type){
-            case PUMP:
-                pump = Pump.makeNew();
-                pump.setCurrentIngredient(ingredient);
-                pump.fill(Integer.parseInt(
-                        binding
-                                .includeNewPump
-                                .includeNewPumpFillEmpty
-                                .editTextPumpFillEmptyVolume
-                                .getText().toString()));
-                setUpEditPump();
-                return;
-            case TOPIC:
-                topic = Topic.makeNew(
-                        binding
-                                .includeName
-                                .editTextEditText
-                                .getText().toString(),
-                        binding
-                                .editTextTopic
-                                .getText()
-                                .toString());
-                return;
-            case RECIPE:
-                recipe = Recipe.makeNew(
-                        binding
-                                .includeName
-                                .editTextEditText
-                                .getText().toString());
-                setUpEditRecipe();
-                return;
-            case INGREDIENT:
-                ingredient = Ingredient.makeNew(
-                        binding
-                                .includeName
-                                .editTextEditText
-                                .getText().toString());
-                setUpEditIngredient();
+        saved = true;
+        try {
+            switch (type) {
+                case PUMP:
+                    pump = Pump.makeNew();
+                    pump.setCurrentIngredient(ingredient);
+                    pump.fill(Integer.parseInt(
+                            binding
+                                    .includeNewPump
+                                    .includeNewPumpFillEmpty
+                                    .editTextPumpFillEmptyVolume
+                                    .getText().toString()));
+                    setUpEditPump();
+                    b.putString("Type", ModelFragment.ModelType.INGREDIENT.name());
+                    b.putLong("ID", pump.getID());
+                    pump.save();
+                    return;
+                case TOPIC:
+                    topic = Topic.makeNew(
+                            binding
+                                    .includeName
+                                    .editTextEditText
+                                    .getText().toString(),
+                            binding
+                                    .editTextTopic
+                                    .getText()
+                                    .toString());
+                    setUpEditTopic();
+                    b.putString("Type", ModelFragment.ModelType.TOPIC.name());
+                    b.putLong("ID", topic.getID());
+                    topic.save();
+                    return;
+                case RECIPE:
+                    recipe = Recipe.makeNew(
+                            binding
+                                    .includeName
+                                    .editTextEditText
+                                    .getText().toString());
+                    setUpEditRecipe();
+                    b.putString("Type", ModelFragment.ModelType.RECIPE.name());
+                    b.putLong("ID", recipe.getID());
+                    recipe.save();
+                    return;
+                case INGREDIENT:
+                    ingredient = Ingredient.makeNew(
+                            binding
+                                    .includeName
+                                    .editTextEditText
+                                    .getText().toString());
+                    setUpEditIngredient();
+                    b.putString("Type", ModelFragment.ModelType.INGREDIENT.name());
+                    b.putLong("ID", ingredient.getID());
+                    ingredient.save();
+                    return;
+            }
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            saved = false;
+            return;
         }
     }
 
@@ -217,7 +239,6 @@ public class EditModelFragment extends Fragment {
                 binding.includeEditRecipeTopics.includeList.imageButtonListDelete,
                 binding.includeEditRecipeTopics.includeList.imageButtonListEdit);
          */
-        //TODO
     }
 
     private void setUpNewTopic() {
@@ -308,7 +329,7 @@ public class EditModelFragment extends Fragment {
             }
         });
         binding.layoutIngredient.setVisibility(View.VISIBLE);
-        binding.layoutPickColor.setOnClickListener(v -> {
+        View.OnClickListener listener = v -> {
             ColorPickerPopUp colorPickerPopUp = new ColorPickerPopUp(activity);	// Pass the context.
             colorPickerPopUp.setShowAlpha(true)			// By default show alpha is true.
                     .setDefaultColor(ingredient.getColor())
@@ -330,7 +351,10 @@ public class EditModelFragment extends Fragment {
                         }
                     })
                     .show();
-        });
+        };
+        binding.layoutPickColor.setOnClickListener(listener);
+        binding.imageButtonGlassColor.setOnClickListener(listener);
+        binding.textViewPickAColor.setOnClickListener(listener);
         binding.checkBoxAlcoholic.setChecked(ingredient.isAlcoholic());
         binding.checkBoxAlcoholic.setOnCheckedChangeListener((buttonView, isChecked) -> {
             saved = false;
@@ -584,7 +608,7 @@ public class EditModelFragment extends Fragment {
             if(args.containsKey("ID")){
                 Log.i(TAG, "onViewCreated: getArguments has ID -> Edit");
                 Long id = args.getLong("ID");
-                setUpEdit( id);
+                setUpEdit(id);
             }else{
                 Log.i(TAG, "onViewCreated: getArguments has no ID -> New");
                 setUpNew();
@@ -593,6 +617,11 @@ public class EditModelFragment extends Fragment {
             Log.i(TAG, "onViewCreated: getArguments == null");
             error();
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         setSaveFAB();
     }
 

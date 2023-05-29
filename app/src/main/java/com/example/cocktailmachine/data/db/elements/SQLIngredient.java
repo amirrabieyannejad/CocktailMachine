@@ -169,7 +169,10 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
     @Override
     public int getVolume() {
         //return this.fluidInMillimeters;
-        return this.ingredientPump.getVolume();
+        if(this.ingredientPump!=null) {
+            return this.ingredientPump.getVolume();
+        }
+        return -1;
     }
 
     @Override

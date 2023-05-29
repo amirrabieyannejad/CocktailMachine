@@ -241,7 +241,7 @@ public class ListRecyclerViewAdapters  {
         @Override
         public RowViews.TopicRowView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.layout_name_list, parent, false);
+                    .inflate(R.layout.item_name, parent, false);
             return addRowView(RowViews.getTopicInstance(view));
         }
 
@@ -292,7 +292,7 @@ public class ListRecyclerViewAdapters  {
         @Override
         public RowViews.PumpRowView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.layout_name_list, parent, false);
+                    .inflate(R.layout.item_name, parent, false);
             return addRowView(RowViews.getPumpInstance(view));
         }
 
@@ -333,7 +333,7 @@ public class ListRecyclerViewAdapters  {
         @Override
         public RowViews.IngredientRowView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.layout_name_list, parent, false);
+                    .inflate(R.layout.item_name, parent, false);
             return addRowView(RowViews.getIngredientInstance(view));
         }
 
@@ -389,7 +389,7 @@ public class ListRecyclerViewAdapters  {
         @Override
         public RowViews.RecipeIngredientRowView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.layout_name_list, parent, false);
+                    .inflate(R.layout.item_name, parent, false);
             return addRowView(RowViews.getRecipeIngredientInstance(view));
         }
 
@@ -455,7 +455,7 @@ public class ListRecyclerViewAdapters  {
         @Override
         public RowViews.RecipeTopicRowView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.layout_name_list, parent, false);
+                    .inflate(R.layout.item_name, parent, false);
             return addRowView(RowViews.getRecipeTopicInstance(view));
         }
 
