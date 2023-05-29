@@ -1,22 +1,33 @@
 package com.example.cocktailmachine.ui;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
+import com.example.cocktailmachine.data.AdminRights;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMainBinding;
+import com.example.cocktailmachine.ui.model.ListFragment;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.PersistableBundle;
+import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -32,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
+    private NavController navController;
+    private Menu menu;
     private static final String TAG = "Main";
 
     @Override
@@ -59,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(binding.toolbar);
         Log.i(TAG, "onCreate: setSupportActionBar");
 
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
@@ -106,5 +119,112 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        Log.i(TAG, "onCreateOptionsMenu" );
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        this.menu = menu;
+        return true;
+    }
+
+
+    //public void switchToNight(){
+    //    getDelegate().applyDayNight();
+    //}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.i(TAG, "onOptionsItemSelected" );
+        if (item.getItemId() == R.id.action_admin_login) {
+            login();
+            return (true);
+        }else if (item.getItemId() == R.id.action_admin_logout) {
+            logout();
+            return (true);
+        }else if (item.getItemId() == R.id.action_ingredients) {
+            ListFragment fragment = new ListFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("Type","Ingredients");
+            navController.navigate(R.id.listFragment, bundle);
+            return (true);
+        }else if (item.getItemId() == R.id.action_pumps) {
+            ListFragment fragment = new ListFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("Type","Pumps");
+            navController.navigate(R.id.listFragment, bundle);
+            return (true);
+        }else if (item.getItemId() == R.id.action_topics) {
+            ListFragment fragment = new ListFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("Type","Topics");
+            navController.navigate(R.id.listFragment, bundle);
+            return (true);
+        }else if (item.getItemId() == R.id.action_recipes) {
+            ListFragment fragment = new ListFragment();
+            Bundle bundle = new Bundle();
+            if(AdminRights.isAdmin()){
+                bundle.putString("Type", "AllRecipes");
+            }else {
+                bundle.putString("Type", "AvailableRecipes");
+            }
+            navController.navigate(R.id.listFragment, bundle);
+            return (true);
+        }
+        return(super.onOptionsItemSelected(item));
+    }
+
+
+    private void login(){
+        Log.i(TAG, "login" );
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Login");
+        LoginView loginView = (LoginView) getLayoutInflater().inflate(R.layout.layout_login, null);
+
+        builder.setView(loginView);
+        builder.setPositiveButton("Weiter", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(loginView.check()){
+                    successfullLogin();
+                }
+            }
+        });
+        builder.setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.create();
+    }
+
+    private void successfullLogin(){
+        Log.i(TAG, "successfullLogin" );
+        this.menu.findItem(R.id.action_admin_login).setVisible(false);
+        this.menu.findItem(R.id.action_admin_logout).setVisible(true);
+        AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.Admin);
+    }
+
+    private void logout(){
+        Log.i(TAG, "logout" );
+        AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.User);
+        this.menu.findItem(R.id.action_admin_login).setVisible(true);
+        this.menu.findItem(R.id.action_admin_logout).setVisible(false);
+    }
+    private static class LoginView extends View{
+        private final TextView t;
+        private final EditText e;
+        public LoginView(MainActivity activity) {
+            super(activity);
+            t = (TextView) activity.findViewById(R.id.textView_edit_text);
+            e = (EditText) activity.findViewById(R.id.editText_edit_text);
+            t.setText("Passwort: ");
+            e.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+
+        }
+        public boolean check(){
+            return e.getText().toString().equals("admin");
+        }
+    }
 
 }

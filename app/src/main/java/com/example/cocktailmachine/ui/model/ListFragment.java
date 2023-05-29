@@ -244,9 +244,7 @@ public class ListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         activity = (MainActivity) getActivity();
-        if (activity != null) {
-            Objects.requireNonNull(activity.getSupportActionBar()).setTitle("");
-        }
+
 
         Bundle args = getArguments();
         if(args != null) {
@@ -273,6 +271,9 @@ public class ListFragment extends Fragment {
         super.onStart();
         if(!local_type.contains("Add")) {
             setFAB();
+        }
+        if (activity != null) {
+            Objects.requireNonNull(activity.getSupportActionBar()).setTitle("");
         }
     }
 }

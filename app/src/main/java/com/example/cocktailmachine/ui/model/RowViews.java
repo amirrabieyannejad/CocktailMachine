@@ -83,6 +83,8 @@ public class RowViews {
             super(itemView);
             if(itemView == null){
                 Log.i(TAG, "itemView is null");
+            }if(itemView.getContext()==null){
+                Log.i(TAG, "itemView is null");
             }
             checkBox = (CheckBox) itemView.findViewById(R.id.checkBox_item);
             if(checkBox == null){
