@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/edtTxtUser"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:hint="@string/add_user"
+        android:inputType="text"
+        android:lines="2" />
+
+    <EditText
+        android:id="@+id/edtTxtRecipe"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
+        android:hint="@string/add_recipe"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:lines="2" />
+
+    <LinearLayout
+        android:id="@+id/LinearLayoutL1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        >
+    <EditText
+        android:id="@+id/edtTxtLiquid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/add_liquid"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:lines="2"
+        />
+
+    <EditText
+        android:id="@+id/edtTxtVolume"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/add_volume"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:lines="2"
+        android:layout_marginLeft="20dp" />
+
+        <EditText
+            android:id="@+id/edtTxtSlot"
+            android:layout_width="103dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/txt_add_Slot"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:lines="3"
+            android:layout_marginLeft="20dp"/>
+        </LinearLayout>
+    <LinearLayout
+        android:id="@+id/LinearLayoutL2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="10dp">
+
+    <EditText
+        android:id="@+id/edtTxtLiquid2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="@string/add_liquid2"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:lines="2" />
+
+    <EditText
+        android:id="@+id/edtTxtVolume2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/add_volume2"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:lines="2"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/LinearLayoutL3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="10dp">
+
+    <EditText
+        android:id="@+id/edtTxtLiquid3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="@string/add_liquid3"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:lines="2" />
+    <EditText
+        android:id="@+id/edtTxtVolume3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/add_volume3"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:lines="2"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        />
+        </LinearLayout>
+    <LinearLayout
+        android:id="@+id/LinearLayoutL4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="10dp"
+
+        >
+    <EditText
+        android:id="@+id/edtTxtLiquid4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="@string/add_liquid4"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:lines="2" />
+
+
+    <EditText
+        android:id="@+id/edtTxtVolume4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/add_volume4"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:lines="2"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        />
+        </LinearLayout>
+    <LinearLayout
+        android:id="@+id/LinearLayoutL5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="10dp"
+        >
+    <EditText
+        android:id="@+id/edtTxtLiquid5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="@string/add_liquid5"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:lines="2"
+
+        />
+
+
+    <EditText
+        android:id="@+id/edtTxtVolume5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/add_volume5"
+        android:layout_marginTop="10dp"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:lines="2"
+        android:layout_marginLeft="20dp"
+        />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/connection_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_state"
+        android:layout_marginBottom="10dp" />
+
+    <TextView
+        android:id="@+id/txtNotificationData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="@string/txt_notificationData" />
+
+    <TextView
+        android:id="@+id/txtReadCharacteristicData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/txt_ReadCharacteristicData"
+        android:layout_marginBottom="10dp"/>
+
+
+
+    <LinearLayout
+        android:id="@+id/LinearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_marginBottom="10dp">
+
+        <Button
+            android:id="@+id/btnAddUser"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="@string/btn_addUser"
+            android:textSize="11dp" />
+
+        <Button
+            android:id="@+id/btnReset"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="@string/btn_reset"
+            android:textSize="11dp" />
+
+        <Button
+            android:id="@+id/btnClean"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="@string/btn_clean"
+            android:textSize="11dp" />
+        <Button
+            android:id="@+id/btnRestart"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="@string/btn_restart"
+            android:textSize="11dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/LinearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_marginBottom="10dp">
+
+        <Button
+            android:id="@+id/btnMakeRecipe"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="@string/btn_makeRecipe"
+            android:textSize="11dp" />
+
+        <Button
+            android:id="@+id/btnCalibrate"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="@string/btn_calibrate"
+            android:textSize="11dp" />
+
+        <Button
+            android:id="@+id/btnDefinePump"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="@string/btn_definePump"
+            android:textSize="11dp" />
+        <Button
+            android:id="@+id/btnRefillPump"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="@string/btn_refillPump"
+            android:textSize="11dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/LinearLayout3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_marginBottom="10dp">
+
+        <Button
+            android:id="@+id/btnAddLiquid"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="@string/btn_addLiquid"
+            android:textSize="11dp" />
+
+        <Button
+            android:id="@+id/btnDefineRecipe"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="@string/btn_defineRecipe"
+            android:textSize="11dp" />
+        <Button
+            android:id="@+id/btnEditRecipe"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="@string/btn_editRecipe"
+            android:textSize="11dp" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/LinearLayout4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_marginBottom="10dp">
+        <Button
+            android:id="@+id/btnReadPumpsVolume"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="@string/btn_ReadPumpsVolume"
+            android:textSize="11dp" />
+        <Button
+            android:id="@+id/btnReadCocktail"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="@string/btn_ReadCocktail"
+            android:textSize="11dp" />
+        <Button
+            android:id="@+id/btnReadRecipes"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="@string/btn_ReadRecipes"
+            android:textSize="11dp" />
+        <Button
+            android:id="@+id/btnReadState"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="@string/btn_ReadStates"
+            android:textSize="11dp" />
+    </LinearLayout>
+</LinearLayout>

@@ -23,50 +23,50 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * Get Id.
      * @return
      */
-    public long getID();
+    long getID();
 
     /**
      * Returns milliliters pumped in milliseconds.
      * aka minimum available pump size
      * @return minimum milliliters to be pumped
      */
-    public int getMinimumPumpVolume();
+    int getMinimumPumpVolume();
 
-    public String getIngredientName();
+    String getIngredientName();
 
-    public int getVolume();
+    int getVolume();
 
     /**
      * Return current ingredient set in pump.
      * @return current ingredient
      */
-    public Ingredient getCurrentIngredient();
+    Ingredient getCurrentIngredient();
 
 
     /**
      * Update ingredient in pump.
      * @param ingredient next ingredient.
      */
-    public void setCurrentIngredient(Ingredient ingredient);
+    void setCurrentIngredient(Ingredient ingredient);
 
     /**
      * Update ingredient in pump.
      * @param id id of next ingredient
      */
-    public default void setCurrentIngredient(long id) throws NotInitializedDBException {
+    default void setCurrentIngredient(long id) throws NotInitializedDBException {
         setCurrentIngredient(Ingredient.getIngredient(id));
     }
 
-    public void empty();
+    void empty();
 
-    public void fill(int volume);
+    void fill(int volume);
 
     /**
      * {"beer": 200}
      * @return
      * @throws JSONException
      */
-    public default JSONObject asMesssage() throws JSONException {
+    default JSONObject asMesssage() throws JSONException {
         //TODO: asMessage: https://github.com/johannareidt/CocktailMachine/blob/main/ProjektDokumente/esp/Services.md
         JSONObject json = new JSONObject();
         json.put(this.getIngredientName(), this.getVolume());
@@ -80,7 +80,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * Set up pumps with ingredients.
      * Load buffer with status quo from data base.
      */
-    public static void loadFromDB() throws NotInitializedDBException{
+    static void loadFromDB() throws NotInitializedDBException{
         DatabaseConnection.getDataBase().loadBufferWithAvailable();
     }
 
@@ -90,7 +90,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * Set up pumps with ingredients.
      * Load buffer with status quo from data base.
      */
-    public static void setPumps(JSONObject json) throws NotInitializedDBException, JSONException {
+    static void setPumps(JSONObject json) throws NotInitializedDBException, JSONException {
         JSONArray names = json.names();
         if(names==null){
             throw new JSONException("Ingredient Names not readable!");
@@ -119,7 +119,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * Set up pumps with ingredients.
      * Load buffer with status quo from data base.
      */
-    public static void updatePumpStatus(JSONObject json) throws JSONException, NotInitializedDBException {
+    static void updatePumpStatus(JSONObject json) throws JSONException, NotInitializedDBException {
         List<Pump> pumps = DatabaseConnection.getDataBase().getPumps();
         JSONArray t_names = json.names();
         if(t_names == null){
@@ -166,7 +166,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @throws JSONException
      * @throws NewlyEmptyIngredientException
      */
-    public static void updatePumpStatus(JSONArray json) throws JSONException, NewlyEmptyIngredientException {
+    static void updatePumpStatus(JSONArray json) throws JSONException, NewlyEmptyIngredientException {
         int i = 0;
         JSONArray temp = json.optJSONArray(i);
         while(temp != null){
@@ -179,7 +179,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
     }
 
-    public static Pump makeNew(){
+    static Pump makeNew(){
         return new SQLPump();
     }
 
@@ -189,7 +189,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      *
      * @param numberOfPumps k
      */
-    public static List<Pump> setOverrideEmptyPumps(int numberOfPumps) throws NotInitializedDBException {
+    static List<Pump> setOverrideEmptyPumps(int numberOfPumps) throws NotInitializedDBException {
         DatabaseConnection.getDataBase().loadForSetUp();
         for(int i=0; i<numberOfPumps;i++){
             Pump pump = makeNew();
@@ -203,7 +203,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * Get available pumps.
      * @return pumps
      */
-    public static List<Pump> getPumps() throws NotInitializedDBException {
+    static List<Pump> getPumps() throws NotInitializedDBException {
           return DatabaseConnection.getDataBase().getPumps();
     }
 
@@ -213,7 +213,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @param id pump id k
      * @return
      */
-    public static Pump getPump(long id) {
+    static Pump getPump(long id) {
         try {
             return DatabaseConnection.getDataBase().getPump(id);
         } catch (NotInitializedDBException e) {
@@ -229,7 +229,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @throws JSONException
      * @throws NotInitializedDBException
      */
-    public static JSONObject getAllPumpsStatus() throws JSONException, NotInitializedDBException {
+    static JSONObject getAllPumpsStatus() throws JSONException, NotInitializedDBException {
         JSONObject json = new JSONObject();
         List<Pump> pumps = Pump.getPumps();
         for(Pump p: pumps){

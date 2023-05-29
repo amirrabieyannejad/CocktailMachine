@@ -1,5 +1,7 @@
 package com.example.cocktailmachine.data;
 
+import android.graphics.Color;
+
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 
@@ -14,11 +16,11 @@ public class BasicRecipes {
         4 cl   Orangenlikör (z.B. Cointreau)
                 4 cl   frischer Limettensaft
          **/
-        Ingredient tequila = Ingredient.makeNew("Tequila", true, 0);
+        Ingredient tequila = Ingredient.makeNew("Tequila", true, Color.WHITE);
         tequila.save();
-        Ingredient orangenlikör = Ingredient.makeNew("Orangenlikör", true, 0);
+        Ingredient orangenlikör = Ingredient.makeNew("Orangenlikör", true, Color.YELLOW);
         orangenlikör.save();
-        Ingredient limettensaft = Ingredient.makeNew("Limettensaft", false, 0);
+        Ingredient limettensaft = Ingredient.makeNew("Limettensaft", false, Color.CYAN);
         limettensaft.save();
         Topic ice = Topic.makeNew(" Crushed Eis", "klein gehaktes Eis");
         ice.save();

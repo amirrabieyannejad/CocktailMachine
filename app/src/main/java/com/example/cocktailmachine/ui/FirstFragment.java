@@ -12,7 +12,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.databinding.FragmentFirstBinding;
 
-
 public class FirstFragment extends Fragment {
 
     private FragmentFirstBinding binding;
