@@ -117,6 +117,7 @@ public class RowViews {
             this.recipe = recipe;
         }
 
+        /*
         void finishAdd(){
             if(checkBox.isChecked()){
                 try {
@@ -153,8 +154,11 @@ public class RowViews {
             loadLongListener();
         }
 
+         */
+
         abstract Bundle getGoToModelBundle();
 
+        /*
         void addGoToListener(Fragment fragment){
             if(fragment instanceof ModelFragment) {
                 addListener(v -> {
@@ -204,6 +208,8 @@ public class RowViews {
         public void deleteLongListener(){
             super.itemView.setOnLongClickListener(null);
         }
+
+         */
 
         private void error(){
             Toast.makeText(itemView.getContext(), "Datenbankverbindungsfehler", Toast.LENGTH_SHORT).show();
@@ -298,7 +304,6 @@ public class RowViews {
         }
 
         public void setTopic(Topic topic){
-            this.recipe = recipe;
             this.topic = topic;
             super.setName(this.topic.getName());
         }
@@ -375,6 +380,11 @@ public class RowViews {
             super.setDesc(this.volume+" ml");
         }
 
+        public void setIngredientVolume(Ingredient ingredient){
+            this.ingredient = ingredient;
+            super.setName(this.ingredient.getName());
+        }
+
         @Override
         void delete() throws NotInitializedDBException {
             this.recipe.remove(ingredient);
@@ -412,6 +422,7 @@ public class RowViews {
         @Override
         void delete() throws NotInitializedDBException {
             this.pump.delete();
+            this.pump.save();
         }
 
         @Override
