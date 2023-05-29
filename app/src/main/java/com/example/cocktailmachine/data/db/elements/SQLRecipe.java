@@ -197,7 +197,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
     @Override
     public List<Long> getTopics() {
-        return this.getTopics();
+        return this.topics;
     }
 
     @Override

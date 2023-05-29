@@ -44,6 +44,8 @@ public class ListRecyclerViewAdapters  {
         private boolean delete=false;
         private boolean add=false;
 
+        private Fragment fragment;
+
         public ListRecyclerViewAdapter(RowViews.RowType type) {
             this.type = type;
         }
@@ -111,12 +113,15 @@ public class ListRecyclerViewAdapters  {
             add = false;
         }
 
+        /*
         void addGoToModelListener(Fragment fragment){
             Log.i(TAG, "addGoToModelListener");
             for(RowViews.RowView view: views){
                 view.addGoToListener(fragment);
             }
         }
+
+         */
 
         protected E addRowView(E view){
 
@@ -162,7 +167,7 @@ public class ListRecyclerViewAdapters  {
                         return false;
                     });
 
-
+            view.addGoToListener(fragment);
             views.add(view);
             return view;
         }
@@ -181,6 +186,10 @@ public class ListRecyclerViewAdapters  {
 
         public void putRecipe(Recipe recipe){
             this.recipe = recipe;
+        }
+
+        public void setFragment(Fragment fragment) {
+            this.fragment = fragment;
         }
     }
 
