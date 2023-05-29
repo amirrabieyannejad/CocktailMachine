@@ -70,6 +70,15 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
         }
     }
 
+    public static List<Topic> getAllTopics(){
+        try {
+            return DatabaseConnection.getDataBase().getTopics();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
     public static List<Topic> getTopics(){
 
         try {

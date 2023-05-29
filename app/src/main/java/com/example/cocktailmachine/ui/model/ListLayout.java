@@ -41,7 +41,7 @@ public class ListLayout {
         if(adapter.getItemCount()>0) {
             Log.i(TAG, "set: list with "+adapter.getItemCount()+" items");
             setRecyclerView(recylerViewNames, getContext, adapter, fragment);
-            setButtons(adapter, getContext, imageButtonListDelete, imageButtonListEdit);
+            setButtons(recylerViewNames,adapter, getContext, imageButtonListDelete, imageButtonListEdit);
         }else{
             //The list is empty.
             Log.i(TAG, "set: empty list");
@@ -71,6 +71,7 @@ public class ListLayout {
 
 
     private static void setButtons(
+            RecyclerView recylerViewNames,
             ListRecyclerViewAdapters.ListRecyclerViewAdapter adapter,
             Context getContext,
             ImageButton imageButtonListDelete,
@@ -81,6 +82,9 @@ public class ListLayout {
             if(adapter.isCurrentlyDeleting()){
                 Log.i(TAG,"delete: isCurrentlyAdding, finishDelete");
                 adapter.finishDelete();
+                adapter.notifyDataSetChanged();
+                adapter.reload();
+                recylerViewNames.swapAdapter(adapter, true);
             }else{
                 if(adapter.isCurrentlyAdding()){
                     Log.i(TAG,"delete: isCurrentlyDeleting, Toast");
@@ -97,63 +101,96 @@ public class ListLayout {
         if(adapter.type.equals(RowViews.RowType.recipeIngredient)||adapter.type.equals(RowViews.RowType.recipeTopic)) {
             imageButtonListEdit.setOnClickListener(v -> {
                 Log.i(TAG, "delete: imageButtonListEdit clicked");
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext);
-                builder.setTitle("Wähle neue Zutaten!");
-                builder.setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                final List<Ingredient> ingredients;
-                final List<Topic> topics;
-                if(adapter.type.equals(RowViews.RowType.recipeIngredient)) {
-                    topics = new ArrayList<>();
-                    ingredients = Ingredient.getIngredientWithIds();
+                if(adapter.type.equals(RowViews.RowType.recipeIngredient)){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext);
+                    builder.setTitle("Wähle neue Zutaten!");
+                    builder.setNegativeButton("Abbrechen", (dialog, which) -> dialog.dismiss());
+                    final List<Ingredient> ingredients;
+                    ingredients = Ingredient.getAllIngredients();
                     ingredients.removeAll(adapter.recipe.getIngredients());
+                    String[] temp = new String[ingredients.size()];
+                    boolean[] tempB = new boolean[ingredients.size()];
+                    for (int i = 0; i < ingredients.size(); i++) {
+                        temp[i] = ingredients.get(i).getName();
+                        tempB[i] = false;
+                    }
+                    List<Ingredient> chosenIngredients = new ArrayList<>();
+                    builder.setMultiChoiceItems(
+                            temp,
+                            tempB,
+                            (DialogInterface.OnMultiChoiceClickListener) (dialog, which, isChecked) -> {
+                                if (isChecked) {
+                                    chosenIngredients.add(ingredients.get(which));
+                                } else {
+                                    chosenIngredients.remove(ingredients.get(which));
+                                }
+                            });
+                    builder.setPositiveButton("Weiter", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            for (Ingredient i : chosenIngredients) {
+                                adapter.recipe.addOrUpdate(i, -1);
+                                try {
+                                    adapter.recipe.save();
+                                } catch (NotInitializedDBException e) {
+                                    e.printStackTrace();
+                                }
+                                adapter.reload();
+                            }
+                        }
+                    });
+                    builder.show();
+                    //recylerViewNames.setAdapter(adapter);
+                    recylerViewNames.swapAdapter(adapter, true);
+
                 }else{
-                    ingredients = new ArrayList<>();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext);
+                    builder.setTitle("Wähle neue Serviervorschläge!");
+                    builder.setNegativeButton("Abbrechen", (dialog, which) -> dialog.dismiss());
+
+                    final List<Topic> topics;
                     topics = Topic.getTopics();
                     topics.removeAll(Topic.getTopics(adapter.recipe));
-                }
-                String[] temp = new String[ingredients.size()];
-                boolean[] tempB = new boolean[ingredients.size()];
-                for (int i = 0; i < ingredients.size(); i++) {
-                    temp[i] = ingredients.get(i).getName();
-                    tempB[i] = false;
-                }
-                List<Ingredient> chosenIngredients = new ArrayList<>();
-                List<Topic> chosenTopics = new ArrayList<>();
-                builder.setMultiChoiceItems(
-                        temp,
-                        tempB,
-                        (DialogInterface.OnMultiChoiceClickListener) (dialog, which, isChecked) -> {
-                            if (isChecked) {
-                                if(!ingredients.isEmpty()){
-                                    chosenIngredients.add(ingredients.get(which));
-                                }else{
+                    String[] temp = new String[topics.size()];
+                    boolean[] tempB = new boolean[topics.size()];
+
+                    for (int i = 0; i < topics.size(); i++) {
+                        temp[i] = topics.get(i).getName();
+                        tempB[i] = false;
+                    }
+                    List<Topic> chosenTopics = new ArrayList<>();
+                    builder.setMultiChoiceItems(
+                            temp,
+                            tempB,
+                            (DialogInterface.OnMultiChoiceClickListener) (dialog, which, isChecked) -> {
+                                if (isChecked) {
                                     chosenTopics.add(topics.get(which));
-                                }
-                            } else {
-                                if(!ingredients.isEmpty()){
-                                    chosenIngredients.remove(ingredients.get(which));
-                                }else{
+
+                                } else {
                                     chosenTopics.remove(topics.get(which));
                                 }
+                            });
+                    builder.setPositiveButton("Weiter", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            for (Topic t : chosenTopics) {
+                                adapter.recipe.addOrUpdate(t);
+                                try {
+                                    adapter.recipe.save();
+                                } catch (NotInitializedDBException e) {
+                                    e.printStackTrace();
+                                }
+                                adapter.reload();
                             }
-                        });
-                builder.setPositiveButton("Weiter", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        for (Ingredient i : chosenIngredients) {
-                            adapter.recipe.addOrUpdate(i, -1);
                         }
-                        for (Topic t : chosenTopics) {
-                            adapter.recipe.addOrUpdate(t);
-                        }
-                    }
+                    });
+                    builder.show();
+                    //recylerViewNames.setAdapter(adapter);
+                    recylerViewNames.swapAdapter(adapter, true);
+
+                }
+
                 });
-            });
         }else{
             imageButtonListEdit.setVisibility(View.INVISIBLE);
         }

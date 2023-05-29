@@ -58,6 +58,10 @@ public class ListRecyclerViewAdapters  {
 
         public void reload(){
             Log.i(TAG, "reload");
+            //views = new ArrayList<>();
+            if(recipe!= null) {
+                recipe = Recipe.getRecipe(recipe.getID());
+            }
             putIds();
             notifyDataSetChanged();
         }
@@ -97,11 +101,16 @@ public class ListRecyclerViewAdapters  {
         }
 
         public void finishDelete(){
+            List<RowViews.RowView> trash = new ArrayList<>();
             for (RowViews.RowView view: views) {
-                view.finishDelete();
+                if(view.finishDelete()){
+                    trash.add(view);
+                }
             }
+            views.removeAll(trash);
             lock = false;
             delete = false;
+            add = false;
         }
 
         public void finishAdd(){
@@ -110,6 +119,7 @@ public class ListRecyclerViewAdapters  {
                 //view.addLongListener(v -> loadDelete());
             }
             lock = false;
+            delete = false;
             add = false;
         }
 

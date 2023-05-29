@@ -145,19 +145,22 @@ public class RowViews {
             loadLongListener();
         }
 
-        public void finishDelete(){
+        public boolean finishDelete(){
             if(checkBox.isChecked()){
                 try {
                     delete();
+                    checkBox.setVisibility(View.GONE);
+                    checkBox.setChecked(false);
+                    loadListener();
+                    loadLongListener();
+                    return true;
                 } catch (NotInitializedDBException e) {
                     e.printStackTrace();
                     error();
+                    return false;
                 }
             }
-            checkBox.setVisibility(View.GONE);
-            checkBox.setChecked(false);
-            loadListener();
-            loadLongListener();
+            return false;
         }
 
         abstract Bundle getGoToModelBundle();

@@ -190,6 +190,7 @@ public class ModelFragment extends Fragment {
             ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter topicAdapter
                     = new ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter(recipe);
 
+
             ListLayout.set(binding.includeTopics.textViewNameListTitle,
                     "Serviervorschläge",
                     binding.includeTopics.recylerViewNames,

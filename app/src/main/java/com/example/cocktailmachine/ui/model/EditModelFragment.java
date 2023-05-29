@@ -428,7 +428,7 @@ public class EditModelFragment extends Fragment {
                     dialog.dismiss();
                 }
             });
-            List<Ingredient> ingredients = Ingredient.getIngredientWithIds();
+            List<Ingredient> ingredients = Ingredient.getAllIngredients();
             ingredients.removeAll(recipe.getIngredients());
             String[] temp = new String[ingredients.size()];
             boolean[] tempB = new boolean[ingredients.size()];
@@ -452,7 +452,7 @@ public class EditModelFragment extends Fragment {
                     recipe.addOrUpdate(i, -1);
                 }
             });
-
+            builder.show();
         });
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
@@ -691,13 +691,14 @@ public class EditModelFragment extends Fragment {
                 public boolean onLongClick(View v) {
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-                    builder.setMessage("Möchten Sie dises Zutat wirklich aus dem Rezept löschen?");
+                    builder.setMessage("Möchten Sie diese Zutat wirklich aus dem Rezept löschen?");
                     builder.setTitle("Warnung");
                     builder.setPositiveButton("Ja", (dialog, which) -> {
                         recipe.remove(ingredient);
                         dialog.dismiss();
                     });
                     builder.setNegativeButton("Nein", (dialog, which) -> dialog.dismiss());
+                    builder.show();
                     return false;
                 }
             };

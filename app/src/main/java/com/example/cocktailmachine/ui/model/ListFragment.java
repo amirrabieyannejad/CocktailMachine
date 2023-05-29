@@ -278,6 +278,6 @@ public class ListFragment extends Fragment {
         Log.i(TAG,"onResume");
         super.onResume();
         recyclerViewAdapter.reload();
-        binding.includeList.recylerViewNames.setAdapter(recyclerViewAdapter);
+        binding.includeList.recylerViewNames.swapAdapter(recyclerViewAdapter, true);
     }
 }
