@@ -28,6 +28,7 @@ import com.example.cocktailmachine.ui.MainActivity;
 import com.example.cocktailmachine.ui.SecondFragment;
 
 import java.util.Objects;
+import java.util.zip.Inflater;
 
 public class ModelFragment extends Fragment {
     private FragmentModelBinding binding;
@@ -87,10 +88,17 @@ public class ModelFragment extends Fragment {
                             .append("Pumpe: ")
                             .append(pump.getIngredientName())
                             .toString());
+            activity.getLayoutInflater().inflate(R.layout.layout_pump, null);
             binding.includePump.getRoot().setVisibility(View.VISIBLE);
-            binding.includePump.textViewMinPumpVolume.setText(pump.getMinimumPumpVolume());
-            binding.includePump.textViewPumpVolume.setText(pump.getVolume());
-            binding.includePump.textViewPumpIngredientName.setText(pump.getIngredientName());
+            binding.includePump.textViewMinPumpVolume
+            //((TextView)activity.findViewById(R.id.textView_min_pump_volume))
+                    .setText(String.valueOf(pump.getMinimumPumpVolume()));
+            //((TextView)activity.findViewById(R.id.textView_pump_volume))
+            binding.includePump.textViewPumpVolume
+                    .setText(String.valueOf(pump.getVolume()));
+            //((TextView)activity.findViewById(R.id.textView_pump_ingredient_name))
+            binding.includePump.textViewPumpIngredientName
+                    .setText(pump.getIngredientName());
             if (pump.isAvailable()) {
                 binding.includeAvailable.getRoot().setVisibility(View.VISIBLE);
             } else {

@@ -18,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
@@ -67,6 +68,7 @@ public class EditModelFragment extends Fragment {
     public EditModelFragment(){}
 
     private void setGoToFAB(){
+        Log.i(TAG,"setGoToFAB Bundle"+b);
         activity.setFAB(v -> NavHostFragment
                 .findNavController(EditModelFragment.this)
                 .navigate(R.id.action_editModelFragment_to_modelFragment,
@@ -91,9 +93,9 @@ public class EditModelFragment extends Fragment {
                                     .getText().toString()));
                     setUpEditPump();
                     pump.save();
-                    b.putString("Type", ModelFragment.ModelType.INGREDIENT.name());
+                    b.putString("Type", ModelFragment.ModelType.PUMP.name());
                     b.putLong("ID", pump.getID());
-                    Log.i(TAG,"Bundle"+b);
+                    Log.i(TAG,"savenew"+b);
                     return;
                 case TOPIC:
                     topic = Topic.makeNew(
@@ -109,7 +111,7 @@ public class EditModelFragment extends Fragment {
                     topic.save();
                     b.putString("Type", ModelFragment.ModelType.TOPIC.name());
                     b.putLong("ID", topic.getID());
-                    Log.i(TAG,"Bundle"+b);
+                    Log.i(TAG,"savenew"+b);
                     return;
                 case RECIPE:
                     recipe = Recipe.makeNew(
@@ -121,7 +123,7 @@ public class EditModelFragment extends Fragment {
                     recipe.save();
                     b.putString("Type", ModelFragment.ModelType.RECIPE.name());
                     b.putLong("ID", recipe.getID());
-                    Log.i(TAG,"Bundle"+b);
+                    Log.i(TAG,"savenew"+b);
                     return;
                 case INGREDIENT:
                     ingredient = Ingredient.makeNew(
@@ -133,7 +135,7 @@ public class EditModelFragment extends Fragment {
                     ingredient.save();
                     b.putString("Type", ModelFragment.ModelType.INGREDIENT.name());
                     b.putLong("ID", ingredient.getID());
-                    Log.i(TAG,"Bundle"+b);
+                    Log.i(TAG,"savenew"+b);
                     return;
             }
         } catch (NotInitializedDBException e) {
@@ -149,6 +151,7 @@ public class EditModelFragment extends Fragment {
         try {
             switch (type){
                 case INGREDIENT:
+                    ingredient.setAlcoholic(binding.checkBoxAlcoholic.isChecked());
                     ingredient.save();
                     b.putString("Type", ModelFragment.ModelType.INGREDIENT.name());
                     b.putLong("ID", ingredient.getID());
@@ -167,8 +170,14 @@ public class EditModelFragment extends Fragment {
                     Log.i(TAG,"saved "+b);
                     return;
                 case PUMP:
+                    pump.fill(Integer.parseInt(
+                        binding
+                                .includeNewPump
+                                .includeNewPumpFillEmpty
+                                .editTextPumpFillEmptyVolume
+                                .getText().toString()));
                     pump.save();
-                    b.putString("Type", ModelFragment.ModelType.INGREDIENT.name());
+                    b.putString("Type", ModelFragment.ModelType.PUMP.name());
                     b.putLong("ID", pump.getID());
                     Log.i(TAG,"saved "+b);
                     return;
@@ -181,6 +190,7 @@ public class EditModelFragment extends Fragment {
     }
 
     private void setSaveFAB(){
+        Log.i(TAG,"setGoToFAB Bundle"+b);
         activity.setFAB(v -> {
             InputMethodManager inputManager = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
             View view = activity.getCurrentFocus();
@@ -271,20 +281,12 @@ public class EditModelFragment extends Fragment {
             binding.includeNewPump.includeNewPumpFillEmpty.editTextPumpFillEmptyVolume.setText(null);
         });
         final List<Ingredient> ingredients;
-        String[] ingredientNames = new String[0];
-        ingredients = Ingredient.getIngredientWithIds();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            ingredientNames = ingredients
-                    .stream()
-                    .map(Ingredient::getName)
-                    .toArray(String[]::new);
-        }else{
-            List<String> names = new ArrayList<>();
-            for(Ingredient ingredient: ingredients){
-                names.add(ingredient.getName());
-            }
-            ingredientNames = names.toArray(new String[0]);
+       ArrayList<String> ingredientNames = new ArrayList<>();
+        ingredients = Ingredient.getAllIngredients();
+        for(Ingredient ingredient: ingredients){
+            ingredientNames.add(ingredient.getName());
         }
+
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 activity,//);
                 //this,
@@ -299,8 +301,11 @@ public class EditModelFragment extends Fragment {
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+                ingredient = ingredients.get(0);
             }
         });
+        ingredient = ingredients.get(0);
+        binding.includeNewPump.spinnerNewPump.setSelection(0);
 
     }
 
@@ -551,25 +556,18 @@ public class EditModelFragment extends Fragment {
             pump.empty();
         });
         final List<Ingredient> ingredients;
-        String[] ingredientNames;
-        ingredients = Ingredient.getIngredientWithIds();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            ingredientNames = ingredients
-                    .stream()
-                    .map(Ingredient::getName)
-                    .toArray(String[]::new);
-        }else{
-            List<String> names = new ArrayList<>();
-            for(Ingredient ingredient: ingredients){
-                names.add(ingredient.getName());
-            }
-            ingredientNames = names.toArray(new String[0]);
+        ArrayList<String> ingredientNames = new ArrayList<>();
+        ingredients = Ingredient.getAllIngredients();
+        for(Ingredient ingredient: ingredients){
+            ingredientNames.add(ingredient.getName());
         }
+        Log.i(TAG, ingredientNames.toString());
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                activity,//);
+                this.getContext(),//);
                 //this,
                 android.R.layout.simple_spinner_item,
                 ingredientNames);
+
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.includeNewPump.spinnerNewPump.setAdapter(adapter);
         binding.includeNewPump.spinnerNewPump.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -582,14 +580,11 @@ public class EditModelFragment extends Fragment {
             }
         });
         if(pump.getCurrentIngredient()!= null) {
-            int position = 0;
             String in_name = pump.getIngredientName();
-            for(int i = 0; i< ingredientNames.length; i++){
-                if(Objects.equals(in_name, ingredientNames[i])){
-                    position = i;
-                }
-            }
+            int position = ingredientNames.indexOf(in_name);
             binding.includeNewPump.spinnerNewPump.setSelection(position);
+        }else{
+            binding.includeNewPump.spinnerNewPump.setSelection(0);
         }
     }
 

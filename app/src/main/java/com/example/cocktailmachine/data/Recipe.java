@@ -1,7 +1,10 @@
 package com.example.cocktailmachine.data;
 
 
+import android.os.Bundle;
+
 import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
@@ -169,11 +172,24 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * Sends to CocktailMachine to get mixed.
 
      * Reminder:
-     * send topics to user!
+     * send recipe to machine!
      */
-    public default void send(){
-        //TODO:
-        return;
+    public default boolean send(){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("cmd", "make_recipe");
+            jsonObject.put("user", AdminRights.getUserId());
+            jsonObject.put("recipe", this.getName());
+            //TODO: send
+            List<Ingredient> is = this.getIngredients();
+            for(Ingredient i: is){
+                i.pump(this.getSpecificIngredientVolume(i));
+            }
+        } catch (JSONException | TooManyTimesSettedIngredientEcxception |
+                NoSuchIngredientSettedException | NewlyEmptyIngredientException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 
