@@ -28,6 +28,9 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        
+        DatabaseConnection.initialize_singleton(this, UserPrivilegeLevel.Admin);
+        
 
         setSupportActionBar(binding.toolbar);
 
