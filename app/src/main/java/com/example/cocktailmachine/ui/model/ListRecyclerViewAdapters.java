@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.data.AdminRights;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
@@ -25,6 +26,7 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
 import com.example.cocktailmachine.ui.SecondFragment;
 
 import java.util.ArrayList;
@@ -225,7 +227,11 @@ public class ListRecyclerViewAdapters  {
 
         @Override
         public void putIds() {
-            recipes = Recipe.getRecipes();
+            if(AdminRights.isAdmin()){
+                recipes =Recipe.getAllRecipes();
+            }else {
+                recipes = Recipe.getRecipes();
+            }
         }
     }
 
@@ -359,7 +365,11 @@ public class ListRecyclerViewAdapters  {
 
         @Override
         public void putIds() {
-            data  = Ingredient.getIngredientWithIds();
+            if(AdminRights.isAdmin()){
+                data  = Ingredient.getAllIngredients();
+            }else {
+                data  = Ingredient.getIngredientWithIds();
+            }
         }
 
         @Override

@@ -348,6 +348,10 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
 
+    public List<? extends Ingredient> getAllIngredients() {
+        return ingredients;
+    }
+
 
     public List<? extends Ingredient> getAvailableIngredients() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

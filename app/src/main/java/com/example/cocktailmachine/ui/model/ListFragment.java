@@ -134,11 +134,7 @@ public class ListFragment extends Fragment {
         type = ModelFragment.ModelType.RECIPE;
         ListRecyclerViewAdapters.RecipeListRecyclerViewAdapter recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeListRecyclerViewAdapter();
-        try {
-            recyclerViewAdapter.replaceRecipes(Recipe.getAllRecipes());
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
+        recyclerViewAdapter.replaceRecipes(Recipe.getAllRecipes());
         this.recyclerViewAdapter = recyclerViewAdapter;
         set("Rezepte (Administrator)");
     }
@@ -279,8 +275,9 @@ public class ListFragment extends Fragment {
 
     @Override
     public void onResume() {
-        Log.i(TAG,"onResum");
+        Log.i(TAG,"onResume");
         super.onResume();
         recyclerViewAdapter.reload();
+        binding.includeList.recylerViewNames.setAdapter(recyclerViewAdapter);
     }
 }

@@ -43,7 +43,6 @@ import com.example.cocktailmachine.R;
 
 import org.json.JSONException;
 
-import java.util.zip.Inflater;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -94,13 +93,8 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG,"onCreate finished");
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        Log.i(TAG, "onSupportNavigateUp");
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        return NavigationUI.navigateUp(navController, appBarConfiguration)
-                || super.onSupportNavigateUp();
-    }
+
+
 
     public void setFAB(View.OnClickListener listener, @DrawableRes int drawable) {
         if(binding.fab == null){
@@ -137,6 +131,14 @@ public class MainActivity extends AppCompatActivity {
             logout();
         }
         return true;
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        Log.i(TAG, "onSupportNavigateUp" );
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+        return NavigationUI.navigateUp(navController, appBarConfiguration)
+                || super.onSupportNavigateUp();
     }
 
 
@@ -198,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 if(loginView.check()){
                     successfullLogin();
+                    Toast.makeText(getBaseContext(),"Eingeloggt!",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -212,7 +215,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void successfullLogin(){
         Log.i(TAG, "successfullLogin" );
-        Toast.makeText(this,"Eingeloggt!",Toast.LENGTH_SHORT).show();
         this.menu.findItem(R.id.action_admin_login).setVisible(false);
         this.menu.findItem(R.id.action_admin_logout).setVisible(true);
         this.menu.findItem(R.id.action_pumps).setVisible(true);

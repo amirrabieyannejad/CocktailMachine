@@ -111,6 +111,21 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
     //general
     /**
      * Static Access to ingredients.
+     * Get all ingredients.
+     * @return List of ingredients.
+     */
+    public static List<Ingredient> getAllIngredients() {
+        try {
+            return (List<Ingredient>) DatabaseConnection.getDataBase().getAllIngredients();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+
+    /**
+     * Static Access to ingredients.
      * Get all available ingredients.
      * @return List of ingredients.
      */
