@@ -61,8 +61,13 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
         }
     }
 
-    public static List<Topic> getTopics(Recipe recipe) throws NotInitializedDBException {
-        return DatabaseConnection.getDataBase().getTopics(recipe);
+    public static List<Topic> getTopics(Recipe recipe)  {
+        try {
+            return DatabaseConnection.getDataBase().getTopics(recipe);
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
     public static List<Topic> getTopics(){

@@ -113,7 +113,7 @@ public class ListLayout {
                 }else{
                     ingredients = new ArrayList<>();
                     topics = Topic.getTopics();
-                    topics.removeAll(adapter.recipe.getIngredients());
+                    topics.removeAll(Topic.getTopics(adapter.recipe));
                 }
                 String[] temp = new String[ingredients.size()];
                 boolean[] tempB = new boolean[ingredients.size()];

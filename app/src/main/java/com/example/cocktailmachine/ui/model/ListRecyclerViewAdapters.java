@@ -257,40 +257,24 @@ public class ListRecyclerViewAdapters  {
 
         @Override
         public void putIds(List<Long> ids) {
-            try {
-                topics = Topic.getTopics();
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-            }
+            topics = Topic.getTopics();
         }
 
         @Override
         public void putIds() {
-            try {
-                topics = Topic.getTopics();
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-            }
+            topics = Topic.getTopics();
         }
 
         @Override
         public void putRecipe(Long id) {
             super.putRecipe(id);
-            try {
-                topics = Topic.getTopics(super.recipe);
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-            }
+            topics = Topic.getTopics(super.recipe);
         }
 
         @Override
         public void putRecipe(Recipe recipe) {
             super.putRecipe(recipe);
-            try {
-                topics = Topic.getTopics(super.recipe);
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-            }
+            topics = Topic.getTopics(super.recipe);
         }
     }
 
@@ -488,41 +472,24 @@ public class ListRecyclerViewAdapters  {
 
         @Override
         public void putIds(List<Long> ids) {
-
-            try {
-                data  = Topic.getTopics();
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-            }
+            data  = Topic.getTopics();
         }
 
         @Override
         public void putIds() {
-            try {
-                data  = Topic.getTopics();
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-            }
+            data  = Topic.getTopics();
         }
 
         @Override
         public void putRecipe(Long id) {
             super.putRecipe(id);
-            try {
-                data = Topic.getTopics(recipe);
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-            }
+            data  = Topic.getTopics(super.recipe);
         }
 
         @Override
         public void putRecipe(Recipe recipe) {
             super.putRecipe(recipe);
-            try {
-                data = Topic.getTopics(recipe);
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-            }
+            data  = Topic.getTopics(super.recipe);
         }
 
 
