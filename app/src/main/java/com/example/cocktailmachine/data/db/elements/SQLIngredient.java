@@ -182,7 +182,10 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
 
     @Override
     public Long getPumpId() {
-        return this.ingredientPump.getPumpID();
+        if(this.ingredientPump != null) {
+            return this.ingredientPump.getPumpID();
+        }
+        return -1L;
     }
 
     @Override

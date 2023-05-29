@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
@@ -114,30 +116,26 @@ public class ModelFragment extends Fragment {
                 binding.includeNotAvailable.getRoot().setVisibility(View.VISIBLE);
             }
             if(AdminRights.isAdmin()){
+                //binding.includeIngredientAdmin.getRoot().setVisibility(View.VISIBLE);
                 binding.includeIngredientAdmin.getRoot().setVisibility(View.VISIBLE);
-                binding.includeIngredientAdmin.textViewIngredientVolume.setText(ingredient.getVolume());
-                binding.includeIngredientAdmin.getRoot().setOnClickListener(v -> {
+                TextView vol = (TextView) binding.includeIngredientAdmin
+                        .getRoot().getViewById(R.id.textView_ingredient_volume);
+                vol.setText(ingredient.getVolume()+" ml");
+                //binding.includeIngredientAdmin.textViewIngredientVolume.setVisibility(View.VISIBLE);
+                //binding.includeIngredientAdmin.textViewIngredientVolume.setText(ingredient.getVolume());
+                binding.includeIngredientAdmin.getRoot().getViewById(R.id.imageView_ingredient_pump)
+                        .setOnClickListener(v -> {
                     Bundle b = new Bundle();
                     b.putString("Type","PUMP");
                     b.putLong("ID", ingredient.getPumpId());
-                    NavHostFragment.findNavController(ModelFragment.this)
-                            .navigate(R.id.action_modelFragment_self, b);
+                    if(ingredient.getPumpId()>0) {
+                        NavHostFragment.findNavController(ModelFragment.this)
+                                .navigate(R.id.action_modelFragment_self, b);
+                    }else{
+                        Toast.makeText(this.getContext(),"Keine Pumpe verbunden!", Toast.LENGTH_SHORT).show();
+                    }
                 });
             }
-            ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter ingredientListAdapter =
-                    new ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter(recipe.getID());
-            binding.includeIngredients.textViewNameListTitle.setText("Zutaten");
-            binding.includeIngredients.recylerViewNames.setLayoutManager(ingredientListAdapter.getManager(this.getContext()));
-            binding.includeIngredients.recylerViewNames.setAdapter(ingredientListAdapter);
-            binding.includeIngredients.getRoot().setVisibility(View.VISIBLE);
-
-            ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter topicListAdapter =
-                    new ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter(recipe.getID());
-            binding.includeTopics.textViewNameListTitle.setText("Servierempfehlungen");
-            binding.includeTopics.recylerViewNames.setLayoutManager(topicListAdapter.getManager(this.getContext()));
-            binding.includeTopics.recylerViewNames.setAdapter(topicListAdapter);
-            binding.includeTopics.getRoot().setVisibility(View.VISIBLE);
-
         }else{
             error();
         }
@@ -158,6 +156,25 @@ public class ModelFragment extends Fragment {
             }
 
             binding.includeIngredients.textViewNameListTitle.setText("Zutaten");
+
+
+/*
+            ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter ingredientListAdapter =
+                    new ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter(recipe.getID());
+            binding.includeIngredients.textViewNameListTitle.setText("Zutaten");
+            binding.includeIngredients.recylerViewNames.setLayoutManager(ingredientListAdapter.getManager(this.getContext()));
+            binding.includeIngredients.recylerViewNames.setAdapter(ingredientListAdapter);
+            binding.includeIngredients.getRoot().setVisibility(View.VISIBLE);
+
+            ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter topicListAdapter =
+                    new ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter(recipe.getID());
+            binding.includeTopics.textViewNameListTitle.setText("Servierempfehlungen");
+            binding.includeTopics.recylerViewNames.setLayoutManager(topicListAdapter.getManager(this.getContext()));
+            binding.includeTopics.recylerViewNames.setAdapter(topicListAdapter);
+            binding.includeTopics.getRoot().setVisibility(View.VISIBLE);
+
+ */
+
 
             ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter ingredientAdapter
                     = new ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter(recipe);

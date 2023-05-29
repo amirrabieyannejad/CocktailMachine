@@ -1,6 +1,7 @@
 package com.example.cocktailmachine.ui.model;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Build;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
@@ -88,9 +90,10 @@ public class EditModelFragment extends Fragment {
                                     .editTextPumpFillEmptyVolume
                                     .getText().toString()));
                     setUpEditPump();
+                    pump.save();
                     b.putString("Type", ModelFragment.ModelType.INGREDIENT.name());
                     b.putLong("ID", pump.getID());
-                    pump.save();
+                    Log.i(TAG,"Bundle"+b);
                     return;
                 case TOPIC:
                     topic = Topic.makeNew(
@@ -103,9 +106,10 @@ public class EditModelFragment extends Fragment {
                                     .getText()
                                     .toString());
                     setUpEditTopic();
+                    topic.save();
                     b.putString("Type", ModelFragment.ModelType.TOPIC.name());
                     b.putLong("ID", topic.getID());
-                    topic.save();
+                    Log.i(TAG,"Bundle"+b);
                     return;
                 case RECIPE:
                     recipe = Recipe.makeNew(
@@ -114,9 +118,10 @@ public class EditModelFragment extends Fragment {
                                     .editTextEditText
                                     .getText().toString());
                     setUpEditRecipe();
+                    recipe.save();
                     b.putString("Type", ModelFragment.ModelType.RECIPE.name());
                     b.putLong("ID", recipe.getID());
-                    recipe.save();
+                    Log.i(TAG,"Bundle"+b);
                     return;
                 case INGREDIENT:
                     ingredient = Ingredient.makeNew(
@@ -125,9 +130,10 @@ public class EditModelFragment extends Fragment {
                                     .editTextEditText
                                     .getText().toString());
                     setUpEditIngredient();
+                    ingredient.save();
                     b.putString("Type", ModelFragment.ModelType.INGREDIENT.name());
                     b.putLong("ID", ingredient.getID());
-                    ingredient.save();
+                    Log.i(TAG,"Bundle"+b);
                     return;
             }
         } catch (NotInitializedDBException e) {
@@ -146,21 +152,25 @@ public class EditModelFragment extends Fragment {
                     ingredient.save();
                     b.putString("Type", ModelFragment.ModelType.INGREDIENT.name());
                     b.putLong("ID", ingredient.getID());
+                    Log.i(TAG,"Bundle"+b);
                     return;
                 case RECIPE:
                     recipe.save();
                     b.putString("Type", ModelFragment.ModelType.RECIPE.name());
                     b.putLong("ID", recipe.getID());
+                    Log.i(TAG,"Bundle"+b);
                     return;
                 case TOPIC:
                     topic.save();
                     b.putString("Type", ModelFragment.ModelType.TOPIC.name());
                     b.putLong("ID", topic.getID());
+                    Log.i(TAG,"Bundle"+b);
                     return;
                 case PUMP:
                     pump.save();
                     b.putString("Type", ModelFragment.ModelType.INGREDIENT.name());
                     b.putLong("ID", pump.getID());
+                    Log.i(TAG,"Bundle"+b);
                     return;
             }
         } catch (NotInitializedDBException e) {
@@ -172,6 +182,13 @@ public class EditModelFragment extends Fragment {
 
     private void setSaveFAB(){
         activity.setFAB(v -> {
+            InputMethodManager inputManager = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            View view = activity.getCurrentFocus();
+            //If no view currently has focus, create a new one, just so we can grab a window token from it
+            if (view == null) {
+                view = new View(activity);
+            }
+            inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
             if(old){
                 save();
             }else{
@@ -248,6 +265,7 @@ public class EditModelFragment extends Fragment {
     }
 
     private void setUpNewPump(){
+        binding.includeName.getRoot().setVisibility(View.GONE);
         binding.includeNewPump.getRoot().setVisibility(View.VISIBLE);
         binding.includeNewPump.includeNewPumpFillEmpty.imageButtonEmpty.setOnClickListener(v -> {
             binding.includeNewPump.includeNewPumpFillEmpty.editTextPumpFillEmptyVolume.setText(null);
@@ -287,6 +305,10 @@ public class EditModelFragment extends Fragment {
     }
 
     private void setUpEdit(Long id){
+        if(id<0){
+            setUpNew();
+            return;
+        }
         switch (type){
             case PUMP:
                 pump = Pump.getPump(id);
@@ -502,6 +524,7 @@ public class EditModelFragment extends Fragment {
     }
 
     private void setUpEditPump() {
+        binding.includeName.getRoot().setVisibility(View.GONE);
         binding.includeNewPump.getRoot().setVisibility(View.VISIBLE);
         binding.includeNewPump.includeNewPumpFillEmpty.editTextPumpFillEmptyVolume.addTextChangedListener(new TextWatcher() {
             @Override

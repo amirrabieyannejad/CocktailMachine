@@ -55,11 +55,12 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
 
     //HELPER
     private List<T> cursorToList(Cursor cursor){
-        cursor.moveToFirst();
         List<T> res = new ArrayList<>();
-        res.add(makeElement(cursor));
-        while(cursor.moveToNext()){
+        if(cursor.moveToFirst()) {
             res.add(makeElement(cursor));
+            while (cursor.moveToNext()) {
+                res.add(makeElement(cursor));
+            }
         }
         cursor.close();
         return res;
@@ -138,10 +139,12 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 null,
                 null,
                 "1");
-        cursor.moveToFirst();
-        T res = makeElement(cursor);
-        cursor.close();
-        return res;
+        if(cursor.moveToFirst()) {
+            T res = makeElement(cursor);
+            cursor.close();
+            return res;
+        }
+        return null;
     }
 
     public List<T> getElements(SQLiteDatabase db,
