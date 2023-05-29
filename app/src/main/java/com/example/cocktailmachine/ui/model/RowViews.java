@@ -1,5 +1,7 @@
 package com.example.cocktailmachine.ui.model;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -154,10 +156,7 @@ public class RowViews {
             loadLongListener();
         }
 
-
-
         abstract Bundle getGoToModelBundle();
-
 
         void addGoToListener(Fragment fragment){
             if(fragment instanceof ModelFragment) {
@@ -240,6 +239,7 @@ public class RowViews {
 
         void delete() throws NotInitializedDBException{
             this.recipe.delete();
+            this.recipe.save();
         }
 
         @Override

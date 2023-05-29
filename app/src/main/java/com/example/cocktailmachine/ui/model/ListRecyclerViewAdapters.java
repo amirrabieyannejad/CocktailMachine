@@ -1,5 +1,7 @@
 package com.example.cocktailmachine.ui.model;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.nfc.Tag;
 import android.os.Build;
 import android.util.Log;
@@ -54,7 +56,7 @@ public class ListRecyclerViewAdapters  {
         public boolean isCurrentlyAdding(){
             return add;
         }
-        
+
         public boolean loadDelete(){
             if(!lock){
                 lock = true;
@@ -105,7 +107,32 @@ public class ListRecyclerViewAdapters  {
         }
 
         protected E addRowView(E view){
-            view.addLongListener(v -> loadDelete());
+            view.addLongListener(
+                    v1 -> {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(view.itemView.getContext());
+                        builder.setMessage("Möchten Sie dises Rezept wirklich löschen?");
+                        builder.setTitle("Warnung");
+                        builder.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                try {
+                                    view.delete();
+                                    views.remove(view);
+                                } catch (NotInitializedDBException e) {
+                                    e.printStackTrace();
+                                }
+                                notifyDataSetChanged();
+                                dialog.dismiss();
+                            }
+                        });
+                        builder.setNegativeButton("Nein", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        return false;
+                    });
             views.add(view);
             return view;
         }
