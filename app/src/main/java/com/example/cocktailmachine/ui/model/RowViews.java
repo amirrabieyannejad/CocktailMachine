@@ -117,7 +117,7 @@ public class RowViews {
             this.recipe = recipe;
         }
 
-        /*
+
         void finishAdd(){
             if(checkBox.isChecked()){
                 try {
@@ -154,11 +154,11 @@ public class RowViews {
             loadLongListener();
         }
 
-         */
+
 
         abstract Bundle getGoToModelBundle();
 
-        /*
+
         void addGoToListener(Fragment fragment){
             if(fragment instanceof ModelFragment) {
                 addListener(v -> {
@@ -209,7 +209,7 @@ public class RowViews {
             super.itemView.setOnLongClickListener(null);
         }
 
-         */
+
 
         private void error(){
             Toast.makeText(itemView.getContext(), "Datenbankverbindungsfehler", Toast.LENGTH_SHORT).show();

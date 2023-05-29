@@ -1,6 +1,7 @@
 package com.example.cocktailmachine.ui.model;
 
 import android.nfc.Tag;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,10 +31,11 @@ public class ListRecyclerViewAdapters  {
     public abstract static class ListRecyclerViewAdapter<E extends RowViews.RowView> extends RecyclerView.Adapter<E> {
         private RowViews.RowType type;
         private boolean lock = false;
-        private boolean add = false;
-        private boolean delete = false;
         private List<E> views = new ArrayList<>();
         protected Recipe recipe=null;
+
+        private boolean delete=false;
+        private boolean add=false;
 
         public ListRecyclerViewAdapter(RowViews.RowType type) {
             this.type = type;
@@ -52,7 +54,7 @@ public class ListRecyclerViewAdapters  {
         public boolean isCurrentlyAdding(){
             return add;
         }
-
+        
         public boolean loadDelete(){
             if(!lock){
                 lock = true;
