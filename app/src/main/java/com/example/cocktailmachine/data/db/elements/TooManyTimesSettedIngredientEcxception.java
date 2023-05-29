@@ -5,9 +5,9 @@ public class TooManyTimesSettedIngredientEcxception extends Exception {
         super("In Recipe"
                 +recipe.getName()
                 +" with id "
-                +Long.toString(recipe.getID())
+                + recipe.getID()
                 +" the Ingredient with id"
-                +Long.toString(ingredientID)
+                + ingredientID
                 +" was added to many times!!! "
                 +"Every ingredient is only allowed to be added once!");
     }

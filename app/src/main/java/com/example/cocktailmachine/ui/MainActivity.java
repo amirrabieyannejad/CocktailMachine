@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "onCreate: setContentView");
 
         setSupportActionBar(binding.toolbar);
+        //setActionBar(binding.toolbar);
         Log.i(TAG, "onCreate: setSupportActionBar");
 
         navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);

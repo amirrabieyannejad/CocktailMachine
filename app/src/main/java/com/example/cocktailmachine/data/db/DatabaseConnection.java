@@ -432,7 +432,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public List<Topic> getTopics() {
-        return (List<Topic>) this.topics;
+        return this.topics;
     }
 
     public List<Long> getTopicIDs(SQLRecipe newSQLRecipe) {

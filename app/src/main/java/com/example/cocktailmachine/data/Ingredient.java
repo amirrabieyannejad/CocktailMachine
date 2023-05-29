@@ -32,43 +32,43 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * Get the Id.
      * @return id
      */
-    public long getID();
+    long getID();
 
     /**
      * Get the name.
      * @return name
      */
-    public String getName();
+    String getName();
 
     /**
      * Get the addresses for the images.
      * @return list of image addresses.
      */
-    public List<String> getImageUrls();
+    List<String> getImageUrls();
 
     /**
      * Is alcoholic?
      * @return alcoholic?
      */
-    public boolean isAlcoholic();
+    boolean isAlcoholic();
 
     /**
      * Is available?
      * @return available?
      */
-    public boolean isAvailable();
+    boolean isAvailable();
 
     /**
      * Still available liquid/fluid in milliliter.
      * @return milliliter of ingredient
      */
-    public int getVolume();
+    int getVolume();
 
     /**
      * Get Pump representative class, where the ingredient is within.
      * @return pump
      */
-    public Pump getPump();
+    Pump getPump();
 
     /**
      * Get Pump representative class, where the ingredient is within.
@@ -80,6 +80,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * Get fluid color.
      * @return Integer representative of color
      */
+    int getColor();
     @ColorInt
     public int getColor();
 
@@ -88,9 +89,9 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * Add to the image address list an address.
      * @param url to be added image address
      */
-    public void addImageUrl(String url);
+    void addImageUrl(String url);
 
-    public void setPump(Long pump, int volume);
+    void setPump(Long pump, int volume);
 
 
     public void setColor(@ColorInt int color);
@@ -106,7 +107,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @param volume m
      * @throws NewlyEmptyIngredientException ingredient is empty.
      */
-    public void pump(int volume) throws NewlyEmptyIngredientException;
+    void pump(int volume) throws NewlyEmptyIngredientException;
 
     //general
     /**
@@ -144,7 +145,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @param ingredientsIds k
      * @return List of ingredients.
      */
-    public static List<Ingredient> getIngredientWithIds(List<Long> ingredientsIds) {
+    static List<Ingredient> getIngredientWithIds(List<Long> ingredientsIds) {
         try {
             return DatabaseConnection.getDataBase().getIngredients(ingredientsIds);
         } catch (NotInitializedDBException e) {
@@ -159,7 +160,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @param id k
      * @return
      */
-    public static Ingredient getIngredient(Long id) {
+    static Ingredient getIngredient(Long id) {
         try {
             return DatabaseConnection.getDataBase().getIngredient(id);
         } catch (NotInitializedDBException e) {
@@ -174,7 +175,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @param name k
      * @return
      */
-    public static Ingredient getIngredient(String name) {
+    static Ingredient getIngredient(String name) {
         try {
             return DatabaseConnection.getDataBase().getIngredientWithExact(name);
         } catch (NotInitializedDBException e) {
@@ -197,12 +198,12 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @param color color in Integer representation
      * @return new Ingredient instance
      */
-    public static Ingredient makeNew(String name,
-                                     boolean alcoholic,
-                                     boolean available,
-                                     int volume,
-                                     long pump,
-                                     int color){
+    static Ingredient makeNew(String name,
+                              boolean alcoholic,
+                              boolean available,
+                              int volume,
+                              long pump,
+                              int color){
         return new SQLIngredient(name, alcoholic, available, volume, pump, color);
     }
 
@@ -215,9 +216,9 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @param color color in Integer representation
      * @return  new Ingredient instance
      */
-    public static Ingredient makeNew(String name,
-                                     boolean alcoholic,
-                                     int color){
+    static Ingredient makeNew(String name,
+                              boolean alcoholic,
+                              int color){
         return new SQLIngredient(name, alcoholic, color);
     }
 
@@ -228,11 +229,11 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @param name name
      * @return  new Ingredient instance
      */
-    public static Ingredient makeNew(String name){
+    static Ingredient makeNew(String name){
         return new SQLIngredient(name);
     }
 
-    public static Ingredient searchOrNew(String name){
+    static Ingredient searchOrNew(String name){
         Ingredient ingredient = Ingredient.getIngredient(name);
         if(ingredient == null){
             return Ingredient.makeNew(name);

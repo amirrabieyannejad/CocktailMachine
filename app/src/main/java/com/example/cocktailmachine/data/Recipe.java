@@ -29,37 +29,37 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * Get id.
      * @return id
      */
-    public long getID();
+    long getID();
 
     /**
      * Get name.
      * @return name
      */
-    public String getName();
+    String getName();
 
     /**
      * Get ingredient ids used in this recipe.
      * @return list of ingredient ids.
      */
-    public List<Long> getIngredientIds();
+    List<Long> getIngredientIds();
 
     /**
      * Get ingredients used in this recipe.
      * @return list of ingredient.
      */
-    public List<Ingredient> getIngredients();
+    List<Ingredient> getIngredients();
 
     /**
      * Get ingredients ids and their associated pumptimes in milliseconds
      * @return hashmap ids, pump time
      */
-    public HashMap<Long, Integer> getIngredientVolumes();
+    HashMap<Long, Integer> getIngredientVolumes();
 
     /**
      * Get ingredients names and their associated pumptimes in milliseconds
      * @return hashmap name, pump time
      */
-    public List<Map.Entry<String, Integer>> getIngredientNameNVolumes();
+    List<Map.Entry<String, Integer>> getIngredientNameNVolumes();
 
     /**
      * Get specific pump time for ingredient with id k
@@ -68,7 +68,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @throws TooManyTimesSettedIngredientEcxception There are multiple times setted. only one time is allowed.
      * @throws NoSuchIngredientSettedException There is no such ingredient. The id is not known.
      */
-    public int getSpecificIngredientVolume(long ingredientId) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException;
+    int getSpecificIngredientVolume(long ingredientId) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException;
 
     /**
      * Get specific pump time for ingredient k
@@ -77,31 +77,31 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @throws TooManyTimesSettedIngredientEcxception There are multiple times setted. only one time is allowed.
      * @throws NoSuchIngredientSettedException There is no such ingredient. The id is not known.
      */
-    public int getSpecificIngredientVolume(Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException;
+    int getSpecificIngredientVolume(Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException;
 
     /**
      * Is alcoholic?
      * @return alcoholic?
      */
-    public boolean isAlcoholic();
+    boolean isAlcoholic();
 
     /**
      * Is available?
      * @return available?
      */
-    public boolean isAvailable();
+    boolean isAvailable();
 
     /**
      * Get associated image addresses.
      * @return list of image addresses
      */
-    public List<String> getImageUrls();
+    List<String> getImageUrls();
 
     /**
      * Get recommended topics.
      * @return recommended topics
      */
-    public List<Long> getTopics();
+    List<Long> getTopics();
 
 
     //bASIC CHANGER
@@ -113,36 +113,36 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @param ingredient
      * @param volume
      */
-    public void addOrUpdate(Ingredient ingredient, int volume);
+    void addOrUpdate(Ingredient ingredient, int volume);
     /**
      * Adds ingredient with quantity measured in needed pump time.
      * @param ingredientId
      * @param volume
      */
-    public void addOrUpdate(long ingredientId, int volume);
+    void addOrUpdate(long ingredientId, int volume);
 
-    public void addOrUpdate(Topic topic);
+    void addOrUpdate(Topic topic);
 
-    public void addOrUpdate(String imageUrls);
+    void addOrUpdate(String imageUrls);
 
     /**
      * Remove Ingredient from Recipe.
      * @param ingredient
      */
-    public void remove(Ingredient ingredient);
+    void remove(Ingredient ingredient);
     /**
      * Remove Ingredient from Recipe.
      * @param ingredientId
      */
-    public void removeIngredient(long ingredientId);
+    void removeIngredient(long ingredientId);
 
-    public void remove(Topic topic);
+    void remove(Topic topic);
 
-    public void removeTopic(long topicId);
+    void removeTopic(long topicId);
 
-    public void remove(SQLRecipeImageUrlElement url);
+    void remove(SQLRecipeImageUrlElement url);
 
-    public void removeUrl(long urlId);
+    void removeUrl(long urlId);
 
 
     //this Instance
@@ -158,7 +158,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         return json;
     }
 
-    public default JSONObject asMessage() throws JSONException {
+    default JSONObject asMessage() throws JSONException {
         //TODO: https://github.com/johannareidt/CocktailMachine/blob/main/ProjektDokumente/esp/Services.md
 
         JSONObject json = new JSONObject();
@@ -172,34 +172,9 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * Sends to CocktailMachine to get mixed.
 
      * Reminder:
-     * send recipe to machine!
+     * send topics to user!
      */
-    public default boolean send(){
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("cmd", "make_recipe");
-            jsonObject.put("user", AdminRights.getUserId());
-            jsonObject.put("recipe", this.getName());
-            //TODO: send
-            List<Ingredient> is = this.getIngredients();
-            for(Ingredient i: is){
-                i.pump(this.getSpecificIngredientVolume(i));
-            }
-        } catch (JSONException | TooManyTimesSettedIngredientEcxception |
-                NoSuchIngredientSettedException | NewlyEmptyIngredientException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-
-    /**
-     * Sends to CocktailMachine to get mixed.
-
-     * Reminder:
-     * send recipe to machine!
-     */
-    public default boolean sendSave(){
+    default boolean sendSave(){
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("cmd", "define_recipe");
@@ -227,7 +202,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
     //general
 
-    public static JSONArray getAllRecipesAsMessage() throws NotInitializedDBException, JSONException {
+    static JSONArray getAllRecipesAsMessage() throws NotInitializedDBException, JSONException {
         JSONArray json = new JSONArray();
         for(Recipe r: getRecipes()){
             json.put(r.asMessage());
@@ -241,7 +216,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @param json
      * @throws NotInitializedDBException
      */
-    public void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException;
+    void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException;
 
     /**
      * Static access to recipes.
@@ -249,7 +224,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @param id id k
      * @return Recipe
      */
-    public static Recipe getRecipe(long id) {
+    static Recipe getRecipe(long id) {
         try {
             return DatabaseConnection.getDataBase().getRecipe(id);
         } catch (NotInitializedDBException e) {
@@ -258,7 +233,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         }
     }
 
-    public static Recipe getRecipe(String name){
+    static Recipe getRecipe(String name){
         try {
             return DatabaseConnection.getDataBase().getRecipeWithExact(name);
         } catch (NotInitializedDBException e) {
@@ -272,7 +247,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * Get available recipes.
      * @return list of recipes
      */
-    public static List<Recipe> getRecipes() {
+     static List<Recipe> getRecipes() {
         try {
             return (List<Recipe>) DatabaseConnection.getDataBase().getAvailableRecipes();
         } catch (NotInitializedDBException e) {
@@ -286,7 +261,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * Get all saved recipes.
      * @return list of recipes
      */
-    public static List<Recipe> getAllRecipes() {
+    static List<Recipe> getAllRecipes() {
         try {
             return (List<Recipe>) DatabaseConnection.getDataBase().getRecipes();
         } catch (NotInitializedDBException e) {
@@ -301,7 +276,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @param ids list of ids k
      * @return list of recipes
      */
-    public static List<Recipe> getRecipes(List<Long> ids) {
+    static List<Recipe> getRecipes(List<Long> ids) {
         try {
             return DatabaseConnection.getDataBase().getRecipes(ids);
         } catch (NotInitializedDBException e) {
@@ -315,11 +290,11 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @param name name of the new recipe
      * @return new recipe instance with given name. It is already saved in the database!
      */
-    public static Recipe makeNew(String name){
+    static Recipe makeNew(String name){
         return new SQLRecipe(name);
     }
 
-    public static Recipe searchOrNew(String name){
+    static Recipe searchOrNew(String name){
         Recipe recipe = Recipe.getRecipe(name);
         if(recipe == null){
             return Recipe.makeNew(name);

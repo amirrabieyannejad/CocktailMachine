@@ -13,32 +13,32 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
      * Get id.
      * @return id
      */
-    public long getID();
+    long getID();
 
     /**
      * Get name.
      * @return name
      */
-    public String getName();
+    String getName();
 
     /**
      * Get description.
      * @return description
      */
-    public String getDescription();
+    String getDescription();
 
     //setter
     /**
      * Set name.
      * @param name name
      */
-    public void setName(String name);
+    void setName(String name);
 
     /**
      * Set description.
      * @param description description
      */
-    public void setDescription(String description);
+    void setDescription(String description);
 
 
     /**
@@ -48,11 +48,11 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
      * @param description description
      * @return new saved instance
      */
-    public static Topic makeNew(String name, String description){
+    static Topic makeNew(String name, String description){
         return new SQLTopic(name, description);
     }
 
-    public static Topic getTopic(long id)  {
+    static Topic getTopic(long id)  {
         try {
             return DatabaseConnection.getDataBase().getTopic(id);
         } catch (NotInitializedDBException e) {
@@ -61,7 +61,7 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
         }
     }
 
-    public static List<Topic> getTopics(Recipe recipe)  {
+    static List<Topic> getTopics(Recipe recipe)  {
         try {
             return DatabaseConnection.getDataBase().getTopics(recipe);
         } catch (NotInitializedDBException e) {
@@ -70,7 +70,7 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
         }
     }
 
-    public static List<Topic> getAllTopics(){
+    static List<Topic> getAllTopics(){
         try {
             return DatabaseConnection.getDataBase().getTopics();
         } catch (NotInitializedDBException e) {

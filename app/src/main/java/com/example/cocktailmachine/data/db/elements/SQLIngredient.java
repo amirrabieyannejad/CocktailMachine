@@ -21,7 +21,7 @@ import java.util.Objects;
 public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
     private String name = "";
     private List<String> imageUrls = new ArrayList<>();
-    private boolean urlsLoaded = false;
+    private final boolean urlsLoaded = false;
     private boolean alcoholic;
     private boolean available = false;
     //private int fluidInMillimeters;
