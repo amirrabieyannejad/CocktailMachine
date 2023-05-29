@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.example.cocktailmachine.data.AdminRights;
 import com.example.cocktailmachine.data.Recipe;
+import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
@@ -26,8 +27,11 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -38,6 +42,8 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.cocktailmachine.R;
 
 import org.json.JSONException;
+
+import java.util.zip.Inflater;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -125,6 +131,11 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "onCreateOptionsMenu" );
         getMenuInflater().inflate(R.menu.menu_main, menu);
         this.menu = menu;
+        if(AdminRights.isAdmin()){
+            successfullLogin();
+        }else{
+            logout();
+        }
         return true;
     }
 
@@ -178,9 +189,10 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "login" );
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Login");
-        LoginView loginView = (LoginView) getLayoutInflater().inflate(R.layout.layout_login, null);
+        View v = getLayoutInflater().inflate(R.layout.layout_login, null);
+        LoginView loginView = new LoginView(this, v);
 
-        builder.setView(loginView);
+        builder.setView(v);
         builder.setPositiveButton("Weiter", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -195,11 +207,12 @@ public class MainActivity extends AppCompatActivity {
                 dialog.dismiss();
             }
         });
-        builder.create();
+        builder.show();
     }
 
     private void successfullLogin(){
         Log.i(TAG, "successfullLogin" );
+        Toast.makeText(this,"Eingeloggt!",Toast.LENGTH_SHORT).show();
         this.menu.findItem(R.id.action_admin_login).setVisible(false);
         this.menu.findItem(R.id.action_admin_logout).setVisible(true);
         this.menu.findItem(R.id.action_pumps).setVisible(true);
@@ -208,19 +221,22 @@ public class MainActivity extends AppCompatActivity {
 
     private void logout(){
         Log.i(TAG, "logout" );
+        Toast.makeText(this,"Ausgeloggt!",Toast.LENGTH_SHORT).show();
         AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.User);
         this.menu.findItem(R.id.action_admin_login).setVisible(true);
         this.menu.findItem(R.id.action_admin_logout).setVisible(false);
         this.menu.findItem(R.id.action_pumps).setVisible(false);
     }
 
-    private static class LoginView extends View{
+    private static class LoginView{
         private final TextView t;
         private final EditText e;
-        public LoginView(Context context) {
-            super(context);
-            t = (TextView) findViewById(R.id.textView_edit_text);
-            e = (EditText) findViewById(R.id.editText_edit_text);
+        private final View v;
+        public LoginView(Context context, View v) {
+            this.v = v;
+            t = (TextView) v.findViewById(R.id.textView_edit_text);
+            e = (EditText) v.findViewById(R.id.editText_edit_text);
+            e.setHint("");
             t.setText("Passwort: ");
             e.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
@@ -228,6 +244,8 @@ public class MainActivity extends AppCompatActivity {
         public boolean check(){
             return e.getText().toString().equals("admin");
         }
+
+
     }
 
 }

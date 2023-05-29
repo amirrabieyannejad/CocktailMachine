@@ -87,6 +87,7 @@ public class RowViews {
                 Log.i(TAG, "itemView is null");
             }
             checkBox = (CheckBox) itemView.findViewById(R.id.checkBox_item);
+            checkBox.setVisibility(View.GONE);
             if(checkBox == null){
                 Log.i(TAG, "checkBox is null");
             }
@@ -95,6 +96,7 @@ public class RowViews {
                 Log.i(TAG, "name is null");
             }
             desc = (TextView) itemView.findViewById(R.id.textView_item_desc);
+            desc.setVisibility(View.GONE);
             if(desc == null){
                 Log.i(TAG, "desc is null");
             }
