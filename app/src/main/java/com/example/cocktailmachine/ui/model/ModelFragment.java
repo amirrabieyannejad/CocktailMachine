@@ -192,12 +192,12 @@ public class ModelFragment extends Fragment {
                     ingredientAdapter,
                     this,
                     binding.includeIngredients.imageButtonListDelete,
-                    binding.includeIngredients.imageButtonListEdit);
+                    binding.includeIngredients.imageButtonListEdit,
+                    binding.includeIngredients.imageButtonListAdd);
             binding.includeIngredients.getRoot().setVisibility(View.VISIBLE);
 
             ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter topicAdapter
                     = new ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter(recipe);
-
 
             ListLayout.set(binding.includeTopics.textViewNameListTitle,
                     "Serviervorschläge",
@@ -206,7 +206,8 @@ public class ModelFragment extends Fragment {
                     topicAdapter,
                     this,
                     binding.includeTopics.imageButtonListDelete,
-                    binding.includeTopics.imageButtonListEdit);
+                    binding.includeTopics.imageButtonListEdit,
+                    binding.includeTopics.imageButtonListAdd);
             binding.includeTopics.getRoot().setVisibility(View.VISIBLE);
 
             
@@ -228,6 +229,17 @@ public class ModelFragment extends Fragment {
     }
 
     private void setFAB(){
+        binding.imageViewEdit.setOnClickListener(v -> {
+            Bundle b = new Bundle();
+            b.putString("Type", type.name());
+            b.putLong("ID", id);
+
+            NavHostFragment
+                    .findNavController(ModelFragment.this)
+                    .navigate(R.id.action_modelFragment_to_editModelFragment,
+                            b);
+        });
+        /*
         activity.setFAB(v -> {
             Bundle b = new Bundle();
             b.putString("Type", type.name());
@@ -238,6 +250,15 @@ public class ModelFragment extends Fragment {
                     .navigate(R.id.action_modelFragment_to_editModelFragment,
                             b);
         }, R.drawable.ic_edit);
+         */
+        if(type.equals(ModelType.RECIPE)) {
+            activity.setFAB(v ->{
+                recipe.send();
+                Toast.makeText(this.getContext(), "Cocktail in Bearbeitung.", Toast.LENGTH_SHORT).show();
+            }, R.drawable.ic_send);
+        }else{
+            activity.invisibleFAB();
+        }
     }
 
 

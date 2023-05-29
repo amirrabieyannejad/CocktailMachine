@@ -232,10 +232,10 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         //this.wasChanged();
         try {
             this.ingredientPump.pump(volume);
-        } catch (NewlyEmptyIngredientException e) {
+        } catch (NewlyEmptyIngredientException|NullPointerException e) {
             e.printStackTrace();
             this.available = false;
-            throw e;
+            throw new NewlyEmptyIngredientException(this);
         }
 
     }

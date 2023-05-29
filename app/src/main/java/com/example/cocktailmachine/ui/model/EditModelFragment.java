@@ -413,6 +413,7 @@ public class EditModelFragment extends Fragment {
                 recipe.setName(s.toString());
             }
         });
+        binding.includeName.editTextEditText.setText(recipe.getName());
         binding.layoutRecipe.setVisibility(View.VISIBLE);
 
         ListLayout.set(binding.includeEditRecipeTopics.includeList.textViewNameListTitle,
@@ -422,7 +423,8 @@ public class EditModelFragment extends Fragment {
                 new ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter(recipe),
                 EditModelFragment.this,
                 binding.includeEditRecipeTopics.includeList.imageButtonListDelete,
-                binding.includeEditRecipeTopics.includeList.imageButtonListEdit);
+                binding.includeEditRecipeTopics.includeList.imageButtonListEdit,
+                binding.includeEditRecipeTopics.includeList.imageButtonListAdd);
 
         binding.includeEditRecipeIngredients.imageButton.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());

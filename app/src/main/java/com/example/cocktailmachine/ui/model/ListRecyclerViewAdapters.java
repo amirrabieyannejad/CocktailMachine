@@ -62,6 +62,9 @@ public class ListRecyclerViewAdapters  {
             if(recipe!= null) {
                 recipe = Recipe.getRecipe(recipe.getID());
             }
+            lock = false;
+            delete = false;
+            add = false;
             putIds();
             notifyDataSetChanged();
         }
@@ -78,6 +81,7 @@ public class ListRecyclerViewAdapters  {
             if(!lock){
                 lock = true;
                 delete = true;
+                add = false;
                 for (RowViews.RowView view: views) {
                     view.loadCheck();
                     view.deleteLongListener();
@@ -92,6 +96,7 @@ public class ListRecyclerViewAdapters  {
             if(!lock && recipe!=null ){
                 lock = true;
                 add = true;
+                delete = false;
                 for (RowViews.RowView view: views) {
                     view.loadCheck();
                     view.deleteLongListener();

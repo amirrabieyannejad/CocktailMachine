@@ -154,6 +154,9 @@ public class MainActivity extends AppCompatActivity {
         }else if (item.getItemId() == R.id.action_admin_logout) {
             logout();
             return (true);
+        }else if (item.getItemId() == R.id.action_refresh) {
+            refresh();
+            return (true);
         }else if (item.getItemId() == R.id.action_ingredients) {
             ListFragment fragment = new ListFragment();
             Bundle bundle = new Bundle();
@@ -184,6 +187,10 @@ public class MainActivity extends AppCompatActivity {
             return (true);
         }
         return(super.onOptionsItemSelected(item));
+    }
+
+    private void refresh(){
+        //Todo: refresh
     }
 
 

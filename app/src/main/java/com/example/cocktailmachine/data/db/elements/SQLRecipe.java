@@ -296,7 +296,9 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     //REMOVER
     @Override
     public void remove(Ingredient ingredient) {
-        this.removeIngredient(ingredient.getID());
+        if(ingredient!=null) {
+            this.removeIngredient(ingredient.getID());
+        }
     }
 
     @Override
