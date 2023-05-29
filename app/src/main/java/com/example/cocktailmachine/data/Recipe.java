@@ -193,6 +193,37 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     }
 
 
+    /**
+     * Sends to CocktailMachine to get mixed.
+
+     * Reminder:
+     * send recipe to machine!
+     */
+    public default boolean sendSave(){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("cmd", "define_recipe");
+            jsonObject.put("user", AdminRights.getUserId());
+            jsonObject.put("recipe", this.getName());
+            JSONArray array = new JSONArray();
+            //TODO: send
+            List<Ingredient> is = this.getIngredients();
+            for(Ingredient i: is){
+                JSONArray temp = new JSONArray();
+                temp.put(i.getName());
+                temp.put(this.getSpecificIngredientVolume(i));
+                array.put(temp);
+            }
+            jsonObject.put("liquids", array);
+            return true;
+        } catch (JSONException | TooManyTimesSettedIngredientEcxception |
+                NoSuchIngredientSettedException  e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
 
     //general
 
