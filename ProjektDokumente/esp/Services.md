@@ -2,9 +2,6 @@
 
 ## Allgemein
 
-- Name: Cocktail Machine ESP32
-- UUID des Namens: c0605c38-3f94-33f6-ace6-7a5504544a80
-
 Der ESP nutzt kein Pairing. Stattdessen wird jedem Benutzer eine User-ID zugewiesen, die dann bei den Befehlen mit angegeben werden muss. 
 
 Um allgemeine Werte (z.B. den Zustand der Pumpen) auszulesen, reicht es, die entsprechenden Characteristics auszulesen. Die Characteristics unterstützen Notifications, damit sie nur neu ausgelesen werden müssen, wenn sie sich geändert haben. Die verfügbaren Services und Characteristics stehen im Abschnitt Status-Services.
@@ -33,6 +30,12 @@ Die Antwort ist dann:
     {"user": 100}
 
 Die ID ist also 100 und kann dann in anderen Befehlen mit angegeben werden.
+
+## ID-Service
+
+- Name: Cocktail Machine ESP32
+- UUID des Service: 8ccbf239-1cd2-4eb7-8872-1cb76c980d14
+- UUID des Namens:  c0605c38-3f94-33f6-ace6-7a5504544a80
 
 ## Kommunikations-Service
 
