@@ -383,6 +383,11 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         }
     }
 
+    @Override
+    public void send() {
+
+    }
+
     //general
     @Override
     public void delete() throws NotInitializedDBException {

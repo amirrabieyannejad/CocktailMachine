@@ -11,7 +11,6 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.cocktailmachine.R;
@@ -20,15 +19,10 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.databinding.FragmentModelBinding;
-import com.example.cocktailmachine.ui.FirstFragment;
 import com.example.cocktailmachine.ui.MainActivity;
-import com.example.cocktailmachine.ui.SecondFragment;
 
 import java.util.Objects;
-import java.util.zip.Inflater;
 
 public class ModelFragment extends Fragment {
     private FragmentModelBinding binding;

@@ -13,6 +13,7 @@ import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredient
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -132,6 +133,11 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public Long getPumpId() {
+                        return null;
+                    }
+
+                    @Override
                     public int getColor() {
                         return Color.RED;
                     }
@@ -143,6 +149,21 @@ public class SingeltonTestdata {
 
                     @Override
                     public void setPump(Long pump, int fluidInMillimeters) {
+
+                    }
+
+                    @Override
+                    public void setColor(int color) {
+
+                    }
+
+                    @Override
+                    public void setAlcoholic(boolean alcoholic) {
+
+                    }
+
+                    @Override
+                    public void setName(String name) {
 
                     }
 
@@ -228,6 +249,11 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public Long getPumpId() {
+                        return null;
+                    }
+
+                    @Override
                     public int getColor() {
                         return Color.BLUE;
                     }
@@ -239,6 +265,21 @@ public class SingeltonTestdata {
 
                     @Override
                     public void setPump(Long pump, int fluidInMillimeters) {
+
+                    }
+
+                    @Override
+                    public void setColor(int color) {
+
+                    }
+
+                    @Override
+                    public void setAlcoholic(boolean alcoholic) {
+
+                    }
+
+                    @Override
+                    public void setName(String name) {
 
                     }
 
@@ -327,6 +368,11 @@ public class SingeltonTestdata {
             }
 
             @Override
+            public void setName(String name) {
+
+            }
+
+            @Override
             public void addOrUpdate(Ingredient ingredient, int timeInMilliseconds) {
 
             }
@@ -377,7 +423,27 @@ public class SingeltonTestdata {
             }
 
             @Override
+            public JSONArray getLiquids() {
+                return Recipe.super.getLiquids();
+            }
+
+            @Override
+            public JSONObject asMessage() throws JSONException {
+                return Recipe.super.asMessage();
+            }
+
+            @Override
+            public boolean sendSave() {
+                return Recipe.super.sendSave();
+            }
+
+            @Override
             public void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException {
+
+            }
+
+            @Override
+            public void send() {
 
             }
 
@@ -493,6 +559,11 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public Long getPumpId() {
+                        return null;
+                    }
+
+                    @Override
                     public int getColor() {
                         return Color.RED;
                     }
@@ -504,6 +575,21 @@ public class SingeltonTestdata {
 
                     @Override
                     public void setPump(Long pump, int fluidInMillimeters) {
+
+                    }
+
+                    @Override
+                    public void setColor(int color) {
+
+                    }
+
+                    @Override
+                    public void setAlcoholic(boolean alcoholic) {
+
+                    }
+
+                    @Override
+                    public void setName(String name) {
 
                     }
 
@@ -589,6 +675,11 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public Long getPumpId() {
+                        return null;
+                    }
+
+                    @Override
                     public int getColor() {
                         return Color.BLUE;
                     }
@@ -600,6 +691,21 @@ public class SingeltonTestdata {
 
                     @Override
                     public void setPump(Long pump, int fluidInMillimeters) {
+
+                    }
+
+                    @Override
+                    public void setColor(int color) {
+
+                    }
+
+                    @Override
+                    public void setAlcoholic(boolean alcoholic) {
+
+                    }
+
+                    @Override
+                    public void setName(String name) {
 
                     }
 
@@ -688,6 +794,11 @@ public class SingeltonTestdata {
             }
 
             @Override
+            public void setName(String name) {
+
+            }
+
+            @Override
             public void addOrUpdate(Ingredient ingredient, int timeInMilliseconds) {
 
             }
@@ -738,8 +849,28 @@ public class SingeltonTestdata {
             }
 
             @Override
+            public JSONArray getLiquids() {
+                return Recipe.super.getLiquids();
+            }
+
+            @Override
+            public JSONObject asMessage() throws JSONException {
+                return Recipe.super.asMessage();
+            }
+
+            @Override
+            public boolean sendSave() {
+                return Recipe.super.sendSave();
+            }
+
+            @Override
             public void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException {
 
+            }
+
+            @Override
+            public void send() {
+                
             }
 
             @Override

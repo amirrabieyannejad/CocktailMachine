@@ -302,4 +302,5 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         return recipe;
     }
 
+    void send();
 }

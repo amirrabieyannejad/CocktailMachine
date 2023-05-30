@@ -80,7 +80,6 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * Get fluid color.
      * @return Integer representative of color
      */
-    int getColor();
     @ColorInt
     public int getColor();
 

@@ -2,18 +2,13 @@ package com.example.cocktailmachine.ui.model;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.nfc.Tag;
-import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,8 +21,6 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
-import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
-import com.example.cocktailmachine.ui.SecondFragment;
 
 import java.util.ArrayList;
 import java.util.List;
