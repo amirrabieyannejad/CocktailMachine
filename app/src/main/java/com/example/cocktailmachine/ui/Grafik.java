@@ -98,12 +98,8 @@ public class Grafik extends AppCompatActivity {
         magarita.addOrUpdate(limettensaft, 4);
 
 
-        List<Recipe> recipes= null;
-        try {
-            recipes = Recipe.getRecipes();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
+        List<Recipe> recipes = Recipe.getRecipes();
+
 
         System.out.println(recipes);
 

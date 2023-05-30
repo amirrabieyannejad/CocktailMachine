@@ -870,7 +870,7 @@ public class SingeltonTestdata {
 
             @Override
             public void send() {
-                
+
             }
 
             @Override
