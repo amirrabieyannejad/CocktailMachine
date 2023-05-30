@@ -143,6 +143,11 @@ struct Service {
   Service(const char *uuid_service, const char *uuid_char, const uint32_t props, const int num_chars);
 };
 
+struct ID : Service {
+  ID(const char *uuid_char, const char *init_value);
+  void update(const char *value);
+};
+
 struct Status : Service {
   Status(const char *uuid_char, const char *init_value);
   void update(const char *value);
@@ -164,7 +169,7 @@ struct ServerCB : BLEServerCallbacks {
   void onDisconnect(BLEServer *server, esp_ble_gatts_cb_param_t *param);
 };
 
-struct StatusCB: BLECharacteristicCallbacks {
+struct CharCB: BLECharacteristicCallbacks {
   void onRead(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *param);
 };
 
@@ -178,24 +183,25 @@ struct CommCB: BLECharacteristicCallbacks {
 
 // convenient grouping of all statuses / comms
 
-#define ID_BASE     	0
-#define ID_LIQUIDS  	1
-#define ID_PUMPS    	2
-#define ID_STATE    	3
-#define ID_RECIPES  	4
-#define ID_COCKTAIL 	5
-#define ID_TIMESTAMP	6
-#define ID_USER     	7
-#define NUM_STATUS  	8
-
+#define ID_LIQUIDS  	0
+#define ID_PUMPS    	1
+#define ID_STATE    	2
+#define ID_RECIPES  	3
+#define ID_COCKTAIL 	4
+#define ID_TIMESTAMP	5
+#define ID_USER     	6
+#define NUM_STATUS  	7
+                    	
 #define ID_MSG_USER 	0
 #define ID_MSG_ADMIN	1
 #define NUM_COMM    	2
+                    	
+#define ID_NAME     	0
+#define NUM_ID      	1
 
 // UUIDs
 
 #define UUID_STATUS          	"0f7742d4-ea2d-43c1-9b98-bb4186be905d"
-#define UUID_STATUS_BASE     	"c0605c38-3f94-33f6-ace6-7a5504544a80"
 #define UUID_STATUS_STATE    	"e9e4b3f2-fd3f-3b76-8688-088a0671843a"
 #define UUID_STATUS_LIQUIDS  	"fc60afb0-2b00-3af2-877a-69ae6815ca2f"
 #define UUID_STATUS_PUMPS    	"1a9a598a-17ce-3fcd-be03-40a48587d04e"
@@ -207,6 +213,10 @@ struct CommCB: BLECharacteristicCallbacks {
 #define UUID_COMM            	"dad995d1-f228-38ec-8b0f-593953973406"
 #define UUID_COMM_USER       	"eb61e31a-f00b-335f-ad14-d654aac8353d"
 #define UUID_COMM_ADMIN      	"41044979-6a5d-36be-b9f1-d4d49e3f5b73"
+                             	
+#define UUID_ID              	"8ccbf239-1cd2-4eb7-8872-1cb76c980d14"
+#define UUID_ID_NAME         	"c0605c38-3f94-33f6-ace6-7a5504544a80"
+
 
 // return codes
 #define def_ret(cls, msg)                                               \
@@ -452,6 +462,7 @@ User current_user = -1;
 std::unordered_map<User, String> users;
 
 BLEServer *ble_server;
+ID*     all_id[NUM_ID];
 Status* all_status[NUM_STATUS];
 Comm*   all_comm[NUM_COMM];
 
@@ -582,6 +593,7 @@ void setup() {
   }
 
   { // initialize machine state
+    for (int i=0; i<NUM_ID; i++)    	all_id[i]    	= NULL;
     for (int i=0; i<NUM_STATUS; i++)	all_status[i]	= NULL;
     for (int i=0; i<NUM_COMM; i++)  	all_comm[i]  	= NULL;
     for (int i=0; i<MAX_PUMPS; i++) 	pumps[i]     	= NULL;
@@ -1513,7 +1525,8 @@ bool ble_start(void) {
   ble_server->setCallbacks(new ServerCB());
 
   // init services
-  all_status[ID_BASE]     	= new Status(UUID_STATUS_BASE,     	BLE_NAME);
+  all_id[ID_NAME]         	= new ID(UUID_ID_NAME,             	BLE_NAME);
+                          	                                   	
   all_status[ID_STATE]    	= new Status(UUID_STATUS_STATE,    	"\"init\"");
   all_status[ID_LIQUIDS]  	= new Status(UUID_STATUS_LIQUIDS,  	"{}");
   all_status[ID_PUMPS]    	= new Status(UUID_STATUS_PUMPS,    	"{}");
@@ -1521,13 +1534,13 @@ bool ble_start(void) {
   all_status[ID_COCKTAIL] 	= new Status(UUID_STATUS_COCKTAIL, 	"[]");
   all_status[ID_TIMESTAMP]	= new Status(UUID_STATUS_TIMESTAMP,	"0");
   all_status[ID_USER]     	= new Status(UUID_STATUS_USER,     	"-1");
-
-  all_comm[ID_MSG_USER] 	= new Comm(UUID_COMM_USER);
-  all_comm[ID_MSG_ADMIN]	= new Comm(UUID_COMM_ADMIN);
+                          	
+  all_comm[ID_MSG_USER]   	= new Comm(UUID_COMM_USER);
+  all_comm[ID_MSG_ADMIN]  	= new Comm(UUID_COMM_ADMIN);
 
   // start and advertise services
   BLEAdvertising *adv = ble_server->getAdvertising();
-  const char *services[] = {UUID_STATUS, UUID_COMM};
+  const char *services[] = {UUID_ID, UUID_STATUS, UUID_COMM};
 
   for (int i=0; i<(sizeof(services)/sizeof(services[0])); i++) {
     const char *uuid = services[i];
@@ -1570,12 +1583,26 @@ Service::Service(const char *uuid_service, const char *uuid_char, const uint32_t
   this->ble_char->addDescriptor(new BLE2902());
 }
 
+ID::ID(const char *uuid_char, const char *init_value)
+  : Service(UUID_ID, uuid_char,
+            BLECharacteristic::PROPERTY_READ |
+            BLECharacteristic::PROPERTY_NOTIFY,
+            NUM_ID) {
+  this->ble_char->setCallbacks(new CharCB());
+  this->ble_char->setValue(init_value);
+}
+
+void ID::update(const char *value) {
+  this->ble_char->setValue(value);
+  this->ble_char->notify();
+}
+
 Status::Status(const char *uuid_char, const char *init_value)
   : Service(UUID_STATUS, uuid_char,
             BLECharacteristic::PROPERTY_READ |
             BLECharacteristic::PROPERTY_NOTIFY,
             NUM_STATUS) {
-  this->ble_char->setCallbacks(new StatusCB());
+  this->ble_char->setCallbacks(new CharCB());
   this->ble_char->setValue(init_value);
 }
 
@@ -1639,7 +1666,7 @@ void ServerCB::onDisconnect(BLEServer *server, esp_ble_gatts_cb_param_t* param) 
   debug("  %s -> %d", remote_addr.toString().c_str(), id);
 }
 
-void StatusCB::onRead(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *param) {
+void CharCB::onRead(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *param) {
   uint16_t id = param->read.conn_id;
   std::string value = ble_char->getValue();
 
