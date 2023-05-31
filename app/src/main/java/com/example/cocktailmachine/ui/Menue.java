@@ -44,7 +44,6 @@ public class Menue extends AppCompatActivity {
     public void openDeviceScan(View view){
         Intent success = new Intent(this, DeviceScanActivity.class);
         startActivity(success);
-
     }
 
     public void exit(View view){
