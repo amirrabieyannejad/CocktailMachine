@@ -7,73 +7,73 @@
     android:layout_height="match_parent"
     tools:context=".ui.Menue">
 
-  <ScrollView
-      android:layout_width="match_parent"
-      android:layout_height="match_parent">
-
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-      <ImageView
-          android:layout_width="150dp"
-          android:layout_height="150dp"
-          android:layout_margin="30dp"
-          android:contentDescription="Show one available Cocktail"
-          android:onClick="openRecipeList"
-          app:srcCompat="@drawable/ic_list" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
-      <ImageView
-          android:layout_width="150dp"
-          android:layout_height="150dp"
-          android:layout_margin="30dp"
-          android:contentDescription="add recipe"
-          android:onClick="openRecipeCreator"
-          app:srcCompat="@drawable/ic_list_add" />
-      <ImageView
-          android:layout_width="150dp"
-          android:layout_height="150dp"
-          android:layout_margin="30dp"
-          android:contentDescription="FillAnimation"
-          android:onClick="openGlassFillAnimationView"
-          app:srcCompat="@drawable/ic_list_add" />
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
+                android:contentDescription="Show one available Cocktail"
+                android:onClick="openRecipeList"
+                app:srcCompat="@drawable/ic_list" />
 
-
-      <ImageView
-          android:layout_width="150dp"
-          android:layout_height="150dp"
-          android:layout_margin="30dp"
-          android:contentDescription="swipe thing"
-          android:onClick="openSingelCocktailView"
-          app:srcCompat="@drawable/ic_single_cocktail_choice_2" />
-
-      <ImageView
-          android:layout_width="150dp"
-          android:layout_height="150dp"
-          android:layout_margin="30dp"
-          android:contentDescription="FindBluetooth"
-          android:onClick="openDeviceScan"
-          app:srcCompat="@drawable/ic_find_bluetooth" />
-
-      <ImageView
-          android:layout_width="150dp"
-          android:layout_height="150dp"
-          android:layout_margin="30dp"
-          android:contentDescription="Settings"
-          android:onClick="openGrafik"
-          app:srcCompat="@drawable/ic_options" />
-
-      <ImageView
-          android:layout_width="150dp"
-          android:layout_height="150dp"
-          android:layout_margin="30dp"
-          android:contentDescription="Logout"
-          app:srcCompat="@drawable/ic_logout_icon" />
-
-    </LinearLayout>
-  </ScrollView>
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
+                android:contentDescription="add recipe"
+                android:onClick="openRecipeCreator"
+                app:srcCompat="@drawable/ic_list_add" />
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
+                android:contentDescription="FillAnimation"
+                android:onClick="openGlassFillAnimationView"
+                app:srcCompat="@drawable/ic_list_add" />
 
 
-  </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
+                android:contentDescription="swipe thing"
+                android:onClick="openSingelCocktailView"
+                app:srcCompat="@drawable/ic_single_cocktail_choice_2" />
+
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
+                android:contentDescription="FindBluetooth"
+                android:onClick="openDeviceScan"
+                app:srcCompat="@drawable/ic_find_bluetooth" />
+
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
+                android:contentDescription="Settings"
+                android:onClick="openGrafik"
+                app:srcCompat="@drawable/ic_options" />
+
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
+                android:contentDescription="Logout"
+                app:srcCompat="@drawable/ic_logout_icon" />
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

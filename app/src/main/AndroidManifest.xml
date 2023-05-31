@@ -74,14 +74,14 @@
                 android:value="" />
         </activity>
         <activity
-            android:name="com.example.cocktailmachine.ui.bluetoothlegatt.DeviceControlActivity"
+            android:name="com.example.cocktailmachine.bluetoothlegatt.DeviceControlActivity"
             android:exported="false">
 		<meta-data
                 	android:name="android.app.lib_name"
                 	android:value="" />
  	</activity>
 	<activity
-            android:name="com.example.cocktailmachine.ui.bluetoothlegatt.DeviceScanActivity"
+            android:name="com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity"
             android:exported="false">
 		<meta-data
                 	android:name="android.app.lib_name"
