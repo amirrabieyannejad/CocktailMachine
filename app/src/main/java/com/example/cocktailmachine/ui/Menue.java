@@ -37,18 +37,18 @@ public class Menue extends AppCompatActivity {
         }
     }
 
-    public void openRecipeList(View view){
-        Intent success = new Intent(this, SingleCocktailChoice.class);
+    public void openRecipeList(View view) {
+        Intent success = new Intent(this, ModelActivity.class);
         Bundle b = new Bundle();
         b.putString("Fragment", "RecipeList");
-        startActivity(success);
+        startActivity(success, b);
     }
 
     public void openRecipeCreator(View view){
         Intent success = new Intent(this, ModelActivity.class);
         Bundle b = new Bundle();
         b.putString("Fragment", "RecipeCreator");
-        startActivity(success);
+        startActivity(success, b);
     }
 
 
@@ -81,4 +81,6 @@ public class Menue extends AppCompatActivity {
         startActivity(success);
 
     }
+
+
 }
