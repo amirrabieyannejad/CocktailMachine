@@ -37,9 +37,12 @@ android {
     }
     sourceSets {
         main{
-            res{
-                srcDir 'src/main/resGlas'
-            }
+            res.srcDirs = [
+                     'src/main/res',
+                     'src/main/resGlas',
+                     'src/main/resModel'
+
+            ]
         }
     }
     dependenciesInfo {
