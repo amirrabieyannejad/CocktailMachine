@@ -57,7 +57,7 @@ public class ModelFragment extends Fragment {
         binding.includeIngredients.getRoot().setVisibility(View.GONE);
         binding.includeTopics.getRoot().setVisibility(View.GONE);
 
-         
+
 
 
         switch (type){

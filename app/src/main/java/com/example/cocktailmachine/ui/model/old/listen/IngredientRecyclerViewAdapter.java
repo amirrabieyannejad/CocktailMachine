@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.listen;
+package com.example.cocktailmachine.ui.model.old.listen;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.cocktailmachine.databinding.FragmentItemIngredientBinding;
-import com.example.cocktailmachine.ui.listen.placeholder.PlaceholderContent.PlaceholderItem;
+import com.example.cocktailmachine.ui.model.old.listen.placeholder.PlaceholderContent.PlaceholderItem;
 
 import java.util.List;
 

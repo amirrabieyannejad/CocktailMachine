@@ -9,5 +9,5 @@
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
-    tools:context=".ui.listen.PumpListFragment"
+    tools:context=".ui.model.old.listen.PumpListFragment"
     tools:listitem="@layout/fragment_item_pump" />

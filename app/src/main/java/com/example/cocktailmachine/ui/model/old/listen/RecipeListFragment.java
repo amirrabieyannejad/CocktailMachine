@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.listen;
+package com.example.cocktailmachine.ui.model.old.listen;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -13,12 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.ui.listen.placeholder.PlaceholderContent;
+import com.example.cocktailmachine.ui.model.old.listen.placeholder.PlaceholderContent;
 
 /**
  * A fragment representing a list of Items.
  */
-public class TopicListFragment extends Fragment {
+public class RecipeListFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -29,13 +29,13 @@ public class TopicListFragment extends Fragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public TopicListFragment() {
+    public RecipeListFragment() {
     }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static TopicListFragment newInstance(int columnCount) {
-        TopicListFragment fragment = new TopicListFragment();
+    public static RecipeListFragment newInstance(int columnCount) {
+        RecipeListFragment fragment = new RecipeListFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -54,7 +54,7 @@ public class TopicListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_item_topic_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_item_recipe_list, container, false);
 
         // Set the adapter
         if (view instanceof RecyclerView) {
@@ -65,7 +65,7 @@ public class TopicListFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new TopicRecyclerViewAdapter(PlaceholderContent.ITEMS));
+            recyclerView.setAdapter(new RecipeRecyclerViewAdapter(PlaceholderContent.ITEMS));
         }
         return view;
     }
