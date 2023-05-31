@@ -14,20 +14,26 @@
         android:title="Serviervorschläge" />
     <item
         android:id="@+id/action_menue_activity"
+        android:icon="@drawable/ic_home"
+        android:menuCategory="system"
         android:title="Menü" />
     <item
         android:id="@+id/action_admin_logout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/ic_logout"
+        android:menuCategory="system"
         android:title="Ausloggen" />
     <item
         android:id="@+id/action_admin_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/ic_login"
-        android:title="Admin einoggen" />
+        android:menuCategory="system"
+        android:title="Admin einloggen" />
     <item
         android:id="@+id/action_refresh"
+        android:icon="@drawable/ic_reload"
+        android:menuCategory="system"
         android:title="Synchronisieren" />
 </menu>
