@@ -120,8 +120,8 @@ public class ModelActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         Log.i(TAG, "onCreateOptionsMenu" );
-        getMenuInflater().inflate(R.menu.menu_main, menu);
         this.menu = menu;
+        getMenuInflater().inflate(R.menu.menu_main, this.menu);
         if(AdminRights.isAdmin()){
             successfullLogin();
         }else{
@@ -228,7 +228,6 @@ public class ModelActivity extends AppCompatActivity {
 
     private void logout(){
         Log.i(TAG, "logout" );
-        Toast.makeText(this,"Ausgeloggt!",Toast.LENGTH_SHORT).show();
         AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.User);
         this.menu.findItem(R.id.action_admin_login).setVisible(true);
         this.menu.findItem(R.id.action_admin_logout).setVisible(false);
@@ -241,9 +240,8 @@ public class ModelActivity extends AppCompatActivity {
 
     public void logout(MenuItem item) {
         logout();
+        Toast.makeText(this,"Ausgeloggt!",Toast.LENGTH_SHORT).show();
     }
-
-
 
     private static class LoginView{
         private final TextView t;
