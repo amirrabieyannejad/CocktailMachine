@@ -2,20 +2,25 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_pumps"
+        android:onClick="goToPumps"
         android:title="Pumpen" />
     <item
         android:id="@+id/action_recipes"
+        android:onClick="goToRecipes"
         android:title="Rezepte" />
     <item
         android:id="@+id/action_ingredients"
+        android:onClick="goToIngredients"
         android:title="Zutaten" />
     <item
         android:id="@+id/action_topics"
+        android:onClick="goToTopics"
         android:title="Serviervorschläge" />
     <item
         android:id="@+id/action_menue_activity"
         android:icon="@drawable/ic_home"
         android:menuCategory="system"
+        android:onClick="goToMenue"
         android:title="Menü" />
     <item
         android:id="@+id/action_admin_logout"
@@ -23,6 +28,7 @@
         android:layout_height="wrap_content"
         android:icon="@drawable/ic_logout"
         android:menuCategory="system"
+        android:onClick="logout"
         android:title="Ausloggen" />
     <item
         android:id="@+id/action_admin_login"
@@ -30,10 +36,12 @@
         android:layout_height="wrap_content"
         android:icon="@drawable/ic_login"
         android:menuCategory="system"
+        android:onClick="login"
         android:title="Admin einloggen" />
     <item
         android:id="@+id/action_refresh"
         android:icon="@drawable/ic_reload"
         android:menuCategory="system"
+        android:onClick="refresh"
         android:title="Synchronisieren" />
 </menu>

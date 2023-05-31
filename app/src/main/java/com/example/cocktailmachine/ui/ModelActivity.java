@@ -2,6 +2,7 @@ package com.example.cocktailmachine.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.cocktailmachine.data.AdminRights;
@@ -10,6 +11,7 @@ import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMainBinding;
+import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
 import com.example.cocktailmachine.ui.model.ListFragment;
 
 import androidx.annotation.DrawableRes;
@@ -90,6 +92,7 @@ public class ModelActivity extends AppCompatActivity {
 
 
 
+
     public void setFAB(View.OnClickListener listener, @DrawableRes int drawable) {
         if(binding.fab == null){
             Log.i(TAG, "fab is null");
@@ -139,55 +142,56 @@ public class ModelActivity extends AppCompatActivity {
     //public void switchToNight(){
     //    getDelegate().applyDayNight();
     //}
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Log.i(TAG, "onOptionsItemSelected" );
-        if (item.getItemId() == R.id.action_admin_login) {
-            login();
-            return (true);
-        }else if (item.getItemId() == R.id.action_admin_logout) {
-            logout();
-            return (true);
-        }else if (item.getItemId() == R.id.action_refresh) {
-            refresh();
-            return (true);
-        }else if (item.getItemId() == R.id.action_ingredients) {
-            ListFragment fragment = new ListFragment();
-            Bundle bundle = new Bundle();
-            bundle.putString("Type","Ingredients");
-            navController.navigate(R.id.listFragment, bundle);
-            return (true);
-        }else if (item.getItemId() == R.id.action_pumps) {
-            ListFragment fragment = new ListFragment();
-            Bundle bundle = new Bundle();
-            bundle.putString("Type","Pumps");
-            navController.navigate(R.id.listFragment, bundle);
-            return (true);
-        }else if (item.getItemId() == R.id.action_topics) {
-            ListFragment fragment = new ListFragment();
-            Bundle bundle = new Bundle();
-            bundle.putString("Type","Topics");
-            navController.navigate(R.id.listFragment, bundle);
-            return (true);
-        }else if (item.getItemId() == R.id.action_recipes) {
-            ListFragment fragment = new ListFragment();
-            Bundle bundle = new Bundle();
-            if(AdminRights.isAdmin()){
-                bundle.putString("Type", "AllRecipes");
-            }else {
-                bundle.putString("Type", "AvailableRecipes");
-            }
-            navController.navigate(R.id.listFragment, bundle);
-            return (true);
+
+
+    //Menu
+    public void refresh(MenuItem item) {
+        //TODO
+    }
+
+    public void goToMenue(MenuItem item) {
+        Intent success = new Intent(this, Menue.class);
+        startActivity(success);
+    }
+
+    public void goToTopics(MenuItem item) {
+        ListFragment fragment = new ListFragment();
+        Bundle bundle = new Bundle();
+        if(AdminRights.isAdmin()){
+            bundle.putString("Type", "AllRecipes");
+        }else {
+            bundle.putString("Type", "AvailableRecipes");
         }
-        return(super.onOptionsItemSelected(item));
+        navController.navigate(R.id.listFragment, bundle);
     }
 
-    private void refresh(){
-        //Todo: refresh
+    public void goToIngredients(MenuItem item) {
+        ListFragment fragment = new ListFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("Type","Ingredients");
+        navController.navigate(R.id.listFragment, bundle);
+    }
+
+    public void goToPumps(MenuItem item) {
+        ListFragment fragment = new ListFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("Type","Pumps");
+        navController.navigate(R.id.listFragment, bundle);
+    }
+
+    public void goToRecipes(MenuItem item) {
+        ListFragment fragment = new ListFragment();
+        Bundle bundle = new Bundle();
+        if(AdminRights.isAdmin()) {
+            bundle.putString("Type", "AllRecipes");
+        }else{
+            bundle.putString("Type", "AvailableRecipes");
+        }
+        navController.navigate(R.id.listFragment, bundle);
     }
 
 
+    //Login / logout
     private void login(){
         Log.i(TAG, "login" );
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -230,6 +234,16 @@ public class ModelActivity extends AppCompatActivity {
         this.menu.findItem(R.id.action_admin_logout).setVisible(false);
         this.menu.findItem(R.id.action_pumps).setVisible(false);
     }
+
+    public void login(MenuItem item) {
+        login();
+    }
+
+    public void logout(MenuItem item) {
+        logout();
+    }
+
+
 
     private static class LoginView{
         private final TextView t;
