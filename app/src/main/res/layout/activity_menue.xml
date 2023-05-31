@@ -28,7 +28,7 @@
           android:layout_width="150dp"
           android:layout_height="150dp"
           android:layout_margin="30dp"
-          android:contentDescription=""
+          android:contentDescription="add recipe"
           android:onClick="openGlassFillAnimationView"
           app:srcCompat="@drawable/ic_list_add" />
 
@@ -37,7 +37,7 @@
           android:layout_width="150dp"
           android:layout_height="150dp"
           android:layout_margin="30dp"
-          android:contentDescription=""
+          android:contentDescription="swipe thing"
           android:onClick="openSingelCocktailView"
           app:srcCompat="@drawable/ic_single_cocktail_choice_2" />
 
