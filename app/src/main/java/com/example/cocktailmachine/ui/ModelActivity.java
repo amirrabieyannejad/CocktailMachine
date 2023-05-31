@@ -49,17 +49,21 @@ public class ModelActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
-        DatabaseConnection.initialize_singleton(this, UserPrivilegeLevel.Admin);
-        try {
-            DatabaseConnection.getDataBase();
-            Log.i(TAG, "onCreate: DataBase is initialized");
-            Log.i(TAG, Recipe.getAllRecipesAsMessage().toString());
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            Log.e(TAG, "onCreate: DataBase is not initialized");
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e(TAG, "onCreate:  Json didnt work");
+        if(!DatabaseConnection.is_initialized()) {
+            DatabaseConnection.initialize_singleton(this, UserPrivilegeLevel.Admin);
+            try {
+                DatabaseConnection.getDataBase();
+                Log.i(TAG, "onCreate: DataBase is initialized");
+                //Log.i(TAG, Recipe.getAllRecipesAsMessage().toString());
+            } catch (NotInitializedDBException e) {
+                e.printStackTrace();
+                Log.e(TAG, "onCreate: DataBase is not initialized");
+            }
+            /* catch (JSONException e) {
+                e.printStackTrace();
+                Log.e(TAG, "onCreate:  Json didnt work");
+            }
+            */
         }
         super.onCreate(savedInstanceState);
 
@@ -157,11 +161,7 @@ public class ModelActivity extends AppCompatActivity {
     public void goToTopics(MenuItem item) {
         ListFragment fragment = new ListFragment();
         Bundle bundle = new Bundle();
-        if(AdminRights.isAdmin()){
-            bundle.putString("Type", "AllRecipes");
-        }else {
-            bundle.putString("Type", "AvailableRecipes");
-        }
+        bundle.putString("Type","Topics");
         navController.navigate(R.id.listFragment, bundle);
     }
 

@@ -100,7 +100,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         }
     }
 
-    private static synchronized boolean is_initialized(){
+    public static synchronized boolean is_initialized(){
         return DatabaseConnection.singleton != null;
     }
 

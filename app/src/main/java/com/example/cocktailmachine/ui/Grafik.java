@@ -46,6 +46,8 @@ import java.util.Map;
 
 public class Grafik extends AppCompatActivity {
 
+    private static final String TAG = "Grafik";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
