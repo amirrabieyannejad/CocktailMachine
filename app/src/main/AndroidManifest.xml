@@ -74,6 +74,13 @@
                 android:value="" />
         </activity>
         <activity
+            android:name="com.example.cocktailmachine.ui.Menue"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name="com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice"
             android:exported="true">
             <meta-data
