@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,14 +13,12 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
-import com.example.cocktailmachine.databinding.FragmentListBinding;
-import com.example.cocktailmachine.ui.MainActivity;
+import com.example.cocktailmachine.ui.ModelActivity;
 
 import java.util.Objects;
 
 public class ListFragment extends Fragment {
-    private MainActivity activity;
+    private ModelActivity activity;
     private FragmentListBinding binding;
     private static final String TAG = "ListFragment";
 
@@ -240,7 +237,7 @@ public class ListFragment extends Fragment {
         Log.i(TAG, "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
 
-        activity = (MainActivity) getActivity();
+        activity = (ModelActivity) getActivity();
 
 
         Bundle args = getArguments();

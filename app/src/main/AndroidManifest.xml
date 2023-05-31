@@ -57,7 +57,7 @@
         android:theme="@style/Theme.CocktailMachine"
         tools:targetApi="26">
         <activity
-            android:name="com.example.cocktailmachine.ui.MainActivity"
+            android:name="com.example.cocktailmachine.ui.ModelActivity"
             android:exported="true"
 
             android:label="@string/title_activity_main"

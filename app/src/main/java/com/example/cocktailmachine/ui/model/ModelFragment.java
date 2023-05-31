@@ -20,13 +20,13 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.databinding.FragmentModelBinding;
-import com.example.cocktailmachine.ui.MainActivity;
+import com.example.cocktailmachine.ui.ModelActivity;
 
 import java.util.Objects;
 
 public class ModelFragment extends Fragment {
     private FragmentModelBinding binding;
-    private MainActivity activity;
+    private ModelActivity activity;
     private static final String TAG = "ModelFragment";
     private ModelType type;
     private Long id;
@@ -284,7 +284,7 @@ public class ModelFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Log.i(TAG, "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
-        activity = (MainActivity) getActivity();
+        activity = (ModelActivity) getActivity();
         if (activity != null) {
             Objects.requireNonNull(activity.getSupportActionBar()).setTitle("");
         }

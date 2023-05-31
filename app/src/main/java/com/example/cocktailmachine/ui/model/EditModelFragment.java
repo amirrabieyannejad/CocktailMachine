@@ -3,8 +3,6 @@ package com.example.cocktailmachine.ui.model;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,10 +13,8 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
@@ -37,19 +33,16 @@ import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
-import com.example.cocktailmachine.databinding.FragmentEditModelBinding;
-import com.example.cocktailmachine.ui.MainActivity;
+import com.example.cocktailmachine.ui.ModelActivity;
 import com.mrudultora.colorpicker.ColorPickerPopUp;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.IntFunction;
-import java.util.stream.Collectors;
 
 public class EditModelFragment extends Fragment {
     private FragmentEditModelBinding binding;
-    private MainActivity activity;
+    private ModelActivity activity;
     private static final String TAG = "EditModelFragment";
 
     //data
@@ -613,7 +606,7 @@ public class EditModelFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Log.i(TAG, "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
-        activity = (MainActivity) getActivity();
+        activity = (ModelActivity) getActivity();
         if (activity != null) {
             Objects.requireNonNull(activity.getSupportActionBar()).setTitle("");
         }
@@ -650,9 +643,9 @@ public class EditModelFragment extends Fragment {
         private int volume;
         private final TextView name;
         private final EditText vol;
-        private MainActivity activity;
+        private ModelActivity activity;
 
-        public EditRowViewHolder(@NonNull View itemView, Recipe recipe, MainActivity activity) {
+        public EditRowViewHolder(@NonNull View itemView, Recipe recipe, ModelActivity activity) {
             super(itemView);
             this.recipe = recipe;
             this.activity = activity;

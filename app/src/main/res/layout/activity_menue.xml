@@ -21,7 +21,8 @@
           android:layout_width="150dp"
           android:layout_height="150dp"
           android:layout_margin="30dp"
-          android:contentDescription="Show one avalable Cocktail"
+          android:contentDescription="Show one available Cocktail"
+          android:onClick="openRecipeList"
           app:srcCompat="@drawable/ic_list" />
 
       <ImageView
@@ -29,6 +30,13 @@
           android:layout_height="150dp"
           android:layout_margin="30dp"
           android:contentDescription="add recipe"
+          android:onClick="openRecipeCreator"
+          app:srcCompat="@drawable/ic_list_add" />
+      <ImageView
+          android:layout_width="150dp"
+          android:layout_height="150dp"
+          android:layout_margin="30dp"
+          android:contentDescription="FillAnimation"
           android:onClick="openGlassFillAnimationView"
           app:srcCompat="@drawable/ic_list_add" />
 
