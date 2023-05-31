@@ -41,7 +41,6 @@ android {
                      'src/main/res',
                      'src/main/resGlas',
                      'src/main/resModel'
-
             ]
         }
     }

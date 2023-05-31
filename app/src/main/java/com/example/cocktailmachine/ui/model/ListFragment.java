@@ -13,6 +13,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Recipe;
+import com.example.cocktailmachine.databinding.FragmentListBinding;
 import com.example.cocktailmachine.ui.ModelActivity;
 
 import java.util.Objects;

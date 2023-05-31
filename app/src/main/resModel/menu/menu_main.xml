@@ -13,14 +13,19 @@
         android:id="@+id/action_topics"
         android:title="Serviervorschläge" />
     <item
+        android:id="@+id/action_menue_activity"
+        android:title="Menü" />
+    <item
         android:id="@+id/action_admin_logout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:icon="@drawable/ic_logout"
         android:title="Ausloggen" />
     <item
         android:id="@+id/action_admin_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:icon="@drawable/ic_login"
         android:title="Admin einoggen" />
     <item
         android:id="@+id/action_refresh"

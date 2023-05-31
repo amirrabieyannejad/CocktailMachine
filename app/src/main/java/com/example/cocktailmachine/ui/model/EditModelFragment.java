@@ -33,6 +33,7 @@ import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.databinding.FragmentEditModelBinding;
 import com.example.cocktailmachine.ui.ModelActivity;
 import com.mrudultora.colorpicker.ColorPickerPopUp;
 
