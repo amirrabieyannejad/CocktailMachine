@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.model;
+package com.example.cocktailmachine.ui.model.old;
 
 import android.os.Bundle;
 
@@ -12,10 +12,10 @@ import com.example.cocktailmachine.R;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link IngredientModelFragment#newInstance} factory method to
+ * Use the {@link PumpModelFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class IngredientModelFragment extends Fragment {
+public class PumpModelFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -26,7 +26,7 @@ public class IngredientModelFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public IngredientModelFragment() {
+    public PumpModelFragment() {
         // Required empty public constructor
     }
 
@@ -36,11 +36,11 @@ public class IngredientModelFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment IngredientModelFragment.
+     * @return A new instance of fragment PumpModelFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static IngredientModelFragment newInstance(String param1, String param2) {
-        IngredientModelFragment fragment = new IngredientModelFragment();
+    public static PumpModelFragment newInstance(String param1, String param2) {
+        PumpModelFragment fragment = new PumpModelFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -61,6 +61,6 @@ public class IngredientModelFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_ingredient_model, container, false);
+        return inflater.inflate(R.layout.fragment_pump_model, container, false);
     }
 }

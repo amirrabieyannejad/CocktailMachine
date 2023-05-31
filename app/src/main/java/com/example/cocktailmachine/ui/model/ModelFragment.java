@@ -46,6 +46,8 @@ public class ModelFragment extends Fragment {
     private void setUP(){
         Log.i(TAG, "setUP: "+type+" "+id.toString());
         binding.textViewDescription.setVisibility(View.GONE);
+        //binding.includePump
+
         binding.includeAvailable.getRoot().setVisibility(View.GONE);
         binding.includeNotAvailable.getRoot().setVisibility(View.GONE);
         binding.includeNotAvailable.getRoot().setVisibility(View.GONE);
@@ -54,6 +56,8 @@ public class ModelFragment extends Fragment {
         binding.includeIngredientAdmin.getRoot().setVisibility(View.GONE);
         binding.includeIngredients.getRoot().setVisibility(View.GONE);
         binding.includeTopics.getRoot().setVisibility(View.GONE);
+
+         
 
 
         switch (type){
