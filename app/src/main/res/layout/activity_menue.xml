@@ -21,7 +21,7 @@
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
-                android:contentDescription="Show one available Cocktail"
+                android:contentDescription="Show available Cocktails"
                 android:onClick="openRecipeList"
                 app:srcCompat="@drawable/ic_list" />
 
@@ -66,11 +66,22 @@
                 app:srcCompat="@drawable/ic_options" />
 
             <ImageView
+                android:id="@+id/activity_menue_logout"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:contentDescription="Logout"
-                app:srcCompat="@drawable/ic_logout_icon" />
+                android:onClick="logout"
+                app:srcCompat="@drawable/ic_logout" />
+
+            <ImageView
+                android:id="@+id/activity_menue_login"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
+                android:contentDescription="Login"
+                android:onClick="login"
+                app:srcCompat="@drawable/ic_login" />
 
         </LinearLayout>
     </ScrollView>

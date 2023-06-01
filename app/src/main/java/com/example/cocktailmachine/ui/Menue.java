@@ -9,20 +9,25 @@ import android.view.View;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
+import com.example.cocktailmachine.data.AdminRights;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
+import com.example.cocktailmachine.databinding.ActivityMainBinding;
+import com.example.cocktailmachine.databinding.ActivityMenueBinding;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
 import com.example.cocktailmachine.ui.model.ModelFragment;
 import com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice;
 
 public class Menue extends AppCompatActivity {
     private static final String TAG = "Menue";
+    private ActivityMenueBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menue);
+        binding = ActivityMenueBinding.inflate(getLayoutInflater());
         if(!DatabaseConnection.is_initialized()) {
             Log.i(TAG, "onCreate: DataBase is not yet initialized");
             DatabaseConnection.initialize_singleton(this, UserPrivilegeLevel.Admin);
@@ -34,6 +39,13 @@ public class Menue extends AppCompatActivity {
                 e.printStackTrace();
                 Log.e(TAG, "onCreate: DataBase is not initialized");
             }
+        }
+        if(AdminRights.isAdmin()){
+            binding.activityMenueLogout.setVisibility(View.VISIBLE);
+            binding.activityMenueLogin.setVisibility(View.GONE);
+        }else{
+            binding.activityMenueLogout.setVisibility(View.GONE);
+            binding.activityMenueLogin.setVisibility(View.VISIBLE);
         }
     }
 
@@ -74,6 +86,19 @@ public class Menue extends AppCompatActivity {
     public void openDeviceScan(View view){
         Intent success = new Intent(this, DeviceScanActivity.class);
         startActivity(success);
+    }
+
+    public void login(View view){
+        if(AdminRights.login(this, getLayoutInflater())){
+            binding.activityMenueLogout.setVisibility(View.VISIBLE);
+            binding.activityMenueLogin.setVisibility(View.GONE);
+        }
+    }
+
+    public void logout(View view){
+        AdminRights.logout(this);
+        binding.activityMenueLogout.setVisibility(View.GONE);
+        binding.activityMenueLogin.setVisibility(View.VISIBLE);
     }
 
 

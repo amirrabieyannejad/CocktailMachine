@@ -194,28 +194,9 @@ public class ModelActivity extends AppCompatActivity {
     //Login / logout
     private void login(){
         Log.i(TAG, "login" );
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Login");
-        View v = getLayoutInflater().inflate(R.layout.layout_login, null);
-        LoginView loginView = new LoginView(this, v);
-
-        builder.setView(v);
-        builder.setPositiveButton("Weiter", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if(loginView.check()){
-                    successfullLogin();
-                    Toast.makeText(getBaseContext(),"Eingeloggt!",Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        builder.setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        builder.show();
+        if(AdminRights.login(this, getLayoutInflater())){
+            successfullLogin();
+        }
     }
 
     private void successfullLogin(){
@@ -223,12 +204,11 @@ public class ModelActivity extends AppCompatActivity {
         this.menu.findItem(R.id.action_admin_login).setVisible(false);
         this.menu.findItem(R.id.action_admin_logout).setVisible(true);
         this.menu.findItem(R.id.action_pumps).setVisible(true);
-        AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.Admin);
     }
 
     private void logout(){
         Log.i(TAG, "logout" );
-        AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.User);
+        AdminRights.logout(this);
         this.menu.findItem(R.id.action_admin_login).setVisible(true);
         this.menu.findItem(R.id.action_admin_logout).setVisible(false);
         this.menu.findItem(R.id.action_pumps).setVisible(false);
@@ -243,24 +223,5 @@ public class ModelActivity extends AppCompatActivity {
         Toast.makeText(this,"Ausgeloggt!",Toast.LENGTH_SHORT).show();
     }
 
-    private static class LoginView{
-        private final TextView t;
-        private final EditText e;
-        private final View v;
-        public LoginView(Context context, View v) {
-            this.v = v;
-            t = (TextView) v.findViewById(R.id.textView_edit_text);
-            e = (EditText) v.findViewById(R.id.editText_edit_text);
-            e.setHint("");
-            t.setText("Passwort: ");
-            e.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-
-        }
-        public boolean check(){
-            return e.getText().toString().equals("admin");
-        }
-
-
-    }
 
 }
