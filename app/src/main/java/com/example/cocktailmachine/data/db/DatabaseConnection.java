@@ -51,6 +51,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         super(context, DatabaseConnection.DBname,
                 DatabaseConnection.factory,
                 DatabaseConnection.version);
+        Log.i(TAG, "DatabaseConnection");
         //this.privilege = UserPrivilegeLevel.User;
     }
 
@@ -59,11 +60,14 @@ public class DatabaseConnection extends SQLiteOpenHelper {
                 DatabaseConnection.factory,
                 DatabaseConnection.version);
         //this.privilege = privilege;
+        Log.i(TAG, "DatabaseConnection");
         AdminRights.setUserPrivilegeLevel(privilege);
 
     }
 
     static synchronized DatabaseConnection getSingleton() throws NotInitializedDBException {
+
+        Log.i(TAG, "getSingleton");
         if(!DatabaseConnection.is_initialized()) {
             throw new NotInitializedDBException();
         }
@@ -71,10 +75,12 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public static synchronized DatabaseConnection getDataBase() throws NotInitializedDBException {
+        Log.i(TAG, "getDataBase");
         return DatabaseConnection.getSingleton();
     }
 
     public static synchronized void initialize_singleton(Context context){
+        Log.i(TAG, "initialize_singleton");
         DatabaseConnection.singleton = new DatabaseConnection(context);
         try {
             Log.i(TAG, "initialize_singleton: start loading");
@@ -90,6 +96,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public static synchronized void initialize_singleton(Context context, UserPrivilegeLevel privilege){
+        Log.i(TAG, "initialize_singleton");
         DatabaseConnection.singleton = new DatabaseConnection(context, privilege);
         try {
             Log.i(TAG, "initialize_singleton: start loading");
@@ -105,6 +112,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public static synchronized boolean is_initialized(){
+        Log.i(TAG, "is_initialized");
         return DatabaseConnection.singleton != null;
     }
 
@@ -114,6 +122,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
 
     public void emptyUpPumps() {
+        Log.i(TAG, "emptyUpPumps");
         Tables.TABLE_INGREDIENT_PUMP.deleteTable();
         Tables.TABLE_INGREDIENT_PUMP.createTable();
         this.ingredientPumps = new ArrayList<>();
@@ -125,6 +134,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public void setUpEmptyPumps() {
+        Log.i(TAG, "setUpEmptyPumps");
         this.emptyUpPumps();
         Tables.TABLE_PUMP.deleteTable();
         Tables.TABLE_PUMP.createTable();
@@ -134,18 +144,21 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     //LOAD
 
     public void loadForSetUp() {
+        Log.i(TAG, "loadForSetUp");
         this.emptyUpPumps();
         this.ingredients = this.loadAllAvailableIngredients();
 
     }
 
     private List<Ingredient> loadAllAvailableIngredients() {
+        Log.i(TAG, "loadAllAvailableIngredients");
 
         List<? extends Ingredient> res = Tables.TABLE_INGREDIENT.getAllElements(this.getReadableDatabase());
         return (List<Ingredient>) res;
     }
 
     public void loadBufferWithAvailable() {
+        Log.i(TAG, "loadBufferWithAvailable");
         this.pumps = this.loadPumps();
         this.ingredientPumps = this.loadIngredientPumps();
         this.ingredients = this.loadAvailableIngredients();
@@ -155,10 +168,12 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public List<Recipe> loadAvailableRecipes() {
+        Log.i(TAG, "loadAvailableRecipes");
         return (List<Recipe>) Tables.TABLE_RECIPE.getAvailable(this.getReadableDatabase() );
     }
 
     public List<Ingredient> loadAvailableIngredients() {
+        Log.i(TAG, "loadAvailableIngredients");
        // return IngredientTable.
         List<? extends Ingredient> res =  Tables.TABLE_INGREDIENT.getElements(this.getReadableDatabase(),
                 this.getAvailableIngredientIDs());
@@ -166,28 +181,33 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     private List<SQLIngredientPump> loadIngredientPumps() {
+        Log.i(TAG, "loadIngredientPumps");
         // return IngredientTable.
         return Tables.TABLE_INGREDIENT_PUMP.getAllElements(this.getReadableDatabase());
     }
 
     private List<Pump> loadPumps() {
+        Log.i(TAG, "loadPumps");
         // return IngredientTable.
         List<? extends Pump> res =   Tables.TABLE_PUMP.getAllElements(this.getReadableDatabase());
         return (List<Pump>) res;
     }
 
     private List<Topic> loadTopics() {
+        Log.i(TAG, "loadTopics");
         //return
         List<? extends Topic> res = Tables.TABLE_TOPIC.getAllElements(this.getReadableDatabase());
         return (List<Topic>) res;
     }
 
     private List<SQLRecipeIngredient> loadIngredientVolumes(){
+        Log.i(TAG, "loadIngredientVolumes");
         return Tables.TABLE_RECIPE_INGREDIENT.getAvailable(this.getReadableDatabase(), this.recipes);
 
     }
 
     public Ingredient loadIngredient(long id) throws AccessDeniedException {
+        Log.i(TAG, "loadIngredient");
         if(!AdminRights.isAdmin()){
             throw  new AccessDeniedException();
         }
@@ -195,6 +215,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public Recipe loadRecipe(long id) throws AccessDeniedException {
+        Log.i(TAG, "loadRecipe");
         if(!AdminRights.isAdmin()){
             throw  new AccessDeniedException();
         }
@@ -202,6 +223,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public Topic loadTopic(long id) throws AccessDeniedException {
+        Log.i(TAG, "loadTopic");
         if(!AdminRights.isAdmin()){
             throw  new AccessDeniedException();
         }
@@ -212,6 +234,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     //CHECKER
 
     public boolean checkAvailabilityOfAllIngredients(HashMap<Long, Integer> ingredientVolume) {
+        Log.i(TAG, "checkAvailabilityOfAllIngredients");
         final List<Boolean> availables = new ArrayList<>();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             ingredientVolume.forEach((id, time)->{
@@ -228,6 +251,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     //GETTER //Not allowed to fetch from database !!!only!!! from buffer unless they are admins
 
     private List<Long> getAvailableIngredientIDs(){
+        Log.i(TAG, "getAvailableIngredientIDs");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.ingredientPumps
                     .stream().map(SQLIngredientPump::getIngredientID)
@@ -237,14 +261,17 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public List<SQLIngredientPump> getIngredientPumps() {
+        Log.i(TAG, "getIngredientPumps");
         return this.ingredientPumps;
     }
 
     public List<Pump> getPumps() {
+        Log.i(TAG, "getPumps");
         return this.pumps;
     }
 
     public Pump getPump(Long id){
+        Log.i(TAG, "getPump");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.pumps.stream().filter(p->p.getID()==id).findFirst().orElse(null);
         }
@@ -253,6 +280,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public Ingredient getIngredient(Long id) {
+        Log.i(TAG, "getIngredient");
         Ingredient ingredient = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             ingredient = this.ingredients.stream().filter(i->i.getID()==id)
@@ -272,6 +300,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public List<Ingredient> getIngredients(List<Long> ingredients) {
+        Log.i(TAG, "getIngredients");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.ingredients.stream().filter(i->ingredients.contains(i.getID())).collect(Collectors.toList());
         }
@@ -281,6 +310,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public Recipe getRecipe(Long id) {
+        Log.i(TAG, "getRecipe");
         Recipe recipe= null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             recipe = this.recipes.stream().filter(i->i.getID()==id).findFirst().orElse(null);
@@ -302,7 +332,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public List<Recipe> getRecipes(List<Long> recipeIds) {
-
+        Log.i(TAG, "getRecipes");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.recipes.stream().filter(i->recipeIds.contains(i.getID())).collect(Collectors.toList());
         }
@@ -312,6 +342,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public List<Recipe> getRecipeWith(String needle) {
+        Log.i(TAG, "getRecipeWith");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.recipes.stream().filter(i->i.getName().contains(needle)).collect(Collectors.toList());
         }
@@ -319,6 +350,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public Recipe getRecipeWithExact(String name) {
+        Log.i(TAG, "getRecipeWithExact");
         List<Recipe> recipes;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             recipes = this.recipes.stream().filter(i-> Objects.equals(i.getName(), name)).collect(Collectors.toList());
@@ -333,6 +365,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public List<Ingredient> getIngredientWith(String needle) {
+        Log.i(TAG, "getIngredientWith");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.ingredients.stream().filter(i->i.getName().contains(needle)).collect(Collectors.toList());
         }
@@ -340,6 +373,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public Ingredient getIngredientWithExact(String name) {
+        Log.i(TAG, "getIngredientWithExact");
         List<Ingredient> ingredients;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             ingredients =  this.ingredients.stream().filter(i->i.getName()==name).collect(Collectors.toList());
@@ -354,11 +388,13 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
 
     public List<? extends Ingredient> getAllIngredients() {
+        Log.i(TAG, "getAllIngredients");
         return ingredients;
     }
 
 
     public List<? extends Ingredient> getAvailableIngredients() {
+        Log.i(TAG, "getAvailableIngredients");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.ingredients.stream().filter(Ingredient::isAvailable).collect(Collectors.toList());
         }
@@ -366,6 +402,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public List<? extends Recipe> getRecipes() {
+        Log.i(TAG, "getRecipes");
         if (AdminRights.isAdmin()) {
             return this.recipes;
         }
@@ -374,6 +411,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
 
     public List<? extends Recipe> getAvailableRecipes() {
+        Log.i(TAG, "getAvailableRecipes");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.recipes.stream().filter(Recipe::isAvailable).collect(Collectors.toList());
         }
@@ -381,22 +419,27 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public List<String> getUrls(SQLIngredient newSQLIngredient) {
+        Log.i(TAG, "getUrls");
         return Tables.TABLE_INGREDIENT_URL.getUrls(this.getReadableDatabase(), newSQLIngredient.getID());
     }
 
-    public List<SQLIngredientImageUrlElement> getUrlElements(SQLIngredient newSQLIngredient)  {
+    public List<SQLIngredientImageUrlElement> getUrlElements(SQLIngredient newSQLIngredient) {
+        Log.i(TAG, "getUrlElements");
         return Tables.TABLE_INGREDIENT_URL.getElements(this.getReadableDatabase(), newSQLIngredient.getID());
     }
 
     public List<String> getUrls(SQLRecipe newSQLRecipe) {
+        Log.i(TAG, "getUrls");
         return Tables.TABLE_RECIPE_URL.getUrls(this.getReadableDatabase(), newSQLRecipe.getID());
     }
 
     public List<SQLRecipeImageUrlElement> getUrlElements(SQLRecipe newSQLRecipe) {
+        Log.i(TAG, "getUrlElements");
         return Tables.TABLE_RECIPE_URL.getElements(this.getReadableDatabase(), newSQLRecipe.getID());
     }
 
     private List<Topic> getTopics(List<Long> t_ids) {
+        Log.i(TAG, "getTopics");
         //return Tables.TABLE_TOPIC.getElements(this.getReadableDatabase(), t_ids);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.topics.stream().filter(t -> t_ids.contains(t.getID())).collect(Collectors.toList());
@@ -412,10 +455,12 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public List<Topic> getTopics(SQLRecipe newSQLRecipe) {
+        Log.i(TAG, "getTopics");
         return this.getTopics(newSQLRecipe.getTopics());
     }
 
     public Topic getTopic(long id) {
+        Log.i(TAG, "getTopic");
         Topic topic = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             topic = this.topics.stream().filter(t-> t.getID()==id).findFirst().orElse(null);
@@ -433,6 +478,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public List<Topic> getTopicsWith(String needle) {
+        Log.i(TAG, "getTopicsWith");
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             return this.topics.stream().filter(t -> t.getName().contains(needle)).collect(Collectors.toList());
         } else {
@@ -441,6 +487,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public List<Topic> getTopicsWithExact(String name) {
+        Log.i(TAG, "getTopicsWithExact");
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             return this.topics.stream().filter(t -> t.getName().equals(name)).collect(Collectors.toList());
         } else {
@@ -448,31 +495,74 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * get topic wit needle
+     * @param needle
+     * @return
+     */
     public Topic getTopicWith(String needle) {
+        Log.i(TAG, "getTopicWith");
+        return getTopicWith(needle, false);
+    }
+
+    /**
+     * get topic wit needle or make new, if true
+     * @param needle
+     * @return
+     */
+    public Topic getTopicWith(String needle, boolean makeNew) {
+        Log.i(TAG, "getTopicWith");
         List<Topic> ts = getTopicsWith(needle);
         if(!ts.isEmpty()){
             return ts.get(0);
         }
-        return null;
+        if(makeNew) {
+            return Topic.makeNew(needle, "Füll bitte bei Gelegenheit aus!");
+        }else{
+            return null;
+        }
     }
 
+    /**
+     * get topic with exact this name or null
+     * @param name
+     * @return
+     */
     public Topic getTopicWithExact(String name) {
+        Log.i(TAG, "getTopicWithExact");
+        return getTopicWithExact(name, false);
+    }
+
+    /**
+     * get topic with exact this name or make one, if makeNew
+     * @param name
+     * @param makeNew
+     * @return
+     */
+    public Topic getTopicWithExact(String name, boolean makeNew) {
+        Log.i(TAG, "getTopicWithExact");
         List<Topic> ts = getTopicsWithExact(name);
         if(!ts.isEmpty()){
             return ts.get(0);
+        }
+        if(makeNew) {
+            return Topic.makeNew(name, "Füll bitte bei Gelegenheit aus!");
         }
         return null;
     }
 
     public List<Topic> getTopics(Recipe recipe) {
+        Log.i(TAG, "getTopics");
         return this.getTopics(recipe.getTopics());
     }
 
     public List<Topic> getTopics() {
+        Log.i(TAG, "getTopics");
         return this.topics;
     }
 
     public List<Long> getTopicIDs(SQLRecipe newSQLRecipe) {
+        Log.i(TAG, "getTopicIDs");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.getTopics(newSQLRecipe).stream().map(Topic::getID).collect(Collectors.toList());
         }
@@ -480,6 +570,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public List<SQLRecipeIngredient> getIngredientVolumes(SQLRecipe newSQLRecipe) {
+        Log.i(TAG, "getIngredientVolumes");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.recipeIngredients
                     .stream()
@@ -492,11 +583,13 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     //ADD OR UPDATE
     public void addIngredientImageUrl(long ingredientId, String url) {
+        Log.i(TAG, "addIngredientImageUrl");
         // this.getWritableDatabase().
         Tables.TABLE_INGREDIENT_URL.addElement(this.getWritableDatabase(),ingredientId, url);
     }
 
     public void addOrUpdate(SQLIngredient ingredient) {
+        Log.i(TAG, "addOrUpdate");
         if(ingredient.isSaved() && ingredient.needsUpdate()){
             Tables.TABLE_INGREDIENT.updateElement(this.getWritableDatabase(), ingredient);
             this.ingredients.remove(ingredient);
@@ -508,6 +601,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public void addOrUpdate(SQLRecipe recipe) {
+        Log.i(TAG, "addOrUpdate");
         if(recipe.isSaved() && recipe.needsUpdate()){
             this.recipes.remove(recipe);
             Tables.TABLE_RECIPE.updateElement(this.getWritableDatabase(), recipe);
@@ -518,6 +612,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public void addOrUpdate(SQLTopic topic) {
+        Log.i(TAG, "addOrUpdate");
         if(topic.isSaved() && topic.needsUpdate()){
             this.topics.remove(topic);
             Tables.TABLE_TOPIC.updateElement(this.getWritableDatabase(), topic);
@@ -528,6 +623,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public void addOrUpdate(SQLPump pump) {
+        Log.i(TAG, "addOrUpdate");
         if(pump.isSaved() && pump.needsUpdate()){
             Tables.TABLE_PUMP.updateElement(this.getWritableDatabase(), pump);
             this.pumps.remove(pump);
@@ -538,6 +634,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public void addOrUpdate(SQLRecipeTopic recipeTopic) {
+        Log.i(TAG, "addOrUpdate");
         if(recipeTopic.isSaved() && recipeTopic.needsUpdate()){
             Tables.TABLE_RECIPE_TOPIC.updateElement(this.getWritableDatabase(), recipeTopic);
         }else{
@@ -546,6 +643,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public void addOrUpdate(SQLIngredientPump ingredientPump) {
+        Log.i(TAG, "addOrUpdate");
         if(ingredientPump.isSaved() && ingredientPump.needsUpdate()){
             Tables.TABLE_INGREDIENT_PUMP.updateElement(this.getWritableDatabase(), ingredientPump);
             //this.ingredientPumps.remove(ingredientPump);
@@ -556,6 +654,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public void addOrUpdate(SQLRecipeIngredient recipeIngredient) {
+        Log.i(TAG, "addOrUpdate");
         if(recipeIngredient.isSaved() && recipeIngredient.needsUpdate()){
             Tables.TABLE_RECIPE_INGREDIENT.updateElement(this.getWritableDatabase(), recipeIngredient);
             //this.recipeIngredients.remove(recipeIngredient);
@@ -566,6 +665,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public void addOrUpdate(SQLRecipeImageUrlElement recipeImageUrlElement) {
+        Log.i(TAG, "addOrUpdate");
         if(recipeImageUrlElement.isSaved() && recipeImageUrlElement.needsUpdate()){
             Tables.TABLE_RECIPE_URL.updateElement(this.getWritableDatabase(), recipeImageUrlElement);
         }else{
@@ -574,6 +674,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public void addOrUpdate(SQLIngredientImageUrlElement ingredientImageUrlElement) {
+        Log.i(TAG, "addOrUpdate");
         if(ingredientImageUrlElement.isSaved() && ingredientImageUrlElement.needsUpdate()){
             Tables.TABLE_INGREDIENT_URL.updateElement(this.getWritableDatabase(), ingredientImageUrlElement);
         }else{
@@ -586,6 +687,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     //REMOVE in DB and buffer
     public void removeRecipe(long id) {
+        Log.i(TAG, "removeRecipe");
         Tables.TABLE_RECIPE.deleteElement(this.getWritableDatabase(), id);
         Tables.TABLE_RECIPE_URL.deleteWithOwnerId(this.getWritableDatabase(), id);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -596,6 +698,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public void removeIngredient(long id) {
+        Log.i(TAG, "removeIngredient");
         Tables.TABLE_INGREDIENT.deleteElement(this.getWritableDatabase(), id);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             this.ingredients.removeIf(i->i.getID()==id);
@@ -610,6 +713,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public void removePump(long id) {
+        Log.i(TAG, "removePump");
         Tables.TABLE_PUMP.deleteElement(this.getWritableDatabase(), id);
         Tables.TABLE_INGREDIENT_PUMP.deletePump(this.getWritableDatabase(), id);
         // .deletePump(this.getWritableDatabase(), pump.getID());
@@ -625,17 +729,20 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
 
     public void remove(Ingredient ingredient) {
+        Log.i(TAG, "remove");
         Tables.TABLE_INGREDIENT.deleteElement(this.getWritableDatabase(), ingredient.getID());
         this.ingredients.remove(ingredient);
     }
 
     public void remove(Recipe recipe) {
+        Log.i(TAG, "remove");
         Tables.TABLE_RECIPE.deleteElement(this.getWritableDatabase(), recipe.getID());
         Tables.TABLE_RECIPE_URL.deleteWithOwnerId(this.getWritableDatabase(), recipe.getID());
         this.recipes.remove(recipe);
     }
 
     public void remove(Pump pump) {
+        Log.i(TAG, "remove");
         Tables.TABLE_PUMP.deleteElement(this.getWritableDatabase(), pump.getID());
         Tables.TABLE_INGREDIENT_PUMP.deletePump(this.getWritableDatabase(), pump.getID());
         this.pumps.remove(pump);
@@ -649,10 +756,12 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
 
     public void remove(SQLRecipeTopic newSQLRecipeTopic) {
+        Log.i(TAG, "remove");
         Tables.TABLE_RECIPE_TOPIC.deleteElement(this.getWritableDatabase(), newSQLRecipeTopic);
     }
 
     public void remove(SQLTopic topic) {
+        Log.i(TAG, "remove");
         Tables.TABLE_TOPIC.deleteElement(this.getWritableDatabase(), topic);
         this.topics.remove(topic);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -665,20 +774,24 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public void remove(SQLRecipeIngredient recipeIngredient) {
+        Log.i(TAG, "remove");
         Tables.TABLE_RECIPE_INGREDIENT.deleteElement(this.getWritableDatabase(),recipeIngredient);
         this.recipeIngredients.remove(recipeIngredient);
     }
 
     public void remove(SQLIngredientPump ingredientPump) {
+        Log.i(TAG, "remove");
         Tables.TABLE_INGREDIENT_PUMP.deleteElement(this.getWritableDatabase(), ingredientPump);
         this.ingredientPumps.remove(ingredientPump);
     }
 
     public void remove(SQLRecipeImageUrlElement recipeImageUrlElement) {
+        Log.i(TAG, "remove");
         Tables.TABLE_RECIPE_URL.deleteElement(this.getWritableDatabase(),recipeImageUrlElement);
     }
 
     public void remove(SQLIngredientImageUrlElement ingredientImageUrlElement) {
+        Log.i(TAG, "remove");
         Tables.TABLE_INGREDIENT_URL.deleteElement(this.getWritableDatabase(),ingredientImageUrlElement);
     }
 
@@ -687,12 +800,14 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     // Helper Over rides
 
     public void onConfigure(SQLiteDatabase db) {
+        Log.i(TAG, "onConfigure");
         super.onConfigure(db);
         db.setForeignKeyConstraintsEnabled(true);
         db.enableWriteAheadLogging();
     }
 
     public void onCreate(SQLiteDatabase db) {
+        Log.i(TAG, "onCreate");
         for (String createCmd : Tables.getCreates()) {
             db.execSQL(createCmd);
         }
@@ -701,6 +816,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        Log.i(TAG, "onUpgrade");
         //db.enableWriteAheadLogging();
         if(oldVersion == DatabaseConnection.version) {
             for (String deleteCmd : Tables.getDeletes()) {
