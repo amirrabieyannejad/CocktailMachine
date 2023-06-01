@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
@@ -26,8 +27,9 @@ public class Menue extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_menue);
+        //setContentView(R.layout.activity_menue);
         binding = ActivityMenueBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         if(!DatabaseConnection.is_initialized()) {
             Log.i(TAG, "onCreate: DataBase is not yet initialized");
             DatabaseConnection.initialize_singleton(this, UserPrivilegeLevel.Admin);
@@ -89,13 +91,16 @@ public class Menue extends AppCompatActivity {
     }
 
     public void login(View view){
+        Log.i(TAG, "login");
         if(AdminRights.login(this, getLayoutInflater())){
+            Log.i(TAG, "successful login");
             binding.activityMenueLogout.setVisibility(View.VISIBLE);
             binding.activityMenueLogin.setVisibility(View.GONE);
         }
     }
 
     public void logout(View view){
+        Log.i(TAG, "logout");
         AdminRights.logout(this);
         binding.activityMenueLogout.setVisibility(View.GONE);
         binding.activityMenueLogin.setVisibility(View.VISIBLE);
