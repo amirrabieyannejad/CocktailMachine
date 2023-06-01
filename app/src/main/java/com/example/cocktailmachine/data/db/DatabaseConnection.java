@@ -200,9 +200,12 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         if(!AdminRights.isAdmin()) {
             this.ingredients = this.loadAvailableIngredients();
             Log.i(TAG, "loadBufferWithAvailable no admin Ingredients: "+this.ingredients.toString());
+            this.recipes = this.loadAvailableRecipes();
+            Log.i(TAG, "loadBufferWithAvailable AvailableRecipes: "+this.recipes.toString());
+        }else{
+            this.recipes = this.loadAllRecipes();
+            Log.i(TAG, "loadBufferWithAvailable AllRecipes: "+this.recipes.toString());
         }
-        this.recipes = this.loadAvailableRecipes();
-        Log.i(TAG, "loadBufferWithAvailable AvailableRecipes: "+this.recipes.toString());
         this.topics = this.loadTopics();
         Log.i(TAG, "loadBufferWithAvailable Topics: "+this.topics.toString());
         this.recipeIngredients = this.loadIngredientVolumes();
@@ -213,6 +216,12 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     public List<Recipe> loadAvailableRecipes() {
         Log.i(TAG, "loadAvailableRecipes");
         return (List<Recipe>) Tables.TABLE_RECIPE.getAvailable(this.getReadableDatabase() );
+    }
+
+    public List<Recipe> loadAllRecipes() {
+        Log.i(TAG, "loadAvailableRecipes");
+        List<? extends Recipe> res =  Tables.TABLE_RECIPE.getAllElements(this.getReadableDatabase());
+        return (List<Recipe>) res;
     }
 
     public List<Ingredient> loadAvailableIngredients() {
@@ -420,24 +429,33 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return Helper.ingredientWithNeedleInName(this.ingredients, needle);
     }
 
-    public Ingredient getIngredientWithExact(String name) {
-        Log.i(TAG, "getIngredientWithExact");
+    public List<Ingredient> getIngredientsWithExact(String name) {
+        Log.i(TAG, "getIngredientsWithExact");
         List<Ingredient> res;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             res =  this.ingredients.stream().filter(i-> {
-                Log.i(TAG, i.getName()+ name+Objects.equals(i.getName(), name));
-                return Objects.equals(i.getName(), name);})
+                        Log.i(TAG, i.getName()+ name+Objects.equals(i.getName(), name));
+                        return Objects.equals(i.getName(), name);})
                     .collect(Collectors.toList());
         }else {
             res = Helper.ingredientWitName(this.ingredients, name);
         }
         if(res.isEmpty()){
-            Log.i(TAG, "getIngredientWithExact ingredients is empty");
-            return null;
+            Log.i(TAG, "getIngredientsWithExact ingredients is empty");
         }else{
             for(Ingredient i: res){
-                Log.i(TAG, "getIngredientWithExact res "+i.getName());
+                Log.i(TAG, "getIngredientsWithExact res "+i.getName());
             }
+        }
+        return res;
+    }
+
+    public Ingredient getIngredientWithExact(String name) {
+        Log.i(TAG, "getIngredientWithExact");
+        List<Ingredient> res = getIngredientsWithExact(name);
+        if(res.isEmpty()){
+            Log.i(TAG, "getIngredientWithExact ingredients is empty");
+            return null;
         }
         return res.get(0);
     }

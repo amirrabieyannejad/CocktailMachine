@@ -184,6 +184,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
             return DatabaseConnection.getDataBase().getIngredientWithExact(name);
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
+            Log.i(TAG,"getIngredient res null");
             return null;
         }
     }

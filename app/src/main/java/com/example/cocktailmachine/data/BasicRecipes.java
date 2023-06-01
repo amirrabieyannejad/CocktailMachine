@@ -91,6 +91,10 @@ public class BasicRecipes {
     }
 
 
+    /**
+     * Load margarita cocktail
+     * @throws NotInitializedDBException
+     */
     public static void loadMargarita() throws NotInitializedDBException {
         Log.i(TAG,"loadMargarita");
         /**
