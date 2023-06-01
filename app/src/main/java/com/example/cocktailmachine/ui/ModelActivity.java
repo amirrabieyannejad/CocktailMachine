@@ -194,16 +194,16 @@ public class ModelActivity extends AppCompatActivity {
     //Login / logout
     private void login(){
         Log.i(TAG, "login" );
-        if(AdminRights.login(this, getLayoutInflater())){
-            successfullLogin();
-        }
+        AdminRights.login(this, getLayoutInflater(), dialog -> successfullLogin());
     }
 
     private void successfullLogin(){
         Log.i(TAG, "successfullLogin" );
-        this.menu.findItem(R.id.action_admin_login).setVisible(false);
-        this.menu.findItem(R.id.action_admin_logout).setVisible(true);
-        this.menu.findItem(R.id.action_pumps).setVisible(true);
+        if(AdminRights.isAdmin()) {
+            this.menu.findItem(R.id.action_admin_login).setVisible(false);
+            this.menu.findItem(R.id.action_admin_logout).setVisible(true);
+            this.menu.findItem(R.id.action_pumps).setVisible(true);
+        }
     }
 
     private void logout(){

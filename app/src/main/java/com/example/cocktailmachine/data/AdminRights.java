@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatCallback;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
@@ -24,6 +25,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class AdminRights {
     private static final String TAG = "AdminRights";
@@ -81,11 +83,10 @@ public class AdminRights {
         return json;
     }
 
-    public static boolean login(Context getContext,
-                                LayoutInflater getLayoutInflater){
+    public static void login(Context getContext,
+                             LayoutInflater getLayoutInflater,
+                             DialogInterface.OnDismissListener dismissListener){
         Log.i(TAG, "login" );
-
-        final List<Boolean> res = new ArrayList<>();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext);
         builder.setTitle("Login");
@@ -99,7 +100,6 @@ public class AdminRights {
                 if(loginView.check()){
                     AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.Admin);
                     Toast.makeText(getContext,"Eingeloggt!",Toast.LENGTH_SHORT).show();
-                    res.add(true);
                 }
             }
         });
@@ -109,8 +109,8 @@ public class AdminRights {
                 dialog.dismiss();
             }
         });
+        builder.setOnDismissListener(dismissListener);
         builder.show();
-        return isAdmin();
     }
 
     public static void logout(Context getContext){

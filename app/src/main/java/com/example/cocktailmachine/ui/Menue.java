@@ -92,8 +92,16 @@ public class Menue extends AppCompatActivity {
 
     public void login(View view){
         Log.i(TAG, "login");
-        if(AdminRights.login(this, getLayoutInflater())){
-            Log.i(TAG, "successful login");
+        AdminRights.login(this,
+                getLayoutInflater(),
+                dialog -> successfulLogin());
+        Log.i(TAG, "finished login");
+    }
+
+    public void successfulLogin(){
+        Log.i(TAG, "successfulLogin");
+        if(AdminRights.isAdmin()) {
+            Log.i(TAG, "successful login: admin");
             binding.activityMenueLogout.setVisibility(View.VISIBLE);
             binding.activityMenueLogin.setVisibility(View.GONE);
         }
@@ -104,6 +112,7 @@ public class Menue extends AppCompatActivity {
         AdminRights.logout(this);
         binding.activityMenueLogout.setVisibility(View.GONE);
         binding.activityMenueLogin.setVisibility(View.VISIBLE);
+        Log.i(TAG, "finished logout");
     }
 
 
