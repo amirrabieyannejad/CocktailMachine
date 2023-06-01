@@ -1,5 +1,7 @@
 package com.example.cocktailmachine.data.db.tables;
 
+import android.database.sqlite.SQLiteDatabase;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,32 +28,44 @@ public class Tables {
     public static final RecipeTopicTable TABLE_RECIPE_TOPIC = new RecipeTopicTable();
     public static final IngredientPumpTable TABLE_INGREDIENT_PUMP = new IngredientPumpTable();
 
-    public static List<String> getCreates(){
+    public static List<String> getCreateCmds(){
         List<String> res = new ArrayList<>();
-        res.add(TABLE_RECIPE.createTable());
-        res.add(TABLE_INGREDIENT.createTable());
-        res.add(TABLE_RECIPE_URL.createTable());
-        res.add(TABLE_PUMP.createTable());
-        res.add(TABLE_INGREDIENT_URL.createTable());
-        res.add(TABLE_TOPIC.createTable());
-        res.add(TABLE_RECIPE_INGREDIENT.createTable());
-        res.add(TABLE_RECIPE_TOPIC.createTable());
-        res.add(TABLE_INGREDIENT_PUMP.createTable());
+        res.add(TABLE_RECIPE.createTableCmd());
+        res.add(TABLE_INGREDIENT.createTableCmd());
+        res.add(TABLE_RECIPE_URL.createTableCmd());
+        res.add(TABLE_PUMP.createTableCmd());
+        res.add(TABLE_INGREDIENT_URL.createTableCmd());
+        res.add(TABLE_TOPIC.createTableCmd());
+        res.add(TABLE_RECIPE_INGREDIENT.createTableCmd());
+        res.add(TABLE_RECIPE_TOPIC.createTableCmd());
+        res.add(TABLE_INGREDIENT_PUMP.createTableCmd());
         return res;
     }
 
-    public static List<String> getDeletes(){
+    public static List<String> getDeleteCmds(){
         List<String> res = new ArrayList<>();
-        res.add(TABLE_RECIPE.deleteTable());
-        res.add(TABLE_INGREDIENT.deleteTable());
-        res.add(TABLE_RECIPE_URL.deleteTable());
-        res.add(TABLE_PUMP.deleteTable());
-        res.add(TABLE_INGREDIENT_URL.deleteTable());
-        res.add(TABLE_TOPIC.deleteTable());
-        res.add(TABLE_RECIPE_INGREDIENT.deleteTable());
-        res.add(TABLE_RECIPE_TOPIC.deleteTable());
-        res.add(TABLE_INGREDIENT_PUMP.deleteTable());
+        res.add(TABLE_RECIPE.deleteTableCmd());
+        res.add(TABLE_INGREDIENT.deleteTableCmd());
+        res.add(TABLE_RECIPE_URL.deleteTableCmd());
+        res.add(TABLE_PUMP.deleteTableCmd());
+        res.add(TABLE_INGREDIENT_URL.deleteTableCmd());
+        res.add(TABLE_TOPIC.deleteTableCmd());
+        res.add(TABLE_RECIPE_INGREDIENT.deleteTableCmd());
+        res.add(TABLE_RECIPE_TOPIC.deleteTableCmd());
+        res.add(TABLE_INGREDIENT_PUMP.deleteTableCmd());
         return res;
+    }
+
+    public static void deleteAll(SQLiteDatabase db){
+        for(String cmd: getDeleteCmds()){
+            db.execSQL(cmd);
+        }
+    }
+
+    public static void createAll(SQLiteDatabase db){
+        for(String cmd: getCreateCmds()){
+            db.execSQL(cmd);
+        }
     }
 
 

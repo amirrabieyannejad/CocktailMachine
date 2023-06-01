@@ -9,7 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class SQLPump extends SQLDataBaseElement implements Pump {
-    private int minimumPumpVolume = -1;
+    private int minimumPumpVolume = 1;
     private SQLIngredientPump ingredientPump = null;
 
     public SQLPump(){
@@ -47,20 +47,25 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     public Ingredient getCurrentIngredient() {
         if(this.ingredientPump!=null) {
             return this.ingredientPump.getIngredient();
-        }return null;
+        }
+        return null;
     }
 
     @Override
-    public void setCurrentIngredient(Ingredient ingredient) {
-        try {
-            if(this.ingredientPump!=null) {
+    public void setCurrentIngredient(long id) {
+        if(ingredientPump != null) {
+            try {
+                if (this.ingredientPump.getIngredientID() == id) {
+                    return;
+                }
                 this.ingredientPump.delete();
+            } catch (NotInitializedDBException e) {
+                e.printStackTrace();
             }
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
         }
-        this.ingredientPump = new SQLIngredientPump(-1, this.getID(), ingredient.getID());
+        this.ingredientPump = new SQLIngredientPump(-1, this.getID(), id);
     }
+
 
     @Override
     public void empty() {

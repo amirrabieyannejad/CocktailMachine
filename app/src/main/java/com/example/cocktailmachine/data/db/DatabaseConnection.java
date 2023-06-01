@@ -84,6 +84,8 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         DatabaseConnection.singleton = new DatabaseConnection(context);
         try {
             Log.i(TAG, "initialize_singleton: start loading");
+            DatabaseConnection.singleton.emptyAll();
+            BasicRecipes.loadTopics();
             BasicRecipes.loadIngredients();
             BasicRecipes.loadPumps();
             BasicRecipes.loadMargarita();
@@ -100,6 +102,8 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         DatabaseConnection.singleton = new DatabaseConnection(context, privilege);
         try {
             Log.i(TAG, "initialize_singleton: start loading");
+            DatabaseConnection.singleton.emptyAll();
+            BasicRecipes.loadTopics();
             BasicRecipes.loadIngredients();
             BasicRecipes.loadPumps();
             BasicRecipes.loadMargarita();
@@ -126,12 +130,32 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
 
 
+
+
+
+
     //NewDatabaseConnection Overrides
+
+    private void emptyAll(){
+        Log.i(TAG, "emptyAll");
+        resetAll();
+        Tables.deleteAll(this.getWritableDatabase());
+        Tables.createAll(this.getWritableDatabase());
+    }
+    private void resetAll(){
+        Log.i(TAG, "resetAll");
+        this.ingredients = new ArrayList<>();
+        this.ingredientPumps = new ArrayList<>();
+        this.topics = new ArrayList<>();
+        this.pumps = new ArrayList<>();
+        this.recipeIngredients = new ArrayList<>();
+        this.recipes = new ArrayList<>();
+    }
 
     public void emptyUpPumps() {
         Log.i(TAG, "emptyUpPumps");
-        Tables.TABLE_INGREDIENT_PUMP.deleteTable();
-        Tables.TABLE_INGREDIENT_PUMP.createTable();
+        Tables.TABLE_INGREDIENT_PUMP.deleteTable(this.getWritableDatabase());
+        Tables.TABLE_INGREDIENT_PUMP.createTable(this.getWritableDatabase());
         this.ingredientPumps = new ArrayList<>();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             this.pumps.forEach(Pump::empty);
@@ -143,8 +167,8 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     public void setUpEmptyPumps() {
         Log.i(TAG, "setUpEmptyPumps");
         this.emptyUpPumps();
-        Tables.TABLE_PUMP.deleteTable();
-        Tables.TABLE_PUMP.createTable();
+        Tables.TABLE_PUMP.deleteTable(this.getWritableDatabase());
+        Tables.TABLE_PUMP.createTable(this.getWritableDatabase());
         this.pumps = new ArrayList<>();
     }
 
@@ -153,11 +177,11 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     public void loadForSetUp() {
         Log.i(TAG, "loadForSetUp");
         this.emptyUpPumps();
-        this.ingredients = this.loadAllAvailableIngredients();
+        this.ingredients = this.loadAllIngredients();
 
     }
 
-    private List<Ingredient> loadAllAvailableIngredients() {
+    private List<Ingredient> loadAllIngredients() {
         Log.i(TAG, "loadAllAvailableIngredients");
 
         List<? extends Ingredient> res = Tables.TABLE_INGREDIENT.getAllElements(this.getReadableDatabase());
@@ -165,13 +189,25 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public void loadBufferWithAvailable() {
+        resetAll();
         Log.i(TAG, "loadBufferWithAvailable");
+        this.ingredients = this.loadAllIngredients();
+        Log.i(TAG, "loadBufferWithAvailable Ingredients: "+this.ingredients.toString());
         this.pumps = this.loadPumps();
+        Log.i(TAG, "loadBufferWithAvailable Pumps: "+this.pumps.toString());
         this.ingredientPumps = this.loadIngredientPumps();
-        this.ingredients = this.loadAvailableIngredients();
+        Log.i(TAG, "loadBufferWithAvailable IngredientPumps: "+this.ingredientPumps.toString());
+        if(!AdminRights.isAdmin()) {
+            this.ingredients = this.loadAvailableIngredients();
+            Log.i(TAG, "loadBufferWithAvailable no admin Ingredients: "+this.ingredients.toString());
+        }
         this.recipes = this.loadAvailableRecipes();
+        Log.i(TAG, "loadBufferWithAvailable AvailableRecipes: "+this.recipes.toString());
         this.topics = this.loadTopics();
+        Log.i(TAG, "loadBufferWithAvailable Topics: "+this.topics.toString());
         this.recipeIngredients = this.loadIngredientVolumes();
+        Log.i(TAG, "loadBufferWithAvailable recipeIngredients: "+this.recipeIngredients.toString());
+        Log.i(TAG, "loadBufferWithAvailable finished");
     }
 
     public List<Recipe> loadAvailableRecipes() {
@@ -196,7 +232,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     private List<Pump> loadPumps() {
         Log.i(TAG, "loadPumps");
         // return IngredientTable.
-        List<? extends Pump> res =   Tables.TABLE_PUMP.getAllElements(this.getReadableDatabase());
+        List<? extends Pump> res = Tables.TABLE_PUMP.getAllElements(this.getReadableDatabase());
         return (List<Pump>) res;
     }
 
@@ -218,6 +254,11 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         if(!AdminRights.isAdmin()){
             throw  new AccessDeniedException();
         }
+        return Tables.TABLE_INGREDIENT.getElement(this.getReadableDatabase(), id);
+    }
+
+    public Ingredient loadIngredientForPump(long id) {
+        Log.i(TAG, "loadIngredientForPump");
         return Tables.TABLE_INGREDIENT.getElement(this.getReadableDatabase(), id);
     }
 
@@ -820,7 +861,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     public void onCreate(SQLiteDatabase db) {
         Log.i(TAG, "onCreate");
-        for (String createCmd : Tables.getCreates()) {
+        for (String createCmd : Tables.getCreateCmds()) {
             db.execSQL(createCmd);
         }
 
@@ -831,7 +872,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         Log.i(TAG, "onUpgrade");
         //db.enableWriteAheadLogging();
         if(oldVersion == DatabaseConnection.version) {
-            for (String deleteCmd : Tables.getDeletes()) {
+            for (String deleteCmd : Tables.getDeleteCmds()) {
                db.execSQL(deleteCmd);
             }
             onCreate(db);
