@@ -56,6 +56,8 @@ public class BasicRecipes {
         rum.save();
         Ingredient cola = Ingredient.makeNew("Cola", false, 0);
         cola.save();
+
+        DatabaseConnection.localRefresh();
     }
 
     public static void loadPumps() throws NotInitializedDBException{
@@ -84,6 +86,8 @@ public class BasicRecipes {
         c_p.setCurrentIngredient(Ingredient.getIngredient("Cola"));//cola);
         c_p.fill(100);
         c_p.save();
+
+        DatabaseConnection.localRefresh();
     }
 
 
@@ -104,15 +108,21 @@ public class BasicRecipes {
         magarita.save();
 
 
+
+        DatabaseConnection.localRefresh();
+
         Log.i(TAG,"loadMargarita finished");
     }
 
-    public static void loadTequila(){
+    public static void loadTequila() throws NotInitializedDBException {
         Log.i(TAG,"loadTequila");
-        Recipe magarita = Recipe.makeNew("Margarita");
+        Recipe magarita = Recipe.makeNew("Margarita 2.0");
         magarita.addOrUpdate(Ingredient.getIngredient("Tequila"), 8);
         magarita.addOrUpdate(Ingredient.getIngredient("Orangenlikör"), 4);
         magarita.addOrUpdate(Ingredient.getIngredient("Limettensaft"), 4);
+        magarita.save();
+
+        DatabaseConnection.localRefresh();
         Log.i(TAG,"loadTequila finished");
     }
 
@@ -140,6 +150,8 @@ public class BasicRecipes {
         magarita.addOrUpdate(Topic.getTopic("Zuckersirup"));
         magarita.addOrUpdate(Topic.getTopic("Eis"));
         magarita.save();
+
+        DatabaseConnection.localRefresh();
 
 
         Log.i(TAG,"loadLongIslandIceTea finished");

@@ -117,9 +117,16 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
 
+    //Refresher
+    //Local
+    public static synchronized void localRefresh() throws NotInitializedDBException {
+        Log.i(TAG, "localRefresh");
+        getDataBase().loadBufferWithAvailable();
+    }
+
+
 
     //NewDatabaseConnection Overrides
-
 
     public void emptyUpPumps() {
         Log.i(TAG, "emptyUpPumps");
@@ -480,8 +487,10 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     public List<Topic> getTopicsWith(String needle) {
         Log.i(TAG, "getTopicsWith");
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            Log.i(TAG, "getTopicsWith high version");
             return this.topics.stream().filter(t -> t.getName().contains(needle)).collect(Collectors.toList());
         } else {
+            Log.i(TAG, "getTopicsWith low version");
             return Helper.topicWithNeedleInName(this.topics, needle);
         }
     }
@@ -514,11 +523,14 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         Log.i(TAG, "getTopicWith");
         List<Topic> ts = getTopicsWith(needle);
         if(!ts.isEmpty()){
+            Log.i(TAG, "getTopicWith not isEmpty");
             return ts.get(0);
         }
         if(makeNew) {
+            Log.i(TAG, "getTopicWith makeNew");
             return Topic.makeNew(needle, "Füll bitte bei Gelegenheit aus!");
         }else{
+            Log.i(TAG, "getTopicWith return null");
             return null;
         }
     }
