@@ -8,7 +8,7 @@ import java.util.List;
 public class Tables {
 
     static final String TYPE_LONG = "LONG";
-    static final String TYPE_ID = "LONG PRIMARY KEY";
+    static final String TYPE_ID = "INTEGER PRIMARY KEY AUTOINCREMENT";
     static final String TYPE_INTEGER = "INTEGER";
     static final String TYPE_TEXT = "TEXT";
     static final String TYPE_BOOLEAN = "BOOLEAN";

@@ -1,6 +1,9 @@
 package com.example.cocktailmachine.data;
 
 
+
+import android.util.Log;
+
 import androidx.annotation.ColorInt;
 
 import com.example.cocktailmachine.data.db.DatabaseConnection;
@@ -25,6 +28,7 @@ import java.util.List;
  * The color is known.
  */
 public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
+    String TAG = "Ingredient";
 
     //Reminder: Only liquids!!!
 
@@ -175,6 +179,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @return
      */
     static Ingredient getIngredient(String name) {
+        Log.i(TAG, "getIngredient "+name);
         try {
             return DatabaseConnection.getDataBase().getIngredientWithExact(name);
         } catch (NotInitializedDBException e) {

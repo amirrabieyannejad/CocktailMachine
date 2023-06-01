@@ -1,5 +1,7 @@
 package com.example.cocktailmachine.data.db;
 
+import android.util.Log;
+
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Helper<T extends DataBaseElement> {
+    private static final String TAG = "Helper";
     public List<T> getAvailable(List<T> elements){
         List<T> res = new ArrayList<>();
         for(T e:elements){
@@ -356,9 +359,17 @@ public class Helper<T extends DataBaseElement> {
         return res;
     }
 
+    /**
+     * get ingredients from list with exact name name
+     * @param ingredients
+     * @param name
+     * @return list
+     */
     public static List<Ingredient> ingredientWitName(List<Ingredient> ingredients, String name){
+        Log.i(TAG, "ingredientWitName");
         List<Ingredient> res = new ArrayList<>();
         for(Ingredient r: ingredients){
+            Log.i(TAG, "ingredientWitName "+r.getName()+name+r.getName().equals(name));
             if(r.getName().equals(name)) {
                 res.add(r);
             }

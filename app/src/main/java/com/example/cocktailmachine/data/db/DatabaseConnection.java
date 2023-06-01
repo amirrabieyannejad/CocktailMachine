@@ -422,16 +422,24 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     public Ingredient getIngredientWithExact(String name) {
         Log.i(TAG, "getIngredientWithExact");
-        List<Ingredient> ingredients;
+        List<Ingredient> res;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            ingredients =  this.ingredients.stream().filter(i->i.getName()==name).collect(Collectors.toList());
+            res =  this.ingredients.stream().filter(i-> {
+                Log.i(TAG, i.getName()+ name+Objects.equals(i.getName(), name));
+                return Objects.equals(i.getName(), name);})
+                    .collect(Collectors.toList());
         }else {
-            ingredients = Helper.ingredientWitName(this.ingredients, name);
+            res = Helper.ingredientWitName(this.ingredients, name);
         }
-        if(ingredients.isEmpty()){
+        if(res.isEmpty()){
+            Log.i(TAG, "getIngredientWithExact ingredients is empty");
             return null;
+        }else{
+            for(Ingredient i: res){
+                Log.i(TAG, "getIngredientWithExact res "+i.getName());
+            }
         }
-        return ingredients.get(0);
+        return res.get(0);
     }
 
 
