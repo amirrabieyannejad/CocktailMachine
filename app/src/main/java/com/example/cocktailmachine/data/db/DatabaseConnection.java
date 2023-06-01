@@ -78,6 +78,8 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         DatabaseConnection.singleton = new DatabaseConnection(context);
         try {
             Log.i(TAG, "initialize_singleton: start loading");
+            BasicRecipes.loadIngredients();
+            BasicRecipes.loadPumps();
             BasicRecipes.loadMargarita();
             BasicRecipes.loadLongIslandIceTea();
             Log.i(TAG, "initialize_singleton: finished loading");
@@ -91,6 +93,8 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         DatabaseConnection.singleton = new DatabaseConnection(context, privilege);
         try {
             Log.i(TAG, "initialize_singleton: start loading");
+            BasicRecipes.loadIngredients();
+            BasicRecipes.loadPumps();
             BasicRecipes.loadMargarita();
             BasicRecipes.loadLongIslandIceTea();
             Log.i(TAG, "initialize_singleton: finished loading");
@@ -203,6 +207,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         }
         return Tables.TABLE_TOPIC.getElement(this.getReadableDatabase(), id);
     }
+
 
     //CHECKER
 
@@ -425,6 +430,38 @@ public class DatabaseConnection extends SQLiteOpenHelper {
             }
         }
         return topic;
+    }
+
+    public List<Topic> getTopicsWith(String needle) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            return this.topics.stream().filter(t -> t.getName().contains(needle)).collect(Collectors.toList());
+        } else {
+            return Helper.topicWithNeedleInName(this.topics, needle);
+        }
+    }
+
+    public List<Topic> getTopicsWithExact(String name) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            return this.topics.stream().filter(t -> t.getName().equals(name)).collect(Collectors.toList());
+        } else {
+            return Helper.topicWithName(this.topics, name);
+        }
+    }
+
+    public Topic getTopicWith(String needle) {
+        List<Topic> ts = getTopicsWith(needle);
+        if(!ts.isEmpty()){
+            return ts.get(0);
+        }
+        return null;
+    }
+
+    public Topic getTopicWithExact(String name) {
+        List<Topic> ts = getTopicsWithExact(name);
+        if(!ts.isEmpty()){
+            return ts.get(0);
+        }
+        return null;
     }
 
     public List<Topic> getTopics(Recipe recipe) {

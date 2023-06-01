@@ -326,6 +326,26 @@ public class Helper<T extends DataBaseElement> {
         return true;
     }
 
+    public static List<Topic> topicWithNeedleInName(List<Topic> topics, String needle){
+        List<Topic> res = new ArrayList<>();
+        for(Topic r: topics){
+            if(r.getName().contains(needle)) {
+                res.add(r);
+            }
+        }
+        return res;
+    }
+
+    public static List<Topic> topicWithName(List<Topic> topics, String name){
+        List<Topic> res = new ArrayList<>();
+        for(Topic r: topics){
+            if(r.getName().equals(name)) {
+                res.add(r);
+            }
+        }
+        return res;
+    }
+
     public static List<Ingredient> ingredientWithNeedleInName(List<Ingredient> ingredients, String needle){
         List<Ingredient> res = new ArrayList<>();
         for(Ingredient r: ingredients){
