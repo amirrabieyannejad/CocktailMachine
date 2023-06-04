@@ -1,23 +1,23 @@
 package com.example.cocktailmachine.bluetoothlegatt;
 
-public class SingeltonSettings {
+public class BluethoothSingelton {
 
     //Variable
-    private static SingeltonSettings instance;
+    private static BluethoothSingelton instance;
 
     private String EspDeviceName;
     private String EspDeviceAddress;
 
     //Konstruktor
-    private SingeltonSettings(){
+    private BluethoothSingelton(){
 
     }
 
     //Funktionen
 
-    public static SingeltonSettings getInstance(){
+    public static BluethoothSingelton getInstance(){
         if (instance == null) {
-            instance = new SingeltonSettings();
+            instance = new BluethoothSingelton();
         }
         return instance;
 
@@ -39,8 +39,11 @@ public class SingeltonSettings {
         this.EspDeviceAddress = espDeviceAddress;
     }
 
-    BluetoothLeService getBluetoothLe (){
+    BluetoothLeService getBluetoothLe () throws BluethoothDeviceAdressNotDefinedException {
         BluetoothLeService bluetooth = new BluetoothLeService();
+        if (this.EspDeviceAddress.equals(null) || this.EspDeviceAddress==""){
+            throw new BluethoothDeviceAdressNotDefinedException("The Adress for the Bluetooth Device is not defined in Bluetooth Singelton");
+        }
         bluetooth.connect(this.EspDeviceAddress);
         return (bluetooth);
     }
