@@ -90,6 +90,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
             BasicRecipes.loadPumps();
             BasicRecipes.loadMargarita();
             BasicRecipes.loadLongIslandIceTea();
+            DatabaseConnection.singleton.print();
             Log.i(TAG, "initialize_singleton: finished loading");
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
@@ -108,6 +109,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
             BasicRecipes.loadPumps();
             BasicRecipes.loadMargarita();
             BasicRecipes.loadLongIslandIceTea();
+            DatabaseConnection.singleton.print();
             Log.i(TAG, "initialize_singleton: finished loading");
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
@@ -211,6 +213,17 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         this.recipeIngredients = this.loadIngredientVolumes();
         Log.i(TAG, "loadBufferWithAvailable recipeIngredients: "+this.recipeIngredients.toString());
         Log.i(TAG, "loadBufferWithAvailable finished");
+        print();
+    }
+
+    private void print(){
+        Log.i(TAG, "print");
+        Log.i(TAG, "print ingredients: "+this.ingredients);
+        Log.i(TAG, "print pumps: "+this.pumps);
+        Log.i(TAG, "print ingredientPumps: "+this.ingredientPumps);
+        Log.i(TAG, "print topics: "+this.topics);
+        Log.i(TAG, "print recipeIngredients: "+this.recipeIngredients);
+        Log.i(TAG, "print recipes: "+this.recipes);
     }
 
     public List<Recipe> loadAvailableRecipes() {

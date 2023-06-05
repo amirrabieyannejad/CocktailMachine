@@ -57,7 +57,7 @@ public class BasicRecipes {
         Ingredient cola = Ingredient.makeNew("Cola", false, 0);
         cola.save();
 
-        DatabaseConnection.localRefresh();
+        //DatabaseConnection.localRefresh();
     }
 
     public static void loadPumps() throws NotInitializedDBException{
@@ -87,7 +87,7 @@ public class BasicRecipes {
         c_p.fill(100);
         c_p.save();
 
-        DatabaseConnection.localRefresh();
+        //DatabaseConnection.localRefresh();
     }
 
 
@@ -113,7 +113,7 @@ public class BasicRecipes {
 
 
 
-        DatabaseConnection.localRefresh();
+        //DatabaseConnection.localRefresh();
 
         Log.i(TAG,"loadMargarita finished");
     }
@@ -126,7 +126,7 @@ public class BasicRecipes {
         magarita.addOrUpdate(Ingredient.getIngredient("Limettensaft"), 4);
         magarita.save();
 
-        DatabaseConnection.localRefresh();
+        //DatabaseConnection.localRefresh();
         Log.i(TAG,"loadTequila finished");
     }
 
@@ -155,7 +155,7 @@ public class BasicRecipes {
         magarita.addOrUpdate(Topic.getTopic("Eis"));
         magarita.save();
 
-        DatabaseConnection.localRefresh();
+        //DatabaseConnection.localRefresh();
 
 
         Log.i(TAG,"loadLongIslandIceTea finished");
