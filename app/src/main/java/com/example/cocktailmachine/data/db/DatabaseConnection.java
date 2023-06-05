@@ -232,7 +232,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public List<Recipe> loadAllRecipes() {
-        Log.i(TAG, "loadAvailableRecipes");
+        Log.i(TAG, "loadAllRecipes");
         List<? extends Recipe> res =  Tables.TABLE_RECIPE.getAllElements(this.getReadableDatabase());
         return (List<Recipe>) res;
     }
