@@ -64,6 +64,11 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
             }
         }
         this.ingredientPump = new SQLIngredientPump(-1, this.getID(), id);
+        try {
+            this.ingredientPump.save();
+        } catch (NotInitializedDBException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -76,6 +81,11 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     public void fill(int volume) {
         if(this.ingredientPump!=null) {
             this.ingredientPump.setVolume(volume);
+            try {
+                this.ingredientPump.save();
+            } catch (NotInitializedDBException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -91,6 +101,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     @Override
     public void save() throws NotInitializedDBException {
         DatabaseConnection.getDataBase().addOrUpdate(this);
+        this.ingredientPump.save();
         this.wasSaved();
     }
 
@@ -102,5 +113,13 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     @Override
     public int compareTo(Pump o) {
         return Long.compare(this.getID(), o.getID());
+    }
+
+    @Override
+    public String toString() {
+        return "SQLPump{" +
+                "minimumPumpVolume=" + minimumPumpVolume +
+                ", ingredientPump=" + ingredientPump +
+                '}';
     }
 }
