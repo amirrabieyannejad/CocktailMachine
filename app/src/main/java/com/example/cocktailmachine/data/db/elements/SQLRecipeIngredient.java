@@ -1,5 +1,7 @@
 package com.example.cocktailmachine.data.db.elements;
 
+import androidx.annotation.NonNull;
+
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
@@ -59,5 +61,22 @@ public class SQLRecipeIngredient extends SQLDataBaseElement {
     @Override
     public void delete() throws NotInitializedDBException {
         DatabaseConnection.getDataBase().remove(this);
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("{");
+        builder.append("id: ");
+        builder.append(this.getID());
+        builder.append(", recipe id: ");
+        builder.append(this.getRecipeID());
+        builder.append(", ingredient id: ");
+        builder.append(this.getIngredientID());
+        builder.append(", volume: ");
+        builder.append(this.getVolume());
+        builder.append("}");
+        return builder.toString();
     }
 }

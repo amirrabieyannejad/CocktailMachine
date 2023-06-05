@@ -1,6 +1,7 @@
 package com.example.cocktailmachine.data.db.elements;
 
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SQLRecipe extends SQLDataBaseElement implements Recipe {
+    private static final String TAG = "SQLRecipe";
     private String name = "";
     //private List<Long> ingredientIds;
     //private HashMap<Long, Integer> ingredientVolume;
@@ -208,7 +210,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
 
     //ADDER
-    public void add(Ingredient ingredient, int timeInMilliseconds)
+    public void add(Ingredient ingredient, int volume)
             throws AlreadySetIngredientException {
         if(ingredient.getID()==-1L){
             try {
@@ -217,15 +219,15 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
                 e.printStackTrace();
             }
         }
-        this.add(ingredient.getID(), timeInMilliseconds);
+        this.add(ingredient.getID(), volume);
     }
 
-    public void add(long ingredientId, int timeInMilliseconds)
+    public void add(long ingredientId, int volume)
             throws AlreadySetIngredientException {
         if(this.getIngredientIds().contains(ingredientId)){
             throw new AlreadySetIngredientException(this, ingredientId);
         }
-        this.ingredientVolumes.add(new SQLRecipeIngredient(ingredientId, this.getID(), timeInMilliseconds));
+        this.ingredientVolumes.add(new SQLRecipeIngredient(ingredientId, this.getID(), volume));
     }
 
     @Override
@@ -242,14 +244,40 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
     @Override
     public void addOrUpdate(long ingredientId, int volume) {
+
+        boolean newNeeded=true;
+        for(SQLRecipeIngredient ri: ingredientVolumes){
+            if(ri.getIngredientID()==ingredientId){
+                ri.setVolume(volume);
+                newNeeded = false;
+            }
+        }
+        if(newNeeded){
+            SQLRecipeIngredient ri = new SQLRecipeIngredient(ingredientId, this.getID(), volume);
+            try {
+                ri.save();
+            } catch (NotInitializedDBException ignored) {
+                ignored.printStackTrace();
+                Log.i(TAG, "should not happen");
+                //throw new RuntimeException(e);
+            }
+            this.ingredientVolumes.add(ri);
+        }
+        this.wasChanged();
+        /*
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if(this.ingredientVolumes.stream()
                     .filter(pt -> pt.getIngredientID() == ingredientId)
-                    .peek(pt -> pt.setVolume(volume)).count() == 0){
+                    .peek(pt -> pt.setVolume(volume))
+                    .count()
+                    == 0){
                 this.ingredientVolumes.add(new SQLRecipeIngredient(ingredientId, this.getID(), volume));
             }
         }
         this.wasChanged();
+
+         */
     }
 
     public void addOrUpdateIDs(HashMap<Long, Integer> ingredientVolumes){
@@ -401,6 +429,9 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         DatabaseConnection.getDataBase().addOrUpdate(this);
         for(SQLRecipeImageUrlElement url: this.imageUrls) {
             DatabaseConnection.getDataBase().addOrUpdate(url);
+        }
+        for(SQLRecipeIngredient ri: this.ingredientVolumes){
+            DatabaseConnection.getDataBase().addOrUpdate(ri);
         }
         this.wasSaved();
     }
