@@ -4,7 +4,6 @@
     package="com.example.android.bluetoothlegatt"
     android:versionCode="1"
     android:versionName="1.0">
-
     <!-- Min/target SDK versions (<uses-sdk>) managed by build.gradle -->
     <!--
  Declare this required feature if you want to make the app available to BLE-capable
@@ -57,9 +56,12 @@
         android:theme="@style/Theme.CocktailMachine"
         tools:targetApi="26">
         <activity
-            android:name="com.example.cocktailmachine.ui.ModelActivity"
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_settings" />
+        <activity
+            android:name=".ui.ModelActivity"
             android:exported="true"
-
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.CocktailMachine.NoActionBar">
             <meta-data
@@ -67,50 +69,49 @@
                 android:value="" />
         </activity>
         <activity
-            android:name="com.example.cocktailmachine.ui.cocktail.cocktailList.CocktailList"
+            android:name=".ui.cocktail.cocktailList.CocktailList"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name="com.example.cocktailmachine.bluetoothlegatt.DeviceControlActivity"
+            android:name=".bluetoothlegatt.DeviceControlActivity"
             android:exported="false">
-		    <meta-data
+            <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
- 	    </activity>
-	    <activity
-            android:name="com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity"
+        </activity>
+        <activity
+            android:name=".bluetoothlegatt.DeviceScanActivity"
             android:exported="false">
-		    <meta-data
+            <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
- 	    </activity>
+        </activity>
         <activity
-            android:name="com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice"
+            android:name=".ui.singleCocktailChoice.SingleCocktailChoice"
             android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name="com.example.cocktailmachine.ui.fillAnimation.FillAnimation"
+            android:name=".ui.fillAnimation.FillAnimation"
             android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name="com.example.cocktailmachine.ui.Grafik"
+            android:name=".ui.Grafik"
             android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-
         <activity
-            android:name="com.example.cocktailmachine.ui.Menue"
+            android:name=".ui.Menue"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -124,7 +125,7 @@
         </activity>
 
         <service
-            android:name="com.example.cocktailmachine.bluetoothlegatt.BluetoothLeService"
+            android:name=".bluetoothlegatt.BluetoothLeService"
             android:enabled="true" />
     </application>
 
