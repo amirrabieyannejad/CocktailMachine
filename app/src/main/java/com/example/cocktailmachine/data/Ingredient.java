@@ -175,6 +175,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
             return DatabaseConnection.getDataBase().getIngredient(id);
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
+            Log.i(TAG, "getIngredient failed for "+id);
             return null;
         }
     }
@@ -191,7 +192,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
             return DatabaseConnection.getDataBase().getIngredientWithExact(name);
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
-            Log.i(TAG,"getIngredient res null");
+            Log.i(TAG,"getIngredient failed for "+name);
             return null;
         }
     }

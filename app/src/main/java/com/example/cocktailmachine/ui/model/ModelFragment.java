@@ -134,7 +134,7 @@ public class ModelFragment extends Fragment {
                 binding.includeIngredientAdmin.getRoot().setVisibility(View.VISIBLE);
                 TextView vol = (TextView) binding.includeIngredientAdmin
                         .getRoot().getViewById(R.id.textView_ingredient_volume);
-                vol.setText(ingredient.getVolume()+" ml");
+                vol.setText(String.format("%d ml", ingredient.getVolume()));
                 //binding.includeIngredientAdmin.textViewIngredientVolume.setVisibility(View.VISIBLE);
                 //binding.includeIngredientAdmin.textViewIngredientVolume.setText(ingredient.getVolume());
                 binding.includeIngredientAdmin.getRoot().getViewById(R.id.imageView_ingredient_pump)

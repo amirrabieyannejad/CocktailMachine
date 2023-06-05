@@ -1,5 +1,7 @@
 package com.example.cocktailmachine.data.db.elements;
 
+import android.util.Log;
+
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
@@ -8,7 +10,10 @@ import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.List;
+
 public class SQLPump extends SQLDataBaseElement implements Pump {
+    private static final String TAG = "SQLPump";
     private int minimumPumpVolume = 1;
     private SQLIngredientPump ingredientPump = null;
 
@@ -20,6 +25,11 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         super(ID);
         this.wasSaved();
         this.minimumPumpVolume = minimumPumpVolume;
+        try {
+            this.checkIngredientPumps();
+        } catch (NotInitializedDBException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -75,6 +85,17 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     @Override
     public void setIngredientPump(SQLIngredientPump ingredientPump) {
         this.ingredientPump = ingredientPump;
+        Log.i(TAG, "setIngredientPump: "+ingredientPump.toString());
+    }
+
+    private void checkIngredientPumps() throws NotInitializedDBException {
+        Log.i(TAG, "checkIngredientPumps");
+        List<SQLIngredientPump> ips = DatabaseConnection.getDataBase().getIngredientPumps();
+        for(SQLIngredientPump ip: ips){
+            if(ip.getIngredientID()==this.getID()){
+                this.setIngredientPump(ip);
+            }
+        }
     }
 
     @Override

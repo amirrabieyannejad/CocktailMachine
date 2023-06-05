@@ -31,8 +31,11 @@ public class SQLIngredientPump extends SQLDataBaseElement {
         this.volume = volume;
         this.pump = pump;
         this.ingredient = ingredient;
+        /*
         Objects.requireNonNull(Ingredient.getIngredient(id)).setIngredientPump(this);
+        Objects.requireNonNull(Ingredient.getIngredient(id)).isAvailable();
         Objects.requireNonNull(Pump.getPump(id)).setIngredientPump(this);
+         */
     }
 
     public int getVolume(){
@@ -84,7 +87,7 @@ public class SQLIngredientPump extends SQLDataBaseElement {
 
     @Override
     public boolean isAvailable() {
-        return false;
+        return this.volume>0;
     }
 
     @Override
