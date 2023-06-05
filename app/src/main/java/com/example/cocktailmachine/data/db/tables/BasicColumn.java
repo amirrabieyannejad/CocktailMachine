@@ -87,11 +87,23 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         }
         //String ttype = getColumnsAndTypes().get(column_name);
 
+        StringBuilder builder = new StringBuilder();
+        builder.append( "(");
+        builder.append(ll.get(0));
+        for(int i=1;i<ll.size();i++){
+            builder.append(", ");
+            builder.append(ll.get(i));
+        }
+        builder.append(")");
+        return new String[]{builder.toString()};
+        /*
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return ll.stream().map(Object::toString).toArray(String[] ::new);
         }else{
             return Helper.objToString(ll);
         }
+
+         */
     }
 
     private String[] makeSelectionList(String column_name,

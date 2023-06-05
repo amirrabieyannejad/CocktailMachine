@@ -5,6 +5,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.cocktailmachine.bluetoothlegatt.BluetoothLeService;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
@@ -385,7 +386,8 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
     @Override
     public void send() {
-
+        BluetoothLeService service = new BluetoothLeService();
+        //service.
     }
 
     //general
