@@ -137,6 +137,7 @@ public class ModelFragment extends Fragment {
                 vol.setText(String.format("%d ml", ingredient.getVolume()));
                 //binding.includeIngredientAdmin.textViewIngredientVolume.setVisibility(View.VISIBLE);
                 //binding.includeIngredientAdmin.textViewIngredientVolume.setText(ingredient.getVolume());
+                /*
                 binding.includeIngredientAdmin.getRoot().getViewById(R.id.imageView_ingredient_pump)
                         .setOnClickListener(v -> {
                     Bundle b = new Bundle();
@@ -149,6 +150,22 @@ public class ModelFragment extends Fragment {
                         Toast.makeText(this.getContext(),"Keine Pumpe verbunden!", Toast.LENGTH_SHORT).show();
                     }
                 });
+
+                 */
+
+                binding.includeIngredientAdmin.imageViewIngredientPump
+                        .setOnClickListener(v -> {
+                            Bundle b = new Bundle();
+                            b.putString("Type","PUMP");
+                            b.putLong("ID", ingredient.getPumpId());
+                            if(ingredient.getPumpId()>0) {
+                                NavHostFragment.findNavController(ModelFragment.this)
+                                        .navigate(R.id.action_modelFragment_self, b);
+                            }else{
+                                Toast.makeText(this.getContext(),"Keine Pumpe verbunden!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
             }
         }else{
             error();
