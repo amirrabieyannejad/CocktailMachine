@@ -71,6 +71,12 @@ public class SQLIngredientPump extends SQLDataBaseElement {
 
     public void setVolume(int volume){
         this.volume = volume;
+        this.wasChanged();
+    }
+
+    public void setPumpID(long id) {
+        this.pump = id;
+        this.wasChanged();
     }
 
     @Override
@@ -130,4 +136,6 @@ public class SQLIngredientPump extends SQLDataBaseElement {
         }
         return null;
     }
+
+
 }

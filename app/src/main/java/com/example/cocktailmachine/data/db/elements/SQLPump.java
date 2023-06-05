@@ -69,12 +69,14 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         } catch (NotInitializedDBException e) {
             throw new RuntimeException(e);
         }
+        this.wasChanged();
     }
 
 
     @Override
     public void empty() {
         this.ingredientPump = null;
+        this.wasChanged();
     }
 
     @Override
@@ -87,6 +89,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
                 throw new RuntimeException(e);
             }
         }
+        this.wasChanged();
     }
 
     //General
@@ -101,6 +104,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     @Override
     public void save() throws NotInitializedDBException {
         DatabaseConnection.getDataBase().addOrUpdate(this);
+        this.ingredientPump.setPumpID(this.getID());
         this.ingredientPump.save();
         this.wasSaved();
     }
