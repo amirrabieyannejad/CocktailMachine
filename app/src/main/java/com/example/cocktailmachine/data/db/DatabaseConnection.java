@@ -670,37 +670,46 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public void addOrUpdate(SQLIngredient ingredient) {
-        Log.i(TAG, "addOrUpdate");
+        Log.i(TAG, "addOrUpdate: "+ingredient.toString());
         if(ingredient.isSaved() && ingredient.needsUpdate()){
+            Log.i(TAG, "was saved and needs update");
             Tables.TABLE_INGREDIENT.updateElement(this.getWritableDatabase(), ingredient);
-            this.ingredients.remove(ingredient);
+        }else if(ingredient.isSaved() && !ingredient.needsUpdate()){
+            Log.i(TAG, "was saved and needs no update");
         }else{
+            Log.i(TAG, "first time saving");
             ingredient.setID(Tables.TABLE_INGREDIENT.addElement(this.getWritableDatabase(), ingredient));
+            this.ingredients.add(ingredient);
         }
-        this.ingredients.add(ingredient);
 
     }
 
     public void addOrUpdate(SQLRecipe recipe) {
-        Log.i(TAG, "addOrUpdate");
+        Log.i(TAG, "addOrUpdate: "+recipe.toString());
         if(recipe.isSaved() && recipe.needsUpdate()){
-            this.recipes.remove(recipe);
+            Log.i(TAG, "was saved and needs update");
             Tables.TABLE_RECIPE.updateElement(this.getWritableDatabase(), recipe);
+        }else if(recipe.isSaved() && !recipe.needsUpdate()){
+            Log.i(TAG, "was saved and needs no update");
         }else{
+            Log.i(TAG, "first time saving");
             recipe.setID(Tables.TABLE_RECIPE.addElement(this.getWritableDatabase(), recipe));
+            this.recipes.add(recipe);
         }
-        this.recipes.add(recipe);
     }
 
     public void addOrUpdate(SQLTopic topic) {
-        Log.i(TAG, "addOrUpdate");
+        Log.i(TAG, "addOrUpdate: "+topic.toString());
         if(topic.isSaved() && topic.needsUpdate()){
-            this.topics.remove(topic);
+            Log.i(TAG, "was saved and needs update");
             Tables.TABLE_TOPIC.updateElement(this.getWritableDatabase(), topic);
+        }else if(topic.isSaved() && !topic.needsUpdate()){
+            Log.i(TAG, "was saved and needs no update");
         }else{
+            Log.i(TAG, "first time saving");
             topic.setID(Tables.TABLE_TOPIC.addElement(this.getWritableDatabase(), topic));
+            this.topics.add(topic);
         }
-        this.topics.add(topic);
     }
 
     public void addOrUpdate(SQLPump pump) {
@@ -708,15 +717,13 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         if(pump.isSaved() && pump.needsUpdate()){
             Log.i(TAG, "was saved and needs update");
             Tables.TABLE_PUMP.updateElement(this.getWritableDatabase(), pump);
-            this.pumps.remove(pump);
         }else if(pump.isSaved() && !pump.needsUpdate()){
             Log.i(TAG, "was saved and needs no update");
-            this.pumps.remove(pump);
         }else{
             Log.i(TAG, "first time saving");
             pump.setID(Tables.TABLE_PUMP.addElement(this.getWritableDatabase(), pump));
+            this.pumps.add(pump);
         }
-        this.pumps.add(pump);
     }
 
     public void addOrUpdate(SQLRecipeTopic recipeTopic) {
@@ -743,8 +750,8 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         }else{
             Log.i(TAG, "first time saving");
             ingredientPump.setID(Tables.TABLE_INGREDIENT_PUMP.addElement(this.getWritableDatabase(), ingredientPump));
+            this.ingredientPumps.add(ingredientPump);
         }
-        this.ingredientPumps.add(ingredientPump);
     }
 
     public void addOrUpdate(SQLRecipeIngredient recipeIngredient) {
@@ -758,26 +765,36 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         }else{
             Log.i(TAG, "first time saving");
             recipeIngredient.setID(Tables.TABLE_RECIPE_INGREDIENT.addElement(this.getWritableDatabase(), recipeIngredient));
+            this.recipeIngredients.add(recipeIngredient);
         }
-        this.recipeIngredients.add(recipeIngredient);
     }
 
     public void addOrUpdate(SQLRecipeImageUrlElement recipeImageUrlElement) {
-        Log.i(TAG, "addOrUpdate");
+        Log.i(TAG, "addOrUpdate: "+recipeImageUrlElement.toString());
         if(recipeImageUrlElement.isSaved() && recipeImageUrlElement.needsUpdate()){
+            Log.i(TAG, "was saved and needs update");
             Tables.TABLE_RECIPE_URL.updateElement(this.getWritableDatabase(), recipeImageUrlElement);
+        }else if(recipeImageUrlElement.isSaved() && !recipeImageUrlElement.needsUpdate()){
+            Log.i(TAG, "was saved and needs no update");
         }else{
+            Log.i(TAG, "first time saving");
             recipeImageUrlElement.setID(Tables.TABLE_RECIPE_URL.addElement(this.getWritableDatabase(), recipeImageUrlElement));
         }
     }
 
     public void addOrUpdate(SQLIngredientImageUrlElement ingredientImageUrlElement) {
-        Log.i(TAG, "addOrUpdate");
+        Log.i(TAG, "addOrUpdate: "+ingredientImageUrlElement);
         if(ingredientImageUrlElement.isSaved() && ingredientImageUrlElement.needsUpdate()){
+            Log.i(TAG, "was saved and needs update");
             Tables.TABLE_INGREDIENT_URL.updateElement(this.getWritableDatabase(), ingredientImageUrlElement);
+        }else if(ingredientImageUrlElement.isSaved() && !ingredientImageUrlElement.needsUpdate()){
+            Log.i(TAG, "was saved and needs no update");
         }else{
+            Log.i(TAG, "first time saving");
             ingredientImageUrlElement.setID(
-                    Tables.TABLE_INGREDIENT_URL.addElement(this.getWritableDatabase(), ingredientImageUrlElement));
+                    Tables.TABLE_INGREDIENT_URL.addElement(
+                            this.getWritableDatabase(),
+                            ingredientImageUrlElement));
         }
     }
 
