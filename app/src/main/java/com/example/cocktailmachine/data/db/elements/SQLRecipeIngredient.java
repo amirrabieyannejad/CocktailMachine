@@ -47,6 +47,7 @@ public class SQLRecipeIngredient extends SQLDataBaseElement {
     }
     public void setRecipeID(long recipeID) {
         this.recipeID= recipeID;
+        this.wasChanged();
     }
 
     @Override
