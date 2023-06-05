@@ -66,23 +66,13 @@ public class SQLRecipeIngredient extends SQLDataBaseElement {
         DatabaseConnection.getDataBase().remove(this);
     }
 
-    @NonNull
+
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("{");
-        builder.append("id: ");
-        builder.append(this.getID());
-        builder.append(", recipe id: ");
-        builder.append(this.getRecipeID());
-        builder.append(", ingredient id: ");
-        builder.append(this.getIngredientID());
-        builder.append(", volume: ");
-        builder.append(this.getVolume());
-        builder.append("}");
-        return builder.toString();
+        return "SQLRecipeIngredient{" +
+                "ingredientID=" + ingredientID +
+                ", recipeID=" + recipeID +
+                ", volume=" + volume +
+                '}';
     }
-
-
-
 }
