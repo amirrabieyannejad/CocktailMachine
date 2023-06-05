@@ -704,21 +704,30 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public void addOrUpdate(SQLPump pump) {
-        Log.i(TAG, "addOrUpdate");
+        Log.i(TAG, "addOrUpdate: "+pump.toString());
         if(pump.isSaved() && pump.needsUpdate()){
+            Log.i(TAG, "was saved and needs update");
             Tables.TABLE_PUMP.updateElement(this.getWritableDatabase(), pump);
             this.pumps.remove(pump);
+        }else if(pump.isSaved() && !pump.needsUpdate()){
+            Log.i(TAG, "was saved and needs no update");
+            this.pumps.remove(pump);
         }else{
+            Log.i(TAG, "first time saving");
             pump.setID(Tables.TABLE_PUMP.addElement(this.getWritableDatabase(), pump));
         }
         this.pumps.add(pump);
     }
 
     public void addOrUpdate(SQLRecipeTopic recipeTopic) {
-        Log.i(TAG, "addOrUpdate");
+        Log.i(TAG, "addOrUpdate: "+recipeTopic.toString());
         if(recipeTopic.isSaved() && recipeTopic.needsUpdate()){
+            Log.i(TAG, "was saved and needs update");
             Tables.TABLE_RECIPE_TOPIC.updateElement(this.getWritableDatabase(), recipeTopic);
+        }else if(recipeTopic.isSaved() && !recipeTopic.needsUpdate()){
+            Log.i(TAG, "was saved and needs no update");
         }else{
+            Log.i(TAG, "first time saving");
             recipeTopic.setID(Tables.TABLE_RECIPE_TOPIC.addElement(this.getWritableDatabase(), recipeTopic));
         }
     }
