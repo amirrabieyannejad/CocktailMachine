@@ -349,6 +349,11 @@ public class SingeltonTestdata {
             }
 
             @Override
+            public boolean loadAvailable() {
+                return false;
+            }
+
+            @Override
             public boolean isSaved() {
                 return false;
             }
@@ -781,6 +786,11 @@ public class SingeltonTestdata {
 
             @Override
             public boolean isAvailable() {
+                return false;
+            }
+
+            @Override
+            public boolean loadAvailable() {
                 return false;
             }
 

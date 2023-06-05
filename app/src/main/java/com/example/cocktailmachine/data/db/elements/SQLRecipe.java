@@ -96,6 +96,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
 
     private void load() throws NotInitializedDBException {
+        this.loadAvailable();
         this.imageUrls = DatabaseConnection.getDataBase().getUrlElements(this);
         this.topics = DatabaseConnection.getDataBase().getTopicIDs(this);
         this.ingredientVolumes = DatabaseConnection.getDataBase().getIngredientVolumes(this);
@@ -187,6 +188,40 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     @Override
     public boolean isAvailable() {
         return this.available;
+    }
+
+    @Override
+    public boolean loadAvailable() {
+        boolean res = privateLoadAvailable();
+        if(res!= this.available){
+            this.available = res;
+            this.wasChanged();
+        }
+        return this.available;
+    }
+
+    /**
+     * @return if available
+     */
+    private boolean privateLoadAvailable(){
+        for(Ingredient i: getIngredients()){
+            if(i.isAvailable()){
+                try {
+                    if(i.getVolume()>this.getSpecificIngredientVolume(i)){
+                        Log.i(TAG, "loadAvailable: is available "+i.getName());
+                    }else{
+                        return false;
+                    }
+                } catch (TooManyTimesSettedIngredientEcxception |
+                         NoSuchIngredientSettedException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }else{
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

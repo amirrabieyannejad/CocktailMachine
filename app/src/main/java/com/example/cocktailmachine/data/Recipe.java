@@ -92,6 +92,12 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     boolean isAvailable();
 
     /**
+     * Is available? with ingredients
+     * @return available?
+     */
+    boolean loadAvailable();
+
+    /**
      * Get associated image addresses.
      * @return list of image addresses
      */

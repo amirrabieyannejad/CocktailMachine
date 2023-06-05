@@ -302,6 +302,12 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return Tables.TABLE_TOPIC.getElement(this.getReadableDatabase(), id);
     }
 
+    public void checkForAvailablityInRecipes(){
+        for(Recipe r: this.recipes){
+            r.isAvailable();
+        }
+    }
+
 
 
     //CHECKER
