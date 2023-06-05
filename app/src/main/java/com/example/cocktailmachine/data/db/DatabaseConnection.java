@@ -227,7 +227,8 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     public List<Ingredient> loadAvailableIngredients() {
         Log.i(TAG, "loadAvailableIngredients");
        // return IngredientTable.
-        List<? extends Ingredient> res =  Tables.TABLE_INGREDIENT.getElements(this.getReadableDatabase(),
+        List<? extends Ingredient> res =  Tables.TABLE_INGREDIENT.getElements(
+                this.getReadableDatabase(),
                 this.getAvailableIngredientIDs());
         return (List<Ingredient>) res;
     }
@@ -255,7 +256,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     private List<SQLRecipeIngredient> loadIngredientVolumes(){
         Log.i(TAG, "loadIngredientVolumes");
         //return Tables.TABLE_RECIPE_INGREDIENT.getAvailable(this.getReadableDatabase(), this.recipes);
-        return Tables.TABLE_RECIPE_INGREDIENT.getAvailable(this.getReadableDatabase(), this.recipes);
+        return Tables.TABLE_RECIPE_INGREDIENT.getAllElements(this.getReadableDatabase());
 
     }
 

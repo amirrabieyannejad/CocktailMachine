@@ -104,9 +104,10 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
                     ids);
         } catch (NoSuchColumnException e) {
             e.printStackTrace();
-            return null;
+            return new ArrayList<>();
         }
     }
+
 
 
 }
