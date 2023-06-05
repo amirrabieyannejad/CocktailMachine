@@ -89,6 +89,14 @@ public class SQLIngredientPump extends SQLDataBaseElement {
         DatabaseConnection.getDataBase().remove(this);
     }
 
+    @Override
+    public String toString() {
+        return "SQLIngredientPump{" +
+                "volume=" + volume +
+                ", pump=" + pump +
+                ", ingredient=" + ingredient +
+                '}';
+    }
 
     private static List<SQLIngredientPump> getAvailableInstances(){
         //TODO
