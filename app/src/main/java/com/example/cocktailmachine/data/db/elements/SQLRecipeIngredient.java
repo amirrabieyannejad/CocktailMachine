@@ -3,7 +3,6 @@ package com.example.cocktailmachine.data.db.elements;
 import androidx.annotation.NonNull;
 
 import com.example.cocktailmachine.data.Ingredient;
-import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 
@@ -46,6 +45,9 @@ public class SQLRecipeIngredient extends SQLDataBaseElement {
         this.volume = volume;
         this.wasChanged();
     }
+    public void setRecipeID(long recipeID) {
+        this.recipeID= recipeID;
+    }
 
     @Override
     public boolean isAvailable() {
@@ -79,4 +81,7 @@ public class SQLRecipeIngredient extends SQLDataBaseElement {
         builder.append("}");
         return builder.toString();
     }
+
+
+
 }

@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothLeService;
 import com.example.cocktailmachine.data.Ingredient;
-import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.Helper;
@@ -431,6 +430,10 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
             DatabaseConnection.getDataBase().addOrUpdate(url);
         }
         for(SQLRecipeIngredient ri: this.ingredientVolumes){
+            if(ri.getRecipeID()!=this.getID()){
+                ri.setRecipeID(this.getID());
+                ri.save();
+            }
             DatabaseConnection.getDataBase().addOrUpdate(ri);
         }
         this.wasSaved();
