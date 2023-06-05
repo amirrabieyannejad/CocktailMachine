@@ -42,4 +42,12 @@ public class SQLRecipeTopic extends SQLDataBaseElement {
     public void delete() throws NotInitializedDBException {
         DatabaseConnection.getDataBase().remove(this);
     }
+
+    @Override
+    public String toString() {
+        return "SQLRecipeTopic{" +
+                "recipeID=" + recipeID +
+                ", topicID=" + topicID +
+                '}';
+    }
 }
