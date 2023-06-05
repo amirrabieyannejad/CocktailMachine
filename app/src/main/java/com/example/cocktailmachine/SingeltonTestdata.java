@@ -8,6 +8,7 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
 
@@ -168,6 +169,11 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public void setIngredientPump(SQLIngredientPump ingredientPump) {
+
+                    }
+
+                    @Override
                     public void pump(int millimeters) {
 
                     }
@@ -280,6 +286,11 @@ public class SingeltonTestdata {
 
                     @Override
                     public void setName(String name) {
+
+                    }
+
+                    @Override
+                    public void setIngredientPump(SQLIngredientPump ingredientPump) {
 
                     }
 
@@ -594,6 +605,11 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public void setIngredientPump(SQLIngredientPump ingredientPump) {
+
+                    }
+
+                    @Override
                     public void pump(int millimeters) {
 
                     }
@@ -706,6 +722,11 @@ public class SingeltonTestdata {
 
                     @Override
                     public void setName(String name) {
+
+                    }
+
+                    @Override
+                    public void setIngredientPump(SQLIngredientPump ingredientPump) {
 
                     }
 

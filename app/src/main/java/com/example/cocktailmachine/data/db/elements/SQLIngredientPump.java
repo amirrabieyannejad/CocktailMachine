@@ -11,6 +11,7 @@ import com.example.cocktailmachine.data.db.NotInitializedDBException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class SQLIngredientPump extends SQLDataBaseElement {
     private int volume = -1;
@@ -30,6 +31,8 @@ public class SQLIngredientPump extends SQLDataBaseElement {
         this.volume = volume;
         this.pump = pump;
         this.ingredient = ingredient;
+        Objects.requireNonNull(Ingredient.getIngredient(id)).setIngredientPump(this);
+        Objects.requireNonNull(Pump.getPump(id)).setIngredientPump(this);
     }
 
     public int getVolume(){
@@ -98,7 +101,8 @@ public class SQLIngredientPump extends SQLDataBaseElement {
     @Override
     public String toString() {
         return "SQLIngredientPump{" +
-                "volume=" + volume +
+                "id=" + getID() +
+                ", volume=" + volume +
                 ", pump=" + pump +
                 ", ingredient=" + ingredient +
                 '}';

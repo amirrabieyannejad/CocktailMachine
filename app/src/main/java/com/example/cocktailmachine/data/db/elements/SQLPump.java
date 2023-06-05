@@ -72,6 +72,10 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         this.wasChanged();
     }
 
+    @Override
+    public void setIngredientPump(SQLIngredientPump ingredientPump) {
+        this.ingredientPump = ingredientPump;
+    }
 
     @Override
     public void empty() {

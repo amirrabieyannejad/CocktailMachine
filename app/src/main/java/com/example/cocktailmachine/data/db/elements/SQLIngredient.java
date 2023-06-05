@@ -166,6 +166,15 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         this.wasChanged();
     }
 
+    void checkIngredientPump() throws NotInitializedDBException {
+        List<SQLIngredientPump> ingredientPumps = DatabaseConnection.getDataBase().getIngredientPumps();
+        for(SQLIngredientPump ip: ingredientPumps){
+            if(ip.getIngredientID()==this.getID()){
+                this.ingredientPump = ip;
+            }
+        }
+    }
+
     @Override
     public int getVolume() {
         //return this.fluidInMillimeters;
@@ -201,10 +210,18 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         //this.volume = volume;
 
         Pump pp = Pump.getPump(pump);
-        assert pp != null;
-        pp.setCurrentIngredient(this);
-        this.ingredientPump = new SQLIngredientPump(volume, pump, this.getID());
+        if(pp != null) {
+            pp.setCurrentIngredient(this);
+            this.ingredientPump = new SQLIngredientPump(volume, pump, this.getID());
+        }
         this.wasChanged();
+    }
+
+
+    @Override
+    public void setIngredientPump(SQLIngredientPump ingredientPump) {
+        this.ingredientPump = ingredientPump;
+        //this.wasChanged();
     }
 
     @Override

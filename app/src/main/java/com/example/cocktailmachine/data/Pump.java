@@ -7,6 +7,7 @@ import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
+import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
 
 import org.json.JSONArray;
@@ -56,6 +57,12 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @param id id of next ingredient
      */
     void setCurrentIngredient(long id);
+
+    /**
+     * only use after db loading to connect pump and ingredient
+     * @param ingredientPump
+     */
+    void setIngredientPump(SQLIngredientPump ingredientPump);
 
     void empty();
 

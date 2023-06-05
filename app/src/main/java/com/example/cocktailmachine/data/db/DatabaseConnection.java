@@ -303,6 +303,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
 
+
     //CHECKER
 
     public boolean checkAvailabilityOfAllIngredients(HashMap<Long, Integer> ingredientVolume) {
