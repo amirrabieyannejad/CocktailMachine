@@ -6,11 +6,11 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
-import com.example.cocktailmachine.data.db.elements.exceptions.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
-import com.example.cocktailmachine.data.db.elements.exceptions.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -100,6 +100,11 @@ public class SingeltonTestdata {
 
                     @Override
                     public boolean isAvailable() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean loadAvailable() {
                         return false;
                     }
 
@@ -221,6 +226,11 @@ public class SingeltonTestdata {
 
                     @Override
                     public boolean isAvailable() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean loadAvailable() {
                         return false;
                     }
 
@@ -545,6 +555,11 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public boolean loadAvailable() {
+                        return false;
+                    }
+
+                    @Override
                     public boolean isSaved() {
                         return false;
                     }
@@ -662,6 +677,11 @@ public class SingeltonTestdata {
 
                     @Override
                     public boolean isAvailable() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean loadAvailable() {
                         return false;
                     }
 

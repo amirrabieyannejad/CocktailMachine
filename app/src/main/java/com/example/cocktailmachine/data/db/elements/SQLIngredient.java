@@ -8,9 +8,9 @@ import androidx.annotation.Nullable;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
-import com.example.cocktailmachine.data.db.elements.exceptions.MissingIngredientPumpException;
+import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -277,6 +277,21 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
             pp.setCurrentIngredient(this);
             this.ingredientPump = new SQLIngredientPump(volume, pump, this.getID());
         }
+        this.wasChanged();
+    }
+
+    @Override
+    public void empty() {
+        this.checkIngredientPumps();
+        if(ingredientPump != null){
+            try {
+                this.ingredientPump.delete();
+            } catch (NotInitializedDBException e) {
+                e.printStackTrace();
+            }
+        }
+        this.ingredientPump = null;
+        this.loadAvailable();
         this.wasChanged();
     }
 

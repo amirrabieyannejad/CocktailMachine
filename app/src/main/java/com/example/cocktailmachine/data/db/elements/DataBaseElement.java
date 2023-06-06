@@ -1,6 +1,6 @@
 package com.example.cocktailmachine.data.db.elements;
 
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 public interface DataBaseElement {
     long getID();

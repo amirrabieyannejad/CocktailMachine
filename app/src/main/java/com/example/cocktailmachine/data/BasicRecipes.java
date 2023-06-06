@@ -5,7 +5,8 @@ import android.util.Log;
 
 
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 
 public class BasicRecipes {
     private static final String TAG = "BasicRecipes";
@@ -17,7 +18,7 @@ public class BasicRecipes {
      * sonst immer DB mit Context initialisieren!!!!
      */
     public static void loadTest(){
-        DatabaseConnection.initialize_singleton(null);
+        DatabaseConnection.initializeSingleton(null);
     }
 
     public static void loadTopics() throws NotInitializedDBException{
@@ -60,7 +61,7 @@ public class BasicRecipes {
         //DatabaseConnection.localRefresh();
     }
 
-    public static void loadPumps() throws NotInitializedDBException{
+    public static void loadPumps() throws NotInitializedDBException, MissingIngredientPumpException {
 
         Pump t_p = Pump.makeNew();
         t_p.setCurrentIngredient(Ingredient.getIngredient("Tequila"));

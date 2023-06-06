@@ -12,6 +12,7 @@ import com.example.cocktailmachine.data.BasicRecipes;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -27,7 +28,7 @@ public class TestDB {
 
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         assertNotNull("cant be", appContext);
-        DatabaseConnection.initialize_singleton(appContext);
+        DatabaseConnection.initializeSingleton(appContext);
         try {
             if(DatabaseConnection.getDataBase().getWritableDatabase()==null){
                 System.out.println("no writable");

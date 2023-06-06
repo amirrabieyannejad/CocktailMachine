@@ -2,12 +2,12 @@ package com.example.cocktailmachine.data;
 
 
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
-import com.example.cocktailmachine.data.db.elements.exceptions.NoSuchIngredientSettedException;
-import com.example.cocktailmachine.data.db.elements.exceptions.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 
 
 import org.json.JSONArray;

@@ -2,12 +2,10 @@ package com.example.cocktailmachine.data.db.elements;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 public class SQLRecipeIngredient extends SQLDataBaseElement {
     private static final String TAG = "SQLRecipeIngredient";

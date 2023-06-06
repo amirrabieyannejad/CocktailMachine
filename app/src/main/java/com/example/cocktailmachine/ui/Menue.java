@@ -6,18 +6,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
-import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 import com.example.cocktailmachine.data.AdminRights;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
-import com.example.cocktailmachine.databinding.ActivityMainBinding;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
-import com.example.cocktailmachine.ui.model.ModelFragment;
 import com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice;
 
 public class Menue extends AppCompatActivity {
@@ -30,9 +26,9 @@ public class Menue extends AppCompatActivity {
         //setContentView(R.layout.activity_menue);
         binding = ActivityMenueBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        if(!DatabaseConnection.is_initialized()) {
+        if(DatabaseConnection.isInitialized()) {
             Log.i(TAG, "onCreate: DataBase is not yet initialized");
-            DatabaseConnection.initialize_singleton(this, UserPrivilegeLevel.Admin);
+            DatabaseConnection.initializeSingleton(this, UserPrivilegeLevel.Admin);
             try {
                 DatabaseConnection.getDataBase();
                 Log.i(TAG, "onCreate: DataBase is initialized");

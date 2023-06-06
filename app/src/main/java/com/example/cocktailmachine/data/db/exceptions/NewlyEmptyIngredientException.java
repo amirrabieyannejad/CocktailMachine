@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.data.db;
+package com.example.cocktailmachine.data.db.exceptions;
 
 import com.example.cocktailmachine.data.Ingredient;
 

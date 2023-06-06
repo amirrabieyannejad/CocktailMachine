@@ -1,30 +1,22 @@
 package com.example.cocktailmachine.ui;
 
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.cocktailmachine.data.AdminRights;
-import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMainBinding;
-import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
 import com.example.cocktailmachine.ui.model.ListFragment;
 
 import androidx.annotation.DrawableRes;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.navigation.NavController;
@@ -34,8 +26,6 @@ import androidx.navigation.ui.NavigationUI;
 
 
 import com.example.cocktailmachine.R;
-
-import org.json.JSONException;
 
 
 public class ModelActivity extends AppCompatActivity {
@@ -49,8 +39,8 @@ public class ModelActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
-        if(!DatabaseConnection.is_initialized()) {
-            DatabaseConnection.initialize_singleton(this, UserPrivilegeLevel.Admin);
+        if(DatabaseConnection.isInitialized()) {
+            DatabaseConnection.initializeSingleton(this, UserPrivilegeLevel.Admin);
             try {
                 DatabaseConnection.getDataBase();
                 Log.i(TAG, "onCreate: DataBase is initialized");

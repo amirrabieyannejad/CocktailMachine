@@ -5,9 +5,9 @@ import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.SingeltonTestdata;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
-import com.example.cocktailmachine.data.db.elements.exceptions.NoSuchIngredientSettedException;
-import com.example.cocktailmachine.data.db.elements.exceptions.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
 
@@ -33,9 +33,9 @@ public class FillAnimation extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fill_animation);
 
-        if(!DatabaseConnection.is_initialized()) {
+        if(DatabaseConnection.isInitialized()) {
             Log.i(TAG, "onCreate: DataBase is not yet initialized");
-            DatabaseConnection.initialize_singleton(this, UserPrivilegeLevel.Admin);
+            DatabaseConnection.initializeSingleton(this, UserPrivilegeLevel.Admin);
             try {
                 DatabaseConnection.getDataBase();
                 Log.i(TAG, "onCreate: DataBase is initialized");

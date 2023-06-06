@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.data.db.elements.exceptions;
+package com.example.cocktailmachine.data.db.exceptions;
 
 import androidx.annotation.Nullable;
 

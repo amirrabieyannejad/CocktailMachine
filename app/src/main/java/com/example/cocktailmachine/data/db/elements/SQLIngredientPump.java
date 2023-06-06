@@ -7,12 +7,11 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class SQLIngredientPump extends SQLDataBaseElement {
     private static final String TAG = "SQLIngredientPump";

@@ -30,9 +30,9 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
-import com.example.cocktailmachine.data.db.elements.exceptions.NoSuchIngredientSettedException;
-import com.example.cocktailmachine.data.db.elements.exceptions.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.databinding.FragmentEditModelBinding;
 import com.example.cocktailmachine.ui.ModelActivity;
 import com.mrudultora.colorpicker.ColorPickerPopUp;
@@ -668,7 +668,7 @@ public class EditModelFragment extends Fragment {
                     this.recipe.save();
                 } catch (NotInitializedDBException ex) {
                     ex.printStackTrace();
-                    DatabaseConnection.initialize_singleton(activity, AdminRights.getUserPrivilegeLevel());
+                    DatabaseConnection.initializeSingleton(activity, AdminRights.getUserPrivilegeLevel());
                 }
             }
             name.setText(ingredient.getName());
