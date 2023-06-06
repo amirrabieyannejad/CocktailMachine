@@ -16,8 +16,8 @@ import android.widget.TextView;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.db.elements.exceptions.NoSuchIngredientSettedException;
-import com.example.cocktailmachine.data.db.elements.exceptions.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.databinding.FragmentFragment1Binding;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
 

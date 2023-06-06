@@ -1,11 +1,13 @@
 package com.example.cocktailmachine.data;
 
 
+import android.util.Log;
+
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
-import com.example.cocktailmachine.data.db.elements.exceptions.MissingIngredientPumpException;
+import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
 
@@ -18,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface Pump extends Comparable<Pump>, DataBaseElement {
+    static final String TAG = "Pump";
+
     /**
      * Get Id.
      * @return
@@ -96,6 +100,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * Load buffer with status quo from data base.
      */
     static void setPumps(JSONObject json) throws NotInitializedDBException, JSONException {
+        Log.i(TAG,"setPumps");
         JSONArray names = json.names();
         if(names==null){
             throw new JSONException("Ingredient Names not readable!");
@@ -112,7 +117,12 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 ig.save();
             }
             pumps.get(i).setCurrentIngredient(ig);
-            pumps.get(i).fill(volume);
+            try {
+                pumps.get(i).fill(volume);
+            } catch (MissingIngredientPumpException e) {
+                e.printStackTrace();
+                Log.i(TAG,"setPumps: should not happen");
+            }
             pumps.get(i).save();
         }
 
@@ -125,6 +135,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * Load buffer with status quo from data base.
      */
     static void updatePumpStatus(JSONObject json) throws JSONException, NotInitializedDBException {
+        Log.i(TAG,"updatePumpStatus");
         List<Pump> pumps = DatabaseConnection.getDataBase().getPumps();
         JSONArray t_names = json.names();
         if(t_names == null){
@@ -139,7 +150,12 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         for(Pump p:pumps){
             Ingredient ig = p.getCurrentIngredient();
             if(names.contains(ig.getName())){
-                p.fill(json.getInt(ig.getName()));
+                try {
+                    p.fill(json.getInt(ig.getName()));
+                } catch (MissingIngredientPumpException e) {
+                    e.printStackTrace();
+                    Log.i(TAG,"updatePumpStatus: should not happen");
+                }
                 p.save();
                 names.remove(ig.getName());
             }else{
@@ -156,7 +172,12 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 ig.save();
             }
             temp.setCurrentIngredient(ig);
-            temp.fill(json.getInt(n));
+            try {
+                temp.fill(json.getInt(n));
+            } catch (MissingIngredientPumpException e) {
+                e.printStackTrace();
+                Log.i(TAG,"updatePumpStatus: should not happen");
+            }
             temp.save();
         }
 
@@ -172,12 +193,18 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @throws NewlyEmptyIngredientException
      */
     static void updatePumpStatus(JSONArray json) throws JSONException, NewlyEmptyIngredientException {
+        Log.i(TAG,"updatePumpStatus");
         int i = 0;
         JSONArray temp = json.optJSONArray(i);
         while(temp != null){
             String name = temp.getString(0);
             int volume = temp.getInt(1);
-            Ingredient.getIngredient(name).pump(volume);
+            try {
+                Ingredient.getIngredient(name).pump(volume);
+            } catch (MissingIngredientPumpException e) {
+                e.printStackTrace();
+                Log.i(TAG,"updatePumpStatus: should not happen");
+            }
             i++;
             temp = json.optJSONArray(i);
         }

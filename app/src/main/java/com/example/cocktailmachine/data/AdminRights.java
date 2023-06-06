@@ -3,7 +3,6 @@ package com.example.cocktailmachine.data;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.InputType;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,20 +11,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatCallback;
 
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
-import com.example.cocktailmachine.ui.ModelActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
 
 public class AdminRights {
     private static final String TAG = "AdminRights";

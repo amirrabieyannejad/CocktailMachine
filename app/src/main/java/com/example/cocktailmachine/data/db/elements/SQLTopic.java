@@ -5,7 +5,7 @@ import androidx.annotation.Nullable;
 
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
