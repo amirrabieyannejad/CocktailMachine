@@ -11,6 +11,7 @@ import com.example.cocktailmachine.data.db.elements.SQLImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +20,9 @@ import java.util.Map;
 
 public class Helper<T extends DataBaseElement> {
     private static final String TAG = "Helper";
+
+
+
     public List<T> getAvailable(List<T> elements){
         List<T> res = new ArrayList<>();
         for(T e:elements){
@@ -303,6 +307,12 @@ public class Helper<T extends DataBaseElement> {
     public static void emptyPump(List<? extends Pump> pumps){
         for (Pump p: pumps){
             p.empty();
+        }
+    }
+
+    public static void emptyIngredient(List<? extends Ingredient> ingredients) {
+        for(Ingredient ingredient: ingredients){
+            ingredient.empty();
         }
     }
 

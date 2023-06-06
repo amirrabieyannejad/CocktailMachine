@@ -23,6 +23,9 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
+import com.example.cocktailmachine.data.db.exceptions.AccessDeniedException;
+import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.tables.Tables;
 import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
 
@@ -68,7 +71,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     static synchronized DatabaseConnection getSingleton() throws NotInitializedDBException {
 
         Log.i(TAG, "getSingleton");
-        if(!DatabaseConnection.is_initialized()) {
+        if(DatabaseConnection.isInitialized()) {
             throw new NotInitializedDBException();
         }
         return DatabaseConnection.singleton;
@@ -79,7 +82,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return DatabaseConnection.getSingleton();
     }
 
-    public static synchronized void initialize_singleton(Context context){
+    public static synchronized void initializeSingleton(Context context){
         Log.i(TAG, "initialize_singleton");
         DatabaseConnection.singleton = new DatabaseConnection(context);
         try {
@@ -92,13 +95,13 @@ public class DatabaseConnection extends SQLiteOpenHelper {
             BasicRecipes.loadLongIslandIceTea();
             DatabaseConnection.singleton.print();
             Log.i(TAG, "initialize_singleton: finished loading");
-        } catch (NotInitializedDBException e) {
+        } catch (NotInitializedDBException | MissingIngredientPumpException e) {
+            Log.i(TAG, "initialize_singleton: Exception");
             e.printStackTrace();
-            Log.i(TAG, "initialize_singleton: NotInitializedDBException");
         }
     }
 
-    public static synchronized void initialize_singleton(Context context, UserPrivilegeLevel privilege){
+    public static synchronized void initializeSingleton(Context context, UserPrivilegeLevel privilege){
         Log.i(TAG, "initialize_singleton");
         DatabaseConnection.singleton = new DatabaseConnection(context, privilege);
         try {
@@ -111,15 +114,15 @@ public class DatabaseConnection extends SQLiteOpenHelper {
             BasicRecipes.loadLongIslandIceTea();
             DatabaseConnection.singleton.print();
             Log.i(TAG, "initialize_singleton: finished loading");
-        } catch (NotInitializedDBException e) {
+        }  catch (NotInitializedDBException | MissingIngredientPumpException e) {
+            Log.i(TAG, "initialize_singleton: Exception");
             e.printStackTrace();
-            Log.i(TAG, "initialize_singleton: NotInitializedDBException");
         }
     }
 
-    public static synchronized boolean is_initialized(){
+    public static synchronized boolean isInitialized(){
         Log.i(TAG, "is_initialized");
-        return DatabaseConnection.singleton != null;
+        return DatabaseConnection.singleton == null;
     }
 
 
@@ -154,6 +157,9 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         this.recipes = new ArrayList<>();
     }
 
+    /**
+     * complety deletes table with ingredient pump connection
+     */
     public void emptyUpPumps() {
         Log.i(TAG, "emptyUpPumps");
         Tables.TABLE_INGREDIENT_PUMP.deleteTable(this.getWritableDatabase());
@@ -161,8 +167,10 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         this.ingredientPumps = new ArrayList<>();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             this.pumps.forEach(Pump::empty);
+            this.ingredients.forEach(Ingredient::empty);
         }else {
             Helper.emptyPump(this.pumps);
+            Helper.emptyIngredient(this.ingredients);
         }
     }
 
@@ -179,12 +187,11 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     public void loadForSetUp() {
         Log.i(TAG, "loadForSetUp");
         this.emptyUpPumps();
-        this.ingredients = this.loadAllIngredients();
-
+        //this.ingredients = this.loadAllIngredients();
     }
 
     private List<Ingredient> loadAllIngredients() {
-        Log.i(TAG, "loadAllAvailableIngredients");
+        Log.i(TAG, "loadAllIngredients");
 
         List<? extends Ingredient> res = Tables.TABLE_INGREDIENT.getAllElements(this.getReadableDatabase());
         return (List<Ingredient>) res;
@@ -202,17 +209,13 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         this.ingredientPumps = this.loadIngredientPumps();
         Log.i(TAG, "loadBufferWithAvailable: all IngredientPumps: "+this.ingredientPumps.toString());
         this.recipeIngredients = this.loadIngredientVolumes();
-        Log.i(TAG, "loadBufferWithAvailable: recipeIngredients: "+this.recipeIngredients.toString());
-        if(!AdminRights.isAdmin()) {
-            //this.ingredients = this.loadAvailableIngredients();
-            this.loadAvailabilityForIngredients();
-            Log.i(TAG, "loadBufferWithAvailable: no admin Ingredients: "+this.ingredients.toString());
-            this.loadAvailableRecipes();
-            Log.i(TAG, "loadBufferWithAvailable: no admin AvailableRecipes: "+this.recipes.toString());
-        }else{
-            this.recipes = this.loadAllRecipes();
-            Log.i(TAG, "loadBufferWithAvailable: AllRecipes: "+this.recipes.toString());
-        }
+        Log.i(TAG, "loadBufferWithAvailable: all recipeIngredients: "+this.recipeIngredients.toString());
+        this.recipes = this.loadAllRecipes();
+        Log.i(TAG, "loadBufferWithAvailable: all Recipes: "+this.recipes.toString());
+        this.loadAvailabilityForIngredients();
+        Log.i(TAG, "loadBufferWithAvailable: no admin Ingredients: "+this.ingredients.toString());
+        this.loadAvailabilityForRecipes();
+        Log.i(TAG, "loadBufferWithAvailable: no admin AvailableRecipes: "+this.recipes.toString());
         Log.i(TAG, "loadBufferWithAvailable: finished");
         print();
     }
