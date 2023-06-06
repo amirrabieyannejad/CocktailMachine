@@ -159,6 +159,11 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public void empty() {
+                        
+                    }
+
+                    @Override
                     public void setColor(int color) {
 
                     }
@@ -281,6 +286,11 @@ public class SingeltonTestdata {
 
                     @Override
                     public void setPump(Long pump, int fluidInMillimeters) {
+
+                    }
+
+                    @Override
+                    public void empty() {
 
                     }
 
@@ -610,6 +620,11 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public void empty() {
+
+                    }
+
+                    @Override
                     public void setColor(int color) {
 
                     }
@@ -732,6 +747,11 @@ public class SingeltonTestdata {
 
                     @Override
                     public void setPump(Long pump, int fluidInMillimeters) {
+
+                    }
+
+                    @Override
+                    public void empty() {
 
                     }
 
