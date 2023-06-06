@@ -194,25 +194,26 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         resetAll();
         Log.i(TAG, "loadBufferWithAvailable");
         this.ingredients = this.loadAllIngredients();
-        Log.i(TAG, "loadBufferWithAvailable Ingredients: "+this.ingredients.toString());
+        Log.i(TAG, "loadBufferWithAvailable: all Ingredients: "+this.ingredients.toString());
         this.pumps = this.loadPumps();
-        Log.i(TAG, "loadBufferWithAvailable Pumps: "+this.pumps.toString());
+        Log.i(TAG, "loadBufferWithAvailable: all Pumps: "+this.pumps.toString());
+        this.topics = this.loadTopics();
+        Log.i(TAG, "loadBufferWithAvailable: Topics: "+this.topics.toString());
         this.ingredientPumps = this.loadIngredientPumps();
-        Log.i(TAG, "loadBufferWithAvailable IngredientPumps: "+this.ingredientPumps.toString());
+        Log.i(TAG, "loadBufferWithAvailable: all IngredientPumps: "+this.ingredientPumps.toString());
+        this.recipeIngredients = this.loadIngredientVolumes();
+        Log.i(TAG, "loadBufferWithAvailable: recipeIngredients: "+this.recipeIngredients.toString());
         if(!AdminRights.isAdmin()) {
-            this.ingredients = this.loadAvailableIngredients();
-            Log.i(TAG, "loadBufferWithAvailable no admin Ingredients: "+this.ingredients.toString());
-            this.recipes = this.loadAvailableRecipes();
-            Log.i(TAG, "loadBufferWithAvailable AvailableRecipes: "+this.recipes.toString());
+            //this.ingredients = this.loadAvailableIngredients();
+            this.loadAvailabilityForIngredients();
+            Log.i(TAG, "loadBufferWithAvailable: no admin Ingredients: "+this.ingredients.toString());
+            this.loadAvailableRecipes();
+            Log.i(TAG, "loadBufferWithAvailable: no admin AvailableRecipes: "+this.recipes.toString());
         }else{
             this.recipes = this.loadAllRecipes();
-            Log.i(TAG, "loadBufferWithAvailable AllRecipes: "+this.recipes.toString());
+            Log.i(TAG, "loadBufferWithAvailable: AllRecipes: "+this.recipes.toString());
         }
-        this.topics = this.loadTopics();
-        Log.i(TAG, "loadBufferWithAvailable Topics: "+this.topics.toString());
-        this.recipeIngredients = this.loadIngredientVolumes();
-        Log.i(TAG, "loadBufferWithAvailable recipeIngredients: "+this.recipeIngredients.toString());
-        Log.i(TAG, "loadBufferWithAvailable finished");
+        Log.i(TAG, "loadBufferWithAvailable: finished");
         print();
     }
 
@@ -226,9 +227,16 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         Log.i(TAG, "print recipes: "+this.recipes);
     }
 
-    public List<Recipe> loadAvailableRecipes() {
+    public List<Recipe> loadAvailabilityForRecipes() {
         Log.i(TAG, "loadAvailableRecipes");
-        return (List<Recipe>) Tables.TABLE_RECIPE.getAvailable(this.getReadableDatabase() );
+        //return (List<Recipe>) Tables.TABLE_RECIPE.getAvailable(this.getReadableDatabase() );
+        List<Recipe> res = new ArrayList<>();
+        for(Recipe i: this.recipes){
+            if(i.loadAvailable()){
+                res.add(i);
+            }
+        }
+        return res;
     }
 
     public List<Recipe> loadAllRecipes() {
@@ -237,13 +245,27 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return (List<Recipe>) res;
     }
 
-    public List<Ingredient> loadAvailableIngredients() {
+    /**
+     * load Availability For Ingredients
+     * @return available ingredients
+     */
+    public List<Ingredient> loadAvailabilityForIngredients() {
         Log.i(TAG, "loadAvailableIngredients");
        // return IngredientTable.
+        /*
         List<? extends Ingredient> res =  Tables.TABLE_INGREDIENT.getElements(
                 this.getReadableDatabase(),
                 this.getAvailableIngredientIDs());
         return (List<Ingredient>) res;
+
+         */
+        List<Ingredient> res = new ArrayList<>();
+        for(Ingredient i: this.ingredients){
+            if(i.isAvailable()){
+                res.add(i);
+            }
+        }
+        return res;
     }
 
     private List<SQLIngredientPump> loadIngredientPumps() {
