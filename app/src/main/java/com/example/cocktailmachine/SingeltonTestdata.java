@@ -160,7 +160,7 @@ public class SingeltonTestdata {
 
                     @Override
                     public void empty() {
-                        
+
                     }
 
                     @Override

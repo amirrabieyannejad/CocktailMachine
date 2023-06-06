@@ -30,6 +30,7 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
@@ -70,6 +71,7 @@ public class EditModelFragment extends Fragment {
     }
 
     private void saveNew(){
+        Log.i(TAG, "saveNew");
         b = new Bundle();
         old = true;
         saved = true;
@@ -78,12 +80,17 @@ public class EditModelFragment extends Fragment {
                 case PUMP:
                     pump = Pump.makeNew();
                     pump.setCurrentIngredient(ingredient);
-                    pump.fill(Integer.parseInt(
-                            binding
-                                    .includeNewPump
-                                    .includeNewPumpFillEmpty
-                                    .editTextPumpFillEmptyVolume
-                                    .getText().toString()));
+                    try {
+                        pump.fill(Integer.parseInt(
+                                binding
+                                        .includeNewPump
+                                        .includeNewPumpFillEmpty
+                                        .editTextPumpFillEmptyVolume
+                                        .getText().toString()));
+                    } catch (MissingIngredientPumpException e) {
+                        e.printStackTrace();
+                        Log.i(TAG, "saveNew: pump filling failed: pump: "+pump);
+                    }
                     setUpEditPump();
                     pump.save();
                     b.putString("Type", ModelFragment.ModelType.PUMP.name());
@@ -139,6 +146,7 @@ public class EditModelFragment extends Fragment {
     }
 
     private void save(){
+        Log.i(TAG, "save");
         b = new Bundle();
         saved = true;
         try {
@@ -163,12 +171,17 @@ public class EditModelFragment extends Fragment {
                     Log.i(TAG,"saved "+b);
                     return;
                 case PUMP:
-                    pump.fill(Integer.parseInt(
-                        binding
-                                .includeNewPump
-                                .includeNewPumpFillEmpty
-                                .editTextPumpFillEmptyVolume
-                                .getText().toString()));
+                    try {
+                        pump.fill(Integer.parseInt(
+                            binding
+                                    .includeNewPump
+                                    .includeNewPumpFillEmpty
+                                    .editTextPumpFillEmptyVolume
+                                    .getText().toString()));
+                    } catch (MissingIngredientPumpException e) {
+                        e.printStackTrace();
+                        Log.i(TAG, "save: pump filling failed: pump: "+pump);
+                    }
                     pump.save();
                     b.putString("Type", ModelFragment.ModelType.PUMP.name());
                     b.putLong("ID", pump.getID());
@@ -524,6 +537,7 @@ public class EditModelFragment extends Fragment {
     }
 
     private void setUpEditPump() {
+        Log.i(TAG, "setUpEditPump");
         binding.includeName.getRoot().setVisibility(View.GONE);
         binding.includeNewPump.getRoot().setVisibility(View.VISIBLE);
         binding.includeNewPump.includeNewPumpFillEmpty.editTextPumpFillEmptyVolume.addTextChangedListener(new TextWatcher() {
@@ -541,7 +555,12 @@ public class EditModelFragment extends Fragment {
             public void afterTextChanged(Editable s) {
                 saved = false;
                 setSaveFAB();
-                pump.fill(Integer.parseInt(s.toString()));
+                try {
+                    pump.fill(Integer.parseInt(s.toString()));
+                } catch (MissingIngredientPumpException e) {
+                    e.printStackTrace();
+                    Log.i(TAG, "setUpEditPump: editTextPumpFillEmptyVolume: afterTextChanged: pump filling failed: pump: "+pump);
+                }
             }
         });
         binding.includeNewPump.includeNewPumpFillEmpty.imageButtonEmpty.setOnClickListener(v -> {
