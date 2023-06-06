@@ -184,6 +184,10 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     //LOAD
 
+    public void loadAllAvailability(){
+        //TODO: loadAllAvailability
+    }
+
     public void loadForSetUp() {
         Log.i(TAG, "loadForSetUp");
         this.emptyUpPumps();

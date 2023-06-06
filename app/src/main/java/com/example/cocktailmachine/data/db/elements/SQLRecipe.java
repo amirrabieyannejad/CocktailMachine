@@ -217,6 +217,9 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
      */
     boolean privateLoadAvailable(){
         Log.i(TAG, "privateLoadAvailable");
+        for(SQLRecipeIngredient i: this.ingredientVolumes){
+            i.loadAvailable();
+        }
         for(Ingredient i: getIngredients()){
             if(i.isAvailable()){
                 try {
