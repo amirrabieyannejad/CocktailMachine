@@ -13,6 +13,9 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.elements.exceptions.AlreadySetIngredientException;
+import com.example.cocktailmachine.data.db.elements.exceptions.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.elements.exceptions.TooManyTimesSettedIngredientEcxception;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -96,12 +99,11 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
 
     private void load() throws NotInitializedDBException {
-        this.loadAvailable();
         this.imageUrls = DatabaseConnection.getDataBase().getUrlElements(this);
         this.topics = DatabaseConnection.getDataBase().getTopicIDs(this);
         this.ingredientVolumes = DatabaseConnection.getDataBase().getIngredientVolumes(this);
+        this.loadAvailable();
         this.loaded = true;
-
     }
 
 
@@ -190,10 +192,18 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         return this.available;
     }
 
+    /**
+     * check for ingredient pump connection
+     * true, if ingredient pump connection exists
+     *
+     * @return
+     */
     @Override
     public boolean loadAvailable() {
-        boolean res = privateLoadAvailable();
-        if(res!= this.available){
+        Log.i(TAG, "loadAvailable");
+        boolean res = this.privateLoadAvailable();
+        if(res != this.available){
+            Log.i(TAG, "loadAvailable: has changed: "+res);
             this.available = res;
             this.wasChanged();
         }
@@ -201,20 +211,24 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     }
 
     /**
-     * @return if available
+     * @return if all ingredients available, with sufficient amounts of volume
      */
-    private boolean privateLoadAvailable(){
+    boolean privateLoadAvailable(){
+        Log.i(TAG, "privateLoadAvailable");
         for(Ingredient i: getIngredients()){
             if(i.isAvailable()){
                 try {
                     if(i.getVolume()>this.getSpecificIngredientVolume(i)){
-                        Log.i(TAG, "loadAvailable: is available "+i.getName());
+                        Log.i(TAG, "privateLoadAvailable: is available "+i);
                     }else{
+                        Log.i(TAG, "privateLoadAvailable: is NOT available "+i);
                         return false;
                     }
                 } catch (TooManyTimesSettedIngredientEcxception |
                          NoSuchIngredientSettedException e) {
                     e.printStackTrace();
+
+                    Log.i(TAG, "privateLoadAvailable: is setted multiple times "+i);
                     return false;
                 }
             }else{
@@ -226,6 +240,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
     @Override
     public List<String> getImageUrls() {
+        Log.i(TAG, "getImageUrls");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.imageUrls.stream().map(SQLImageUrlElement::getUrl).collect(Collectors.toList());
         }

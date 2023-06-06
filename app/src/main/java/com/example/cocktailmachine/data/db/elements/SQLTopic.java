@@ -26,13 +26,29 @@ public class SQLTopic extends SQLDataBaseElement implements Topic {
         this.description = description;
     }
 
+    /*
     @Override
     public long getID(){
         return super.getID();
     }
 
+     */
+
+    /**
+     * always true
+     * @return
+     */
     @Override
     public boolean isAvailable() {
+        return true;
+    }
+
+    /**
+     * always true
+     * @return
+     */
+    @Override
+    public boolean loadAvailable() {
         return true;
     }
 

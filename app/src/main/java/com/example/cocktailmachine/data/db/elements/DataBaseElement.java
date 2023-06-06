@@ -9,6 +9,8 @@ public interface DataBaseElement {
 
     boolean isAvailable();
 
+    boolean loadAvailable();
+
     boolean isSaved();
 
     boolean needsUpdate();
