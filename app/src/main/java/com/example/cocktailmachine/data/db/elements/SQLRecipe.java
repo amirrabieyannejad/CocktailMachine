@@ -76,6 +76,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         this.topics = topics;
         this.addOrUpdateIDs(ingredientVolumes);
         this.loaded = true;
+        this.loadAvailable();
     }
 
     public SQLRecipe(long ID,
@@ -93,6 +94,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         this.topics = topics;
         this.addOrUpdateElements(ingredientVolumes);
         this.loaded = true;
+        this.loadAvailable();
     }
 
     //LOADER

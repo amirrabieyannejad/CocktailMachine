@@ -316,7 +316,9 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         if(!AdminRights.isAdmin()){
             throw  new AccessDeniedException();
         }
-        return Tables.TABLE_RECIPE.getElement(this.getReadableDatabase(), id);
+        Recipe res =  Tables.TABLE_RECIPE.getElement(this.getReadableDatabase(), id);
+        res.loadAvailable();
+        return res;
     }
 
     public Topic loadTopic(long id) throws AccessDeniedException {

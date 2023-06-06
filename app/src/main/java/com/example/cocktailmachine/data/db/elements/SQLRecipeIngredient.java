@@ -57,9 +57,13 @@ public class SQLRecipeIngredient extends SQLDataBaseElement {
         this.wasChanged();
     }
 
+    /**
+     * always true
+     * @return
+     */
     @Override
     public boolean isAvailable() {
-        return this.available;
+        return true;
     }
 
     /**

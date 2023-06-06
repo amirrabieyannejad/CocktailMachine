@@ -88,16 +88,16 @@ public class SQLIngredientPump extends SQLDataBaseElement {
     }
 
     /**
-     * true, if volume grater then zero and ingredient and pump exists
+     * true, if volume > zero
      * @return
      */
     @Override
     public boolean isAvailable() {
-        return this.available&&this.volume>0;
+        return this.volume>0;
     }
 
     /**
-     * true, if pump and ingredient exists
+     * true, if pump and ingredient exists and volume > zero
      * @return
      */
     @Override
@@ -109,7 +109,7 @@ public class SQLIngredientPump extends SQLDataBaseElement {
             this.available = res;
             this.wasChanged();
         }
-        return this.available;
+        return this.available&&this.isAvailable();
     }
 
     @Override

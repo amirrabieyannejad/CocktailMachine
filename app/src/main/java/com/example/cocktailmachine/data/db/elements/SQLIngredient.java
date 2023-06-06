@@ -280,6 +280,9 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         this.wasChanged();
     }
 
+    /**
+     * delete ingredient pump connection if exists, and set to null
+     */
     @Override
     public void empty() {
         this.checkIngredientPumps();
@@ -304,7 +307,8 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
     public void setIngredientPump(SQLIngredientPump ingredientPump) {
         this.ingredientPump = ingredientPump;
         //this.wasChanged();
-        Log.i(TAG, "setIngredientPump: "+ingredientPump.toString()+available);
+        this.loadAvailable();
+        Log.i(TAG, "setIngredientPump: "+ingredientPump+available);
         this.wasChanged();
     }
 
@@ -313,7 +317,6 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
      * @throws NotInitializedDBException
      */
     private void checkIngredientPumps() {
-
         Log.i(TAG, "checkIngredientPumps");
         if(this.ingredientPump==null){
             Log.i(TAG,"checkIngredientPumps: check for ingredientpump");

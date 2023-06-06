@@ -171,12 +171,12 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
 
 
     /**
-     * true, if ingredient pump connection exists and  volume > 0
+     * true, if volume > 0
      * @return
      */
     @Override
     public boolean isAvailable() {
-        return this.available && (this.getVolume() > 0);
+        return (this.getVolume() > 0);
     }
 
     /**
