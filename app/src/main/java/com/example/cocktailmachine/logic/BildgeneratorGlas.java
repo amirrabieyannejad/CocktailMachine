@@ -12,8 +12,8 @@ import androidx.core.content.res.ResourcesCompat;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
-import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.data.db.elements.exceptions.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.elements.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.R;
 
 import java.util.Collections;

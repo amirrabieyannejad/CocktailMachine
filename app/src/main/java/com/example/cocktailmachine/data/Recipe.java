@@ -1,16 +1,13 @@
 package com.example.cocktailmachine.data;
 
 
-import android.os.Bundle;
-
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
-import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
-import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.data.db.elements.exceptions.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.elements.exceptions.TooManyTimesSettedIngredientEcxception;
 
 
 import org.json.JSONArray;

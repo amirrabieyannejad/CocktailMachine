@@ -19,30 +19,16 @@ import android.widget.ImageView;
 
 
 import com.example.cocktailmachine.SingeltonTestdata;
-import com.example.cocktailmachine.data.BasicRecipes;
 import com.example.cocktailmachine.data.Ingredient;
-import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
-import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.elements.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
-import com.example.cocktailmachine.data.db.elements.SQLRecipe;
-import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
-import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.data.db.elements.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
 import com.example.cocktailmachine.R;
 
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class Grafik extends AppCompatActivity {
 

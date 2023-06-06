@@ -1,12 +1,11 @@
 package com.example.cocktailmachine.data;
 
 
-import android.view.animation.ScaleAnimation;
-
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
+import com.example.cocktailmachine.data.db.elements.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
 
@@ -17,7 +16,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public interface Pump extends Comparable<Pump>, DataBaseElement {
     /**
@@ -66,7 +64,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
     void empty();
 
-    void fill(int volume);
+    void fill(int volume) throws MissingIngredientPumpException;
 
     /**
      * {"beer": 200}

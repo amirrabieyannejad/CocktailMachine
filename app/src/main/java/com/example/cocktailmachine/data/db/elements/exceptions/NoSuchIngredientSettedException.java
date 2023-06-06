@@ -1,4 +1,6 @@
-package com.example.cocktailmachine.data.db.elements;
+package com.example.cocktailmachine.data.db.elements.exceptions;
+
+import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 
 public class NoSuchIngredientSettedException extends Exception {
     public NoSuchIngredientSettedException(SQLRecipe recipe, long ingredientID) {

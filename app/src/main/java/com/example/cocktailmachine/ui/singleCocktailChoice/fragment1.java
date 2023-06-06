@@ -7,7 +7,6 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.transition.TransitionInflater;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +16,8 @@ import android.widget.TextView;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
-import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.data.db.elements.exceptions.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.elements.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.databinding.FragmentFragment1Binding;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
 

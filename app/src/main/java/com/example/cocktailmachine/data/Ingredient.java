@@ -10,11 +10,10 @@ import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
+import com.example.cocktailmachine.data.db.elements.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,7 +116,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @param volume m
      * @throws NewlyEmptyIngredientException ingredient is empty.
      */
-    void pump(int volume) throws NewlyEmptyIngredientException;
+    void pump(int volume) throws NewlyEmptyIngredientException, MissingIngredientPumpException;
 
     //general
     /**
