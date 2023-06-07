@@ -186,17 +186,23 @@ public class ListFragment extends Fragment {
 
     private void setFAB(){
         Log.i(TAG, "setFAB: "+type.name());
-        activity.setFAB(v -> {
-            Log.i(TAG, "setFAB: clicked: list to edit: "+type.name());
-            Bundle b = new Bundle();
-            b.putString("Type", type.name());
-            Log.i(TAG, "setFAB: clicked: b: "+b);
-            NavHostFragment
-                    .findNavController(
-                            ListFragment.this)
-                    .navigate(R.id.action_listFragment_to_editModelFragment,
-                            b);
-        }, R.drawable.ic_add);
+        if(AdminRights.isAdmin()) {
+            Log.i(TAG, "setFAB: admin, add fab");
+            activity.setFAB(v -> {
+                Log.i(TAG, "setFAB: clicked: list to edit: " + type.name());
+                Bundle b = new Bundle();
+                b.putString("Type", type.name());
+                Log.i(TAG, "setFAB: clicked: b: " + b);
+                NavHostFragment
+                        .findNavController(
+                                ListFragment.this)
+                        .navigate(R.id.action_listFragment_to_editModelFragment,
+                                b);
+            }, R.drawable.ic_add);
+        }else{
+            Log.i(TAG, "setFAB: no admin, no add");
+            activity.invisibleFAB();
+        }
     }
 
     private void error(){
