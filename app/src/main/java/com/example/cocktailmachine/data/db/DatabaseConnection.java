@@ -174,6 +174,11 @@ public class DatabaseConnection extends SQLiteOpenHelper {
             Helper.emptyPump(this.pumps);
             Helper.emptyIngredient(this.ingredients);
         }
+        try {
+            this.checkAllAvailability();
+        } catch (NotInitializedDBException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void setUpEmptyPumps() {
@@ -182,6 +187,11 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         Tables.TABLE_PUMP.deleteTable(this.getWritableDatabase());
         Tables.TABLE_PUMP.createTable(this.getWritableDatabase());
         this.pumps = new ArrayList<>();
+        try {
+            this.checkAllAvailability();
+        } catch (NotInitializedDBException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     //LOAD
