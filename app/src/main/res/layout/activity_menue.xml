@@ -9,7 +9,9 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="-358dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,6 +34,7 @@
                 android:contentDescription="add recipe"
                 android:onClick="openRecipeCreator"
                 app:srcCompat="@drawable/ic_list_add" />
+
             <ImageView
                 android:layout_width="150dp"
                 android:layout_height="150dp"
@@ -62,8 +65,15 @@
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:contentDescription="Settings"
-                android:onClick="openGrafik"
+                android:onClick="openSettings"
                 app:srcCompat="@drawable/ic_options" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentDescription="Grafik"
+                android:onClick="openGrafik"
+                app:srcCompat="@drawable/ic_glass" />
 
             <ImageView
                 android:id="@+id/activity_menue_logout"

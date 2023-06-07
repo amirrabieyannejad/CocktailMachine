@@ -72,6 +72,11 @@ public class Menue extends AppCompatActivity {
 
     }
 
+    public void openSettings(View view){
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
     public void openGlassFillAnimationView(View view){
         Intent success = new Intent(this, FillAnimation.class);
         startActivity(success);
