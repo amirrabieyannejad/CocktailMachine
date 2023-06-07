@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.cocktailmachine.data.AdminRights;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
@@ -55,10 +56,15 @@ public class ListLayout {
             setAddB(recylerViewNames, getContext, adapter, fragment,
                     imageButtonListDelete, imageButtonListEdit, imageButtonListAdd);
         }
+        if(!AdminRights.isAdmin()) {
+            imageButtonListAdd.setVisibility(View.INVISIBLE);
+            imageButtonListDelete.setVisibility(View.INVISIBLE);
+            imageButtonListEdit.setVisibility(View.INVISIBLE);
+        }
 
     }
 
-    protected static void littlset(
+    private static void littlset(
             //Recycler
             RecyclerView recylerViewNames,
             Context getContext,

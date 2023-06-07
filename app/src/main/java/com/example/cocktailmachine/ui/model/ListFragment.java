@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.data.AdminRights;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.databinding.FragmentListBinding;
 import com.example.cocktailmachine.ui.ModelActivity;
@@ -25,6 +27,7 @@ public class ListFragment extends Fragment {
 
     private String local_type = "AllRecipes";
     private ModelFragment.ModelType type;
+    private Long recipeID = -1L;
 
     public ListFragment(){
     }
@@ -32,17 +35,28 @@ public class ListFragment extends Fragment {
     private ListRecyclerViewAdapters.ListRecyclerViewAdapter recyclerViewAdapter = null;
 
 
-    private void setUP(Long recipe_id){
-        Log.i(TAG, "setUP: "+ local_type +" "+recipe_id.toString());
+    private void preSetUp(){
+        Log.i(TAG, "preSetUp");
+        if(recipeID >-1L){
+            Log.i(TAG, "preSetUp with recipe");
+            setUP(recipeID);
+        }else{
+            Log.i(TAG, "preSetUp without recipe");
+            setUP();
+        }
+    }
+
+    private void setUP(Long recipeID){
+        Log.i(TAG, "setUP: "+ local_type +" "+recipeID.toString());
         switch (local_type){
             case "AvailableRecipes":
             case "AllRecipes":
             case "Pumps":
                 error();return;
-            case "Topics": setTopics(recipe_id);return;
-            case "Ingredients": setIngredients(recipe_id);return;
-            case "AddTopics": setAddTopics(recipe_id);return;
-            case "AddIngredients": setAddIngredients(recipe_id);return;
+            case "Topics": setTopics(recipeID);return;
+            case "Ingredients": setIngredients(recipeID);return;
+            case "AddTopics": setAddTopics(recipeID);return;
+            case "AddIngredients": setAddIngredients(recipeID);return;
         }
     }
 
@@ -97,6 +111,13 @@ public class ListFragment extends Fragment {
 
     private void setPumps(){
         Log.i(TAG, "setPumps");
+        if(!AdminRights.isAdmin()){
+            Toast.makeText(this.getContext(),
+                    "Pumpen find nur für den Administrator sichtbar.",
+                    Toast.LENGTH_SHORT)
+                            .show();
+            error();
+        }
         type = ModelFragment.ModelType.PUMP;
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.PumpListRecyclerViewAdapter();
@@ -160,6 +181,7 @@ public class ListFragment extends Fragment {
                 binding.includeList.imageButtonListEdit,
                 binding.includeList.imageButtonListAdd);
         binding.includeList.getRoot().setVisibility(View.VISIBLE);
+
     }
 
     private void setFAB(){
@@ -248,16 +270,17 @@ public class ListFragment extends Fragment {
             local_type = args.getString("Type");
             if(args.containsKey("Recipe_ID")){
                 Log.i(TAG, "onViewCreated: getArguments has Recipe_ID");
-                Long id = args.getLong("Recipe_ID");
-                setUP(id);
+                recipeID = args.getLong("Recipe_ID");
+                //setUP(recipeID);
             }else{
                 Log.i(TAG, "onViewCreated: getArguments has no Recipe_ID");
-                setUP();
+                //setUP();
             }
         }else{
             Log.i(TAG, "onViewCreated: getArguments == null");
-            setUP();
+            //setUP();
         }
+        preSetUp();
     }
 
     @Override
@@ -276,7 +299,8 @@ public class ListFragment extends Fragment {
     public void onResume() {
         Log.i(TAG,"onResume");
         super.onResume();
-        recyclerViewAdapter.reload();
-        binding.includeList.recylerViewNames.swapAdapter(recyclerViewAdapter, true);
+        preSetUp();
+        //recyclerViewAdapter.reload();
+        //binding.includeList.recylerViewNames.swapAdapter(recyclerViewAdapter, false);
     }
 }
