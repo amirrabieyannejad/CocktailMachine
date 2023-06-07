@@ -14,6 +14,7 @@
         android:text="@string/zutat"
         android:textAlignment="gravity"
         android:textColor="@android:color/primary_text_light"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="@+id/textView_min_pump_volume_desc"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -27,6 +28,7 @@
         android:text="@string/ingredient_name"
         android:textAlignment="gravity"
         android:textColor="@android:color/primary_text_light"
+        android:textSize="20sp"
         android:visibility="visible"
         app:layout_constraintStart_toEndOf="@+id/textView_name_desc"
         app:layout_constraintTop_toTopOf="parent" />
@@ -40,6 +42,7 @@
         android:text="@string/volumen"
         android:textAlignment="gravity"
         android:textColor="@android:color/primary_text_light"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="@+id/textView_min_pump_volume_desc"
         app:layout_constraintTop_toBottomOf="@+id/textView_name_desc" />
 
@@ -53,6 +56,7 @@
         android:text="@string/_30_ml"
         android:textAlignment="gravity"
         android:textColor="@android:color/primary_text_light"
+        android:textSize="20sp"
         android:visibility="visible"
         app:layout_constraintStart_toEndOf="@+id/textView_min_pump_volume_desc"
         app:layout_constraintTop_toBottomOf="@+id/textView_name_desc" />
@@ -67,6 +71,7 @@
         android:text="@string/minimales_pumpvolumen"
         android:textAlignment="gravity"
         android:textColor="@android:color/primary_text_light"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView_pump_volume_desc" />
 
@@ -80,6 +85,7 @@
         android:text="@string/_30_ml"
         android:textAlignment="gravity"
         android:textColor="@android:color/primary_text_light"
+        android:textSize="20sp"
         android:visibility="visible"
         app:layout_constraintStart_toEndOf="@+id/textView_min_pump_volume_desc"
         app:layout_constraintTop_toBottomOf="@+id/textView_pump_volume_desc" />
