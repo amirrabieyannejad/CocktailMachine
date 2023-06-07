@@ -369,7 +369,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
 
     //CHECKER
-
+/*
     public boolean checkAvailabilityOfAllIngredients(HashMap<Long, Integer> ingredientVolume) {
         Log.i(TAG, "checkAvailabilityOfAllIngredients");
         final List<Boolean> availables = new ArrayList<>();
@@ -381,6 +381,8 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         }
         return Helper.ingredientAvailable(ingredientVolume);
     }
+
+ */
 
     /**
      * load all availabilities
@@ -437,13 +439,12 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.pumps.stream().filter(p->p.getID()==id).findFirst().orElse(null);
         }
-        Helper<Pump> h = Helper.getPumpHelper();
-        return h.getWithId(this.pumps, id);
+        return Helper.getPumpHelper().getWithId(this.pumps, id);
     }
 
     public Ingredient getIngredient(Long id) {
         Log.i(TAG, "getIngredient");
-        Ingredient ingredient = null;
+        Ingredient ingredient;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             ingredient = this.ingredients.stream().filter(i->i.getID()==id)
                     .findFirst().orElse(null);
@@ -463,17 +464,41 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     public List<Ingredient> getIngredients(List<Long> ingredients) {
         Log.i(TAG, "getIngredients");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return this.ingredients.stream().filter(i->ingredients.contains(i.getID())).collect(Collectors.toList());
+        if(AdminRights.isAdmin()) {
+            List<Ingredient> res = new ArrayList<>();
+            for(Ingredient i: this.ingredients){
+                if(ingredients.contains(i.getID())){
+                    res.add(i);
+                }
+            }
+            return res;
+        }else{
+            List<Ingredient> res = new ArrayList<>();
+            for(Ingredient i: this.ingredients){
+                if(i.isAvailable()&&ingredients.contains(i.getID())){
+                    res.add(i);
+                }
+            }
+            return res;
         }
-
-        Helper<Ingredient> h = Helper.getIngredientHelper();
-        return h.getWithIds(this.ingredients, ingredients);
     }
 
     public Recipe getRecipe(Long id) {
         Log.i(TAG, "getRecipe");
-        Recipe recipe= null;
+        if(AdminRights.isAdmin()){
+            for(Recipe r: this.recipes){
+                if(id.equals(r.getID())){
+                    return r;
+                }
+            }
+        }else{
+            for(Recipe r: this.recipes){
+                if(id.equals(r.getID())&&r.isAvailable()){
+                    return r;
+                }
+            }
+        }
+        /*
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             recipe = this.recipes.stream().filter(i->i.getID()==id).findFirst().orElse(null);
         }else {
@@ -490,17 +515,30 @@ public class DatabaseConnection extends SQLiteOpenHelper {
                 e.printStackTrace();
             }
         }
-        return recipe;
+
+         */
+        return null;
     }
 
     public List<Recipe> getRecipes(List<Long> recipeIds) {
         Log.i(TAG, "getRecipes");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return this.recipes.stream().filter(i->recipeIds.contains(i.getID())).collect(Collectors.toList());
+        if(AdminRights.isAdmin()) {
+            List<Recipe> res = new ArrayList<>();
+            for(Recipe i: this.recipes){
+                if(recipeIds.contains(i.getID())){
+                    res.add(i);
+                }
+            }
+            return res;
+        }else{
+            List<Recipe> res = new ArrayList<>();
+            for(Recipe i: this.recipes){
+                if(i.isAvailable()&&recipeIds.contains(i.getID())){
+                    res.add(i);
+                }
+            }
+            return res;
         }
-
-        Helper<Recipe> h = Helper.getRecipeHelper();
-        return h.getWithIds(this.recipes, recipeIds);
     }
 
     public List<Recipe> getRecipeWith(String needle) {
