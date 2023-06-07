@@ -10,8 +10,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="-358dp">
+        tools:layout_editor_absoluteX="34dp"
+        tools:layout_editor_absoluteY="-349dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -69,8 +69,9 @@
                 app:srcCompat="@drawable/ic_options" />
 
             <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
                 android:contentDescription="Grafik"
                 android:onClick="openGrafik"
                 app:srcCompat="@drawable/ic_glass" />
