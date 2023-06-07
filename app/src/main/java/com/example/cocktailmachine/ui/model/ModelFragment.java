@@ -46,6 +46,7 @@ public class ModelFragment extends Fragment {
     private void setUP(){
         Log.i(TAG, "setUP: "+type+" "+id.toString());
         binding.textViewDescription.setVisibility(View.GONE);
+        binding.imageViewEdit.setVisibility(View.GONE);
         //binding.includePump
 
         binding.includeAvailable.getRoot().setVisibility(View.GONE);
@@ -254,16 +255,25 @@ public class ModelFragment extends Fragment {
     }
 
     private void setFAB(){
-        binding.imageViewEdit.setOnClickListener(v -> {
-            Bundle b = new Bundle();
-            b.putString("Type", type.name());
-            b.putLong("ID", id);
+        Log.i(TAG, "setFAB");
+        if(AdminRights.isAdmin()) {
+            Log.i(TAG, "setFAB: is Admin: make edit possible");
+            binding.imageViewEdit.setVisibility(View.VISIBLE);
+            binding.imageViewEdit.setOnClickListener(v -> {
+                Bundle b = new Bundle();
+                b.putString("Type", type.name());
+                b.putLong("ID", id);
 
-            NavHostFragment
-                    .findNavController(ModelFragment.this)
-                    .navigate(R.id.action_modelFragment_to_editModelFragment,
-                            b);
-        });
+                NavHostFragment
+                        .findNavController(ModelFragment.this)
+                        .navigate(R.id.action_modelFragment_to_editModelFragment,
+                                b);
+            });
+        }else{
+            Log.i(TAG, "setFAB: is no Admin: make edit impossible");
+            binding.imageViewEdit.setVisibility(View.GONE);
+
+        }
         /*
         activity.setFAB(v -> {
             Bundle b = new Bundle();
@@ -277,13 +287,20 @@ public class ModelFragment extends Fragment {
         }, R.drawable.ic_edit);
          */
         if(type.equals(ModelType.RECIPE)) {
-            activity.setFAB(v ->{
-                recipe.send();
-                Toast.makeText(this.getContext(), "Cocktail in Bearbeitung.", Toast.LENGTH_SHORT).show();
-            }, R.drawable.ic_send);
-        }else{
-            activity.invisibleFAB();
+            if(this.recipe!=null&&this.recipe.isAvailable()) {
+                Log.i(TAG, "setFAB: recipe is shown and recipe is available");
+                activity.setFAB(v -> {
+                    recipe.send();
+                    Toast.makeText(this.getContext(), "Cocktail in Bearbeitung.", Toast.LENGTH_SHORT).show();
+                }, R.drawable.ic_send);
+                return;
+            }else if(this.recipe==null){
+                Toast.makeText(this.getContext(), "Rezept nicht verfügbar.", Toast.LENGTH_SHORT).show();
+                error();
+            }
         }
+        Log.i(TAG, "setFAB: no recipe is shown or recipe is not available");
+        activity.invisibleFAB();
     }
 
 
@@ -326,4 +343,35 @@ public class ModelFragment extends Fragment {
         super.onStart();
         setFAB();
     }
+
+    @Override
+    public void onResume() {
+        Log.i(TAG, "onResume");
+        super.onResume();
+        if(!AdminRights.isAdmin()){
+            if (type == ModelType.PUMP) {
+                Toast.makeText(this.getContext(),
+                                "Pumpen sind für normale Nutzer nicht zugreifbar.",
+                                Toast.LENGTH_SHORT)
+                        .show();
+                NavHostFragment
+                        .findNavController(ModelFragment.this)
+                        .navigate(R.id.action_modelFragment_to_listFragment);
+                return;
+            }
+            binding.imageViewEdit.setVisibility(View.GONE);
+            binding.includeIngredientAdmin.getRoot().setVisibility(View.GONE);
+            binding.includeIngredients.imageButtonListAdd.setVisibility(View.GONE);
+            binding.includeIngredients.imageButtonListDelete.setVisibility(View.GONE);
+            binding.includeIngredients.imageButtonListEdit.setVisibility(View.GONE);
+            binding.includeTopics.imageButtonListAdd.setVisibility(View.GONE);
+            binding.includeTopics.imageButtonListDelete.setVisibility(View.GONE);
+            binding.includeTopics.imageButtonListEdit.setVisibility(View.GONE);
+        }else{
+            setUP();
+            setFAB();
+        }
+    }
+
+
 }

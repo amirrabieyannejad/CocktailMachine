@@ -42,7 +42,8 @@ public class ListLayout {
         if (adapter.getItemCount() > 0) {
             Log.i(TAG, "set: list with " + adapter.getItemCount() + " items");
             setRecyclerView(recylerViewNames, getContext, adapter, fragment);
-            setButtons(recylerViewNames, adapter, getContext, imageButtonListDelete, imageButtonListEdit);
+            setButtons(recylerViewNames, adapter, getContext,
+                    imageButtonListDelete, imageButtonListEdit);
             imageButtonListAdd.setVisibility(View.GONE);
         } else {
             //The list is empty.
@@ -51,7 +52,8 @@ public class ListLayout {
             imageButtonListDelete.setVisibility(View.GONE);
             imageButtonListEdit.setVisibility(View.GONE);
             imageButtonListAdd.setVisibility(View.VISIBLE);
-            setAddB(recylerViewNames, getContext, adapter, fragment, imageButtonListDelete, imageButtonListEdit, imageButtonListAdd);
+            setAddB(recylerViewNames, getContext, adapter, fragment,
+                    imageButtonListDelete, imageButtonListEdit, imageButtonListAdd);
         }
 
     }
@@ -143,7 +145,8 @@ public class ListLayout {
                 }
             }
         });
-        if (adapter.type.equals(RowViews.RowType.recipeIngredient) || adapter.type.equals(RowViews.RowType.recipeTopic)) {
+        if (adapter.type.equals(RowViews.RowType.recipeIngredient)
+                || adapter.type.equals(RowViews.RowType.recipeTopic)) {
             imageButtonListEdit.setOnClickListener(v -> {
                 Log.i(TAG, "delete: imageButtonListEdit clicked");
                 if (adapter.type.equals(RowViews.RowType.recipeIngredient)) {
