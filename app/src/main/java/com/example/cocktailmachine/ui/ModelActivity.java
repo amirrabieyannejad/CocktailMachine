@@ -26,6 +26,7 @@ import androidx.navigation.ui.NavigationUI;
 
 
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.ui.model.ModelType;
 
 
 public class ModelActivity extends AppCompatActivity {
@@ -81,8 +82,23 @@ public class ModelActivity extends AppCompatActivity {
 
          */
         Log.i(TAG,"onCreate finished");
+
     }
 
+
+
+    private void goTo(Bundle bundle){
+        FragmentType ft = FragmentType.valueOf(bundle.getString("FragmentType"));
+        ModelType.ModelType mt = ModelType.ModelType.valueOf(bundle.getString("ModelType"));
+    }
+
+    private void goTo(FragmentType ft, ModelType.ModelType mt){
+
+        ListFragment fragment = new ListFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("Type","Topics");
+        navController.navigate(R.id.listFragment, bundle);
+    }
 
 
 
@@ -138,9 +154,17 @@ public class ModelActivity extends AppCompatActivity {
     //}
 
 
+
+
+    //
+    public static enum FragmentType{
+        Edit, Model, List;
+    }
+
+
     //Menu
     public void refresh(MenuItem item) {
-        //TODO
+        //TODO sync
     }
 
     public void goToMenue(MenuItem item) {
@@ -198,7 +222,7 @@ public class ModelActivity extends AppCompatActivity {
 
     private void logout(){
         Log.i(TAG, "logout" );
-        AdminRights.logout(this);
+        AdminRights.logout();
         this.menu.findItem(R.id.action_admin_login).setVisible(true);
         this.menu.findItem(R.id.action_admin_logout).setVisible(false);
         this.menu.findItem(R.id.action_pumps).setVisible(false);
