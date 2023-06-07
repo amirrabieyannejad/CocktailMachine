@@ -89,10 +89,10 @@ public class ModelActivity extends AppCompatActivity {
 
     private void goTo(Bundle bundle){
         FragmentType ft = FragmentType.valueOf(bundle.getString("FragmentType"));
-        ModelType.ModelType mt = ModelType.ModelType.valueOf(bundle.getString("ModelType"));
+        ModelType mt = ModelType.valueOf(bundle.getString("ModelType"));
     }
 
-    private void goTo(FragmentType ft, ModelType.ModelType mt){
+    private void goTo(FragmentType ft, ModelType mt){
 
         ListFragment fragment = new ListFragment();
         Bundle bundle = new Bundle();
