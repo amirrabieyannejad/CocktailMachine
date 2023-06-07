@@ -100,6 +100,10 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     //LOADER
 
 
+    /**
+     * laod recipe ingredient, image urls, topics
+     * @throws NotInitializedDBException
+     */
     private void load() throws NotInitializedDBException {
         this.imageUrls = DatabaseConnection.getDataBase().getUrlElements(this);
         this.topics = DatabaseConnection.getDataBase().getTopicIDs(this);
@@ -107,6 +111,8 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         this.loadAvailable();
         this.loaded = true;
     }
+
+
 
 
     //GETTER
@@ -217,6 +223,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
      */
     boolean privateLoadAvailable(){
         Log.i(TAG, "privateLoadAvailable");
+
         for(SQLRecipeIngredient i: this.ingredientVolumes){
             i.loadAvailable();
         }
@@ -242,6 +249,9 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         }
         return true;
     }
+
+
+
 
     @Override
     public List<String> getImageUrls() {

@@ -93,6 +93,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
             BasicRecipes.loadPumps();
             BasicRecipes.loadMargarita();
             BasicRecipes.loadLongIslandIceTea();
+            DatabaseConnection.singleton.checkAllAvailability();
             DatabaseConnection.singleton.print();
             Log.i(TAG, "initialize_singleton: finished loading");
         } catch (NotInitializedDBException | MissingIngredientPumpException e) {
@@ -112,6 +113,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
             BasicRecipes.loadPumps();
             BasicRecipes.loadMargarita();
             BasicRecipes.loadLongIslandIceTea();
+            DatabaseConnection.singleton.checkAllAvailability();
             DatabaseConnection.singleton.print();
             Log.i(TAG, "initialize_singleton: finished loading");
         }  catch (NotInitializedDBException | MissingIngredientPumpException e) {
@@ -184,9 +186,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     //LOAD
 
-    public void loadAllAvailability(){
-        //TODO: loadAllAvailability
-    }
+
 
     public void loadForSetUp() {
         Log.i(TAG, "loadForSetUp");
@@ -202,8 +202,8 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public void loadBufferWithAvailable() {
-        resetAll();
         Log.i(TAG, "loadBufferWithAvailable");
+        resetAll();
         this.ingredients = this.loadAllIngredients();
         Log.i(TAG, "loadBufferWithAvailable: all Ingredients: "+this.ingredients.toString());
         this.pumps = this.loadPumps();
@@ -216,11 +216,18 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         Log.i(TAG, "loadBufferWithAvailable: all recipeIngredients: "+this.recipeIngredients.toString());
         this.recipes = this.loadAllRecipes();
         Log.i(TAG, "loadBufferWithAvailable: all Recipes: "+this.recipes.toString());
-        this.loadAvailabilityForIngredients();
-        Log.i(TAG, "loadBufferWithAvailable: no admin Ingredients: "+this.ingredients.toString());
-        this.loadAvailabilityForRecipes();
-        Log.i(TAG, "loadBufferWithAvailable: no admin AvailableRecipes: "+this.recipes.toString());
-        Log.i(TAG, "loadBufferWithAvailable: finished");
+        //this.loadAvailabilityForIngredients();
+        //Log.i(TAG, "loadBufferWithAvailable: no admin Ingredients: "+this.ingredients.toString());
+        //this.loadAvailabilityForRecipes();
+        //Log.i(TAG, "loadBufferWithAvailable: no admin AvailableRecipes: "+this.recipes.toString());
+
+        try {
+            this.checkAllAvailability();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            Log.i(TAG, "loadBufferWithAvailable: checkAllAvailability: saving of one instance failed");
+        }
+        Log.i(TAG, "loadBufferWithAvailable: finished now print");
         print();
     }
 
@@ -234,6 +241,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         Log.i(TAG, "print recipes: "+this.recipes);
     }
 
+    /*
     public List<Recipe> loadAvailabilityForRecipes() {
         Log.i(TAG, "loadAvailableRecipes");
         //return (List<Recipe>) Tables.TABLE_RECIPE.getAvailable(this.getReadableDatabase() );
@@ -246,6 +254,8 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return res;
     }
 
+     */
+
     public List<Recipe> loadAllRecipes() {
         Log.i(TAG, "loadAllRecipes");
         List<? extends Recipe> res =  Tables.TABLE_RECIPE.getAllElements(this.getReadableDatabase());
@@ -256,6 +266,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
      * load Availability For Ingredients
      * @return available ingredients
      */
+    /*
     public List<Ingredient> loadAvailabilityForIngredients() {
         Log.i(TAG, "loadAvailableIngredients");
        // return IngredientTable.
@@ -266,6 +277,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return (List<Ingredient>) res;
 
          */
+    /*
         List<Ingredient> res = new ArrayList<>();
         for(Ingredient i: this.ingredients){
             if(i.isAvailable()){
@@ -274,6 +286,8 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         }
         return res;
     }
+    */
+
 
     private List<SQLIngredientPump> loadIngredientPumps() {
         Log.i(TAG, "loadIngredientPumps");
@@ -333,11 +347,14 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return Tables.TABLE_TOPIC.getElement(this.getReadableDatabase(), id);
     }
 
+    /*
     public void checkForAvailablityInRecipes(){
         for(Recipe r: this.recipes){
             r.isAvailable();
         }
     }
+
+     */
 
 
 
@@ -355,6 +372,31 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return Helper.ingredientAvailable(ingredientVolume);
     }
 
+    /**
+     * load all availabilities
+     */
+    private void checkAllAvailability() throws NotInitializedDBException {
+        //TO DO: checkAllAvailability
+        Log.i(TAG, "checkAllAvailability");
+        Log.i(TAG, "checkAllAvailability: pumps");
+        for(Pump p: this.pumps){
+            p.loadAvailable();//loads ingredient pump connection if exists
+            p.save();
+        }
+        Log.i(TAG, "checkAllAvailability: pumps: "+this.pumps);
+        Log.i(TAG, "checkAllAvailability: ingredients");
+        for(Ingredient i: this.ingredients){
+            i.loadAvailable();//loads ingredient pump connection if exists
+            i.save();
+        }
+        Log.i(TAG, "checkAllAvailability: ingredients: "+this.ingredients);
+        Log.i(TAG, "checkAllAvailability: recipes");
+        for(Recipe r: this.recipes){
+            r.loadAvailable();
+            r.save();
+        }
+        Log.i(TAG, "checkAllAvailability: recipes: "+this.recipes);
+    }
 
 
 
