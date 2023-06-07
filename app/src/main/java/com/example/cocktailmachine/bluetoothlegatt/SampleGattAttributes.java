@@ -23,13 +23,17 @@ import java.util.HashMap;
  */
 public class SampleGattAttributes {
     private static final HashMap<String, String> attributes = new HashMap();
-    public static String COCKTAIL_MACHINE = "c0605c38-3f94-33f6-ace6-7a5504544a80";
+    //public static String COCKTAIL_MACHINE = "c0605c38-3f94-33f6-ace6-7a5504544a80";
+    public static String COCKTAIL_MACHINE = "8ccbf239-1cd2-4eb7-8872-1cb76c980d14";
 
     // TO-DO: Add CCC Descriptor for add Notification/Indication to specific Characteristic
     public static String CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
     static   {
         // Cocktail Machine ESP32
         attributes.put("Cocktail Machine ESP32", COCKTAIL_MACHINE);
+
+        // Cocktail Machine ESP32 Name
+        attributes.put("Cocktail Machine ESP32 Name", "c0605c38-3f94-33f6-ace6-7a5504544a80");
 
         // Communication-Service
         attributes.put("Communication Service", "dad995d1-f228-38ec-8b0f-593953973406");
