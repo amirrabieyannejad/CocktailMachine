@@ -57,7 +57,7 @@ public class EditModelFragment extends Fragment {
     private boolean old=false;
     private Bundle b;
 
-    private ModelFragment.ModelType type;
+    private ModelType type;
 
     public EditModelFragment(){}
 
@@ -93,7 +93,7 @@ public class EditModelFragment extends Fragment {
                     }
                     setUpEditPump();
                     pump.save();
-                    b.putString("Type", ModelFragment.ModelType.PUMP.name());
+                    b.putString("Type", ModelType.PUMP.name());
                     b.putLong("ID", pump.getID());
                     Log.i(TAG,"savenew"+b);
                     return;
@@ -109,7 +109,7 @@ public class EditModelFragment extends Fragment {
                                     .toString());
                     setUpEditTopic();
                     topic.save();
-                    b.putString("Type", ModelFragment.ModelType.TOPIC.name());
+                    b.putString("Type", ModelType.TOPIC.name());
                     b.putLong("ID", topic.getID());
                     Log.i(TAG,"savenew"+b);
                     return;
@@ -121,7 +121,7 @@ public class EditModelFragment extends Fragment {
                                     .getText().toString());
                     setUpEditRecipe();
                     recipe.save();
-                    b.putString("Type", ModelFragment.ModelType.RECIPE.name());
+                    b.putString("Type", ModelType.RECIPE.name());
                     b.putLong("ID", recipe.getID());
                     Log.i(TAG,"savenew"+b);
                     return;
@@ -133,7 +133,7 @@ public class EditModelFragment extends Fragment {
                                     .getText().toString());
                     setUpEditIngredient();
                     ingredient.save();
-                    b.putString("Type", ModelFragment.ModelType.INGREDIENT.name());
+                    b.putString("Type", ModelType.INGREDIENT.name());
                     b.putLong("ID", ingredient.getID());
                     Log.i(TAG,"savenew"+b);
                     return;
@@ -154,19 +154,19 @@ public class EditModelFragment extends Fragment {
                 case INGREDIENT:
                     ingredient.setAlcoholic(binding.checkBoxAlcoholic.isChecked());
                     ingredient.save();
-                    b.putString("Type", ModelFragment.ModelType.INGREDIENT.name());
+                    b.putString("Type", ModelType.INGREDIENT.name());
                     b.putLong("ID", ingredient.getID());
                     Log.i(TAG,"saved "+b);
                     return;
                 case RECIPE:
                     recipe.save();
-                    b.putString("Type", ModelFragment.ModelType.RECIPE.name());
+                    b.putString("Type", ModelType.RECIPE.name());
                     b.putLong("ID", recipe.getID());
                     Log.i(TAG,"saved "+b);
                     return;
                 case TOPIC:
                     topic.save();
-                    b.putString("Type", ModelFragment.ModelType.TOPIC.name());
+                    b.putString("Type", ModelType.TOPIC.name());
                     b.putLong("ID", topic.getID());
                     Log.i(TAG,"saved "+b);
                     return;
@@ -183,7 +183,7 @@ public class EditModelFragment extends Fragment {
                         Log.i(TAG, "save: pump filling failed: pump: "+pump);
                     }
                     pump.save();
-                    b.putString("Type", ModelFragment.ModelType.PUMP.name());
+                    b.putString("Type", ModelType.PUMP.name());
                     b.putLong("ID", pump.getID());
                     Log.i(TAG,"saved "+b);
                     return;
@@ -636,7 +636,7 @@ public class EditModelFragment extends Fragment {
             Log.i(TAG, "onViewCreated: getArguments != null");
             Log.i(TAG, "onViewCreated: getArguments"+args);
             String type = args.getString("Type");
-            this.type = ModelFragment.ModelType.valueOf(type);
+            this.type = ModelType.valueOf(type);
             if(args.containsKey("ID")){
                 Log.i(TAG, "onViewCreated: getArguments has ID -> Edit");
                 Long id = args.getLong("ID");

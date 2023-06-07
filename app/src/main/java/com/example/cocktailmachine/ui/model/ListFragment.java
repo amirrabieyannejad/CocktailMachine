@@ -26,7 +26,7 @@ public class ListFragment extends Fragment {
     private static final String TAG = "ListFragment";
 
     private String local_type = "AllRecipes";
-    private ModelFragment.ModelType type;
+    private ModelType type;
     private Long recipeID = -1L;
 
     public ListFragment(){
@@ -78,7 +78,7 @@ public class ListFragment extends Fragment {
 
     private void setAddIngredients(Long recipe_id){
         Log.i(TAG, "setAddIngredients: "+recipe_id.toString());
-        type = ModelFragment.ModelType.INGREDIENT;
+        type = ModelType.INGREDIENT;
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter(recipe_id);
         recyclerViewAdapter.loadAdd();
@@ -87,7 +87,7 @@ public class ListFragment extends Fragment {
 
     private void setAddTopics(Long recipe_id){
         Log.i(TAG, "setAddTopics: "+recipe_id.toString());
-        type = ModelFragment.ModelType.TOPIC;
+        type = ModelType.TOPIC;
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter(recipe_id);
         recyclerViewAdapter.loadAdd();
@@ -103,7 +103,7 @@ public class ListFragment extends Fragment {
 
     private void setTopics(Long recipe_id){
         Log.i(TAG, "setTopics: "+recipe_id.toString());
-        type = ModelFragment.ModelType.TOPIC;
+        type = ModelType.TOPIC;
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter(recipe_id);
         set("Serviervorschläge");
@@ -118,7 +118,7 @@ public class ListFragment extends Fragment {
                             .show();
             error();
         }
-        type = ModelFragment.ModelType.PUMP;
+        type = ModelType.PUMP;
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.PumpListRecyclerViewAdapter();
         set( "Pumpen");
@@ -126,7 +126,7 @@ public class ListFragment extends Fragment {
 
     private void setIngredients(){
         Log.i(TAG, "setIngredients");
-        type = ModelFragment.ModelType.INGREDIENT;
+        type = ModelType.INGREDIENT;
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.IngredientListRecyclerViewAdapter();
         set( "Zutaten");
@@ -134,7 +134,7 @@ public class ListFragment extends Fragment {
 
     private void setTopics(){
         Log.i(TAG, "setTopics");
-        type = ModelFragment.ModelType.TOPIC;
+        type = ModelType.TOPIC;
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.TopicListRecyclerViewAdapter();
         set("Serviervorschläge");
@@ -142,7 +142,7 @@ public class ListFragment extends Fragment {
 
     private void setAvailableRecipes(){
         Log.i(TAG, "setAvailableRecipes");
-        type = ModelFragment.ModelType.RECIPE;
+        type = ModelType.RECIPE;
         recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeListRecyclerViewAdapter();
         set( "Rezepte");
@@ -150,7 +150,7 @@ public class ListFragment extends Fragment {
 
     private void setAllRecipes(){
         Log.i(TAG, "setAllRecipes");
-        type = ModelFragment.ModelType.RECIPE;
+        type = ModelType.RECIPE;
         ListRecyclerViewAdapters.RecipeListRecyclerViewAdapter recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeListRecyclerViewAdapter();
         recyclerViewAdapter.replaceRecipes(Recipe.getAllRecipes());

@@ -256,7 +256,7 @@ public class RowViews {
         @Override
         Bundle getGoToModelBundle() {
             Bundle b = new Bundle();
-            b.putString("Type", ModelFragment.ModelType.RECIPE.toString());
+            b.putString("Type", ModelType.RECIPE.toString());
             b.putLong("ID", recipe.getID());
             return b;
         }
@@ -287,7 +287,7 @@ public class RowViews {
         @Override
         Bundle getGoToModelBundle() {
             Bundle b = new Bundle();
-            b.putString("Type", ModelFragment.ModelType.TOPIC.toString());
+            b.putString("Type", ModelType.TOPIC.toString());
             b.putLong("ID", topic.getID());
             return b;
         }
@@ -322,7 +322,7 @@ public class RowViews {
         @Override
         Bundle getGoToModelBundle() {
             Bundle b = new Bundle();
-            b.putString("Type", ModelFragment.ModelType.TOPIC.toString());
+            b.putString("Type", ModelType.TOPIC.toString());
             b.putLong("ID", topic.getID());
             return b;
         }
@@ -357,7 +357,7 @@ public class RowViews {
         @Override
         Bundle getGoToModelBundle() {
             Bundle b = new Bundle();
-            b.putString("Type", ModelFragment.ModelType.INGREDIENT.toString());
+            b.putString("Type", ModelType.INGREDIENT.toString());
             b.putLong("ID", ingredient.getID());
             return b;
         }
@@ -392,7 +392,7 @@ public class RowViews {
         @Override
         Bundle getGoToModelBundle() {
             Bundle b = new Bundle();
-            b.putString("Type", ModelFragment.ModelType.INGREDIENT.toString());
+            b.putString("Type", ModelType.INGREDIENT.toString());
             b.putLong("ID", ingredient.getID());
             return b;
         }
@@ -432,7 +432,7 @@ public class RowViews {
         @Override
         Bundle getGoToModelBundle() {
             Bundle b = new Bundle();
-            b.putString("Type", ModelFragment.ModelType.PUMP.toString());
+            b.putString("Type", ModelType.PUMP.toString());
             b.putLong("ID", pump.getID());
             return b;
         }

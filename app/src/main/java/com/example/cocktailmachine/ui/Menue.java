@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 import com.example.cocktailmachine.data.AdminRights;
@@ -14,6 +15,7 @@ import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
+import com.example.cocktailmachine.ui.model.ModelType;
 import com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice;
 
 public class Menue extends AppCompatActivity {
@@ -50,14 +52,16 @@ public class Menue extends AppCompatActivity {
     public void openRecipeList(View view) {
         Intent success = new Intent(this, ModelActivity.class);
         Bundle b = new Bundle();
-        b.putString("Fragment", "RecipeList");
+        b.putString("FragmentType", ModelActivity.FragmentType.List.toString());
+        b.putString("ModelType", ModelType.RECIPE.toString());
         startActivity(success, b);
     }
 
     public void openRecipeCreator(View view){
         Intent success = new Intent(this, ModelActivity.class);
         Bundle b = new Bundle();
-        b.putString("Fragment", "RecipeCreator");
+        b.putString("FragmentType", ModelActivity.FragmentType.Edit.toString());
+        b.putString("ModelType", ModelType.RECIPE.toString());
         startActivity(success, b);
     }
 
@@ -105,9 +109,11 @@ public class Menue extends AppCompatActivity {
 
     public void logout(View view){
         Log.i(TAG, "logout");
-        AdminRights.logout(this);
+        AdminRights.logout();
         binding.activityMenueLogout.setVisibility(View.GONE);
         binding.activityMenueLogin.setVisibility(View.VISIBLE);
+
+        Toast.makeText(this,"Ausgeloggt!",Toast.LENGTH_SHORT).show();
         Log.i(TAG, "finished logout");
     }
 

@@ -39,10 +39,6 @@ public class ModelFragment extends Fragment {
     public ModelFragment(){
     }
 
-    protected static enum ModelType{
-        TOPIC, INGREDIENT, PUMP,RECIPE
-    }
-
     private void setUP(){
         Log.i(TAG, "setUP: "+type+" "+id.toString());
         binding.textViewDescription.setVisibility(View.GONE);

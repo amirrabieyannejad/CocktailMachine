@@ -104,9 +104,9 @@ public class AdminRights {
         builder.show();
     }
 
-    public static void logout(Context getContext){
+    public static void logout(){
         AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.User);
-        Toast.makeText(getContext,"Ausgeloggt!",Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getContext,"Ausgeloggt!",Toast.LENGTH_SHORT).show();
     }
 
 
