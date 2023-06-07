@@ -174,16 +174,20 @@ public class Helper<T extends DataBaseElement> {
     public static List<SQLIngredientPump> removeIfPumpID(
             List<SQLIngredientPump> elements,
             Long id){
-        for(SQLIngredientPump e: elements){
-            if(e.getPumpID() == id) {
-                elements.remove(e);
-                try {
-                    e.delete();
-                } catch (NotInitializedDBException ex) {
-                    ex.printStackTrace();
-                }
+        List<SQLIngredientPump> toBeDeleted = new ArrayList<>();
+        for(SQLIngredientPump ip: elements){
+            if(ip.getPumpID() == id) {
+                toBeDeleted.add(ip);
             }
         }
+        for(SQLIngredientPump ip: toBeDeleted){
+            try {
+                ip.delete();
+            } catch (NotInitializedDBException e) {
+                e.printStackTrace();
+            }
+        }
+        elements.removeAll(toBeDeleted);
         return elements;
     }
 
