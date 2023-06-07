@@ -980,6 +980,24 @@ public class DatabaseConnection extends SQLiteOpenHelper {
             this.pumps = Helper.getPumpHelper().removeIf(this.pumps, id);
             //this.ingredientPumps =
             Helper.removeIfPumpID(this.ingredientPumps, id);
+            /*
+            List<SQLIngredientPump> toBeDeleted = new ArrayList<>();
+            for(SQLIngredientPump ip: this.ingredientPumps){
+                if(ip.getPumpID() == id) {
+                    toBeDeleted.add(ip);
+                }
+            }
+            for(SQLIngredientPump ip: toBeDeleted){
+                try {
+                    ip.delete();
+                } catch (NotInitializedDBException e) {
+                    e.printStackTrace();
+                }
+            }
+            this.ingredientPumps.removeAll(toBeDeleted);
+            //return elements;
+
+             */
         }
     }
 
@@ -999,6 +1017,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     public void remove(Pump pump) {
         Log.i(TAG, "remove");
+
         Tables.TABLE_PUMP.deleteElement(this.getWritableDatabase(), pump.getID());
         Tables.TABLE_INGREDIENT_PUMP.deletePump(this.getWritableDatabase(), pump.getID());
         this.pumps.remove(pump);
