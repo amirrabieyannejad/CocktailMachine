@@ -529,10 +529,10 @@ public class BluetoothLeService extends Service {
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      */
     @SuppressLint("MissingPermission")
-    public void reset(float user) throws JSONException {
+    public String reset(float user) throws JSONException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
+            return "BluetoothAdapter not initialized";
         }
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
@@ -540,16 +540,18 @@ public class BluetoothLeService extends Service {
         jsonObject.put("user", user);
         String payload = jsonObject.toString();
         writeCharacteristic(payload, false);
+        return (getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
+                BluetoothLeService.CHARACTERISTIC_MESSAGE_USER));
     }
     /**
      * reset: Cancels the current recipe
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      */
     @SuppressLint("MissingPermission")
-    public void abort(float user) throws JSONException {
+    public String abort(float user) throws JSONException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
+            return "BluetoothAdapter not initialized";
         }
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
@@ -557,6 +559,8 @@ public class BluetoothLeService extends Service {
         jsonObject.put("user", user);
         String payload = jsonObject.toString();
         writeCharacteristic(payload, false);
+        return (getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
+                BluetoothLeService.CHARACTERISTIC_MESSAGE_USER));
     }
 
     /**
@@ -564,10 +568,10 @@ public class BluetoothLeService extends Service {
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      */
     @SuppressLint("MissingPermission")
-    public void makeRecipe(float user, String recipe) throws JSONException {
+    public String makeRecipe(float user, String recipe) throws JSONException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
+            return "BluetoothAdapter not initialized";
         }
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
@@ -576,6 +580,9 @@ public class BluetoothLeService extends Service {
         jsonObject.put("recipe", recipe);
         String payload = jsonObject.toString();
         writeCharacteristic(payload, false);
+        return (getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
+                BluetoothLeService.CHARACTERISTIC_MESSAGE_USER));
+
     }
 
     /**
@@ -583,10 +590,10 @@ public class BluetoothLeService extends Service {
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      */
     @SuppressLint("MissingPermission")
-    public void addLiquid(float user,String liquid, float volume) throws JSONException {
+    public String addLiquid(float user,String liquid, float volume) throws JSONException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
+            return "BluetoothAdapter not initialized";
         }
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
@@ -596,6 +603,8 @@ public class BluetoothLeService extends Service {
         jsonObject.put("volume", volume);
         String payload = jsonObject.toString();
         writeCharacteristic(payload, false);
+        return (getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
+                BluetoothLeService.CHARACTERISTIC_MESSAGE_USER));
     }
 
     /**
@@ -604,8 +613,13 @@ public class BluetoothLeService extends Service {
       */
 
     @SuppressLint("MissingPermission")
-    public void defineRecipe(float user,String name, ArrayList<Pair<String, Float>> liquids)
+    public String defineRecipe(float user,String name, ArrayList<Pair<String, Float>> liquids)
             throws JSONException {
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized");
+            return "BluetoothAdapter not initialized";
+        }
+        //generate JSON Format
         JSONArray arrayLiquids = new JSONArray();
         int i = 0;
         for (Pair p : liquids) {
@@ -622,41 +636,51 @@ public class BluetoothLeService extends Service {
         jsonObject.put("liquids", arrayLiquids);
         String payload = jsonObject.toString();
         writeCharacteristic(payload, false);
+        return (getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
+                BluetoothLeService.CHARACTERISTIC_MESSAGE_USER));
     }
     /**
      * edit_Recipe: edit an existing recipe
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
       */
     @SuppressLint("MissingPermission")
-    public void editRecipe(float user,String name, ArrayList<Pair<String, Float>> liquids)
+    public String editRecipe(float user,String name, ArrayList<Pair<String, Float>> liquids)
             throws JSONException {
-        JSONArray arrayLiquids = new JSONArray();
-        int i = 0;
-        for (Pair p : liquids) {
-            JSONArray arrayPair = new JSONArray();
-            arrayPair.put(i, p.first);
-            arrayPair.put(i + 1, p.second);
-            arrayLiquids.put(arrayPair);
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized");
+            return "BluetoothAdapter not initialized";
         }
-        // generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "edit_recipe");
-        jsonObject.put("user", user);
-        jsonObject.put("name", name);
-        jsonObject.put("liquids", arrayLiquids);
-        String payload = jsonObject.toString();
-        writeCharacteristic(payload, false);
-    }
+            // generate JSON Format
+            JSONArray arrayLiquids = new JSONArray();
+            int i = 0;
+            for (Pair p : liquids) {
+                JSONArray arrayPair = new JSONArray();
+                arrayPair.put(i, p.first);
+                arrayPair.put(i + 1, p.second);
+                arrayLiquids.put(arrayPair);
+            }
+            // generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "edit_recipe");
+            jsonObject.put("user", user);
+            jsonObject.put("name", name);
+            jsonObject.put("liquids", arrayLiquids);
+            String payload = jsonObject.toString();
+            writeCharacteristic(payload, false);
+            return (getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
+                    BluetoothLeService.CHARACTERISTIC_MESSAGE_USER));
+        }
+
 
     /**
      * addPump: add a new pump to ESP
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      */
     @SuppressLint("MissingPermission")
-    public void adminDefinePump(String liquid, float volume, int slot) throws JSONException {
+    public String adminDefinePump(String liquid, float volume, int slot) throws JSONException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
+            return "BluetoothAdapter not initialized";
         }
         // generate JSON Format
         JSONObject jsonObject = new JSONObject();
@@ -667,16 +691,18 @@ public class BluetoothLeService extends Service {
         jsonObject.put("slot", slot);
         String payload = jsonObject.toString();
         writeCharacteristic(payload, true);
+        return (getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
+                BluetoothLeService.CHARACTERISTIC_MESSAGE_ADMIN));
     }
     /**
      * addPump: add a new pump to ESP
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      */
     @SuppressLint("MissingPermission")
-    public void adminRefillPump(float volume, int slot) throws JSONException {
+    public String adminRefillPump(float volume, int slot) throws JSONException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
+            return "BluetoothAdapter not initialized";
         }
         // generate JSON Format
         JSONObject jsonObject = new JSONObject();
@@ -686,6 +712,8 @@ public class BluetoothLeService extends Service {
         jsonObject.put("slot", slot);
         String payload = jsonObject.toString();
         writeCharacteristic(payload, true);
+        return (getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
+                BluetoothLeService.CHARACTERISTIC_MESSAGE_ADMIN));
     }
 
     /**
@@ -694,10 +722,10 @@ public class BluetoothLeService extends Service {
      */
     // TODO add to DeviceControlActivity
     @SuppressLint("MissingPermission")
-    public void adminRunPump(int slot, int time) throws JSONException {
+    public String adminRunPump(int slot, int time) throws JSONException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
+            return "BluetoothAdapter not initialized";
         }
         // generate JSON Format
         JSONObject jsonObject = new JSONObject();
@@ -707,6 +735,8 @@ public class BluetoothLeService extends Service {
         jsonObject.put("time", time);
         String payload = jsonObject.toString();
         writeCharacteristic(payload, true);
+        return (getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
+                BluetoothLeService.CHARACTERISTIC_MESSAGE_ADMIN));
     }
 
     /**
@@ -717,10 +747,10 @@ public class BluetoothLeService extends Service {
      */
     // TODO add to DeviceControlActivity
     @SuppressLint("MissingPermission")
-    public void adminCalibratePump(int slot, int time1, int time2, float volume1, float volume2) throws JSONException {
+    public String adminCalibratePump(int slot, int time1, int time2, float volume1, float volume2) throws JSONException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
+            return "BluetoothAdapter not initialized";
         }
         // generate JSON Format
         JSONObject jsonObject = new JSONObject();
@@ -734,6 +764,8 @@ public class BluetoothLeService extends Service {
 
         String payload = jsonObject.toString();
         writeCharacteristic(payload, true);
+        return (getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
+                BluetoothLeService.CHARACTERISTIC_MESSAGE_ADMIN));
     }
 
     /**
