@@ -320,6 +320,46 @@ public class BluetoothLeService extends Service {
         mBluetoothDeviceAddress = address;
         return true;
     }
+    // Demonstrates how to iterate through the supported GATT Services/Characteristics.
+    // In this sample, we populate the data structure that is bound to the ExpandableListView
+    // on the UI.
+    private String getCharacteristicValue(String server, String characteristic) {
+        BluetoothGattCharacteristic mGattCharacteristics;
+        BluetoothGattCharacteristic mNotifyCharacteristic = null;
+        mGattCharacteristics = getBluetoothGattCharacteristic(server, characteristic);
+        // refer to BluetoothGatt Class readCharacteristic(characteristic)
+        if (mGattCharacteristics != null) {
+            Log.println(Log.ASSERT, TAG, "characteristic is not null: " + mGattCharacteristics.getStringValue(0));
+            final int charaProp = mGattCharacteristics.getProperties();
+            if ((charaProp | BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
+                // If there is an active notification on a characteristic, clear
+                // it first so it doesn't update the data field on the user interface.
+                if (mNotifyCharacteristic != null) {
+                    setCharacteristicNotification(
+                            mNotifyCharacteristic, false);
+                    mNotifyCharacteristic = null;
+                }
+
+
+                Handler handler = new Handler();
+                handler.postDelayed(() -> {
+                    readCharacteristic(mGattCharacteristics);
+                }, 5000);
+
+
+            }
+            if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+                mNotifyCharacteristic = mGattCharacteristics;
+                setCharacteristicNotification(
+                        mGattCharacteristics, true);
+                // refer to BluetoothGatt Class readCharacteristic(characteristic)
+                return (mGattCharacteristics.getStringValue(0));
+            }
+        } else {
+            Log.w(TAG, "Characteristic can't find");
+        }
+        return ("False");
+    }
 
     /**
      * Disconnects an existing connection or cancel a pending connection. The disconnection result
@@ -469,10 +509,10 @@ public class BluetoothLeService extends Service {
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      */
     @SuppressLint("MissingPermission")
-    public void initUser(String name) throws JSONException {
+    public String initUser(String name) throws JSONException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
+            return "False";
         }
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
@@ -480,6 +520,8 @@ public class BluetoothLeService extends Service {
         jsonObject.put("name", name);
         String payload = jsonObject.toString();
         writeCharacteristic(payload, false);
+        return (getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
+                BluetoothLeService.CHARACTERISTIC_MESSAGE_USER));
     }
 
     /**
