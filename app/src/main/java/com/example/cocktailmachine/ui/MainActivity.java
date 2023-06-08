@@ -2,6 +2,8 @@ package com.example.cocktailmachine.ui;
 
 import android.os.Bundle;
 
+import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMainBinding;
 import com.google.android.material.snackbar.Snackbar;
 
