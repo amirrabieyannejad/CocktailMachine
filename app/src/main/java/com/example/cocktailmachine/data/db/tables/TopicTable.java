@@ -5,6 +5,7 @@ import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_ID;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
 
@@ -12,8 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TopicTable extends BasicColumn<SQLTopic>{
-
-
     public static final String TABLE_NAME = "Topic";
     public static final String COLUMN_NAME_NAME = "Name";
     public static final String COLUMN_NAME_DESCRIPTION = "Description";

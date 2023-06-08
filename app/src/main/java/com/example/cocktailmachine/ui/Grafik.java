@@ -46,6 +46,8 @@ import java.util.Map;
 
 public class Grafik extends AppCompatActivity {
 
+    private static final String TAG = "Grafik";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,12 +100,8 @@ public class Grafik extends AppCompatActivity {
         magarita.addOrUpdate(limettensaft, 4);
 
 
-        List<Recipe> recipes= null;
-        try {
-            recipes = Recipe.getRecipes();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
+        List<Recipe> recipes = Recipe.getRecipes();
+
 
         System.out.println(recipes);
 

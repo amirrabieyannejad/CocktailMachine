@@ -17,6 +17,7 @@ public class SQLIngredientPump extends SQLDataBaseElement {
     private long pump = -1L;
     private long ingredient = -1L;
 
+
     public SQLIngredientPump(int volume, long pump, long ingredient) {
         super();
         this.volume = volume;
@@ -42,7 +43,12 @@ public class SQLIngredientPump extends SQLDataBaseElement {
     public long getPumpID() {return this.pump;}
 
     public Ingredient getIngredient(){
-        return Ingredient.getIngredient(this.ingredient);
+        try {
+            return DatabaseConnection.getDataBase().loadIngredientForPump(this.ingredient);
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public long getIngredientID() {return this.ingredient;}
@@ -57,7 +63,7 @@ public class SQLIngredientPump extends SQLDataBaseElement {
 
     public void pump(int volume) throws NewlyEmptyIngredientException {
         if(this.volume - volume <= 0){
-            throw new NewlyEmptyIngredientException(Ingredient.getIngredient(this.ingredient));
+            throw new NewlyEmptyIngredientException(this.ingredient);
         }
         this.volume = this.volume - volume;
         this.wasChanged();

@@ -1,5 +1,7 @@
 package com.example.cocktailmachine.data.db.elements;
 
+import android.graphics.Color;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -24,7 +26,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
     private boolean available = false;
     //private int fluidInMillimeters;
     //private long pump;
-    private int color = -1;
+    private int color = Color.GREEN;
 
     private SQLIngredientPump ingredientPump;
 
@@ -167,12 +169,23 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
     @Override
     public int getVolume() {
         //return this.fluidInMillimeters;
-        return this.ingredientPump.getVolume();
+        if(this.ingredientPump!=null) {
+            return this.ingredientPump.getVolume();
+        }
+        return -1;
     }
 
     @Override
     public Pump getPump() {
         return this.ingredientPump.getPump();
+    }
+
+    @Override
+    public Long getPumpId() {
+        if(this.ingredientPump != null) {
+            return this.ingredientPump.getPumpID();
+        }
+        return -1L;
     }
 
     @Override
@@ -195,6 +208,22 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
     }
 
     @Override
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+    @Override
+    public void setAlcoholic(boolean alcoholic) {
+        this.alcoholic = alcoholic;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+
+    @Override
     public void pump(int volume) throws NewlyEmptyIngredientException{
         //if(this.fluidInMillimeters - millimeters < this.getPump().getMillilitersPumpedInMilliseconds()){
         //    throw new NewEmptyIngredientException(this);
@@ -203,10 +232,10 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         //this.wasChanged();
         try {
             this.ingredientPump.pump(volume);
-        } catch (NewlyEmptyIngredientException e) {
+        } catch (NewlyEmptyIngredientException|NullPointerException e) {
             e.printStackTrace();
             this.available = false;
-            throw e;
+            throw new NewlyEmptyIngredientException(this);
         }
 
     }

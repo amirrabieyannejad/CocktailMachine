@@ -1,7 +1,10 @@
 package com.example.cocktailmachine.data;
 
 
+import android.os.Bundle;
+
 import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
@@ -101,6 +104,9 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     List<Long> getTopics();
 
 
+    //bASIC CHANGER
+    public void setName(String name);
+
     //Ingredient Changer
     /**
      * Adds ingredient with quantity measured in needed pump time.
@@ -168,9 +174,28 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * Reminder:
      * send topics to user!
      */
-    default void send(){
-        //TODO:
-        return;
+    default boolean sendSave(){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("cmd", "define_recipe");
+            jsonObject.put("user", AdminRights.getUserId());
+            jsonObject.put("recipe", this.getName());
+            JSONArray array = new JSONArray();
+            //TODO: send
+            List<Ingredient> is = this.getIngredients();
+            for(Ingredient i: is){
+                JSONArray temp = new JSONArray();
+                temp.put(i.getName());
+                temp.put(this.getSpecificIngredientVolume(i));
+                array.put(temp);
+            }
+            jsonObject.put("liquids", array);
+            return true;
+        } catch (JSONException | TooManyTimesSettedIngredientEcxception |
+                NoSuchIngredientSettedException  e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 
@@ -222,8 +247,27 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * Get available recipes.
      * @return list of recipes
      */
-    static List<Recipe> getRecipes() throws NotInitializedDBException {
-        return (List<Recipe>) DatabaseConnection.getDataBase().getAvailableRecipes();
+     static List<Recipe> getRecipes() {
+        try {
+            return (List<Recipe>) DatabaseConnection.getDataBase().getAvailableRecipes();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Static access to recipes.
+     * Get all saved recipes.
+     * @return list of recipes
+     */
+    static List<Recipe> getAllRecipes() {
+        try {
+            return (List<Recipe>) DatabaseConnection.getDataBase().getRecipes();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
     /**
@@ -258,4 +302,5 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         return recipe;
     }
 
+    void send();
 }
