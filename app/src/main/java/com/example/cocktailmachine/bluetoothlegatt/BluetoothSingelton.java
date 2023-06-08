@@ -1,23 +1,27 @@
 package com.example.cocktailmachine.bluetoothlegatt;
 
-public class BluethoothSingelton {
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.os.Handler;
+import android.util.Log;
+
+public class BluetoothSingelton {
 
     //Variable
-    private static BluethoothSingelton instance;
+    private static BluetoothSingelton instance;
 
     private String EspDeviceName;
     private String EspDeviceAddress;
 
     //Konstruktor
-    private BluethoothSingelton(){
+    private BluetoothSingelton(){
 
     }
 
     //Funktionen
 
-    public static BluethoothSingelton getInstance(){
+    public static BluetoothSingelton getInstance(){
         if (instance == null) {
-            instance = new BluethoothSingelton();
+            instance = new BluetoothSingelton();
         }
         return instance;
 
@@ -39,13 +43,15 @@ public class BluethoothSingelton {
         this.EspDeviceAddress = espDeviceAddress;
     }
 
-    BluetoothLeService getBluetoothLe () throws BluethoothDeviceAdressNotDefinedException {
+    public BluetoothLeService getBluetoothLe () throws BluetoothDeviceAdressNotDefinedException {
         BluetoothLeService bluetooth = new BluetoothLeService();
         if (this.EspDeviceAddress.equals(null) || this.EspDeviceAddress==""){
-            throw new BluethoothDeviceAdressNotDefinedException("The Adress for the Bluetooth Device is not defined in Bluetooth Singelton");
+            throw new BluetoothDeviceAdressNotDefinedException("The Adress for the Bluetooth Device is not defined in Bluetooth Singelton");
         }
         bluetooth.connect(this.EspDeviceAddress);
         return (bluetooth);
     }
+
+
 
 }

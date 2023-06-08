@@ -83,6 +83,15 @@
                 android:onClick="login"
                 app:srcCompat="@drawable/ic_login" />
 
+            <ImageView
+                android:id="@+id/activity_test"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
+                android:contentDescription="Login"
+                android:onClick="testEnviroment"
+                app:srcCompat="@android:mipmap/sym_def_app_icon" />
+
         </LinearLayout>
     </ScrollView>
 

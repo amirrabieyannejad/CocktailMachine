@@ -4,7 +4,6 @@
     package="com.example.android.bluetoothlegatt"
     android:versionCode="1"
     android:versionName="1.0">
-
     <!-- Min/target SDK versions (<uses-sdk>) managed by build.gradle -->
     <!--
  Declare this required feature if you want to make the app available to BLE-capable
@@ -55,11 +54,17 @@
         android:roundIcon="@mipmap/ic_app_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CocktailMachine"
-        tools:targetApi="26">
+        tools:targetApi="21">
+        <activity
+            android:name="com.example.cocktailmachine.ui.BluetoothTestEnviroment"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <activity
             android:name="com.example.cocktailmachine.ui.ModelActivity"
             android:exported="true"
-
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.CocktailMachine.NoActionBar">
             <meta-data
@@ -76,17 +81,17 @@
         <activity
             android:name="com.example.cocktailmachine.bluetoothlegatt.DeviceControlActivity"
             android:exported="false">
-		    <meta-data
+            <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
- 	    </activity>
-	    <activity
+        </activity>
+        <activity
             android:name="com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity"
             android:exported="false">
-		    <meta-data
+            <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
- 	    </activity>
+        </activity>
         <activity
             android:name="com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice"
             android:exported="true">
@@ -108,7 +113,6 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-
         <activity
             android:name="com.example.cocktailmachine.ui.Menue"
             android:exported="true">

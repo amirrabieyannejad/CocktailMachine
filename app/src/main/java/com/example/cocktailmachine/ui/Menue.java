@@ -30,7 +30,7 @@ public class Menue extends AppCompatActivity {
         //setContentView(R.layout.activity_menue);
         binding = ActivityMenueBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        if(!DatabaseConnection.is_initialized()) {
+       /* if(!DatabaseConnection.is_initialized()) {
             Log.i(TAG, "onCreate: DataBase is not yet initialized");
             DatabaseConnection.initialize_singleton(this, UserPrivilegeLevel.Admin);
             try {
@@ -48,7 +48,7 @@ public class Menue extends AppCompatActivity {
         }else{
             binding.activityMenueLogout.setVisibility(View.GONE);
             binding.activityMenueLogin.setVisibility(View.VISIBLE);
-        }
+        }*/
     }
 
     public void openRecipeList(View view) {
@@ -119,6 +119,12 @@ public class Menue extends AppCompatActivity {
 
     public void exit(View view){
         Intent success = new Intent(this, Grafik.class);
+        startActivity(success);
+
+    }
+
+    public void testEnviroment(View view){
+        Intent success = new Intent(this, BluetoothTestEnviroment.class);
         startActivity(success);
 
     }

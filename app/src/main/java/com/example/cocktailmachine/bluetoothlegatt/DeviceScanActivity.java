@@ -187,7 +187,7 @@ public class DeviceScanActivity extends ListActivity {
         final Intent intent = new Intent(this, DeviceControlActivity.class);
         intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_NAME, device.getName());
         intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, device.getAddress());
-        BluethoothSingelton settings = BluethoothSingelton.getInstance();
+        BluetoothSingelton settings = BluetoothSingelton.getInstance();
         settings.setEspDeviceName(device.getName());
         settings.setEspDeviceAddress(device.getAddress());
         if (mScanning) {
