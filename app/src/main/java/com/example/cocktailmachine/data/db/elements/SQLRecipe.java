@@ -197,7 +197,12 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
     @Override
     public List<Long> getTopics() {
-        return this.getTopics();
+        return this.topics;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
     }
 
 
@@ -291,7 +296,9 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     //REMOVER
     @Override
     public void remove(Ingredient ingredient) {
-        this.removeIngredient(ingredient.getID());
+        if(ingredient!=null) {
+            this.removeIngredient(ingredient.getID());
+        }
     }
 
     @Override
@@ -374,6 +381,11 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
             }
             temp.save();
         }
+    }
+
+    @Override
+    public void send() {
+
     }
 
     //general

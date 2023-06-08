@@ -2,9 +2,6 @@
 
 ## Allgemein
 
-- Name: Cocktail Machine ESP32 (Simulator)
-- UUID des Namens: c0605c38-3f94-33f6-ace6-7a5504544a80
-
 Der ESP nutzt kein Pairing. Stattdessen wird jedem Benutzer eine User-ID zugewiesen, die dann bei den Befehlen mit angegeben werden muss. 
 
 Um allgemeine Werte (z.B. den Zustand der Pumpen) auszulesen, reicht es, die entsprechenden Characteristics auszulesen. Die Characteristics unterstützen Notifications, damit sie nur neu ausgelesen werden müssen, wenn sie sich geändert haben. Die verfügbaren Services und Characteristics stehen im Abschnitt Status-Services.
@@ -34,6 +31,12 @@ Die Antwort ist dann:
 
 Die ID ist also 100 und kann dann in anderen Befehlen mit angegeben werden.
 
+## ID-Service
+
+- Name: Cocktail Machine ESP32
+- UUID des Service: 8ccbf239-1cd2-4eb7-8872-1cb76c980d14
+- UUID des Namens:  c0605c38-3f94-33f6-ace6-7a5504544a80
+
 ## Kommunikations-Service
 
 - UUID des Service: dad995d1-f228-38ec-8b0f-593953973406
@@ -45,7 +48,7 @@ Die ID ist also 100 und kann dann in anderen Befehlen mit angegeben werden.
 - UUID des Service: 0f7742d4-ea2d-43c1-9b98-bb4186be905d
 
 ### Pumpen
-- UUID Characteristic: 9f719b67-1cc6-4ed8-8df3-f4edc235c519
+- UUID Characteristic: 1a9a598a-17ce-3fcd-be03-40a48587d04e
 
 Wert: Map aller verfügbaren Pumpen und deren Füllstand
 
@@ -74,7 +77,7 @@ Beispiel:
 ### Rezepte
 - UUID Characteristic: 9ede6e03-f89b-3e52-bb15-5c6c72605f6c
 
-Wert: Alle gespeicherten Rezepte und deren Namen.
+Wert: alle gespeicherten Rezepte und deren Namen
 
 Beispiel:
 
@@ -88,4 +91,28 @@ Wert: Der Inhalt des aktuellen Cocktails, der gemischt wird.
 
 Beispiel:
 
-    [["beer", 250], ["lemonade", 250]]
+    {"weight": 500.0, "content": [["beer", 250], ["lemonade", 250]]}
+
+### Aktueller Benutzer
+- UUID Characteristic: 2ce478ea-8d6f-30ba-9ac6-2389c8d5b172
+
+Wert: der aktuelle Benutzer, für den ein Cocktail gemacht wird oder bereit steht
+
+Wenn kein Benutzer aktiv ist, ist der Wert `-1`.
+
+Beispiel:
+
+    5
+    
+### Letzte Ändererung
+- UUID Characteristic: 586b5706-5856-34e1-ad17-94f840298816
+
+Wert: Timestamp der letzten Änderung 
+
+Wenn sich der Timestamp nicht geändert hat, sind die verfügbaren Rezepte und Zutaten noch die gleichen.
+
+Der Timestamp ist ein interner Wert des ESP und hat keinen Bezug zur echten Zeit. 
+
+Beispiel:
+
+    275492

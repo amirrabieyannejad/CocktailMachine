@@ -1,6 +1,11 @@
 package com.example.cocktailmachine.data;
 
 
+
+import android.util.Log;
+
+import androidx.annotation.ColorInt;
+
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
 import com.example.cocktailmachine.data.db.NotInitializedDBException;
@@ -23,6 +28,7 @@ import java.util.List;
  * The color is known.
  */
 public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
+    String TAG = "Ingredient";
 
     //Reminder: Only liquids!!!
 
@@ -69,10 +75,17 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
     Pump getPump();
 
     /**
+     * Get Pump representative class, where the ingredient is within.
+     * @return pump
+     */
+    public Long getPumpId();
+
+    /**
      * Get fluid color.
      * @return Integer representative of color
      */
-    int getColor();
+    @ColorInt
+    public int getColor();
 
     //Setter
     /**
@@ -82,6 +95,14 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
     void addImageUrl(String url);
 
     void setPump(Long pump, int volume);
+
+
+    public void setColor(@ColorInt int color);
+
+    public void setAlcoholic(boolean alcoholic);
+
+
+    void setName(String name);
 
     //use
     /**
@@ -94,11 +115,31 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
     //general
     /**
      * Static Access to ingredients.
+     * Get all ingredients.
+     * @return List of ingredients.
+     */
+    public static List<Ingredient> getAllIngredients() {
+        try {
+            return (List<Ingredient>) DatabaseConnection.getDataBase().getAllIngredients();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+
+    /**
+     * Static Access to ingredients.
      * Get all available ingredients.
      * @return List of ingredients.
      */
-    static List<Ingredient> getIngredientWithIds() throws NotInitializedDBException {
-        return (List<Ingredient>) DatabaseConnection.getDataBase().getAvailableIngredients();
+    public static List<Ingredient> getIngredientWithIds() {
+        try {
+            return (List<Ingredient>) DatabaseConnection.getDataBase().getAvailableIngredients();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
     /**
@@ -138,10 +179,12 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @return
      */
     static Ingredient getIngredient(String name) {
+        Log.i(TAG, "getIngredient "+name);
         try {
             return DatabaseConnection.getDataBase().getIngredientWithExact(name);
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
+            Log.i(TAG,"getIngredient res null");
             return null;
         }
     }

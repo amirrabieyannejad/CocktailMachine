@@ -200,6 +200,9 @@ public class DeviceScanActivity extends ListActivity {
         final Intent intent = new Intent(this, DeviceControlActivity.class);
         intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_NAME, device.getName());
         intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, device.getAddress());
+        BluetoothSingelton settings = BluetoothSingelton.getInstance();
+        settings.setEspDeviceName(device.getName());
+        settings.setEspDeviceAddress(device.getAddress());
         if (scanning) {
             bluetoothLeScanner.stopScan(leScanCallback);
             scanning = false;

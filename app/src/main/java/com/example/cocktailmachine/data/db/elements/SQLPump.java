@@ -9,7 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class SQLPump extends SQLDataBaseElement implements Pump {
-    private int minimumPumpVolume = -1;
+    private int minimumPumpVolume = 1;
     private SQLIngredientPump ingredientPump = null;
 
     public SQLPump(){
@@ -29,29 +29,43 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
 
     @Override
     public String getIngredientName() {
-        return this.ingredientPump.getIngredient().getName();
-        //return null;
+        if(this.ingredientPump!=null) {
+            return this.ingredientPump.getIngredient().getName();
+        }
+        return "Keine Zutat";
     }
 
     @Override
     public int getVolume() {
-        return this.ingredientPump.getVolume();
+        if(this.ingredientPump!=null) {
+            return this.ingredientPump.getVolume();
+        }
+        return -1;
     }
 
     @Override
     public Ingredient getCurrentIngredient() {
-        return this.ingredientPump.getIngredient();
+        if(this.ingredientPump!=null) {
+            return this.ingredientPump.getIngredient();
+        }
+        return null;
     }
 
     @Override
-    public void setCurrentIngredient(Ingredient ingredient) {
-        try {
-            this.ingredientPump.delete();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
+    public void setCurrentIngredient(long id) {
+        if(ingredientPump != null) {
+            try {
+                if (this.ingredientPump.getIngredientID() == id) {
+                    return;
+                }
+                this.ingredientPump.delete();
+            } catch (NotInitializedDBException e) {
+                e.printStackTrace();
+            }
         }
-        this.ingredientPump = new SQLIngredientPump(-1, this.getID(), ingredient.getID());
+        this.ingredientPump = new SQLIngredientPump(-1, this.getID(), id);
     }
+
 
     @Override
     public void empty() {
@@ -60,7 +74,9 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
 
     @Override
     public void fill(int volume) {
-        this.ingredientPump.setVolume(volume);
+        if(this.ingredientPump!=null) {
+            this.ingredientPump.setVolume(volume);
+        }
     }
 
     //General

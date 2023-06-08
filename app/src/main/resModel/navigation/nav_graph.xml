@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/listFragment">
+
+    <fragment
+        android:id="@+id/modelFragment"
+        android:name="com.example.cocktailmachine.ui.model.ModelFragment"
+        android:label="fragment_model"
+        tools:layout="@layout/fragment_model" >
+        <action
+            android:id="@+id/action_modelFragment_self"
+            app:destination="@id/modelFragment" />
+        <action
+            android:id="@+id/action_modelFragment_to_listFragment"
+            app:destination="@id/listFragment" />
+        <action
+            android:id="@+id/action_modelFragment_to_mainActivity"
+            app:destination="@id/mainActivity" />
+        <action
+            android:id="@+id/action_modelFragment_to_editModelFragment"
+            app:destination="@id/editModelFragment" />
+    </fragment>
+    <activity
+        android:id="@+id/mainActivity"
+        android:name="com.example.cocktailmachine.ui.ModelActivity"
+        android:label="activity_main"
+        tools:layout="@layout/activity_main" />
+    <fragment
+        android:id="@+id/listFragment"
+        android:name="com.example.cocktailmachine.ui.model.ListFragment"
+        android:label="fragment_list"
+        tools:layout="@layout/fragment_list" >
+        <action
+            android:id="@+id/action_listFragment_to_modelFragment"
+            app:destination="@id/modelFragment" />
+        <action
+            android:id="@+id/action_listFragment_to_mainActivity"
+            app:destination="@id/mainActivity" />
+        <action
+            android:id="@+id/action_listFragment_to_editModelFragment"
+            app:destination="@id/editModelFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editModelFragment"
+        android:name="com.example.cocktailmachine.ui.model.EditModelFragment"
+        android:label="fragment_edit_model"
+        tools:layout="@layout/fragment_edit_model" >
+        <action
+            android:id="@+id/action_editModelFragment_to_modelFragment"
+            app:destination="@id/modelFragment" />
+    </fragment>
+</navigation>

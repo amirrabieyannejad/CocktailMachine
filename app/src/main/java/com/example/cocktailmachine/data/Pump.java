@@ -47,15 +47,15 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * Update ingredient in pump.
      * @param ingredient next ingredient.
      */
-    void setCurrentIngredient(Ingredient ingredient);
+    default void setCurrentIngredient(Ingredient ingredient){
+        setCurrentIngredient(ingredient.getID());
+    }
 
     /**
      * Update ingredient in pump.
      * @param id id of next ingredient
      */
-    default void setCurrentIngredient(long id) throws NotInitializedDBException {
-        setCurrentIngredient(Ingredient.getIngredient(id));
-    }
+    void setCurrentIngredient(long id);
 
     void empty();
 
@@ -203,8 +203,13 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * Get available pumps.
      * @return pumps
      */
-    static List<Pump> getPumps() throws NotInitializedDBException {
-          return DatabaseConnection.getDataBase().getPumps();
+     static List<Pump> getPumps() {
+        try {
+            return DatabaseConnection.getDataBase().getPumps();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
     /**

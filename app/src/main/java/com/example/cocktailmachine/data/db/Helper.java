@@ -1,5 +1,7 @@
 package com.example.cocktailmachine.data.db;
 
+import android.util.Log;
+
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Helper<T extends DataBaseElement> {
+    private static final String TAG = "Helper";
     public List<T> getAvailable(List<T> elements){
         List<T> res = new ArrayList<>();
         for(T e:elements){
@@ -326,6 +329,26 @@ public class Helper<T extends DataBaseElement> {
         return true;
     }
 
+    public static List<Topic> topicWithNeedleInName(List<Topic> topics, String needle){
+        List<Topic> res = new ArrayList<>();
+        for(Topic r: topics){
+            if(r.getName().contains(needle)) {
+                res.add(r);
+            }
+        }
+        return res;
+    }
+
+    public static List<Topic> topicWithName(List<Topic> topics, String name){
+        List<Topic> res = new ArrayList<>();
+        for(Topic r: topics){
+            if(r.getName().equals(name)) {
+                res.add(r);
+            }
+        }
+        return res;
+    }
+
     public static List<Ingredient> ingredientWithNeedleInName(List<Ingredient> ingredients, String needle){
         List<Ingredient> res = new ArrayList<>();
         for(Ingredient r: ingredients){
@@ -336,9 +359,17 @@ public class Helper<T extends DataBaseElement> {
         return res;
     }
 
+    /**
+     * get ingredients from list with exact name name
+     * @param ingredients
+     * @param name
+     * @return list
+     */
     public static List<Ingredient> ingredientWitName(List<Ingredient> ingredients, String name){
+        Log.i(TAG, "ingredientWitName");
         List<Ingredient> res = new ArrayList<>();
         for(Ingredient r: ingredients){
+            Log.i(TAG, "ingredientWitName "+r.getName()+name+r.getName().equals(name));
             if(r.getName().equals(name)) {
                 res.add(r);
             }

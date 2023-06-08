@@ -2,6 +2,8 @@ package com.example.cocktailmachine.ui;
 
 import android.os.Bundle;
 
+import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMainBinding;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -28,9 +30,9 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        
+
         DatabaseConnection.initialize_singleton(this, UserPrivilegeLevel.Admin);
-        
+
 
         setSupportActionBar(binding.toolbar);
 

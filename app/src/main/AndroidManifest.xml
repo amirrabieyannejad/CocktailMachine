@@ -1,25 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
- Copyright 2013 The Android Open Source Project
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
--->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.android.bluetoothlegatt"
     android:versionCode="1"
     android:versionName="1.0">
-
     <!-- Min/target SDK versions (<uses-sdk>) managed by build.gradle -->
     <!--
  Declare this required feature if you want to make the app available to BLE-capable
@@ -65,15 +49,22 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_app"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_app_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CocktailMachine"
         tools:targetApi="21">
         <activity
-            android:name="com.example.cocktailmachine.ui.MainActivity"
-            android:exported="false"
+            android:name="com.example.cocktailmachine.ui.BluetoothTestEnviroment"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name="com.example.cocktailmachine.ui.ModelActivity"
+            android:exported="true"
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.CocktailMachine.NoActionBar">
             <meta-data
@@ -82,6 +73,20 @@
         </activity>
         <activity
             android:name="com.example.cocktailmachine.ui.cocktail.cocktailList.CocktailList"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name="com.example.cocktailmachine.bluetoothlegatt.DeviceControlActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name="com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -109,10 +114,6 @@
                 android:value="" />
         </activity>
         <activity
-            android:name="com.example.cocktailmachine.ui.login.LoginActivity"
-            android:exported="true"
-            android:label="@string/app_name" />
-        <activity
             android:name="com.example.cocktailmachine.ui.Menue"
             android:exported="true">
             <intent-filter>
@@ -125,14 +126,6 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-        <activity
-            android:name="com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity"
-            android:exported="true"
-            android:label="@string/welcome"></activity>
-        <activity
-            android:name="com.example.cocktailmachine.bluetoothlegatt.DeviceControlActivity"
-            android:exported="true"
-            android:label="@string/welcome"></activity>
 
         <service
             android:name="com.example.cocktailmachine.bluetoothlegatt.BluetoothLeService"

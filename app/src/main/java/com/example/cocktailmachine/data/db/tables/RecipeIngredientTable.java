@@ -94,7 +94,9 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
             else{
                 ids = Helper.getRecipeHelper().getIdsExtend(recipes);
             }
-            return this.getElementsIn(db, COLUMN_NAME_RECIPE_ID,
+            return this.getElementsIn(
+                    db,
+                    COLUMN_NAME_RECIPE_ID,
                     ids);
         } catch (NoSuchColumnException e) {
             e.printStackTrace();
