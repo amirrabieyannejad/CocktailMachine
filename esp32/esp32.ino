@@ -249,7 +249,6 @@ def_ret(MissingLiquid,     	"liquid unavailable");
 def_ret(MissingRecipe,     	"recipe not found");
 def_ret(DuplicateRecipe,   	"recipe already exists");
 def_ret(MissingIngredients,	"missing ingredients");
-def_ret(ScaleError,        	"scale error");
 def_ret(InvalidCalibration,	"invalid calibration data");
 
 struct RetUserID : Processed {
