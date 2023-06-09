@@ -3,7 +3,7 @@
 Mögliche Fehler, die vom ESP zurückgegeben werden können. (s. [Befehle.md]())
 
 - `ok`: alles in Ordnung
-- `processing`: Befehl wird geparset (kein Fehler; kommt nur, wenn der Wert zu früh ausgelesen wird
+- `processing`: Befehl wird geparset (kein Fehler; kommt nur, wenn der Wert zu früh ausgelesen wird)
 - `unsupported`: Befehl noch nicht implementiert
 - `unauthorized`: Befehl nur für Admin verfügbar
 - `invalid json`: ungültiges JSON 
