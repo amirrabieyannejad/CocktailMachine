@@ -2,10 +2,14 @@ package com.example.cocktailmachine.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.bluetooth.BluetoothGattCharacteristic;
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -13,7 +17,7 @@ import android.widget.Toast;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothDeviceAdressNotDefinedException;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothLeService;
-import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingelton;
+import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 
 import org.json.JSONException;
 
@@ -22,7 +26,9 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
     EditText editText;
     TextView textView;
 
-    BluetoothSingelton singelton;
+
+    // Step1
+    BluetoothSingleton singleton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,34 +38,45 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
         editText = findViewById(R.id.editTextTextPersonName);
         textView = findViewById(R.id.ESPData);
 
-        singelton = BluetoothSingelton.getInstance();
+        // Step2
+        singleton = BluetoothSingleton.getInstance();
+        // Step3: request Ble Permissions
+        singleton.requestBlePermissions(this);
+        //Step4: bind Service
+        Intent gattServiceIntent = new Intent(this,BluetoothLeService.class);
+        bindService(gattServiceIntent, singleton.mServiceConnection, BIND_AUTO_CREATE);
+    }
+    public void addUser(View view) throws JSONException {
+
+        //Step5: Call initUser() Method
+        String user = editText.getText().toString();
+        singleton.mBluetoothLeService.initUser(user);
+
+        //Step6: Wait 6 Second to return the value from ESP
+        Handler handler = new Handler();
+        handler.postDelayed(() -> textView.setText
+                (singleton.getEspResponseValue()), 6000);
+
     }
 
-    public void addUser(View view) throws BluetoothDeviceAdressNotDefinedException, JSONException {
-        BluetoothLeService bluetooth =  singelton.getBluetoothLe();
-        bluetooth.initUser(editText.getText().toString());
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
+        // Step7: Unbind Service if the Activity is destroyed
+        unbindService(singleton.mServiceConnection);
+        singleton.mBluetoothLeService = null;
+    }
+    @SuppressLint("MissingPermission")
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Step8: make sure that Gatt Server is founded
+        if (singleton.mBluetoothLeService != null) {
+            final boolean result = singleton.mBluetoothLeService.connect(
+                    singleton.getEspDeviceAddress());
+            Log.d("OnResume", "Connect request result=" + result);
 
-
-
-
-
-
-
-
-
-
-
-
-
-        BluetoothGattCharacteristic mGattCharacteristics = bluetooth.getBluetoothGattCharacteristic(BluetoothLeService.SERVICE_READ_WRITE,
-                BluetoothLeService.CHARACTERISTIC_MESSAGE_USER);
-
-        bluetooth.readCharacteristic(mGattCharacteristics);
-        String text =mGattCharacteristics.getStringValue(0);
-        Toast.makeText(this, text,Toast.LENGTH_LONG).show();
-
-
-
+        }
     }
 }
