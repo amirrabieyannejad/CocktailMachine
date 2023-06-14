@@ -1,5 +1,6 @@
 package com.example.cocktailmachine.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -14,6 +15,7 @@ import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityMainBinding;
 import com.example.cocktailmachine.databinding.ActivitySettingsBinding;
+import com.example.cocktailmachine.ui.model.ModelType;
 
 public class SettingsActivity extends AppCompatActivity {
     private static final String TAG = "SettingsActivity";
@@ -111,16 +113,36 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public void recipes(View view) {
+        Intent intent = new Intent(this, ModelActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("ModelType", ModelType.RECIPE.name());
+        bundle.putString("FragmentType", ModelActivity.FragmentType.List.name());
+        startActivity(intent, bundle);
     }
 
     public void pumps(View view) {
+        Intent intent = new Intent(this, ModelActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("ModelType", ModelType.PUMP.name());
+        bundle.putString("FragmentType", ModelActivity.FragmentType.List.name());
+        startActivity(intent, bundle);
     }
 
     public void ingredients(View view) {
+        Intent intent = new Intent(this, ModelActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("ModelType", ModelType.INGREDIENT.name());
+        bundle.putString("FragmentType", ModelActivity.FragmentType.List.name());
+        startActivity(intent, bundle);
     }
 
     public void topics(View view) {
-        //TODO topics
-        Toast.makeText(this,"topics",Toast.LENGTH_SHORT).show();
+        //TO DO topics
+        Intent intent = new Intent(this, ModelActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("ModelType", ModelType.TOPIC.name());
+        bundle.putString("FragmentType", ModelActivity.FragmentType.List.name());
+        startActivity(intent, bundle);
+        //Toast.makeText(this,"topics",Toast.LENGTH_SHORT).show();
     }
 }
