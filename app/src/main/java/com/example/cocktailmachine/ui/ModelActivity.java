@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -93,13 +94,26 @@ public class ModelActivity extends AppCompatActivity {
     }
 
     private void goTo(FragmentType ft, ModelType mt){
-
         ListFragment fragment = new ListFragment();
         Bundle bundle = new Bundle();
-        bundle.putString("Type","Topics");
+        bundle.putString("Type",mt.toString());
+        navController.popBackStack(R.id.listFragment, true);
+        navController.clearBackStack(R.id.listFragment);
         navController.navigate(R.id.listFragment, bundle);
     }
 
+
+    protected void refreshCurrentFragment(){
+        NavDestination current = navController.getCurrentDestination();
+        navController.popBackStack(current.getId(), true);
+        navController.navigate(current.getId());
+    }
+
+    protected void refreshCurrentFragment(Bundle bundle){
+        NavDestination current = navController.getCurrentDestination();
+        navController.popBackStack(current.getId(), true);
+        navController.navigate(current.getId(), bundle);
+    }
 
 
 
@@ -134,8 +148,10 @@ public class ModelActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_main, this.menu);
         if(AdminRights.isAdmin()){
             successfullLogin();
+            refreshCurrentFragment();
         }else{
             logout();
+            refreshCurrentFragment();
         }
         return true;
     }
