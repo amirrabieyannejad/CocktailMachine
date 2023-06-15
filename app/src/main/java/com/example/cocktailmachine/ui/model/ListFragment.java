@@ -258,6 +258,7 @@ public class ListFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView");
         binding = FragmentListBinding.inflate(inflater, container, false);
+        activity = (ModelActivity) getActivity();
         return binding.getRoot();
     }
 
@@ -265,9 +266,6 @@ public class ListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Log.i(TAG, "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
-
-        activity = (ModelActivity) getActivity();
-
 
         Bundle args = getArguments();
         if(args != null) {
@@ -291,22 +289,21 @@ public class ListFragment extends Fragment {
 
     @Override
     public void onStart() {
-        Log.i(TAG, "onViewCreated");
+        Log.i(TAG, "onStart");
         super.onStart();
         if(!local_type.contains("Add")) {
             setFAB();
         }
         if (activity != null) {
-            Objects.requireNonNull(activity.getSupportActionBar()).setTitle("");
+            //Objects.requireNonNull(activity.getSupportActionBar()).setTitle("");
+            activity.setToolBarTitle("");
         }
     }
 
     @Override
     public void onResume() {
-        Log.i(TAG,"onResume");
+        Log.i(TAG, "onResume");
         super.onResume();
         preSetUp();
-        //recyclerViewAdapter.reload();
-        //binding.includeList.recylerViewNames.swapAdapter(recyclerViewAdapter, false);
     }
 }

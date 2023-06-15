@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
@@ -632,6 +633,7 @@ public class EditModelFragment extends Fragment {
         }
 
         Bundle args = getArguments();
+        /*
         if(args != null) {
             Log.i(TAG, "onViewCreated: getArguments != null");
             Log.i(TAG, "onViewCreated: getArguments"+args);
@@ -649,13 +651,62 @@ public class EditModelFragment extends Fragment {
             Log.i(TAG, "onViewCreated: getArguments == null");
             error();
         }
+         */
+        setArgs(args);
     }
 
     @Override
     public void onStart() {
+        Log.i(TAG, "onStart");
         super.onStart();
         setSaveFAB();
     }
+
+    @Override
+    public void onResume() {
+        Log.i(TAG, "onResume");
+        super.onResume();
+        if(!AdminRights.isAdmin()){
+            Log.i(TAG, "onResume: GoTo List Fragment, because no admin");
+            Toast.makeText(getContext(),
+                    "Keine Editierung für mnicht Admins möglich!",
+                    Toast.LENGTH_SHORT).show();
+            NavHostFragment.findNavController(EditModelFragment.this)
+                    .navigate(R.id.action_modelFragment_to_listFragment);
+        }
+    }
+
+
+    protected void setArgs(@Nullable Bundle args){
+        Log.i(TAG,"setArgs");
+        if(args != null) {
+            Log.i(TAG, "setArgs: getArguments != null");
+            Log.i(TAG, "setArgs: getArguments"+args);
+            String type = args.getString("Type");
+            this.type = ModelType.valueOf(type);
+            if(args.containsKey("ID")){
+                Log.i(TAG, "setArgs: getArguments has ID -> Edit");
+                Long id = args.getLong("ID");
+                setUpEdit(id);
+            }else{
+                Log.i(TAG, "setArgs: getArguments has no ID -> New");
+                setUpNew();
+            }
+        }else{
+            Log.i(TAG, "setArgs: getArguments == null");
+            error();
+        }
+        Log.i(TAG,"setArgs: finished");
+    }
+
+    @Override
+    public void setArguments(@Nullable Bundle args) {
+        Log.i(TAG,"setArguments");
+        super.setArguments(args);
+        setArgs(args);
+    }
+
+
 
     static class EditRowViewHolder extends RecyclerView.ViewHolder {
         private final Recipe recipe;

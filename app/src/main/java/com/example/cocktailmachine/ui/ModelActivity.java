@@ -19,6 +19,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
@@ -28,6 +30,8 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.ui.model.ModelType;
+
+import java.util.List;
 
 
 public class ModelActivity extends AppCompatActivity {
@@ -103,16 +107,61 @@ public class ModelActivity extends AppCompatActivity {
     }
 
 
+    public Fragment getCurrentFragment(){
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        for(Fragment fragment : fragments){
+            if(fragment != null && fragment.isVisible())
+                return fragment;
+        }
+        return null;
+    }
+
     protected void refreshCurrentFragment(){
-        NavDestination current = navController.getCurrentDestination();
-        navController.popBackStack(current.getId(), true);
-        navController.navigate(current.getId());
+        Log.i(TAG, "refreshCurrentFragment: start");
+        //NavDestination current = navController.getCurrentDestination();
+        //Log.i(TAG, "refreshCurrentFragment: "+ (current != null ? current.toString() : "null"));
+        //navController.popBackStack(current.getId(), true);
+        //navController.navigate(current.getId());
+        getCurrentFragment().onResume();
+        Log.i(TAG, "refreshCurrentFragment: end");
     }
 
     protected void refreshCurrentFragment(Bundle bundle){
+        Log.i(TAG, "refreshCurrentFragment: start");
+        //NavDestination current = navController.getCurrentDestination();
+        //Log.i(TAG, "refreshCurrentFragment: "+ (current != null ? current.toString() : "null"));
+        //navController.popBackStack(current.getId(), true);
+        //navController.navigate(current.getId());
+        //getCurrentFragment().setArguments(bundle);
+        reloadCurrentFragment(bundle);
+        Log.i(TAG, "refreshCurrentFragment: end");
+    }
+
+
+    protected void reloadCurrentFragment(){
+        Log.i(TAG, "refreshCurrentFragment: start");
         NavDestination current = navController.getCurrentDestination();
+        Log.i(TAG, "refreshCurrentFragment: "+ (current != null ? current.toString() : "null"));
+        navController.popBackStack(current.getId(), true);
+        navController.navigate(current.getId());
+        Log.i(TAG, "refreshCurrentFragment: end");
+    }
+
+    protected void reloadCurrentFragment(Bundle bundle){
+        Log.i(TAG, "refreshCurrentFragment: start");
+        NavDestination current = navController.getCurrentDestination();
+        Log.i(TAG, "refreshCurrentFragment: "+ (current != null ? current.toString() : "null"));
         navController.popBackStack(current.getId(), true);
         navController.navigate(current.getId(), bundle);
+        Log.i(TAG, "refreshCurrentFragment: end");
+    }
+
+    protected void reloadCurrentFragmentSavely(){
+        Log.i(TAG, "reloadCurrentFragmentSavely: start");
+        Bundle bundle = getCurrentFragment().getArguments();
+        Log.i(TAG, "reloadCurrentFragmentSavely: "+ bundle);
+        reloadCurrentFragment(bundle);
+        Log.i(TAG, "reloadCurrentFragmentSavely: end");
     }
 
 
@@ -131,7 +180,7 @@ public class ModelActivity extends AppCompatActivity {
         binding.fab.setVisibility(View.GONE);
     }
 
-    public void setToolBar(String title){
+    public void setToolBarTitle(String title){
         binding.toolbar.setTitle(title);
     }
 
@@ -147,11 +196,10 @@ public class ModelActivity extends AppCompatActivity {
         this.menu = menu;
         getMenuInflater().inflate(R.menu.menu_main, this.menu);
         if(AdminRights.isAdmin()){
-            successfullLogin();
-            refreshCurrentFragment();
+            //successfullLogin();
+            loginMenuState();
         }else{
-            logout();
-            refreshCurrentFragment();
+            logoutMenuState();
         }
         return true;
     }
@@ -181,6 +229,7 @@ public class ModelActivity extends AppCompatActivity {
     //Menu
     public void refresh(MenuItem item) {
         //TODO sync
+        refreshCurrentFragment();
     }
 
     public void goToMenue(MenuItem item) {
@@ -229,6 +278,11 @@ public class ModelActivity extends AppCompatActivity {
 
     private void successfullLogin(){
         Log.i(TAG, "successfullLogin" );
+        loginMenuState();
+        reloadCurrentFragmentSavely();
+    }
+
+    private void loginMenuState(){
         if(AdminRights.isAdmin()) {
             this.menu.findItem(R.id.action_admin_login).setVisible(false);
             this.menu.findItem(R.id.action_admin_logout).setVisible(true);
@@ -236,9 +290,8 @@ public class ModelActivity extends AppCompatActivity {
         }
     }
 
-    private void logout(){
+    private void logoutMenuState(){
         Log.i(TAG, "logout" );
-        AdminRights.logout();
         this.menu.findItem(R.id.action_admin_login).setVisible(true);
         this.menu.findItem(R.id.action_admin_logout).setVisible(false);
         this.menu.findItem(R.id.action_pumps).setVisible(false);
@@ -249,8 +302,10 @@ public class ModelActivity extends AppCompatActivity {
     }
 
     public void logout(MenuItem item) {
-        logout();
+        logoutMenuState();
+        AdminRights.logout();
         Toast.makeText(this,"Ausgeloggt!",Toast.LENGTH_SHORT).show();
+        reloadCurrentFragmentSavely();
     }
 
 
