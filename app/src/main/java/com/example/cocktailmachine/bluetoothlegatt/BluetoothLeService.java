@@ -853,7 +853,7 @@ public class BluetoothLeService extends Service {
     }
 
     /**
-     * adminReadCurrentUser: the current user for whom a cocktail is being
+     * adminReadCurrentUser: the current user for whom a cocktail is being made
      * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
      */
     @SuppressLint("MissingPermission")
@@ -899,6 +899,12 @@ public class BluetoothLeService extends Service {
     /**
      * adminReadState: The current state of the cocktail machine and what it does.
      * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
+     init: Maschine wird initialisiert
+     ready: Maschine ist bereit einen Befehl auszuführen und wartet
+     mixing: Maschine macht einen Cocktail
+     pumping: Maschine pumpt Flüssigkeiten
+     cocktail done: Cocktail ist fertig zubereitet und kann entnommen werden. Danach sollte
+     reset ausgeführt werden.
      */
     @SuppressLint("MissingPermission")
     public void adminReadState() {

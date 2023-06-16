@@ -58,6 +58,17 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
                 (singleton.getEspResponseValue()), 6000);
 
     }
+    public void showUser(View view) throws JSONException {
+
+        //Step9: Call adminReadCurrentUser() Method
+        singleton.mBluetoothLeService.adminReadCurrentUser();
+
+        //Step6: Wait 6 Second to return the value from ESP
+        Handler handler = new Handler();
+        handler.postDelayed(() -> textView.setText
+                (singleton.getEspResponseValue()), 6000);
+
+    }
 
     @Override
     protected void onDestroy() {
