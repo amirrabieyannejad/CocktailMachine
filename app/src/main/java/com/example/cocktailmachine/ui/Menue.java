@@ -12,7 +12,7 @@ import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 import com.example.cocktailmachine.data.AdminRights;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMainBinding;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
@@ -109,7 +109,7 @@ public class Menue extends AppCompatActivity {
 
     public void logout(View view){
         Log.i(TAG, "logout");
-        AdminRights.logout(this);
+        AdminRights.logout();
         binding.activityMenueLogout.setVisibility(View.GONE);
         binding.activityMenueLogin.setVisibility(View.VISIBLE);
         Log.i(TAG, "finished logout");
