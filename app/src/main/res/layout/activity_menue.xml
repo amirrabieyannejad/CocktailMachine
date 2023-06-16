@@ -77,6 +77,14 @@
                 app:srcCompat="@drawable/ic_glass" />
 
             <ImageView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
+                android:contentDescription="TestSiteForBluetooth"
+                android:onClick="testEnviroment"
+                app:srcCompat="@drawable/ic_bluetooth_test" />
+
+            <ImageView
                 android:id="@+id/activity_menue_logout"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
