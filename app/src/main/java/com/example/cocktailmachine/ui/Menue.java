@@ -18,6 +18,7 @@ import com.example.cocktailmachine.databinding.ActivityMainBinding;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
 import com.example.cocktailmachine.ui.model.ModelFragment;
+import com.example.cocktailmachine.ui.model.ModelType;
 import com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice;
 
 public class Menue extends AppCompatActivity {
@@ -30,9 +31,10 @@ public class Menue extends AppCompatActivity {
         //setContentView(R.layout.activity_menue);
         binding = ActivityMenueBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-       /* if(!DatabaseConnection.is_initialized()) {
+        /*
+        if(!DatabaseConnection.isInitialized()) {
             Log.i(TAG, "onCreate: DataBase is not yet initialized");
-            DatabaseConnection.initialize_singleton(this, UserPrivilegeLevel.Admin);
+            DatabaseConnection.initializeSingleton(this, UserPrivilegeLevel.Admin);
             try {
                 DatabaseConnection.getDataBase();
                 Log.i(TAG, "onCreate: DataBase is initialized");
@@ -42,27 +44,36 @@ public class Menue extends AppCompatActivity {
                 Log.e(TAG, "onCreate: DataBase is not initialized");
             }
         }
+
+         */
         if(AdminRights.isAdmin()){
             binding.activityMenueLogout.setVisibility(View.VISIBLE);
             binding.activityMenueLogin.setVisibility(View.GONE);
         }else{
             binding.activityMenueLogout.setVisibility(View.GONE);
             binding.activityMenueLogin.setVisibility(View.VISIBLE);
-        }*/
+        }
     }
 
     public void openRecipeList(View view) {
         Intent success = new Intent(this, ModelActivity.class);
         Bundle b = new Bundle();
-        b.putString("Fragment", "RecipeList");
+        b.putString("FragmentType", ModelActivity.FragmentType.List.toString());
+        b.putString("ModelType", ModelType.RECIPE.toString());
         startActivity(success, b);
     }
 
     public void openRecipeCreator(View view){
         Intent success = new Intent(this, ModelActivity.class);
         Bundle b = new Bundle();
-        b.putString("Fragment", "RecipeCreator");
+        b.putString("FragmentType", ModelActivity.FragmentType.Edit.toString());
+        b.putString("ModelType", ModelType.RECIPE.toString());
         startActivity(success, b);
+    }
+
+    public void openSettings(View view){
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 
 
@@ -112,6 +123,7 @@ public class Menue extends AppCompatActivity {
         AdminRights.logout();
         binding.activityMenueLogout.setVisibility(View.GONE);
         binding.activityMenueLogin.setVisibility(View.VISIBLE);
+        Toast.makeText(this,"Ausgeloggt!",Toast.LENGTH_SHORT).show();
         Log.i(TAG, "finished logout");
     }
 
