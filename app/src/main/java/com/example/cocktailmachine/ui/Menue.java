@@ -8,14 +8,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 import com.example.cocktailmachine.data.AdminRights;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
+import com.example.cocktailmachine.databinding.ActivityMainBinding;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
-import com.example.cocktailmachine.ui.model.ModelType;
+import com.example.cocktailmachine.ui.model.ModelFragment;
 import com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice;
 
 public class Menue extends AppCompatActivity {
@@ -28,9 +30,9 @@ public class Menue extends AppCompatActivity {
         //setContentView(R.layout.activity_menue);
         binding = ActivityMenueBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        if(DatabaseConnection.isInitialized()) {
+       /* if(!DatabaseConnection.is_initialized()) {
             Log.i(TAG, "onCreate: DataBase is not yet initialized");
-            DatabaseConnection.initializeSingleton(this, UserPrivilegeLevel.Admin);
+            DatabaseConnection.initialize_singleton(this, UserPrivilegeLevel.Admin);
             try {
                 DatabaseConnection.getDataBase();
                 Log.i(TAG, "onCreate: DataBase is initialized");
@@ -46,22 +48,20 @@ public class Menue extends AppCompatActivity {
         }else{
             binding.activityMenueLogout.setVisibility(View.GONE);
             binding.activityMenueLogin.setVisibility(View.VISIBLE);
-        }
+        }*/
     }
 
     public void openRecipeList(View view) {
         Intent success = new Intent(this, ModelActivity.class);
         Bundle b = new Bundle();
-        b.putString("FragmentType", ModelActivity.FragmentType.List.toString());
-        b.putString("ModelType", ModelType.RECIPE.toString());
+        b.putString("Fragment", "RecipeList");
         startActivity(success, b);
     }
 
     public void openRecipeCreator(View view){
         Intent success = new Intent(this, ModelActivity.class);
         Bundle b = new Bundle();
-        b.putString("FragmentType", ModelActivity.FragmentType.Edit.toString());
-        b.putString("ModelType", ModelType.RECIPE.toString());
+        b.putString("Fragment", "RecipeCreator");
         startActivity(success, b);
     }
 
@@ -70,11 +70,6 @@ public class Menue extends AppCompatActivity {
         Intent success = new Intent(this, SingleCocktailChoice.class);
         startActivity(success);
 
-    }
-
-    public void openSettings(View view){
-        Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
     }
 
     public void openGlassFillAnimationView(View view){
@@ -114,11 +109,9 @@ public class Menue extends AppCompatActivity {
 
     public void logout(View view){
         Log.i(TAG, "logout");
-        AdminRights.logout();
+        AdminRights.logout(this);
         binding.activityMenueLogout.setVisibility(View.GONE);
         binding.activityMenueLogin.setVisibility(View.VISIBLE);
-
-        Toast.makeText(this,"Ausgeloggt!",Toast.LENGTH_SHORT).show();
         Log.i(TAG, "finished logout");
     }
 
@@ -126,6 +119,12 @@ public class Menue extends AppCompatActivity {
 
     public void exit(View view){
         Intent success = new Intent(this, Grafik.class);
+        startActivity(success);
+
+    }
+
+    public void testEnviroment(View view){
+        Intent success = new Intent(this, BluetoothTestEnviroment.class);
         startActivity(success);
 
     }

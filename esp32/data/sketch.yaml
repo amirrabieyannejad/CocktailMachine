@@ -1,0 +1,24 @@
+profiles:
+  # adafruit feather32 huzzah (main dev board)
+  feather:
+    fqbn: esp32:esp32:featheresp32
+    platforms:
+      - platform: esp32:esp32 (2.0.9)
+        platform_index_url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+    libraries:
+      - ArduinoJson (6.21.2)
+      - SafeString (4.1.27)
+      - HX711 (0.3.6)
+      - PCF8574 (0.3.8)
+
+  # generic
+  esp:
+    fqbn: esp32:esp32:esp32
+    platforms:
+      - platform: esp32:esp32 (2.0.9)
+        platform_index_url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+    libraries:
+      - ArduinoJson (6.21.2)
+      - SafeString (4.1.27)
+      - HX711 (0.3.6)
+      - PCF8574 (0.3.8)

@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
 
 public class CocktailList extends AppCompatActivity {
@@ -17,9 +17,9 @@ public class CocktailList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cocktail_list);
-        if(DatabaseConnection.isInitialized()) {
+        if(!DatabaseConnection.is_initialized()) {
             Log.i(TAG, "onCreate: DataBase is not yet initialized");
-            DatabaseConnection.initializeSingleton(this, UserPrivilegeLevel.Admin);
+            DatabaseConnection.initialize_singleton(this, UserPrivilegeLevel.Admin);
             try {
                 DatabaseConnection.getDataBase();
                 Log.i(TAG, "onCreate: DataBase is initialized");
