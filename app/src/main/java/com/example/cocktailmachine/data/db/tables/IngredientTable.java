@@ -16,6 +16,12 @@ import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *
+ * @created Fr. 23.Jun 2023 - 12:51
+ * @project CocktailMachine
+ * @author Johanna Reidt
+ */
 public class IngredientTable extends BasicColumn<SQLIngredient> {
 
         public static final String TABLE_NAME = "Ingredient";

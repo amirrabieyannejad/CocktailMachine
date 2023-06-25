@@ -91,7 +91,7 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
         }
     }
 
-    public static List<Topic> getTopics(){
+    static List<Topic> getTopics(){
         Log.i(TAG, "getTopics");
         try {
             return DatabaseConnection.getDataBase().getTopics();

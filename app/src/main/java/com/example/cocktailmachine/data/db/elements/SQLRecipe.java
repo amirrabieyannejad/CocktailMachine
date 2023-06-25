@@ -1,12 +1,12 @@
 package com.example.cocktailmachine.data.db.elements;
 
+import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.cocktailmachine.bluetoothlegatt.BluetoothLeService;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
@@ -455,7 +455,8 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     }
 
     @Override
-    public void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException {
+    public void
+    setRecipes(JSONArray json) throws NotInitializedDBException, JSONException {
         //[{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}, {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
         for(int i=0; i<json.length(); i++){
             JSONObject j = json.optJSONObject(i);
@@ -477,9 +478,9 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     }
 
     @Override
-    public void send() {
-        BluetoothLeService service = new BluetoothLeService();
+    public void send(Context context) {
         //service.
+        //BluetoothSingleton.getInstance().mBluetoothLeService.makeRecipe(AdminRights.getUserId(), );
     }
 
     //general

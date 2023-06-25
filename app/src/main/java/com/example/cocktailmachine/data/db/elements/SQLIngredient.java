@@ -194,6 +194,13 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         this.wasChanged();
     }
 
+    @Override
+    public void removeImageUrl(String url) {
+        Log.i(TAG,"removeImageUrl");
+        this.imageUrls.remove(url);
+        this.wasChanged();
+    }
+
     /*
     void checkIngredientPump() throws NotInitializedDBException {
         List<SQLIngredientPump> ingredientPumps = DatabaseConnection.getDataBase().getIngredientPumps();

@@ -14,13 +14,12 @@ import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.data.AdminRights;
+import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.databinding.FragmentModelBinding;
-import com.example.cocktailmachine.ui.ModelActivity;
 
 import java.util.Objects;
 
@@ -286,7 +285,7 @@ public class ModelFragment extends Fragment {
             if(this.recipe!=null&&this.recipe.isAvailable()) {
                 Log.i(TAG, "setFAB: recipe is shown and recipe is available");
                 activity.setFAB(v -> {
-                    recipe.send();
+                    recipe.send(this.getContext());
                     Toast.makeText(this.getContext(), "Cocktail in Bearbeitung.", Toast.LENGTH_SHORT).show();
                 }, R.drawable.ic_send);
                 return;

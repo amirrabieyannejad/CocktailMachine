@@ -1,6 +1,6 @@
 package com.example.cocktailmachine.logic;
 
-import com.example.cocktailmachine.data.Orientation;
+import com.example.cocktailmachine.data.enums.Orientation;
 
 public class FlingAnalysis {
     public static Orientation getOrientationFromVelocity(float velocityX, float velocityY){

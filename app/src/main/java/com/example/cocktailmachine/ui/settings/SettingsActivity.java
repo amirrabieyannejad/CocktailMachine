@@ -1,22 +1,32 @@
-package com.example.cocktailmachine.ui;
+package com.example.cocktailmachine.ui.settings;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.PreferenceFragmentCompat;
 
-import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.data.AdminRights;
-import com.example.cocktailmachine.databinding.ActivityMainBinding;
+import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
+import com.example.cocktailmachine.data.CocktailMachine;
+import com.example.cocktailmachine.data.Pump;
+import com.example.cocktailmachine.data.Recipe;
+import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.data.enums.AdminRights;
+import com.example.cocktailmachine.data.enums.Status;
 import com.example.cocktailmachine.databinding.ActivitySettingsBinding;
+import com.example.cocktailmachine.ui.model.ModelActivity;
 import com.example.cocktailmachine.ui.model.ModelType;
 
+/**
+ * Settings
+ * @created Fr. 23.Jun 2023 - 16:09
+ * @project CocktailMachine
+ * @author Johanna Reidt
+ */
 public class SettingsActivity extends AppCompatActivity {
     private static final String TAG = "SettingsActivity";
     private ActivitySettingsBinding binding;
@@ -49,15 +59,7 @@ public class SettingsActivity extends AppCompatActivity {
         setVisibility();
     }
 
-    /*
-    public static class SettingsFragment extends PreferenceFragmentCompat {
-        @Override
-        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            setPreferencesFromResource(R.xml.root_preferences, rootKey);
-        }
-    }
 
-     */
 
     @Override
     protected void onResume() {
@@ -66,52 +68,32 @@ public class SettingsActivity extends AppCompatActivity {
         setVisibility();
     }
 
+    /**
+     * some features only visible for admin
+     * @author Johanna Reidt
+     */
     private void setVisibility(){
         Log.i(TAG, "setVisibility");
         if(AdminRights.isAdmin()){
             Log.i(TAG, "setVisibility: isAdmin");
-            binding.textViewSettingsClean.setVisibility(View.VISIBLE);
-            binding.textViewSettingsCalibration.setVisibility(View.VISIBLE);
             binding.textViewSettingsPumps.setVisibility(View.VISIBLE);
+            binding.textViewMachine.setVisibility(View.VISIBLE);
 
         }else{
             Log.i(TAG, "setVisibility: is no Admin");
-            binding.textViewSettingsClean.setVisibility(View.GONE);
-            binding.textViewSettingsCalibration.setVisibility(View.GONE);
             binding.textViewSettingsPumps.setVisibility(View.GONE);
+            binding.textViewMachine.setVisibility(View.GONE);
         }
     }
 
-    public void calibrate(View view) {
-        //TODO: calibrate
-        Toast.makeText(this,"calibrate",Toast.LENGTH_SHORT).show();
-    }
 
-    public void status(View view) {
-        //TODO status
-        Toast.makeText(this,"status",Toast.LENGTH_SHORT).show();
-    }
 
-    public void loadNew(View view) {
-        //TODO loadNew
-        Toast.makeText(this,"loadNew",Toast.LENGTH_SHORT).show();
-    }
-
-    public void clean(View view) {
-        //TODO clean
-        Toast.makeText(this,"clean",Toast.LENGTH_SHORT).show();
-    }
-
-    public void sync(View view) {
-        //TODO clean
-        Toast.makeText(this,"sync",Toast.LENGTH_SHORT).show();
-    }
-
-    public void bluetooth(View view) {
-        //TODO bluetooth
-        Toast.makeText(this,"bluetooth",Toast.LENGTH_SHORT).show();
-    }
-
+    //Listen
+    /**
+     * got to recipe list
+     * @param view
+     * @author Johanna Reidt
+     */
     public void recipes(View view) {
         Intent intent = new Intent(this, ModelActivity.class);
         Bundle bundle = new Bundle();
@@ -120,6 +102,11 @@ public class SettingsActivity extends AppCompatActivity {
         startActivity(intent, bundle);
     }
 
+    /**
+     * go to pump list
+     * @param view
+     * @author Johanna Reidt
+     */
     public void pumps(View view) {
         Intent intent = new Intent(this, ModelActivity.class);
         Bundle bundle = new Bundle();
@@ -128,6 +115,11 @@ public class SettingsActivity extends AppCompatActivity {
         startActivity(intent, bundle);
     }
 
+    /**
+     * go to ingredient list
+     * @author Johanna Reidt
+     * @param view
+     */
     public void ingredients(View view) {
         Intent intent = new Intent(this, ModelActivity.class);
         Bundle bundle = new Bundle();
@@ -136,6 +128,11 @@ public class SettingsActivity extends AppCompatActivity {
         startActivity(intent, bundle);
     }
 
+    /** got to topics list*
+     * @author Johanna Reidt
+     *
+     * @param view
+     */
     public void topics(View view) {
         //TO DO topics
         Intent intent = new Intent(this, ModelActivity.class);
@@ -145,4 +142,87 @@ public class SettingsActivity extends AppCompatActivity {
         startActivity(intent, bundle);
         //Toast.makeText(this,"topics",Toast.LENGTH_SHORT).show();
     }
+
+
+
+    //Bluetooth
+
+    /**
+     * open bluetooth scan activity
+     * @author Johanna Reidt
+     * @param view
+     */
+    public void bluetooth(View view) {
+        //TO DO bluetooth
+        //Toast.makeText(this,"bluetooth",Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, DeviceScanActivity.class);
+        startActivity(intent);
+    }
+
+    /**
+     * open bluetooth Scan
+     * @author Johanna Reidt
+     * @param view
+     */
+    public void scan(View view) {
+        Intent intent = new Intent(this, DeviceScanActivity.class);
+        startActivity(intent);
+
+    }
+
+    /**
+     * synchronised Pumps
+     * and downloads all recipes into db
+     * @author Johanna Reidt
+     * @param view
+     */
+    public void sync(View view) {
+        Pump.sync(this);
+        Recipe.sync(this);
+        Toast.makeText(this,"Synchronisierung läuft!",Toast.LENGTH_SHORT).show();
+    }
+
+
+
+    //CocktailMachine
+    /**
+     * TO DO machine title
+     * @author Johanna Reidt
+     * @param view
+     */
+    public void machine(View view) {
+        Intent intent = new Intent(this, MachineSettingsActivity.class);
+        startActivity(intent);
+    }
+
+
+
+    //DB
+    /**
+     * TODO db title, maybe delete
+     * @author Johanna Reidt
+     * @param view
+     */
+    public void db(View view) {
+        Toast.makeText(this,"Datenbank!",Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * do local refresh of database if initialized
+     * @author Johanna Reidt
+     * @param view
+     */
+    public void loadNew(View view) {
+        DatabaseConnection.initializeSingleton(this);
+        try {
+            DatabaseConnection.localRefresh();
+        } catch (NotInitializedDBException e) {
+            throw new RuntimeException(e);
+        }
+
+        Toast.makeText(this,"Lade aus der Datenbank neu!",Toast.LENGTH_SHORT).show();
+    }
+
+
+
 }

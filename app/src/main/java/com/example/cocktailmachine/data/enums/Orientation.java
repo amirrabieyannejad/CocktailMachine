@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.data;
+package com.example.cocktailmachine.data.enums;
 
 public enum Orientation {
     TOP,

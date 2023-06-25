@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context=".ui.settings.MachineSettingsActivity">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+
+            <TextView
+                android:id="@+id/textViewCalibrationTitel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:padding="8dp"
+                android:text="Kalibrierungen"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewSettingsCalibrationScale"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="calibrateScale"
+                android:padding="8dp"
+                android:paddingStart="16dp"
+                android:text="Waagenkalibrierung"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textViewSettingsCalibrationPump"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="calibratePump"
+                android:padding="8dp"
+                android:paddingStart="16dp"
+                android:text="Pumpenkalibrierung"
+                android:textSize="20sp" />
+
+
+            <TextView
+                android:id="@+id/textViewStateTitel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:padding="8dp"
+                android:text="Zustand"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewSettingsStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="status"
+                android:padding="8dp"
+                android:paddingStart="16dp"
+                android:text="Statusabfrage"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textViewSettingsClean"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="clean"
+                android:padding="8dp"
+                android:paddingStart="16dp"
+                android:text="Reinigung"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textViewNewStartTitel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:padding="8dp"
+                android:text="Neustart"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewSettingsRestart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="restart"
+                android:padding="8dp"
+                android:paddingStart="16dp"
+                android:text="Neustart der Cocktailmaschine"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textViewSettingsFactoryReset"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="factoryReset"
+                android:padding="8dp"
+                android:paddingStart="16dp"
+                android:text="Auf Werkseinstellungen zurücksetzen"
+                android:textSize="20sp" />
+
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

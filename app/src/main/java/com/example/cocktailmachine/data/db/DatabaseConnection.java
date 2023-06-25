@@ -8,7 +8,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.example.cocktailmachine.data.AdminRights;
+import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.BasicRecipes;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
@@ -27,10 +27,9 @@ import com.example.cocktailmachine.data.db.exceptions.AccessDeniedException;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.tables.Tables;
-import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
+import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -1083,9 +1082,13 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     public void onCreate(SQLiteDatabase db) {
         Log.i(TAG, "onCreate");
+        Tables.createAll(db);
+        /*
         for (String createCmd : Tables.getCreateCmds()) {
             db.execSQL(createCmd);
         }
+
+         */
 
 
     }
@@ -1094,11 +1097,27 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         Log.i(TAG, "onUpgrade");
         //db.enableWriteAheadLogging();
         if(oldVersion == DatabaseConnection.version) {
+            /*
             for (String deleteCmd : Tables.getDeleteCmds()) {
                db.execSQL(deleteCmd);
             }
+
+             */
+            Tables.deleteAll(db);
             onCreate(db);
             DatabaseConnection.version = newVersion;
         }
     }
+
+
+    /**
+     *
+     */
+    @Override
+    public void close(){
+        singleton = null;
+        super.close();
+    }
+
+
 }

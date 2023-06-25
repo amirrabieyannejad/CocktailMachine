@@ -12,11 +12,18 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ *
+ * @created Fr. 23.Jun 2023 - 12:51
+ * @project CocktailMachine
+ * @author Johanna Reidt
+ */
 public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
 
 

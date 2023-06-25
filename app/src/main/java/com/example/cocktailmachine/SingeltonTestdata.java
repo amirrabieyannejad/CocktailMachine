@@ -1,5 +1,6 @@
 package com.example.cocktailmachine;
 
+import android.content.Context;
 import android.graphics.Color;
 
 import com.example.cocktailmachine.data.Ingredient;
@@ -154,6 +155,11 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public void removeImageUrl(String url) {
+
+                    }
+
+                    @Override
                     public void setPump(Long pump, int fluidInMillimeters) {
 
                     }
@@ -281,6 +287,11 @@ public class SingeltonTestdata {
 
                     @Override
                     public void addImageUrl(String url) {
+
+                    }
+
+                    @Override
+                    public void removeImageUrl(String url) {
 
                     }
 
@@ -459,8 +470,8 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public JSONArray getLiquids() {
-                return Recipe.super.getLiquids();
+            public JSONArray getLiquidsJSON() {
+                return Recipe.super.getLiquidsJSON();
             }
 
             @Override
@@ -469,8 +480,8 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public boolean sendSave() {
-                return Recipe.super.sendSave();
+            public boolean sendSave(Context context) {
+                return Recipe.super.sendSave(context);
             }
 
             @Override
@@ -479,7 +490,7 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public void send() {
+            public void send(Context context) {
 
             }
 
@@ -615,6 +626,11 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public void removeImageUrl(String url) {
+
+                    }
+
+                    @Override
                     public void setPump(Long pump, int fluidInMillimeters) {
 
                     }
@@ -742,6 +758,11 @@ public class SingeltonTestdata {
 
                     @Override
                     public void addImageUrl(String url) {
+
+                    }
+
+                    @Override
+                    public void removeImageUrl(String url) {
 
                     }
 
@@ -920,8 +941,8 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public JSONArray getLiquids() {
-                return Recipe.super.getLiquids();
+            public JSONArray getLiquidsJSON() {
+                return Recipe.super.getLiquidsJSON();
             }
 
             @Override
@@ -930,8 +951,8 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public boolean sendSave() {
-                return Recipe.super.sendSave();
+            public boolean sendSave(Context context) {
+                return Recipe.super.sendSave(context);
             }
 
             @Override
@@ -940,7 +961,7 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public void send() {
+            public void send(Context context) {
 
             }
 

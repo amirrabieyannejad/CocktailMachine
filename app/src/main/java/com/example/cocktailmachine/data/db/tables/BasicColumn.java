@@ -7,8 +7,11 @@ import android.os.Build;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.elements.SQLDataBaseElement;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,11 +19,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * @created Fr. 23.Jun 2023 - 12:32
+ * @project CocktailMachine
+ * @author Johanna Reidt
+ */
 public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseColumns {
     private static final String TAG = "BasicColumn";
 
+    /**
+     * gives name of table
+     * @author Johanna Reidt
+     * @return name of table
+     */
     public abstract String getName();
+
+    /**
+     * gives names of columns in table
+     * @author Johanna Reidt
+     * @return names of columns in table as list of strings
+     */
     public abstract List<String> getColumns();
+
+    /**
+     * gives types of columns in table
+     * @author Johanna Reidt
+     * @return types of columns in table as list of strings
+     */
     public abstract List<String> getColumnTypes();
     public HashMap<String, String> getColumnsAndTypes(){
         HashMap<String, String> ct = new HashMap<>();
@@ -52,19 +77,41 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         return res.toString();
     }
 
+    /**
+     * creates table
+     * @author Johanna Reidt
+     * @param db
+     */
     public void createTable(SQLiteDatabase db){
         db.execSQL(createTableCmd());
     }
 
+    /**
+     * gives delete cmd for table
+     * @author Johanna Reidt
+     * @return delete cmd for table as string
+     */
     public String deleteTableCmd(){
         return "DROP TABLE IF EXISTS "+this.getName()+";";
     }
 
+    /**
+     * deletes table
+     * @author Johanna Reidt
+     * @param db
+     */
     public void deleteTable(SQLiteDatabase db){
         db.execSQL(deleteTableCmd());
     }
 
     //HELPER
+
+    /**
+     * reads with given crusor each given rows to a T element
+     * @author Johanna Reidt
+     * @param cursor
+     * @return T element list
+     */
     private List<T> cursorToList(Cursor cursor){
         List<T> res = new ArrayList<>();
         if(cursor.moveToFirst()) {
@@ -136,6 +183,15 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
     }
 
     //GET
+
+    /**
+     * get T element from table with given id
+     * @author Johanna Reidt
+     * @param db
+     * @param id
+     * @return T element with given id or null
+     */
+    @Nullable
     public T getElement(SQLiteDatabase db,
                         Long id){
         Cursor cursor = db.query(this.getName(),
@@ -154,6 +210,13 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         return null;
     }
 
+    /**
+     * get elements with given ids
+     * @author Johanna Reidt
+     * @param db
+     * @param ids
+     * @return list of elements with given ids
+     */
     public List<T> getElements(SQLiteDatabase db,
                                List<Long> ids){
         String selection = null;
@@ -175,6 +238,12 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         return this.cursorToList(cursor);
     }
 
+    /**
+     * get all elements in table
+     * @author Johanna Reidt
+     * @param db
+     * @return all elements in table as list
+     */
     public List<T> getAllElements(SQLiteDatabase db){
         Cursor cursor = db.query(this.getName(),
                 getColumns().toArray(new String[0]),

@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.data;
+package com.example.cocktailmachine.data.enums;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,7 +13,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,7 +21,7 @@ public class AdminRights {
     private static final String TAG = "AdminRights";
     private static AdminRights singleton = null;
     private UserPrivilegeLevel privilege = UserPrivilegeLevel.User;
-    private Long userId;
+    private int userId = -1;
 
     private AdminRights(){
 
@@ -35,6 +34,85 @@ public class AdminRights {
         return singleton;
     }
 
+
+    //USer ID handling
+    public static int getUserId(){
+        return getSingleton().userId;
+    }
+    public static void setUserId(int userId){
+        getSingleton().userId = userId;
+    }
+
+    public static void setUser(JSONObject jsonObject){
+        try {
+            setUserId(jsonObject.getInt("user"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * get JSON Object to init user
+     * @return
+     */
+    private static JSONObject getUserIdAsMessage(){
+
+        JSONObject json = new JSONObject();
+        try {
+            json.put("name", String.valueOf(System.currentTimeMillis()));
+            json.put("cmd", "init_user");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
+    /**
+     * init user with bluetooth
+     * @return
+     */
+    public static void initUser(Context context, String name){
+        //TODO: init user
+        JSONObject getQuestion = getUserIdAsMessage();
+        JSONObject answer = new JSONObject();
+        setUser(answer);
+    }
+
+    /**
+     * {"cmd": "abort", "user": 483}
+     * @return
+     */
+    private static JSONObject getUserAbortMessage(){
+        JSONObject json = new JSONObject();
+        try {
+            json.put("cmd", "abort");
+            json.put("user", getUserId());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
+    /**
+     * init user with bluetooth
+     * @return
+     */
+    public static void abortUser(Context context, String name){
+        //TODO: abort user
+        JSONObject getQuestion = getUserAbortMessage();
+        JSONObject answer = new JSONObject();
+        //setUser(answer);
+        setUserId(-1);
+    }
+
+    public static boolean isUserIntialized(){
+        return getUserId()>-1;
+    }
+
+
+
+
+    //Admin/ User status
     public static UserPrivilegeLevel getUserPrivilegeLevel(){
         return getSingleton().privilege;
     }
@@ -45,33 +123,6 @@ public class AdminRights {
 
     public static boolean isAdmin(){
         return getUserPrivilegeLevel().equals(UserPrivilegeLevel.Admin);
-    }
-
-    public static Long getUserId(){
-        return getSingleton().userId;
-    }
-    public static void setUserId(Long userId){
-        getSingleton().userId = userId;
-    }
-
-    public static void setUser(JSONObject jsonObject){
-        try {
-            getSingleton().userId  = jsonObject.getLong("user");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static JSONObject sendUserId(){
-
-        JSONObject json = new JSONObject();
-        try {
-            json.put("name", String.valueOf(System.currentTimeMillis()));
-            json.put("cmd", "init_user");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return json;
     }
 
     public static void login(Context getContext,

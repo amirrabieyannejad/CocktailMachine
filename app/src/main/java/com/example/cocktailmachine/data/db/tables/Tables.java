@@ -5,6 +5,18 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *
+ * is a collection point for all database tables.
+ * This class has a static attribute for each table.
+ * It also offers two functions each to regenerate and delete all tables.
+ * The difference lies in the variant:
+ * - once an SQL-DB is given and thus deleted
+ * - once the commands are output as a list of strings
+ * @created Fr. 23.Jun 2023 - 12:51
+ * @project CocktailMachine
+ * @author Johanna Reidt
+ */
 public class Tables {
 
     static final String TYPE_LONG = "LONG";
@@ -28,7 +40,12 @@ public class Tables {
     public static final RecipeTopicTable TABLE_RECIPE_TOPIC = new RecipeTopicTable();
     public static final IngredientPumpTable TABLE_INGREDIENT_PUMP = new IngredientPumpTable();
 
-    public static List<String> getCreateCmds(){
+    /**
+     * gives list of sql cmds as strings, that create each a table
+     * @return list of sql cmds as strings, that create each a table
+     * @author Johanna Reidt
+     */
+    private static List<String> getCreateCmds(){
         List<String> res = new ArrayList<>();
         res.add(TABLE_RECIPE.createTableCmd());
         res.add(TABLE_INGREDIENT.createTableCmd());
@@ -42,7 +59,12 @@ public class Tables {
         return res;
     }
 
-    public static List<String> getDeleteCmds(){
+    /**
+     * gives list of sql cmds as strings, that delete each a table
+     * @author Johanna Reidt
+     * @return list of sql cmds as strings, that delete each a table
+     */
+    private static List<String> getDeleteCmds(){
         List<String> res = new ArrayList<>();
         res.add(TABLE_RECIPE.deleteTableCmd());
         res.add(TABLE_INGREDIENT.deleteTableCmd());
@@ -56,12 +78,22 @@ public class Tables {
         return res;
     }
 
+    /**
+     * deletes all tables from given db
+     * @author Johanna Reidt
+     * @param db
+     */
     public static void deleteAll(SQLiteDatabase db){
         for(String cmd: getDeleteCmds()){
             db.execSQL(cmd);
         }
     }
 
+    /**
+     * deletes all tables for given db
+     * @author Johanna Reidt
+     * @param db
+     */
     public static void createAll(SQLiteDatabase db){
         for(String cmd: getCreateCmds()){
             db.execSQL(cmd);

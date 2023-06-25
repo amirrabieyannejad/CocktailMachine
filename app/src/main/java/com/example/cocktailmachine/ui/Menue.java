@@ -8,19 +8,23 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
-import com.example.cocktailmachine.data.AdminRights;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
-import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
-import com.example.cocktailmachine.databinding.ActivityMainBinding;
+import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
-import com.example.cocktailmachine.ui.model.ModelFragment;
+import com.example.cocktailmachine.ui.model.ModelActivity;
 import com.example.cocktailmachine.ui.model.ModelType;
+import com.example.cocktailmachine.ui.settings.SettingsActivity;
 import com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice;
 
+/**
+ * Menu class
+ * is the Main Activity and is intended to provide the shortcuts to the Recipe List/Creation,
+ * the settings and login/logout to the admin view with appropriate symbols.
+ * @created Fr. 23.Jun 2023 - 14:14
+ * @project CocktailMachine
+ * @author Wieber
+ */
 public class Menue extends AppCompatActivity {
     private static final String TAG = "Menue";
     private ActivityMenueBinding binding;
@@ -55,6 +59,11 @@ public class Menue extends AppCompatActivity {
         }
     }
 
+    /**
+     * opens recipe list
+     * @author Johanna Reidt
+     * @param view
+     */
     public void openRecipeList(View view) {
         Intent success = new Intent(this, ModelActivity.class);
         Bundle b = new Bundle();
@@ -63,6 +72,11 @@ public class Menue extends AppCompatActivity {
         startActivity(success, b);
     }
 
+    /**
+     * open recipe creator
+     * @author Johanna Reidt
+     * @param view
+     */
     public void openRecipeCreator(View view){
         Intent success = new Intent(this, ModelActivity.class);
         Bundle b = new Bundle();
@@ -71,36 +85,69 @@ public class Menue extends AppCompatActivity {
         startActivity(success, b);
     }
 
+    /**
+     * opens Settings
+     * @author Johanna Reidt
+     * @param view
+     */
     public void openSettings(View view){
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
 
 
+    /**
+     * open single cocktail choice
+     * TODO: put in respective place and delete here
+     * @author Wieber
+     * @param view
+     */
     public void openSingelCocktailView(View view){
         Intent success = new Intent(this, SingleCocktailChoice.class);
         startActivity(success);
 
     }
 
+    /**
+     * opens GlassFillAnimation
+     * TODO: put in respective place and delete here
+     * @author  Wieber
+     * @param view
+     */
     public void openGlassFillAnimationView(View view){
         Intent success = new Intent(this, FillAnimation.class);
         startActivity(success);
 
     }
 
-
+    /**
+     * opens Grafik
+     * TODO: put in respective place and delete here
+     * @author Wieber
+     * @param view
+     */
     public void openGrafik(View view){
         Intent success = new Intent(this, Grafik.class);
         startActivity(success);
 
     }
 
+    /**
+     * opens device scan, scans for bluetooth connection
+     *
+     * @author Wieber
+     * @param view
+     */
     public void openDeviceScan(View view){
         Intent success = new Intent(this, DeviceScanActivity.class);
         startActivity(success);
     }
 
+    /**
+     * opens login dialog
+     * @author Johanna Reidt
+     * @param view
+     */
     public void login(View view){
         Log.i(TAG, "login");
         AdminRights.login(this,
@@ -109,6 +156,10 @@ public class Menue extends AppCompatActivity {
         Log.i(TAG, "finished login");
     }
 
+    /**
+     * if login successful display logout symbol
+     * @author Johanna Reidt
+     */
     public void successfulLogin(){
         Log.i(TAG, "successfulLogin");
         if(AdminRights.isAdmin()) {
@@ -118,6 +169,11 @@ public class Menue extends AppCompatActivity {
         }
     }
 
+    /**
+     * logs admin out, displays login symbol
+     * @author Johanna Reidt
+     * @param view
+     */
     public void logout(View view){
         Log.i(TAG, "logout");
         AdminRights.logout();
@@ -128,13 +184,24 @@ public class Menue extends AppCompatActivity {
     }
 
 
-
+    /**
+     *  ????????
+     * TODO: dont know the use
+     * @author Wieber
+     * @param view
+     */
     public void exit(View view){
         Intent success = new Intent(this, Grafik.class);
         startActivity(success);
 
     }
 
+    /**
+     * opens BluetoothTestEnviroment
+     * TODO: put in respective place and delete here
+     * @author Wieber
+     * @param view
+     */
     public void testEnviroment(View view){
         Intent success = new Intent(this, BluetoothTestEnviroment.class);
         startActivity(success);

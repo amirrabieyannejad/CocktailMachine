@@ -56,11 +56,22 @@
         android:theme="@style/Theme.CocktailMachine"
         tools:targetApi="26">
         <activity
-            android:name="com.example.cocktailmachine.ui.SettingsActivity"
+            android:name=".ui.settings.MachineSettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.settings.PumpSettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.settings.ScaleSettingsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_scale_settings"
+            android:theme="@style/Theme.CocktailMachine" />
+        <activity
+            android:name=".ui.settings.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name="com.example.cocktailmachine.ui.ModelActivity"
+            android:name=".ui.model.ModelActivity"
             android:exported="true"
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.CocktailMachine.NoActionBar">
@@ -69,49 +80,49 @@
                 android:value="" />
         </activity>
         <activity
-            android:name="com.example.cocktailmachine.ui.cocktail.cocktailList.CocktailList"
+            android:name=".ui.cocktail.cocktailList.CocktailList"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name="com.example.cocktailmachine.bluetoothlegatt.DeviceControlActivity"
+            android:name=".bluetoothlegatt.DeviceControlActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name="com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity"
+            android:name=".bluetoothlegatt.DeviceScanActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name="com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice"
+            android:name=".ui.singleCocktailChoice.SingleCocktailChoice"
             android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name="com.example.cocktailmachine.ui.fillAnimation.FillAnimation"
+            android:name=".ui.fillAnimation.FillAnimation"
             android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name="com.example.cocktailmachine.ui.Grafik"
+            android:name=".ui.Grafik"
             android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name="com.example.cocktailmachine.ui.Menue"
+            android:name=".ui.Menue"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -125,7 +136,7 @@
         </activity>
 
         <service
-            android:name="com.example.cocktailmachine.bluetoothlegatt.BluetoothLeService"
+            android:name=".bluetoothlegatt.BluetoothLeService"
             android:enabled="true" />
     </application>
 

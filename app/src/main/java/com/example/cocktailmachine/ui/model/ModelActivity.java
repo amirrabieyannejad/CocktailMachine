@@ -1,13 +1,15 @@
-package com.example.cocktailmachine.ui;
+package com.example.cocktailmachine.ui.model;
 
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.example.cocktailmachine.data.AdminRights;
+import com.example.cocktailmachine.data.Pump;
+import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
-import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
+import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMainBinding;
+import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.model.ListFragment;
 
 import androidx.annotation.DrawableRes;
@@ -20,7 +22,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
@@ -90,7 +91,33 @@ public class ModelActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * check data base open, open if not
+     */
+    @Override
+    protected void onResume() {
+        Log.i(TAG, "onResume: check data base open, open if not");
+        super.onResume();
+        if(!DatabaseConnection.isInitialized()) {
+            DatabaseConnection.initializeSingleton(this, AdminRights.getUserPrivilegeLevel());
+            Log.i(TAG, "onResume: data base was opened");
+        } else  {
+            Log.i(TAG, "onResume: data base is open");
+        }
+    }
 
+    @Override
+    protected void onDestroy() {
+        Log.i(TAG, "onDestroy: close data base");
+        super.onDestroy();
+        try {
+            DatabaseConnection.getDataBase().close();
+            Log.i(TAG, "onDestroy: data base closed");
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            Log.i(TAG, "onDestroy: data base wasn't open");
+        }
+    }
 
     private void goTo(Bundle bundle){
         FragmentType ft = FragmentType.valueOf(bundle.getString("FragmentType"));
@@ -227,9 +254,15 @@ public class ModelActivity extends AppCompatActivity {
 
 
     //Menu
+
+    /**
+     * simple sync with only pumps getting updated
+     * @param item
+     */
     public void refresh(MenuItem item) {
-        //TODO sync
         refreshCurrentFragment();
+        Pump.sync(this);
+        Toast.makeText(this,"Synchronisierung läuft!",Toast.LENGTH_SHORT).show();
     }
 
     public void goToMenue(MenuItem item) {

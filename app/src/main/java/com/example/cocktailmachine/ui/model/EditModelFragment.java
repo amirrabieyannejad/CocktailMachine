@@ -25,7 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.data.AdminRights;
+import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
@@ -36,7 +36,6 @@ import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.databinding.FragmentEditModelBinding;
-import com.example.cocktailmachine.ui.ModelActivity;
 import com.mrudultora.colorpicker.ColorPickerPopUp;
 
 import java.util.ArrayList;
@@ -173,12 +172,15 @@ public class EditModelFragment extends Fragment {
                     return;
                 case PUMP:
                     try {
-                        pump.fill(Integer.parseInt(
-                            binding
-                                    .includeNewPump
-                                    .includeNewPumpFillEmpty
-                                    .editTextPumpFillEmptyVolume
-                                    .getText().toString()));
+                        String vol = binding
+                                .includeNewPump
+                                .includeNewPumpFillEmpty
+                                .editTextPumpFillEmptyVolume
+                                .getText().toString();
+                        if(!vol.equals("")) {
+                            pump.fill(Integer.parseInt(vol));
+                        }
+                        pump.sendRefill(this.getContext());
                     } catch (MissingIngredientPumpException e) {
                         e.printStackTrace();
                         Log.i(TAG, "save: pump filling failed: pump: "+pump);
@@ -398,7 +400,8 @@ public class EditModelFragment extends Fragment {
     }
 
     private void setUpEditRecipe() {
-        //TODO
+        //TODO: edit make new current design is shit
+
 
         binding.includeName.textViewEditText.setText("Rezept");
         binding.includeName.editTextEditText.setHint("bspw. Magarita");

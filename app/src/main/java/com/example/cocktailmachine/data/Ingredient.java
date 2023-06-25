@@ -44,11 +44,6 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      */
     String getName();
 
-    /**
-     * Get the addresses for the images.
-     * @return list of image addresses.
-     */
-    List<String> getImageUrls();
 
     /**
      * Is alcoholic?
@@ -62,11 +57,47 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      */
     boolean isAvailable();
 
+
     /**
-     * Still available liquid/fluid in milliliter.
-     * @return milliliter of ingredient
+     * Get fluid color.
+     * @return Integer representative of color
      */
-    int getVolume();
+    @ColorInt
+    public int getColor();
+
+    //Setter
+    public void setColor(@ColorInt int color);
+
+    public void setAlcoholic(boolean alcoholic);
+
+
+    void setName(String name);
+
+
+    //FOTOS
+
+    /**
+     * Get the addresses for the images.
+     * @return list of image addresses.
+     */
+    List<String> getImageUrls();
+
+    /**
+     * Add to the image address list an address.
+     * @param url to be added image address
+     */
+    void addImageUrl(String url);
+
+    /**
+     * removes from image address list
+     * @param url to be added image address
+     */
+    void removeImageUrl(String url);
+
+
+
+
+    //Pump stuff
 
     /**
      * Get Pump representative class, where the ingredient is within.
@@ -80,31 +111,13 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      */
     public Long getPumpId();
 
+
     /**
-     * Get fluid color.
-     * @return Integer representative of color
+     * Still available liquid/fluid in milliliter.
+     * @return milliliter of ingredient
      */
-    @ColorInt
-    public int getColor();
+    int getVolume();
 
-    //Setter
-    /**
-     * Add to the image address list an address.
-     * @param url to be added image address
-     */
-    void addImageUrl(String url);
-
-    void setPump(Long pump, int volume);
-
-    void empty();
-
-
-    public void setColor(@ColorInt int color);
-
-    public void setAlcoholic(boolean alcoholic);
-
-
-    void setName(String name);
 
     /**
      * use only for connecting pump and ingredient after loading
@@ -112,13 +125,27 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      */
     void setIngredientPump(SQLIngredientPump ingredientPump);
 
-    //use
+    void setPump(Long pump, int volume);
+
+    /**
+     * emptys pump if exist
+     */
+    void empty();
+
+
     /**
      * Pump m milliliters.
      * @param volume m
      * @throws NewlyEmptyIngredientException ingredient is empty.
      */
     void pump(int volume) throws NewlyEmptyIngredientException, MissingIngredientPumpException;
+
+
+
+
+
+
+
 
     //general
     /**
