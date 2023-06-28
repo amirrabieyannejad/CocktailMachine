@@ -143,6 +143,8 @@ public class DeviceControlActivity extends Activity {
                             (singleton.getEspResponseValue()),6000);
             } catch (JSONException e) {
                 e.printStackTrace();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
 
         });

@@ -1,10 +1,13 @@
 package com.example.cocktailmachine.bluetoothlegatt;
 
+import static android.content.Context.BIND_AUTO_CREATE;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Build;
 
@@ -13,6 +16,8 @@ import android.os.IBinder;
 import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
+
+import org.json.JSONException;
 
 
 public class BluetoothSingleton {
@@ -26,7 +31,7 @@ public class BluetoothSingleton {
     private final static String TAG = BluetoothSingleton.class.getSimpleName();
     public BluetoothLeService mBluetoothLeService;
     private static final int PERMISSIONS_REQUEST_CODE = 191;
-
+    private BluetoothSingleton singleton;
     @SuppressLint("InlinedApi")
     private static final String[] ANDROID_12_BLE_PERMISSIONS = new String[]{
             Manifest.permission.BLUETOOTH_SCAN,
@@ -91,19 +96,24 @@ public class BluetoothSingleton {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
             Log.w(TAG, "try to initialize");
-            mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
-            if (!mBluetoothLeService.initialize()) {
+            singleton = BluetoothSingleton.getInstance();
+            //TODO: Check localBinder
+            singleton.mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
+
+            if (!singleton.mBluetoothLeService.initialize()) {
                 Log.e(TAG, "Unable to initialize Bluetooth");
             }
             // Automatically connects to the device upon successful start-up initialization.
 
-            Log.w(TAG, "try to connect: " + EspDeviceAddress);
-            mBluetoothLeService.connect(EspDeviceAddress);
+            Log.w(TAG, "try to connect: " + singleton.EspDeviceAddress);
+            //singleton.mBluetoothLeService.connect(EspDeviceAddress);
+            singleton.mBluetoothLeService.connect("54:43:B2:A9:32:26");
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-            mBluetoothLeService = null;
+            singleton = BluetoothSingleton.getInstance();
+            singleton.mBluetoothLeService = null;
         }
     };
 
@@ -114,7 +124,17 @@ public class BluetoothSingleton {
         else
             ActivityCompat.requestPermissions(activity, BLE_PERMISSIONS, requestCode);
     }
+    public void bindService(Activity activity) {
+        singleton = BluetoothSingleton.getInstance();
+        singleton.requestBlePermissions(activity);
+        Intent gattServiceIntent = new Intent(activity,BluetoothLeService.class);
+        activity.bindService(gattServiceIntent, singleton.mServiceConnection, BIND_AUTO_CREATE);
+    }
 
-
+    public String initUser(String user) throws JSONException, InterruptedException {
+        singleton = BluetoothSingleton.getInstance();
+        singleton.mBluetoothLeService.initUser(user);
+        return "true";
+    }
 
 }

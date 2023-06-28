@@ -41,22 +41,21 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
         // Step2
         singleton = BluetoothSingleton.getInstance();
         // Step3: request Ble Permissions
-        singleton.requestBlePermissions(this);
+
         //Step4: bind Service
-        Intent gattServiceIntent = new Intent(this,BluetoothLeService.class);
-        bindService(gattServiceIntent, singleton.mServiceConnection, BIND_AUTO_CREATE);
+        singleton.bindService(this);
     }
-    public void addUser(View view) throws JSONException {
+    public void addUser(View view) throws JSONException, InterruptedException {
 
         //Step5: Call initUser() Method
         String user = editText.getText().toString();
-        singleton.mBluetoothLeService.initUser(user);
+        singleton.initUser(user);
 
         //Step6: Wait 6 Second to return the value from ESP
-        Handler handler = new Handler();
+/*        Handler handler = new Handler();
         handler.postDelayed(() -> textView.setText
-                (singleton.getEspResponseValue()), 6000);
-
+                (singleton.getEspResponseValue()), 6000);*/
+        textView.setText(singleton.getEspResponseValue());
     }
     public void showUser(View view) throws JSONException {
 
@@ -64,9 +63,8 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
         singleton.mBluetoothLeService.adminReadCurrentUser();
 
         //Step6: Wait 6 Second to return the value from ESP
-        Handler handler = new Handler();
-        handler.postDelayed(() -> textView.setText
-                (singleton.getEspResponseValue()), 6000);
+        textView.setText
+                (singleton.getEspResponseValue());
 
     }
 
