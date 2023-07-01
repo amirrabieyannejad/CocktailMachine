@@ -71,7 +71,7 @@ public class DeviceControlActivity extends Activity {
 
     private BluetoothGattCharacteristic mGattCharacteristics;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
-    private boolean mConnected = false;
+    private final boolean mConnected = false;
 
 
     @SuppressLint("MissingInflatedId")

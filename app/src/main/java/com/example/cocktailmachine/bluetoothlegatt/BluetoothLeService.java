@@ -34,6 +34,7 @@ import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
@@ -232,6 +233,7 @@ public class BluetoothLeService extends Service {
 
     public class LocalBinder extends Binder {
         BluetoothLeService getService() {
+            Log.w(TAG, "localBinder has been reached! type to getService" );
             return BluetoothLeService.this;
         }
     }
@@ -267,6 +269,7 @@ public class BluetoothLeService extends Service {
                 Log.e(TAG, "Unable to initialize BluetoothManager.");
                 return false;
             }
+            Log.w(TAG,"get Instance of BluetoothManager! ");
         }
 
         mBluetoothAdapter = mBluetoothManager.getAdapter();
@@ -274,7 +277,7 @@ public class BluetoothLeService extends Service {
             Log.e(TAG, "Unable to obtain a BluetoothAdapter.");
             return false;
         }
-
+        Log.w(TAG,"Adapter has been read!");
         return true;
     }
 
@@ -294,7 +297,7 @@ public class BluetoothLeService extends Service {
             Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
             return false;
         }
-
+        Log.w(TAG, "BluetoothAdapter is initialized! Address is specified!");
         // Previously connected device.  Try to reconnect.
         if (address.equals(mBluetoothDeviceAddress)
                 && mBluetoothGatt != null) {
@@ -308,10 +311,19 @@ public class BluetoothLeService extends Service {
             Log.w(TAG, "Device not found.  Unable to connect.");
             return false;
         }
+        Log.w(TAG, "Device found.  Able to connect.");
         // We want to directly connect to the device, so we are setting the autoConnect
         // parameter to false.
-        mBluetoothGatt = device.connectGatt(this, true, mGattCallback);
-        Log.d(TAG, "Trying to create a new connection.");
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+                         @Override
+                         public void run() {
+                             mBluetoothGatt = device.connectGatt(getApplicationContext(),
+                                     false, mGattCallback);
+                             Log.w(TAG, "Connection has been established!");
+                         }
+    });
+
         mBluetoothDeviceAddress = address;
         return true;
     }
@@ -451,11 +463,14 @@ public class BluetoothLeService extends Service {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return null;
         }
+        Log.w(TAG, "getBluetoothGattCharacteristic mBluetoothAdapter" +
+                " and mBluetoothGatt are available!");
         BluetoothGattService mCustomService = mBluetoothGatt.getService
                 (UUID.fromString(SampleGattAttributes.lookupUuid(service)));
         if (mCustomService == null) {
-            Log.w(TAG, "Custom BLE Service not found");
-            return null;
+            Log.w(TAG, "getBluetoothGattCharacteristic: Custom BLE Service not found");
+
+            //return null;
         }
         /* get the characteristic from the service */
         Log.w(TAG, "Characteristic found, try to return it");
@@ -466,13 +481,17 @@ public class BluetoothLeService extends Service {
 
 
     @SuppressLint("MissingPermission")
-    public void writeCharacteristic(String value, Boolean admin) {
+    public Boolean writeCharacteristic(String value, Boolean admin) {
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized");
+            return false;
+        }
         /* check if the service is available on the device */
         BluetoothGattService mCustomService = mBluetoothGatt.getService
                 (UUID.fromString(SampleGattAttributes.lookupUuid(SERVICE_READ_WRITE)));
         if (mCustomService == null) {
-            Log.w(TAG, "Custom BLE Service not found");
-            return;
+            Log.w(TAG, "write Characteristic: Custom BLE Service not found");
+            return false;
         }
         BluetoothGattCharacteristic mWriteCharacteristic;
         /* get the characteristic from the service */
@@ -490,9 +509,11 @@ public class BluetoothLeService extends Service {
 
         if (!mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
             Log.w(TAG, "Failed to write characteristic");
+            return false;
         }
-
+        return true;
     }
+
     @SuppressLint("MissingPermission")
     public String readCharacteristicValue(String server, String characteristic)
             throws InterruptedException {
