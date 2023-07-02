@@ -182,6 +182,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @throws JSONException
      */
     default JSONObject asMessage() throws JSONException {
+        //TODO: USE THIS AMIR
         JSONObject json = new JSONObject();
         json.put("name", this.getName());
         json.put("liquids", this.getLiquidsJSON());
@@ -199,6 +200,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         //service.
         //BluetoothSingleton.getInstance().mBluetoothLeService.makeRecipe(AdminRights.getUserId(), );
         //TODO: Bluetooth send to mix
+        //TODO: AMIR
     }
 
     /**
@@ -209,6 +211,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * TODO: find what this is doing :     {"cmd": "add_liquid", "user": 0, "liquid": "water", "volume": 30}
      */
     default boolean sendSave(Activity activity){
+        //TODO: USE THIS AMIR
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("cmd", "define_recipe");
@@ -245,6 +248,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @throws JSONException
      */
     static JSONArray getRecipesAsMessage() throws NotInitializedDBException, JSONException {
+        //TODO: USE THIS AMIR
         JSONArray json = new JSONArray();
         for(Recipe r: getRecipes()){
             json.put(r.asMessage());
@@ -270,6 +274,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @throws NotInitializedDBException
      */
     static void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException{
+        //TODO: USE THIS AMIR
         //[{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}, {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
         for(int i=0; i<json.length(); i++){
             JSONObject j = json.optJSONObject(i);

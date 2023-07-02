@@ -6,6 +6,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 public enum Status {
+    //TODO: USE THIS AMIR
     /*
     - `init`: Maschine wird initialisiert
 - `ready`: Maschine ist bereit einen Befehl auszuführen und wartet
@@ -32,6 +33,7 @@ public enum Status {
     public static Status getCurrentStatus(Activity activity){
         //TODO: Bluetoothlegatt
         //BluetoothSingleton.getInstance().mBluetoothLeService;
+        //TODO: AMIR
         return Status.ready;
     }
 

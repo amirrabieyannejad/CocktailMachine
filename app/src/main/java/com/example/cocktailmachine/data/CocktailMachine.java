@@ -18,6 +18,7 @@ import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 
 public class CocktailMachine {
+    //TODO: AMIR
 
 
 
