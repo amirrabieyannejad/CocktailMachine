@@ -68,6 +68,9 @@
             android:name="com.example.cocktailmachine.ui.settings.PumpSettingsActivity"
             android:exported="false" />
         <activity
+            android:name="com.example.cocktailmachine.ui.model.v1.ModelActivity"
+            android:exported="false" />
+        <activity
             android:name="com.example.cocktailmachine.ui.settings.ScaleSettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_scale_settings"
