@@ -9,6 +9,7 @@ import android.view.View;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.CocktailMachine;
 
+import com.example.cocktailmachine.data.Pump;
 /**
  * Pumpenkalibrierung und Pumpenzeit
  * @created Fr. 23.Jun 2023 - 16:16
@@ -21,6 +22,10 @@ public class PumpSettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pump_settings);
+
+
+        //TODO: bind bluetooth
+
     }
 
 
@@ -40,7 +45,8 @@ public class PumpSettingsActivity extends AppCompatActivity {
      * @param view
      */
     public void calibratePump(View view){
-        CocktailMachine.calibratePump(this);
+
+        //TODO: CocktailMachine.calibratePump(this);
     }
 
 
@@ -59,7 +65,11 @@ public class PumpSettingsActivity extends AppCompatActivity {
      * @param view
      */
     public void setPumpTimes(View view){
-        CocktailMachine.setPumpTimes(this);
+
+        //open alert dialog pick pump
+        Pump pump = Pump.getPump(0);
+        pump.setPumpTimes(this, 0,0,0);
+
     }
 
 }

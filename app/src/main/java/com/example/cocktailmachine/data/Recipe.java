@@ -1,6 +1,7 @@
 package com.example.cocktailmachine.data;
 
 
+import android.app.Activity;
 import android.content.Context;
 
 import com.example.cocktailmachine.data.db.DatabaseConnection;
@@ -42,6 +43,12 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @return list of ingredient ids.
      */
     List<Long> getIngredientIds();
+
+    /**
+     * Get ingredient ids used in this recipe.
+     * @return list of ingredient ids.
+     */
+    List<String> getIngredientNames();
 
     /**
      * Get ingredients used in this recipe.
@@ -186,9 +193,13 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     /**
      * send to be mixed
      *   {"cmd": "make_recipe", "user": 8858, "recipe": "radler"}
-     * TODO:send topics to user!
+     * TODO:show topics to user!
      */
-    void send(Context context);
+    default void send(Activity activity){
+        //service.
+        //BluetoothSingleton.getInstance().mBluetoothLeService.makeRecipe(AdminRights.getUserId(), );
+        //TODO: Bluetooth send to mix
+    }
 
     /**
      * Sends to CocktailMachine to get saved.
@@ -197,7 +208,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      *
      * TODO: find what this is doing :     {"cmd": "add_liquid", "user": 0, "liquid": "water", "volume": 30}
      */
-    default boolean sendSave(Context context){
+    default boolean sendSave(Activity activity){
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("cmd", "define_recipe");
@@ -241,8 +252,14 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         return json;
     }
 
-    static void sync(Context context){
+    static void sync(Activity activity){
         //TODO: Sync, get alle recipes from bluetooth
+        JSONArray answer = new JSONArray();
+        try {
+            setRecipes(answer);
+        } catch (NotInitializedDBException | JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -252,7 +269,26 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @param json
      * @throws NotInitializedDBException
      */
-    void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException;
+    static void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException{
+        //[{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}, {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
+        for(int i=0; i<json.length(); i++){
+            JSONObject j = json.optJSONObject(i);
+            Recipe temp = Recipe.searchOrNew(j.optString("name", "Default"));
+            JSONArray a = j.optJSONArray("liquids");
+            if(a != null){
+                for(int l=0; l<a.length(); l++){
+                    JSONArray liq = a.optJSONArray(l);
+                    if(liq!=null){
+                        String name = a.getString(0);
+                        int volume = a.getInt(1);
+                        Ingredient ig = Ingredient.searchOrNew(name);
+                        temp.addOrUpdate(ig, volume);
+                    }
+                }
+            }
+            temp.save();
+        }
+    }
 
 
 

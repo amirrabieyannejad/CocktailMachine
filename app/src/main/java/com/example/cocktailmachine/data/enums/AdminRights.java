@@ -1,5 +1,6 @@
 package com.example.cocktailmachine.data.enums;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.InputType;
@@ -19,6 +20,7 @@ import org.json.JSONObject;
 
 public class AdminRights {
     private static final String TAG = "AdminRights";
+    public static final String PASSWORD = "admin";
     private static AdminRights singleton = null;
     private UserPrivilegeLevel privilege = UserPrivilegeLevel.User;
     private int userId = -1;
@@ -33,7 +35,6 @@ public class AdminRights {
         }
         return singleton;
     }
-
 
     //USer ID handling
     public static int getUserId(){
@@ -71,7 +72,7 @@ public class AdminRights {
      * init user with bluetooth
      * @return
      */
-    public static void initUser(Context context, String name){
+    public static void initUser(Activity activity, String name){
         //TODO: init user
         JSONObject getQuestion = getUserIdAsMessage();
         JSONObject answer = new JSONObject();

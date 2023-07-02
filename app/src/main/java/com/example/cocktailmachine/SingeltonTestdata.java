@@ -1,6 +1,6 @@
 package com.example.cocktailmachine;
 
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.Color;
 
 import com.example.cocktailmachine.data.Ingredient;
@@ -66,6 +66,11 @@ public class SingeltonTestdata {
             }
 
             @Override
+            public List<String> getIngredientNames() {
+                return null;
+            }
+
+            @Override
             public List<Ingredient> getIngredients() {
                 List<Ingredient> list = new LinkedList();
                 list.add(new Ingredient() {
@@ -480,17 +485,13 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public boolean sendSave(Context context) {
-                return Recipe.super.sendSave(context);
+            public boolean sendSave(Activity activity) {
+                return Recipe.super.sendSave(activity);
             }
 
-            @Override
-            public void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException {
-
-            }
 
             @Override
-            public void send(Context context) {
+            public void send(Activity activity) {
 
             }
 
@@ -537,6 +538,11 @@ public class SingeltonTestdata {
             }
 
             @Override
+            public List<String> getIngredientNames() {
+                return null;
+            }
+
+            @Override
             public List<Ingredient> getIngredients() {
                 List<Ingredient> list = new LinkedList();
                 list.add(new Ingredient() {
@@ -951,17 +957,14 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public boolean sendSave(Context context) {
-                return Recipe.super.sendSave(context);
+            public boolean sendSave(Activity activity) {
+                return Recipe.super.sendSave(activity);
             }
 
-            @Override
-            public void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException {
 
-            }
 
             @Override
-            public void send(Context context) {
+            public void send(Activity activity) {
 
             }
 

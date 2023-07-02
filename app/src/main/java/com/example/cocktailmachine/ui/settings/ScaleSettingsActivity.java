@@ -38,6 +38,10 @@ public class ScaleSettingsActivity extends AppCompatActivity {
         binding = ActivityScaleSettingsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+
+
+        //TODO: bind bluetooth
+
     }
 
 
@@ -65,7 +69,10 @@ public class ScaleSettingsActivity extends AppCompatActivity {
      * @param view
      */
     public void calibrateScale(View view){
-        CocktailMachine.calibrateScale(this);
+
+        CocktailMachine.calibrateScale(this, 0);
+
+
     }
 
 

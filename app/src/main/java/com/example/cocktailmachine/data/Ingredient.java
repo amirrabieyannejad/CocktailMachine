@@ -283,4 +283,8 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
     }
 
 
+    //TODO: JSON Object
+    //TODO: JSON Array
+    //TODO: nachschauen ob DB schon mit infos geladen sein kann beim runterladen
+
 }

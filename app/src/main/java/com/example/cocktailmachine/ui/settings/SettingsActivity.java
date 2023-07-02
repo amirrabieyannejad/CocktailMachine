@@ -6,19 +6,22 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
-import com.example.cocktailmachine.data.CocktailMachine;
+
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.AdminRights;
-import com.example.cocktailmachine.data.enums.Status;
+
 import com.example.cocktailmachine.databinding.ActivitySettingsBinding;
-import com.example.cocktailmachine.ui.model.ModelActivity;
+import com.example.cocktailmachine.ui.model.v1.ModelActivity;
+
+import com.example.cocktailmachine.ui.model.FragmentType;
+
+
 import com.example.cocktailmachine.ui.model.ModelType;
 
 /**
@@ -57,6 +60,9 @@ public class SettingsActivity extends AppCompatActivity {
 
          */
         setVisibility();
+
+        //TODO: bind bluetooth
+
     }
 
 
@@ -98,7 +104,9 @@ public class SettingsActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ModelActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("ModelType", ModelType.RECIPE.name());
-        bundle.putString("FragmentType", ModelActivity.FragmentType.List.name());
+
+        bundle.putString("FragmentType", FragmentType.List.name());
+
         startActivity(intent, bundle);
     }
 
@@ -111,7 +119,9 @@ public class SettingsActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ModelActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("ModelType", ModelType.PUMP.name());
-        bundle.putString("FragmentType", ModelActivity.FragmentType.List.name());
+
+        bundle.putString("FragmentType", FragmentType.List.name());
+
         startActivity(intent, bundle);
     }
 
@@ -124,7 +134,9 @@ public class SettingsActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ModelActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("ModelType", ModelType.INGREDIENT.name());
-        bundle.putString("FragmentType", ModelActivity.FragmentType.List.name());
+
+        bundle.putString("FragmentType", FragmentType.List.name());
+
         startActivity(intent, bundle);
     }
 
@@ -138,7 +150,8 @@ public class SettingsActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ModelActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("ModelType", ModelType.TOPIC.name());
-        bundle.putString("FragmentType", ModelActivity.FragmentType.List.name());
+
+        bundle.putString("FragmentType", FragmentType.List.name());
         startActivity(intent, bundle);
         //Toast.makeText(this,"topics",Toast.LENGTH_SHORT).show();
     }

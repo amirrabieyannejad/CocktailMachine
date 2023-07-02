@@ -1,4 +1,5 @@
-package com.example.cocktailmachine.ui.model;
+
+package com.example.cocktailmachine.ui.model.v1;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,7 +11,7 @@ import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMainBinding;
 import com.example.cocktailmachine.ui.Menue;
-import com.example.cocktailmachine.ui.model.ListFragment;
+import com.example.cocktailmachine.ui.model.FragmentType;
 
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,12 +37,15 @@ import java.util.List;
 
 
 public class ModelActivity extends AppCompatActivity {
+    private static final String TAG = "Main";
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
     private NavController navController;
     private Menu menu;
-    private static final String TAG = "Main";
+
+    private FragmentType fragmentType;
+    private ModelType modelType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +91,11 @@ public class ModelActivity extends AppCompatActivity {
                 .setAction("Action", null).show());
 
          */
+
+
+        //TODO: Bluetooth bind
+
+
         Log.i(TAG,"onCreate finished");
 
     }
@@ -178,6 +187,7 @@ public class ModelActivity extends AppCompatActivity {
         Log.i(TAG, "refreshCurrentFragment: start");
         NavDestination current = navController.getCurrentDestination();
         Log.i(TAG, "refreshCurrentFragment: "+ (current != null ? current.toString() : "null"));
+        assert current != null;
         navController.popBackStack(current.getId(), true);
         navController.navigate(current.getId(), bundle);
         Log.i(TAG, "refreshCurrentFragment: end");
@@ -246,13 +256,6 @@ public class ModelActivity extends AppCompatActivity {
 
 
 
-
-    //
-    public static enum FragmentType{
-        Edit, Model, List;
-    }
-
-
     //Menu
 
     /**
@@ -260,9 +263,9 @@ public class ModelActivity extends AppCompatActivity {
      * @param item
      */
     public void refresh(MenuItem item) {
-        refreshCurrentFragment();
-        Pump.sync(this);
         Toast.makeText(this,"Synchronisierung läuft!",Toast.LENGTH_SHORT).show();
+        Pump.sync(this);
+        refreshCurrentFragment();
     }
 
     public void goToMenue(MenuItem item) {

@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.model;
+package com.example.cocktailmachine.ui.model.v1;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +18,7 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.ui.model.ModelType;
 
 public class RowViews {
     private static final String TAG = "RowViews";

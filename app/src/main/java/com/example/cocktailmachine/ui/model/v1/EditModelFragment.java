@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.model;
+package com.example.cocktailmachine.ui.model.v1;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -36,6 +36,7 @@ import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.databinding.FragmentEditModelBinding;
+import com.example.cocktailmachine.ui.model.ModelType;
 import com.mrudultora.colorpicker.ColorPickerPopUp;
 
 import java.util.ArrayList;
@@ -63,10 +64,11 @@ public class EditModelFragment extends Fragment {
 
     private void setGoToFAB(){
         Log.i(TAG,"setGoToFAB Bundle"+b);
-        activity.setFAB(v -> NavHostFragment
-                .findNavController(EditModelFragment.this)
-                .navigate(R.id.action_editModelFragment_to_modelFragment,
-                        b),
+        activity.setFAB(
+                v -> NavHostFragment
+                        .findNavController(EditModelFragment.this)
+                        .navigate(R.id.action_editModelFragment_to_modelFragment,
+                                b),
                 R.drawable.ic_check);
     }
 
@@ -93,6 +95,7 @@ public class EditModelFragment extends Fragment {
                     }
                     setUpEditPump();
                     pump.save();
+                    pump.sendSave(activity);
                     b.putString("Type", ModelType.PUMP.name());
                     b.putLong("ID", pump.getID());
                     Log.i(TAG,"savenew"+b);
@@ -121,6 +124,7 @@ public class EditModelFragment extends Fragment {
                                     .getText().toString());
                     setUpEditRecipe();
                     recipe.save();
+                    recipe.sendSave(activity);
                     b.putString("Type", ModelType.RECIPE.name());
                     b.putLong("ID", recipe.getID());
                     Log.i(TAG,"savenew"+b);
@@ -160,6 +164,7 @@ public class EditModelFragment extends Fragment {
                     return;
                 case RECIPE:
                     recipe.save();
+                    recipe.sendSave(activity);
                     b.putString("Type", ModelType.RECIPE.name());
                     b.putLong("ID", recipe.getID());
                     Log.i(TAG,"saved "+b);
@@ -180,12 +185,14 @@ public class EditModelFragment extends Fragment {
                         if(!vol.equals("")) {
                             pump.fill(Integer.parseInt(vol));
                         }
-                        pump.sendRefill(this.getContext());
+
+                        pump.sendRefill(this.activity);
                     } catch (MissingIngredientPumpException e) {
                         e.printStackTrace();
                         Log.i(TAG, "save: pump filling failed: pump: "+pump);
                     }
                     pump.save();
+                    pump.sendSave(activity);
                     b.putString("Type", ModelType.PUMP.name());
                     b.putLong("ID", pump.getID());
                     Log.i(TAG,"saved "+b);

@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.model;
+package com.example.cocktailmachine.ui.model.v1;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +16,7 @@ import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.databinding.FragmentListBinding;
+import com.example.cocktailmachine.ui.model.ModelType;
 
 public class ListFragment extends Fragment {
     private ModelActivity activity;
@@ -27,6 +28,7 @@ public class ListFragment extends Fragment {
     private Long recipeID = -1L;
 
     public ListFragment(){
+
     }
 
     private ListRecyclerViewAdapters.ListRecyclerViewAdapter recyclerViewAdapter = null;

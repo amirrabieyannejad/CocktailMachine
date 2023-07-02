@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.model;
+package com.example.cocktailmachine.ui.model.v1;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +20,8 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.databinding.FragmentModelBinding;
+
+import com.example.cocktailmachine.ui.model.ModelType;
 
 import java.util.Objects;
 
@@ -285,7 +287,7 @@ public class ModelFragment extends Fragment {
             if(this.recipe!=null&&this.recipe.isAvailable()) {
                 Log.i(TAG, "setFAB: recipe is shown and recipe is available");
                 activity.setFAB(v -> {
-                    recipe.send(this.getContext());
+                    recipe.send(activity);
                     Toast.makeText(this.getContext(), "Cocktail in Bearbeitung.", Toast.LENGTH_SHORT).show();
                 }, R.drawable.ic_send);
                 return;

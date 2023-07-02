@@ -12,8 +12,9 @@ import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
-import com.example.cocktailmachine.ui.model.ModelActivity;
+import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
+import com.example.cocktailmachine.ui.model.v1.ModelActivity;
 import com.example.cocktailmachine.ui.settings.SettingsActivity;
 import com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice;
 
@@ -67,9 +68,10 @@ public class Menue extends AppCompatActivity {
     public void openRecipeList(View view) {
         Intent success = new Intent(this, ModelActivity.class);
         Bundle b = new Bundle();
-        b.putString("FragmentType", ModelActivity.FragmentType.List.toString());
+        b.putString("FragmentType", FragmentType.List.toString());
         b.putString("ModelType", ModelType.RECIPE.toString());
-        startActivity(success, b);
+        success.putExtras(b);
+        startActivity(success);
     }
 
     /**
@@ -78,10 +80,15 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void openRecipeCreator(View view){
-        Intent success = new Intent(this, ModelActivity.class);
+
+        Intent success = new Intent(this,
+                ModelActivity.class);
         Bundle b = new Bundle();
-        b.putString("FragmentType", ModelActivity.FragmentType.Edit.toString());
-        b.putString("ModelType", ModelType.RECIPE.toString());
+        b.putString(
+                "FragmentType",
+                FragmentType.Edit.toString());
+        b.putString("ModelType",
+                ModelType.RECIPE.toString());
         startActivity(success, b);
     }
 

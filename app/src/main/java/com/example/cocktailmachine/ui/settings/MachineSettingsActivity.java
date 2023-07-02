@@ -25,6 +25,10 @@ public class MachineSettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_machine_settings);
+
+        //TODO: bind bluetooth
+
+
     }
 
     //Calibration
