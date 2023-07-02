@@ -137,12 +137,10 @@ public class EditModelFragment extends Fragment {
                     b.putString("Type", ModelType.INGREDIENT.name());
                     b.putLong("ID", ingredient.getID());
                     Log.i(TAG,"savenew"+b);
-                    return;
             }
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
             saved = false;
-            return;
         }
     }
 
@@ -187,12 +185,10 @@ public class EditModelFragment extends Fragment {
                     b.putString("Type", ModelType.PUMP.name());
                     b.putLong("ID", pump.getID());
                     Log.i(TAG,"saved "+b);
-                    return;
             }
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
             saved = false;
-            return;
         }
     }
 
@@ -223,7 +219,7 @@ public class EditModelFragment extends Fragment {
             case PUMP: setUpNewPump();return;
             case TOPIC:setUpNewTopic();return;
             case RECIPE:setUpNewRecipe();return;
-            case INGREDIENT:setUpNewIngredient();return;
+            case INGREDIENT:setUpNewIngredient();
         }
     }
 
@@ -336,7 +332,6 @@ public class EditModelFragment extends Fragment {
             case INGREDIENT:
                 ingredient = Ingredient.getIngredient(id);
                 setUpEditIngredient();
-                return;
         }
     }
 
@@ -714,7 +709,7 @@ public class EditModelFragment extends Fragment {
         private int volume;
         private final TextView name;
         private final EditText vol;
-        private ModelActivity activity;
+        private final ModelActivity activity;
 
         public EditRowViewHolder(@NonNull View itemView, Recipe recipe, ModelActivity activity) {
             super(itemView);

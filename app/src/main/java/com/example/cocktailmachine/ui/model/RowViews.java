@@ -23,7 +23,7 @@ public class RowViews {
     private static final String TAG = "RowViews";
 
     public enum RowType{
-        recipe, topic, ingredient,pump, recipeIngredient, recipeTopic;
+        recipe, topic, ingredient,pump, recipeIngredient, recipeTopic
     }
 
     public static RowView getInstance(RowViews.RowType type, View view){
@@ -68,9 +68,9 @@ public class RowViews {
 
     public static abstract class RowView extends RecyclerView.ViewHolder {
 
-        private CheckBox checkBox;
-        private TextView name;
-        private TextView desc;
+        private final CheckBox checkBox;
+        private final TextView name;
+        private final TextView desc;
 
         private View.OnLongClickListener longClickListener;
         private View.OnClickListener listener;

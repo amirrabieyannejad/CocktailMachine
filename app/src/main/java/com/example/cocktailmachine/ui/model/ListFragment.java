@@ -56,7 +56,7 @@ public class ListFragment extends Fragment {
             case "Topics": setTopics(recipeID);return;
             case "Ingredients": setIngredients(recipeID);return;
             case "AddTopics": setAddTopics(recipeID);return;
-            case "AddIngredients": setAddIngredients(recipeID);return;
+            case "AddIngredients": setAddIngredients(recipeID);
         }
     }
 
@@ -70,7 +70,7 @@ public class ListFragment extends Fragment {
             case "AddTopics":
             case "AddIngredients":
                 error();return;
-            case "Pumps": setPumps();return;
+            case "Pumps": setPumps();
         }
     }
 

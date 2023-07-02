@@ -31,7 +31,7 @@ public class ListRecyclerViewAdapters  {
         RowViews.RowType type;
         private static final String TAG = "ListRecyclerViewAdapter";
         private boolean lock = false;
-        private List<E> views = new ArrayList<>();
+        private final List<E> views = new ArrayList<>();
         protected Recipe recipe=null;
 
         private boolean delete=false;

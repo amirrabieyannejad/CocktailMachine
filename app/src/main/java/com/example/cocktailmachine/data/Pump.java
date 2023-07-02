@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface Pump extends Comparable<Pump>, DataBaseElement {
-    static final String TAG = "Pump";
+    String TAG = "Pump";
 
     /**
      * Get Id.

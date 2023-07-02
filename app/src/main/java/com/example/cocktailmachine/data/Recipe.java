@@ -108,7 +108,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
 
     //bASIC CHANGER
-    public void setName(String name);
+    void setName(String name);
 
     //Ingredient Changer
     /**

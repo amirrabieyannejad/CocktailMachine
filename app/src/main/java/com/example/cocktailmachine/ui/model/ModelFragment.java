@@ -62,7 +62,7 @@ public class ModelFragment extends Fragment {
             case INGREDIENT:setIngredient();return;
             case PUMP:setPump();return;
             case RECIPE: setRecipe();return;
-            default: error();return;
+            default: error();
         }
     }
 
@@ -79,10 +79,8 @@ public class ModelFragment extends Fragment {
         pump = Pump.getPump(id);
         if(pump != null) {
             binding.textViewTitle.setText(
-                    new StringBuilder()
-                            .append("Pumpe: ")
-                            .append(pump.getIngredientName())
-                            .toString());
+                    "Pumpe: " +
+                            pump.getIngredientName());
 
             //activity.getLayoutInflater().inflate(R.layout.layout_pump, null);
             binding.includePump.getRoot().setVisibility(View.VISIBLE);
@@ -247,7 +245,6 @@ public class ModelFragment extends Fragment {
         Log.i(TAG, "error");
         NavHostFragment.findNavController(ModelFragment.this)
                 .navigate(R.id.action_modelFragment_to_mainActivity);
-        return;
     }
 
     private void setFAB(){

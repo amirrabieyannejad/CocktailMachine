@@ -26,7 +26,7 @@ import java.util.Map;
 public class BildgeneratorGlas {
 
     //
-    private int[] listIdGlasFlüssigkeit={R.drawable.glas_fluessigkeit01,R.drawable.glas_fluessigkeit02,R.drawable.glas_fluessigkeit03,
+    private final int[] listIdGlasFlüssigkeit={R.drawable.glas_fluessigkeit01,R.drawable.glas_fluessigkeit02,R.drawable.glas_fluessigkeit03,
             R.drawable.glas_fluessigkeit04,R.drawable.glas_fluessigkeit05,R.drawable.glas_fluessigkeit06,R.drawable.glas_fluessigkeit07,
             R.drawable.glas_fluessigkeit08,R.drawable.glas_fluessigkeit09,R.drawable.glas_fluessigkeit10,R.drawable.glas_fluessigkeit11,R.drawable.glas_fluessigkeit12,
             R.drawable.glas_fluessigkeit13,R.drawable.glas_fluessigkeit14, R.drawable.glas_fluessigkeit15,R.drawable.glas_fluessigkeit16,

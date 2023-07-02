@@ -3,23 +3,18 @@ package com.example.cocktailmachine.ui;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.bluetoothlegatt.BluetoothDeviceAdressNotDefinedException;
-import com.example.cocktailmachine.bluetoothlegatt.BluetoothLeService;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 public class BluetoothTestEnviroment extends AppCompatActivity {
 
@@ -50,7 +45,11 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
         //singleton.initUser(user,textView,BluetoothTestEnviroment.this);
         //TODO: als Rückgabe JSON Datei
 
-        singleton.initUser(user,textView,BluetoothTestEnviroment.this);
+        //singleton.initUser(user);
+        //singleton.adminDefinePump("beer", 1000,1);
+        //singleton.adminReadCurrentUser();
+        Log.w("Activity", "is everything is a right place??");
+        //textView.setText(json.toString());
         //singleton.connectGatt(BluetoothTestEnviroment.this);
     }
     public void showUser(View view) throws JSONException {
@@ -71,7 +70,7 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        singleton.unRegisterService(this);
+        //singleton.unRegisterService(this);
     }
 
     @SuppressLint("MissingPermission")
@@ -79,7 +78,8 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         // Step8: make sure that Gatt Server is founded
-        singleton.registerService(this);
+        //singleton.registerReceiver(this);
+
 
     }
 }

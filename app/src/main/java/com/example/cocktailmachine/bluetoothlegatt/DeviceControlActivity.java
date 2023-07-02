@@ -90,7 +90,7 @@ public class DeviceControlActivity extends Activity {
 
         // TODO: step4
         Intent gattServiceIntent = new Intent(this,BluetoothLeService.class);
-        bindService(gattServiceIntent, singleton.mServiceConnection, BIND_AUTO_CREATE);
+        //bindService(gattServiceIntent, singleton.mServiceConnection, BIND_AUTO_CREATE);
 
         mConnectionState = findViewById(R.id.connection_state);
         Button btnAddUser = findViewById(R.id.btnAddUser);
@@ -381,7 +381,7 @@ public class DeviceControlActivity extends Activity {
         super.onDestroy();
 
         // TODO: Step7: Unbind Service if the Activity is destroyed
-        unbindService(singleton.mServiceConnection);
+        //unbindService(singleton.mServiceConnection);
         singleton.mBluetoothLeService = null;
 
     }

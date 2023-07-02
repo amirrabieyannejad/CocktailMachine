@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface Topic extends Comparable<Topic>, DataBaseElement {
-    static final String TAG = "Topic";
+    String TAG = "Topic";
 
     /**
      * Get id.
@@ -91,7 +91,7 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
         }
     }
 
-    public static List<Topic> getTopics(){
+    static List<Topic> getTopics(){
         Log.i(TAG, "getTopics");
         try {
             return DatabaseConnection.getDataBase().getTopics();

@@ -221,8 +221,8 @@ public class ModelActivity extends AppCompatActivity {
 
 
     //
-    public static enum FragmentType{
-        Edit, Model, List;
+    public enum FragmentType{
+        Edit, Model, List
     }
 
 

@@ -27,7 +27,7 @@ public class SingleCocktailChoice extends AppCompatActivity {
 
     private GestureDetector mDetector;
     private int counter = 0;
-    private int fragmentCounter = 0;
+    private final int fragmentCounter = 0;
 
 
 
