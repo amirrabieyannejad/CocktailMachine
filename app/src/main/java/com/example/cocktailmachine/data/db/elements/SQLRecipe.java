@@ -1,12 +1,14 @@
 package com.example.cocktailmachine.data.db.elements;
 
+
+import android.app.Activity;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.cocktailmachine.bluetoothlegatt.BluetoothLeService;
+import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
@@ -131,6 +133,15 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         }
         return Helper.getrecipeingredienthelper().getIds(this.ingredientVolumes);
 
+    }
+
+    @Override
+    public List<String> getIngredientNames() {
+        ArrayList<String> names = new ArrayList<>();
+        for(SQLRecipeIngredient ri: this.ingredientVolumes){
+            names.add(ri.getIngredient().getName());
+        }
+      return names;
     }
 
     @Override
@@ -452,34 +463,6 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         }else{
             this.imageUrls = (List<SQLRecipeImageUrlElement>) Helper.getImageUrlElementhelper().removeIfAndDeleteExtended(this.imageUrls, urlId);
         }
-    }
-
-    @Override
-    public void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException {
-        //[{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}, {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
-        for(int i=0; i<json.length(); i++){
-            JSONObject j = json.optJSONObject(i);
-            Recipe temp = Recipe.searchOrNew(j.optString("name", "Default"));
-            JSONArray a = j.optJSONArray("liquids");
-            if(a != null){
-                for(int l=0; l<a.length(); l++){
-                    JSONArray liq = a.optJSONArray(l);
-                    if(liq!=null){
-                        String name = a.getString(l);
-                        int volume = a.getInt(1);
-                        Ingredient ig = Ingredient.searchOrNew(name);
-                        temp.addOrUpdate(ig, volume);
-                    }
-                }
-            }
-            temp.save();
-        }
-    }
-
-    @Override
-    public void send() {
-        BluetoothLeService service = new BluetoothLeService();
-        //service.
     }
 
     //general

@@ -8,7 +8,7 @@ import android.util.Log;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
-import com.example.cocktailmachine.data.model.UserPrivilegeLevel;
+import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 
 public class CocktailList extends AppCompatActivity {
     private static final String TAG = "CocktailList";

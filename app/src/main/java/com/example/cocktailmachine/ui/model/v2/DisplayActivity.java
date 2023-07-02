@@ -1,0 +1,192 @@
+package com.example.cocktailmachine.ui.model.v2;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+
+import com.example.cocktailmachine.data.Ingredient;
+import com.example.cocktailmachine.data.Pump;
+import com.example.cocktailmachine.data.Recipe;
+import com.example.cocktailmachine.data.Topic;
+import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.enums.AdminRights;
+import com.example.cocktailmachine.databinding.ActivityDisplayBinding;
+import com.example.cocktailmachine.ui.model.ModelType;
+
+public class DisplayActivity extends BasicAcitivity {
+    ActivityDisplayBinding binding;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);//calls read Intent
+        binding = ActivityDisplayBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        DatabaseConnection.initializeSingleton(this);
+    }
+
+    @Override
+    void preSetUp() {
+        //TOPIC
+        binding.textViewDisplayDescription.setVisibility(View.GONE);
+        //PUMP
+        binding.includeDisplayPump.getRoot().setVisibility(View.GONE);
+        //Availabilities //Alcoholic
+        binding.includeDisplayAlcoholic.getRoot().setVisibility(View.GONE);
+        binding.includeDisplayAvailable.getRoot().setVisibility(View.GONE);
+        binding.includeDisplayNotAvailable.getRoot().setVisibility(View.GONE);
+        //Ingredient
+        binding.includeDisplayIngredientAdmin.getRoot().setVisibility(View.GONE);
+        //RECIPE
+        binding.includeRecipeIngredientsList.getRoot().setVisibility(View.GONE);
+        binding.includeRecipeTopicsList.getRoot().setVisibility(View.GONE);
+
+    }
+
+    @Override
+    void setUpRecipe(){
+        Recipe recipe = Recipe.getRecipe(getID());
+        assert recipe != null;
+        recipe.loadAvailable();
+        binding.textViewDisplayTitle.setText(recipe.getName());;
+        //TO DO: AlertDialog to change title if admin
+        setChangeTitle();
+        if(recipe.isAvailable()){
+            binding.includeDisplayAvailable.getRoot().setVisibility(View.VISIBLE);
+        }else{
+            binding.includeDisplayNotAvailable.getRoot().setVisibility(View.VISIBLE);
+        }
+        if (recipe.isAlcoholic()) {
+            binding.includeDisplayAlcoholic.getRoot().setVisibility(View.VISIBLE);
+        }
+        binding.includeRecipeIngredientsList.getRoot().setVisibility(View.VISIBLE);
+        binding.includeRecipeTopicsList.getRoot().setVisibility(View.VISIBLE);
+        binding.includeRecipeIngredientsList.textViewListTitle.setText("Zutaten");
+        binding.includeRecipeTopicsList.textViewListTitle.setText("Serviervorschläge");
+
+        TitleListAdapter titleadapter = new TitleListAdapter(
+                this,
+                recipe.getIngredientIds(),
+                recipe.getIngredientNames(),
+                ModelType.INGREDIENT);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        binding.includeRecipeIngredientsList.recyclerViewList.setLayoutManager(llm);
+        binding.includeRecipeIngredientsList.recyclerViewList.setAdapter(titleadapter);
+
+
+        TitleVolumeListAdapter titlevoladapter = new TitleVolumeListAdapter(
+                this,
+                recipe);
+        LinearLayoutManager llmvol = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        binding.includeRecipeIngredientsList.recyclerViewList.setLayoutManager(llmvol);
+        binding.includeRecipeIngredientsList.recyclerViewList.setAdapter(titlevoladapter);
+
+
+/*
+        TitleListAdapter adapter = new TitleListAdapter(
+                this,
+                recipe.getIngredientIds(),
+                recipe.getIngredientNames(),
+                ModelType.INGREDIENT);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        binding.includeRecipeIngredientsList.recyclerViewList.setLayoutManager(llm);
+        binding.includeRecipeIngredientsList.recyclerViewList.setAdapter(adapter);
+
+
+ */
+
+    }
+
+    @Override
+    void postSetUp() {
+    }
+
+    @Override
+    void setUpIngredient(){
+        Ingredient ingredient = Ingredient.getIngredient(getID());
+        binding.textViewDisplayTitle.setText(ingredient.getName());;
+        //TO DO: AlertDialog to change title if admin
+        setChangeTitle();
+        if(ingredient.isAvailable()){
+            binding.includeDisplayAvailable.getRoot().setVisibility(View.VISIBLE);
+        }else{
+            binding.includeDisplayNotAvailable.getRoot().setVisibility(View.VISIBLE);
+        }
+        if (ingredient.isAlcoholic()) {
+            binding.includeDisplayAlcoholic.getRoot().setVisibility(View.VISIBLE);
+            //TODO: AlertDialog change alcoholic
+        }
+        if(AdminRights.isAdmin()){
+            binding.includeDisplayIngredientAdmin.getRoot().setVisibility(View.VISIBLE);
+            String vol = ingredient.getVolume()+" ml";
+            binding.includeDisplayIngredientAdmin.textViewIngredientVolume.setText(vol);
+        }
+
+    }
+
+    @Override
+    void setUpTopic(){
+        Topic topic = Topic.getTopic(getID());
+        binding.textViewDisplayTitle.setText(topic.getName());;
+        //TO DO: AlertDialog to change title if admin
+        setChangeTitle();
+        binding.textViewDisplayDescription.setText(topic.getDescription());
+        binding.textViewDisplayDescription.setVisibility(View.VISIBLE);
+        //TODO: AlertDialog to change description if admin
+    }
+
+    private void setChangeTitle(){
+        DisplayActivity activity = this;
+        if(AdminRights.isAdmin()) {
+            binding.textViewDisplayTitle.setOnLongClickListener(
+                    v -> {
+                        GetDialog.setTitle(activity, activity.getModelType(), activity.getID());
+                        return true;
+                    }
+            );
+        }
+    }
+
+
+    @Override
+    void setUpPump(){
+        Pump pump = Pump.getPump(getID());
+        binding.textViewDisplayTitle.setText(String.valueOf(pump.getID()));;
+        //TODO: AlertDialog to change title if admin
+        binding.includeDisplayPump.getRoot().setVisibility(View.VISIBLE);
+        binding.includeDisplayPump.textViewPumpIngredientName.setText(pump.getIngredientName());
+        //TODO: AlertDialog to change ingredient if admin
+        String vol = pump.getVolume() +" ml";
+        binding.includeDisplayPump.textViewPumpVolume.setText(vol);
+        final Activity activity = this;
+
+        //TO DO: AlertDialog to change volume if admin
+        //is always admin
+        binding.includeDisplayPump.textViewPumpVolume.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                GetDialog.setPumpVolume(activity, pump);
+                return true;
+            }
+        });
+        vol = pump.getMinimumPumpVolume() +" ml";
+        binding.includeDisplayPump.textViewMinPumpVolume.setText(vol);
+        //TO DO: AlertDialog to change min pump vol if admin
+        //is always admin
+        binding.includeDisplayPump.textViewPumpVolume.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                GetDialog.setPumpMinVolume(activity, pump);
+                return true;
+            }
+        });
+    }
+}

@@ -167,6 +167,12 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         this.wasChanged();
     }
 
+    @Override
+    public void setMinimumPumpVolume(int volume)  {
+        this.minimumPumpVolume = volume;
+        this.wasChanged();
+    }
+
     //General
 
 

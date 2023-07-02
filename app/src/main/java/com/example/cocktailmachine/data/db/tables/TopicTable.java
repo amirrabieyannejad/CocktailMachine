@@ -12,6 +12,12 @@ import com.example.cocktailmachine.data.db.elements.SQLTopic;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *
+ * @created Fr. 23.Jun 2023 - 12:52
+ * @project CocktailMachine
+ * @author Johanna Reidt
+ */
 public class TopicTable extends BasicColumn<SQLTopic>{
     public static final String TABLE_NAME = "Topic";
     public static final String COLUMN_NAME_NAME = "Name";

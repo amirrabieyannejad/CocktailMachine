@@ -44,11 +44,6 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      */
     String getName();
 
-    /**
-     * Get the addresses for the images.
-     * @return list of image addresses.
-     */
-    List<String> getImageUrls();
 
     /**
      * Is alcoholic?
@@ -62,11 +57,47 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      */
     boolean isAvailable();
 
+
     /**
-     * Still available liquid/fluid in milliliter.
-     * @return milliliter of ingredient
+     * Get fluid color.
+     * @return Integer representative of color
      */
-    int getVolume();
+    @ColorInt
+    public int getColor();
+
+    //Setter
+    public void setColor(@ColorInt int color);
+
+    public void setAlcoholic(boolean alcoholic);
+
+
+    void setName(String name);
+
+
+    //FOTOS
+
+    /**
+     * Get the addresses for the images.
+     * @return list of image addresses.
+     */
+    List<String> getImageUrls();
+
+    /**
+     * Add to the image address list an address.
+     * @param url to be added image address
+     */
+    void addImageUrl(String url);
+
+    /**
+     * removes from image address list
+     * @param url to be added image address
+     */
+    void removeImageUrl(String url);
+
+
+
+
+    //Pump stuff
 
     /**
      * Get Pump representative class, where the ingredient is within.
@@ -78,33 +109,15 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * Get Pump representative class, where the ingredient is within.
      * @return pump
      */
-    Long getPumpId();
+    public Long getPumpId();
+
 
     /**
-     * Get fluid color.
-     * @return Integer representative of color
+     * Still available liquid/fluid in milliliter.
+     * @return milliliter of ingredient
      */
-    @ColorInt
-    int getColor();
+    int getVolume();
 
-    //Setter
-    /**
-     * Add to the image address list an address.
-     * @param url to be added image address
-     */
-    void addImageUrl(String url);
-
-    void setPump(Long pump, int volume);
-
-    void empty();
-
-
-    void setColor(@ColorInt int color);
-
-    void setAlcoholic(boolean alcoholic);
-
-
-    void setName(String name);
 
     /**
      * use only for connecting pump and ingredient after loading
@@ -112,7 +125,14 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      */
     void setIngredientPump(SQLIngredientPump ingredientPump);
 
-    //use
+    void setPump(Long pump, int volume);
+
+    /**
+     * emptys pump if exist
+     */
+    void empty();
+
+
     /**
      * Pump m milliliters.
      * @param volume m
@@ -120,13 +140,20 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      */
     void pump(int volume) throws NewlyEmptyIngredientException, MissingIngredientPumpException;
 
+
+
+
+
+
+
+
     //general
     /**
      * Static Access to ingredients.
      * Get all ingredients.
      * @return List of ingredients.
      */
-    static List<Ingredient> getAllIngredients() {
+    public static List<Ingredient> getAllIngredients() {
         try {
             return (List<Ingredient>) DatabaseConnection.getDataBase().getAllIngredients();
         } catch (NotInitializedDBException e) {
@@ -141,7 +168,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * Get all available ingredients.
      * @return List of ingredients.
      */
-    static List<Ingredient> getIngredientWithIds() {
+    public static List<Ingredient> getIngredientWithIds() {
         try {
             return (List<Ingredient>) DatabaseConnection.getDataBase().getAvailableIngredients();
         } catch (NotInitializedDBException e) {
@@ -255,5 +282,9 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
         return ingredient;
     }
 
+
+    //TODO: JSON Object
+    //TODO: JSON Array
+    //TODO: nachschauen ob DB schon mit infos geladen sein kann beim runterladen
 
 }

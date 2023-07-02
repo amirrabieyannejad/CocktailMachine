@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.settings.ScaleSettingsActivity">
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textViewSettingsCalibration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:onClick="calibrateScale"
+            android:padding="8dp"
+            android:paddingStart="16dp"
+            android:text="Kalibrierung der Waage"
+            android:textSize="20sp" />
+
+
+        <TextView
+            android:id="@+id/textViewSettingsScaleFactor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:onClick="setScaleFactor"
+            android:padding="8dp"
+            android:paddingStart="16dp"
+            android:text="Setze Skalierungsfaktor"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/textViewSettingsTareScale"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:onClick="tareScale"
+            android:padding="8dp"
+            android:paddingStart="16dp"
+            android:text="Tariere die Waage"
+            android:textSize="20sp" />
+
+
+
+    </LinearLayout>
+
+</LinearLayout>

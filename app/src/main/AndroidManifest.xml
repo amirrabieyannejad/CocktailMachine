@@ -56,18 +56,26 @@
         android:theme="@style/Theme.CocktailMachine"
         tools:targetApi="26">
         <activity
-            android:name="com.example.cocktailmachine.ui.SettingsActivity"
+            android:name="com.example.cocktailmachine.ui.model.v2.ListActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.cocktailmachine.ui.model.v2.DisplayActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.cocktailmachine.ui.settings.MachineSettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.cocktailmachine.ui.settings.PumpSettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.cocktailmachine.ui.settings.ScaleSettingsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_scale_settings"
+            android:theme="@style/Theme.CocktailMachine" />
+        <activity
+            android:name="com.example.cocktailmachine.ui.settings.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings" />
-        <activity
-            android:name="com.example.cocktailmachine.ui.ModelActivity"
-            android:exported="true"
-            android:label="@string/title_activity_main"
-            android:theme="@style/Theme.CocktailMachine.NoActionBar">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
         <activity
             android:name="com.example.cocktailmachine.ui.cocktail.cocktailList.CocktailList"
             android:exported="false">
@@ -112,15 +120,6 @@
         </activity>
         <activity
             android:name="com.example.cocktailmachine.ui.Menue"
-            android:exported="true">
-
-
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name="com.example.cocktailmachine.ui.BluetoothTestEnviroment"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

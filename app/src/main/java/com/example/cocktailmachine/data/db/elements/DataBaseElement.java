@@ -22,4 +22,5 @@ public interface DataBaseElement {
     void save() throws NotInitializedDBException;
 
     void delete() throws NotInitializedDBException;
+
 }

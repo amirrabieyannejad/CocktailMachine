@@ -1,5 +1,6 @@
 package com.example.cocktailmachine;
 
+import android.app.Activity;
 import android.graphics.Color;
 
 import com.example.cocktailmachine.data.Ingredient;
@@ -65,6 +66,11 @@ public class SingeltonTestdata {
             }
 
             @Override
+            public List<String> getIngredientNames() {
+                return null;
+            }
+
+            @Override
             public List<Ingredient> getIngredients() {
                 List<Ingredient> list = new LinkedList();
                 list.add(new Ingredient() {
@@ -150,6 +156,11 @@ public class SingeltonTestdata {
 
                     @Override
                     public void addImageUrl(String url) {
+
+                    }
+
+                    @Override
+                    public void removeImageUrl(String url) {
 
                     }
 
@@ -281,6 +292,11 @@ public class SingeltonTestdata {
 
                     @Override
                     public void addImageUrl(String url) {
+
+                    }
+
+                    @Override
+                    public void removeImageUrl(String url) {
 
                     }
 
@@ -459,8 +475,8 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public JSONArray getLiquids() {
-                return Recipe.super.getLiquids();
+            public JSONArray getLiquidsJSON() {
+                return Recipe.super.getLiquidsJSON();
             }
 
             @Override
@@ -469,17 +485,13 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public boolean sendSave() {
-                return Recipe.super.sendSave();
+            public boolean sendSave(Activity activity) {
+                return Recipe.super.sendSave(activity);
             }
 
-            @Override
-            public void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException {
-
-            }
 
             @Override
-            public void send() {
+            public void send(Activity activity) {
 
             }
 
@@ -526,6 +538,11 @@ public class SingeltonTestdata {
             }
 
             @Override
+            public List<String> getIngredientNames() {
+                return null;
+            }
+
+            @Override
             public List<Ingredient> getIngredients() {
                 List<Ingredient> list = new LinkedList();
                 list.add(new Ingredient() {
@@ -611,6 +628,11 @@ public class SingeltonTestdata {
 
                     @Override
                     public void addImageUrl(String url) {
+
+                    }
+
+                    @Override
+                    public void removeImageUrl(String url) {
 
                     }
 
@@ -742,6 +764,11 @@ public class SingeltonTestdata {
 
                     @Override
                     public void addImageUrl(String url) {
+
+                    }
+
+                    @Override
+                    public void removeImageUrl(String url) {
 
                     }
 
@@ -920,8 +947,8 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public JSONArray getLiquids() {
-                return Recipe.super.getLiquids();
+            public JSONArray getLiquidsJSON() {
+                return Recipe.super.getLiquidsJSON();
             }
 
             @Override
@@ -930,17 +957,14 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public boolean sendSave() {
-                return Recipe.super.sendSave();
+            public boolean sendSave(Activity activity) {
+                return Recipe.super.sendSave(activity);
             }
 
-            @Override
-            public void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException {
 
-            }
 
             @Override
-            public void send() {
+            public void send(Activity activity) {
 
             }
 

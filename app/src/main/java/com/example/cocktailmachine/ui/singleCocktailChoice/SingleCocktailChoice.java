@@ -14,7 +14,7 @@ import android.view.View;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.SingeltonTestdata;
-import com.example.cocktailmachine.data.Orientation;
+import com.example.cocktailmachine.data.enums.Orientation;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
