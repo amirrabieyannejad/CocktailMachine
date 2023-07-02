@@ -71,7 +71,7 @@ public class DeviceControlActivity extends Activity {
 
     private BluetoothGattCharacteristic mGattCharacteristics;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
-    private boolean mConnected = false;
+    private final boolean mConnected = false;
 
 
     @SuppressLint("MissingInflatedId")
@@ -143,6 +143,8 @@ public class DeviceControlActivity extends Activity {
                             (singleton.getEspResponseValue()),6000);
             } catch (JSONException e) {
                 e.printStackTrace();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
 
         });

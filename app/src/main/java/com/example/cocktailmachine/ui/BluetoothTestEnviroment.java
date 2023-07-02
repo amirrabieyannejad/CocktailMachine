@@ -28,7 +28,7 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
 
 
     // Step1
-    BluetoothSingleton singleton;
+    BluetoothSingleton singleton=BluetoothSingleton.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,35 +38,23 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
         editText = findViewById(R.id.editTextTextPersonName);
         textView = findViewById(R.id.ESPData);
 
-        // Step2
-        singleton = BluetoothSingleton.getInstance();
-        // Step3: request Ble Permissions
-        singleton.requestBlePermissions(this);
-        //Step4: bind Service
-        Intent gattServiceIntent = new Intent(this,BluetoothLeService.class);
-        bindService(gattServiceIntent, singleton.mServiceConnection, BIND_AUTO_CREATE);
+        // Step2: Only at the very first time Connect to Device
+        singleton.connectGatt(BluetoothTestEnviroment.this);
+
+
     }
-    public void addUser(View view) throws JSONException {
+    public void addUser(View view) throws JSONException, InterruptedException {
 
         //Step5: Call initUser() Method
         String user = editText.getText().toString();
-        singleton.mBluetoothLeService.initUser(user);
+        //singleton.initUser(user,textView,BluetoothTestEnviroment.this);
+        //TODO: als Rückgabe JSON Datei
 
-        //Step6: Wait 6 Second to return the value from ESP
-        Handler handler = new Handler();
-        handler.postDelayed(() -> textView.setText
-                (singleton.getEspResponseValue()), 6000);
-
+        singleton.initUser(user,textView,BluetoothTestEnviroment.this);
+        //singleton.connectGatt(BluetoothTestEnviroment.this);
     }
     public void showUser(View view) throws JSONException {
 
-        //Step9: Call adminReadCurrentUser() Method
-        singleton.mBluetoothLeService.adminReadCurrentUser();
-
-        //Step6: Wait 6 Second to return the value from ESP
-        Handler handler = new Handler();
-        handler.postDelayed(() -> textView.setText
-                (singleton.getEspResponseValue()), 6000);
 
     }
 
@@ -75,19 +63,23 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
         super.onDestroy();
 
         // Step7: Unbind Service if the Activity is destroyed
-        unbindService(singleton.mServiceConnection);
-        singleton.mBluetoothLeService = null;
+        //singleton.mBluetoothLeService.disconnect();
+        //unbindService(singleton.mServiceConnection);
+        //singleton.mBluetoothLeService = null;
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        singleton.unRegisterService(this);
+    }
+
     @SuppressLint("MissingPermission")
     @Override
     protected void onResume() {
         super.onResume();
         // Step8: make sure that Gatt Server is founded
-        if (singleton.mBluetoothLeService != null) {
-            final boolean result = singleton.mBluetoothLeService.connect(
-                    singleton.getEspDeviceAddress());
-            Log.d("OnResume", "Connect request result=" + result);
+        singleton.registerService(this);
 
-        }
     }
 }
