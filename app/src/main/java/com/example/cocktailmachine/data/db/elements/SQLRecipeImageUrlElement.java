@@ -1,7 +1,7 @@
 package com.example.cocktailmachine.data.db.elements;
 
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 public class SQLRecipeImageUrlElement extends SQLImageUrlElement {
     public SQLRecipeImageUrlElement(long ID, String url, long ingredientID) {

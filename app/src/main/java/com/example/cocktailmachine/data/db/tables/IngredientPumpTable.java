@@ -13,6 +13,12 @@ import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *
+ * @created Fr. 23.Jun 2023 - 12:50
+ * @project CocktailMachine
+ * @author Johanna Reidt
+ */
 public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
 
 

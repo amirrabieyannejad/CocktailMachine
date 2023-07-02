@@ -5,7 +5,7 @@ import androidx.annotation.Nullable;
 
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,13 +26,29 @@ public class SQLTopic extends SQLDataBaseElement implements Topic {
         this.description = description;
     }
 
+    /*
     @Override
     public long getID(){
         return super.getID();
     }
 
+     */
+
+    /**
+     * always true
+     * @return
+     */
     @Override
     public boolean isAvailable() {
+        return true;
+    }
+
+    /**
+     * always true
+     * @return
+     */
+    @Override
+    public boolean loadAvailable() {
         return true;
     }
 

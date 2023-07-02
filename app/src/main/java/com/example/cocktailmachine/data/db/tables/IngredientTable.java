@@ -8,6 +8,7 @@ import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_LONG;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
@@ -15,6 +16,12 @@ import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *
+ * @created Fr. 23.Jun 2023 - 12:51
+ * @project CocktailMachine
+ * @author Johanna Reidt
+ */
 public class IngredientTable extends BasicColumn<SQLIngredient> {
 
         public static final String TABLE_NAME = "Ingredient";
