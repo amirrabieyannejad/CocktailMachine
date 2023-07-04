@@ -214,6 +214,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     static void updatePumpStatus(JSONObject json) throws JSONException, NotInitializedDBException, MissingIngredientPumpException {
         Log.i(TAG,"updatePumpStatus");
+        //TODO: USE THIS AMIR
         JSONArray t_ids = json.names();
         if(t_ids == null){
             throw new JSONException("Pump IDs not readable.");
@@ -243,7 +244,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @throws NotInitializedDBException
      */
     static void updateLiquidStatus(JSONObject json) throws JSONException, NotInitializedDBException, MissingIngredientPumpException {
-        Log.i(TAG,"updatePumpStatus");
+        Log.i(TAG,"updateLiquidStatus");
+        //TODO: USE THIS AMIR
         //List<Pump> pumps = DatabaseConnection.getDataBase().getPumps();
         JSONArray t_names = json.names();
         if(t_names == null){
@@ -302,6 +304,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @throws NewlyEmptyIngredientException
      */
     static void updatePumpStatus(JSONArray json) throws JSONException, NewlyEmptyIngredientException {
+        //TODO: USE THIS AMIR
         Log.i(TAG,"updatePumpStatus");
         int i = 0;
         JSONArray temp = json.optJSONArray(i);
@@ -337,6 +340,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @param activity
      */
     static void clean(Activity activity){
+        //TODO: AMIR
         //TODO: clean
         //
         JSONObject cmd = new JSONObject();
@@ -364,6 +368,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
      */
     default void sendSave(Activity activity){
+        //TODO: AMIR
         JSONObject request = new JSONObject();
         try {
             request.put("cmd", "define_pump");
@@ -390,6 +395,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      {"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1}
      */
     default void sendRefill(Activity activity){
+        //TODO: AMIR
         //TODO: refillPump
         JSONObject request = new JSONObject();
         try {
@@ -429,6 +435,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         }
         //TODO: send runPump
         JSONObject answer = new JSONObject();
+        //TODO: AMIR
     }
 
     /**
@@ -452,6 +459,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     default void calibrate(Activity activity, int time1, int time2, float volume1, float volume2){
         //TODO calibrate
+        //TODO: AMIR
     }
 
 
@@ -471,6 +479,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     public default void setPumpTimes(Activity activity, int timeInit, int timeReverse, float rate){
         //TODO: setPumpTimes
+        //TODO: AMIR
     }
 
     /**

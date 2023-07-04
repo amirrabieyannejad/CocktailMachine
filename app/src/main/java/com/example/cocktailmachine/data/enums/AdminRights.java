@@ -38,6 +38,7 @@ public class AdminRights {
 
     //USer ID handling
     public static int getUserId(){
+        //TODO: USE THIS AMIR
         return getSingleton().userId;
     }
     public static void setUserId(int userId){
@@ -45,6 +46,7 @@ public class AdminRights {
     }
 
     public static void setUser(JSONObject jsonObject){
+        //TODO: USE THIS AMIR
         try {
             setUserId(jsonObject.getInt("user"));
         } catch (JSONException e) {
@@ -74,6 +76,7 @@ public class AdminRights {
      */
     public static void initUser(Activity activity, String name){
         //TODO: init user
+        //TODO: AMIR
         JSONObject getQuestion = getUserIdAsMessage();
         JSONObject answer = new JSONObject();
         setUser(answer);
@@ -98,8 +101,9 @@ public class AdminRights {
      * init user with bluetooth
      * @return
      */
-    public static void abortUser(Context context, String name){
+    public static void abortUser(Activity acitvity, String name){
         //TODO: abort user
+        //TODO: AMIR
         JSONObject getQuestion = getUserAbortMessage();
         JSONObject answer = new JSONObject();
         //setUser(answer);
