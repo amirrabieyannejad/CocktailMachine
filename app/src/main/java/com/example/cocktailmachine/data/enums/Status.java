@@ -32,6 +32,7 @@ public enum Status {
     public static Status getCurrentStatus(Activity activity){
         //TODO: Bluetoothlegatt
         //BluetoothSingleton.getInstance().mBluetoothLeService;
+        Status.valueOf("ready");
         return Status.ready;
     }
 

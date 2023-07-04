@@ -76,6 +76,21 @@
             android:name="com.example.cocktailmachine.ui.settings.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings" />
+
+        <activity
+
+            android:name="com.example.cocktailmachine.ui.BluetoothTestEnviroment"
+            android:exported="true"
+            android:label="BluetoothTestEnviroment" >
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+
+        </intent-filter>
+
+    </activity>
+
         <activity
             android:name="com.example.cocktailmachine.ui.cocktail.cocktailList.CocktailList"
             android:exported="false">

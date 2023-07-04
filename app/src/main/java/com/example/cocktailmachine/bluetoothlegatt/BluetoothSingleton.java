@@ -31,7 +31,7 @@ import android.widget.Toast;
 import androidx.annotation.UiThread;
 import androidx.core.app.ActivityCompat;
 
-import com.example.cocktailmachine.data.AdminRights;
+import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.ui.BluetoothTestEnviroment;
 
 import org.json.JSONException;
