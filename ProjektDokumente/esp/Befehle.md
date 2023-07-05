@@ -65,14 +65,31 @@ JSON-Beispiel:
 
     {"cmd": "add_liquid", "user": 0, "liquid": "water", "volume": 30}
 
-### define_recipe: definiert ein neues Rezept oder ändert ein bestehendes Rezept
+### define_recipe: definiert ein neues Rezept
 - user: User
 - name: str
-- liquids: List[Tuple[str, float]]
+- ingredients: List[Tuple[str, float]]
 
 JSON-Beispiel:
 
-    {"cmd": "define_recipe", "user": 0, "name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}
+    {"cmd": "define_recipe", "user": 0, "name": "radler", "ingredients": [["beer", 250], ["lemonade", 250]]}
+
+### edit_recipe: editiert ein Rezept
+- user: User
+- name: str
+- ingredients: List[Tuple[str, float]]
+
+JSON-Beispiel:
+
+    {"cmd": "edit_recipe", "user": 0, "name": "radler", "ingredients": [["beer", 250], ["lemonade", 250]]}
+
+### delete_recipe: löscht ein Rezept
+- user: User
+- name: str
+
+JSON-Beispiel:
+
+    {"cmd": "delete_recipe", "user": 0, "name": "radler"}
 
 ## Admin-Befehle
 
