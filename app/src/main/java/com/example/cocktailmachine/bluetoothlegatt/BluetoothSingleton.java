@@ -1043,17 +1043,19 @@ public class BluetoothSingleton {
      * JSON-sample: {"cmd": "reset", "user": 9650}
      * like described in ProjektDokumente/esp/Services.md
      * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
+     *
+     * Note: used in CocktailMachine: reset
      * @return
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void reset(float user) throws JSONException,
+    public void reset() throws JSONException,
             InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "reset");
-        jsonObject.put("user", user);
+        jsonObject.put("user", AdminRights.getUserId());
         singleton.sendReadWrite(jsonObject,false,true);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
@@ -1071,6 +1073,8 @@ public class BluetoothSingleton {
      * JSON-sample: {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
      * like described in ProjektDokumente/esp/Befehle.md
      * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
+     *
+     * Note: used in Pump for an instance: sendSave
      * @return
      * @throws JSONException
      */
@@ -1107,11 +1111,13 @@ public class BluetoothSingleton {
      * "liquids": [["beer", 250], ["lemonade", 250]]}
      * like described in ProjektDokumente/esp/Befehle.md
      * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
+     *
+     * Note: used in CocktailMachine: sendSave
      * @return
      * @throws JSONException
      */
-    public void defineRecipe(float user,String name, JSONArray liquids)
-    //public void defineRecipe(float user,String name, JSONArray liquids)
+    public void defineRecipe(String name, JSONArray liquids)
+    //public void defineRecipe(String name, JSONArray liquids)
             throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         // generate JSON Format
@@ -1129,7 +1135,7 @@ public class BluetoothSingleton {
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "define_recipe");
-        jsonObject.put("user", user);
+        jsonObject.put("user", AdminRights.getUserId());
         jsonObject.put("name", name);
         jsonObject.put("liquids", liquids);
 
@@ -1155,11 +1161,13 @@ public class BluetoothSingleton {
      * "liquids": [["beer", 250], ["lemonade", 250]]}
      * like described in ProjektDokumente/esp/Befehle.md
      * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
+     *
+     * TODO: add to sendSave as variation
      * @return
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void editRecipe(float user,String name, ArrayList<Pair<String, Float>> liquids)
+    public void editRecipe(String name, ArrayList<Pair<String, Float>> liquids)
             throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         // generate JSON Format
@@ -1174,7 +1182,7 @@ public class BluetoothSingleton {
         // generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "edit_recipe");
-        jsonObject.put("user", user);
+        jsonObject.put("user", AdminRights.getUserId());
         jsonObject.put("name", name);
         jsonObject.put("liquids", arrayLiquids);
 
@@ -1199,18 +1207,20 @@ public class BluetoothSingleton {
      * like described in ProjektDokumente/esp/Befehle.md
      * JSON-sample: {"cmd": "make_recipe", "user": 8858, "recipe": "radler"}
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     *
+     * Note: used in CocktailMachine: send
      * @return
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void makeRecipe(float user, String recipe) throws
+    public void makeRecipe( String recipe) throws
             JSONException, InterruptedException {
 
         singleton = BluetoothSingleton.getInstance();
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "make_recipe");
-        jsonObject.put("user", user);
+        jsonObject.put("user", AdminRights.getUserId());
         jsonObject.put("recipe", recipe);
         singleton.sendReadWrite(jsonObject,false,true);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
@@ -1232,18 +1242,20 @@ public class BluetoothSingleton {
      * like described in ProjektDokumente/esp/Befehle.md
      * JSON-sample: {"cmd": "delete_recipe", "user": 0, "name": "radler"}
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     *
+     * Note: used in Recipe sendDelete
      * @return
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void deleteRecipe(float user, String name) throws
+    public void deleteRecipe(String name) throws
             JSONException, InterruptedException {
 
         singleton = BluetoothSingleton.getInstance();
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "delete_recipe");
-        jsonObject.put("user", user);
+        jsonObject.put("user", AdminRights.getUserId());
         jsonObject.put("name", name);
         singleton.sendReadWrite(jsonObject,false,true);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
@@ -1265,6 +1277,8 @@ public class BluetoothSingleton {
      * JSON-sample: {"cmd": "abort", "user": 483}
      * like described in ProjektDokumente/esp/Services.md
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     *
+     * Note: used in CocktailMachine
      * @return
      * @throws JSONException
      */
@@ -1297,17 +1311,19 @@ public class BluetoothSingleton {
      * like described in ProjektDokumente/esp/Befehle.md
      * JSON-sample: {"cmd": "add_liquid", "user": 0, "liquid": "water", "volume": 30}
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     *
+     * TODO: find usage place
      * @return
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void addLiquid(float user,String liquid, float volume)
+    public void addLiquid(String liquid, float volume)
             throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "add_liquid");
-        jsonObject.put("user", user);
+        jsonObject.put("user", AdminRights.getUserId());
         jsonObject.put("liquid", liquid);
         jsonObject.put("volume", volume);
         singleton.sendReadWrite(jsonObject,false,true);
@@ -1330,6 +1346,8 @@ public class BluetoothSingleton {
      * like described in ProjektDokumente/esp/Befehle.md
      * JSON-sample: {"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1}
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     *
+     * Note: used in Pump for an instance
      * @return
      * @throws JSONException
      */
@@ -1358,15 +1376,17 @@ public class BluetoothSingleton {
         Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
 
     }
+
     /**
      * run_pump: Runs the pump for a certain time. The time is given in milliseconds.
      * like described in ProjektDokumente/esp/Befehle.md
      * JSON-sample: {"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1}
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     *
+     * Note: used in Pump for an instance
      * @return
      * @throws JSONException
      */
-
     @SuppressLint("MissingPermission")
     public void adminRunPump(int slot, int time) throws JSONException,
             InterruptedException {
@@ -1400,6 +1420,8 @@ public class BluetoothSingleton {
      * like described in ProjektDokumente/esp/Befehle.md
      * "time1": 10000, "time2": 20000, "volume1": 15.0, "volume2": 20.0}
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     *
+     * Note: used in Pump for an instance
      * @return
      * @throws JSONException
      */
@@ -1440,6 +1462,8 @@ public class BluetoothSingleton {
      * JSON-sample: {"cmd": "set_pump_times", "user": 0, "slot": 1,
      * "time_init": 1000, "time_reverse": 1000, "rate": 1.0}
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     *
+     * Note: used in Pump for an instance
      * @return
      * @throws JSONException
      */
@@ -1478,6 +1502,7 @@ public class BluetoothSingleton {
      * like described in ProjektDokumente/esp/Befehle.md
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      *
+     * Note: used in CocktailMachine
      * @return
      * @throws JSONException
      */
@@ -1510,6 +1535,7 @@ public class BluetoothSingleton {
      * like described in ProjektDokumente/esp/Befehle.md
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      *
+     * Note: used in CocktailMachine
      * @return
      * @throws JSONException
      */
@@ -1544,6 +1570,7 @@ public class BluetoothSingleton {
      * like described in ProjektDokumente/esp/Befehle.md
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      *
+     * Note: used in CocktailMachine
      * @return
      * @throws JSONException
      */
@@ -1577,6 +1604,7 @@ public class BluetoothSingleton {
      * like described in ProjektDokumente/esp/Befehle.md
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      *
+     * Note: used in CocktailMachine
      * @return
      * @throws JSONException
      */
@@ -1610,6 +1638,7 @@ public class BluetoothSingleton {
      * like described in ProjektDokumente/esp/Befehle.md
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      *
+     * Note: used in CocktailMachine
      * @return
      * @throws JSONException
      */
@@ -1643,6 +1672,7 @@ public class BluetoothSingleton {
      * like described in ProjektDokumente/esp/Befehle.md
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      *
+     * Note: used in CocktailMachine
      * @return
      * @throws JSONException
      */
@@ -1680,6 +1710,8 @@ public class BluetoothSingleton {
      * JSON-Sample: {"1": {"liquid": "lemonade", "volume": 200}}
      * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
      * like described in ProjektDokumente/esp/Services.md
+     *
+     * Note: used in Pump for all pumps
      * @return
      * @throws JSONException
      */
@@ -1708,6 +1740,9 @@ public class BluetoothSingleton {
      * Sample: 275492
      * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
      * like described in ProjektDokumente/esp/Services.md
+     *
+     *
+     * Note: used in CocktailMachine to access necessity of db update
      * @return
      * @throws JSONException
      */
@@ -1735,6 +1770,9 @@ public class BluetoothSingleton {
      * JSON-Sample: {"beer": 200, "lemonade": 2000, "orange juice": 2000}
      * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
      * like described in ProjektDokumente/esp/Services.md
+     *
+     *
+     * Note: used in Pump for all Pumps
      * @return
      * @throws JSONException
      */
@@ -1767,6 +1805,8 @@ public class BluetoothSingleton {
      * cocktail done: Cocktail is prepared and can be taken out. After that
      * reset should be executed.
      * like described in ProjektDokumente/esp/Services.md
+     *
+     * Note: used in Status
      * @return
      * @throws JSONException
      */
@@ -1795,6 +1835,8 @@ public class BluetoothSingleton {
      * {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
      * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
      * like described in ProjektDokumente/esp/Services.md
+     *
+     * Note: used in CocktailMachine
      * @return
      * @throws JSONException
      */
@@ -1822,6 +1864,8 @@ public class BluetoothSingleton {
      * JSON-Sample: {"weight": 500.0, "content": [["beer", 250], ["lemonade", 250]]}
      * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
      * like described in ProjektDokumente/esp/Services.md
+     *
+     * Note: used in CocktailMachine
      * @return
      * @throws JSONException
      */
@@ -1849,6 +1893,8 @@ public class BluetoothSingleton {
      * like described in ProjektDokumente/esp/Services.md
      * receives a message along with Read on {@code BluetoothGattCharacteristic}
      * from the Device.
+     *
+     * Note: used in CocktailMachine
      * @return
      * @throws JSONException
      */
