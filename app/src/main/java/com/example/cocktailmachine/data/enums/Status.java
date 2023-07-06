@@ -5,7 +5,10 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
+
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public enum Status {
@@ -19,6 +22,8 @@ public enum Status {
      */
     init, ready, mixing, pumping, cocktail_done,
     ;
+
+    static Status currentState = Status.ready;
 
     @NonNull
     @Override
@@ -36,10 +41,15 @@ public enum Status {
      * @return
      */
     public static Status getCurrentStatus(Activity activity) {
-        //TODO: Bluetoothlegatt
+        //TO DO: Bluetoothlegatt
         //BluetoothSingleton.getInstance().mBluetoothLeService;
-        //TODO: AMIR
-        return Status.ready;
+        //TO DO: AMIR
+        try {
+            BluetoothSingleton.getInstance().adminReadState();
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return currentState;
     }
 
     /**
