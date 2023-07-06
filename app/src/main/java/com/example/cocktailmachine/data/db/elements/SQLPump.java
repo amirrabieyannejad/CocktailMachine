@@ -2,6 +2,8 @@ package com.example.cocktailmachine.data.db.elements;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
@@ -13,6 +15,8 @@ import java.util.List;
 public class SQLPump extends SQLDataBaseElement implements Pump {
     private static final String TAG = "SQLPump";
     private int minimumPumpVolume = 1;
+
+    private int slot = -1;
     private SQLIngredientPump ingredientPump = null;
     private boolean available = false;
 
@@ -59,6 +63,16 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
             return this.ingredientPump.getIngredient();
         }
         return null;
+    }
+
+    @Override
+    public int getSlot() {
+        return slot;
+    }
+
+    @Override
+    public void setSlot(int slot) {
+        this.slot = slot;
     }
 
     @Override
@@ -227,10 +241,12 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         return Long.compare(this.getID(), o.getID());
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "SQLPump{" +
                 "ID=" + getID() +
+                "slot=" + getSlot() +
                 ", minimumPumpVolume=" + minimumPumpVolume +
                 ", ingredientPump=" + ingredientPump +
                 '}';
