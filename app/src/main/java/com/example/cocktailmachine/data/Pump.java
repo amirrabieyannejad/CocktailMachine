@@ -4,6 +4,7 @@ package com.example.cocktailmachine.data;
 import android.app.Activity;
 import android.util.Log;
 
+import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
@@ -57,6 +58,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @throws MissingIngredientPumpException
      */
     void setMinimumPumpVolume(int volume);
+
+    void setSlot(int slot);
+    int getSlot();
 
 
 
@@ -167,8 +171,6 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         return json;
     }
 
-
-
     /**
      *  {"beer": 200, "lemonade": 2000, "orange juice": 2000}
      * @return {"beer": 200, "lemonade": 2000, "orange juice": 2000}
@@ -202,7 +204,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         return json;
     }
 
-    //reading
+    //reading json objects
 
     /**
      * {"1": {"liquid": "lemonade", "volume": 200}}
@@ -333,27 +335,10 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     }
 
 
-    //Bluetooth
-
-    /**
-     *clean with     {"cmd": "clean", "user": 0}
-     * @param activity
-     */
-    static void clean(Activity activity){
-        //TODO: AMIR
-        //TODO: clean
-        //
-        JSONObject cmd = new JSONObject();
-        try {
-            cmd.put("cmd", "clean");
-            cmd.put("user", AdminRights.getUserId());
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
 
 
+
+    //send with Bluetooth for a single pump
 
     /**
      * send new Pump with Bluetooth
@@ -368,6 +353,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
      */
     default void sendSave(Activity activity){
+        /*
         //TODO: AMIR
         JSONObject request = new JSONObject();
         try {
@@ -381,10 +367,21 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         }
         //TODO: send define pump
         JSONObject answer = new JSONObject();
+
+         */
+
+        try {
+            BluetoothSingleton.getInstance().adminDefinePump(
+                    this.getIngredientName(),
+                    this.getVolume(),
+                    this.getSlot());
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
-     * TODO: sendRefill
+     * sendRefill
      ### refill_pump: füllt Pumpe auf
      - user: User
      - liquid: str
@@ -393,10 +390,14 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      JSON-Beispiel:
 
      {"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1}
+     * @author Johanna Reidt
+     * @param activity
+     * @param volume
      */
-    default void sendRefill(Activity activity){
+    default void sendRefill(Activity activity, int volume){
         //TODO: AMIR
         //TODO: refillPump
+        /*
         JSONObject request = new JSONObject();
         try {
             request.put("cmd", "refill_pump");
@@ -406,8 +407,55 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-        //TODO: send refillPump
+        //TO DO: send refillPump
         JSONObject answer = new JSONObject();
+
+         */
+        try {
+            fill(volume);
+        } catch (MissingIngredientPumpException e) {
+            e.printStackTrace();
+        }
+        sendRefill(activity);
+    }
+
+
+    /**
+     * sendRefill from volume already settted und updated in db
+     ### refill_pump: füllt Pumpe auf
+     - user: User
+     - liquid: str
+     - slot: int
+
+     JSON-Beispiel:
+
+     {"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1}
+     * @author Johanna Reidt
+     * @param activity
+     */
+    default void sendRefill(Activity activity){
+        //TODO: AMIR
+        //TODO: refillPump
+        /*
+        JSONObject request = new JSONObject();
+        try {
+            request.put("cmd", "refill_pump");
+            request.put("user", AdminRights.getUserId());
+            request.put("volume", this.getVolume());
+            request.put( "slot", 1);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        //TO DO: send refillPump
+        JSONObject answer = new JSONObject();
+
+         */
+        try {
+            BluetoothSingleton.getInstance().adminRefillPump(this.getVolume(),
+                    this.getSlot());
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -423,6 +471,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      {"cmd": "run_pump", "user": 0, "slot": 1, "time": 1000}
      */
     default void run(Activity activity, int time){
+        /*
         //TODO: runPump, when needed???
         JSONObject request = new JSONObject();
         try {
@@ -433,9 +482,18 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-        //TODO: send runPump
+        //TO DO: send runPump
         JSONObject answer = new JSONObject();
-        //TODO: AMIR
+        //TO DO: AMIR
+
+         */
+        try {
+            BluetoothSingleton.getInstance().adminRunPump(
+                    this.getSlot(),
+                    time);
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -460,6 +518,17 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     default void calibrate(Activity activity, int time1, int time2, float volume1, float volume2){
         //TODO calibrate
         //TODO: AMIR
+        try {
+            BluetoothSingleton.getInstance().adminCalibratePump(
+                    this.getSlot(),
+                    time1,
+                    time2,
+                    volume1,
+                    volume2);
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
 
@@ -480,18 +549,11 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     public default void setPumpTimes(Activity activity, int timeInit, int timeReverse, float rate){
         //TODO: setPumpTimes
         //TODO: AMIR
-    }
 
-    /**
-     * ask for liquid status to update db with availability
-     * @param activity
-     */
-    static void sync(Activity activity){
-        //TODO sync
         try {
-            DatabaseConnection.localRefresh();
-        } catch (NotInitializedDBException e) {
-            throw new RuntimeException(e);
+            BluetoothSingleton.getInstance().adminSetPumpTimes(this.getSlot(), timeInit, timeReverse, rate);
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -500,7 +562,54 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
 
 
-    //general
+
+    //FOR ALL PUMPS
+    /**
+     * ask for pump status to update db with availability
+     * @param activity
+     */
+    static void sync(Activity activity){
+        //TODO sync
+        try {
+            BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
+            bluetoothSingleton.adminReadPumpsStatus();
+            DatabaseConnection.localRefresh();
+        } catch (NotInitializedDBException |JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     *clean with     {"cmd": "clean", "user": 0}
+     * @param activity
+     */
+    static void clean(Activity activity){
+        //TODO: AMIR
+        //TODO: clean
+        //
+        /*
+        JSONObject cmd = new JSONObject();
+        try {
+            cmd.put("cmd", "clean");
+            cmd.put("user", AdminRights.getUserId());
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
+         */
+        try {
+            BluetoothSingleton.getInstance().adminClean();
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+
+
+    //general access to db to all pumps
 
     /**
      * Static access to pumps.
@@ -530,11 +639,5 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             return null;
         }
     }
-
-
-
-
-
-
 
 }
