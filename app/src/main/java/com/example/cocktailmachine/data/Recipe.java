@@ -200,11 +200,15 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      *   {"cmd": "make_recipe", "user": 8858, "recipe": "radler"}
      * TODO:show topics to user!
      */
-    default void send(Activity activity) throws JSONException, InterruptedException {
+    default void send(Activity activity) {
         //service.
         //BluetoothSingleton.getInstance().mBluetoothLeService.makeRecipe(AdminRights.getUserId(), );
         BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
-        bluetoothSingleton.makeRecipe(AdminRights.getUserId(), this.getName());
+        try {
+            bluetoothSingleton.makeRecipe(AdminRights.getUserId(), this.getName());
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
         //TO DO: Bluetooth send to mix
         //TO DO: AMIR **DONE**
     }

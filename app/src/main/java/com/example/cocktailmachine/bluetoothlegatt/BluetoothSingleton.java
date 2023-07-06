@@ -1721,7 +1721,8 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                Pump.updatePumpStatus(this.getResult());
+                //Pump.updatePumpStatus(this.getResult());
+                CocktailMachine.setLastChange(jsonObject);
                 Log.w(TAG, "To Save: " + this.getResult());
             }
         };
