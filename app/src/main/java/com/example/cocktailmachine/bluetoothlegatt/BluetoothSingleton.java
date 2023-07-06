@@ -1269,12 +1269,12 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void abort(float user) throws JSONException, InterruptedException {
+    public void abort() throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "abort");
-        jsonObject.put("user", user);
+        jsonObject.put("user", AdminRights.getUserId());
         singleton.sendReadWrite(jsonObject,false,true);
 
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
