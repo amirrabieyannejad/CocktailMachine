@@ -27,6 +27,11 @@ public class CocktailMachine {
 
     //FOR SENDING TO Bluetooth
 
+    static int time;
+    static boolean dbChanged = false;
+    static Recipe currentRecipe;
+    static int currentUser = -1;
+
     /**
      ### tare_scale: tariert die Waage
      - user: User
@@ -96,6 +101,62 @@ public class CocktailMachine {
     }
 
 
+    public static void abort(Activity activity){
+
+        try {
+            BluetoothSingleton.getInstance().abort();
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     *
+     * @author Johanna Reidt
+     * @param activity
+     */
+    public static void getLastChange(Activity activity){
+        try {
+            BluetoothSingleton.getInstance().adminReadLastChange();
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * updateDBIfCanged
+     * @author Johanna Reidt
+     * @param activity
+     */
+    public static void updateRecipeListIfChanged(Activity activity){
+        getLastChange(activity);
+        if(dbChanged){
+            try {
+                BluetoothSingleton.getInstance().adminReadRecipesStatus();
+            } catch (JSONException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static Recipe getCurrentCocktail(Activity activity){
+        try {
+            BluetoothSingleton.getInstance().adminReadCurrentCocktail();
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return currentRecipe;
+    }
+
+    public static int getCurrentUser(Activity activity){
+        try {
+            BluetoothSingleton.getInstance().adminReadCurrentUser();
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return currentUser;
+    }
+
 
 
     //For Bluetooth use
@@ -108,7 +169,11 @@ public class CocktailMachine {
 
 
     public static void setLastChange(JSONObject jsonObject){
-
+        int old_time = time;
+        time = jsonObject.optInt("", -1);
+        if(old_time<time){
+            dbChanged = true;
+        }
     }
 
 
