@@ -205,7 +205,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         //BluetoothSingleton.getInstance().mBluetoothLeService.makeRecipe(AdminRights.getUserId(), );
         BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
         try {
-            bluetoothSingleton.makeRecipe(AdminRights.getUserId(), this.getName());
+            bluetoothSingleton.makeRecipe(this.getName());
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -245,11 +245,23 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
             //jsonObject.put("liquids", array);
 
             BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
-            bluetoothSingleton.defineRecipe(AdminRights.getUserId(),this.getName(),array);
+            bluetoothSingleton.defineRecipe(this.getName(),array);
 
             return true;
         } catch (JSONException | TooManyTimesSettedIngredientEcxception |
                  NoSuchIngredientSettedException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    default boolean sendDelete(Activity activity){
+        try {
+            BluetoothSingleton.getInstance().deleteRecipe(
+                    this.getName()
+            );
+            return true;
+        } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }
         return false;
