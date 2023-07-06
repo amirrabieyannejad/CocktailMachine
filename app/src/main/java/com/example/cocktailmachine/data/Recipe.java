@@ -323,7 +323,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @throws NotInitializedDBException
      */
     static void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException{
-        //TODO: USE THIS AMIR **DONE**
+        //TO DO: USE THIS AMIR **DONE**
         //[{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}, {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
         for(int i=0; i<json.length(); i++){
             JSONObject j = json.optJSONObject(i);
