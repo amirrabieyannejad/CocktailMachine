@@ -32,6 +32,9 @@ public class CocktailMachine {
     static Recipe currentRecipe;
     static int currentUser = -1;
 
+
+    //SCALE
+
     /**
      ### tare_scale: tariert die Waage
      - user: User
@@ -217,6 +220,11 @@ public class CocktailMachine {
      */
     public static void restart(Activity activity){
         //TODO: restart
+        try {
+            BluetoothSingleton.getInstance().adminRestart();
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -231,8 +239,35 @@ public class CocktailMachine {
      */
     public static void factoryReset(Activity activity){
         //TODO: factoryReset
+        try {
+            BluetoothSingleton.getInstance().adminFactoryReset();
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
+
+
+    /**
+     * TODO: find usage
+     *
+     * to be called if cocktail done and new Cocktail should be mixed
+     * reset: reset the machine so that it can make a new cocktail
+     * JSON-sample: {"cmd": "reset", "user": 9650}
+     * like described in ProjektDokumente/esp/Services.md
+     * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
+
+     * @author Johanna Reidt
+     * @param activity
+     */
+    public static void reset(Activity activity){
+        //TODO: factoryReset
+        try {
+            BluetoothSingleton.getInstance().adminFactoryReset();
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
 

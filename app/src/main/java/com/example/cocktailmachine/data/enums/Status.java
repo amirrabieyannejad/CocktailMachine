@@ -12,7 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public enum Status {
-    //TODO: USE THIS AMIR
+    //TO DO: USE THIS AMIR
     /*
     - `init`: Maschine wird initialisiert
 - `ready`: Maschine ist bereit einen Befehl auszuführen und wartet
@@ -83,7 +83,7 @@ public enum Status {
     }
 
     public  static void setStatus(JSONObject jsonObject) {
-
+        //TODO: figure out if only string or JSON Object and put in currentStatus
     }
 
 
