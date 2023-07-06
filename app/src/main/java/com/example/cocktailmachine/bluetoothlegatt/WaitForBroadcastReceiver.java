@@ -3,6 +3,10 @@ package com.example.cocktailmachine.bluetoothlegatt;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -11,9 +15,10 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
     private final static String TAG = WaitForBroadcastReceiver.class.getSimpleName();
     BluetoothSingleton singleton = BluetoothSingleton.getInstance();
     JSONObject jsonObject;
+    JSONArray jsonArray;
     String result;
 
-    public abstract void toSave() throws InterruptedException;
+    public abstract void toSave() throws InterruptedException, JSONException, NotInitializedDBException, MissingIngredientPumpException;
 
     public Boolean check() {
         return (jsonObject != null) ||
@@ -25,6 +30,10 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
     public JSONObject getResult() {
         return jsonObject;
     }
+    public JSONArray getJSONArrayResult() throws JSONException {
+        jsonArray = jsonObject.getJSONArray("");
+        return jsonArray;
+    }
 
     @Override
     protected JSONObject doInBackground(Void... voids) {
@@ -33,7 +42,7 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
                 || singleton.getEspResponseValue().equals("\"processing\"")) {
             Log.w(TAG, "we are in WaitForBroadcast doInBackground before try-catch!");
             try {
-                Log.w(TAG, "waitForBroadcastReceiver: this is middle night.." +
+                Log.w(TAG, "waitForBroadcastReceiverAsyncTask: Waiting for target value.." +
                         singleton.getEspResponseValue());
 
                 Thread.sleep(500);
@@ -50,6 +59,7 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
         result = singleton.getEspResponseValue();
         try {
             jsonObject = new JSONObject(result);
+            //jsonArray = jsonObject.getJSONArray(result);
 
         } catch (JSONException e) {
             //throw new RuntimeException(e);
@@ -68,8 +78,10 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
             Log.w(TAG, "we are in WaitForBroadcast Post Execute!");
             try {
                 toSave();
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | NotInitializedDBException e) {
                 e.printStackTrace();
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
             }
 
 

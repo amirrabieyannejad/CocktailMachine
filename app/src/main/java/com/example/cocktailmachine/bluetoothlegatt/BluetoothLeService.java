@@ -572,7 +572,10 @@ public class BluetoothLeService extends Service {
     }
     /**
      * initUser: register as a new user and receive a user ID
+     * sample: {"cmd": "init_user", "name": "Jane"}
+     * like described in ProjektDokumente/esp/Services.md
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     * @return JSONO
      */
     @SuppressLint("MissingPermission")
     public void initUser(String name) throws JSONException, InterruptedException {
@@ -675,6 +678,7 @@ public class BluetoothLeService extends Service {
     }
 
     /**
+     *
      * define_recipe: defines a new recipe or changes an existing recipe
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
       */
@@ -706,6 +710,7 @@ public class BluetoothLeService extends Service {
         getCharacteristicValue(BluetoothLeService.SERVICE_READ_WRITE,
                 BluetoothLeService.CHARACTERISTIC_MESSAGE_USER);
     }
+
     /**
      * edit_Recipe: edit an existing recipe
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
@@ -784,10 +789,10 @@ public class BluetoothLeService extends Service {
     }
 
     /**
-     * addPump: Runs the pump for a certain time. The time is given in milliseconds.
+     * run_pump: Runs the pump for a certain time. The time is given in milliseconds.
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      */
-    // TODO add to DeviceControlActivity
+
     @SuppressLint("MissingPermission")
     public void adminRunPump(int slot, int time) throws JSONException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
@@ -812,7 +817,6 @@ public class BluetoothLeService extends Service {
      * the pump rate. The times are given in milliseconds and the liquids in millilitres.
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      */
-    // TODO add to DeviceControlActivity
     @SuppressLint("MissingPermission")
     public void adminCalibratePump(int slot, int time1, int time2, float volume1, float volume2)
             throws JSONException {
@@ -842,7 +846,6 @@ public class BluetoothLeService extends Service {
      * or the same. The rate is given in mL/ms.
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      */
-    // TODO add to DeviceControlActivity
     @SuppressLint("MissingPermission")
     public void adminSetPumpTimes(int slot, int timeInit, int timeReverse, float rate) throws
             JSONException {
@@ -869,7 +872,6 @@ public class BluetoothLeService extends Service {
      * tare_scale: Tares the scale
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      */
-    // TODO add to DeviceControlActivity
     @SuppressLint("MissingPermission")
     public void adminTareScale() throws JSONException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
@@ -1033,5 +1035,6 @@ public class BluetoothLeService extends Service {
         getCharacteristicValue(BluetoothLeService.SERVICE_STATUS_STATE,
                 BluetoothLeService.CHARACTERISTIC_STATUS_COCKTAIL);
     }
+
 
 }

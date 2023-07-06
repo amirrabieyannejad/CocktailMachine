@@ -5,6 +5,9 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 public enum Status {
     //TODO: USE THIS AMIR
     /*
@@ -14,12 +17,13 @@ public enum Status {
 - `pumping`: Maschine pumpt Flüssigkeiten
 - `cocktail done`: Cocktail ist fertig zubereitet und kann entnommen werden. Danach sollte `reset` ausgeführt werden.
      */
-    init, ready, mixing, pumping, cocktail_done;
+    init, ready, mixing, pumping, cocktail_done,
+    ;
 
     @NonNull
     @Override
     public String toString() {
-        if(this.ordinal()==cocktail_done.ordinal()){
+        if (this.ordinal() == cocktail_done.ordinal()) {
             return "cocktail done";
         }
         return super.toString();
@@ -27,10 +31,11 @@ public enum Status {
 
     /**
      * return current Status
+     *
      * @param activity
      * @return
      */
-    public static Status getCurrentStatus(Activity activity){
+    public static Status getCurrentStatus(Activity activity) {
         //TODO: Bluetoothlegatt
         //BluetoothSingleton.getInstance().mBluetoothLeService;
         //TODO: AMIR
@@ -39,14 +44,15 @@ public enum Status {
 
     /**
      * return current Status
+     *
      * @param activity
      * @return
      */
-    public static String getCurrentStatusMessage(Activity activity){
+    public static String getCurrentStatusMessage(Activity activity) {
         Status status = getCurrentStatus(activity);
         StringBuilder builder = new StringBuilder();
         builder.append("Die Cocktailmaschine ");
-        switch (status){
+        switch (status) {
             case init:
                 builder.append("wird gerade initialisiert.");
                 return builder.toString();
@@ -65,5 +71,10 @@ public enum Status {
         }
         return "Error";
     }
+
+    public  static void setStatus(JSONObject jsonObject) {
+
+    }
+
 
 }

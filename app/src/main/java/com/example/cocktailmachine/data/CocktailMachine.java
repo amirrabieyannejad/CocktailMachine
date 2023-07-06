@@ -17,6 +17,8 @@ import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 
+import org.json.JSONObject;
+
 public class CocktailMachine {
     //TODO: AMIR
 
@@ -71,6 +73,12 @@ public class CocktailMachine {
 
     public static void sendScale(Activity activity, Float factor){
         //TODO: send scale factor
+    }
+    public static void setCurrentCocktail(JSONObject jsonObject) {
+
+    }
+    public static void setCurrentUser(JSONObject jsonObject) {
+
     }
 
 

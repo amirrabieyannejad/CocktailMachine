@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,6 +23,7 @@ public class AdminRights {
     private static final String TAG = "AdminRights";
     public static final String PASSWORD = "admin";
     private static AdminRights singleton = null;
+    private static BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
     private UserPrivilegeLevel privilege = UserPrivilegeLevel.User;
     private int userId = -1;
 
@@ -38,7 +40,7 @@ public class AdminRights {
 
     //USer ID handling
     public static int getUserId(){
-        //TODO: USE THIS AMIR
+        //TODO: USE THIS AMIR *OK*
         return getSingleton().userId;
     }
     public static void setUserId(int userId){
@@ -46,7 +48,8 @@ public class AdminRights {
     }
 
     public static void setUser(JSONObject jsonObject){
-        //TODO: USE THIS AMIR
+        //TODO: USE THIS AMIR **DONE**
+
         try {
             setUserId(jsonObject.getInt("user"));
         } catch (JSONException e) {
@@ -74,12 +77,19 @@ public class AdminRights {
      * init user with bluetooth
      * @return
      */
-    public static void initUser(Activity activity, String name){
-        //TODO: init user
-        //TODO: AMIR
+    public static void initUser(Activity activity, String name)
+            throws JSONException, InterruptedException {
+        //TODO: init user  Dummy Function **OK**
+        //TODO: AMIR  ** JOHANNA bitte kontrollieren **
+        bluetoothSingleton.initUser(name);
+
+        /*
+
         JSONObject getQuestion = getUserIdAsMessage();
         JSONObject answer = new JSONObject();
         setUser(answer);
+
+         */
     }
 
     /**
@@ -103,7 +113,7 @@ public class AdminRights {
      */
     public static void abortUser(Activity acitvity, String name){
         //TODO: abort user
-        //TODO: AMIR
+
         JSONObject getQuestion = getUserAbortMessage();
         JSONObject answer = new JSONObject();
         //setUser(answer);

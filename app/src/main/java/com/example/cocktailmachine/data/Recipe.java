@@ -4,6 +4,7 @@ package com.example.cocktailmachine.data;
 import android.app.Activity;
 import android.content.Context;
 
+import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
@@ -182,7 +183,8 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @throws JSONException
      */
     default JSONObject asMessage() throws JSONException {
-        //TODO: USE THIS AMIR
+        //TODO: USE THIS AMIR ** ich vermute, dasss ich das schon verwendet habe
+        // ** bitte nochmal überprüfen
         JSONObject json = new JSONObject();
         json.put("name", this.getName());
         json.put("liquids", this.getLiquidsJSON());
@@ -196,11 +198,13 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      *   {"cmd": "make_recipe", "user": 8858, "recipe": "radler"}
      * TODO:show topics to user!
      */
-    default void send(Activity activity){
+    default void send(Activity activity) throws JSONException, InterruptedException {
         //service.
         //BluetoothSingleton.getInstance().mBluetoothLeService.makeRecipe(AdminRights.getUserId(), );
+        BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
+        bluetoothSingleton.makeRecipe(AdminRights.getUserId(), this.getName());
         //TODO: Bluetooth send to mix
-        //TODO: AMIR
+        //TODO: AMIR **DONE**
     }
 
     /**
@@ -211,12 +215,19 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * TODO: find what this is doing :     {"cmd": "add_liquid", "user": 0, "liquid": "water", "volume": 30}
      */
     default boolean sendSave(Activity activity){
-        //TODO: USE THIS AMIR
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("cmd", "define_recipe");
+        //TODO: USE THIS AMIR  * ich habe in adminDefinePump das gleiche. wollen wir vlt.
+        // * hier das verwenden vlt. durch:
+
+
+        //JSONObject jsonObject = new JSONObject();
+
+
+            /* jsonObject.put("cmd", "define_recipe");
             jsonObject.put("user", AdminRights.getUserId());
             jsonObject.put("recipe", this.getName());
+
+             */
+        try {
             JSONArray array = new JSONArray();
             List<Ingredient> is = this.getIngredients();
             for(Ingredient i: is){
@@ -225,11 +236,14 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
                 temp.put(this.getSpecificIngredientVolume(i));
                 array.put(temp);
             }
-            jsonObject.put("liquids", array);
-            //TODO: send
+             //jsonObject.put("liquids", array);
+
+            BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
+            bluetoothSingleton.defineRecipe(AdminRights.getUserId(),this.getName(),array);
+
             return true;
         } catch (JSONException | TooManyTimesSettedIngredientEcxception |
-                NoSuchIngredientSettedException  e) {
+                 NoSuchIngredientSettedException | InterruptedException e) {
             e.printStackTrace();
         }
         return false;
@@ -247,12 +261,13 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @throws NotInitializedDBException
      * @throws JSONException
      */
-    static JSONArray getRecipesAsMessage() throws NotInitializedDBException, JSONException {
-        //TODO: USE THIS AMIR
+    static JSONArray getRecipesAsMessage() throws NotInitializedDBException, JSONException, InterruptedException {
+        //TODO: USE THIS AMIR * Ich glaube ist für mich setRecipe interessant? *
         JSONArray json = new JSONArray();
         for(Recipe r: getRecipes()){
             json.put(r.asMessage());
         }
+
         return json;
     }
 
@@ -269,12 +284,13 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
     /**
      * add Recipes to db from json array gotten from cocktail machine
-     * [{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}, {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
+     * [{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]},
+     * {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
      * @param json
      * @throws NotInitializedDBException
      */
     static void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException{
-        //TODO: USE THIS AMIR
+        //TODO: USE THIS AMIR **DONE**
         //[{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}, {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
         for(int i=0; i<json.length(); i++){
             JSONObject j = json.optJSONObject(i);

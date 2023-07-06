@@ -23,6 +23,8 @@ import com.example.cocktailmachine.databinding.FragmentModelBinding;
 
 import com.example.cocktailmachine.ui.model.ModelType;
 
+import org.json.JSONException;
+
 import java.util.Objects;
 
 public class ModelFragment extends Fragment {
@@ -284,7 +286,13 @@ public class ModelFragment extends Fragment {
             if(this.recipe!=null&&this.recipe.isAvailable()) {
                 Log.i(TAG, "setFAB: recipe is shown and recipe is available");
                 activity.setFAB(v -> {
-                    recipe.send(activity);
+                    try {
+                        recipe.send(activity);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                     Toast.makeText(this.getContext(), "Cocktail in Bearbeitung.", Toast.LENGTH_SHORT).show();
                 }, R.drawable.ic_send);
                 return;
