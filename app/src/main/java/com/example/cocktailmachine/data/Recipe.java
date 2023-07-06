@@ -303,11 +303,11 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         }
 
          */
-        BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
+        Pump.readPumpStatus(activity);
+        CocktailMachine.updateRecipeListIfChanged(activity);
         try {
-            bluetoothSingleton.adminReadPumpsStatus();
-            bluetoothSingleton.adminReadLastChange();
-        } catch (JSONException | InterruptedException e) {
+            DatabaseConnection.localRefresh();
+        } catch (NotInitializedDBException e) {
             e.printStackTrace();
         }
     }

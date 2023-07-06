@@ -204,6 +204,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         return json;
     }
 
+
+
+
     //reading json objects
 
     /**
@@ -570,11 +573,10 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     static void sync(Activity activity){
         //TODO sync
+        readPumpStatus(activity);
         try {
-            BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
-            bluetoothSingleton.adminReadPumpsStatus();
             DatabaseConnection.localRefresh();
-        } catch (NotInitializedDBException |JSONException | InterruptedException e) {
+        } catch (NotInitializedDBException e) {
             e.printStackTrace();
         }
     }
@@ -599,6 +601,34 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
          */
         try {
             BluetoothSingleton.getInstance().adminClean();
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * read pump status without refresh of availability
+     * @author Johanna Reidt
+     * @param activity
+     */
+    static void readPumpStatus(Activity activity){
+        try {
+            BluetoothSingleton.getInstance().adminReadPumpsStatus();
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     *
+     * read liquid status without refresh of availability
+     * @author Johanna Reidt
+     * @param activity
+     */
+    static void readLiquidStatus(Activity activity){
+
+        try {
+            BluetoothSingleton.getInstance().adminReadLiquidsStatus();
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }
