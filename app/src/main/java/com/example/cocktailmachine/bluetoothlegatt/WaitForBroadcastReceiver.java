@@ -78,10 +78,9 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
             Log.w(TAG, "we are in WaitForBroadcast Post Execute!");
             try {
                 toSave();
-            } catch (InterruptedException | NotInitializedDBException e) {
+            } catch (InterruptedException | NotInitializedDBException | JSONException |
+                     MissingIngredientPumpException e) {
                 e.printStackTrace();
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
             }
 
 
