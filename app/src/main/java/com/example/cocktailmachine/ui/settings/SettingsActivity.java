@@ -227,12 +227,7 @@ public class SettingsActivity extends AppCompatActivity {
      */
     public void loadNew(View view) {
         DatabaseConnection.initializeSingleton(this);
-        try {
-            DatabaseConnection.localRefresh();
-        } catch (NotInitializedDBException e) {
-            throw new RuntimeException(e);
-        }
-
+        DatabaseConnection.localRefresh();
         Toast.makeText(this,"Lade aus der Datenbank neu!",Toast.LENGTH_SHORT).show();
     }
 

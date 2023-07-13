@@ -5,21 +5,23 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.text.InputType;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
-import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
+import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.ui.model.ModelType;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -337,6 +339,46 @@ public class GetDialog {
         }
     }
 
+
+    //Pick a ingredient for pump
+    public static void chooseIngredient(Activity activity, Pump pump){
+        List<Ingredient> ingredients= Ingredient.getAllIngredients();
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Änderung");
+
+        builder.setMessage("Wähle eine Zutat!");
+
+        ArrayList<String> displayValues=new ArrayList<>();
+        for (Ingredient entity : ingredients) {
+            displayValues.add(entity.getName());
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                activity.getApplicationContext(),
+                android.R.layout.simple_list_item_1,
+                displayValues);
+        builder.setSingleChoiceItems(adapter, 0, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                pump.setCurrentIngredient(ingredients.get(which));
+            }
+        });
+
+
+
+        builder.setPositiveButton("Speichern", (dialog, which) -> {
+            pump.save();
+            pump.sendSave(activity);
+            Toast.makeText(activity,"Cocktailmaschine wird informiert.",Toast.LENGTH_SHORT).show();
+            DatabaseConnection.localRefresh();
+            Toast.makeText(activity,"DB-Synchronisation läuft!",Toast.LENGTH_SHORT).show();
+
+        });
+        builder.setNeutralButton("Abbrechen", (dialog, which) -> {
+
+        });
+        builder.show();
+    }
 
 
 

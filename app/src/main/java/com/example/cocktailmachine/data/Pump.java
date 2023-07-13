@@ -574,11 +574,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     static void sync(Activity activity){
         //TODO sync
         readPumpStatus(activity);
-        try {
-            DatabaseConnection.localRefresh();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
+        DatabaseConnection.localRefresh();
     }
 
     /**

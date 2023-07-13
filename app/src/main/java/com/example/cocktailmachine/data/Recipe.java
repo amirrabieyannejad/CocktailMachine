@@ -317,11 +317,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
          */
         Pump.readPumpStatus(activity);
         CocktailMachine.updateRecipeListIfChanged(activity);
-        try {
-            DatabaseConnection.localRefresh();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
+        DatabaseConnection.localRefresh();
     }
 
 

@@ -1,14 +1,12 @@
 package com.example.cocktailmachine.data.db.elements;
 
 
-import android.app.Activity;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
@@ -19,7 +17,6 @@ import com.example.cocktailmachine.data.db.exceptions.AlreadySetIngredientExcept
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -146,7 +143,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
     @Override
     public List<Ingredient> getIngredients() {
-        return Ingredient.getIngredientWithIds(this.getIngredientIds());
+        return Ingredient.getAvailableIngredients(this.getIngredientIds());
     }
 
     @Override

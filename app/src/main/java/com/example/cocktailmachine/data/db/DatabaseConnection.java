@@ -129,10 +129,15 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     //Refresher
     //Local
-    public static synchronized void localRefresh() throws NotInitializedDBException {
+    public static synchronized void localRefresh() {
         Log.i(TAG, "localRefresh");
-        getDataBase().loadBufferWithAvailable();
+        try {
+            getDataBase().loadBufferWithAvailable();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+        }
     }
+
 
 
 
