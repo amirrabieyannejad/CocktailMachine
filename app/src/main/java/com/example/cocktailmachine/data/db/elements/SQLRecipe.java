@@ -421,22 +421,14 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     @Override
     public void remove(SQLRecipeImageUrlElement url) {
         this.imageUrls.remove(url);
-        try {
-            url.delete();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
+        url.delete();
     }
 
     @Override
     public void removeUrl(long urlId) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             this.imageUrls.stream().filter(url-> url.getID()==urlId).forEach(url-> {
-                        try {
-                            url.delete();
-                        } catch (NotInitializedDBException e) {
-                            e.printStackTrace();
-                        }
+                        url.delete();
                         this.imageUrls.remove(url);
             });
         }else{
