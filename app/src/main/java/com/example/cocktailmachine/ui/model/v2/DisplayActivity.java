@@ -152,7 +152,8 @@ public class DisplayActivity extends BasicAcitivity {
         setChangeTitleDialog();
         binding.textViewDisplayDescription.setText(topic.getDescription());
         binding.textViewDisplayDescription.setVisibility(View.VISIBLE);
-        //TODO: AlertDialog to change description if admin
+        //TO DO: AlertDialog to change description if admin
+        GetDialog.setDescribtion(this, topic);
     }
 
     /**

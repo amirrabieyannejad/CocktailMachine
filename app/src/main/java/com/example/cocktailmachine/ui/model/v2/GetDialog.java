@@ -244,6 +244,11 @@ public class GetDialog {
             return Integer.getInteger(e.getText().toString());
         }
         public boolean save(){
+            try {
+                pump.fill(getVolume());
+            } catch (MissingIngredientPumpException ex) {
+                ex.printStackTrace();
+            }
             return pump.save();
         }
 
@@ -277,6 +282,60 @@ public class GetDialog {
         builder.show();
     }
 
+
+    //Description
+    public static void setDescribtion(Activity activity, Topic topic){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Änderung");
+
+        View v = activity.getLayoutInflater().inflate(R.layout.layout_long_edit_text, null);
+        GetDialog.LongEditChangeView longEditChangeView =
+                new GetDialog.LongEditChangeView(
+                        topic,
+                        v);
+
+        builder.setView(v);
+
+        builder.setPositiveButton("Speichern", (dialog, which) -> {
+            longEditChangeView.save();
+        });
+        builder.setNeutralButton("Abbrechen", (dialog, which) -> {
+
+        });
+        builder.show();
+    }
+
+
+    public static class LongEditChangeView{
+
+        private final TextView t;
+        private final EditText e;
+        private final Topic topic;
+        private final View v;
+        private LongEditChangeView( Topic topic, View v) {
+            this.t = (TextView) v.findViewById(R.id.textView_long_edit_title);
+            this.e = (EditText) v.findViewById(R.id.editText_long_edit_txt);
+
+            this.t.setText("Beschreibung: ");
+            this.e.setInputType(InputType.TYPE_CLASS_TEXT);
+            this.topic = topic;
+            this.v = v;
+            String name = getDescribtionFromDB();
+            this.e.setHint(name);
+            this.e.setText(name);
+        }
+
+        private String getDescribtionFromDB(){
+            return this.topic.getDescription();
+        }
+        private String getDescription(){
+            return e.getText().toString();
+        }
+        public boolean save(){
+            this.topic.setDescription(getDescription());
+            return topic.save();
+        }
+    }
 
 
 
