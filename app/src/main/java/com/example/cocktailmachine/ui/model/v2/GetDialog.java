@@ -361,6 +361,7 @@ public class GetDialog {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 pump.setCurrentIngredient(ingredients.get(which));
+                Toast.makeText(activity,"Gewählte Zutat: "+displayValues.get(which),Toast.LENGTH_SHORT).show();
             }
         });
 
