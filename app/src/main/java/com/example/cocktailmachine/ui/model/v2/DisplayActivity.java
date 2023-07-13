@@ -34,6 +34,7 @@ public class DisplayActivity extends BasicAcitivity {
         binding.includeDisplayPump.getRoot().setVisibility(View.GONE);
         //Availabilities //Alcoholic
         binding.includeDisplayAlcoholic.getRoot().setVisibility(View.GONE);
+        binding.includeDisplayNotAlcoholic.getRoot().setVisibility(View.GONE);
         binding.includeDisplayAvailable.getRoot().setVisibility(View.GONE);
         binding.includeDisplayNotAvailable.getRoot().setVisibility(View.GONE);
         //Ingredient
@@ -42,6 +43,11 @@ public class DisplayActivity extends BasicAcitivity {
         binding.includeRecipeIngredientsList.getRoot().setVisibility(View.GONE);
         binding.includeRecipeTopicsList.getRoot().setVisibility(View.GONE);
 
+    }
+
+
+    @Override
+    void postSetUp() {
     }
 
     @Override
@@ -59,8 +65,6 @@ public class DisplayActivity extends BasicAcitivity {
         }
         if (recipe.isAlcoholic()) {
             binding.includeDisplayAlcoholic.getRoot().setVisibility(View.VISIBLE);
-        }else{
-            binding.includeDisplayNotAlcoholic.getRoot().setVisibility(View.VISIBLE);
         }
         binding.includeRecipeIngredientsList.getRoot().setVisibility(View.VISIBLE);
         binding.includeRecipeTopicsList.getRoot().setVisibility(View.VISIBLE);
@@ -103,9 +107,7 @@ public class DisplayActivity extends BasicAcitivity {
 
     }
 
-    @Override
-    void postSetUp() {
-    }
+
 
     @Override
     void setUpIngredient(){
@@ -203,4 +205,6 @@ public class DisplayActivity extends BasicAcitivity {
             }
         });
     }
+
+
 }

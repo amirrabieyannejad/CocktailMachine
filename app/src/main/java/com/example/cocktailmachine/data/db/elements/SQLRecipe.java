@@ -288,11 +288,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     public void add(Ingredient ingredient, int volume)
             throws AlreadySetIngredientException {
         if(ingredient.getID()==-1L){
-            try {
-                ingredient.save();
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-            }
+            ingredient.save();
         }
         this.add(ingredient.getID(), volume);
     }
@@ -308,11 +304,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     @Override
     public void addOrUpdate(Ingredient ingredient, int volume) {
         if(ingredient.getID()==-1L){
-            try {
-                ingredient.save();
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-            }
+            ingredient.save();
         }
         this.addOrUpdate(ingredient.getID(), volume);
     }
@@ -329,13 +321,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         }
         if(newNeeded){
             SQLRecipeIngredient ri = new SQLRecipeIngredient(ingredientId, this.getID(), volume);
-            try {
-                ri.save();
-            } catch (NotInitializedDBException ignored) {
-                ignored.printStackTrace();
-                Log.i(TAG, "should not happen");
-                //throw new RuntimeException(e);
-            }
+            ri.save();
             this.ingredientVolumes.add(ri);
         }
         this.wasChanged();
@@ -374,11 +360,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     @Override
     public void addOrUpdate(Topic topic) {
         if(topic.getID()==-1L){
-            try {
-                topic.save();
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-            }
+            topic.save();
         }
         if(this.topics.contains(topic.getID())){
             return;
@@ -412,11 +394,8 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
             this.ingredientVolumes.removeAll(this.ingredientVolumes.stream()
                     .filter(ri -> ri.getIngredientID() == ingredientId)
                     .peek(sqlRecipeIngredient -> {
-                        try {
-                            sqlRecipeIngredient.delete();
-                        } catch (NotInitializedDBException e) {
-                            e.printStackTrace();
-                        }
+                        sqlRecipeIngredient.delete();
+
                     })
                     .collect(Collectors.toList()));
 
@@ -467,24 +446,38 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
     //general
     @Override
-    public void delete() throws NotInitializedDBException {
-        DatabaseConnection.getDataBase().remove(this);
+    public void delete() {
+        Log.i(TAG, "delete");
+        try {
+            DatabaseConnection.getDataBase().remove(this);
+            Log.i(TAG, "delete: successfull");
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            Log.i(TAG, "delete: failed");
+        }
     }
 
     @Override
-    public void save() throws NotInitializedDBException {
-        DatabaseConnection.getDataBase().addOrUpdate(this);
-        for(SQLRecipeImageUrlElement url: this.imageUrls) {
-            DatabaseConnection.getDataBase().addOrUpdate(url);
-        }
-        for(SQLRecipeIngredient ri: this.ingredientVolumes){
-            if(ri.getRecipeID()!=this.getID()){
-                ri.setRecipeID(this.getID());
-                ri.save();
+    public boolean save() {
+        Log.i(TAG, "save");
+        try {
+            DatabaseConnection.getDataBase().addOrUpdate(this);
+            for(SQLRecipeImageUrlElement url: this.imageUrls) {
+                DatabaseConnection.getDataBase().addOrUpdate(url);
             }
-            DatabaseConnection.getDataBase().addOrUpdate(ri);
+            for(SQLRecipeIngredient ri: this.ingredientVolumes){
+                if(ri.getRecipeID()!=this.getID()){
+                    ri.setRecipeID(this.getID());
+                    ri.save();
+                }
+                DatabaseConnection.getDataBase().addOrUpdate(ri);
+            }
+            this.wasSaved();
+            return true;
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
         }
-        this.wasSaved();
+        return false;
     }
 
     public JSONObject asJSON(){

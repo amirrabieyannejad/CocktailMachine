@@ -17,18 +17,30 @@ public class SQLIngredientImageUrlElement extends SQLImageUrlElement {
     }
 
     @Override
-    public void save() throws NotInitializedDBException {
+    public boolean save() {
         Log.i(TAG, "save");
-        DatabaseConnection.getDataBase().addOrUpdate(this);
+        try {
+            DatabaseConnection.getDataBase().addOrUpdate(this);
+            this.wasSaved();
+            return true;
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+        }
+        return false;
 
-        this.wasSaved();
     }
 
     @Override
-    public void delete() throws NotInitializedDBException {
+    public void delete() {
         Log.i(TAG, "delete");
 
-        DatabaseConnection.getDataBase().remove(this);
+        try {
+            DatabaseConnection.getDataBase().remove(this);
+            Log.i(TAG, "delete: success");
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            Log.i(TAG, "delete: failed");
+        }
     }
 
 
