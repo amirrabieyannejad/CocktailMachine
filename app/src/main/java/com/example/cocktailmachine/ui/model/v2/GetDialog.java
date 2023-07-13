@@ -124,33 +124,15 @@ public class GetDialog {
                 case INGREDIENT:
                     Ingredient ingredient = Ingredient.getIngredient(ID);
                     ingredient.setName(getName());
-                    try {
-                        ingredient.save();
-                        return true;
-                    } catch (NotInitializedDBException ex) {
-                        ex.printStackTrace();
-                    }
-                    break;
+                    return ingredient.save();
                 case RECIPE:
                     Recipe recipe = Recipe.getRecipe(ID);
                     recipe.setName(getName());
-                    try {
-                        recipe.save();
-                        return true;
-                    } catch (NotInitializedDBException ex) {
-                        ex.printStackTrace();
-                    }
-                    break;
+                    return recipe.save();
                 case TOPIC:
                     Topic topic = Topic.getTopic(ID);
                     topic.setName(getName());
-                    try {
-                        topic.save();
-                        return true;
-                    } catch (NotInitializedDBException ex) {
-                        ex.printStackTrace();
-                    }
-                    break;
+                    return topic.save();
             }
             return false;
         }
@@ -165,7 +147,7 @@ public class GetDialog {
 
 
 
-    //Pump
+    //Pump Volume
 
     public static void setPumpVolume(Activity activity, Pump pump){
         if (pump != null) {
@@ -262,19 +244,44 @@ public class GetDialog {
             return Integer.getInteger(e.getText().toString());
         }
         public boolean save(){
-            try {
-                pump.save();
-                return true;
-            } catch (NotInitializedDBException ex) {
-                ex.printStackTrace();
-            }
-            return false;
+            return pump.save();
         }
 
         public void send(){
             pump.sendRefill(activity, getVolume());
         }
     }
+
+
+
+    //Alcoholic
+    public static void setAlcoholic(Activity activity, Ingredient ingredient){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Änderung");
+
+        builder.setMessage("Ist die Zutat alkoholisch?");
+
+        builder.setPositiveButton("Ja", (dialog, which) -> {
+            ingredient.setAlcoholic(true);
+            ingredient.save();
+
+        });
+        builder.setNegativeButton("Nein", (dialog, which) -> {
+            ingredient.setAlcoholic(false);
+            ingredient.save();
+
+        });
+        builder.setNeutralButton("Abbrechen", (dialog, which) -> {
+
+        });
+        builder.show();
+    }
+
+
+
+
+
+
 
 
     //DELETE FROM RECIPE

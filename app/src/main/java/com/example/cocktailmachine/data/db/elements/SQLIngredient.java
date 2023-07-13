@@ -393,9 +393,13 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
 
     //DB
     @Override
-    public void save() throws NotInitializedDBException {
-        DatabaseConnection.getDataBase().addOrUpdate(this);
-        this.wasSaved();
+    public void save() {
+        try {
+            DatabaseConnection.getDataBase().addOrUpdate(this);
+            this.wasSaved();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

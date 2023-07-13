@@ -59,6 +59,8 @@ public class DisplayActivity extends BasicAcitivity {
         }
         if (recipe.isAlcoholic()) {
             binding.includeDisplayAlcoholic.getRoot().setVisibility(View.VISIBLE);
+        }else{
+            binding.includeDisplayNotAlcoholic.getRoot().setVisibility(View.VISIBLE);
         }
         binding.includeRecipeIngredientsList.getRoot().setVisibility(View.VISIBLE);
         binding.includeRecipeTopicsList.getRoot().setVisibility(View.VISIBLE);
@@ -118,7 +120,19 @@ public class DisplayActivity extends BasicAcitivity {
         }
         if (ingredient.isAlcoholic()) {
             binding.includeDisplayAlcoholic.getRoot().setVisibility(View.VISIBLE);
-            //TODO: AlertDialog change alcoholic
+
+            final Activity activity = this;
+            binding.includeDisplayAlcoholic.getRoot().setOnLongClickListener(v -> {
+                GetDialog.setAlcoholic(activity, ingredient);
+                return true;
+            });
+        }else{
+            binding.includeDisplayNotAlcoholic.getRoot().setVisibility(View.VISIBLE);
+            final Activity activity = this;
+            binding.includeDisplayAlcoholic.getRoot().setOnLongClickListener(v -> {
+                GetDialog.setAlcoholic(activity, ingredient);
+                return true;
+            });
         }
         if(AdminRights.isAdmin()){
             binding.includeDisplayIngredientAdmin.getRoot().setVisibility(View.VISIBLE);
