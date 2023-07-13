@@ -1,12 +1,8 @@
 package com.example.cocktailmachine.ui.model.v2;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -55,7 +51,7 @@ public class DisplayActivity extends BasicAcitivity {
         recipe.loadAvailable();
         binding.textViewDisplayTitle.setText(recipe.getName());;
         //TO DO: AlertDialog to change title if admin
-        setChangeTitle();
+        setChangeTitleDialog();
         if(recipe.isAvailable()){
             binding.includeDisplayAvailable.getRoot().setVisibility(View.VISIBLE);
         }else{
@@ -114,7 +110,7 @@ public class DisplayActivity extends BasicAcitivity {
         Ingredient ingredient = Ingredient.getIngredient(getID());
         binding.textViewDisplayTitle.setText(ingredient.getName());;
         //TO DO: AlertDialog to change title if admin
-        setChangeTitle();
+        setChangeTitleDialog();
         if(ingredient.isAvailable()){
             binding.includeDisplayAvailable.getRoot().setVisibility(View.VISIBLE);
         }else{
@@ -137,13 +133,17 @@ public class DisplayActivity extends BasicAcitivity {
         Topic topic = Topic.getTopic(getID());
         binding.textViewDisplayTitle.setText(topic.getName());;
         //TO DO: AlertDialog to change title if admin
-        setChangeTitle();
+        setChangeTitleDialog();
         binding.textViewDisplayDescription.setText(topic.getDescription());
         binding.textViewDisplayDescription.setVisibility(View.VISIBLE);
         //TODO: AlertDialog to change description if admin
     }
 
-    private void setChangeTitle(){
+    /**
+     * adds change title Dialog to text view of title, if admin
+     * @author Johanna Reidt
+     */
+    private void setChangeTitleDialog(){
         DisplayActivity activity = this;
         if(AdminRights.isAdmin()) {
             binding.textViewDisplayTitle.setOnLongClickListener(
@@ -160,7 +160,7 @@ public class DisplayActivity extends BasicAcitivity {
     void setUpPump(){
         Pump pump = Pump.getPump(getID());
         binding.textViewDisplayTitle.setText(String.valueOf(pump.getID()));;
-        //TODO: AlertDialog to change title if admin
+        //TO DO: AlertDialog to change title if admin ----NOT BECAUSE PUMP NO NAME
         binding.includeDisplayPump.getRoot().setVisibility(View.VISIBLE);
         binding.includeDisplayPump.textViewPumpIngredientName.setText(pump.getIngredientName());
         //TODO: AlertDialog to change ingredient if admin

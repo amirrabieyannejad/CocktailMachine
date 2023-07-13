@@ -2,14 +2,15 @@ package com.example.cocktailmachine.ui.model.v2;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
-import android.security.AppUriAuthenticationPolicy;
+import android.content.DialogInterface;
 import android.text.InputType;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
@@ -17,7 +18,6 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
-import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.ui.model.ModelType;
 
 import java.util.Objects;
@@ -29,7 +29,35 @@ import java.util.Objects;
  */
 public class GetDialog {
 
+    //ERROR
+    public static void errorMessage(Activity activity){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("FEHLER");
+        builder.setMessage("Es ist ein Fehler aufgetreten. Wir empfehlen die Daten zu aktualisieren.");
+
+        builder.setNeutralButton("Abbrechen", (dialog, which) -> {
+
+        });
+        builder.setPositiveButton("Aktualisieren", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Pump.sync(activity);
+                Recipe.sync(activity);
+                Toast.makeText(activity,"Synchronisierung läuft!",Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.show();
+    }
+
     //Title
+
+    /**
+     * gets Title Change Dialog, saves and send to esp if required
+     * @author Johanna Reidt
+     * @param activity
+     * @param modelType
+     * @param ID
+     */
     public static void setTitle(Activity activity, ModelType modelType, long ID){
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Änderung");
@@ -37,6 +65,7 @@ public class GetDialog {
         View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
         GetDialog.TitleChangeView titleChangeView =
                 new GetDialog.TitleChangeView(
+                        activity,
                         modelType,
                         ID,
                         v);
@@ -45,6 +74,8 @@ public class GetDialog {
 
         builder.setPositiveButton("Speichern", (dialog, which) -> {
             titleChangeView.save();
+            titleChangeView.send();
+
         });
         builder.setNeutralButton("Abbrechen", (dialog, which) -> {
 
@@ -58,10 +89,12 @@ public class GetDialog {
         private final long ID;
         private final ModelType modelType;
         private final View v;
-        private TitleChangeView(ModelType modelType, long ID, View v) {
+        private final Activity activity;
+        private TitleChangeView(Activity activity, ModelType modelType, long ID, View v) {
+            this.activity = activity;
             this.t = (TextView) v.findViewById(R.id.textView_edit_text);
             this.e = (EditText) v.findViewById(R.id.editText_edit_text);
-            String name = setName();
+            String name = getNameFromDB();
             this.e.setHint(name);
             this.e.setText(name);
             this.t.setText("Name: ");
@@ -72,7 +105,7 @@ public class GetDialog {
 
         }
 
-        private String setName(){
+        private String getNameFromDB(){
             switch(modelType){
                 case INGREDIENT:
                     return Ingredient.getIngredient(ID).getName();
@@ -121,6 +154,12 @@ public class GetDialog {
             }
             return false;
         }
+
+        public void send(){
+            if(ModelType.RECIPE == modelType) {
+                Objects.requireNonNull(Recipe.getRecipe(this.ID)).send(activity);
+            }
+        }
     }
 
 
@@ -129,27 +168,112 @@ public class GetDialog {
     //Pump
 
     public static void setPumpVolume(Activity activity, Pump pump){
-        int vol = 0;
         if (pump != null) {
-            try {
-                pump.fill(vol);
-
-            } catch (MissingIngredientPumpException e) {
-                e.printStackTrace();
-            }
             pump.sendRefill(activity);
-        }//TODO: pump is null
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle("Setze das jetzt vorhandene Volumen:");
+
+            View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
+            GetDialog.VolumeChangeView volumeChangeView =
+                    new GetDialog.VolumeChangeView(
+                            activity,
+                            pump,
+                            v,
+                            false);
+
+            builder.setView(v);
+
+            builder.setPositiveButton("Speichern", (dialog, which) -> {
+                volumeChangeView.save();
+                volumeChangeView.send();
+
+            });
+            builder.setNeutralButton("Abbrechen", (dialog, which) -> {
+
+            });
+            builder.show();
+        }else{
+            errorMessage(activity);
+        }
     }
 
 
     public static void setPumpMinVolume(Activity activity, Pump pump){
-        int vol = 0;
         if (pump != null) {
-            pump.setMinimumPumpVolume(vol);
-            //pump.se(activity);
-            //CocktailMachine.
-            pump.calibrate(activity, 0,0,0,0);
-        }//TODO: pump is null
+            pump.sendRefill(activity);
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle("Setze das Minimalvolumen:");
+
+            View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
+            GetDialog.VolumeChangeView volumeChangeView =
+                    new GetDialog.VolumeChangeView(
+                            activity,
+                            pump,
+                            v,
+                            true);
+
+            builder.setView(v);
+
+            builder.setPositiveButton("Speichern", (dialog, which) -> {
+                volumeChangeView.save();
+                volumeChangeView.send();
+
+            });
+            builder.setNeutralButton("Abbrechen", (dialog, which) -> {
+
+            });
+            builder.show();
+        }else{
+            errorMessage(activity);
+        }
+    }
+
+
+    public static class VolumeChangeView{
+
+        private final TextView t;
+        private final EditText e;
+        private final Pump pump;
+        private final boolean minimum;
+        private final View v;
+        private final Activity activity;
+        private VolumeChangeView(Activity activity, Pump pump, View v, boolean minimum) {
+            this.activity = activity;
+            this.t = (TextView) v.findViewById(R.id.textView_edit_text);
+            this.e = (EditText) v.findViewById(R.id.editText_edit_text);
+
+            this.t.setText("Volumen: ");
+            this.e.setInputType(InputType.TYPE_CLASS_TEXT);
+            this.minimum = minimum;
+            this.pump = pump;
+            this.v = v;
+            String name = getVolumeFromDB();
+            this.e.setHint(name +" ml");
+            this.e.setText(name);
+        }
+
+        private String getVolumeFromDB(){
+            if(this.minimum){
+                return this.pump.getMinimumPumpVolume()+" ml";
+            }
+            return String.valueOf(this.pump.getVolume());
+        }
+        private int getVolume(){
+            return Integer.getInteger(e.getText().toString());
+        }
+        public boolean save(){
+            try {
+                pump.save();
+                return true;
+            } catch (NotInitializedDBException ex) {
+                ex.printStackTrace();
+            }
+            return false;
+        }
+
+        public void send(){
+            pump.sendRefill(activity, getVolume());
+        }
     }
 
 
@@ -235,6 +359,13 @@ public class GetDialog {
         builder.show();
     }
 
+    /**
+     * returns delete txt for dialog
+     * @author Johanna Reidt
+     * @param modelType
+     * @param title
+     * @return
+     */
     private static String getDeleteTitle(ModelType modelType, String title){
         StringBuilder builder = new StringBuilder();
         builder.append("Möchtest du ");
@@ -257,6 +388,13 @@ public class GetDialog {
         return builder.toString();
     }
 
+    /**
+     * deletes element from db
+     * @author Johanna Reidt
+     * @param modelType
+     * @param ID
+     * @throws NotInitializedDBException
+     */
     private static void deleteElement(ModelType modelType,
                                       Long ID) throws NotInitializedDBException {
         switch (modelType){
@@ -271,6 +409,13 @@ public class GetDialog {
         }
     }
 
+    /**
+     * delete either topic or ingredient from recipe
+     * @author Johanna Reidt
+     * @param recipe
+     * @param modelType
+     * @param ID
+     */
     private static void deleteElementFromRecipe(Recipe recipe,
                                                 ModelType modelType,
                                                 Long ID){
