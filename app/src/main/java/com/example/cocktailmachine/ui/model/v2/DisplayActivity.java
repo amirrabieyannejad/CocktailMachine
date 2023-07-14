@@ -13,6 +13,7 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityDisplayBinding;
+import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
 
 public class DisplayActivity extends BasicAcitivity {
@@ -114,7 +115,14 @@ public class DisplayActivity extends BasicAcitivity {
         Ingredient ingredient = Ingredient.getIngredient(getID());
         binding.textViewDisplayTitle.setText(ingredient.getName());;
         //TO DO: AlertDialog to change title if admin
-        setChangeTitleDialog();
+        binding.textViewDisplayTitle.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                setChangeTitleDialog();
+                return false;
+            }
+        });
+
         if(ingredient.isAvailable()){
             binding.includeDisplayAvailable.getRoot().setVisibility(View.VISIBLE);
         }else{
@@ -140,6 +148,16 @@ public class DisplayActivity extends BasicAcitivity {
             binding.includeDisplayIngredientAdmin.getRoot().setVisibility(View.VISIBLE);
             String vol = ingredient.getVolume()+" ml";
             binding.includeDisplayIngredientAdmin.textViewIngredientVolume.setText(vol);
+            final Activity activity = this;
+            binding.includeDisplayIngredientAdmin.textViewIngredientVolume.setOnLongClickListener(
+                    //GetActivity.goTo(activity, FragmentType.Model, );
+                    new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            return true;
+                        }
+                    }
+            );
         }
 
     }
