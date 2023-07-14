@@ -1,23 +1,26 @@
 package com.example.cocktailmachine.data.db.elements;
 
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 public interface DataBaseElement {
-    public long getID();
+    long getID();
 
-    public void setID(long id);
+    void setID(long id);
 
-    public boolean isAvailable();
+    boolean isAvailable();
 
-    public boolean isSaved();
+    boolean loadAvailable();
 
-    public boolean needsUpdate();
+    boolean isSaved();
+
+    boolean needsUpdate();
 
     void wasSaved();
 
     void wasChanged();
 
-    public abstract void save() throws NotInitializedDBException;
+    void save() throws NotInitializedDBException;
 
-    public abstract void delete() throws NotInitializedDBException;
+    void delete() throws NotInitializedDBException;
+
 }

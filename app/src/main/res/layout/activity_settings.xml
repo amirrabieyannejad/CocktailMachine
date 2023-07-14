@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.settings.SettingsActivity">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textViewSettingsLists"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="recipes"
+                android:padding="8dp"
+                android:text="Listen"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewSettingsPumps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="pumps"
+                android:padding="8dp"
+                android:paddingStart="16dp"
+                android:text="Pumpen"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textViewSettingsIngredients"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="ingredients"
+                android:padding="8dp"
+                android:paddingStart="16dp"
+                android:text="Zutaten"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textViewSettingsRecipes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="recipes"
+                android:padding="8dp"
+                android:paddingStart="16dp"
+                android:text="Rezepte"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textViewSettingsTopics"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="topics"
+                android:padding="8dp"
+                android:paddingStart="16dp"
+                android:text="Serviervorschläge"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textViewSettingsBluetooth"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="bluetooth"
+                android:padding="8dp"
+                android:text="Bluetooth"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewSettingsSynchronisation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="sync"
+                android:padding="8dp"
+                android:paddingStart="16dp"
+                android:text="Synchronisieren"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textViewSettingsBluetoothScan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="scan"
+                android:padding="8dp"
+                android:paddingStart="16dp"
+                android:text="Scannen"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textViewMachine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="machine"
+                android:padding="8dp"
+                android:text="CocktailMaschine"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                />
+
+
+
+            <TextView
+                android:id="@+id/textViewDB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="db"
+                android:padding="8dp"
+                android:text="Datenbank"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                />
+
+            <TextView
+                android:id="@+id/textViewSettingsLoadNew"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="loadNew"
+                android:padding="8dp"
+                android:paddingStart="16dp"
+                android:text="Komplett neuladen"
+                android:textSize="20sp" />
+
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

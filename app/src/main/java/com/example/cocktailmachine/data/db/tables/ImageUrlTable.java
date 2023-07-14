@@ -12,11 +12,18 @@ import android.os.Build;
 
 import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.elements.SQLImageUrlElement;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ *
+ * @created Fr. 23.Jun 2023 - 12:50
+ * @project CocktailMachine
+ * @author Johanna Reidt
+ */
 public abstract class ImageUrlTable extends BasicColumn<SQLImageUrlElement>{
     public String TABLE_NAME;
     public static final String COLUMN_NAME_URL = "URL";
