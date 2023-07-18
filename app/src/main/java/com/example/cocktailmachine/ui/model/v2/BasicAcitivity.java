@@ -52,6 +52,17 @@ public abstract class BasicAcitivity extends AppCompatActivity {
 
     abstract void postSetUp();
 
+    protected void load(long ID, FragmentType fragmentType, ModelType modelType){
+        this.id = ID;
+        this.modelType = modelType;
+        this.fragmentType = fragmentType;
+        setUp();
+    }
+
+    public void reload(){
+        setUp();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

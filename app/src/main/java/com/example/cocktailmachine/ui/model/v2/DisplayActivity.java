@@ -232,6 +232,7 @@ public class DisplayActivity extends BasicAcitivity {
             }
         });
     }
+    
 
 
 }

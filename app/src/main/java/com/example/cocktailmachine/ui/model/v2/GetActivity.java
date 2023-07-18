@@ -17,7 +17,7 @@ public class GetActivity {
     public static final String MODELTYPE = "MODELTYPE";
     public static final String FRAGMENTTYPE = "FRAGMENTTYPE";
     public static void goTo(Activity activity, FragmentType fragmentType, ModelType modelType){
-        //TODO
+        //TO DO
         /*
         Intent intent = new Intent(this, ModelActivity.class);
         Bundle bundle = new Bundle();
@@ -27,6 +27,7 @@ public class GetActivity {
          */
         Intent intent = new Intent();
         Bundle bundle = new Bundle();
+        bundle.putLong(ID, -1L);
         bundle.putString(FRAGMENTTYPE, fragmentType.toString());
         bundle.putString(MODELTYPE, modelType.toString());
         intent.putExtras(bundle);
@@ -35,7 +36,7 @@ public class GetActivity {
     }
 
     public static void goTo(Activity activity, FragmentType fragmentType, ModelType modelType, Long id){
-        //TODO
+        //TO DO
         /*
         Intent intent = new Intent(this, ModelActivity.class);
         Bundle bundle = new Bundle();
@@ -50,6 +51,7 @@ public class GetActivity {
         Bundle bundle = new Bundle();
         bundle.putLong(ID, id);
         bundle.putString(MODELTYPE, modelType.toString());
+        bundle.putString(FRAGMENTTYPE, fragmentType.toString());
         intent.putExtras(bundle);
         activity.startActivity(intent);
         activity.finish();
