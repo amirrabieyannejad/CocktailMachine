@@ -217,25 +217,29 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @throws JSONException
      * @throws NotInitializedDBException
      */
-    static void updatePumpStatus(JSONObject json) throws JSONException, NotInitializedDBException, MissingIngredientPumpException {
+    static void updatePumpStatus(JSONObject json)  {
         Log.i(TAG,"updatePumpStatus");
-        //TODO: USE THIS AMIR
-        JSONArray t_ids = json.names();
-        if(t_ids == null){
-            throw new JSONException("Pump IDs not readable.");
+        //TO DO: USE THIS AMIR
+        try {
+            JSONArray t_ids = json.names();
+            if (t_ids == null) {
+                throw new JSONException("Pump IDs not readable.");
+            }
+            List<Pump> toDeletePumps = Pump.getPumps();
+            for (int i = 0; i < t_ids.length(); i++) {
+                toDeletePumps.remove(
+                        makeNewOrUpdate(
+                                Objects.requireNonNull(
+                                        json.optJSONObject(
+                                                t_ids.getString(i)))));
+            }
+            for (Pump toDelete : toDeletePumps) {
+                toDelete.delete();
+            }
+            DatabaseConnection.getDataBase().loadBufferWithAvailable();
+        }catch (NotInitializedDBException|JSONException|MissingIngredientPumpException e){
+            e.printStackTrace();
         }
-        List<Pump> toDeletePumps = Pump.getPumps();
-        for(int i=0; i<t_ids.length();i++){
-            toDeletePumps.remove(
-                    makeNewOrUpdate(
-                            Objects.requireNonNull(
-                                    json.optJSONObject(
-                                            t_ids.getString(i)))));
-        }
-        for(Pump toDelete: toDeletePumps){
-            toDelete.delete();
-        }
-        DatabaseConnection.getDataBase().loadBufferWithAvailable();
 
     }
 

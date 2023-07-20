@@ -1725,6 +1725,7 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
+                Pump.updatePumpStatus(this.getResult());
 
                 Log.w(TAG, "To Save: " + this.getResult());
             }
