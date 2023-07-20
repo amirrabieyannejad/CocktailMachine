@@ -28,6 +28,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
     /**
      * Get Id.
+     *
      * @return
      */
     long getID();
@@ -37,6 +38,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     /**
      * Returns milliliters pumped in milliseconds.
      * aka minimum available pump size
+     *
      * @return minimum milliliters to be pumped
      */
     int getMinimumPumpVolume();
@@ -47,6 +49,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
     /**
      * set volume
+     *
      * @param volume
      * @throws MissingIngredientPumpException
      */
@@ -54,15 +57,15 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
     /**
      * set volume
+     *
      * @param volume
      * @throws MissingIngredientPumpException
      */
     void setMinimumPumpVolume(int volume);
 
     void setSlot(int slot);
+
     int getSlot();
-
-
 
 
     //Ingredient
@@ -70,20 +73,23 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
     /**
      * Return current ingredient set in pump.
+     *
      * @return current ingredient
      */
     Ingredient getCurrentIngredient();
 
     /**
      * Update ingredient in pump.
+     *
      * @param ingredient next ingredient.
      */
-    default void setCurrentIngredient(Ingredient ingredient){
+    default void setCurrentIngredient(Ingredient ingredient) {
         setCurrentIngredient(ingredient.getID());
     }
 
     /**
      * Update ingredient in pump.
+     *
      * @param id id of next ingredient
      */
     void setCurrentIngredient(long id);
@@ -93,6 +99,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
     /**
      * only use after db loading to connect pump and ingredient
+     *
      * @param ingredientPump
      */
     void setIngredientPump(SQLIngredientPump ingredientPump);
@@ -102,10 +109,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * Set up pumps with ingredients.
      * Load buffer with status quo from data base.
      */
-    static void loadFromDB() throws NotInitializedDBException{
+    static void loadFromDB() throws NotInitializedDBException {
         DatabaseConnection.getDataBase().loadBufferWithAvailable();
     }
-
 
 
     /**
@@ -115,7 +121,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     static List<Pump> setOverrideEmptyPumps(int numberOfPumps) throws NotInitializedDBException {
         DatabaseConnection.getDataBase().loadForSetUp();
-        for(int i=0; i<numberOfPumps;i++){
+        for (int i = 0; i < numberOfPumps; i++) {
             Pump pump = makeNew();
             pump.save();
         }
@@ -123,13 +129,13 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     }
 
 
-
-    static Pump makeNew(){
+    static Pump makeNew() {
         return new SQLPump();
     }
 
     /**
      * update pump with ingredient name and volume
+     *
      * @param liquidName
      * @param volume
      * @return pump
@@ -138,16 +144,16 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     static Pump makeNewOrUpdate(String liquidName, int volume)
             throws MissingIngredientPumpException, NotInitializedDBException {
-        Ingredient ingredient =  Ingredient.getIngredient(liquidName);
-        if(ingredient == null){
+        Ingredient ingredient = Ingredient.getIngredient(liquidName);
+        if (ingredient == null) {
             ingredient = Ingredient.makeNew(liquidName);
             ingredient.save();
         }
-        if(ingredient.getPump()==null){
+        if (ingredient.getPump() == null) {
             Pump pump = makeNew();
             pump.setCurrentIngredient(ingredient);
             pump.fill(volume);
-        }else{
+        } else {
             ingredient.getPump().fill(volume);
         }
         ingredient.save();
@@ -157,11 +163,12 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     }
 
 
-
     //JSON Object
     // creation
+
     /**
      * {"beer": 200}
+     *
      * @return
      * @throws JSONException
      */
@@ -172,7 +179,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     }
 
     /**
-     *  {"beer": 200, "lemonade": 2000, "orange juice": 2000}
+     * {"beer": 200, "lemonade": 2000, "orange juice": 2000}
+     *
      * @return {"beer": 200, "lemonade": 2000, "orange juice": 2000}
      * @throws JSONException
      * @throws NotInitializedDBException
@@ -180,14 +188,15 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     static JSONObject getLiquidStatus() throws JSONException, NotInitializedDBException {
         JSONObject json = new JSONObject();
         List<Pump> pumps = Pump.getPumps();
-        for(Pump p: pumps){
+        for (Pump p : pumps) {
             json.put(p.getIngredientName(), p.getVolume());
         }
         return json;
     }
 
     /**
-     *  {"1": {"liquid": "lemonade", "volume": 200}}
+     * {"1": {"liquid": "lemonade", "volume": 200}}
+     *
      * @return {"beer": 200, "lemonade": 2000, "orange juice": 2000}
      * @throws JSONException
      * @throws NotInitializedDBException
@@ -195,16 +204,14 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     static JSONObject getPumpStatus() throws JSONException, NotInitializedDBException {
         JSONObject json = new JSONObject();
         List<Pump> pumps = Pump.getPumps();
-        for(int i = 1; i<=pumps.size(); i++){
+        for (int i = 1; i <= pumps.size(); i++) {
             Pump p = pumps.get(i);
             JSONObject temp = new JSONObject();
             temp.put(p.getIngredientName(), p.getVolume());
-            json.put(String.valueOf(i),temp);
+            json.put(String.valueOf(i), temp);
         }
         return json;
     }
-
-
 
 
     //reading json objects
@@ -213,12 +220,13 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * {"1": {"liquid": "lemonade", "volume": 200}}
      * Set up pumps with ingredients.
      * Load buffer with status quo from data base.
+     *
      * @param json
      * @throws JSONException
      * @throws NotInitializedDBException
      */
-    static void updatePumpStatus(JSONObject json)  {
-        Log.i(TAG,"updatePumpStatus");
+    static void updatePumpStatus(JSONObject json) {
+        Log.i(TAG, "updatePumpStatus");
         //TO DO: USE THIS AMIR
         try {
             JSONArray t_ids = json.names();
@@ -237,27 +245,27 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 toDelete.delete();
             }
             DatabaseConnection.getDataBase().loadBufferWithAvailable();
-        }catch (NotInitializedDBException|JSONException|MissingIngredientPumpException e){
+        } catch (NotInitializedDBException | JSONException | MissingIngredientPumpException e) {
             e.printStackTrace();
         }
 
     }
 
     /**
-     *
      * {"beer": 200, "lemonade": 2000, "orange juice": 2000} Flüssigkeiten Status
      * Set up pumps with ingredients.
      * Load buffer with status quo from data base.
+     *
      * @param json
      * @throws JSONException
      * @throws NotInitializedDBException
      */
     static void updateLiquidStatus(JSONObject json) throws JSONException, NotInitializedDBException, MissingIngredientPumpException {
-        Log.i(TAG,"updateLiquidStatus");
+        Log.i(TAG, "updateLiquidStatus");
         //TO DO: USE THIS AMIR
         //List<Pump> pumps = DatabaseConnection.getDataBase().getPumps();
         JSONArray t_names = json.names();
-        if(t_names == null){
+        if (t_names == null) {
             throw new JSONException("Ingredient Names not readable.");
         }
         /*
@@ -294,13 +302,13 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
          */
 
         List<Pump> toDeletePumps = Pump.getPumps();
-        for(int i=0; i<t_names.length(); i++){
+        for (int i = 0; i < t_names.length(); i++) {
             toDeletePumps.remove(
                     makeNewOrUpdate(
                             t_names.optString(i),
                             json.optInt(t_names.optString(i))));
         }
-        for(Pump toDelete: toDeletePumps){
+        for (Pump toDelete : toDeletePumps) {
             toDelete.delete();
         }
         DatabaseConnection.getDataBase().loadBufferWithAvailable();
@@ -308,23 +316,24 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
     /**
      * [["beer", 250], ["lemonade", 250]] current Mixing cocktail
+     *
      * @param json
      * @throws JSONException
      * @throws NewlyEmptyIngredientException
      */
     static void currentMixingCocktail(JSONArray json) throws JSONException, NewlyEmptyIngredientException {
         //TO DO: USE THIS AMIR
-        Log.i(TAG,"updatePumpStatus");
+        Log.i(TAG, "updatePumpStatus");
         int i = 0;
         JSONArray temp = json.optJSONArray(i);
-        while(temp != null){
+        while (temp != null) {
             String name = temp.getString(0);
             int volume = temp.getInt(1);
             try {
                 Ingredient.getIngredient(name).pump(volume);
             } catch (MissingIngredientPumpException e) {
                 e.printStackTrace();
-                Log.i(TAG,"updatePumpStatus: should not happen");
+                Log.i(TAG, "updatePumpStatus: should not happen");
             }
             i++;
             temp = json.optJSONArray(i);
@@ -334,32 +343,30 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
     /**
      * {"liquid": "lemonade", "volume": 200}
+     *
      * @param jsonObject
      * @return
      */
     static Pump makeNewOrUpdate(JSONObject jsonObject) throws NotInitializedDBException, MissingIngredientPumpException {
-        return makeNewOrUpdate(jsonObject.optString("liquid"),jsonObject.optInt("volume") );
+        return makeNewOrUpdate(jsonObject.optString("liquid"), jsonObject.optInt("volume"));
     }
-
-
-
 
 
     //send with Bluetooth for a single pump
 
     /**
      * send new Pump with Bluetooth
-     ### define_pump: fügt Pumpe zu ESP hinzu
-     - user: User
-     - liquid: str
-     - volume: float
-     - slot: int
-
-     JSON-Beispiel:
-
-     {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
+     * ### define_pump: fügt Pumpe zu ESP hinzu
+     * - user: User
+     * - liquid: str
+     * - volume: float
+     * - slot: int
+     * <p>
+     * JSON-Beispiel:
+     * <p>
+     * {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
      */
-    default void sendSave(Activity activity){
+    default void sendSave(Activity activity) {
         /*
         //TO DO: AMIR
         JSONObject request = new JSONObject();
@@ -389,19 +396,20 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
     /**
      * sendRefill
-     ### refill_pump: füllt Pumpe auf
-     - user: User
-     - liquid: str
-     - slot: int
-
-     JSON-Beispiel:
-
-     {"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1}
-     * @author Johanna Reidt
+     * ### refill_pump: füllt Pumpe auf
+     * - user: User
+     * - liquid: str
+     * - slot: int
+     * <p>
+     * JSON-Beispiel:
+     * <p>
+     * {"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1}
+     *
      * @param activity
      * @param volume
+     * @author Johanna Reidt
      */
-    default void sendRefill(Activity activity, int volume){
+    default void sendRefill(Activity activity, int volume) {
         //TO DO: AMIR
         //TO DO: refillPump
         /*
@@ -429,18 +437,19 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
     /**
      * sendRefill from volume already settted und updated in db
-     ### refill_pump: füllt Pumpe auf
-     - user: User
-     - liquid: str
-     - slot: int
-
-     JSON-Beispiel:
-
-     {"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1}
-     * @author Johanna Reidt
+     * ### refill_pump: füllt Pumpe auf
+     * - user: User
+     * - liquid: str
+     * - slot: int
+     * <p>
+     * JSON-Beispiel:
+     * <p>
+     * {"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1}
+     *
      * @param activity
+     * @author Johanna Reidt
      */
-    default void sendRefill(Activity activity){
+    default void sendRefill(Activity activity) {
         //TO DO: AMIR
         //TO DO: refillPump
         /*
@@ -466,18 +475,18 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     }
 
     /**
-     ### run_pump: lässt die Pumpe für eine bestimmte Zeit laufen
-     - user: User
-     - slot: int
-     - time: int
-
-     Die Zeit wird in Millisekunden angegeben.
-
-     JSON-Beispiel:
-
-     {"cmd": "run_pump", "user": 0, "slot": 1, "time": 1000}
+     * ### run_pump: lässt die Pumpe für eine bestimmte Zeit laufen
+     * - user: User
+     * - slot: int
+     * - time: int
+     * <p>
+     * Die Zeit wird in Millisekunden angegeben.
+     * <p>
+     * JSON-Beispiel:
+     * <p>
+     * {"cmd": "run_pump", "user": 0, "slot": 1, "time": 1000}
      */
-    default void run(Activity activity, int time){
+    default void run(Activity activity, int time) {
         /*
         //TODO: runPump, when needed???
         JSONObject request = new JSONObject();
@@ -504,33 +513,34 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     }
 
 
-    default void calibrate(Activity activity){
+    default void calibrate(Activity activity) {
         //TO do
         //calibrate(activity, time1, time2, volume1, volume2);
         GetDialog.calibratePump(activity, this);
     }
 
     /**
-     ### calibrate_pump: kalibriert die Pumpe mit vorhandenen Messwerten
-     - user: User
-     - slot: int
-     - time1: int
-     - time2: int
-     - volume1: float
-     - volume2: float
-
-     Zur Kalibrierung müssen zwei Messwerte vorliegen, bei denen die Pumpe für eine unterschiedliche Zeit gelaufen ist.
-     Daraus wird dann der Vorlauf und die Pumprate berechnet.
-
-     Die Zeiten werden in Millisekunden und die Flüssigkeiten in Milliliter angegeben.
-
-     JSON-Beispiel:
-
-     {"cmd": "calibrate_pump", "user": 0, "slot": 1, "time1": 10000, "time2": 20000, "volume1": 15.0, "volume2": 20.0}
-     * @author Johanna Reidt
+     * ### calibrate_pump: kalibriert die Pumpe mit vorhandenen Messwerten
+     * - user: User
+     * - slot: int
+     * - time1: int
+     * - time2: int
+     * - volume1: float
+     * - volume2: float
+     * <p>
+     * Zur Kalibrierung müssen zwei Messwerte vorliegen, bei denen die Pumpe für eine unterschiedliche Zeit gelaufen ist.
+     * Daraus wird dann der Vorlauf und die Pumprate berechnet.
+     * <p>
+     * Die Zeiten werden in Millisekunden und die Flüssigkeiten in Milliliter angegeben.
+     * <p>
+     * JSON-Beispiel:
+     * <p>
+     * {"cmd": "calibrate_pump", "user": 0, "slot": 1, "time1": 10000, "time2": 20000, "volume1": 15.0, "volume2": 20.0}
+     *
      * @param activity
+     * @author Johanna Reidt
      */
-    default void sendCalibrate(Activity activity, int time1, int time2, float volume1, float volume2){
+    default void sendCalibrate(Activity activity, int time1, int time2, float volume1, float volume2) {
         //TO DO calibrate
         //TO DO: AMIR
         try {
@@ -547,27 +557,27 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     }
 
 
-    default void pumpTimes(Activity activity){
+    default void pumpTimes(Activity activity) {
         GetDialog.calibratePumpTimes(activity, this);
     }
 
 
     /**
-     ### set_pump_times: setzt die Kalibrierungswerte für eine Pumpe
-     - user: User
-     - slot: int
-     - time_init: int
-     - time_reverse: int
-     - rate: float
-
-     `time_init` ist die Vorlaufzeit und `time_init` die Rücklaufzeit in Millisekunden.
-     Normalerweise sollten diese Werte ähnlich oder gleich sein. Die Rate wird in mL/ms angegeben.
-
-     JSON-Beispiel:
-
-     {"cmd": "set_pump_times", "user": 0, "slot": 1, "time_init": 1000, "time_reverse": 1000, "rate": 1.0}
+     * ### set_pump_times: setzt die Kalibrierungswerte für eine Pumpe
+     * - user: User
+     * - slot: int
+     * - time_init: int
+     * - time_reverse: int
+     * - rate: float
+     * <p>
+     * `time_init` ist die Vorlaufzeit und `time_init` die Rücklaufzeit in Millisekunden.
+     * Normalerweise sollten diese Werte ähnlich oder gleich sein. Die Rate wird in mL/ms angegeben.
+     * <p>
+     * JSON-Beispiel:
+     * <p>
+     * {"cmd": "set_pump_times", "user": 0, "slot": 1, "time_init": 1000, "time_reverse": 1000, "rate": 1.0}
      */
-    public default void sendPumpTimes(Activity activity, int timeInit, int timeReverse, float rate){
+    public default void sendPumpTimes(Activity activity, int timeInit, int timeReverse, float rate) {
         //TO  DO: setPumpTimes
         //TO DO: AMIR
 
@@ -579,17 +589,14 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     }
 
 
-
-
-
-
-
     //FOR ALL PUMPS
+
     /**
      * ask for pump status to update db with availability
+     *
      * @param activity
      */
-    static void sync(Activity activity){
+    static void sync(Activity activity) {
         //TO DO sync
         readPumpStatus(activity);
         DatabaseConnection.localRefresh();
@@ -597,10 +604,11 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
     /**
      * read pump status without refresh of availability
-     * @author Johanna Reidt
+     *
      * @param activity
+     * @author Johanna Reidt
      */
-    static void readPumpStatus(Activity activity){
+    static void readPumpStatus(Activity activity) {
         try {
             BluetoothSingleton.getInstance().adminReadPumpsStatus();
         } catch (JSONException | InterruptedException e) {
@@ -609,12 +617,12 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     }
 
     /**
-     *
      * read liquid status without refresh of availability
-     * @author Johanna Reidt
+     *
      * @param activity
+     * @author Johanna Reidt
      */
-    static void readLiquidStatus(Activity activity){
+    static void readLiquidStatus(Activity activity) {
 
         try {
             BluetoothSingleton.getInstance().adminReadLiquidsStatus();
@@ -623,15 +631,11 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         }
     }
 
-    static void calibratePumps(Activity activity){
-        for(Pump p: getPumps()){
+    static void calibratePumps(Activity activity) {
+        for (Pump p : getPumps()) {
             p.calibrate(activity);
         }
     }
-
-
-
-
 
 
     //general access to db to all pumps
@@ -639,9 +643,10 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     /**
      * Static access to pumps.
      * Get available pumps.
+     *
      * @return pumps
      */
-     static List<Pump> getPumps() {
+    static List<Pump> getPumps() {
         try {
             return DatabaseConnection.getDataBase().getPumps();
         } catch (NotInitializedDBException e) {
@@ -653,6 +658,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     /**
      * Static access to pumps.
      * Get available pump with id k
+     *
      * @param id pump id k
      * @return
      */
@@ -665,7 +671,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         }
     }
 
-    static Pump getPumpWithSlot(int slot){
+    static Pump getPumpWithSlot(int slot) {
 
         try {
             return DatabaseConnection.getDataBase().getPumpWithSlot(slot);
@@ -674,7 +680,6 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             return null;
         }
     }
-
 
 
 }
