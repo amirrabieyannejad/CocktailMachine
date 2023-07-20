@@ -503,6 +503,16 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         }
     }
 
+
+    default void calibrate(Activity activity){
+        //TODO
+        int time1;
+        int time2;
+        float volume1;
+        float volume2;
+        calibrate(activity, time1, time2, volume1, volume2);
+    }
+
     /**
      ### calibrate_pump: kalibriert die Pumpe mit vorhandenen Messwerten
      - user: User
@@ -512,7 +522,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      - volume1: float
      - volume2: float
 
-     Zur Kalibrierung müssen zwei Messwerte vorliegen, bei denen die Pumpe für eine unterschiedliche Zeit gelaufen ist. Daraus wird dann der Vorlauf und die Pumprate berechnet.
+     Zur Kalibrierung müssen zwei Messwerte vorliegen, bei denen die Pumpe für eine unterschiedliche Zeit gelaufen ist.
+     Daraus wird dann der Vorlauf und die Pumprate berechnet.
 
      Die Zeiten werden in Millisekunden und die Flüssigkeiten in Milliliter angegeben.
 
@@ -634,6 +645,12 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         }
     }
 
+    static void calibratePumps(Activity activity){
+        for(Pump p: getPumps()){
+            p.calibrate(activity);
+        }
+    }
+
 
 
 
@@ -669,5 +686,17 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             return null;
         }
     }
+
+    static Pump getPumpWithSlot(int slot){
+
+        try {
+            return DatabaseConnection.getDataBase().getPumpWithSlot(slot);
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
 
 }
