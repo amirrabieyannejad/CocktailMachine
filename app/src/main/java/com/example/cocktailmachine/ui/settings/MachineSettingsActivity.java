@@ -12,6 +12,7 @@ import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.enums.Status;
+import com.example.cocktailmachine.ui.model.v2.GetDialog;
 
 /**
  *
@@ -41,6 +42,8 @@ public class MachineSettingsActivity extends AppCompatActivity {
         //TO DO Go To Pump Settings
         Toast.makeText(this,"calibratePump",Toast.LENGTH_SHORT).show();
 
+        //TODO: Pump.calibrate
+        Pump.calibratePumps(this);
         Intent intent = new Intent(this, PumpSettingsActivity.class);
         startActivity(intent);
     }
@@ -52,8 +55,8 @@ public class MachineSettingsActivity extends AppCompatActivity {
      */
     public void calibrateScale(View view) {
         //TO DO: open calibration Scale settings
-        Toast.makeText(this,"calibrateScale",Toast.LENGTH_SHORT).show();
-        //Pump.calibrate(this);
+        //Toast.makeText(this,"calibrateScale",Toast.LENGTH_SHORT).show();
+        CocktailMachine.calibrateScale(this);
 
         Intent intent = new Intent(this, ScaleSettingsActivity.class);
         startActivity(intent);
@@ -99,6 +102,7 @@ public class MachineSettingsActivity extends AppCompatActivity {
      */
     public void restart(View view) {
         CocktailMachine.restart(this);
+        Toast.makeText(this,"Die Cocktailmaschine wurde wieder gestartet!",Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -113,6 +117,7 @@ public class MachineSettingsActivity extends AppCompatActivity {
      */
     public void factoryReset(View view) {
         CocktailMachine.factoryReset(this);
+        Toast.makeText(this,"Die Cocktailmaschine wurde geresettet!",Toast.LENGTH_SHORT).show();
     }
 
 }
