@@ -254,7 +254,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     static void updateLiquidStatus(JSONObject json) throws JSONException, NotInitializedDBException, MissingIngredientPumpException {
         Log.i(TAG,"updateLiquidStatus");
-        //TODO: USE THIS AMIR
+        //TO DO: USE THIS AMIR
         //List<Pump> pumps = DatabaseConnection.getDataBase().getPumps();
         JSONArray t_names = json.names();
         if(t_names == null){
@@ -312,8 +312,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @throws JSONException
      * @throws NewlyEmptyIngredientException
      */
-    static void updatePumpStatus(JSONArray json) throws JSONException, NewlyEmptyIngredientException {
-        //TODO: USE THIS AMIR
+    static void currentMixingCocktail(JSONArray json) throws JSONException, NewlyEmptyIngredientException {
+        //TO DO: USE THIS AMIR
         Log.i(TAG,"updatePumpStatus");
         int i = 0;
         JSONArray temp = json.optJSONArray(i);
@@ -361,7 +361,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     default void sendSave(Activity activity){
         /*
-        //TODO: AMIR
+        //TO DO: AMIR
         JSONObject request = new JSONObject();
         try {
             request.put("cmd", "define_pump");
@@ -372,7 +372,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-        //TODO: send define pump
+        //TO DO: send define pump
         JSONObject answer = new JSONObject();
 
          */
@@ -402,8 +402,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @param volume
      */
     default void sendRefill(Activity activity, int volume){
-        //TODO: AMIR
-        //TODO: refillPump
+        //TO DO: AMIR
+        //TO DO: refillPump
         /*
         JSONObject request = new JSONObject();
         try {
@@ -441,8 +441,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @param activity
      */
     default void sendRefill(Activity activity){
-        //TODO: AMIR
-        //TODO: refillPump
+        //TO DO: AMIR
+        //TO DO: refillPump
         /*
         JSONObject request = new JSONObject();
         try {
@@ -523,8 +523,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @param activity
      */
     default void calibrate(Activity activity, int time1, int time2, float volume1, float volume2){
-        //TODO calibrate
-        //TODO: AMIR
+        //TO DO calibrate
+        //TO DO: AMIR
         try {
             BluetoothSingleton.getInstance().adminCalibratePump(
                     this.getSlot(),
@@ -554,8 +554,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      {"cmd": "set_pump_times", "user": 0, "slot": 1, "time_init": 1000, "time_reverse": 1000, "rate": 1.0}
      */
     public default void setPumpTimes(Activity activity, int timeInit, int timeReverse, float rate){
-        //TODO: setPumpTimes
-        //TODO: AMIR
+        //TO  DO: setPumpTimes
+        //TO DO: AMIR
 
         try {
             BluetoothSingleton.getInstance().adminSetPumpTimes(this.getSlot(), timeInit, timeReverse, rate);
@@ -576,7 +576,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @param activity
      */
     static void sync(Activity activity){
-        //TODO sync
+        //TO DO sync
         readPumpStatus(activity);
         DatabaseConnection.localRefresh();
     }
@@ -586,8 +586,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @param activity
      */
     static void clean(Activity activity){
-        //TODO: AMIR
-        //TODO: clean
+        //TO DO: AMIR
+        //TO DO: clean
         //
         /*
         JSONObject cmd = new JSONObject();
