@@ -2,12 +2,10 @@ package com.example.cocktailmachine.ui.settings;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.data.CocktailMachine;
 
 import com.example.cocktailmachine.data.Pump;
 /**
@@ -69,7 +67,7 @@ public class PumpSettingsActivity extends AppCompatActivity {
 
         //open alert dialog pick pump
         Pump pump = Pump.getPump(0);
-        pump.setPumpTimes(this, 0,0,0);
+        pump.sendPumpTimes(this, 0,0,0);
 
     }
 

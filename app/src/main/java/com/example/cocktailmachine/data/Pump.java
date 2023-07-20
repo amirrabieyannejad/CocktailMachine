@@ -12,7 +12,7 @@ import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
-import com.example.cocktailmachine.data.enums.AdminRights;
+import com.example.cocktailmachine.ui.model.v2.GetDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -505,12 +505,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
 
     default void calibrate(Activity activity){
-        //TODO
-        int time1;
-        int time2;
-        float volume1;
-        float volume2;
-        calibrate(activity, time1, time2, volume1, volume2);
+        //TO do
+        //calibrate(activity, time1, time2, volume1, volume2);
+        GetDialog.calibratePump(activity, this);
     }
 
     /**
@@ -533,7 +530,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @author Johanna Reidt
      * @param activity
      */
-    default void calibrate(Activity activity, int time1, int time2, float volume1, float volume2){
+    default void sendCalibrate(Activity activity, int time1, int time2, float volume1, float volume2){
         //TO DO calibrate
         //TO DO: AMIR
         try {
@@ -546,6 +543,11 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }
+
+    }
+
+
+    default void pumpTimes(Activity activity){
 
     }
 
@@ -564,7 +566,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
      {"cmd": "set_pump_times", "user": 0, "slot": 1, "time_init": 1000, "time_reverse": 1000, "rate": 1.0}
      */
-    public default void setPumpTimes(Activity activity, int timeInit, int timeReverse, float rate){
+    public default void sendPumpTimes(Activity activity, int timeInit, int timeReverse, float rate){
         //TO  DO: setPumpTimes
         //TO DO: AMIR
 

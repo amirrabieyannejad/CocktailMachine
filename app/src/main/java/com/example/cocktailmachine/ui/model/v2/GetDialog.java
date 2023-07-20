@@ -274,6 +274,92 @@ public class GetDialog {
 
 
 
+
+
+
+
+    //Pumpenkalibrierung
+
+    public static void calibratePump(Activity activity, Pump pump){
+        if (pump != null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle("Setze die Kalibrierungenwerte:");
+
+            View v = activity.getLayoutInflater().inflate(R.layout.layout_calibrate_pump, null);
+            GetDialog.CalibratePumpChangeView calibratePumpChangeView =
+                    new GetDialog.CalibratePumpChangeView(
+                            activity,
+                            pump,
+                            v);
+
+            builder.setView(v);
+
+            builder.setPositiveButton("Speichern", (dialog, which) -> {
+                calibratePumpChangeView.send();
+
+            });
+            builder.setNeutralButton("Abbrechen", (dialog, which) -> {
+
+            });
+            builder.show();
+        }else{
+            errorMessage(activity);
+        }
+    }
+
+    public static class CalibratePumpChangeView{
+        private final EditText time1;
+        private final EditText time2;
+        private final EditText vol1;
+        private final EditText vol2;
+        private final Pump pump;
+        private final View v;
+        private final Activity activity;
+        private CalibratePumpChangeView(Activity activity, Pump pump, View v) {
+            this.activity = activity;
+            this.time1 = (EditText) v.findViewById(R.id.editText_time1);
+            this.time2 = (EditText) v.findViewById(R.id.editText_time2);
+            this.vol1 = (EditText) v.findViewById(R.id.editText_vol1);
+            this.vol2 = (EditText) v.findViewById(R.id.editText_vol2);
+
+            this.pump = pump;
+            this.v = v;
+        }
+
+        private int getTime1(){
+            return Integer.getInteger(this.time1.getText().toString());
+        }
+
+        private int getTime2(){
+            return Integer.getInteger(this.time2.getText().toString());
+        }
+
+        private float getVolume1(){
+            return Float.valueOf(this.vol1.getText().toString());
+        }
+
+        private float getVolume2(){
+            return Float.valueOf(this.vol2.getText().toString());
+        }
+
+        public void send(){
+            pump.sendCalibrate(activity,
+                    getTime1(),
+                    getTime2(),
+                    getVolume1(),
+                    getVolume2());
+        }
+    }
+
+
+
+
+
+
+
+
+
+
     //Calibrate Scale
 
     /**
