@@ -13,7 +13,6 @@ import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.AdminRights;
 
 import com.example.cocktailmachine.databinding.ActivitySettingsBinding;
@@ -191,7 +190,7 @@ public class SettingsActivity extends AppCompatActivity {
      */
     public void sync(View view) {
         Pump.sync(this);
-        Recipe.sync(this);
+        Recipe.syncRecipeDBWithCocktailmachine(this);
         Toast.makeText(this,"Synchronisierung läuft!",Toast.LENGTH_SHORT).show();
     }
 

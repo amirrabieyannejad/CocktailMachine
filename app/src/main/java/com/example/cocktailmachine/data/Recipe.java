@@ -2,7 +2,6 @@ package com.example.cocktailmachine.data;
 
 
 import android.app.Activity;
-import android.content.Context;
 
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
@@ -12,7 +11,6 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
-import com.example.cocktailmachine.data.enums.AdminRights;
 
 
 import org.json.JSONArray;
@@ -213,6 +211,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         //TO DO: AMIR **DONE**
     }
 
+
     /**
      * Sends to CocktailMachine to get saved.
      * {"cmd": "define_recipe", "user": 0, "name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}
@@ -304,8 +303,8 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @author Johanna Reidt
      * @param activity
      */
-    static void sync(Activity activity){
-        //TODO: Sync, get alle recipes from bluetooth
+    static void syncRecipeDBWithCocktailmachine(Activity activity){
+        //TO DO: Sync, get alle recipes from bluetooth
 
         /*JSONArray answer = new JSONArray();
         try {

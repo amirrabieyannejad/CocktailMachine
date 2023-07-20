@@ -45,7 +45,7 @@ public class GetDialog {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Pump.sync(activity);
-                Recipe.sync(activity);
+                Recipe.syncRecipeDBWithCocktailmachine(activity);
                 Toast.makeText(activity,"Synchronisierung läuft!",Toast.LENGTH_SHORT).show();
             }
         });
