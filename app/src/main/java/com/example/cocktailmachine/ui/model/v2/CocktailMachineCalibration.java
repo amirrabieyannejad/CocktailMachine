@@ -23,7 +23,7 @@ public class CocktailMachineCalibration {
             return;
         }
         GetDialog.setPumpNumber(activity);
-        Pump.calibratePumps(activity);
+        Pump.calibratePumpsAndTimes(activity);
     }
 
 }

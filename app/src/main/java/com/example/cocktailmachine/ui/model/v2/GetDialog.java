@@ -353,6 +353,76 @@ public class GetDialog {
     }
 
 
+    public static void calibrateAllPumps(Activity activity){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Setze die Kalibrierungenwerte:");
+
+        View v = activity.getLayoutInflater().inflate(R.layout.layout_calibrate_pump, null);
+        GetDialog.CalibrateAllPumpChangeView calibrateAllPumpChangeView =
+                new GetDialog.CalibrateAllPumpChangeView(
+                        activity,
+                        v);
+
+        builder.setView(v);
+        builder.setPositiveButton("Speichern", (dialog, which) -> {
+                calibrateAllPumpChangeView.send();
+                Toast.makeText(activity, "Kalibrierung von Pumpe fertig.", Toast.LENGTH_SHORT).show();
+
+            });
+        builder.setNeutralButton("Abbrechen", (dialog, which) -> {
+
+            });
+        builder.show();
+
+    }
+
+    public static class CalibrateAllPumpChangeView{
+        private final EditText time1;
+        private final EditText time2;
+        private final EditText vol1;
+        private final EditText vol2;
+        private final View v;
+        private final Activity activity;
+        private CalibrateAllPumpChangeView(Activity activity, View v) {
+            this.activity = activity;
+            this.time1 = (EditText) v.findViewById(R.id.editText_time1);
+            this.time2 = (EditText) v.findViewById(R.id.editText_time2);
+            this.vol1 = (EditText) v.findViewById(R.id.editText_vol1);
+            this.vol2 = (EditText) v.findViewById(R.id.editText_vol2);
+            this.v = v;
+        }
+
+        private int getTime1(){
+            return Integer.getInteger(this.time1.getText().toString());
+        }
+
+        private int getTime2(){
+            return Integer.getInteger(this.time2.getText().toString());
+        }
+
+        private float getVolume1(){
+            return Float.valueOf(this.vol1.getText().toString());
+        }
+
+        private float getVolume2(){
+            return Float.valueOf(this.vol2.getText().toString());
+        }
+
+        public void send(){
+            for(Pump p: Pump.getPumps()) {
+                p.sendCalibrate(activity,
+                        getTime1(),
+                        getTime2(),
+                        getVolume1(),
+                        getVolume2());
+            }
+        }
+    }
+
+
+
+
+
     //Pumpen times
     public static void calibratePumpTimes(Activity activity, Pump pump){
         if (pump != null) {
@@ -480,6 +550,9 @@ public class GetDialog {
             }
         }
     }
+
+
+
 
 
     //Alle Pumpenkalibrieren

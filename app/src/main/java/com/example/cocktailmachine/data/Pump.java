@@ -656,16 +656,16 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         }
     }
 
-    static void calibratePumps(Activity activity) {
+    static void calibratePumpsAndTimes(Activity activity) {
         //Anzahl
         //Setze alle gleicher maßen
         //Kalibrarierung
         //Skalierung
         //Zutat
 
+        GetDialog.calibrateAllPumps(activity);
         GetDialog.calibrateAllPumpTimes(activity);
     }
-
 
 
 
