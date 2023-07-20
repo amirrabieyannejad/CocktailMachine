@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
@@ -51,6 +52,10 @@ public class GetDialog {
         builder.show();
     }
 
+
+
+
+
     //Title
 
     /**
@@ -84,6 +89,7 @@ public class GetDialog {
         });
         builder.show();
     }
+
     public static class TitleChangeView{
 
         private final TextView t;
@@ -145,6 +151,10 @@ public class GetDialog {
             }
         }
     }
+
+
+
+
 
 
 
@@ -261,6 +271,82 @@ public class GetDialog {
 
 
 
+
+
+
+    //Calibrate Scale
+
+    /**
+     * calibrate scale
+     * @author Johanna Reidt
+     * @param activity
+     */
+    public static void calibrateScale(Activity activity) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Setze jetzt das jetzige Gewicht auf der Waage:");
+
+        View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
+        GetDialog.ScaleChangeView scaleChangeView =
+                new GetDialog.ScaleChangeView(
+                        activity,
+                        v);
+
+        builder.setView(v);
+
+        builder.setPositiveButton("Speichern", (dialog, which) -> {
+            scaleChangeView.send();
+
+        });
+        builder.setNeutralButton("Abbrechen", (dialog, which) -> {
+
+        });
+        builder.show();
+    }
+
+    public static class ScaleChangeView extends FloatChangeView{
+        private ScaleChangeView(Activity activity, View v) {
+            super(activity, v, "Gewicht");
+        }
+        public void send(){
+            CocktailMachine.sendCalibrateScale(super.activity, super.getFloat() );
+        }
+    }
+
+    public abstract static class FloatChangeView{
+
+        private final TextView t;
+        private final EditText e;
+        private final View v;
+        private final Activity activity;
+        private FloatChangeView(Activity activity, View v, String title ) {
+            this.activity = activity;
+            this.t = (TextView) v.findViewById(R.id.textView_edit_text);
+            this.e = (EditText) v.findViewById(R.id.editText_edit_text);
+
+            this.t.setText(title+": ");
+            this.e.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+            this.v = v;
+            String name = getPreFloat();
+            this.e.setHint(name);
+            //this.e.setText(name);
+        }
+
+        private String getPreFloat(){
+            return String.valueOf("9738");
+        }
+        private float getFloat(){
+            return Float.valueOf(e.getText().toString());
+        }
+
+        public abstract void send();
+
+    }
+
+
+
+
+
+
     //Alcoholic
     public static void setAlcoholic(Activity activity, Ingredient ingredient){
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -283,6 +369,10 @@ public class GetDialog {
         });
         builder.show();
     }
+
+
+
+
 
 
     //Description
@@ -340,6 +430,11 @@ public class GetDialog {
     }
 
 
+
+
+
+
+
     //Pick a ingredient for pump
     public static void chooseIngredient(Activity activity, Pump pump){
         List<Ingredient> ingredients= Ingredient.getAllIngredients();
@@ -386,6 +481,9 @@ public class GetDialog {
 
 
 
+
+
+
     //DELETE FROM RECIPE
     /**
      * delete element with id from type modeltype is deleted
@@ -418,6 +516,10 @@ public class GetDialog {
         });
         builder.show();
     }
+
+
+
+
 
 
     //DELETE FOR ALL

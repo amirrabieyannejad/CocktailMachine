@@ -1,28 +1,18 @@
 package com.example.cocktailmachine.data;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.text.InputType;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
-
-import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
-import com.example.cocktailmachine.data.enums.AdminRights;
-import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
+import com.example.cocktailmachine.ui.model.v2.GetDialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Random;
+
 public class CocktailMachine {
-    //TODO: AMIR
+    //TO DO: AMIR
 
 
     //FOR SENDING TO Bluetooth
@@ -47,12 +37,15 @@ public class CocktailMachine {
         //TO DO: tareScale
         try {
             BluetoothSingleton.getInstance().adminTareScale();
+            Toast.makeText(activity, "Tarierung der Waage eingeleitet.",Toast.LENGTH_SHORT).show();
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
+            Toast.makeText(activity, "ERROR",Toast.LENGTH_SHORT).show();
         }
     }
 
     /**
+     * send to esp with bluetooth
      ### calibrate_scale: kalibriert die Waage
      - user: User
      - weight: float
@@ -63,18 +56,26 @@ public class CocktailMachine {
 
      {"cmd": "calibrate_scale", "user": 0, "weight": 100.0}
      */
-    public static void calibrateScale(Activity activity, float weight){
-        //TODO: calibrateScale
+    public static void sendCalibrateScale(Activity activity, float weight){
+        //TO DO: calibrateScale
         try {
             BluetoothSingleton.getInstance().adminCalibrateScale(weight);
+            Toast.makeText(activity, "Kalibrierung der Waage mit Gewicht: "+weight+" g",Toast.LENGTH_SHORT).show();
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
+            Toast.makeText(activity, "ERROR",Toast.LENGTH_SHORT).show();
         }
     }
 
+    /**
+     * calibrate Scale with Dialog view
+     * @author Johanna Reidt
+     * @param activity
+     */
     public static void calibrateScale(Activity activity){
-        //TODO: calibrateScale
-        //TODO get Weight with dialog
+        //TO DO: calibrateScale
+        //TO DO get Weight with dialog
+        GetDialog.calibrateScale(activity);
 
     }
 
@@ -88,18 +89,20 @@ public class CocktailMachine {
 
      {"cmd": "set_scale_factor", "user": 0, "factor": 1.0}
      */
-    public static void setScaleFactor(Activity activity){
+    public static void scaleFactor(Activity activity){
         //TODO: setScaleFactor
         //TODO get factor with dialog
 
     }
 
-    public static void sendScale(Activity activity, Float factor){
+    public static void sendScaleFactor(Activity activity, Float factor){
         //TO DO: send scale factor
         try {
             BluetoothSingleton.getInstance().adminSetScaleFactor(factor);
+            Toast.makeText(activity, "Skalierung der Waage mit Faktor: "+factor,Toast.LENGTH_SHORT).show();
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
+            Toast.makeText(activity, "ERROR",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -196,7 +199,11 @@ public class CocktailMachine {
 
 
 
-
+    public static boolean isCocktailMachineSet(Activity activity){
+        //TODO: add bluetooth /esp implamention
+        Random r = new Random(42);
+        return r.nextDouble() >= 0.5;
+    }
 
     /**
      ### clean: reinigt die Maschine
@@ -219,7 +226,7 @@ public class CocktailMachine {
      {"cmd": "restart", "user": 0}
      */
     public static void restart(Activity activity){
-        //TODO: restart
+        //TO DO: restart
         try {
             BluetoothSingleton.getInstance().adminRestart();
         } catch (JSONException | InterruptedException e) {
@@ -238,7 +245,7 @@ public class CocktailMachine {
 
      */
     public static void factoryReset(Activity activity){
-        //TODO: factoryReset
+        //TO DO: factoryReset
         try {
             BluetoothSingleton.getInstance().adminFactoryReset();
         } catch (JSONException | InterruptedException e) {
@@ -249,7 +256,7 @@ public class CocktailMachine {
 
 
     /**
-     * TODO: find usage
+     * TO DO: find usage
      *
      * to be called if cocktail done and new Cocktail should be mixed
      * reset: reset the machine so that it can make a new cocktail
@@ -260,14 +267,17 @@ public class CocktailMachine {
      * @author Johanna Reidt
      * @param activity
      */
+    /*
     public static void reset(Activity activity){
-        //TODO: factoryReset
+        //TO DO: factoryReset
         try {
             BluetoothSingleton.getInstance().adminFactoryReset();
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }
     }
+
+     */
 
 }
 
