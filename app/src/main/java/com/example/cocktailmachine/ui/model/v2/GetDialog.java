@@ -3,10 +3,13 @@ package com.example.cocktailmachine.ui.model.v2;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.database.DataSetObserver;
 import android.text.InputType;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -161,7 +164,7 @@ public class GetDialog {
 
     //Pump Volume
 
-    public static void setPumpVolume(Activity activity, Pump pump){
+    public static void setPumpVolume(Activity activity, Pump pump, boolean setPumpMinVol){
         if (pump != null) {
             pump.sendRefill(activity);
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -180,6 +183,9 @@ public class GetDialog {
             builder.setPositiveButton("Speichern", (dialog, which) -> {
                 volumeChangeView.save();
                 volumeChangeView.send();
+                if(setPumpMinVol){
+                    GetDialog.setPumpMinVolume(activity, pump);
+                }
 
             });
             builder.setNeutralButton("Abbrechen", (dialog, which) -> {
@@ -271,6 +277,48 @@ public class GetDialog {
 
 
 
+    //pump ingredients
+    public static void setPumpIngredient(Activity activity, Pump pump, boolean setPumpVol, boolean setPumpMinVol){
+        if (pump != null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle("Setze die Zutat:");
+
+            List<Ingredient> ingredients = Ingredient.getAllIngredients();
+            ArrayList<String> names = new ArrayList<>();
+            for(Ingredient ingredient: ingredients){
+                names.add(ingredient.getName());
+            }
+
+            ArrayAdapter adapter = new ArrayAdapter<>(
+                    activity,
+                    android.R.layout.simple_list_item_1,
+                    names);
+
+            builder.setAdapter(adapter,
+                    (dialog, which) -> {
+                        pump.setCurrentIngredient(ingredients.get(which));
+                        Toast.makeText(activity, names.get(which)+" gewählt.",Toast.LENGTH_SHORT).show();
+                    });
+
+            builder.setPositiveButton("Speichern", (dialog, which) -> {
+                pump.sendSave(activity);
+                if(setPumpVol) {
+                    GetDialog.setPumpVolume(activity, pump, setPumpMinVol);
+                }
+            });
+            builder.setNeutralButton("Abbrechen", (dialog, which) -> {
+
+            });
+            builder.show();
+        }else{
+            errorMessage(activity);
+        }
+    }
+
+
+
+
+
 
 
 
@@ -352,6 +400,30 @@ public class GetDialog {
         }
     }
 
+
+    public static void calibrateAllPumpsAndTimes(Activity activity){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Setze die Kalibrierungenwerte:");
+
+        View v = activity.getLayoutInflater().inflate(R.layout.layout_calibrate_pump, null);
+        GetDialog.CalibrateAllPumpChangeView calibrateAllPumpChangeView =
+                new GetDialog.CalibrateAllPumpChangeView(
+                        activity,
+                        v);
+
+        builder.setView(v);
+        builder.setPositiveButton("Speichern", (dialog, which) -> {
+            calibrateAllPumpChangeView.send();
+            Toast.makeText(activity, "Kalibrierung von Pumpe fertig.", Toast.LENGTH_SHORT).show();
+            GetDialog.calibrateAllPumpTimes(activity);
+
+        });
+        builder.setNeutralButton("Abbrechen", (dialog, which) -> {
+
+        });
+        builder.show();
+
+    }
 
     public static void calibrateAllPumps(Activity activity){
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);

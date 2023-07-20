@@ -663,8 +663,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         //Skalierung
         //Zutat
 
-        GetDialog.calibrateAllPumps(activity);
-        GetDialog.calibrateAllPumpTimes(activity);
+        GetDialog.calibrateAllPumpsAndTimes(activity);
+        //GetDialog.calibrateAllPumpTimes(activity);
     }
 
 

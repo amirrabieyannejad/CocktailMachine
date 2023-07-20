@@ -24,6 +24,9 @@ public class CocktailMachineCalibration {
         }
         GetDialog.setPumpNumber(activity);
         Pump.calibratePumpsAndTimes(activity);
+        for(Pump p: Pump.getPumps()){
+            GetDialog.setPumpIngredient(activity, p, true, true);
+        }
     }
 
 }
