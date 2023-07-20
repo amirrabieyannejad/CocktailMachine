@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
+import com.example.cocktailmachine.ui.model.v2.GetActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -77,11 +78,16 @@ public class AdminRights {
      * init user with bluetooth
      * @return
      */
-    public static void initUser(Activity activity, String name)
-            throws JSONException, InterruptedException {
-        //TODO: init user  Dummy Function **OK**
-        //TODO: AMIR  ** JOHANNA bitte kontrollieren **
-        bluetoothSingleton.initUser(name);
+    public static void initUser(Activity activity, String name){
+        //TO DO: init user  Dummy Function **OK**
+        //TO DO: AMIR  ** JOHANNA bitte kontrollieren **
+        try {
+            bluetoothSingleton.initUser(name);
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+            Toast.makeText(activity, "Initialisierung des User ist fehlgeschlagen!", Toast.LENGTH_SHORT).show();
+            GetActivity.startAgain(activity);
+        }
 
         /*
 

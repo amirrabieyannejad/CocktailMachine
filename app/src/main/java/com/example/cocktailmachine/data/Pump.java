@@ -33,6 +33,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     long getID();
 
+
+
     //Volume
 
     /**
@@ -63,9 +65,14 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     void setMinimumPumpVolume(int volume);
 
+
+    //Slot
+
     void setSlot(int slot);
 
     int getSlot();
+
+
 
 
     //Ingredient
@@ -93,6 +100,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @param id id of next ingredient
      */
     void setCurrentIngredient(long id);
+
+
+
 
 
     //DATA BASE Stuff
@@ -163,7 +173,12 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     }
 
 
+
+
+
+
     //JSON Object
+
     // creation
 
     /**
@@ -212,6 +227,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         }
         return json;
     }
+
+
 
 
     //reading json objects
@@ -350,6 +367,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     static Pump makeNewOrUpdate(JSONObject jsonObject) throws NotInitializedDBException, MissingIngredientPumpException {
         return makeNewOrUpdate(jsonObject.optString("liquid"), jsonObject.optInt("volume"));
     }
+
+
+
 
 
     //send with Bluetooth for a single pump
@@ -632,10 +652,19 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     }
 
     static void calibratePumps(Activity activity) {
+        //Anzahl
+        //Setze alle gleicher maßen
+        //Kalibrarierung
+        //Skalierung
+        //Zutat
+
         for (Pump p : getPumps()) {
             p.calibrate(activity);
         }
     }
+
+
+
 
 
     //general access to db to all pumps

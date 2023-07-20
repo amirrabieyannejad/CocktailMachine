@@ -296,6 +296,7 @@ public class GetDialog {
 
             builder.setPositiveButton("Speichern", (dialog, which) -> {
                 calibratePumpChangeView.send();
+                Toast.makeText(activity, "Kalibrierung von Pumpe fertig.", Toast.LENGTH_SHORT).show();
 
             });
             builder.setNeutralButton("Abbrechen", (dialog, which) -> {
@@ -369,6 +370,7 @@ public class GetDialog {
 
             builder.setPositiveButton("Speichern", (dialog, which) -> {
                 calibratePumpTimesChangeView.send();
+                Toast.makeText(activity, "Kalibrierung von Pumpzeiten fertig.", Toast.LENGTH_SHORT).show();
 
             });
             builder.setNeutralButton("Abbrechen", (dialog, which) -> {
@@ -417,6 +419,10 @@ public class GetDialog {
                     getRate());
         }
     }
+
+
+    //Alle Pumpenkalibrieren
+
 
 
 

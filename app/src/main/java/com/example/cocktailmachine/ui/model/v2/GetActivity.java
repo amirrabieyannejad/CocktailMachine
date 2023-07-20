@@ -56,4 +56,8 @@ public class GetActivity {
         activity.startActivity(intent);
         activity.finish();
     }
+
+    public static void startAgain(Activity activity) {
+        //TODO: go back to device scan
+    }
 }
