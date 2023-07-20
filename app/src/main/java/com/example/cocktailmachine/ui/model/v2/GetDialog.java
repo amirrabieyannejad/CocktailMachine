@@ -312,6 +312,45 @@ public class GetDialog {
         }
     }
 
+
+
+
+    /**
+     * calibrate scale
+     * @author Johanna Reidt
+     * @param activity
+     */
+    public static void calibrateScaleFactor(Activity activity) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Setze den Skalierungsfaktor:");
+
+        View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
+        GetDialog.ScaleFactorChangeView scaleFactorChangeView =
+                new GetDialog.ScaleFactorChangeView(
+                        activity,
+                        v);
+
+        builder.setView(v);
+
+        builder.setPositiveButton("Speichern", (dialog, which) -> {
+            scaleFactorChangeView.send();
+
+        });
+        builder.setNeutralButton("Abbrechen", (dialog, which) -> {
+
+        });
+        builder.show();
+    }
+
+    public static class ScaleFactorChangeView extends FloatChangeView{
+        private ScaleFactorChangeView(Activity activity, View v) {
+            super(activity, v, "Faktor");
+        }
+        public void send(){
+            CocktailMachine.sendScaleFactor(super.activity, super.getFloat() );
+        }
+    }
+
     public abstract static class FloatChangeView{
 
         private final TextView t;

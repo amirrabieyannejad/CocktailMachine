@@ -90,8 +90,9 @@ public class CocktailMachine {
      {"cmd": "set_scale_factor", "user": 0, "factor": 1.0}
      */
     public static void scaleFactor(Activity activity){
-        //TODO: setScaleFactor
-        //TODO get factor with dialog
+        //TO DO: setScaleFactor
+        //TO DO get factor with dialog
+        GetDialog.calibrateScaleFactor(activity);
 
     }
 
@@ -200,7 +201,7 @@ public class CocktailMachine {
 
 
     public static boolean isCocktailMachineSet(Activity activity){
-        //TODO: add bluetooth /esp implamention
+        //TODO: add bluetooth /esp implementation
         Random r = new Random(42);
         return r.nextDouble() >= 0.5;
     }
