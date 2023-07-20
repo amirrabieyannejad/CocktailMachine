@@ -215,7 +215,13 @@ public class CocktailMachine {
      {"cmd": "clean", "user": 0}
      */
     public static void clean(Activity activity){
-        CocktailMachine.clean(activity);
+        //CocktailMachine.clean(activity);
+        try {
+            BluetoothSingleton.getInstance().adminClean();
+            Toast.makeText(activity, "Reinigung wurde gestartet!", Toast.LENGTH_SHORT).show();
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

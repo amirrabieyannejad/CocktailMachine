@@ -84,9 +84,7 @@ public class MachineSettingsActivity extends AppCompatActivity {
      * @author Johanna Reidt
      */
     public void clean(View view) {
-        //Pump.clean(this);
         CocktailMachine.clean(this);
-        Toast.makeText(this,"Reinigung gestartet!",Toast.LENGTH_SHORT).show();
     }
 
 
