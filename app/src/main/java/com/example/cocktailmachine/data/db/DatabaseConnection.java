@@ -198,6 +198,19 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         }
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
     //LOAD
 
 
@@ -416,6 +429,12 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
 
 
+
+
+
+
+
+
     //GETTER //Not allowed to fetch from database !!!only!!! from buffer unless they are admins
 
     private List<Long> getAvailableIngredientIDs(){
@@ -444,6 +463,16 @@ public class DatabaseConnection extends SQLiteOpenHelper {
             return this.pumps.stream().filter(p->p.getID()==id).findFirst().orElse(null);
         }
         return Helper.getPumpHelper().getWithId(this.pumps, id);
+    }
+
+    @Nullable
+    public Pump getPumpWithSlot(int slot) {
+        for(Pump p: this.pumps){
+            if(p.getSlot()==slot){
+                return p;
+            }
+        }
+        return null;
     }
 
     public Ingredient getIngredient(Long id) {
@@ -568,6 +597,9 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     }
 
+
+
+
     public List<Ingredient> getIngredientWith(String needle) {
         Log.i(TAG, "getIngredientWith");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -622,6 +654,9 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return Helper.getIngredientHelper().getAvailable(this.ingredients);
     }
 
+
+
+
     public List<? extends Recipe> getRecipes() {
         Log.i(TAG, "getRecipes");
         if (AdminRights.isAdmin()) {
@@ -638,6 +673,9 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         }
         return Helper.getRecipeHelper().getAvailable(this.recipes);
     }
+
+
+
 
     public List<String> getUrls(SQLIngredient newSQLIngredient) {
         Log.i(TAG, "getUrls");
@@ -658,6 +696,9 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         Log.i(TAG, "getUrlElements");
         return Tables.TABLE_RECIPE_URL.getElements(this.getReadableDatabase(), newSQLRecipe.getID());
     }
+
+
+
 
     private List<Topic> getTopics(List<Long> t_ids) {
         Log.i(TAG, "getTopics");
@@ -805,6 +846,13 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         }
         return Helper.getWithRecipeID(this.recipeIngredients, newSQLRecipe.getID());
     }
+
+
+
+
+
+
+
 
 
     //ADD OR UPDATE
@@ -1123,6 +1171,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         singleton = null;
         super.close();
     }
+
 
 
 }
