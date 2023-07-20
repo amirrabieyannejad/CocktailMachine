@@ -215,7 +215,7 @@ public class CocktailMachine {
      {"cmd": "clean", "user": 0}
      */
     public static void clean(Activity activity){
-        Pump.clean(activity);
+        CocktailMachine.clean(activity);
     }
 
     /**

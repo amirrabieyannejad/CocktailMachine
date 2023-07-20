@@ -593,31 +593,6 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     }
 
     /**
-     *clean with     {"cmd": "clean", "user": 0}
-     * @param activity
-     */
-    static void clean(Activity activity){
-        //TO DO: AMIR
-        //TO DO: clean
-        //
-        /*
-        JSONObject cmd = new JSONObject();
-        try {
-            cmd.put("cmd", "clean");
-            cmd.put("user", AdminRights.getUserId());
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-
-         */
-        try {
-            BluetoothSingleton.getInstance().adminClean();
-        } catch (JSONException | InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
      * read pump status without refresh of availability
      * @author Johanna Reidt
      * @param activity
