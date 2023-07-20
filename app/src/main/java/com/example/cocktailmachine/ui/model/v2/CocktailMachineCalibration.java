@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.widget.Toast;
 
 import com.example.cocktailmachine.data.CocktailMachine;
+import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.enums.AdminRights;
 
@@ -21,7 +22,8 @@ public class CocktailMachineCalibration {
             Toast.makeText(activity, "Cocktailmaschine ist bereit.", Toast.LENGTH_SHORT).show();
             return;
         }
-
+        GetDialog.setPumpNumber(activity);
+        Pump.calibratePumps(activity);
     }
 
 }

@@ -217,7 +217,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     public void loadForSetUp() {
         Log.i(TAG, "loadForSetUp");
-        this.emptyUpPumps();
+        this.setUpEmptyPumps();
         //this.ingredients = this.loadAllIngredients();
     }
 

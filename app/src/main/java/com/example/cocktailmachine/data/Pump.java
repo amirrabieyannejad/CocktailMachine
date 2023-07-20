@@ -129,13 +129,18 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      *
      * @param numberOfPumps k
      */
-    static List<Pump> setOverrideEmptyPumps(int numberOfPumps) throws NotInitializedDBException {
-        DatabaseConnection.getDataBase().loadForSetUp();
-        for (int i = 0; i < numberOfPumps; i++) {
-            Pump pump = makeNew();
-            pump.save();
+    static List<Pump> setOverrideEmptyPumps(int numberOfPumps) {
+        try {
+            DatabaseConnection.getDataBase().loadForSetUp();
+            for (int i = 0; i < numberOfPumps; i++) {
+                Pump pump = makeNew();
+                pump.save();
+            }
+            return DatabaseConnection.getDataBase().getPumps();
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
         }
-        return DatabaseConnection.getDataBase().getPumps();
+        return new ArrayList<>();
     }
 
 
@@ -658,9 +663,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         //Skalierung
         //Zutat
 
-        for (Pump p : getPumps()) {
-            p.calibrate(activity);
-        }
+        GetDialog.calibrateAllPumpTimes(activity);
     }
 
 

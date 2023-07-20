@@ -421,7 +421,105 @@ public class GetDialog {
     }
 
 
+    public static void calibrateAllPumpTimes(Activity activity){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Setze die Kalibrierungenwerte, die für alle Pumpen verwendet werden:");
+
+        View v = activity.getLayoutInflater().inflate(R.layout.layout_pump_times, null);
+        GetDialog.CalibrateAllPumpTimesChangeView calibrateAllPumpTimesChangeView =
+                new GetDialog.CalibrateAllPumpTimesChangeView(
+                        activity,
+                        v);
+
+        builder.setView(v);
+
+        builder.setPositiveButton("Speichern", (dialog, which) -> {
+            calibrateAllPumpTimesChangeView.send();
+            Toast.makeText(activity, "Kalibrierung von Pumpzeiten fertig.", Toast.LENGTH_SHORT).show();
+            });
+        builder.setNeutralButton("Abbrechen", (dialog, which) -> {
+
+            });
+        builder.show();
+
+    }
+
+    public static class CalibrateAllPumpTimesChangeView{
+        private final EditText timeInit;
+        private final EditText timeRev;
+        private final EditText rate;
+        private final View v;
+        private final Activity activity;
+        private CalibrateAllPumpTimesChangeView(Activity activity, View v) {
+            this.activity = activity;
+            this.timeInit = (EditText) v.findViewById(R.id.editText_times_timeInit);
+            this.timeRev = (EditText) v.findViewById(R.id.editText_times_timeRev);
+            this.rate = (EditText) v.findViewById(R.id.editText_times_rate);
+            this.v = v;
+        }
+
+        private int getTimeInit(){
+            return Integer.getInteger(this.timeInit.getText().toString());
+        }
+
+        private int getTimeRev(){
+            return Integer.getInteger(this.timeRev.getText().toString());
+        }
+
+        private float getRate(){
+            return Float.valueOf(this.rate.getText().toString());
+        }
+
+        public void send(){
+            for(Pump pump: Pump.getPumps()) {
+                pump.sendPumpTimes(
+                        activity,
+                        getTimeInit(),
+                        getTimeRev(),
+                        getRate());
+            }
+        }
+    }
+
+
     //Alle Pumpenkalibrieren
+
+    public static void setPumpNumber(Activity activity) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Setze die Anzahl der Pumpen:");
+
+        View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
+        GetDialog.PumpNumberChangeView pumpNumberChangeView =
+                new GetDialog.PumpNumberChangeView(
+                        activity,
+                        v);
+
+        builder.setView(v);
+
+        builder.setPositiveButton("Speichern", (dialog, which) -> {
+            pumpNumberChangeView.save();
+
+        });
+        builder.setNeutralButton("Abbrechen", (dialog, which) -> {
+
+        });
+        builder.show();
+    }
+
+    public static class PumpNumberChangeView extends FloatChangeView{
+        private PumpNumberChangeView(Activity activity, View v) {
+            super(activity, v, "Anzahl");
+        }
+        public void save(){
+            DatabaseConnection.initializeSingleton(super.activity);
+
+            Pump.setOverrideEmptyPumps((int) super.getFloat());
+        }
+
+        @Override
+        public void send() {
+        }
+    }
 
 
 
@@ -515,7 +613,7 @@ public class GetDialog {
         private final TextView t;
         private final EditText e;
         private final View v;
-        private final Activity activity;
+        final Activity activity;
         private FloatChangeView(Activity activity, View v, String title ) {
             this.activity = activity;
             this.t = (TextView) v.findViewById(R.id.textView_edit_text);
@@ -532,7 +630,7 @@ public class GetDialog {
         private String getPreFloat(){
             return String.valueOf("9738");
         }
-        private float getFloat(){
+        public float getFloat(){
             return Float.valueOf(e.getText().toString());
         }
 
