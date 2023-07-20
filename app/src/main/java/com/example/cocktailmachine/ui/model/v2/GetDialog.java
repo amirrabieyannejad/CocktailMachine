@@ -352,6 +352,73 @@ public class GetDialog {
     }
 
 
+    //Pumpen times
+    public static void calibratePumpTimes(Activity activity, Pump pump){
+        if (pump != null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle("Setze die Kalibrierungenwerte:");
+
+            View v = activity.getLayoutInflater().inflate(R.layout.layout_pump_times, null);
+            GetDialog.CalibratePumpTimesChangeView calibratePumpTimesChangeView =
+                    new GetDialog.CalibratePumpTimesChangeView(
+                            activity,
+                            pump,
+                            v);
+
+            builder.setView(v);
+
+            builder.setPositiveButton("Speichern", (dialog, which) -> {
+                calibratePumpTimesChangeView.send();
+
+            });
+            builder.setNeutralButton("Abbrechen", (dialog, which) -> {
+
+            });
+            builder.show();
+        }else{
+            errorMessage(activity);
+        }
+    }
+
+    public static class CalibratePumpTimesChangeView{
+        private final EditText timeInit;
+        private final EditText timeRev;
+        private final EditText rate;
+        private final Pump pump;
+        private final View v;
+        private final Activity activity;
+        private CalibratePumpTimesChangeView(Activity activity, Pump pump, View v) {
+            this.activity = activity;
+            this.timeInit = (EditText) v.findViewById(R.id.editText_times_timeInit);
+            this.timeRev = (EditText) v.findViewById(R.id.editText_times_timeRev);
+            this.rate = (EditText) v.findViewById(R.id.editText_times_rate);
+
+            this.pump = pump;
+            this.v = v;
+        }
+
+        private int getTimeInit(){
+            return Integer.getInteger(this.timeInit.getText().toString());
+        }
+
+        private int getTimeRev(){
+            return Integer.getInteger(this.timeRev.getText().toString());
+        }
+
+        private float getRate(){
+            return Float.valueOf(this.rate.getText().toString());
+        }
+
+        public void send(){
+            pump.sendPumpTimes(
+                    activity,
+                    getTimeInit(),
+                    getTimeRev(),
+                    getRate());
+        }
+    }
+
+
 
 
 

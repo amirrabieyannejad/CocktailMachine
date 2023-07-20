@@ -548,7 +548,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
 
     default void pumpTimes(Activity activity){
-
+        GetDialog.calibratePumpTimes(activity, this);
     }
 
 
@@ -560,7 +560,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      - time_reverse: int
      - rate: float
 
-     `time_init` ist die Vorlaufzeit und `time_init` die Rücklaufzeit in Millisekunden. Normalerweise sollten diese Werte ähnlich oder gleich sein. Die Rate wird in mL/ms angegeben.
+     `time_init` ist die Vorlaufzeit und `time_init` die Rücklaufzeit in Millisekunden.
+     Normalerweise sollten diese Werte ähnlich oder gleich sein. Die Rate wird in mL/ms angegeben.
 
      JSON-Beispiel:
 
