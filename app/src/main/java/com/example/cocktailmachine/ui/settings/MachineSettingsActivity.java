@@ -42,7 +42,7 @@ public class MachineSettingsActivity extends AppCompatActivity {
         //TO DO Go To Pump Settings
         Toast.makeText(this,"calibratePump",Toast.LENGTH_SHORT).show();
 
-        //TODO: Pump.calibrate
+        //TO DO: Pump.calibrate
         Pump.calibratePumps(this);
         Intent intent = new Intent(this, PumpSettingsActivity.class);
         startActivity(intent);
