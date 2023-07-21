@@ -63,6 +63,8 @@ public class ScaleSettingsActivity extends AppCompatActivity {
     public void calibrateScale(View view){
 
         CocktailMachine.calibrateScale(this);
+        //CocktailMachine.tareScale(this);
+        //CocktailMachine.scaleFactor(this);
 
 
     }

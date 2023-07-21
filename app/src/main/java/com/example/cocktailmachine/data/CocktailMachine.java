@@ -203,7 +203,8 @@ public class CocktailMachine {
     public static boolean isCocktailMachineSet(Activity activity){
         //TODO: add bluetooth /esp implementation
         Random r = new Random(42);
-        return r.nextDouble() >= 0.5;
+        //return r.nextDouble() >= 0.5;
+        return false;
     }
 
     /**

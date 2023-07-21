@@ -1,6 +1,8 @@
 package com.example.cocktailmachine.ui.model.v2;
 
 import android.app.Activity;
+import android.content.DialogInterface;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.cocktailmachine.data.CocktailMachine;
@@ -16,14 +18,16 @@ import java.util.Random;
  * @project CocktailMachine
  */
 public class CocktailMachineCalibration {
-    public void start(Activity activity){
+    public static void start(Activity activity){
+        AdminRights.login(activity, activity.getLayoutInflater(), dialog -> {});
         AdminRights.initUser(activity, String.valueOf(new Random().nextInt()));
         if(CocktailMachine.isCocktailMachineSet(activity)){
+            Log.i("CocktailMachineCalibr", "isset");
             Toast.makeText(activity, "Cocktailmaschine ist bereit.", Toast.LENGTH_SHORT).show();
             return;
         }
         GetDialog.setPumpNumber(activity);
-        Pump.calibratePumpsAndTimes(activity);
+        //Pump.calibratePumpsAndTimes(activity);
         for(Pump p: Pump.getPumps()){
             GetDialog.setPumpIngredient(activity, p, true, true);
         }

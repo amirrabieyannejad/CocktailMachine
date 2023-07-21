@@ -465,19 +465,39 @@ public class GetDialog {
         }
 
         private int getTime1(){
-            return Integer.getInteger(this.time1.getText().toString());
+            try {
+                return Integer.getInteger(this.time1.getText().toString());
+            }catch (NullPointerException e){
+                e.printStackTrace();
+                return 0;
+            }
         }
 
         private int getTime2(){
+            try {
             return Integer.getInteger(this.time2.getText().toString());
+        }catch (NullPointerException e){
+            e.printStackTrace();
+            return 0;
+        }
         }
 
         private float getVolume1(){
+            try {
             return Float.valueOf(this.vol1.getText().toString());
+        }catch (NullPointerException e){
+        e.printStackTrace();
+        return 0;
+    }
         }
 
         private float getVolume2(){
+            try {
             return Float.valueOf(this.vol2.getText().toString());
+        }catch (NullPointerException e){
+        e.printStackTrace();
+        return 0;
+        }
         }
 
         public void send(){
@@ -601,15 +621,34 @@ public class GetDialog {
         }
 
         private int getTimeInit(){
-            return Integer.getInteger(this.timeInit.getText().toString());
+            try {
+
+                return Integer.getInteger(this.timeInit.getText().toString());
+            }catch (NullPointerException e){
+                e.printStackTrace();
+                return 0;
+            }
         }
 
         private int getTimeRev(){
-            return Integer.getInteger(this.timeRev.getText().toString());
+            try {
+
+                return Integer.getInteger(this.timeRev.getText().toString());
+            }catch (NullPointerException e){
+                e.printStackTrace();
+                return 0;
+            }
         }
 
         private float getRate(){
-            return Float.valueOf(this.rate.getText().toString());
+            try {
+
+                return Float.valueOf(this.rate.getText().toString());
+            }catch (NullPointerException e){
+                e.printStackTrace();
+                return 0;
+            }
+            //return Float.valueOf(this.rate.getText().toString());
         }
 
         public void send(){
@@ -643,6 +682,7 @@ public class GetDialog {
 
         builder.setPositiveButton("Speichern", (dialog, which) -> {
             pumpNumberChangeView.save();
+            Pump.calibratePumpsAndTimes(activity);
 
         });
         builder.setNeutralButton("Abbrechen", (dialog, which) -> {
