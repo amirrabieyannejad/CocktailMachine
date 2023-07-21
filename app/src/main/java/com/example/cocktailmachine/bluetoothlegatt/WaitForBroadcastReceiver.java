@@ -26,6 +26,9 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
     }
 
 
+    public String getStringResult() {
+        return result;
+    }
 
     public JSONObject getResult() {
         return jsonObject;

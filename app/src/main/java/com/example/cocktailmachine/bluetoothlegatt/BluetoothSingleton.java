@@ -1822,7 +1822,7 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
                 com.example.cocktailmachine.data.enums.Status.
-                        setStatus(this.getResult());
+                        setStatus(this.getStringResult());
                 Log.w(TAG, "To Save: " + this.getResult());
             }
         };
@@ -1908,8 +1908,8 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                CocktailMachine.setCurrentUser(this.getResult());
-                Log.w(TAG, "To Save: " + this.getResult());
+                CocktailMachine.setCurrentUser(this.getStringResult());//.getResult());
+                Log.w(TAG, "To Save: " + this.getStringResult());
             }
         };
         wfb.execute();

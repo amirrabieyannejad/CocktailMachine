@@ -86,5 +86,20 @@ public enum Status {
         //TODO: figure out if only string or JSON Object and put in currentStatus
     }
 
+    public  static void setStatus(String status) {
+        //TODO: figure out if only string or JSON Object and put in currentStatus
+        try {
+            currentState = Status.valueOf(status);
+        }catch (IllegalArgumentException e){
+            if(status == "cocktail done"){
+                currentState = Status.cocktail_done;
+            }else{
+                currentState = Status.ready;
+            }
+
+        }
+
+    }
+
 
 }
