@@ -45,7 +45,7 @@ public class PumpSettingsActivity extends AppCompatActivity {
     public void calibratePump(View view){
 
         //TO DO: CocktailMachine.calibratePump(this);
-        Pump.calibratePumps(this);
+        Pump.calibratePumpsAndTimes(this);
     }
 
 

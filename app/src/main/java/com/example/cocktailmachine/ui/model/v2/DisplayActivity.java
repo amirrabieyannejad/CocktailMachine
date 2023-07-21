@@ -216,7 +216,7 @@ public class DisplayActivity extends BasicAcitivity {
         binding.includeDisplayPump.textViewPumpVolume.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                GetDialog.setPumpVolume(activity, pump);
+                GetDialog.setPumpVolume(activity, pump, false);
                 return true;
             }
         });
