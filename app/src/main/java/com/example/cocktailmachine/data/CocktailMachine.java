@@ -1,17 +1,21 @@
 package com.example.cocktailmachine.data;
 
 import android.app.Activity;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.ui.model.v2.GetDialog;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.LinkedHashMap;
 import java.util.Random;
 
 public class CocktailMachine {
+    private static final String TAG = "CocktailMachine";
     //TO DO: AMIR
 
 
@@ -20,6 +24,8 @@ public class CocktailMachine {
     static int time;
     static boolean dbChanged = false;
     static Recipe currentRecipe;
+
+    static LinkedHashMap<Ingredient, Integer> current;
     static int currentUser = -1;
 
 
@@ -146,13 +152,13 @@ public class CocktailMachine {
         }
     }
 
-    public static Recipe getCurrentCocktail(Activity activity){
+    public static LinkedHashMap<Ingredient, Integer> getCurrentCocktailStatus(Activity activity){
         try {
             BluetoothSingleton.getInstance().adminReadCurrentCocktail();
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }
-        return currentRecipe;
+        return current;
     }
 
     public static int getCurrentUser(Activity activity){
@@ -168,8 +174,25 @@ public class CocktailMachine {
 
     //For Bluetooth use
     public static void setCurrentCocktail(JSONObject jsonObject) {
+        /**
+         * {"weight": 500.0, "content": [["beer", 250], ["lemonade", 250]]}
+         */
+        //current
+        try {
+            JSONArray array = jsonObject.getJSONArray("content");
+            current = new LinkedHashMap<Ingredient, Integer>();
+            for(int i=0;i< array.length(); i++) {
+                JSONArray temp = array.getJSONArray(i);
+                current.put(Ingredient.getIngredient(temp.getString(0)), temp.getInt(1));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.i(TAG, "setCurrentCocktail failed");
+        }
 
     }
+
+
     public static void setCurrentUser(JSONObject jsonObject) {
 
     }
@@ -181,6 +204,20 @@ public class CocktailMachine {
         if(old_time<time){
             dbChanged = true;
         }
+    }
+
+
+
+    public static void automaticCalibration(){
+        /**
+         * a.	Bitte erst wasser beim ersten Durchgang
+         * b.	Tarierung
+         * c.	Gefässe mit 100 ml Wasser
+         * d.	Pumpenanzahl
+         * e.	Automatische Kalibrierung
+         * f.	Warten auf fertig
+         * g.	Angabe von Zutaten
+         */
     }
 
 
