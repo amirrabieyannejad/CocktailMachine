@@ -23,7 +23,7 @@ public class CocktailMachine {
 
     static int time;
     static boolean dbChanged = false;
-    static Recipe currentRecipe;
+    //static Recipe currentRecipe;
 
     static LinkedHashMap<Ingredient, Integer> current;
     static int currentUser = -1;
@@ -157,6 +157,7 @@ public class CocktailMachine {
             BluetoothSingleton.getInstance().adminReadCurrentCocktail();
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
+            //count down
         }
         return current;
     }
