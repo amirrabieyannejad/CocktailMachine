@@ -11,11 +11,13 @@ import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredie
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
+import com.example.cocktailmachine.ui.model.v2.GetActivity;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
@@ -52,6 +54,13 @@ public class FillAnimation extends AppCompatActivity {
         //initialise Fragment Manager
         fragmentManager = getSupportFragmentManager();
         long id = 0L;
+
+
+        Intent i = getIntent();
+        if(i != null){
+            id = i.getLongExtra(GetActivity.ID, id);
+        }
+
         Recipe recipe = Recipe.getRecipe(id);//Recipe.getRecipe(id);//SingeltonTestdata.getSingelton().getRecipe();
         Bitmap image = null;
         try {

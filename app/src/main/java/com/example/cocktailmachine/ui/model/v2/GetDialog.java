@@ -2,14 +2,12 @@ package com.example.cocktailmachine.ui.model.v2;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
-import android.database.DataSetObserver;
 import android.text.InputType;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +20,7 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
 
 import java.util.ArrayList;
@@ -54,6 +53,67 @@ public class GetDialog {
         });
         builder.show();
     }
+
+
+
+
+    //Recipe Send
+    public static void sendRecipe(Activity activity, Recipe recipe){
+        countDown(activity, recipe);
+    }
+    //Count down
+    public static void countDown(Activity activity, Recipe recipe){
+        //Better solution
+        //https://stackoverflow.com/questions/10780651/display-a-countdown-timer-in-the-alert-dialog-box
+        CountDownRun countDownThread = new CountDownRun();
+        new Thread(countDownThread).start();
+        countDown(activity, recipe, countDownThread);
+    }
+    public static void countDown(Activity activity, Recipe recipe, CountDownRun countDownThread){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Warteschlangen-Countdown");
+        builder.setMessage("Es sind noch "+"Cocktails, bis deiner dran ist.");
+        builder.setOnDismissListener(dialog ->{
+            Toast.makeText(activity,
+                            "Sie werden per Notification informiert.",
+                            Toast.LENGTH_SHORT)
+                    .show();
+        });
+        builder.show();
+
+        startPointCocktailMixing(activity, recipe);
+    }
+    private static class CountDownRun implements Runnable{
+
+        @Override
+        public void run() {
+
+        }
+    }
+
+
+
+    //Los Button+ Notification
+    public static void startPointCocktailMixing(Activity activity, Recipe recipe){
+
+
+        GetActivity.goToFill(activity, recipe);
+    }
+    //Fill Simulation
+
+    //Abholen
+    public static void getCocktail(Activity activity, Recipe recipe){
+        doneMixing(activity);
+    }
+
+    public static void doneMixing(Activity activity){
+        //pick new
+        GetActivity.goTo(activity, FragmentType.List, ModelType.RECIPE);
+    }
+
+
+
+
 
 
 
