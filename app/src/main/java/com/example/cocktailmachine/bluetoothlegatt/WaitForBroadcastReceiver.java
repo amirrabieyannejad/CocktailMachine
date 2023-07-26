@@ -1,5 +1,6 @@
 package com.example.cocktailmachine.bluetoothlegatt;
 
+import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -35,6 +36,7 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
         return jsonArray;
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     protected JSONObject doInBackground(Void... voids) {
         int timeout = 500;
@@ -81,6 +83,8 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
             } catch (InterruptedException | NotInitializedDBException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
+                throw new RuntimeException(e);
+            } catch (MissingIngredientPumpException e) {
                 throw new RuntimeException(e);
             }
 

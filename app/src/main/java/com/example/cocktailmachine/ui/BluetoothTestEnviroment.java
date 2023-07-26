@@ -50,7 +50,7 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
         //singleton.initUser(user,textView,BluetoothTestEnviroment.this);
         //TODO: als Rückgabe JSON Datei
 
-        singleton.initUser(user);
+        singleton.initUser(user,BluetoothTestEnviroment.this);
         //singleton.adminDefinePump("beer", 1000,1);
         //singleton.adminReadCurrentUser();
         Log.w("Activity", "is everything is a right place??");
