@@ -291,9 +291,6 @@ public class BluetoothSingleton {
         // We want to directly connect to the device, so we are setting the autoConnect
         // parameter to false.
 
-        //singleton.mBluetoothGatt = device.connectGatt(activity.getApplicationContext(),
-          //      false, singleton.mGattCallback);
-
         Runnable connection = new Runnable() {
             @Override
             public void run() {
