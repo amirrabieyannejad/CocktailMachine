@@ -3,6 +3,9 @@ package com.example.cocktailmachine.ui.fillAnimation;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.SingeltonTestdata;
+import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
+import com.example.cocktailmachine.data.CocktailMachine;
+import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
@@ -22,6 +25,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
+
+import java.util.LinkedHashMap;
 
 
 public class FillAnimation extends AppCompatActivity {
@@ -79,8 +84,24 @@ public class FillAnimation extends AppCompatActivity {
      * checks if cocktail is mixed
      * @author Johanna Reidt
      */
-    private void isFinished(){
-
+    private boolean isFinished(){
+        LinkedHashMap<Ingredient, Integer> temp =
+                CocktailMachine.getCurrentCocktailStatus(this);
+        if(recipe.getIngredients().size()==temp.size()) {
+            for(Ingredient i:temp.keySet() ) {
+                try {
+                    int t = temp.get(i);
+                    if(0!=Integer.compare(recipe.getSpecificIngredientVolume(i),t)){
+                        return false;
+                    }
+                } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
