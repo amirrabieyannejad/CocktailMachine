@@ -81,7 +81,7 @@ public class AdminRights {
             throws JSONException, InterruptedException {
         //TODO: init user  Dummy Function **OK**
         //TODO: AMIR  ** JOHANNA bitte kontrollieren **
-        bluetoothSingleton.initUser(name);
+        bluetoothSingleton.initUser(name,activity);
 
         /*
 
