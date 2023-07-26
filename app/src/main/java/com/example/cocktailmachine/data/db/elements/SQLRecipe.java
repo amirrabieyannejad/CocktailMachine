@@ -1,12 +1,19 @@
 package com.example.cocktailmachine.data.db.elements;
 
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
@@ -16,6 +23,9 @@ import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.exceptions.AlreadySetIngredientException;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.ui.model.v2.GetActivity;
+import com.example.cocktailmachine.ui.model.v2.GetDialog;
+import com.example.cocktailmachine.ui.model.v2.WaitingQueueCountDown;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,6 +48,14 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     private List<Long> topics = new ArrayList<>();
     private List<SQLRecipeIngredient> ingredientVolumes = new ArrayList<>();
     private boolean loaded = false;
+
+
+
+
+    private WaitingQueueCountDown waitingQueueCountDown = null;
+
+
+
 
     public SQLRecipe(String name) {
         super();
@@ -484,6 +502,119 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
             return null;
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+    @Override
+    public WaitingQueueCountDown getWaitingQueueCountDown() {
+        return this.waitingQueueCountDown;
+    }
+
+    @Override
+    public void setWaitingQueueCountDown(Activity activity) {
+        final Recipe recipe = this;
+        this.waitingQueueCountDown = new WaitingQueueCountDown(5000) {
+            @Override
+            public void onTick() {
+            }
+
+            @Override
+            public void reduceTick() {
+                setTick(CocktailMachine.getNumberOfUsersUntilThisUsersTurn());
+            }
+
+            @Override
+            public void onNext() {
+                //TODO: Notification
+                ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+                //toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,150);
+                toneGen1.startTone(ToneGenerator.TONE_PROP_BEEP2,150);
+                Toast.makeText(activity, "Der nächste Cocktail ist deiner!", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFinish() {
+
+                ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+                //toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,150);
+                toneGen1.startTone(ToneGenerator.TONE_PROP_BEEP,300);
+                GetDialog.isUsersTurn(activity, recipe);
+            }
+        };
+
+    }
+
+    @Override
+    public void addDialogWaitingQueueCountDown(Activity activity, AlertDialog alertDialog) {
+        final Recipe recipe = this;
+
+        alertDialog.setOnDismissListener(dialog -> {
+            setWaitingQueueCountDown(activity);
+            dialog.cancel();
+        });
+
+        this.waitingQueueCountDown = new WaitingQueueCountDown(5000) {
+            @Override
+            public void onTick() {
+                alertDialog.setMessage("noch: "+getTick());
+            }
+
+            @Override
+            public void reduceTick() {
+                setTick(CocktailMachine.getNumberOfUsersUntilThisUsersTurn());
+            }
+
+            @Override
+            public void onNext() {
+                //TODO: Notification
+                ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+                //toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,150);
+                toneGen1.startTone(ToneGenerator.TONE_PROP_BEEP2,150);
+                Toast.makeText(activity, "Der nächste Cocktail ist deiner!", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFinish() {
+                ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+                //toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,150);
+                toneGen1.startTone(ToneGenerator.TONE_PROP_BEEP,300);
+
+                /*
+                alertDialog.setMessage("Bitte stellen sie ihr Glas unter die Cocktailmaschine!");
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
+                        "Los!",
+                        (dialog, which) -> {
+                            GetActivity.goToFill(activity,recipe);
+                            dialog.dismiss();
+                        });
+
+                 */
+                alertDialog.dismiss();
+                GetDialog.isUsersTurn(activity, recipe);
+            }
+        };
+
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     //Comparable
     /**

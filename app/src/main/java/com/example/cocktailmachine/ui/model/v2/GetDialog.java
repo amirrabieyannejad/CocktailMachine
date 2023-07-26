@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.os.CountDownTimer;
 import android.text.InputType;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -65,31 +66,37 @@ public class GetDialog {
     public static void countDown(Activity activity, Recipe recipe){
         //Better solution
         //https://stackoverflow.com/questions/10780651/display-a-countdown-timer-in-the-alert-dialog-box
-        CountDownRun countDownThread = new CountDownRun();
-        new Thread(countDownThread).start();
-        countDown(activity, recipe, countDownThread);
+        //CountDownRun countDownThread = new CountDownRun();
+        //new Thread(countDownThread).start();
+        //countDown(activity, recipe, countDownThread);
+        AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
+        alertDialog.setTitle("Warteschlangen-Countdown");
+        alertDialog.setMessage("...");
+        alertDialog.show();
+
+        recipe.addDialogWaitingQueueCountDown(activity, alertDialog);
     }
-    public static void countDown(Activity activity, Recipe recipe, CountDownRun countDownThread){
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle("Warteschlangen-Countdown");
-        builder.setMessage("Es sind noch "+"Cocktails, bis deiner dran ist.");
-        builder.setOnDismissListener(dialog ->{
-            Toast.makeText(activity,
-                            "Sie werden per Notification informiert.",
-                            Toast.LENGTH_SHORT)
-                    .show();
+
+    public static void isUsersTurn(Activity activity, Recipe recipe){
+        //Better solution
+        //https://stackoverflow.com/questions/10780651/display-a-countdown-timer-in-the-alert-dialog-box
+        //CountDownRun countDownThread = new CountDownRun();
+        //new Thread(countDownThread).start();
+        //countDown(activity, recipe, countDownThread);
+        AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
+        alertDialog.setTitle("Du bist dran!");
+        alertDialog.setMessage("Bitte, geh zur Cocktailmaschine und stelle dein Glas unter die MAschine. ");
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Los!", (dialog, which) -> {
+            //TODO
+            GetActivity.goToFill(activity, recipe);
+            dialog.dismiss();
         });
-        builder.show();
-
-        startPointCocktailMixing(activity, recipe);
+        alertDialog.show();   //
     }
-    private static class CountDownRun implements Runnable{
 
-        @Override
-        public void run() {
 
-        }
-    }
+
+
 
 
 

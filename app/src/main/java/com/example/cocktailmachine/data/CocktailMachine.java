@@ -28,6 +28,23 @@ public class CocktailMachine {
     static LinkedHashMap<Ingredient, Integer> current;
     static int currentUser = -1;
 
+    public static int getNumberOfUsersUntilThisUsersTurn(){
+        /*
+        BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
+        try {
+            bluetoothSingleton.makeRecipe(this.getName());
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
+         */
+        return 0;
+    }
+
+
+
+
+
 
     //SCALE
 

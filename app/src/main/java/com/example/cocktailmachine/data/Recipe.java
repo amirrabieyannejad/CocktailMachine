@@ -2,6 +2,7 @@ package com.example.cocktailmachine.data;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
 
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
@@ -11,6 +12,8 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.ui.model.v2.GetDialog;
+import com.example.cocktailmachine.ui.model.v2.WaitingQueueCountDown;
 
 
 import org.json.JSONArray;
@@ -23,6 +26,16 @@ import java.util.List;
 import java.util.Map;
 
 public interface Recipe extends Comparable<Recipe>, DataBaseElement {
+
+
+
+    WaitingQueueCountDown getWaitingQueueCountDown();
+    void setWaitingQueueCountDown(Activity activity);
+
+    void addDialogWaitingQueueCountDown(Activity activity, AlertDialog alertDialog);
+
+
+
     //Getter
 
     /**
@@ -193,6 +206,9 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
     //Use Bluetooth
 
+
+    //Mixing
+
     /**
      * send to be mixed
      *   {"cmd": "make_recipe", "user": 8858, "recipe": "radler"}
@@ -204,12 +220,31 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
         try {
             bluetoothSingleton.makeRecipe(this.getName());
+            setWaitingQueueCountDown(activity);
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }
         //TO DO: Bluetooth send to mix
         //TO DO: AMIR **DONE**
     }
+
+    //waiting
+    default boolean isWaiting(){
+        return (getWaitingQueueCountDown() != null) && (getWaitingQueueCountDown().isWaiting());
+    }
+
+    default boolean isNext(){
+        return (getWaitingQueueCountDown() != null) && (getWaitingQueueCountDown().isNext());
+    }
+
+
+
+
+
+
+
+
+
 
 
     /**
