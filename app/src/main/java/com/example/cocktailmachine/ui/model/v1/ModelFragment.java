@@ -286,13 +286,7 @@ public class ModelFragment extends Fragment {
             if(this.recipe!=null&&this.recipe.isAvailable()) {
                 Log.i(TAG, "setFAB: recipe is shown and recipe is available");
                 activity.setFAB(v -> {
-                    try {
-                        recipe.send(activity);
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
+                    recipe.send(activity);
                     Toast.makeText(this.getContext(), "Cocktail in Bearbeitung.", Toast.LENGTH_SHORT).show();
                 }, R.drawable.ic_send);
                 return;

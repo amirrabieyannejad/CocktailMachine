@@ -2,6 +2,8 @@ package com.example.cocktailmachine.data.db.elements;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
@@ -13,6 +15,8 @@ import java.util.List;
 public class SQLPump extends SQLDataBaseElement implements Pump {
     private static final String TAG = "SQLPump";
     private int minimumPumpVolume = 1;
+
+    private int slot = -1;
     private SQLIngredientPump ingredientPump = null;
     private boolean available = false;
 
@@ -62,24 +66,26 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     }
 
     @Override
+    public int getSlot() {
+        return slot;
+    }
+
+    @Override
+    public void setSlot(int slot) {
+        this.slot = slot;
+    }
+
+    @Override
     public void setCurrentIngredient(long id) {
         this.checkIngredientPumps();
         if(ingredientPump != null) {
-            try {
-                if (this.ingredientPump.getIngredientID() == id) {
-                    return;
-                }
-                this.ingredientPump.delete();
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
+            if (this.ingredientPump.getIngredientID() == id) {
+                return;
             }
+            this.ingredientPump.delete();
         }
         this.ingredientPump = new SQLIngredientPump(-1, this.getID(), id);
-        try {
-            this.ingredientPump.save();
-        } catch (NotInitializedDBException e) {
-            throw new RuntimeException(e);
-        }
+        this.ingredientPump.save();
         this.wasChanged();
     }
 
@@ -93,12 +99,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         this.checkIngredientPumps();
         if(ingredientPump != null){
             Log.i(TAG, "setIngredientPump: delete old: "+this.ingredientPump);
-            try {
-                ingredientPump.delete();
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-                Log.i(TAG, "setIngredientPump: failed to delete old: "+this.ingredientPump);
-            }
+            ingredientPump.delete();
         }
         this.ingredientPump = ingredientPump;
         Log.i(TAG, "setIngredientPump: "+ingredientPump.toString());
@@ -140,12 +141,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         this.checkIngredientPumps();
         if(this.ingredientPump != null){
             Log.i(TAG, "empty: delete old: "+this.ingredientPump);
-            try {
-                this.ingredientPump.delete();
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-                Log.i(TAG, "empty: failed to delete old: "+this.ingredientPump);
-            }
+            this.ingredientPump.delete();
         }
         this.ingredientPump = null;
         this.wasChanged();
@@ -156,11 +152,8 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         this.checkIngredientPumps();
         if(this.ingredientPump!=null) {
             this.ingredientPump.setVolume(volume);
-            try {
-                this.ingredientPump.save();
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-            }
+            this.ingredientPump.save();
+
         }else{
             throw new MissingIngredientPumpException("There is no IngredientPump in Pump: "+this);
         }
@@ -205,21 +198,33 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     }
 
     @Override
-    public void save() throws NotInitializedDBException {
+    public boolean save() {
         Log.i(TAG, "save");
-        DatabaseConnection.getDataBase().addOrUpdate(this);
-        this.checkIngredientPumps();
-        if(this.ingredientPump != null) {
-            this.ingredientPump.setPumpID(this.getID());
-            this.ingredientPump.save();
+        try {
+            DatabaseConnection.getDataBase().addOrUpdate(this);
+            this.checkIngredientPumps();
+            if(this.ingredientPump != null) {
+                this.ingredientPump.setPumpID(this.getID());
+                this.ingredientPump.save();
+            }
+            this.wasSaved();
+            return true;
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
         }
-        this.wasSaved();
+        return false;
     }
 
     @Override
-    public void delete() throws NotInitializedDBException {
+    public void delete() {
         Log.i(TAG, "delete");
-        DatabaseConnection.getDataBase().remove(this);
+        try {
+            DatabaseConnection.getDataBase().remove(this);
+            Log.i(TAG, "delete: successfull deleted"+this.ingredientPump);
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            Log.i(TAG, "delete: failed to delete old: "+this.ingredientPump);
+        }
     }
 
     @Override
@@ -227,10 +232,12 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         return Long.compare(this.getID(), o.getID());
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "SQLPump{" +
                 "ID=" + getID() +
+                "slot=" + getSlot() +
                 ", minimumPumpVolume=" + minimumPumpVolume +
                 ", ingredientPump=" + ingredientPump +
                 '}';

@@ -200,8 +200,8 @@ public class SingeltonTestdata {
                     }
 
                     @Override
-                    public void save() {
-
+                    public boolean save() {
+                        return false;
                     }
 
                     @Override
@@ -336,8 +336,8 @@ public class SingeltonTestdata {
                     }
 
                     @Override
-                    public void save() {
-
+                    public boolean save() {
+                        return false;
                     }
 
                     @Override
@@ -501,8 +501,8 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public void save() {
-
+            public boolean save() {
+                return false;
             }
         };
 
@@ -672,8 +672,8 @@ public class SingeltonTestdata {
                     }
 
                     @Override
-                    public void save() {
-
+                    public boolean save() {
+                        return false;
                     }
 
                     @Override
@@ -808,8 +808,8 @@ public class SingeltonTestdata {
                     }
 
                     @Override
-                    public void save() {
-
+                    public boolean save() {
+                        return false;
                     }
 
                     @Override
@@ -974,8 +974,8 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public void save() {
-
+            public boolean save() {
+                return false;
             }
         };
 

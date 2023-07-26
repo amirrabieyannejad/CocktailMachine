@@ -184,11 +184,7 @@ public class ListLayout {
                         public void onClick(DialogInterface dialog, int which) {
                             for (Ingredient i : chosenIngredients) {
                                 adapter.recipe.addOrUpdate(i, -1);
-                                try {
-                                    adapter.recipe.save();
-                                } catch (NotInitializedDBException e) {
-                                    e.printStackTrace();
-                                }
+                                adapter.recipe.save();
                                 adapter.reload();
                             }
                         }
@@ -229,11 +225,7 @@ public class ListLayout {
                         public void onClick(DialogInterface dialog, int which) {
                             for (Topic t : chosenTopics) {
                                 adapter.recipe.addOrUpdate(t);
-                                try {
-                                    adapter.recipe.save();
-                                } catch (NotInitializedDBException e) {
-                                    e.printStackTrace();
-                                }
+                                adapter.recipe.save();
                                 adapter.reload();
                             }
                         }
@@ -291,11 +283,7 @@ public class ListLayout {
                         public void onClick(DialogInterface dialog, int which) {
                             for (Ingredient i : chosenIngredients) {
                                 adapter.recipe.addOrUpdate(i, -1);
-                                try {
-                                    adapter.recipe.save();
-                                } catch (NotInitializedDBException e) {
-                                    e.printStackTrace();
-                                }
+                                adapter.recipe.save();
                                 adapter.reload();
                             }
                         }
@@ -343,11 +331,7 @@ public class ListLayout {
                         public void onClick(DialogInterface dialog, int which) {
                             for (Topic t : chosenTopics) {
                                 adapter.recipe.addOrUpdate(t);
-                                try {
-                                    adapter.recipe.save();
-                                } catch (NotInitializedDBException e) {
-                                    e.printStackTrace();
-                                }
+                                adapter.recipe.save();
                                 adapter.reload();
                             }
                         }

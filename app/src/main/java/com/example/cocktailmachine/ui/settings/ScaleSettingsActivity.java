@@ -1,24 +1,16 @@
 package com.example.cocktailmachine.ui.settings;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import com.example.cocktailmachine.data.CocktailMachine;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.View;
 
-import androidx.core.view.WindowCompat;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import com.example.cocktailmachine.databinding.ActivityScaleSettingsBinding;
-
-import com.example.cocktailmachine.R;
 
 /**
  *
@@ -40,7 +32,7 @@ public class ScaleSettingsActivity extends AppCompatActivity {
 
 
 
-        //TODO: bind bluetooth
+        //TO DO: bind bluetooth
 
     }
 
@@ -70,7 +62,9 @@ public class ScaleSettingsActivity extends AppCompatActivity {
      */
     public void calibrateScale(View view){
 
-        CocktailMachine.calibrateScale(this, 0);
+        CocktailMachine.calibrateScale(this);
+        //CocktailMachine.tareScale(this);
+        //CocktailMachine.scaleFactor(this);
 
 
     }
@@ -86,7 +80,7 @@ public class ScaleSettingsActivity extends AppCompatActivity {
      * @param view
      */
     public void setScaleFactor(View view){
-        CocktailMachine.setScaleFactor(this);
+        CocktailMachine.scaleFactor(this);
     }
 
 }

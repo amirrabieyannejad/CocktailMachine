@@ -1,12 +1,8 @@
 package com.example.cocktailmachine.ui.model.v2;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -17,6 +13,7 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityDisplayBinding;
+import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
 
 public class DisplayActivity extends BasicAcitivity {
@@ -38,6 +35,7 @@ public class DisplayActivity extends BasicAcitivity {
         binding.includeDisplayPump.getRoot().setVisibility(View.GONE);
         //Availabilities //Alcoholic
         binding.includeDisplayAlcoholic.getRoot().setVisibility(View.GONE);
+        binding.includeDisplayNotAlcoholic.getRoot().setVisibility(View.GONE);
         binding.includeDisplayAvailable.getRoot().setVisibility(View.GONE);
         binding.includeDisplayNotAvailable.getRoot().setVisibility(View.GONE);
         //Ingredient
@@ -48,6 +46,11 @@ public class DisplayActivity extends BasicAcitivity {
 
     }
 
+
+    @Override
+    void postSetUp() {
+    }
+
     @Override
     void setUpRecipe(){
         Recipe recipe = Recipe.getRecipe(getID());
@@ -55,7 +58,7 @@ public class DisplayActivity extends BasicAcitivity {
         recipe.loadAvailable();
         binding.textViewDisplayTitle.setText(recipe.getName());;
         //TO DO: AlertDialog to change title if admin
-        setChangeTitle();
+        setChangeTitleDialog();
         if(recipe.isAvailable()){
             binding.includeDisplayAvailable.getRoot().setVisibility(View.VISIBLE);
         }else{
@@ -105,16 +108,21 @@ public class DisplayActivity extends BasicAcitivity {
 
     }
 
-    @Override
-    void postSetUp() {
-    }
+
 
     @Override
     void setUpIngredient(){
         Ingredient ingredient = Ingredient.getIngredient(getID());
         binding.textViewDisplayTitle.setText(ingredient.getName());;
         //TO DO: AlertDialog to change title if admin
-        setChangeTitle();
+        binding.textViewDisplayTitle.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                setChangeTitleDialog();
+                return false;
+            }
+        });
+
         if(ingredient.isAvailable()){
             binding.includeDisplayAvailable.getRoot().setVisibility(View.VISIBLE);
         }else{
@@ -122,12 +130,34 @@ public class DisplayActivity extends BasicAcitivity {
         }
         if (ingredient.isAlcoholic()) {
             binding.includeDisplayAlcoholic.getRoot().setVisibility(View.VISIBLE);
-            //TODO: AlertDialog change alcoholic
+
+            final Activity activity = this;
+            binding.includeDisplayAlcoholic.getRoot().setOnLongClickListener(v -> {
+                GetDialog.setAlcoholic(activity, ingredient);
+                return true;
+            });
+        }else{
+            binding.includeDisplayNotAlcoholic.getRoot().setVisibility(View.VISIBLE);
+            final Activity activity = this;
+            binding.includeDisplayAlcoholic.getRoot().setOnLongClickListener(v -> {
+                GetDialog.setAlcoholic(activity, ingredient);
+                return true;
+            });
         }
         if(AdminRights.isAdmin()){
             binding.includeDisplayIngredientAdmin.getRoot().setVisibility(View.VISIBLE);
             String vol = ingredient.getVolume()+" ml";
             binding.includeDisplayIngredientAdmin.textViewIngredientVolume.setText(vol);
+            final Activity activity = this;
+            binding.includeDisplayIngredientAdmin.textViewIngredientVolume.setOnLongClickListener(
+                    //GetActivity.goTo(activity, FragmentType.Model, );
+                    new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            return true;
+                        }
+                    }
+            );
         }
 
     }
@@ -137,13 +167,18 @@ public class DisplayActivity extends BasicAcitivity {
         Topic topic = Topic.getTopic(getID());
         binding.textViewDisplayTitle.setText(topic.getName());;
         //TO DO: AlertDialog to change title if admin
-        setChangeTitle();
+        setChangeTitleDialog();
         binding.textViewDisplayDescription.setText(topic.getDescription());
         binding.textViewDisplayDescription.setVisibility(View.VISIBLE);
-        //TODO: AlertDialog to change description if admin
+        //TO DO: AlertDialog to change description if admin
+        GetDialog.setDescribtion(this, topic);
     }
 
-    private void setChangeTitle(){
+    /**
+     * adds change title Dialog to text view of title, if admin
+     * @author Johanna Reidt
+     */
+    private void setChangeTitleDialog(){
         DisplayActivity activity = this;
         if(AdminRights.isAdmin()) {
             binding.textViewDisplayTitle.setOnLongClickListener(
@@ -160,20 +195,28 @@ public class DisplayActivity extends BasicAcitivity {
     void setUpPump(){
         Pump pump = Pump.getPump(getID());
         binding.textViewDisplayTitle.setText(String.valueOf(pump.getID()));;
-        //TODO: AlertDialog to change title if admin
+        //TO DO: AlertDialog to change title if admin ----NOT BECAUSE PUMP NO NAME
         binding.includeDisplayPump.getRoot().setVisibility(View.VISIBLE);
         binding.includeDisplayPump.textViewPumpIngredientName.setText(pump.getIngredientName());
-        //TODO: AlertDialog to change ingredient if admin
+        //TO DO: AlertDialog to change ingredient if admin
+        final Activity activity = this;
+        binding.includeDisplayPump.textViewPumpIngredientName.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                GetDialog.chooseIngredient(activity, pump);
+                return true;
+            }
+        });
         String vol = pump.getVolume() +" ml";
         binding.includeDisplayPump.textViewPumpVolume.setText(vol);
-        final Activity activity = this;
+        //final Activity activity = this;
 
         //TO DO: AlertDialog to change volume if admin
         //is always admin
         binding.includeDisplayPump.textViewPumpVolume.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                GetDialog.setPumpVolume(activity, pump);
+                GetDialog.setPumpVolume(activity, pump, false);
                 return true;
             }
         });
@@ -189,4 +232,7 @@ public class DisplayActivity extends BasicAcitivity {
             }
         });
     }
+
+
+
 }

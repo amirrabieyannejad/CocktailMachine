@@ -396,7 +396,7 @@ public class ListRecyclerViewAdapters  {
         @Override
         public void putIds(List<Long> ids) {
 
-            data = Ingredient.getIngredientWithIds(ids);
+            data = Ingredient.getAvailableIngredients(ids);
         }
 
         @Override
@@ -404,7 +404,7 @@ public class ListRecyclerViewAdapters  {
             if(AdminRights.isAdmin()){
                 data  = Ingredient.getAllIngredients();
             }else {
-                data  = Ingredient.getIngredientWithIds();
+                data  = Ingredient.getAvailableIngredients();
             }
         }
 
@@ -463,9 +463,9 @@ public class ListRecyclerViewAdapters  {
         @Override
         public void putIds(List<Long> ids) {
             if(ids==null){
-                data  = Ingredient.getIngredientWithIds();
+                data  = Ingredient.getAvailableIngredients();
             }else{
-                data = Ingredient.getIngredientWithIds(ids);
+                data = Ingredient.getAvailableIngredients(ids);
             }
         }
 

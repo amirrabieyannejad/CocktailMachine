@@ -6,27 +6,28 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/imageView_alcoholic"
+        android:id="@+id/imageView_not_alcoholic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:contentDescription="@string/alkholisch"
+        android:contentDescription="@string/nicht_alkoholisch"
         android:minWidth="32dp"
         android:minHeight="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_dialog_alert"
-        app:tint="@color/design_default_color_error" />
+        app:tint="@color/material_dynamic_neutral70" />
 
     <TextView
-        android:id="@+id/textView_alcoholic"
+        android:id="@+id/textView_not_alcoholic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="@string/alkholisch"
+        android:text="@string/nicht_alkoholisch"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView_alcoholic" />
+        app:layout_constraintStart_toEndOf="@+id/imageView_not_alcoholic"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

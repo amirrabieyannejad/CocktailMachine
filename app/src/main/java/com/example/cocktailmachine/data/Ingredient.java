@@ -168,7 +168,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * Get all available ingredients.
      * @return List of ingredients.
      */
-    public static List<Ingredient> getIngredientWithIds() {
+    public static List<Ingredient> getAvailableIngredients() {
         try {
             return (List<Ingredient>) DatabaseConnection.getDataBase().getAvailableIngredients();
         } catch (NotInitializedDBException e) {
@@ -183,7 +183,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @param ingredientsIds k
      * @return List of ingredients.
      */
-    static List<Ingredient> getIngredientWithIds(List<Long> ingredientsIds) {
+    static List<Ingredient> getAvailableIngredients(List<Long> ingredientsIds) {
         try {
             return DatabaseConnection.getDataBase().getIngredients(ingredientsIds);
         } catch (NotInitializedDBException e) {

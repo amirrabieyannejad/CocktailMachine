@@ -19,8 +19,8 @@ public interface DataBaseElement {
 
     void wasChanged();
 
-    void save() throws NotInitializedDBException;
+    boolean save();
 
-    void delete() throws NotInitializedDBException;
+    void delete();
 
 }

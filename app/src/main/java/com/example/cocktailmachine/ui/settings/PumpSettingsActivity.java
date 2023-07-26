@@ -2,14 +2,14 @@ package com.example.cocktailmachine.ui.settings;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.data.CocktailMachine;
 
 import com.example.cocktailmachine.data.Pump;
+import com.example.cocktailmachine.ui.model.v2.GetDialog;
+
 /**
  * Pumpenkalibrierung und Pumpenzeit
  * @created Fr. 23.Jun 2023 - 16:16
@@ -46,7 +46,8 @@ public class PumpSettingsActivity extends AppCompatActivity {
      */
     public void calibratePump(View view){
 
-        //TODO: CocktailMachine.calibratePump(this);
+        //TO DO: CocktailMachine.calibratePump(this);
+        Pump.calibratePumpsAndTimes(this);
     }
 
 
@@ -67,8 +68,9 @@ public class PumpSettingsActivity extends AppCompatActivity {
     public void setPumpTimes(View view){
 
         //open alert dialog pick pump
-        Pump pump = Pump.getPump(0);
-        pump.setPumpTimes(this, 0,0,0);
+        //Pump pump = Pump.getPump(0);
+        //pump.sendPumpTimes(this, 0,0,0);
+        GetDialog.calibrateAllPumpTimes(this);
 
     }
 

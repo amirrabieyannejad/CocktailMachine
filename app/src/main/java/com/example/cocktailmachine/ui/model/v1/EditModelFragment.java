@@ -77,8 +77,7 @@ public class EditModelFragment extends Fragment {
         b = new Bundle();
         old = true;
         saved = true;
-        try {
-            switch (type) {
+        switch (type) {
                 case PUMP:
                     pump = Pump.makeNew();
                     pump.setCurrentIngredient(ingredient);
@@ -94,7 +93,7 @@ public class EditModelFragment extends Fragment {
                         Log.i(TAG, "saveNew: pump filling failed: pump: "+pump);
                     }
                     setUpEditPump();
-                    pump.save();
+                    saved = pump.save();
                     pump.sendSave(activity);
                     b.putString("Type", ModelType.PUMP.name());
                     b.putLong("ID", pump.getID());
@@ -111,7 +110,7 @@ public class EditModelFragment extends Fragment {
                                     .getText()
                                     .toString());
                     setUpEditTopic();
-                    topic.save();
+                    saved = topic.save();
                     b.putString("Type", ModelType.TOPIC.name());
                     b.putLong("ID", topic.getID());
                     Log.i(TAG,"savenew"+b);
@@ -123,7 +122,7 @@ public class EditModelFragment extends Fragment {
                                     .editTextEditText
                                     .getText().toString());
                     setUpEditRecipe();
-                    recipe.save();
+                    saved = recipe.save();
                     recipe.sendSave(activity);
                     b.putString("Type", ModelType.RECIPE.name());
                     b.putLong("ID", recipe.getID());
@@ -136,14 +135,10 @@ public class EditModelFragment extends Fragment {
                                     .editTextEditText
                                     .getText().toString());
                     setUpEditIngredient();
-                    ingredient.save();
+                    saved = ingredient.save();
                     b.putString("Type", ModelType.INGREDIENT.name());
                     b.putLong("ID", ingredient.getID());
                     Log.i(TAG,"savenew"+b);
-            }
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            saved = false;
         }
     }
 
@@ -151,8 +146,8 @@ public class EditModelFragment extends Fragment {
         Log.i(TAG, "save");
         b = new Bundle();
         saved = true;
-        try {
-            switch (type){
+
+        switch (type){
                 case INGREDIENT:
                     ingredient.setAlcoholic(binding.checkBoxAlcoholic.isChecked());
                     ingredient.save();
@@ -189,15 +184,11 @@ public class EditModelFragment extends Fragment {
                         e.printStackTrace();
                         Log.i(TAG, "save: pump filling failed: pump: "+pump);
                     }
-                    pump.save();
+                    saved = pump.save();
                     pump.sendSave(activity);
                     b.putString("Type", ModelType.PUMP.name());
                     b.putLong("ID", pump.getID());
                     Log.i(TAG,"saved "+b);
-            }
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            saved = false;
         }
     }
 
@@ -739,12 +730,7 @@ public class EditModelFragment extends Fragment {
                 this.recipe.remove(ingredient);
                 this.volume = -1;
                 this.recipe.addOrUpdate(ingredient, this.volume);
-                try {
-                    this.recipe.save();
-                } catch (NotInitializedDBException ex) {
-                    ex.printStackTrace();
-                    DatabaseConnection.initializeSingleton(activity, AdminRights.getUserPrivilegeLevel());
-                }
+                this.recipe.save();
             }
             name.setText(ingredient.getName());
             if(volume > 0){

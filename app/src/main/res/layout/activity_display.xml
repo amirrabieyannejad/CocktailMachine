@@ -44,8 +44,7 @@
             layout="@layout/layout_available"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:visibility="gone" />
+            android:layout_margin="8dp" />
 
         <include
             android:id="@+id/include_display_not_available"
@@ -60,8 +59,14 @@
             layout="@layout/layout_alcoholic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:visibility="gone" />
+            android:layout_margin="8dp" />
+
+        <include
+            android:id="@+id/include_display_not_alcoholic"
+            layout="@layout/layout_not_alcoholic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp" />
 
         <include
             android:id="@+id/include_display_ingredient_admin"
@@ -76,13 +81,15 @@
             android:id="@+id/include_recipe_ingredients_list"
             layout="@layout/layout_list_with_title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
 
         <include
             android:id="@+id/include_recipe_topics_list"
             layout="@layout/layout_list_with_title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
 
     </LinearLayout>
 

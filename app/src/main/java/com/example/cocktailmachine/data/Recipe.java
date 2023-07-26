@@ -2,7 +2,6 @@ package com.example.cocktailmachine.data;
 
 
 import android.app.Activity;
-import android.content.Context;
 
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
@@ -12,7 +11,6 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
-import com.example.cocktailmachine.data.enums.AdminRights;
 
 
 import org.json.JSONArray;
@@ -164,6 +162,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
     //this Instance
 
+    //JSON Formating Information from db
 
     default JSONArray getLiquidsJSON(){
         JSONArray json = new JSONArray();
@@ -183,7 +182,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @throws JSONException
      */
     default JSONObject asMessage() throws JSONException {
-        //TODO: USE THIS AMIR ** ich vermute, dasss ich das schon verwendet habe
+        //TO DO: USE THIS AMIR ** ich vermute, dasss ich das schon verwendet habe
         // ** bitte nochmal überprüfen
         JSONObject json = new JSONObject();
         json.put("name", this.getName());
@@ -192,20 +191,26 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
     }
 
+    //Use Bluetooth
 
     /**
      * send to be mixed
      *   {"cmd": "make_recipe", "user": 8858, "recipe": "radler"}
      * TODO:show topics to user!
      */
-    default void send(Activity activity) throws JSONException, InterruptedException {
+    default void send(Activity activity) {
         //service.
         //BluetoothSingleton.getInstance().mBluetoothLeService.makeRecipe(AdminRights.getUserId(), );
         BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
-        bluetoothSingleton.makeRecipe(AdminRights.getUserId(), this.getName());
-        //TODO: Bluetooth send to mix
-        //TODO: AMIR **DONE**
+        try {
+            bluetoothSingleton.makeRecipe(this.getName());
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        //TO DO: Bluetooth send to mix
+        //TO DO: AMIR **DONE**
     }
+
 
     /**
      * Sends to CocktailMachine to get saved.
@@ -215,7 +220,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * TODO: find what this is doing :     {"cmd": "add_liquid", "user": 0, "liquid": "water", "volume": 30}
      */
     default boolean sendSave(Activity activity){
-        //TODO: USE THIS AMIR  * ich habe in adminDefinePump das gleiche. wollen wir vlt.
+        //TO DO: USE THIS AMIR  * ich habe in adminDefinePump das gleiche. wollen wir vlt.
         // * hier das verwenden vlt. durch:
 
 
@@ -236,10 +241,10 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
                 temp.put(this.getSpecificIngredientVolume(i));
                 array.put(temp);
             }
-             //jsonObject.put("liquids", array);
+            //jsonObject.put("liquids", array);
 
             BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
-            bluetoothSingleton.defineRecipe(AdminRights.getUserId(),this.getName(),array);
+            bluetoothSingleton.defineRecipe(this.getName(),array);
 
             return true;
         } catch (JSONException | TooManyTimesSettedIngredientEcxception |
@@ -249,12 +254,30 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         return false;
     }
 
+    default boolean sendDelete(Activity activity){
+        try {
+            BluetoothSingleton.getInstance().deleteRecipe(
+                    this.getName()
+            );
+            return true;
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    //Methods to be called form bluetooth singleton to set informations in db
 
 
-    //general
+
+
+
+
+    //general for all Recipes
+    //JSON Formating Information from db
 
     /**
-     * produces JSON Array with all recipes
+     * produces JSON Array with all recipes from db
      * exmaple  [{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}, {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
      * like described in Services.md
      * @return
@@ -262,7 +285,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @throws JSONException
      */
     static JSONArray getRecipesAsMessage() throws NotInitializedDBException, JSONException, InterruptedException {
-        //TODO: USE THIS AMIR * Ich glaube ist für mich setRecipe interessant? *
+        //TO DO: USE THIS AMIR * Ich glaube ist für mich setRecipe interessant? *
         JSONArray json = new JSONArray();
         for(Recipe r: getRecipes()){
             json.put(r.asMessage());
@@ -271,17 +294,34 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         return json;
     }
 
-    static void sync(Activity activity){
-        //TODO: Sync, get alle recipes from bluetooth
-        JSONArray answer = new JSONArray();
+    //Use Bluetooth
+
+    /**
+     * get pump status
+     * check last cange
+     * get recipes
+     * @author Johanna Reidt
+     * @param activity
+     */
+    static void syncRecipeDBWithCocktailmachine(Activity activity){
+        //TO DO: Sync, get alle recipes from bluetooth
+
+        /*JSONArray answer = new JSONArray();
         try {
             setRecipes(answer);
         } catch (NotInitializedDBException | JSONException e) {
             e.printStackTrace();
         }
+
+         */
+        Pump.readPumpStatus(activity);
+        CocktailMachine.updateRecipeListIfChanged(activity);
+        DatabaseConnection.localRefresh();
     }
 
 
+
+    //Methods to be called form bluetooth singleton to set informations in db
     /**
      * add Recipes to db from json array gotten from cocktail machine
      * [{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]},
@@ -290,7 +330,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @throws NotInitializedDBException
      */
     static void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException{
-        //TODO: USE THIS AMIR **DONE**
+        //TO DO: USE THIS AMIR **DONE**
         //[{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}, {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
         for(int i=0; i<json.length(); i++){
             JSONObject j = json.optJSONObject(i);
@@ -314,7 +354,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
 
 
-    //Getting
+    //Getting from db considering all recipes
     /**
      * Static access to recipes.
      * Get Recipe with id k.

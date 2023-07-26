@@ -8,13 +8,16 @@ import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
+import com.example.cocktailmachine.ui.model.v2.GetActivity;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,7 +38,7 @@ public class FillAnimation extends AppCompatActivity {
 
         if(!DatabaseConnection.isInitialized()) {
             Log.i(TAG, "onCreate: DataBase is not yet initialized");
-            DatabaseConnection.initializeSingleton(this, UserPrivilegeLevel.Admin);
+            DatabaseConnection.initializeSingleton(this, AdminRights.getUserPrivilegeLevel());// UserPrivilegeLevel.Admin);
             try {
                 DatabaseConnection.getDataBase();
                 Log.i(TAG, "onCreate: DataBase is initialized");
@@ -44,12 +47,21 @@ public class FillAnimation extends AppCompatActivity {
                 e.printStackTrace();
                 Log.e(TAG, "onCreate: DataBase is not initialized");
             }
+        }else{
+            Log.i(TAG, "onCreate: DataBase is already initialized");
         }
 
         //initialise Fragment Manager
         fragmentManager = getSupportFragmentManager();
+        long id = 0L;
 
-        Recipe recipe = SingeltonTestdata.getSingelton().getRecipe();
+
+        Intent i = getIntent();
+        if(i != null){
+            id = i.getLongExtra(GetActivity.ID, id);
+        }
+
+        Recipe recipe = Recipe.getRecipe(id);//Recipe.getRecipe(id);//SingeltonTestdata.getSingelton().getRecipe();
         Bitmap image = null;
         try {
             image = BildgeneratorGlas.bildgenerationGlas(this,recipe,(float)0.5);

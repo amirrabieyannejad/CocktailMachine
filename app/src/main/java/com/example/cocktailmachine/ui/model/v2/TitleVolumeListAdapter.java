@@ -133,7 +133,8 @@ public class TitleVolumeListAdapter extends RecyclerView.Adapter<TitleVolumeList
                 this.vol.setOnLongClickListener(v -> {
                     GetDialog.setPumpVolume(
                             activity,
-                            this.ingredient.getPump());
+                            this.ingredient.getPump(),
+                            false);
                     return true;
                 });
             }

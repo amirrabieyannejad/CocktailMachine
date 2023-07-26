@@ -5,11 +5,14 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
+
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public enum Status {
-    //TODO: USE THIS AMIR
+    //TO DO: USE THIS AMIR
     /*
     - `init`: Maschine wird initialisiert
 - `ready`: Maschine ist bereit einen Befehl auszuführen und wartet
@@ -19,6 +22,8 @@ public enum Status {
      */
     init, ready, mixing, pumping, cocktail_done,
     ;
+
+    static Status currentState = Status.ready;
 
     @NonNull
     @Override
@@ -36,10 +41,15 @@ public enum Status {
      * @return
      */
     public static Status getCurrentStatus(Activity activity) {
-        //TODO: Bluetoothlegatt
+        //TO DO: Bluetoothlegatt
         //BluetoothSingleton.getInstance().mBluetoothLeService;
-        //TODO: AMIR
-        return Status.ready;
+        //TO DO: AMIR
+        try {
+            BluetoothSingleton.getInstance().adminReadState();
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return currentState;
     }
 
     /**
@@ -73,6 +83,21 @@ public enum Status {
     }
 
     public  static void setStatus(JSONObject jsonObject) {
+        //TODO: figure out if only string or JSON Object and put in currentStatus
+    }
+
+    public  static void setStatus(String status) {
+        //TODO: figure out if only string or JSON Object and put in currentStatus
+        try {
+            currentState = Status.valueOf(status);
+        }catch (IllegalArgumentException e){
+            if(status == "cocktail done"){
+                currentState = Status.cocktail_done;
+            }else{
+                currentState = Status.ready;
+            }
+
+        }
 
     }
 
