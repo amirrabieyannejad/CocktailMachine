@@ -500,10 +500,11 @@ public class BluetoothSingleton {
             Log.w(TAG, "Characteristic can't find");
             return ("Characteristic can't find");
         }
-        Log.w(TAG,"try to read Response Value from specific Characteristic!");
+        Log.w(TAG, "try to read Response Value from specific Characteristic!");
         return singleton.value;
 
-}
+    }
+
 
     @SuppressLint("MissingPermission")
     public Boolean writeCharacteristic(String value, Boolean admin) throws InterruptedException {
@@ -806,6 +807,7 @@ public class BluetoothSingleton {
     /*
              COMMAND METHODS TOTAL:19
      */
+
     /**
      * initUser: register as a new user and receive a user ID
      * JSON-sample: {"cmd": "init_user", "name": "Jane"}
@@ -823,7 +825,7 @@ public class BluetoothSingleton {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "init_user");
         jsonObject.put("name", name);
-        singleton.sendReadWrite(jsonObject,false,true);
+        singleton.sendReadWrite(jsonObject, false, true);
 
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
@@ -875,7 +877,8 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminDefinePump(String liquid, float volume, int slot) throws JSONException, InterruptedException {
+    public void adminDefinePump(String liquid, float volume, int slot)
+            throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         // generate JSON Format
         JSONObject jsonObject = new JSONObject();
@@ -1012,7 +1015,7 @@ public class BluetoothSingleton {
         jsonObject.put("cmd", "make_recipe");
         jsonObject.put("user", user);
         jsonObject.put("recipe", recipe);
-        singleton.sendReadWrite(jsonObject,false,true);
+        singleton.sendReadWrite(jsonObject, false, true);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
             public void toSave() throws InterruptedException {
@@ -1046,7 +1049,7 @@ public class BluetoothSingleton {
         jsonObject.put("cmd", "delete_recipe");
         jsonObject.put("user", user);
         jsonObject.put("name", name);
-        singleton.sendReadWrite(jsonObject,false,true);
+        singleton.sendReadWrite(jsonObject, false, true);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
             public void toSave() throws InterruptedException {
@@ -1077,7 +1080,7 @@ public class BluetoothSingleton {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "abort");
         jsonObject.put("user", user);
-        singleton.sendReadWrite(jsonObject,false,true);
+        singleton.sendReadWrite(jsonObject, false, true);
 
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
@@ -1104,7 +1107,7 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void addLiquid(float user,String liquid, float volume)
+    public void addLiquid(float user, String liquid, float volume)
             throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         //generate JSON Format
@@ -1113,7 +1116,7 @@ public class BluetoothSingleton {
         jsonObject.put("user", user);
         jsonObject.put("liquid", liquid);
         jsonObject.put("volume", volume);
-        singleton.sendReadWrite(jsonObject,false,true);
+        singleton.sendReadWrite(jsonObject, false, true);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
             public void toSave() throws InterruptedException {
@@ -1147,7 +1150,7 @@ public class BluetoothSingleton {
         jsonObject.put("user", 0);
         jsonObject.put("volume", volume);
         jsonObject.put("slot", slot);
-        singleton.sendReadWrite(jsonObject,true,true);
+        singleton.sendReadWrite(jsonObject, true, true);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
             public void toSave() throws InterruptedException {
@@ -1162,6 +1165,7 @@ public class BluetoothSingleton {
         Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
 
     }
+
     /**
      * run_pump: Runs the pump for a certain time. The time is given in milliseconds.
      * like described in ProjektDokumente/esp/Befehle.md
@@ -1182,7 +1186,7 @@ public class BluetoothSingleton {
         jsonObject.put("user", 0);
         jsonObject.put("slot", slot);
         jsonObject.put("time", time);
-        singleton.sendReadWrite(jsonObject,true,true);
+        singleton.sendReadWrite(jsonObject, true, true);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
             public void toSave() throws InterruptedException {
@@ -1223,7 +1227,7 @@ public class BluetoothSingleton {
         jsonObject.put("time2", time2);
         jsonObject.put("volume1", volume1);
         jsonObject.put("volume2", volume2);
-        singleton.sendReadWrite(jsonObject,true,true);
+        singleton.sendReadWrite(jsonObject, true, true);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
             public void toSave() throws InterruptedException {
@@ -1264,7 +1268,7 @@ public class BluetoothSingleton {
         jsonObject.put("time_reverse", timeReverse);
         jsonObject.put("rate", rate);
 
-        singleton.sendReadWrite(jsonObject,true,true);
+        singleton.sendReadWrite(jsonObject, true, true);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
             public void toSave() throws InterruptedException {
@@ -1296,7 +1300,7 @@ public class BluetoothSingleton {
         jsonObject.put("cmd", "tare_scale");
         jsonObject.put("user", 0);
 
-        singleton.sendReadWrite(jsonObject,true,true);
+        singleton.sendReadWrite(jsonObject, true, true);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
             public void toSave() throws InterruptedException {
@@ -1329,7 +1333,7 @@ public class BluetoothSingleton {
         jsonObject.put("user", 0);
         jsonObject.put("weight", weight);
 
-        singleton.sendReadWrite(jsonObject,true,true);
+        singleton.sendReadWrite(jsonObject, true, true);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
             public void toSave() throws InterruptedException {
@@ -1363,7 +1367,7 @@ public class BluetoothSingleton {
         jsonObject.put("user", 0);
         jsonObject.put("factor", factor);
 
-        singleton.sendReadWrite(jsonObject,true,true);
+        singleton.sendReadWrite(jsonObject, true, true);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
             public void toSave() throws InterruptedException {
@@ -1396,7 +1400,7 @@ public class BluetoothSingleton {
         jsonObject.put("cmd", "restart");
         jsonObject.put("user", 0);
 
-        singleton.sendReadWrite(jsonObject,true,true);
+        singleton.sendReadWrite(jsonObject, true, true);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
             public void toSave() throws InterruptedException {
@@ -1429,7 +1433,7 @@ public class BluetoothSingleton {
         jsonObject.put("cmd", "factory_reset");
         jsonObject.put("user", 0);
 
-        singleton.sendReadWrite(jsonObject,true,true);
+        singleton.sendReadWrite(jsonObject, true, true);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
             public void toSave() throws InterruptedException {
@@ -1462,7 +1466,7 @@ public class BluetoothSingleton {
         jsonObject.put("cmd", "clean");
         jsonObject.put("user", 0);
 
-        singleton.sendReadWrite(jsonObject,true,true);
+        singleton.sendReadWrite(jsonObject, true, true);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
             public void toSave() throws InterruptedException {
