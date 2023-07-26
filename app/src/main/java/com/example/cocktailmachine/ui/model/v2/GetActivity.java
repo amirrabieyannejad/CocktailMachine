@@ -18,7 +18,7 @@ public class GetActivity {
     public static final String ID = "ID";
     public static final String MODELTYPE = "MODELTYPE";
     public static final String FRAGMENTTYPE = "FRAGMENTTYPE";
-    public static void goTo(Activity activity, FragmentType fragmentType, ModelType modelType){
+    public static void goToDisplay(Activity activity, FragmentType fragmentType, ModelType modelType){
         //TO DO
         /*
         Intent intent = new Intent(this, ModelActivity.class);
@@ -42,7 +42,7 @@ public class GetActivity {
         activity.finish();
     }
 
-    public static void goTo(Activity activity, FragmentType fragmentType, ModelType modelType, Long id){
+    public static void goToDisplay(Activity activity, FragmentType fragmentType, ModelType modelType, Long id){
         //TO DO
         /*
         Intent intent = new Intent(this, ModelActivity.class);

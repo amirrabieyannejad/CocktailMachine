@@ -42,12 +42,15 @@ public class ListActivity extends BasicAcitivity {
             IDs.add(pump.getID());
             names.add("Pumpe: "+pump.getIngredientName());
         }
+        /*
         adapter = new TitleListAdapter(
                 this,
                 IDs,
                 names,
                 getModelType()
         );
+
+         */
     }
 
     @Override
@@ -90,7 +93,7 @@ public class ListActivity extends BasicAcitivity {
         binding.recyclerViewListAc.setLayoutManager(llm);
         binding.recyclerViewListAc.setAdapter(adapter);
         Activity activity = this;
-        binding.floatingActionButtonList.setOnClickListener(v -> GetActivity.goTo(activity, FragmentType.Edit, getModelType()));
+        binding.floatingActionButtonList.setOnClickListener(v -> GetActivity.goToDisplay(activity, FragmentType.Edit, getModelType()));
     }
 
 

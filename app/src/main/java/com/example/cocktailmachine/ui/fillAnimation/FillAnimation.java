@@ -12,6 +12,7 @@ import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
 import com.example.cocktailmachine.ui.model.v2.GetActivity;
+import com.example.cocktailmachine.ui.model.v2.GetDialog;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -28,7 +29,7 @@ public class FillAnimation extends AppCompatActivity {
     private static final String TAG = "CocktailList";
 
     FragmentManager fragmentManager;
-    androidx.fragment.app.FragmentTransaction fragmentTransaction;
+    Recipe recipe;
 
 
     @Override
@@ -61,18 +62,35 @@ public class FillAnimation extends AppCompatActivity {
             id = i.getLongExtra(GetActivity.ID, id);
         }
 
-        Recipe recipe = Recipe.getRecipe(id);//Recipe.getRecipe(id);//SingeltonTestdata.getSingelton().getRecipe();
+        recipe = Recipe.getRecipe(id);//Recipe.getRecipe(id);//SingeltonTestdata.getSingelton().getRecipe();
         Bitmap image = null;
         try {
             image = BildgeneratorGlas.bildgenerationGlas(this,recipe,(float)0.5);
-        } catch (TooManyTimesSettedIngredientEcxception e) {
-            e.printStackTrace();
-        } catch (NoSuchIngredientSettedException e) {
+        } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
             e.printStackTrace();
         }
-        GlassFillFragment fragment = GlassFillFragment.newInstance("",image);
+        GlassFillFragment fragment = GlassFillFragment.newInstance(
+                recipe != null ? recipe.getName() : "",
+                image);
         replaceFragment(fragment);
     }
+
+    /**
+     * checks if cocktail is mixed
+     * @author Johanna Reidt
+     */
+    private void isFinished(){
+
+    }
+
+    /**
+     * when cocktail is done, do this
+     * @author Johanna Reidt
+     */
+    private void onFinish(){
+        GetDialog.isDone(this, recipe);
+    }
+
 
 
     private void replaceFragment(Fragment fragment){

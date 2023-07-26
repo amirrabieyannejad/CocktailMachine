@@ -2,17 +2,17 @@ package com.example.cocktailmachine.ui.model.v2;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
-import android.os.CountDownTimer;
 import android.text.InputType;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
@@ -23,6 +23,8 @@ import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpExcep
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
+
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,11 +89,60 @@ public class GetDialog {
         alertDialog.setTitle("Du bist dran!");
         alertDialog.setMessage("Bitte, geh zur Cocktailmaschine und stelle dein Glas unter die MAschine. ");
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Los!", (dialog, which) -> {
-            //TODO
+            //TODO: send force start bluetooth thing
             GetActivity.goToFill(activity, recipe);
             dialog.dismiss();
         });
         alertDialog.show();   //
+    }
+
+    public static void isDone(Activity activity, Recipe recipe){
+        AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
+        alertDialog.setTitle("Fertig!");
+        alertDialog.setMessage("Hole deinen Cocktail ab! ");
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Abgeholt!", (dialog, which) -> {
+            int count = 4;
+            try {
+                BluetoothSingleton.getInstance().reset();
+                GetDialog.showTopics( activity,  recipe);
+                dialog.dismiss();
+            } catch (JSONException | InterruptedException e) {
+                e.printStackTrace();
+                count--;
+                if(count == 0){
+                    GetDialog.showTopics( activity,  recipe);
+                    dialog.dismiss();
+                }
+            }
+        });
+        alertDialog.show();   //
+    }
+
+    public static void showTopics(Activity activity, Recipe recipe){
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
+        alertDialog.setTitle("Serviervorschläge!");
+        alertDialog.setMessage("Füge noch einen oder mehrer der Serviervorschläge hinzu!");
+        alertDialog.setOnDismissListener(dialog -> GetActivity.goToDisplay(activity,
+                FragmentType.List,
+                ModelType.RECIPE));
+        List<Topic> topics = Topic.getTopics(recipe);
+        ArrayList<String> topicsName = new ArrayList<>();
+        for(Topic t: topics){
+            topicsName.add(t.getName());
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter(
+                activity,
+                android.R.layout.simple_list_item_1,
+                topicsName);
+        alertDialog.setAdapter(adapter,
+                (dialog, which) -> {
+            GetActivity.goToDisplay(activity,
+                        FragmentType.Model,
+                        ModelType.TOPIC,
+                        topics.get(which).getID());
+            dialog.dismiss();
+        });
+        alertDialog.show();
     }
 
 
@@ -115,7 +166,7 @@ public class GetDialog {
 
     public static void doneMixing(Activity activity){
         //pick new
-        GetActivity.goTo(activity, FragmentType.List, ModelType.RECIPE);
+        GetActivity.goToDisplay(activity, FragmentType.List, ModelType.RECIPE);
     }
 
 
@@ -1000,12 +1051,12 @@ public class GetDialog {
                 activity.getApplicationContext(),
                 android.R.layout.simple_list_item_1,
                 displayValues);
-        builder.setSingleChoiceItems(adapter, 0, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                pump.setCurrentIngredient(ingredients.get(which));
-                Toast.makeText(activity,"Gewählte Zutat: "+displayValues.get(which),Toast.LENGTH_SHORT).show();
-            }
+        builder.setSingleChoiceItems(
+                adapter,
+                0,
+                (dialog, which) -> {
+            pump.setCurrentIngredient(ingredients.get(which));
+            Toast.makeText(activity,"Gewählte Zutat: "+displayValues.get(which),Toast.LENGTH_SHORT).show();
         });
 
 
