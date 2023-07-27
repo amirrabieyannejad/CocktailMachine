@@ -281,7 +281,7 @@ public class CocktailMachine {
 
 
 
-    public static void automaticCalibration(){
+    public static void automaticCalibration(Activity activity){
         /**
          * a.	Bitte erst wasser beim ersten Durchgang
          * b.	Tarierung
@@ -291,6 +291,7 @@ public class CocktailMachine {
          * f.	Warten auf fertig
          * g.	Angabe von Zutaten
          */
+        //TODO: call bluetooth
     }
 
 

@@ -172,13 +172,13 @@ public class GetDialog {
         builder.setPositiveButton("Erledigt!", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                taring(activity);
+                firstTaring(activity);
                 dialog.dismiss();
             }
         });
     }
 
-    public static void taring(Activity activity){
+    private static void firstTaring(Activity activity){
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Waagentarierung");
         builder.setMessage("Bitte stelle sicher, dass keine Gefässe, Gewichte oder Ähnliches unter der Cocktailmaschine steht. " +
@@ -188,9 +188,56 @@ public class GetDialog {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 CocktailMachine.tareScale(activity);
+                enterNumberOfPumps(activity);
                 dialog.dismiss();
             }
         });
+    }
+
+    private static void enterNumberOfPumps(Activity activity){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Setze die Anzahl der Pumpen:");
+
+        View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
+        GetDialog.PumpNumberChangeView pumpNumberChangeView =
+                new GetDialog.PumpNumberChangeView(
+                        activity,
+                        v);
+
+        builder.setView(v);
+
+        builder.setPositiveButton("Speichern", (dialog, which) -> {
+            pumpNumberChangeView.save();
+            getGlass(activity);
+            dialog.dismiss();
+        });
+        builder.show();
+    }
+
+    private static void getGlass(Activity activity){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Waagenkalibrierung");
+        builder.setMessage("Bitte stelle ein Gefäss mit 100ml Flüssigkeit unter die Cocktailmaschine. ");
+        builder.setPositiveButton("Erledigt!", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                CocktailMachine.automaticCalibration(activity);
+                waitingAutomaticCalibration(activity);
+                dialog.dismiss();
+            }
+        });
+    }
+
+    private static void waitingAutomaticCalibration(Activity activity){
+        //TODO
+        setIngredientsForPumps(activity);
+    }
+
+    private static void setIngredientsForPumps(Activity activity){
+        //TODO
+
+
+        GetActivity.goToMenu(activity);
     }
 
 
@@ -836,7 +883,9 @@ public class GetDialog {
             super(activity, v, "Anzahl");
         }
         public void save(){
-            DatabaseConnection.initializeSingleton(super.activity);
+            if(!DatabaseConnection.isInitialized()) {
+                DatabaseConnection.initializeSingleton(super.activity);
+            }
 
             Pump.setOverrideEmptyPumps((int) super.getFloat());
         }

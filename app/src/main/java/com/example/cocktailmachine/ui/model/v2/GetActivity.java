@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.cocktailmachine.data.Recipe;
+import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
 import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
@@ -73,6 +74,12 @@ public class GetActivity {
         Bundle bundle = new Bundle();
         bundle.putLong(ID, recipe.getID());
         intent.putExtras(bundle);
+        activity.startActivity(intent);
+        activity.finish();
+    }
+
+    public static void goToMenu(Activity activity) {
+        Intent intent = new Intent(activity, Menue.class);
         activity.startActivity(intent);
         activity.finish();
     }
