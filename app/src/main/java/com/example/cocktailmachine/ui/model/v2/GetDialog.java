@@ -237,15 +237,14 @@ public class GetDialog {
         //TODO
 
         List<Pump> pumps = Pump.getPumps();
-        
-        for(Pump p: pumps){
-            setFixedPumpIngredient(activity, p);
-        }
 
-        GetActivity.goToMenu(activity);
+        Pump p = pumps.get(0);
+        pumps.remove(0);
+        setFixedPumpIngredient(activity, p, pumps);
+
     }
 
-    public static void setFixedPumpIngredient(Activity activity, Pump pump){
+    public static void setFixedPumpIngredient(Activity activity, Pump pump, List<Pump> next){
         if (pump != null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setTitle("Setze die Zutat für Slot "+pump.getSlot()+":");
@@ -269,7 +268,7 @@ public class GetDialog {
 
             builder.setPositiveButton("Speichern", (dialog, which) -> {
                 pump.sendSave(activity);
-                setFixedPumpVolume(activity, pump);
+                setFixedPumpVolume(activity, pump, next);
             });
             builder.show();
         }else{
@@ -277,7 +276,7 @@ public class GetDialog {
         }
     }
 
-    public static void setFixedPumpVolume(Activity activity, Pump pump){
+    public static void setFixedPumpVolume(Activity activity, Pump pump, List<Pump> next){
         if (pump != null) {
             pump.sendRefill(activity);
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -296,7 +295,7 @@ public class GetDialog {
             builder.setPositiveButton("Speichern", (dialog, which) -> {
                 volumeChangeView.save();
                 volumeChangeView.send();
-                setFixedPumpMinVolume(activity, pump);
+                setFixedPumpMinVolume(activity, pump, next);
 
 
             });
@@ -307,7 +306,7 @@ public class GetDialog {
     }
 
 
-    public static void setFixedPumpMinVolume(Activity activity, Pump pump){
+    public static void setFixedPumpMinVolume(Activity activity, Pump pump, List<Pump> next){
         if (pump != null) {
             pump.sendRefill(activity);
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -327,6 +326,17 @@ public class GetDialog {
                 volumeChangeView.save();
                 volumeChangeView.send();
 
+                if(next.isEmpty()){
+                    GetActivity.goToMenu(activity);
+                    dialog.dismiss();
+                    return;
+                }else {
+                    Pump p = next.get(0);
+                    next.remove(0);
+                    setFixedPumpIngredient(activity,p,next);
+                    dialog.dismiss();
+                    return;
+                }
             });
             builder.show();
         }else{
