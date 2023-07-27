@@ -212,7 +212,16 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     /**
      * send to be mixed
      *   {"cmd": "make_recipe", "user": 8858, "recipe": "radler"}
-     * TODO:show topics to user!
+     *   starts dialog,
+     *      countdown
+     *      ping for next notification
+     *      demands glas placement and los
+     *      fillanimation activity start
+     *      finish check show finish dialog
+     *      show topics
+     *      go to recipe or selected topic
+     *
+     * TO DO:show topics to user!
      */
     default void send(Activity activity) {
         //service.
@@ -221,6 +230,8 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         try {
             bluetoothSingleton.makeRecipe(this.getName());
             setWaitingQueueCountDown(activity);
+            CocktailMachine.setCurrentRecipe(this);
+            GetDialog.sendRecipe(activity, this);
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }

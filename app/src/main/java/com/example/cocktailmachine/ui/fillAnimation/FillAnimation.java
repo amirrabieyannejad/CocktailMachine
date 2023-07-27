@@ -80,35 +80,16 @@ public class FillAnimation extends AppCompatActivity {
         replaceFragment(fragment);
     }
 
-    /**
-     * checks if cocktail is mixed
-     * @author Johanna Reidt
-     */
-    private boolean isFinished(){
-        LinkedHashMap<Ingredient, Integer> temp =
-                CocktailMachine.getCurrentCocktailStatus(this);
-        if(recipe.getIngredients().size()==temp.size()) {
-            for(Ingredient i:temp.keySet() ) {
-                try {
-                    int t = temp.get(i);
-                    if(0!=Integer.compare(recipe.getSpecificIngredientVolume(i),t)){
-                        return false;
-                    }
-                } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
-                    e.printStackTrace();
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
-    }
+
 
     /**
-     * when cocktail is done, do this
+     * TODO: Phillip: when is done is checked with CocktailMaschine.isFinished(activity)
+     *
+     * when cocktail is done, do this,
      * @author Johanna Reidt
      */
     private void onFinish(){
+
         GetDialog.isDone(this, recipe);
     }
 

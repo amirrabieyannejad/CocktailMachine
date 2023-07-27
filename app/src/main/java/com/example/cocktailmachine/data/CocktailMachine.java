@@ -5,6 +5,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.ui.model.v2.GetDialog;
 
 import org.json.JSONArray;
@@ -27,6 +29,7 @@ public class CocktailMachine {
 
     static LinkedHashMap<Ingredient, Integer> current;
     static int currentUser = -1;
+    static Recipe currentRecipe;
 
     public static int getNumberOfUsersUntilThisUsersTurn(){
         /*
@@ -41,6 +44,45 @@ public class CocktailMachine {
         return 0;
     }
 
+
+    public static void setCurrentRecipe(Recipe currentRecipe) {
+        CocktailMachine.currentRecipe = currentRecipe;
+    }
+
+    public static Recipe getCurrentRecipe() {
+        return currentRecipe;
+    }
+
+    /**
+     * checks if cocktails mixing is done
+     * @author Johanna Reidt
+     */
+    public static boolean isFinished(Activity activity){
+        if(currentRecipe == null){
+            return false;
+        }
+        LinkedHashMap<Ingredient, Integer> temp =
+                CocktailMachine.getCurrentCocktailStatus(activity);
+        if(currentRecipe.getIngredients().size()==temp.size()) {
+            for(Ingredient i:temp.keySet() ) {
+                try {
+                    int t = temp.get(i);
+                    if(0!=Integer.compare(currentRecipe.getSpecificIngredientVolume(i),t)){
+                        return false;
+                    }
+                } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public static void isCollected(){
+        currentRecipe = null;
+    }
 
 
 

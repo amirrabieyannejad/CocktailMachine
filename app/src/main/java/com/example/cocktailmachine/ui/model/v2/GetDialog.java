@@ -104,6 +104,7 @@ public class GetDialog {
             int count = 4;
             try {
                 BluetoothSingleton.getInstance().reset();
+                CocktailMachine.isCollected();
                 GetDialog.showTopics( activity,  recipe);
                 dialog.dismiss();
             } catch (JSONException | InterruptedException e) {
@@ -111,11 +112,13 @@ public class GetDialog {
                 count--;
                 if(count == 0){
                     GetDialog.showTopics( activity,  recipe);
+                    CocktailMachine.isCollected();
                     dialog.dismiss();
                 }
             }
         });
         alertDialog.show();   //
+
     }
 
     public static void showTopics(Activity activity, Recipe recipe){
@@ -123,14 +126,15 @@ public class GetDialog {
         alertDialog.setTitle("Serviervorschläge!");
         alertDialog.setMessage("Füge noch einen oder mehrer der Serviervorschläge hinzu!");
         alertDialog.setOnDismissListener(dialog -> GetActivity.goToDisplay(activity,
-                FragmentType.List,
-                ModelType.RECIPE));
+                FragmentType.Model,
+                ModelType.RECIPE,
+                recipe.getID()));
         List<Topic> topics = Topic.getTopics(recipe);
         ArrayList<String> topicsName = new ArrayList<>();
         for(Topic t: topics){
             topicsName.add(t.getName());
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter(
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 activity,
                 android.R.layout.simple_list_item_1,
                 topicsName);
