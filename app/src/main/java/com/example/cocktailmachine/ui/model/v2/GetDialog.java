@@ -153,27 +153,45 @@ public class GetDialog {
 
 
 
-
-
-    //Los Button+ Notification
-    public static void startPointCocktailMixing(Activity activity, Recipe recipe){
-
-
-        GetActivity.goToFill(activity, recipe);
+    //Automatic calibration
+    /**
+     * a.	Bitte erst wasser beim ersten Durchgang
+     * b.	Tarierung
+     * c.	Gefässe mit 100 ml Wasser
+     * d.	Pumpenanzahl
+     * e.	Automatische Kalibrierung
+     * f.	Warten auf fertig
+     * g.	Angabe von Zutaten
+     */
+    public static void startAutomaticCalibration(Activity activity){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Automatische Kalibrierung");
+        builder.setMessage("Bitte folge den Anweisungen schrittweise. " +
+                "Zur Kalibrierung der Pumpen darf zunächst nur Wasser angeschlossen sein. " +
+                "Bitte stelle sicher, dass an allen Pumpen nur Wassergefässe angeschlossen sind.");
+        builder.setPositiveButton("Erledigt!", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                taring(activity);
+                dialog.dismiss();
+            }
+        });
     }
-    //Fill Simulation
 
-    //Abholen
-    public static void getCocktail(Activity activity, Recipe recipe){
-        doneMixing(activity);
+    public static void taring(Activity activity){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Waagentarierung");
+        builder.setMessage("Bitte stelle sicher, dass keine Gefässe, Gewichte oder Ähnliches unter der Cocktailmaschine steht. " +
+                "Gemeint ist der Bereich an dem später die Gläser stehen." +
+                "Auch das Auffangbecken muss leer sein!");
+        builder.setPositiveButton("Erledigt!", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                CocktailMachine.tareScale(activity);
+                dialog.dismiss();
+            }
+        });
     }
-
-    public static void doneMixing(Activity activity){
-        //pick new
-        GetActivity.goToDisplay(activity, FragmentType.List, ModelType.RECIPE);
-    }
-
-
 
 
 
