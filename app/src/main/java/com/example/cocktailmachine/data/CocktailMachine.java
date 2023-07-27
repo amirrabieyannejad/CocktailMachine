@@ -294,6 +294,11 @@ public class CocktailMachine {
         //TODO: call bluetooth
     }
 
+    public static boolean isAutomaticCalibrationDone(Activity activity){
+        //TODO: bluetooth connection
+        return new Random(42).nextBoolean();
+    }
+
 
 
 

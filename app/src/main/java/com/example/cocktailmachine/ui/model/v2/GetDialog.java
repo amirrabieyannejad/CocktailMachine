@@ -3,7 +3,10 @@ package com.example.cocktailmachine.ui.model.v2;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -164,6 +167,8 @@ public class GetDialog {
      * g.	Angabe von Zutaten
      */
     public static void startAutomaticCalibration(Activity activity){
+        Log.i("GetDialog", "startAutomaticCalibration");
+        DatabaseConnection.initializeSingleton(activity);
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Automatische Kalibrierung");
         builder.setMessage("Bitte folge den Anweisungen schrittweise. " +
@@ -176,9 +181,12 @@ public class GetDialog {
                 dialog.dismiss();
             }
         });
+        builder.show();
+
     }
 
     private static void firstTaring(Activity activity){
+        Log.i("GetDialog", "firstTaring");
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Waagentarierung");
         builder.setMessage("Bitte stelle sicher, dass keine Gefässe, Gewichte oder Ähnliches unter der Cocktailmaschine steht. " +
@@ -192,9 +200,11 @@ public class GetDialog {
                 dialog.dismiss();
             }
         });
+        builder.show();
     }
 
     private static void enterNumberOfPumps(Activity activity){
+        Log.i("GetDialog", "enterNumberOfPumps");
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Setze die Anzahl der Pumpen:");
 
@@ -215,27 +225,80 @@ public class GetDialog {
     }
 
     private static void getGlass(Activity activity){
+        Log.i("GetDialog", "getGlass");
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Waagenkalibrierung");
         builder.setMessage("Bitte stelle ein Gefäss mit 100ml Flüssigkeit unter die Cocktailmaschine. ");
         builder.setPositiveButton("Erledigt!", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
                 CocktailMachine.automaticCalibration(activity);
                 waitingAutomaticCalibration(activity);
-                dialog.dismiss();
             }
         });
+        builder.show();
     }
 
     private static void waitingAutomaticCalibration(Activity activity){
         //TODO
-        setIngredientsForPumps(activity);
+        Log.i("GetDialog", "waitingAutomaticCalibration");
+        //setIngredientsForPumps(activity);
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Bitte Warten!");
+        builder.setMessage("Die automatische Kalibration der Pumpen läuft!");
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        WaitingQueueCountDown waitingQueueCountDown = new WaitingQueueCountDown(50000) {
+            boolean isDone = false;
+            @Override
+            public void onTick() {
+                Log.i("GetDialog", "waitingQueueCountDown:  isAutomaticCalibrationDone false");
+            }
+
+            @Override
+            public void reduceTick() {
+                isDone = CocktailMachine.isAutomaticCalibrationDone(activity);
+                Log.i("GetDialog", "waitingQueueCountDown:  idone: " +isDone);
+                if(isDone){
+                    setTick(0);
+                }else {
+                    setTick(1);
+                }
+            }
+
+            @Override
+            public void onNext() {
+
+            }
+
+            @Override
+            public void onFinish() {
+                Log.i("GetDialog", "waitingQueueCountDown: onFinish");
+                this.cancel();
+                //this.stop();
+                Log.i("GetDialog", "waitingQueueCountDown: onFinish: this canceled");
+                //ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+                //toneGen1.startTone(ToneGenerator.TONE_PROP_BEEP,150);
+                //toneGen1.release();
+                Toast.makeText(activity, "Das Setup ist vollständig!", Toast.LENGTH_LONG).show();
+                dialog.dismiss();
+
+                Log.i("GetDialog", "waitingQueueCountDown: onFinish: dialog dimissed");
+                GetDialog.setIngredientsForPumps(activity);
+                this.cancel();
+            }
+        };
+        waitingQueueCountDown.start();
+
+
     }
 
     private static void setIngredientsForPumps(Activity activity){
-        //TODO
+        //TO DO
 
+        Log.i("GetDialog", "setIngredientsForPumps");
         List<Pump> pumps = Pump.getPumps();
 
         Pump p = pumps.get(0);
@@ -244,7 +307,7 @@ public class GetDialog {
 
     }
 
-    public static void setFixedPumpIngredient(Activity activity, Pump pump, List<Pump> next){
+    private static void setFixedPumpIngredient(Activity activity, Pump pump, List<Pump> next){
         if (pump != null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setTitle("Setze die Zutat für Slot "+pump.getSlot()+":");
@@ -276,7 +339,7 @@ public class GetDialog {
         }
     }
 
-    public static void setFixedPumpVolume(Activity activity, Pump pump, List<Pump> next){
+    private static void setFixedPumpVolume(Activity activity, Pump pump, List<Pump> next){
         if (pump != null) {
             pump.sendRefill(activity);
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -306,7 +369,7 @@ public class GetDialog {
     }
 
 
-    public static void setFixedPumpMinVolume(Activity activity, Pump pump, List<Pump> next){
+    private static void setFixedPumpMinVolume(Activity activity, Pump pump, List<Pump> next){
         if (pump != null) {
             pump.sendRefill(activity);
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);

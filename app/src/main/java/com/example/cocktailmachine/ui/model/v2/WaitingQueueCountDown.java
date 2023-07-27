@@ -108,7 +108,7 @@ public abstract class WaitingQueueCountDown {
 
 
      // handles counting down
-     private Handler mHandler = new Handler() {
+     private final Handler mHandler = new Handler() {
 
             @Override
             public void handleMessage(Message msg) {

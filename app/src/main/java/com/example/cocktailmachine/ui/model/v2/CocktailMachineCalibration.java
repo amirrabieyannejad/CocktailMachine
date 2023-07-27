@@ -19,6 +19,7 @@ import java.util.Random;
  */
 public class CocktailMachineCalibration {
     public static void start(Activity activity){
+        Log.i("CocktailMachineCalib", "start");
         AdminRights.login(activity, activity.getLayoutInflater(), dialog -> {});
         AdminRights.initUser(activity, String.valueOf(new Random().nextInt()));
         if(CocktailMachine.isCocktailMachineSet(activity)){
@@ -26,11 +27,15 @@ public class CocktailMachineCalibration {
             Toast.makeText(activity, "Cocktailmaschine ist bereit.", Toast.LENGTH_SHORT).show();
             return;
         }
+        GetDialog.startAutomaticCalibration(activity);
+        /*
         GetDialog.setPumpNumber(activity);
         //Pump.calibratePumpsAndTimes(activity);
         for(Pump p: Pump.getPumps()){
             GetDialog.setPumpIngredient(activity, p, true, true);
         }
+
+         */
     }
 
 }
