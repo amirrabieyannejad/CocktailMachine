@@ -236,9 +236,107 @@ public class GetDialog {
     private static void setIngredientsForPumps(Activity activity){
         //TODO
 
+        List<Pump> pumps = Pump.getPumps();
+        
+        for(Pump p: pumps){
+            setFixedPumpIngredient(activity, p);
+        }
 
         GetActivity.goToMenu(activity);
     }
+
+    public static void setFixedPumpIngredient(Activity activity, Pump pump){
+        if (pump != null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle("Setze die Zutat für Slot "+pump.getSlot()+":");
+
+            List<Ingredient> ingredients = Ingredient.getAllIngredients();
+            ArrayList<String> names = new ArrayList<>();
+            for(Ingredient ingredient: ingredients){
+                names.add(ingredient.getName());
+            }
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                    activity,
+                    android.R.layout.simple_list_item_1,
+                    names);
+
+            builder.setAdapter(adapter,
+                    (dialog, which) -> {
+                        pump.setCurrentIngredient(ingredients.get(which));
+                        Toast.makeText(activity, names.get(which)+" gewählt.",Toast.LENGTH_SHORT).show();
+                    });
+
+            builder.setPositiveButton("Speichern", (dialog, which) -> {
+                pump.sendSave(activity);
+                setFixedPumpVolume(activity, pump);
+            });
+            builder.show();
+        }else{
+            errorMessage(activity);
+        }
+    }
+
+    public static void setFixedPumpVolume(Activity activity, Pump pump){
+        if (pump != null) {
+            pump.sendRefill(activity);
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle("Setze das jetzt vorhandene Volumen für Slot "+pump.getSlot()+":");
+
+            View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
+            GetDialog.VolumeChangeView volumeChangeView =
+                    new GetDialog.VolumeChangeView(
+                            activity,
+                            pump,
+                            v,
+                            false);
+
+            builder.setView(v);
+
+            builder.setPositiveButton("Speichern", (dialog, which) -> {
+                volumeChangeView.save();
+                volumeChangeView.send();
+                setFixedPumpMinVolume(activity, pump);
+
+
+            });
+            builder.show();
+        }else{
+            errorMessage(activity);
+        }
+    }
+
+
+    public static void setFixedPumpMinVolume(Activity activity, Pump pump){
+        if (pump != null) {
+            pump.sendRefill(activity);
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle("Setze das Minimalvolumen für Slot "+pump.getSlot()+":");
+
+            View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
+            GetDialog.VolumeChangeView volumeChangeView =
+                    new GetDialog.VolumeChangeView(
+                            activity,
+                            pump,
+                            v,
+                            true);
+
+            builder.setView(v);
+
+            builder.setPositiveButton("Speichern", (dialog, which) -> {
+                volumeChangeView.save();
+                volumeChangeView.send();
+
+            });
+            builder.show();
+        }else{
+            errorMessage(activity);
+        }
+    }
+
+
+
+
 
 
 
@@ -468,7 +566,7 @@ public class GetDialog {
     public static void setPumpIngredient(Activity activity, Pump pump, boolean setPumpVol, boolean setPumpMinVol){
         if (pump != null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-            builder.setTitle("Setze die Zutat:");
+            builder.setTitle("Setze die Zutat für Slot"+pump.getSlot()+":");
 
             List<Ingredient> ingredients = Ingredient.getAllIngredients();
             ArrayList<String> names = new ArrayList<>();
@@ -476,7 +574,7 @@ public class GetDialog {
                 names.add(ingredient.getName());
             }
 
-            ArrayAdapter adapter = new ArrayAdapter<>(
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(
                     activity,
                     android.R.layout.simple_list_item_1,
                     names);
