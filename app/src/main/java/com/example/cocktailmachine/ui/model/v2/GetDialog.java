@@ -250,7 +250,7 @@ public class GetDialog {
         AlertDialog dialog = builder.create();
         dialog.show();
 
-        WaitingQueueCountDown waitingQueueCountDown = new WaitingQueueCountDown(50000) {
+        WaitingQueueCountDown waitingQueueCountDown = new WaitingQueueCountDown(5000) {
             boolean isDone = false;
             @Override
             public void onTick() {
