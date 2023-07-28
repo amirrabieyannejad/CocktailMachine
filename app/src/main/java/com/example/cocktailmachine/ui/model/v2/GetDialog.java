@@ -68,7 +68,7 @@ public class GetDialog {
         countDown(activity, recipe);
     }
     //Count down
-    public static void countDown(Activity activity, Recipe recipe){
+    private static void countDown(Activity activity, Recipe recipe){
         //Better solution
         //https://stackoverflow.com/questions/10780651/display-a-countdown-timer-in-the-alert-dialog-box
         //CountDownRun countDownThread = new CountDownRun();
