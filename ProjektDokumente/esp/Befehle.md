@@ -103,6 +103,18 @@ JSON-Beispiel:
 
     {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
 
+### edit_pump: editiert eine Pumpe
+- user: User
+- liquid: str
+- volume: float
+- slot: int
+
+Nur die Flüssigkeit und das Volumen werden angepasst. Die Kalibrierung bleibt erhalten.
+
+JSON-Beispiel:
+
+    {"cmd": "edit_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
+
 ### refill_pump: füllt Pumpe auf
 - user: User
 - liquid: str

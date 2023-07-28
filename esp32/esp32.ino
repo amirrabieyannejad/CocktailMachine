@@ -316,6 +316,16 @@ struct CmdDefinePump : public Command {
     user(user), slot(slot), liquid(liquid), volume(volume) {}
 };
 
+struct CmdEditPump : public Command {
+  def_cmd("edit_pump", ADMIN);
+  User user;
+  int32_t slot;
+  String liquid;
+  float volume;
+  CmdEditPump(User user, const int32_t slot, String liquid, const float volume) :
+    user(user), slot(slot), liquid(liquid), volume(volume) {}
+};
+
 struct CmdRefillPump : public Command {
   def_cmd("refill_pump", ADMIN);
   User user;
@@ -785,6 +795,13 @@ Parsed parse_command(const String json) {
     parse_int32(slot);
     cmd = new CmdDefinePump(user, slot, liquid, volume);
 
+  } else if (match_name(CmdEditPump)) {
+    parse_user();
+    parse_str(liquid);
+    parse_float(volume);
+    parse_int32(slot);
+    cmd = new CmdEditPump(user, slot, liquid, volume);
+
   } else if (match_name(CmdRefillPump)) {
     parse_user();
     parse_float(volume);
@@ -1057,6 +1074,36 @@ Processed* CmdDefinePump::execute() {
   PumpSlot *pump_slot = pump_slots[slot];
   Pump *p = new Pump(pump_slot, this->liquid, volume);
   pumps[slot] = p;
+
+  // update machine state
+  update_liquids();
+  update_config_state(timestamp_ms());
+
+  return new Success();
+}
+
+Processed* CmdEditPump::execute() {
+  if (!is_admin(this->user)) return new Unauthorized();
+
+  int32_t slot = this->slot;
+
+  if (slot < 0 || slot >= MAX_PUMPS) {
+    return new InvalidSlot();
+  }
+
+  if (volume < 0) {
+    return new InvalidVolume();
+  }
+
+  // edit pump
+  Pump *pump = pumps[slot];
+
+  if (pump == NULL) {
+    return new InvalidSlot();
+  }
+
+  pump->liquid = this->liquid;
+  pump->volume = this->volume;
 
   // update machine state
   update_liquids();
