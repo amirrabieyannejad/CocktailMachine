@@ -21,6 +21,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.animation.ValueAnimator;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -69,6 +71,34 @@ public class FillAnimation extends AppCompatActivity {
 
         recipe = Recipe.getRecipe(id);//Recipe.getRecipe(id);//SingeltonTestdata.getSingelton().getRecipe();
         Bitmap image = null;
+
+        ValueAnimator animation = ValueAnimator.ofFloat(0f, 1f);
+        animation.setDuration(10000);
+
+        Context context = this;
+
+        animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator updatedAnimation) {
+                float animatedValue = (float)updatedAnimation.getAnimatedValue();
+                System.out.println(animatedValue);
+                Bitmap image = null;
+                try {
+                    image = BildgeneratorGlas.bildgenerationGlas(context,recipe,(float)animatedValue);
+                } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
+                    e.printStackTrace();
+                }
+                GlassFillFragment fragment = GlassFillFragment.newInstance(
+                        recipe != null ? recipe.getName() : "",
+                        image);
+                replaceFragment(fragment);
+            }
+        });
+
+        animation.start();
+
+
+
         try {
             image = BildgeneratorGlas.bildgenerationGlas(this,recipe,(float)0.5);
         } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
