@@ -14,10 +14,10 @@ import android.view.View;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.SingeltonTestdata;
-import com.example.cocktailmachine.data.Orientation;
+import com.example.cocktailmachine.data.enums.Orientation;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.logic.FlingAnalysis;
 
 import java.util.LinkedList;
@@ -27,7 +27,7 @@ public class SingleCocktailChoice extends AppCompatActivity {
 
     private GestureDetector mDetector;
     private int counter = 0;
-    private int fragmentCounter = 0;
+    private final int fragmentCounter = 0;
 
 
 
@@ -213,10 +213,10 @@ public class SingleCocktailChoice extends AppCompatActivity {
     private List<Recipe> loadRecipes(Context context) throws NotInitializedDBException {
         List<Recipe> recipes;
         try {
-            recipes = DatabaseConnection.getDataBase().loadAvailableRecipes();
+            recipes = DatabaseConnection.getDataBase().loadAllRecipes();
         } catch (NotInitializedDBException e) {
-            DatabaseConnection.initialize_singleton(context);
-            recipes = DatabaseConnection.getDataBase().loadAvailableRecipes();
+            DatabaseConnection.initializeSingleton(context);
+            recipes = DatabaseConnection.getDataBase().loadAllRecipes();
         }
         return(recipes);
     }

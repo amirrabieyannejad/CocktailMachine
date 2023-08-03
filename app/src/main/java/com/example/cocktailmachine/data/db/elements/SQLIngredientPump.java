@@ -1,21 +1,25 @@
 package com.example.cocktailmachine.data.db.elements;
 
 import android.os.Build;
+import android.util.Log;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SQLIngredientPump extends SQLDataBaseElement {
+    private static final String TAG = "SQLIngredientPump";
     private int volume = -1;
     private long pump = -1L;
     private long ingredient = -1L;
+    private boolean available = false;
+
 
 
     public SQLIngredientPump(int volume, long pump, long ingredient) {
@@ -30,6 +34,11 @@ public class SQLIngredientPump extends SQLDataBaseElement {
         this.volume = volume;
         this.pump = pump;
         this.ingredient = ingredient;
+        /*
+        Objects.requireNonNull(Ingredient.getIngredient(id)).setIngredientPump(this);
+        Objects.requireNonNull(Ingredient.getIngredient(id)).isAvailable();
+        Objects.requireNonNull(Pump.getPump(id)).setIngredientPump(this);
+         */
     }
 
     public int getVolume(){
@@ -71,27 +80,75 @@ public class SQLIngredientPump extends SQLDataBaseElement {
 
     public void setVolume(int volume){
         this.volume = volume;
+        this.wasChanged();
+    }
+
+    public void setPumpID(long id) {
+        this.pump = id;
+        this.wasChanged();
+    }
+
+    /**
+     * true, if volume > zero
+     * @return
+     */
+    @Override
+    public boolean isAvailable() {
+        return this.volume>0;
+    }
+
+    /**
+     * true, if pump and ingredient exists and volume > zero
+     * @return
+     */
+    @Override
+    public boolean loadAvailable() {
+        boolean res = (getIngredient() != null)&&(getPump() != null);
+
+        if(res != this.available){
+            Log.i(TAG, "loadAvailable: available has changed to: "+res);
+            this.available = res;
+            this.wasChanged();
+        }
+        return this.available&&this.isAvailable();
     }
 
     @Override
-    public boolean isAvailable() {
+    public boolean save() {
+        try {
+            DatabaseConnection.getDataBase().addOrUpdate(this);
+            this.wasSaved();
+            return true;
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     @Override
-    public void save() throws NotInitializedDBException {
-        DatabaseConnection.getDataBase().addOrUpdate(this);
-        this.wasSaved();
+    public void delete() {
+        Log.i(TAG, "delete");
+        try {
+            DatabaseConnection.getDataBase().remove(this);
+            Log.i(TAG, "delete: success");
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            Log.i(TAG, "delete: failed");
+        }
     }
 
     @Override
-    public void delete() throws NotInitializedDBException {
-        DatabaseConnection.getDataBase().remove(this);
+    public String toString() {
+        return "SQLIngredientPump{" +
+                "ID=" + getID() +
+                ", volume=" + volume +
+                ", pump=" + pump +
+                ", ingredient=" + ingredient +
+                '}';
     }
 
-
     private static List<SQLIngredientPump> getAvailableInstances(){
-        //TODO
+        //TO DO
         try {
             return DatabaseConnection.getDataBase().getIngredientPumps();
         } catch (NotInitializedDBException e) {
@@ -112,7 +169,6 @@ public class SQLIngredientPump extends SQLDataBaseElement {
     }
 
     public static SQLIngredientPump getInstanceWithIngredient(long ingredient) {
-
         List<SQLIngredientPump> available = getAvailableInstances();
         if (available != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -122,4 +178,6 @@ public class SQLIngredientPump extends SQLDataBaseElement {
         }
         return null;
     }
+
+
 }

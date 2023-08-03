@@ -7,12 +7,17 @@ import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_LONG;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *
+ * @created Fr. 23.Jun 2023 - 12:51
+ * @project CocktailMachine
+ * @author Johanna Reidt
+ */
 public class PumpTable extends BasicColumn<SQLPump> {
 
         public static final String TABLE_NAME = "Pump";
@@ -63,7 +68,9 @@ public class PumpTable extends BasicColumn<SQLPump> {
         @Override
         public ContentValues makeContentValues(SQLPump element) {
             ContentValues cv = new ContentValues();
-            cv.put(COLUMN_NAME_INGREDIENT_ID, element.getCurrentIngredient().getID());
+            if(element.getCurrentIngredient() != null) {
+                cv.put(COLUMN_NAME_INGREDIENT_ID, element.getCurrentIngredient().getID());
+            }
             cv.put(COLUMN_NAME_MINIMUM_PUMP_VOLUME, element.getMinimumPumpVolume());
             return cv;
         }

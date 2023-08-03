@@ -1,6 +1,6 @@
 package com.example.cocktailmachine.data.db.elements;
 
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 public interface DataBaseElement {
     long getID();
@@ -8,6 +8,8 @@ public interface DataBaseElement {
     void setID(long id);
 
     boolean isAvailable();
+
+    boolean loadAvailable();
 
     boolean isSaved();
 
@@ -17,7 +19,8 @@ public interface DataBaseElement {
 
     void wasChanged();
 
-    void save() throws NotInitializedDBException;
+    boolean save();
 
-    void delete() throws NotInitializedDBException;
+    void delete();
+
 }

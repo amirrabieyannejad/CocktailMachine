@@ -9,7 +9,9 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="34dp"
+        tools:layout_editor_absoluteY="-349dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -21,7 +23,7 @@
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
-                android:contentDescription="Show available Cocktails"
+                app:contentDescription="Show available Cocktails"
                 android:onClick="openRecipeList"
                 app:srcCompat="@drawable/ic_list" />
 
@@ -29,14 +31,15 @@
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
-                android:contentDescription="add recipe"
+                app:contentDescription="add recipe"
                 android:onClick="openRecipeCreator"
                 app:srcCompat="@drawable/ic_list_add" />
+
             <ImageView
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
-                android:contentDescription="FillAnimation"
+                app:contentDescription="FillAnimation"
                 android:onClick="openGlassFillAnimationView"
                 app:srcCompat="@drawable/ic_list_add" />
 
@@ -45,7 +48,7 @@
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
-                android:contentDescription="swipe thing"
+                app:contentDescription="swipe thing"
                 android:onClick="openSingelCocktailView"
                 app:srcCompat="@drawable/ic_single_cocktail_choice_2" />
 
@@ -53,7 +56,7 @@
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
-                android:contentDescription="FindBluetooth"
+                app:contentDescription="FindBluetooth"
                 android:onClick="openDeviceScan"
                 app:srcCompat="@drawable/ic_find_bluetooth" />
 
@@ -61,16 +64,32 @@
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
-                android:contentDescription="Settings"
-                android:onClick="openGrafik"
+                app:contentDescription="Settings"
+                android:onClick="openSettings"
                 app:srcCompat="@drawable/ic_options" />
+
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
+                app:contentDescription="Grafik"
+                android:onClick="openGrafik"
+                app:srcCompat="@drawable/ic_glass" />
+
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
+                app:contentDescription="TestSiteForBluetooth"
+                android:onClick="testEnviroment"
+                app:srcCompat="@drawable/ic_bluetooth_test" />
 
             <ImageView
                 android:id="@+id/activity_menue_logout"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
-                android:contentDescription="Logout"
+                app:contentDescription="Logout"
                 android:onClick="logout"
                 app:srcCompat="@drawable/ic_logout" />
 
@@ -79,18 +98,9 @@
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
-                android:contentDescription="Login"
+                app:contentDescription="Login"
                 android:onClick="login"
                 app:srcCompat="@drawable/ic_login" />
-
-            <ImageView
-                android:id="@+id/activity_test"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_margin="30dp"
-                android:contentDescription="Login"
-                android:onClick="testEnviroment"
-                app:srcCompat="@android:mipmap/sym_def_app_icon" />
 
         </LinearLayout>
     </ScrollView>

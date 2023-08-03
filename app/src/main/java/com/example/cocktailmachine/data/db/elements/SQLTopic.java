@@ -1,11 +1,13 @@
 package com.example.cocktailmachine.data.db.elements;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,13 +28,29 @@ public class SQLTopic extends SQLDataBaseElement implements Topic {
         this.description = description;
     }
 
+    /*
     @Override
     public long getID(){
         return super.getID();
     }
 
+     */
+
+    /**
+     * always true
+     * @return
+     */
     @Override
     public boolean isAvailable() {
+        return true;
+    }
+
+    /**
+     * always true
+     * @return
+     */
+    @Override
+    public boolean loadAvailable() {
         return true;
     }
 
@@ -60,14 +78,27 @@ public class SQLTopic extends SQLDataBaseElement implements Topic {
 
 
     @Override
-    public void save() throws NotInitializedDBException {
-        DatabaseConnection.getDataBase().addOrUpdate(this);
-        this.wasSaved();
+    public boolean save() {
+        try {
+            DatabaseConnection.getDataBase().addOrUpdate(this);
+            this.wasSaved();
+            return true;
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     @Override
-    public void delete() throws NotInitializedDBException{
-        DatabaseConnection.getDataBase().remove(this);
+    public void delete() {
+        Log.i(TAG, "delete");
+        try {
+            DatabaseConnection.getDataBase().remove(this);
+            Log.i(TAG, "delete: successful deleted");
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            Log.i(TAG, "delete: failed");
+        }
     }
 
     //Comparable

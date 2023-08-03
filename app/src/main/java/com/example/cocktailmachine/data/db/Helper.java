@@ -11,6 +11,7 @@ import com.example.cocktailmachine.data.db.elements.SQLImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +20,9 @@ import java.util.Map;
 
 public class Helper<T extends DataBaseElement> {
     private static final String TAG = "Helper";
+
+
+
     public List<T> getAvailable(List<T> elements){
         List<T> res = new ArrayList<>();
         for(T e:elements){
@@ -43,11 +47,7 @@ public class Helper<T extends DataBaseElement> {
         List<T> res = new ArrayList<>();
         for(int i=0; i<elements.size(); i++){
             if(ids.contains(elements.get(i).getID())){
-                try {
-                    elements.get(i).delete();
-                } catch (NotInitializedDBException e) {
-                    e.printStackTrace();
-                }
+                elements.get(i).delete();
                 res.add(elements.get(i));
             }
         }
@@ -58,11 +58,7 @@ public class Helper<T extends DataBaseElement> {
         List<T> res = new ArrayList<>();
         for(int i=0; i<elements.size(); i++){
             if(id ==elements.get(i).getID()){
-                try {
-                    elements.get(i).delete();
-                } catch (NotInitializedDBException e) {
-                    e.printStackTrace();
-                }
+                elements.get(i).delete();
                 res.add(elements.get(i));
             }
         }
@@ -129,11 +125,7 @@ public class Helper<T extends DataBaseElement> {
         for(T e: elements){
             if(e.getID() == id) {
                 elements.remove(e);
-                try {
-                    e.delete();
-                } catch (NotInitializedDBException ex) {
-                    ex.printStackTrace();
-                }
+                e.delete();
             }
         }
         return elements;
@@ -145,11 +137,7 @@ public class Helper<T extends DataBaseElement> {
         for(T e: elements){
             if(e.getID() == id) {
                 elements.remove(e);
-                try {
-                    e.delete();
-                } catch (NotInitializedDBException ex) {
-                    ex.printStackTrace();
-                }
+                e.delete();
             }
         }
         return elements;
@@ -170,16 +158,16 @@ public class Helper<T extends DataBaseElement> {
     public static List<SQLIngredientPump> removeIfPumpID(
             List<SQLIngredientPump> elements,
             Long id){
-        for(SQLIngredientPump e: elements){
-            if(e.getPumpID() == id) {
-                elements.remove(e);
-                try {
-                    e.delete();
-                } catch (NotInitializedDBException ex) {
-                    ex.printStackTrace();
-                }
+        List<SQLIngredientPump> toBeDeleted = new ArrayList<>();
+        for(SQLIngredientPump ip: elements){
+            if(ip.getPumpID() == id) {
+                toBeDeleted.add(ip);
             }
         }
+        for(SQLIngredientPump ip: toBeDeleted){
+            ip.delete();
+        }
+        elements.removeAll(toBeDeleted);
         return elements;
     }
 
@@ -189,11 +177,7 @@ public class Helper<T extends DataBaseElement> {
         for(SQLIngredientPump e: elements){
             if(e.getIngredientID() == id) {
                 elements.remove(e);
-                try {
-                    e.delete();
-                } catch (NotInitializedDBException ex) {
-                    ex.printStackTrace();
-                }
+                e.delete();
             }
         }
         return elements;
@@ -257,8 +241,6 @@ public class Helper<T extends DataBaseElement> {
                 }catch (NullPointerException e){
                     e.printStackTrace();
                     System.out.println("Das sollte nicht passieren!!!");
-                } catch (NotInitializedDBException e) {
-                    e.printStackTrace();
                 }
             }
         }
@@ -271,11 +253,7 @@ public class Helper<T extends DataBaseElement> {
     public static List<SQLRecipeIngredient> updateWithIngredients(long recipe_id, List<SQLRecipeIngredient> old, HashMap<Ingredient, Integer> updates){
         HashMap<Long, Integer> temp = new HashMap<>();
         for(Map.Entry<Ingredient, Integer> entry: updates.entrySet()){
-            try {
-                entry.getKey().save();
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-            }
+            entry.getKey().save();
             temp.put(entry.getKey().getID(), entry.getValue());
         }
         return Helper.updateWithIds(recipe_id, old, temp);
@@ -303,6 +281,12 @@ public class Helper<T extends DataBaseElement> {
     public static void emptyPump(List<? extends Pump> pumps){
         for (Pump p: pumps){
             p.empty();
+        }
+    }
+
+    public static void emptyIngredient(List<? extends Ingredient> ingredients) {
+        for(Ingredient ingredient: ingredients){
+            ingredient.empty();
         }
     }
 

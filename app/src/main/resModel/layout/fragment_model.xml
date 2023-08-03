@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.model.ModelFragment">
+    tools:context=".ui.model.v1.ModelFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,6 +29,7 @@
                 android:id="@+id/imageView_edit"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:contentDescription="edit"
                 android:src="@drawable/ic_edit" />
 
         </LinearLayout>

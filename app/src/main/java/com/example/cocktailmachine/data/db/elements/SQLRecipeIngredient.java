@@ -1,14 +1,18 @@
 package com.example.cocktailmachine.data.db.elements;
 
+import android.util.Log;
+
 import com.example.cocktailmachine.data.Ingredient;
-import com.example.cocktailmachine.data.Pump;
+import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 public class SQLRecipeIngredient extends SQLDataBaseElement {
+    private static final String TAG = "SQLRecipeIngredient";
     private long ingredientID = -1L;
     private long recipeID = -1L;
     private int volume = -1;
+    private boolean available = false;
 
     public SQLRecipeIngredient(long ingredientID, long recipeID, int volume) {
         super();
@@ -36,6 +40,10 @@ public class SQLRecipeIngredient extends SQLDataBaseElement {
         return recipeID;
     }
 
+    public Recipe getRecipe() {
+        return Recipe.getRecipe(this.recipeID);
+    }
+
     public int getVolume() {
         return volume;
     }
@@ -44,20 +52,70 @@ public class SQLRecipeIngredient extends SQLDataBaseElement {
         this.volume = volume;
         this.wasChanged();
     }
+    public void setRecipeID(long recipeID) {
+        this.recipeID= recipeID;
+        this.wasChanged();
+    }
 
+    /**
+     * always true
+     * @return
+     */
     @Override
     public boolean isAvailable() {
+        return true;
+    }
+
+    /**
+     * true if pump exists, ingredient exists
+     * @return
+     */
+    @Override
+    public boolean loadAvailable() {
+        Log.i(TAG, "loadAvailable");
+        boolean res = (this.getIngredient()!=null)&&(this.getRecipe()!=null);
+        if(res != this.available){
+            Log.i(TAG, "loadAvailable: has changed: "+res);
+            this.available = res;
+            this.wasChanged();
+        }
+        return this.available;
+    }
+
+
+
+    @Override
+    public boolean save() {
+        try {
+            DatabaseConnection.getDataBase().addOrUpdate(this);
+            this.wasSaved();
+            return true;
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     @Override
-    public void save() throws NotInitializedDBException {
-        DatabaseConnection.getDataBase().addOrUpdate(this);
-        this.wasSaved();
+    public void delete() {
+        Log.i(TAG, "delete");
+        try {
+            DatabaseConnection.getDataBase().remove(this);
+            Log.i(TAG, "delete: successfull");
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            Log.i(TAG, "delete: failed");
+        }
     }
 
+
     @Override
-    public void delete() throws NotInitializedDBException {
-        DatabaseConnection.getDataBase().remove(this);
+    public String toString() {
+        return "SQLRecipeIngredient{" +
+                "ID=" + getID() +
+                ", ingredientID=" + ingredientID +
+                ", recipeID=" + recipeID +
+                ", volume=" + volume +
+                '}';
     }
 }

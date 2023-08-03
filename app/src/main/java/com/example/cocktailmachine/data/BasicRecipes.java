@@ -5,7 +5,8 @@ import android.util.Log;
 
 
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 
 public class BasicRecipes {
     private static final String TAG = "BasicRecipes";
@@ -17,7 +18,7 @@ public class BasicRecipes {
      * sonst immer DB mit Context initialisieren!!!!
      */
     public static void loadTest(){
-        DatabaseConnection.initialize_singleton(null);
+        DatabaseConnection.initializeSingleton(null);
     }
 
     public static void loadTopics() throws NotInitializedDBException{
@@ -57,10 +58,10 @@ public class BasicRecipes {
         Ingredient cola = Ingredient.makeNew("Cola", false, 0);
         cola.save();
 
-        DatabaseConnection.localRefresh();
+        //DatabaseConnection.localRefresh();
     }
 
-    public static void loadPumps() throws NotInitializedDBException{
+    public static void loadPumps() throws NotInitializedDBException, MissingIngredientPumpException {
 
         Pump t_p = Pump.makeNew();
         t_p.setCurrentIngredient(Ingredient.getIngredient("Tequila"));
@@ -87,7 +88,7 @@ public class BasicRecipes {
         c_p.fill(100);
         c_p.save();
 
-        DatabaseConnection.localRefresh();
+        //DatabaseConnection.localRefresh();
     }
 
 
@@ -113,7 +114,7 @@ public class BasicRecipes {
 
 
 
-        DatabaseConnection.localRefresh();
+        //DatabaseConnection.localRefresh();
 
         Log.i(TAG,"loadMargarita finished");
     }
@@ -126,7 +127,7 @@ public class BasicRecipes {
         magarita.addOrUpdate(Ingredient.getIngredient("Limettensaft"), 4);
         magarita.save();
 
-        DatabaseConnection.localRefresh();
+        //DatabaseConnection.localRefresh();
         Log.i(TAG,"loadTequila finished");
     }
 
@@ -155,7 +156,7 @@ public class BasicRecipes {
         magarita.addOrUpdate(Topic.getTopic("Eis"));
         magarita.save();
 
-        DatabaseConnection.localRefresh();
+        //DatabaseConnection.localRefresh();
 
 
         Log.i(TAG,"loadLongIslandIceTea finished");

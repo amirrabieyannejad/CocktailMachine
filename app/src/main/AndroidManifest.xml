@@ -54,23 +54,41 @@
         android:roundIcon="@mipmap/ic_app_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CocktailMachine"
-        tools:targetApi="21">
+        tools:targetApi="26">
         <activity
+            android:name="com.example.cocktailmachine.ui.model.v2.ListActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.cocktailmachine.ui.model.v2.DisplayActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.cocktailmachine.ui.settings.MachineSettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.cocktailmachine.ui.settings.PumpSettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.cocktailmachine.ui.model.v1.ModelActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.cocktailmachine.ui.settings.ScaleSettingsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_scale_settings"
+            android:theme="@style/Theme.CocktailMachine" />
+        <activity
+            android:name="com.example.cocktailmachine.ui.settings.SettingsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_settings" />
+
+        <activity
+
             android:name="com.example.cocktailmachine.ui.BluetoothTestEnviroment"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name="com.example.cocktailmachine.ui.ModelActivity"
             android:exported="true"
-            android:label="@string/title_activity_main"
-            android:theme="@style/Theme.CocktailMachine.NoActionBar">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+            android:label="BluetoothTestEnviroment" >
+
+
+    </activity>
+
         <activity
             android:name="com.example.cocktailmachine.ui.cocktail.cocktailList.CocktailList"
             android:exported="false">
@@ -92,6 +110,7 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
         <activity
             android:name="com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice"
             android:exported="true">
@@ -116,15 +135,17 @@
         <activity
             android:name="com.example.cocktailmachine.ui.Menue"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
 
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+
+            </intent-filter>
         </activity>
 
         <service

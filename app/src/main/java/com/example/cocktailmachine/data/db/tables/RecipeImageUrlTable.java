@@ -7,6 +7,12 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 
 import java.util.List;
 
+/**
+ *
+ * @created Fr. 23.Jun 2023 - 12:51
+ * @project CocktailMachine
+ * @author Johanna Reidt
+ */
 public class RecipeImageUrlTable extends ImageUrlTable{
     RecipeImageUrlTable(){
         super();

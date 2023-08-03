@@ -1,7 +1,7 @@
 // general system settings
 #define BLE_NAME             	"Cocktail Machine ESP32"	// bluetooth server name
 #define CORE_DEBUG_LEVEL     	4                       	// 1 = error; 3 = info ; 4 = debug
-const unsigned int VERSION   	= 5;                    	// version number (used for configs etc)
+const unsigned int VERSION   	= 6;                    	// version number (used for configs etc)
 const unsigned char MAX_PUMPS	= 1 + 4*8;              	// maximum number of supported pumps;
 const float LIQUID_CUTOFF    	= 0.1;                  	// minimum amount of liquid we round off
 
@@ -13,10 +13,10 @@ const float LIQUID_CUTOFF    	= 0.1;                  	// minimum amount of liqu
 
 // pinout
 typedef const unsigned char Pin;
-Pin PIN_SDCARD_CS       	= T6;
+Pin PIN_SDCARD_CS       	= 14;
                         	
-Pin PIN_HX711_DOUT      	= T0;
-Pin PIN_HX711_SCK       	= SCK;
+Pin PIN_HX711_DOUT      	= 4;
+Pin PIN_HX711_SCK       	= 5;
                         	
 Pin PIN_SDA             	= 14;
 Pin PIN_SCL             	= 32;
@@ -28,6 +28,7 @@ Pin PIN_BUILTIN_PUMP_IN2	= 27;
 #include <algorithm>
 #include <forward_list>
 #include <inttypes.h>
+#include <map>
 #include <queue>
 #include <sys/time.h>
 #include <unordered_map>
@@ -249,7 +250,6 @@ def_ret(MissingLiquid,     	"liquid unavailable");
 def_ret(MissingRecipe,     	"recipe not found");
 def_ret(DuplicateRecipe,   	"recipe already exists");
 def_ret(MissingIngredients,	"missing ingredients");
-def_ret(ScaleError,        	"scale error");
 def_ret(InvalidCalibration,	"invalid calibration data");
 
 struct RetUserID : Processed {
@@ -459,7 +459,7 @@ Pump* pumps[MAX_PUMPS];
 Processed* machine_state;
 
 User current_user = -1;
-std::unordered_map<User, String> users;
+std::map<User, String> users;
 
 BLEServer *ble_server;
 ID*     all_id[NUM_ID];
@@ -620,6 +620,9 @@ void setup() {
 
   // try to load config
   config_load();
+  for (const auto &[user, name] : users) {
+    debug("user %d: %s", user, name.c_str());
+  }
 
   // update all states
   update_liquids();
@@ -1737,6 +1740,24 @@ bool config_save(void) {
     // metadata
     preferences.putUInt("version", VERSION);
 
+    { // user ids
+      char key[BUF_PREF_KEY];
+
+      int num_users = users.size();
+      preferences.putUInt("num_users", num_users);
+
+      int i=0;
+      for (const auto &[user, name] : users) {
+        snprintf(key, sizeof(key), "users_%d/i", i);
+        preferences.putUInt(key, user);
+
+        snprintf(key, sizeof(key), "users_%d/n", i);
+        preferences.putString(key, name);
+
+        i += 1;
+      }
+    }
+
     if (scale_available) { // scale
       preferences.putFloat("scale/t", scale.get_offset());
       preferences.putFloat("scale/f", scale.get_scale());
@@ -1818,6 +1839,29 @@ bool config_load(void) {
       return true;
     }
     update_config_state(state);
+  }
+
+  { // user ids
+    char key[BUF_PREF_KEY];
+
+    // remove old user config
+    users.clear();
+
+    int num_users = preferences.getUInt("num_users");
+
+    for (int i=0; i<num_users; i++) {
+      snprintf(key, sizeof(key), "users_%d/i", i);
+      unsigned int user = preferences.getUInt(key);
+
+      snprintf(key, sizeof(key), "users_%d/n", i);
+      String name = preferences.getString(key);
+
+      users[user] = name;
+    }
+
+    if (users.count(0) == 0) { // make sure admin exists
+      users[0] = "admin";
+    }
   }
 
   if (scale_available) { // scale

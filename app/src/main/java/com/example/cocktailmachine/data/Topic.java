@@ -3,7 +3,7 @@ package com.example.cocktailmachine.data;
 import android.util.Log;
 
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
 
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface Topic extends Comparable<Topic>, DataBaseElement {
-    static final String TAG = "Topic";
+    String TAG = "Topic";
 
     /**
      * Get id.
@@ -91,7 +91,7 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
         }
     }
 
-    public static List<Topic> getTopics(){
+    static List<Topic> getTopics(){
         Log.i(TAG, "getTopics");
         try {
             return DatabaseConnection.getDataBase().getTopics();

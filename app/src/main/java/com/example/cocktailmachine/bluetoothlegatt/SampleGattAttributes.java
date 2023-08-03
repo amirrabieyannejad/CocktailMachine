@@ -44,14 +44,25 @@ public class SampleGattAttributes {
 
         // Status Service and Characteristics
         attributes.put("Status Service", "0f7742d4-ea2d-43c1-9b98-bb4186be905d");
+
+        // Pumps Characteristics: Map of all available pumps and their level
+        attributes.put("Status Pumps Characteristic", "1a9a598a-17ce-3fcd-be03-40a48587d04e");
+        // Liquids Characteristic: Map of all available liquids and their volumes
+        attributes.put("Status Liquids Characteristic", "fc60afb0-2b00-3af2-877a-69ae6815ca2f");
         // State Characteristics: The current state of the cocktail machine and what it does.
         attributes.put("Status State Characteristic", "e9e4b3f2-fd3f-3b76-8688-088a0671843a");
-        // Recipes Characteristic: All saved recipes and their names.
+        // ok Recipes Characteristic: All saved recipes and their names.
         attributes.put("Status Recipes Characteristic","9ede6e03-f89b-3e52-bb15-5c6c72605f6c");
         // Cocktail Characteristic: The content of the current cocktail being mixed.
         attributes.put("Status Cocktail Characteristic","7344136f-c552-3efc-b04f-a43793f16d43");
-        // Liquids Characteristic: Map of all available liquids im pumps and their volumes
-        attributes.put("Status Liquids Characteristic", "fc60afb0-2b00-3af2-877a-69ae6815ca2f");
+        // ok Current user Characteristic: the current user for whom a cocktail is being
+        // made or is ready.If no user is active, the value is -1.
+        attributes.put("Status Current user Characteristic","2ce478ea-8d6f-30ba-9ac6-2389c8d5b172");
+        // Last Change Characteristic: If the timestamp has not changed, the available recipes
+        // and ingredients are still the same.The timestamp is an internal value of the ESP and
+        // has no relation to the real time.
+        attributes.put("Status Last Change Characteristic","586b5706-5856-34e1-ad17-94f840298816");
+
 
 
 

@@ -1,19 +1,32 @@
 package com.example.cocktailmachine.data.db.elements;
 
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.os.Build;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
-import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.AlreadySetIngredientException;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.ui.model.v2.GetActivity;
+import com.example.cocktailmachine.ui.model.v2.GetDialog;
+import com.example.cocktailmachine.ui.model.v2.WaitingQueueCountDown;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,6 +38,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SQLRecipe extends SQLDataBaseElement implements Recipe {
+    private static final String TAG = "SQLRecipe";
     private String name = "";
     //private List<Long> ingredientIds;
     //private HashMap<Long, Integer> ingredientVolume;
@@ -34,6 +48,14 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     private List<Long> topics = new ArrayList<>();
     private List<SQLRecipeIngredient> ingredientVolumes = new ArrayList<>();
     private boolean loaded = false;
+
+
+
+
+    private WaitingQueueCountDown waitingQueueCountDown = null;
+
+
+
 
     public SQLRecipe(String name) {
         super();
@@ -71,6 +93,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         this.topics = topics;
         this.addOrUpdateIDs(ingredientVolumes);
         this.loaded = true;
+        this.loadAvailable();
     }
 
     public SQLRecipe(long ID,
@@ -88,18 +111,25 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         this.topics = topics;
         this.addOrUpdateElements(ingredientVolumes);
         this.loaded = true;
+        this.loadAvailable();
     }
 
     //LOADER
 
 
+    /**
+     * laod recipe ingredient, image urls, topics
+     * @throws NotInitializedDBException
+     */
     private void load() throws NotInitializedDBException {
         this.imageUrls = DatabaseConnection.getDataBase().getUrlElements(this);
         this.topics = DatabaseConnection.getDataBase().getTopicIDs(this);
         this.ingredientVolumes = DatabaseConnection.getDataBase().getIngredientVolumes(this);
+        this.loadAvailable();
         this.loaded = true;
-
     }
+
+
 
 
     //GETTER
@@ -121,8 +151,17 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     }
 
     @Override
+    public List<String> getIngredientNames() {
+        ArrayList<String> names = new ArrayList<>();
+        for(SQLRecipeIngredient ri: this.ingredientVolumes){
+            names.add(ri.getIngredient().getName());
+        }
+      return names;
+    }
+
+    @Override
     public List<Ingredient> getIngredients() {
-        return Ingredient.getIngredientWithIds(this.getIngredientIds());
+        return Ingredient.getAvailableIngredients(this.getIngredientIds());
     }
 
     @Override
@@ -187,8 +226,62 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         return this.available;
     }
 
+    /**
+     * check for ingredient pump connection
+     * true, if ingredient pump connection exists
+     *
+     * @return
+     */
+    @Override
+    public boolean loadAvailable() {
+        Log.i(TAG, "loadAvailable");
+        boolean res = this.privateLoadAvailable();
+        if(res != this.available){
+            Log.i(TAG, "loadAvailable: has changed: "+res);
+            this.available = res;
+            this.wasChanged();
+        }
+        return this.available;
+    }
+
+    /**
+     * @return if all ingredients available, with sufficient amounts of volume
+     */
+    boolean privateLoadAvailable(){
+        Log.i(TAG, "privateLoadAvailable");
+
+        for(SQLRecipeIngredient i: this.ingredientVolumes){
+            i.loadAvailable();
+        }
+        for(Ingredient i: getIngredients()){
+            if(i.isAvailable()){
+                try {
+                    if(i.getVolume()>this.getSpecificIngredientVolume(i)){
+                        Log.i(TAG, "privateLoadAvailable: is available "+i);
+                    }else{
+                        Log.i(TAG, "privateLoadAvailable: is NOT available "+i);
+                        return false;
+                    }
+                } catch (TooManyTimesSettedIngredientEcxception |
+                         NoSuchIngredientSettedException e) {
+                    e.printStackTrace();
+
+                    Log.i(TAG, "privateLoadAvailable: is setted multiple times "+i);
+                    return false;
+                }
+            }else{
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+
+
     @Override
     public List<String> getImageUrls() {
+        Log.i(TAG, "getImageUrls");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.imageUrls.stream().map(SQLImageUrlElement::getUrl).collect(Collectors.toList());
         }
@@ -207,48 +300,60 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
 
     //ADDER
-    public void add(Ingredient ingredient, int timeInMilliseconds)
+    public void add(Ingredient ingredient, int volume)
             throws AlreadySetIngredientException {
         if(ingredient.getID()==-1L){
-            try {
-                ingredient.save();
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-            }
+            ingredient.save();
         }
-        this.add(ingredient.getID(), timeInMilliseconds);
+        this.add(ingredient.getID(), volume);
     }
 
-    public void add(long ingredientId, int timeInMilliseconds)
+    public void add(long ingredientId, int volume)
             throws AlreadySetIngredientException {
         if(this.getIngredientIds().contains(ingredientId)){
             throw new AlreadySetIngredientException(this, ingredientId);
         }
-        this.ingredientVolumes.add(new SQLRecipeIngredient(ingredientId, this.getID(), timeInMilliseconds));
+        this.ingredientVolumes.add(new SQLRecipeIngredient(ingredientId, this.getID(), volume));
     }
 
     @Override
     public void addOrUpdate(Ingredient ingredient, int volume) {
         if(ingredient.getID()==-1L){
-            try {
-                ingredient.save();
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-            }
+            ingredient.save();
         }
         this.addOrUpdate(ingredient.getID(), volume);
     }
 
     @Override
     public void addOrUpdate(long ingredientId, int volume) {
+
+        boolean newNeeded=true;
+        for(SQLRecipeIngredient ri: ingredientVolumes){
+            if(ri.getIngredientID()==ingredientId){
+                ri.setVolume(volume);
+                newNeeded = false;
+            }
+        }
+        if(newNeeded){
+            SQLRecipeIngredient ri = new SQLRecipeIngredient(ingredientId, this.getID(), volume);
+            ri.save();
+            this.ingredientVolumes.add(ri);
+        }
+        this.wasChanged();
+        /*
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if(this.ingredientVolumes.stream()
                     .filter(pt -> pt.getIngredientID() == ingredientId)
-                    .peek(pt -> pt.setVolume(volume)).count() == 0){
+                    .peek(pt -> pt.setVolume(volume))
+                    .count()
+                    == 0){
                 this.ingredientVolumes.add(new SQLRecipeIngredient(ingredientId, this.getID(), volume));
             }
         }
         this.wasChanged();
+
+         */
     }
 
     public void addOrUpdateIDs(HashMap<Long, Integer> ingredientVolumes){
@@ -270,11 +375,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     @Override
     public void addOrUpdate(Topic topic) {
         if(topic.getID()==-1L){
-            try {
-                topic.save();
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-            }
+            topic.save();
         }
         if(this.topics.contains(topic.getID())){
             return;
@@ -308,11 +409,8 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
             this.ingredientVolumes.removeAll(this.ingredientVolumes.stream()
                     .filter(ri -> ri.getIngredientID() == ingredientId)
                     .peek(sqlRecipeIngredient -> {
-                        try {
-                            sqlRecipeIngredient.delete();
-                        } catch (NotInitializedDBException e) {
-                            e.printStackTrace();
-                        }
+                        sqlRecipeIngredient.delete();
+
                     })
                     .collect(Collectors.toList()));
 
@@ -338,22 +436,14 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     @Override
     public void remove(SQLRecipeImageUrlElement url) {
         this.imageUrls.remove(url);
-        try {
-            url.delete();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
+        url.delete();
     }
 
     @Override
     public void removeUrl(long urlId) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             this.imageUrls.stream().filter(url-> url.getID()==urlId).forEach(url-> {
-                        try {
-                            url.delete();
-                        } catch (NotInitializedDBException e) {
-                            e.printStackTrace();
-                        }
+                        url.delete();
                         this.imageUrls.remove(url);
             });
         }else{
@@ -361,46 +451,40 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         }
     }
 
-    @Override
-    public void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException {
-        //[{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}, {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
-        for(int i=0; i<json.length(); i++){
-            JSONObject j = json.optJSONObject(i);
-            Recipe temp = Recipe.searchOrNew(j.optString("name", "Default"));
-            JSONArray a = j.optJSONArray("liquids");
-            if(a != null){
-                for(int l=0; l<a.length(); l++){
-                    JSONArray liq = a.optJSONArray(l);
-                    if(liq!=null){
-                        String name = a.getString(l);
-                        int volume = a.getInt(1);
-                        Ingredient ig = Ingredient.searchOrNew(name);
-                        temp.addOrUpdate(ig, volume);
-                    }
-                }
-            }
-            temp.save();
-        }
-    }
-
-    @Override
-    public void send() {
-
-    }
-
     //general
     @Override
-    public void delete() throws NotInitializedDBException {
-        DatabaseConnection.getDataBase().remove(this);
+    public void delete() {
+        Log.i(TAG, "delete");
+        try {
+            DatabaseConnection.getDataBase().remove(this);
+            Log.i(TAG, "delete: successfull");
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            Log.i(TAG, "delete: failed");
+        }
     }
 
     @Override
-    public void save() throws NotInitializedDBException {
-        DatabaseConnection.getDataBase().addOrUpdate(this);
-        for(SQLRecipeImageUrlElement url: this.imageUrls) {
-            DatabaseConnection.getDataBase().addOrUpdate(url);
+    public boolean save() {
+        Log.i(TAG, "save");
+        try {
+            DatabaseConnection.getDataBase().addOrUpdate(this);
+            for(SQLRecipeImageUrlElement url: this.imageUrls) {
+                DatabaseConnection.getDataBase().addOrUpdate(url);
+            }
+            for(SQLRecipeIngredient ri: this.ingredientVolumes){
+                if(ri.getRecipeID()!=this.getID()){
+                    ri.setRecipeID(this.getID());
+                    ri.save();
+                }
+                DatabaseConnection.getDataBase().addOrUpdate(ri);
+            }
+            this.wasSaved();
+            return true;
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
         }
-        this.wasSaved();
+        return false;
     }
 
     public JSONObject asJSON(){
@@ -418,6 +502,139 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
             return null;
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+    @Override
+    public WaitingQueueCountDown getWaitingQueueCountDown() {
+        return this.waitingQueueCountDown;
+    }
+
+    @Override
+    public void setWaitingQueueCountDown(Activity activity) {
+        final Recipe recipe = this;
+        if(this.waitingQueueCountDown != null){
+            this.waitingQueueCountDown.cancel();
+            this.waitingQueueCountDown = null;
+        }
+        this.waitingQueueCountDown = new WaitingQueueCountDown(5000) {
+            @Override
+            public void onTick() {
+                Log.i("WaitingQueueCountDown","onTick"+getTick() );
+            }
+
+            @Override
+            public void reduceTick() {
+                Log.i("WaitingQueueCountDown","reduceTick");
+                setTick(CocktailMachine.getNumberOfUsersUntilThisUsersTurn(getTick()));
+            }
+
+            @Override
+            public void onNext() {
+                Log.i("WaitingQueueCountDown","onNext");
+                //TODO: Notification
+                //TODO: ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+                //toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,150);
+                //toneGen1.startTone(ToneGenerator.TONE_PROP_BEEP2,150);
+                Toast.makeText(activity, "Der nächste Cocktail ist deiner!", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFinish() {
+                Log.i("WaitingQueueCountDown","onFinish");
+
+                //TODO: ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+                //toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,150);
+                //toneGen1.startTone(ToneGenerator.TONE_PROP_BEEP,300);
+                GetDialog.isUsersTurn(activity, recipe);
+            }
+        };
+        this.waitingQueueCountDown.start();
+
+    }
+
+    @Override
+    public void addDialogWaitingQueueCountDown(Activity activity, AlertDialog alertDialog) {
+        final Recipe recipe = this;
+
+        if(this.waitingQueueCountDown != null){
+            this.waitingQueueCountDown.cancel();
+            this.waitingQueueCountDown = null;
+        }
+
+        alertDialog.setOnDismissListener(dialog -> {
+            setWaitingQueueCountDown(activity);
+            dialog.cancel();
+        });
+
+        this.waitingQueueCountDown = new WaitingQueueCountDown(5000) {
+            @Override
+            public void onTick() {
+                Log.i("WaitingQueueCountDown","Dialog  onTick"+getTick());
+                alertDialog.setMessage("noch: "+getTick());
+                Log.i("WaitingQueueCountDown","Dialog  onTick"+getTick());
+            }
+
+            @Override
+            public void reduceTick() {
+                Log.i("WaitingQueueCountDown","Dialog  reduceTick");
+                setTick(CocktailMachine.getNumberOfUsersUntilThisUsersTurn(getTick()));
+            }
+
+            @Override
+            public void onNext() {
+                Log.i("WaitingQueueCountDown","Dialog  onNext");
+                //TODO: Notification
+                Toast.makeText(activity, "Der nächste Cocktail ist deiner!", Toast.LENGTH_LONG).show();
+                //TODO: ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+                //toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,150);
+                //toneGen1.startTone(ToneGenerator.TONE_PROP_BEEP2,150);
+                //Toast.makeText(activity, "Der nächste Cocktail ist deiner!", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFinish() {
+                Log.i("WaitingQueueCountDown","Dialog  onFinish");
+                //TODO: ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+                //toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,150);
+                //toneGen1.startTone(ToneGenerator.TONE_PROP_BEEP,300);
+
+                /*
+                alertDialog.setMessage("Bitte stellen sie ihr Glas unter die Cocktailmaschine!");
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
+                        "Los!",
+                        (dialog, which) -> {
+                            GetActivity.goToFill(activity,recipe);
+                            dialog.dismiss();
+                        });
+
+                 */
+                alertDialog.dismiss();
+                GetDialog.isUsersTurn(activity, recipe);
+            }
+        };
+        this.waitingQueueCountDown.start();
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     //Comparable
     /**

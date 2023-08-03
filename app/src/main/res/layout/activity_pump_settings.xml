@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.settings.PumpSettingsActivity">
+
+    <TextView
+        android:id="@+id/textViewSettingsCalibratePump"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:onClick="calibratePump"
+        android:padding="8dp"
+        android:paddingStart="16dp"
+        android:text="Kalibriere Pumpe"
+        android:textSize="20sp" />
+
+
+    <TextView
+        android:id="@+id/textViewSettingsSetPumpTimes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:onClick="setPumpTimes"
+        android:padding="8dp"
+        android:paddingStart="16dp"
+        android:text="Setze Pumpzeiten"
+        android:textSize="20sp" />
+
+</LinearLayout>

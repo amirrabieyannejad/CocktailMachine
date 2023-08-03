@@ -1,22 +1,22 @@
 package com.example.cocktailmachine.data.db.elements;
 
 import android.graphics.Color;
+import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
     private String name = "";
@@ -76,6 +76,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         this.alcoholic = alcoholic;
         this.color = color;
         //this.loadUrls();
+        this.checkIngredientPumps();
     }
 
     public SQLIngredient(long ID,
@@ -155,33 +156,105 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         return this.alcoholic;
     }
 
+    /**
+     * true, if ingredient pump connection exists and pump filled with conntent
+     * @return
+     */
     @Override
     public boolean isAvailable() {
+        Log.i(TAG, "isAvailable: available"+this.available);
         return this.available;
+    }
+
+    /**
+     * true, if ingredient pump connection exists and pump filled with conntent
+     * @return
+     */
+    @Override
+    public boolean loadAvailable() {
+        Log.i(TAG, "loadAvailable");
+        this.checkIngredientPumps();
+        boolean res = false;
+        Log.i(TAG,"loadAvailable: check all ingredientpumps for availability");
+        if(this.ingredientPump != null){
+            res = this.ingredientPump.isAvailable();
+        }
+        if(res != this.available){
+            Log.i(TAG, "loadAvailable: available changed");
+            this.available = res;
+            this.wasChanged();
+        }
+        return isAvailable();
     }
 
     @Override
     public void addImageUrl(String url) {
+        Log.i(TAG,"addImageUrl");
         this.imageUrls.add(url);
         this.wasChanged();
     }
 
     @Override
+    public void removeImageUrl(String url) {
+        Log.i(TAG,"removeImageUrl");
+        this.imageUrls.remove(url);
+        this.wasChanged();
+    }
+
+    /*
+    void checkIngredientPump() throws NotInitializedDBException {
+        List<SQLIngredientPump> ingredientPumps = DatabaseConnection.getDataBase().getIngredientPumps();
+        for(SQLIngredientPump ip: ingredientPumps){
+            if(ip.getIngredientID()==this.getID()){
+                this.ingredientPump = ip;
+            }
+        }
+    }
+
+     */
+
+    /**
+     * no pump, check for coennction
+     * -1, if no pump
+     * volume, if pump connected
+     * @return
+     */
+    @Override
     public int getVolume() {
         //return this.fluidInMillimeters;
+        Log.i(TAG,"getVolume");
+        this.checkIngredientPumps();
         if(this.ingredientPump!=null) {
+            Log.i(TAG, "getVolume: Ingredientpump is not null for ingredient "+this.getID()+this.name);
             return this.ingredientPump.getVolume();
         }
+        Log.i(TAG, "getVolume: Ingredientpump is null for ingredient "+this.getID()+this.name);
         return -1;
     }
 
+    /**
+     * no pump, check for it
+     * null, if no pump, else pump
+     * @return
+     */
     @Override
     public Pump getPump() {
-        return this.ingredientPump.getPump();
+        this.checkIngredientPumps();
+
+        if(this.ingredientPump!=null) {
+            return this.ingredientPump.getPump();
+        }
+        return null;
     }
 
+    /**
+     * no pump, check for it
+     * -1, if no pump, else pump id
+     * @return
+     */
     @Override
     public Long getPumpId() {
+        this.checkIngredientPumps();
         if(this.ingredientPump != null) {
             return this.ingredientPump.getPumpID();
         }
@@ -194,6 +267,12 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
     }
 
     //Setter / Changer
+
+    /**
+     * make pump ingredient connection with new volume
+     * @param pump
+     * @param volume
+     */
     @Override
     public void setPump(Long pump, int volume) {
         this.available = true;
@@ -201,10 +280,64 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         //this.volume = volume;
 
         Pump pp = Pump.getPump(pump);
-        assert pp != null;
-        pp.setCurrentIngredient(this);
-        this.ingredientPump = new SQLIngredientPump(volume, pump, this.getID());
+        if(pp != null) {
+            pp.setCurrentIngredient(this);
+            this.ingredientPump = new SQLIngredientPump(volume, pump, this.getID());
+        }
         this.wasChanged();
+    }
+
+    /**
+     * delete ingredient pump connection if exists, and set to null
+     */
+    @Override
+    public void empty() {
+        this.checkIngredientPumps();
+        if(ingredientPump != null){
+            this.ingredientPump.delete();
+        }
+        this.ingredientPump = null;
+        this.loadAvailable();
+        this.wasChanged();
+    }
+
+
+    /**
+     * set ingredient pump connection
+     * @param ingredientPump
+     */
+    @Override
+    public void setIngredientPump(SQLIngredientPump ingredientPump) {
+        this.ingredientPump = ingredientPump;
+        //this.wasChanged();
+        this.loadAvailable();
+        Log.i(TAG, "setIngredientPump: "+ingredientPump+available);
+        this.wasChanged();
+    }
+
+    /**
+     * check for existing ingredient pump connection
+     * @throws NotInitializedDBException
+     */
+    private void checkIngredientPumps() {
+        Log.i(TAG, "checkIngredientPumps");
+        if(this.ingredientPump==null){
+            Log.i(TAG,"checkIngredientPumps: check for ingredientpump");
+            try {
+                List<SQLIngredientPump> ips = DatabaseConnection.getDataBase().getIngredientPumps();
+                for(SQLIngredientPump ip: ips){
+                    if(ip.getIngredientID()==this.getID()){
+                        this.setIngredientPump(ip);
+                        Log.i(TAG,"checkIngredientPumps: settes ingredientpump: "+ip);
+                        return;
+                    }
+                }
+            } catch (NotInitializedDBException e) {
+                e.printStackTrace();
+                Log.i(TAG,"checkIngredientPumps: there are no ingredientpumps");
+            }
+        }
+
     }
 
     @Override
@@ -223,33 +356,60 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
     }
 
 
+    /**
+     * if no pump, check for existing connection
+     * pump given volume
+     * or throw exception
+     * @param volume m
+     * @throws NewlyEmptyIngredientException
+     */
     @Override
-    public void pump(int volume) throws NewlyEmptyIngredientException{
+    public void pump(int volume) throws NewlyEmptyIngredientException, MissingIngredientPumpException {
         //if(this.fluidInMillimeters - millimeters < this.getPump().getMillilitersPumpedInMilliseconds()){
         //    throw new NewEmptyIngredientException(this);
         //}
         //this.fluidInMillimeters = this.fluidInMillimeters - millimeters;
         //this.wasChanged();
-        try {
-            this.ingredientPump.pump(volume);
-        } catch (NewlyEmptyIngredientException|NullPointerException e) {
-            e.printStackTrace();
-            this.available = false;
-            throw new NewlyEmptyIngredientException(this);
+
+        Log.i(TAG,"pump");
+        this.checkIngredientPumps();
+        if(this.ingredientPump != null) {
+            try {
+                this.ingredientPump.pump(volume);
+                return;
+            } catch (NewlyEmptyIngredientException | NullPointerException e) {
+                e.printStackTrace();
+                this.available = false;
+                throw new NewlyEmptyIngredientException(this);
+            }
         }
+        throw new MissingIngredientPumpException("Cannot pump, because there is no pump connection from ingredient: "+this);
 
     }
 
     //DB
     @Override
-    public void save() throws NotInitializedDBException {
-        DatabaseConnection.getDataBase().addOrUpdate(this);
-        this.wasSaved();
+    public boolean save() {
+        try {
+            DatabaseConnection.getDataBase().addOrUpdate(this);
+            this.wasSaved();
+            return true;
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     @Override
-    public void delete() throws NotInitializedDBException {
-        DatabaseConnection.getDataBase().remove(this);
+    public void delete() {
+        Log.i(TAG, "delete");
+        try {
+            DatabaseConnection.getDataBase().remove(this);
+            Log.i(TAG, "delete: successful deleted");
+        } catch (NotInitializedDBException e) {
+            e.printStackTrace();
+            Log.i(TAG, "delete: failed");
+        }
     }
 
     //Comparable
@@ -283,15 +443,18 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         return false;
     }
 
-    @NonNull
     @Override
     public String toString() {
-        try {
-            return Objects.requireNonNull(this.asJSON()).toString();
-        }catch (NullPointerException e){
-            e.printStackTrace();
-            return "";
-        }
+        return "SQLIngredient{" +
+                "ID='" + getID() + '\'' +
+                ", name='" + name + '\'' +
+                ", imageUrls=" + imageUrls +
+                ", urlsLoaded=" + urlsLoaded +
+                ", alcoholic=" + alcoholic +
+                ", available=" + available +
+                ", color=" + color +
+                ", ingredientPump=" + ingredientPump +
+                '}';
     }
 
     @Override

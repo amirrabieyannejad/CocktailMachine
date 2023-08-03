@@ -7,13 +7,13 @@ import android.util.Log;
 import androidx.annotation.ColorInt;
 
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NewlyEmptyIngredientException;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
+import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
+import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,11 +44,6 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      */
     String getName();
 
-    /**
-     * Get the addresses for the images.
-     * @return list of image addresses.
-     */
-    List<String> getImageUrls();
 
     /**
      * Is alcoholic?
@@ -62,11 +57,47 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      */
     boolean isAvailable();
 
+
     /**
-     * Still available liquid/fluid in milliliter.
-     * @return milliliter of ingredient
+     * Get fluid color.
+     * @return Integer representative of color
      */
-    int getVolume();
+    @ColorInt
+    public int getColor();
+
+    //Setter
+    public void setColor(@ColorInt int color);
+
+    public void setAlcoholic(boolean alcoholic);
+
+
+    void setName(String name);
+
+
+    //FOTOS
+
+    /**
+     * Get the addresses for the images.
+     * @return list of image addresses.
+     */
+    List<String> getImageUrls();
+
+    /**
+     * Add to the image address list an address.
+     * @param url to be added image address
+     */
+    void addImageUrl(String url);
+
+    /**
+     * removes from image address list
+     * @param url to be added image address
+     */
+    void removeImageUrl(String url);
+
+
+
+
+    //Pump stuff
 
     /**
      * Get Pump representative class, where the ingredient is within.
@@ -80,37 +111,41 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      */
     public Long getPumpId();
 
-    /**
-     * Get fluid color.
-     * @return Integer representative of color
-     */
-    @ColorInt
-    public int getColor();
 
-    //Setter
     /**
-     * Add to the image address list an address.
-     * @param url to be added image address
+     * Still available liquid/fluid in milliliter.
+     * @return milliliter of ingredient
      */
-    void addImageUrl(String url);
+    int getVolume();
+
+
+    /**
+     * use only for connecting pump and ingredient after loading
+     * @param ingredientPump
+     */
+    void setIngredientPump(SQLIngredientPump ingredientPump);
 
     void setPump(Long pump, int volume);
 
+    /**
+     * emptys pump if exist
+     */
+    void empty();
 
-    public void setColor(@ColorInt int color);
 
-    public void setAlcoholic(boolean alcoholic);
-
-
-    void setName(String name);
-
-    //use
     /**
      * Pump m milliliters.
      * @param volume m
      * @throws NewlyEmptyIngredientException ingredient is empty.
      */
-    void pump(int volume) throws NewlyEmptyIngredientException;
+    void pump(int volume) throws NewlyEmptyIngredientException, MissingIngredientPumpException;
+
+
+
+
+
+
+
 
     //general
     /**
@@ -133,7 +168,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * Get all available ingredients.
      * @return List of ingredients.
      */
-    public static List<Ingredient> getIngredientWithIds() {
+    public static List<Ingredient> getAvailableIngredients() {
         try {
             return (List<Ingredient>) DatabaseConnection.getDataBase().getAvailableIngredients();
         } catch (NotInitializedDBException e) {
@@ -148,7 +183,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @param ingredientsIds k
      * @return List of ingredients.
      */
-    static List<Ingredient> getIngredientWithIds(List<Long> ingredientsIds) {
+    static List<Ingredient> getAvailableIngredients(List<Long> ingredientsIds) {
         try {
             return DatabaseConnection.getDataBase().getIngredients(ingredientsIds);
         } catch (NotInitializedDBException e) {
@@ -168,6 +203,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
             return DatabaseConnection.getDataBase().getIngredient(id);
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
+            Log.i(TAG, "getIngredient failed for "+id);
             return null;
         }
     }
@@ -184,7 +220,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
             return DatabaseConnection.getDataBase().getIngredientWithExact(name);
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
-            Log.i(TAG,"getIngredient res null");
+            Log.i(TAG,"getIngredient failed for "+name);
             return null;
         }
     }
@@ -246,5 +282,9 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
         return ingredient;
     }
 
+
+    //TODO: JSON Object
+    //TODO: JSON Array
+    //TODO: nachschauen ob DB schon mit infos geladen sein kann beim runterladen
 
 }

@@ -12,11 +12,18 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ *
+ * @created Fr. 23.Jun 2023 - 12:51
+ * @project CocktailMachine
+ * @author Johanna Reidt
+ */
 public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
 
 
@@ -78,12 +85,16 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
             return this.getElementsWith(db, COLUMN_TYPE_RECIPE_ID, Long.toString(recipe.getID()));
         } catch (NoSuchColumnException e) {
             e.printStackTrace();
-            return null;
+            return new ArrayList<>();
         }
     }
 
     public  List<SQLRecipeIngredient>  getAvailable(SQLiteDatabase db,
                                                     List<? extends Recipe> recipes){
+        if(recipes.size() == 1){
+            return getIngredientVolumes(db, (SQLRecipe) recipes.get(0));
+        }
+
         try {
             List<Object> ids = null;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
@@ -100,9 +111,10 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
                     ids);
         } catch (NoSuchColumnException e) {
             e.printStackTrace();
-            return null;
+            return new ArrayList<>();
         }
     }
+
 
 
 }

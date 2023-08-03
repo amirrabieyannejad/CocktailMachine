@@ -12,6 +12,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:text="Volumen:"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,6 +23,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:text="@string/_30_ml"
+        android:textSize="20sp"
         app:layout_constraintStart_toEndOf="@+id/textView_ingredient_volume_desc"
         app:layout_constraintTop_toTopOf="parent" />
 

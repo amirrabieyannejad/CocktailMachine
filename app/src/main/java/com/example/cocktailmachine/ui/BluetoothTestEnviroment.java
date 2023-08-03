@@ -2,63 +2,88 @@ package com.example.cocktailmachine.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.content.Intent;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.bluetoothlegatt.BluetoothDeviceAdressNotDefinedException;
-import com.example.cocktailmachine.bluetoothlegatt.BluetoothLeService;
-import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingelton;
+import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
+import com.example.cocktailmachine.data.db.DatabaseConnection;
 
 import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Date;
 
 public class BluetoothTestEnviroment extends AppCompatActivity {
 
     EditText editText;
     TextView textView;
 
-    BluetoothSingelton singelton;
+
+    // Step1
+    BluetoothSingleton singleton=BluetoothSingleton.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_test_enviroment);
+        //initializieurng von Datenbank
+        DatabaseConnection.initializeSingleton(this);
 
         editText = findViewById(R.id.editTextTextPersonName);
         textView = findViewById(R.id.ESPData);
 
-        singelton = BluetoothSingelton.getInstance();
+        // Step2: Only at the very first time Connect to Device
+        singleton.connectGatt(BluetoothTestEnviroment.this);
+
+
+    }
+    public void addUser(View view) throws JSONException, InterruptedException {
+
+        //Step5: Call initUser() Method
+        String user = editText.getText().toString();
+        //singleton.initUser(user,textView,BluetoothTestEnviroment.this);
+        //TODO: als Rückgabe JSON Datei
+
+        singleton.initUser(user);
+        //singleton.adminDefinePump("beer", 1000,1);
+        //singleton.adminReadCurrentUser();
+        Log.w("Activity", "is everything is a right place??");
+        //textView.setText(json.toString());
+        //singleton.connectGatt(BluetoothTestEnviroment.this);
+    }
+    public void showUser(View view) throws JSONException {
+
+
     }
 
-    public void addUser(View view) throws BluetoothDeviceAdressNotDefinedException, JSONException {
-        BluetoothLeService bluetooth =  singelton.getBluetoothLe();
-        bluetooth.initUser(editText.getText().toString());
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
+        // Step7: Unbind Service if the Activity is destroyed
+        //singleton.mBluetoothLeService.disconnect();
+        //unbindService(singleton.mServiceConnection);
+        //singleton.mBluetoothLeService = null;
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //singleton.unRegisterService(this);
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-        BluetoothGattCharacteristic mGattCharacteristics = bluetooth.getBluetoothGattCharacteristic(BluetoothLeService.SERVICE_READ_WRITE,
-                BluetoothLeService.CHARACTERISTIC_MESSAGE_USER);
-
-        bluetooth.readCharacteristic(mGattCharacteristics);
-        String text =mGattCharacteristics.getStringValue(0);
-        Toast.makeText(this, text,Toast.LENGTH_LONG).show();
-
+    @SuppressLint("MissingPermission")
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Step8: make sure that Gatt Server is founded
+        //singleton.registerReceiver(this);
 
 
     }

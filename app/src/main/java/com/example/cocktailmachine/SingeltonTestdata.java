@@ -1,15 +1,19 @@
 package com.example.cocktailmachine;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.graphics.Color;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
-import com.example.cocktailmachine.data.db.elements.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
-import com.example.cocktailmachine.data.db.elements.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.ui.model.v2.WaitingQueueCountDown;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,6 +48,23 @@ public class SingeltonTestdata {
             }
 
             @Override
+            public WaitingQueueCountDown getWaitingQueueCountDown() {
+                 return null;
+            }
+
+            @Override
+            public void setWaitingQueueCountDown(Activity activity) {
+
+
+            }
+
+            @Override
+            public void addDialogWaitingQueueCountDown(Activity activity, AlertDialog alertDialog) {
+
+
+            }
+
+            @Override
             public long getID() {
                 return 0;
             }
@@ -60,6 +81,11 @@ public class SingeltonTestdata {
 
             @Override
             public List<Long> getIngredientIds() {
+                return null;
+            }
+
+            @Override
+            public List<String> getIngredientNames() {
                 return null;
             }
 
@@ -99,6 +125,11 @@ public class SingeltonTestdata {
 
                     @Override
                     public boolean isAvailable() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean loadAvailable() {
                         return false;
                     }
 
@@ -148,7 +179,17 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public void removeImageUrl(String url) {
+
+                    }
+
+                    @Override
                     public void setPump(Long pump, int fluidInMillimeters) {
+
+                    }
+
+                    @Override
+                    public void empty() {
 
                     }
 
@@ -168,13 +209,18 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public void setIngredientPump(SQLIngredientPump ingredientPump) {
+
+                    }
+
+                    @Override
                     public void pump(int millimeters) {
 
                     }
 
                     @Override
-                    public void save() {
-
+                    public boolean save() {
+                        return false;
                     }
 
                     @Override
@@ -215,6 +261,11 @@ public class SingeltonTestdata {
 
                     @Override
                     public boolean isAvailable() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean loadAvailable() {
                         return false;
                     }
 
@@ -264,7 +315,17 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public void removeImageUrl(String url) {
+
+                    }
+
+                    @Override
                     public void setPump(Long pump, int fluidInMillimeters) {
+
+                    }
+
+                    @Override
+                    public void empty() {
 
                     }
 
@@ -284,13 +345,18 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public void setIngredientPump(SQLIngredientPump ingredientPump) {
+
+                    }
+
+                    @Override
                     public void pump(int millimeters)  {
 
                     }
 
                     @Override
-                    public void save() {
-
+                    public boolean save() {
+                        return false;
                     }
 
                     @Override
@@ -334,6 +400,11 @@ public class SingeltonTestdata {
 
             @Override
             public boolean isAvailable() {
+                return false;
+            }
+
+            @Override
+            public boolean loadAvailable() {
                 return false;
             }
 
@@ -423,8 +494,8 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public JSONArray getLiquids() {
-                return Recipe.super.getLiquids();
+            public JSONArray getLiquidsJSON() {
+                return Recipe.super.getLiquidsJSON();
             }
 
             @Override
@@ -433,17 +504,13 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public boolean sendSave() {
-                return Recipe.super.sendSave();
+            public boolean sendSave(Activity activity) {
+                return Recipe.super.sendSave(activity);
             }
 
-            @Override
-            public void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException {
-
-            }
 
             @Override
-            public void send() {
+            public void send(Activity activity) {
 
             }
 
@@ -453,8 +520,8 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public void save() {
-
+            public boolean save() {
+                return false;
             }
         };
 
@@ -470,6 +537,23 @@ public class SingeltonTestdata {
             }
 
             @Override
+            public WaitingQueueCountDown getWaitingQueueCountDown() {
+                return null;
+            }
+
+            @Override
+            public void setWaitingQueueCountDown(Activity activity) {
+
+
+            }
+
+            @Override
+            public void addDialogWaitingQueueCountDown(Activity activity, AlertDialog alertDialog) {
+
+
+            }
+
+            @Override
             public long getID() {
                 return 0;
             }
@@ -486,6 +570,11 @@ public class SingeltonTestdata {
 
             @Override
             public List<Long> getIngredientIds() {
+                return null;
+            }
+
+            @Override
+            public List<String> getIngredientNames() {
                 return null;
             }
 
@@ -525,6 +614,11 @@ public class SingeltonTestdata {
 
                     @Override
                     public boolean isAvailable() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean loadAvailable() {
                         return false;
                     }
 
@@ -574,7 +668,17 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public void removeImageUrl(String url) {
+
+                    }
+
+                    @Override
                     public void setPump(Long pump, int fluidInMillimeters) {
+
+                    }
+
+                    @Override
+                    public void empty() {
 
                     }
 
@@ -594,13 +698,18 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public void setIngredientPump(SQLIngredientPump ingredientPump) {
+
+                    }
+
+                    @Override
                     public void pump(int millimeters) {
 
                     }
 
                     @Override
-                    public void save() {
-
+                    public boolean save() {
+                        return false;
                     }
 
                     @Override
@@ -641,6 +750,11 @@ public class SingeltonTestdata {
 
                     @Override
                     public boolean isAvailable() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean loadAvailable() {
                         return false;
                     }
 
@@ -690,7 +804,17 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public void removeImageUrl(String url) {
+
+                    }
+
+                    @Override
                     public void setPump(Long pump, int fluidInMillimeters) {
+
+                    }
+
+                    @Override
+                    public void empty() {
 
                     }
 
@@ -710,13 +834,18 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public void setIngredientPump(SQLIngredientPump ingredientPump) {
+
+                    }
+
+                    @Override
                     public void pump(int millimeters)  {
 
                     }
 
                     @Override
-                    public void save() {
-
+                    public boolean save() {
+                        return false;
                     }
 
                     @Override
@@ -760,6 +889,11 @@ public class SingeltonTestdata {
 
             @Override
             public boolean isAvailable() {
+                return false;
+            }
+
+            @Override
+            public boolean loadAvailable() {
                 return false;
             }
 
@@ -849,8 +983,8 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public JSONArray getLiquids() {
-                return Recipe.super.getLiquids();
+            public JSONArray getLiquidsJSON() {
+                return Recipe.super.getLiquidsJSON();
             }
 
             @Override
@@ -859,17 +993,14 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public boolean sendSave() {
-                return Recipe.super.sendSave();
+            public boolean sendSave(Activity activity) {
+                return Recipe.super.sendSave(activity);
             }
 
-            @Override
-            public void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException {
 
-            }
 
             @Override
-            public void send() {
+            public void send(Activity activity) {
 
             }
 
@@ -879,8 +1010,8 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public void save() {
-
+            public boolean save() {
+                return false;
             }
         };
 
