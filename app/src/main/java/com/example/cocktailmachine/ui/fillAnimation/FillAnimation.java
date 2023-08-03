@@ -82,9 +82,7 @@ public class FillAnimation extends AppCompatActivity {
             @Override
             public void onAnimationUpdate(ValueAnimator updatedAnimation) {
                 float animatedValue = (float)updatedAnimation.getAnimatedValue();
-                System.out.println(animatedValue);
                 Bitmap image = null;
-                System.out.println("Das gesuchte Ergebnis ist : " + (roundAvoid(animatedValue,3)));
                 if(true){
                     try {
                         image = BildgeneratorGlas.bildgenerationGlas(context,recipe,(float)animatedValue);

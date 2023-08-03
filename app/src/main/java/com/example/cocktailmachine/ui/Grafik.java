@@ -18,7 +18,7 @@ import android.os.Bundle;
 import android.widget.ImageView;
 
 
-import com.example.cocktailmachine.SingeltonTestdata;
+
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
