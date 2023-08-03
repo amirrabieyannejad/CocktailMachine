@@ -73,6 +73,7 @@ public class FillAnimation extends AppCompatActivity {
         Bitmap image = null;
 
         ValueAnimator animation = ValueAnimator.ofFloat(0f, 1f);
+        //animation.setStartDelay(5000);
         animation.setDuration(10000);
 
         Context context = this;
@@ -83,31 +84,32 @@ public class FillAnimation extends AppCompatActivity {
                 float animatedValue = (float)updatedAnimation.getAnimatedValue();
                 System.out.println(animatedValue);
                 Bitmap image = null;
-                try {
-                    image = BildgeneratorGlas.bildgenerationGlas(context,recipe,(float)animatedValue);
-                } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
-                    e.printStackTrace();
+                System.out.println("Das gesuchte Ergebnis ist : " + (roundAvoid(animatedValue,3)));
+                if(true){
+                    try {
+                        image = BildgeneratorGlas.bildgenerationGlas(context,recipe,(float)animatedValue);
+                    } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
+                        e.printStackTrace();
+                    }
+                    GlassFillFragment fragment = GlassFillFragment.newInstance(
+                            recipe != null ? recipe.getName() : "",
+                            image);
+                    replaceFragment(fragment);
                 }
-                GlassFillFragment fragment = GlassFillFragment.newInstance(
-                        recipe != null ? recipe.getName() : "",
-                        image);
-                replaceFragment(fragment);
+
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                if(animatedValue>=1f) {
+                    onFinish();
+                }
             }
         });
 
         animation.start();
-
-
-
-        try {
-            image = BildgeneratorGlas.bildgenerationGlas(this,recipe,(float)0.5);
-        } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
-            e.printStackTrace();
-        }
-        GlassFillFragment fragment = GlassFillFragment.newInstance(
-                recipe != null ? recipe.getName() : "",
-                image);
-        replaceFragment(fragment);
     }
 
 
@@ -128,8 +130,17 @@ public class FillAnimation extends AppCompatActivity {
     private void replaceFragment(Fragment fragment){
 
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        /**fragmentTransaction.setCustomAnimations(
+                R.anim.fade_in,  // enter
+                R.anim.fade_in_fast  // popExit
+        );*/
         fragmentTransaction.replace(R.id.frameLayout,fragment,"cocktail");
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+    }
+
+    public static float roundAvoid(float value, int places) {
+        double scale = Math.pow(10, places);
+        return (float)(Math.round(value * scale) / scale);
     }
 }
