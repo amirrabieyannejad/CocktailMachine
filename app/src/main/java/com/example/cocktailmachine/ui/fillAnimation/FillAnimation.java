@@ -128,10 +128,10 @@ public class FillAnimation extends AppCompatActivity {
     private void replaceFragment(Fragment fragment){
 
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        /**fragmentTransaction.setCustomAnimations(
-                R.anim.fade_in,  // enter
-                R.anim.fade_in_fast  // popExit
-        );*/
+        fragmentTransaction.setCustomAnimations(
+                R.anim.fade_in_slow,  // enter
+                R.anim.do_nothing  // popExit
+        );
         fragmentTransaction.replace(R.id.frameLayout,fragment,"cocktail");
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
