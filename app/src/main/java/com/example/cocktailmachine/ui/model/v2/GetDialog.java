@@ -260,7 +260,7 @@ public class GetDialog {
             @Override
             public void reduceTick() {
                 isDone = CocktailMachine.isAutomaticCalibrationDone(activity);
-                Log.i("GetDialog", "waitingQueueCountDown:  idone: " +isDone);
+                Log.i("GetDialog", "waitingQueueCountDown:  isDone: " +isDone);
                 if(isDone){
                     setTick(0);
                 }else {
@@ -617,7 +617,12 @@ public class GetDialog {
             return String.valueOf(this.pump.getVolume());
         }
         private int getVolume(){
-            return Integer.getInteger(e.getText().toString());
+            try {
+                return Integer.getInteger(e.getText().toString());
+            }catch (NullPointerException e){
+                e.printStackTrace();
+                return 100;
+            }
         }
         public boolean save(){
             try {

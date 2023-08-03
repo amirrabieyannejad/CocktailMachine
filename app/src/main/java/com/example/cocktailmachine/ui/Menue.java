@@ -59,7 +59,7 @@ public class Menue extends AppCompatActivity {
             binding.activityMenueLogout.setVisibility(View.GONE);
             binding.activityMenueLogin.setVisibility(View.VISIBLE);
         }
-        CocktailMachineCalibration.start(this);
+        //CocktailMachineCalibration.start(this);
     }
 
     /**

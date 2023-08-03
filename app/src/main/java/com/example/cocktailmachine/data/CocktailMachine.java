@@ -32,7 +32,7 @@ public class CocktailMachine {
     static Recipe currentRecipe;
 
     public static int getNumberOfUsersUntilThisUsersTurn(){
-        /*
+        /*TODO:
         BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
         try {
             bluetoothSingleton.makeRecipe(this.getName());
@@ -42,6 +42,18 @@ public class CocktailMachine {
 
          */
         return 0;
+    }
+    public static int getNumberOfUsersUntilThisUsersTurn(int tick){
+        /*TODO:
+        BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
+        try {
+            bluetoothSingleton.makeRecipe(this.getName());
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
+         */
+        return tick-1;
     }
 
 

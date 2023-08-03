@@ -40,7 +40,7 @@ public class GetActivity {
         bundle.putString(MODELTYPE, modelType.toString());
         intent.putExtras(bundle);
         activity.startActivity(intent);
-        activity.finish();
+        //activity.finish();
     }
 
     public static void goToDisplay(Activity activity, FragmentType fragmentType, ModelType modelType, Long id){
@@ -62,7 +62,7 @@ public class GetActivity {
         bundle.putString(FRAGMENTTYPE, fragmentType.toString());
         intent.putExtras(bundle);
         activity.startActivity(intent);
-        activity.finish();
+        //activity.finish();
     }
 
     public static void startAgain(Activity activity) {
@@ -75,12 +75,12 @@ public class GetActivity {
         bundle.putLong(ID, recipe.getID());
         intent.putExtras(bundle);
         activity.startActivity(intent);
-        activity.finish();
+        //activity.finish();
     }
 
     public static void goToMenu(Activity activity) {
         Intent intent = new Intent(activity, Menue.class);
         activity.startActivity(intent);
-        activity.finish();
+        //activity.finish();
     }
 }

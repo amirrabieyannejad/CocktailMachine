@@ -2,6 +2,7 @@ package com.example.cocktailmachine.ui.model.v2;
 
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 /**
  * @author Johanna Reidt
@@ -9,6 +10,7 @@ import android.os.Message;
  * @project CocktailMachine
  */
 public abstract class WaitingQueueCountDown {
+    private static final String TAG = "WaitingQueueCountDown";
 
     /**
      * Millis since epoch when alarm should stop.
@@ -28,9 +30,9 @@ public abstract class WaitingQueueCountDown {
     /**
      * number of next users
      */
-    private int tick;
+    private int tick = 5;
 
-    private long previousTick;
+    //private long previousTick;
 
      /**
        * @param countDownInterval The interval along the way to receive
@@ -38,12 +40,14 @@ public abstract class WaitingQueueCountDown {
      public WaitingQueueCountDown(long countDownInterval) {
           //mMillisInFuture = millisInFuture;
           mCountdownInterval = countDownInterval;
+          Log.i(TAG, "WaitingQueueCountDown");
      }
 
      /**
        * Cancel the countdown.
        */
      public synchronized final void cancel() {
+         Log.i(TAG, "cancel");
           mCancelled = true;
           mHandler.removeMessages(MSG);
      }
@@ -52,16 +56,22 @@ public abstract class WaitingQueueCountDown {
        * Start the countdown.
        */
      public synchronized final WaitingQueueCountDown start() {
+         Log.i(TAG, "start");
           mCancelled = false;
+          reduceTick();
+         Log.i(TAG, "start: reduceTick");
 
           if (tick <= 0) {
               onFinish();
+              Log.i(TAG, "start: onFinish");
               return this;
           }
          if (tick <= 1) {
              onNext();
+             Log.i(TAG, "start: onNext");
          }
           mHandler.sendMessage(mHandler.obtainMessage(MSG));
+         Log.i(TAG, "start: sendMessage");
           return this;
      }
 
@@ -74,6 +84,7 @@ public abstract class WaitingQueueCountDown {
      public abstract void reduceTick();
 
      public void setTick(int tick){
+         Log.i(TAG, "setTick: "+tick);
          this.tick = tick;
      }
 
@@ -92,15 +103,19 @@ public abstract class WaitingQueueCountDown {
      public abstract void onFinish();
 
      public boolean isWaiting(){
+         Log.i(TAG, "isWaiting?");
          return tick >0;
      }
 
     public boolean isNext(){
+        Log.i(TAG, "isNext?");
         return tick ==1;
     }
 
     public boolean isUsersTurn(){
-         return tick ==0;
+         Log.i(TAG, "isUsersTurn?");
+
+        return tick ==0;
     }
 
 
@@ -114,20 +129,26 @@ public abstract class WaitingQueueCountDown {
             public void handleMessage(Message msg) {
                 synchronized (WaitingQueueCountDown.this) {
                     if (mCancelled) {
+                        Log.i("Handler: WaitingQueueC", "cancelled");
                         return;
                     }
 
                     reduceTick();
+                    Log.i("Handler: WaitingQueueC", "reduced");
 
                     if(tick ==1){
                         onNext();
+                        Log.i("Handler: WaitingQueueC", "onNext");
                     }
 
                     if (tick <= 0) {
                         onFinish();
+                        Log.i("Handler: WaitingQueueC", "onFinish");
                     } else {
                         onTick();
+                        Log.i("Handler: WaitingQueueC", "onTick");
                         sendMessageDelayed(obtainMessage(MSG), mCountdownInterval);
+                        Log.i("Handler: WaitingQueueC", "sendMessageDelayed");
                     }
                 }
             }
