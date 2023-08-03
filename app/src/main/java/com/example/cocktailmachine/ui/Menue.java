@@ -16,6 +16,7 @@ import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
 import com.example.cocktailmachine.ui.model.v1.ModelActivity;
 import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
+import com.example.cocktailmachine.ui.model.v2.GetActivity;
 import com.example.cocktailmachine.ui.settings.SettingsActivity;
 import com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice;
 
@@ -82,7 +83,7 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void openRecipeCreator(View view){
-
+        /*
         Intent success = new Intent(this,
                 ModelActivity.class);
         Bundle b = new Bundle();
@@ -92,6 +93,9 @@ public class Menue extends AppCompatActivity {
         b.putString("ModelType",
                 ModelType.RECIPE.toString());
         startActivity(success, b);
+
+         */
+        GetActivity.goToDisplay(this, FragmentType.List, ModelType.TOPIC);
     }
 
     /**

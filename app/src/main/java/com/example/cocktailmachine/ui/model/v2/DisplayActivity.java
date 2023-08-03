@@ -13,10 +13,9 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityDisplayBinding;
-import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
 
-public class DisplayActivity extends BasicAcitivity {
+public class DisplayActivity extends BasicActivity {
     ActivityDisplayBinding binding;
 
     @Override

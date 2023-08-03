@@ -27,8 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:layout_marginTop="16dp"
-            android:text="@string/large_text"
-            android:visibility="gone" />
+            android:text="@string/large_text" />
 
 
         <include
@@ -36,8 +35,7 @@
             layout="@layout/layout_pump"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:visibility="gone" />
+            android:layout_margin="8dp" />
 
         <include
             android:id="@+id/include_display_available"
@@ -51,8 +49,7 @@
             layout="@layout/layout_not_available"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:visibility="gone" />
+            android:layout_margin="8dp" />
 
         <include
             android:id="@+id/include_display_alcoholic"
@@ -73,23 +70,20 @@
             layout="@layout/layout_ingredient_admin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:visibility="gone" />
+            android:layout_margin="8dp" />
 
 
         <include
             android:id="@+id/include_recipe_ingredients_list"
             layout="@layout/layout_list_with_title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
+            android:layout_height="wrap_content" />
 
         <include
             android:id="@+id/include_recipe_topics_list"
             layout="@layout/layout_list_with_title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 
