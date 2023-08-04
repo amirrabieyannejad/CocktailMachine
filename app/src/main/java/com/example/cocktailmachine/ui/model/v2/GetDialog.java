@@ -3,8 +3,10 @@ package com.example.cocktailmachine.ui.model.v2;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
+import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
@@ -24,8 +26,10 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
+import com.example.cocktailmachine.ui.model.v1.ModelActivity;
 
 import org.json.JSONException;
 
@@ -110,6 +114,8 @@ public class GetDialog {
                 CocktailMachine.isCollected();
                 GetDialog.showTopics( activity,  recipe);
                 dialog.dismiss();
+                Intent success = new Intent(activity, Menue.class);
+                activity.startActivity(success);
             } catch (JSONException | InterruptedException e) {
                 e.printStackTrace();
                 count--;

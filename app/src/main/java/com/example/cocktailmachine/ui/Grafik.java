@@ -18,7 +18,7 @@ import android.os.Bundle;
 import android.widget.ImageView;
 
 
-import com.example.cocktailmachine.SingeltonTestdata;
+
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
@@ -26,6 +26,7 @@ import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.data.db.DatabaseConnection;
 
 
 import java.util.List;
@@ -73,7 +74,8 @@ public class Grafik extends AppCompatActivity {
 
         DatabaseConnection.initialize_singleton(this.getBaseContext());
 */
-
+        DatabaseConnection.initializeSingleton(this);
+        Integer idRecipe = 0;
 
         Ingredient tequila = new SQLIngredient(1,"Tequila", true, Color.RED);
         Ingredient orangenlikör = new SQLIngredient(2,"Orangenlikör", true, Color.YELLOW);
@@ -91,7 +93,10 @@ public class Grafik extends AppCompatActivity {
 
         System.out.println(recipes);
 
+        Recipe drink = recipes.get(idRecipe);
 
+        List<Ingredient> ing = drink.getIngredients();
+        System.out.println(drink);
         Context context = this;
 
         ImageView iv =(ImageView) findViewById(R.id.ivtest);
@@ -99,7 +104,7 @@ public class Grafik extends AppCompatActivity {
         ValueAnimator animation = ValueAnimator.ofFloat(0f, 1f);
         animation.setDuration(10000);
 
-        Recipe finalRecipe = SingeltonTestdata.getSingelton().getRecipe();
+        Recipe finalRecipe = drink;// SingeltonTestdata.getSingelton().getRecipe();
         System.out.println("Die Farbe ist = " + finalRecipe.getIngredients());
         animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
