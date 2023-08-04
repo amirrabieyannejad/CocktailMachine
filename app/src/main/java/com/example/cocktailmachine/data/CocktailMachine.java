@@ -38,7 +38,7 @@ public class CocktailMachine {
             bluetoothSingleton.makeRecipe(this.getName());
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
-        }
+        }h
 
          */
         return 0;
