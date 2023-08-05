@@ -454,10 +454,15 @@ struct Parsed {
   Processed *err;
 };
 
-struct Queued {
+struct CommandQueued {
   Command *command;
   Comm *comm;
   uint16_t conn_id;
+};
+
+struct RecipeQueued {
+  User user;
+  String recipe;
 };
 
 // global state
@@ -476,7 +481,6 @@ Pump* pumps[MAX_PUMPS];
 
 Processed* machine_state;
 
-User current_user = -1;
 std::map<User, String> users;
 
 BLEServer *ble_server;
@@ -487,7 +491,8 @@ Comm*   all_comm[NUM_COMM];
 std::forward_list<Recipe>     recipes;
 std::forward_list<Ingredient> cocktail;
 
-std::queue<Queued> command_queue;
+std::queue<CommandQueued> command_queue;
+std::queue<RecipeQueued>  recipe_queue;
 
 // function declarations
 
@@ -617,7 +622,8 @@ void setup() {
     for (int i=0; i<NUM_COMM; i++)  	all_comm[i]  	= NULL;
     for (int i=0; i<MAX_PUMPS; i++) 	pumps[i]     	= NULL;
 
-    while (!command_queue.empty()) 	command_queue.pop();
+    while (!command_queue.empty())	command_queue.pop();
+    while (!recipe_queue.empty()) 	recipe_queue.pop();
 
     recipes.clear();
     cocktail.clear();
@@ -655,8 +661,10 @@ void setup() {
 }
 
 void loop() {
+  // FIXME handle recipe queue
+
   if (!command_queue.empty()) {
-    Queued q = command_queue.front();
+    CommandQueued q = command_queue.front();
     command_queue.pop();
 
     debug("processing queue (#%d): %s (%d)", command_queue.size(), q.command->cmd_name(), q.conn_id);
@@ -689,7 +697,7 @@ Processed* add_to_queue(const String json, Comm *comm, uint16_t conn_id) {
   debug("parsed, adding to queue: %d, %s", conn_id, p.command->cmd_name());
 
   // add to process queue
-  Queued q = {p.command, comm, conn_id};
+  CommandQueued q = {p.command, comm, conn_id};
   command_queue.push(q);
 
   return NULL;
@@ -904,7 +912,8 @@ Processed* CmdFactoryReset::execute() {
       scale.set_scale(1.0);
     }
 
-    while (!command_queue.empty()) command_queue.pop();
+    while (!command_queue.empty())	command_queue.pop();
+    while (!recipe_queue.empty()) 	recipe_queue.pop();
 
     recipes.clear();
     cocktail.clear();
@@ -1028,10 +1037,10 @@ Processed* CmdClean::execute() {
 };
 
 Processed* CmdAbort::execute() {
+  User c = current_user();
+
   // only allowed for admin or the current user
-  if (current_user != USER_UNKNOWN &&
-      current_user != this->user &&
-      !is_admin(this->user))
+  if (c != USER_UNKNOWN && c != this->user && !is_admin(this->user))
     return new Unauthorized();
 
   // TODO stop active pumps
@@ -1166,9 +1175,9 @@ Processed* CmdRefillPump::execute() {
 
 Processed* CmdAddLiquid::execute() {
   // only allowed for admin or the current user
-  if (current_user == this->user ||
-      current_user == USER_UNKNOWN ||
-      is_admin(this->user)) {
+  User c = current_user();
+
+  if (c == this->user || c == USER_UNKNOWN || is_admin(this->user)) {
     Processed *err = add_liquid(this->user, this->liquid, this->volume);
     if (err) return err;
     return new Success();
@@ -1243,58 +1252,11 @@ Processed* CmdDeleteRecipe::execute() {
 
 Processed* CmdMakeRecipe::execute() {
   const String name = this->recipe;
-  const Recipe *recipe = NULL;
-  for (auto const &r : recipes) {
-    if (r.name == name) {
-      recipe = &r;
-      break;
-    }
-  }
-  if (!recipe) return new MissingRecipe();
 
-  debug("checking if recipe %s is possible", name.c_str());
+  // FIXME add recipe to queue
+  Processed* ret = make_recipe(this->user, name);
 
-  debug("  summing up all available liquids");
-  std::unordered_map<std::string, float> liquids = {};
-  for (int i=0; i<MAX_PUMPS; i++) {
-    Pump *p = pumps[i];
-    if (p == NULL) continue;
-
-    std::string liquid = p->liquid.c_str();
-    debug("    pump: %d, liquid: %s, vol: %.1f", i, liquid.c_str(), p->volume);
-
-    // update saved total
-    float sum = liquids[liquid] + p->volume;
-    liquids[liquid] = sum;
-  }
-
-  debug("  checking necessary ingredients");
-  for (auto ing = recipe->ingredients.begin(); ing != recipe->ingredients.end(); ing++) {
-    std::string liquid	= ing->name.c_str();
-    float have        	= liquids[liquid];
-    float need        	= ing->amount;
-    bool found        	= liquids.count(liquid) > 0;
-
-    debug("    need %.1f / %.1f of %s", need, have, liquid.c_str());
-    if (!found)                     	return new MissingLiquid();
-    if (have - need < LIQUID_CUTOFF)	return new Insufficient();
-    liquids[liquid] = have - need; // update total
-  }
-
-  debug("making recipe %s", name.c_str());
-  update_user(this->user);
-  update_state(new Mixing());
-
-  for (auto ing = recipe->ingredients.begin(); ing != recipe->ingredients.end(); ing++) {
-    Processed *err = add_liquid(this->user, ing->name, ing->amount);
-    if (err) {
-      update_state(new Done());
-      return err;
-    }
-  }
-
-  update_state(new Done());
-  return new Success();
+  return ret;
 };
 
 bool is_admin(User user) {
@@ -1367,6 +1329,61 @@ Processed* add_liquid(User user, const String liquid, float amount) {
   }
 
   return NULL;
+}
+
+Processed* make_recipe(User user, String name) {
+  const Recipe *recipe = NULL;
+  for (auto const &r : recipes) {
+    if (r.name == name) {
+      recipe = &r;
+      break;
+    }
+  }
+  if (!recipe) return new MissingRecipe();
+
+  debug("checking if recipe %s is possible", name.c_str());
+
+  debug("  summing up all available liquids");
+  std::unordered_map<std::string, float> liquids = {};
+  for (int i=0; i<MAX_PUMPS; i++) {
+    Pump *p = pumps[i];
+    if (p == NULL) continue;
+
+    std::string liquid = p->liquid.c_str();
+    debug("    pump: %d, liquid: %s, vol: %.1f", i, liquid.c_str(), p->volume);
+
+    // update saved total
+    float sum = liquids[liquid] + p->volume;
+    liquids[liquid] = sum;
+  }
+
+  debug("  checking necessary ingredients");
+  for (auto ing = recipe->ingredients.begin(); ing != recipe->ingredients.end(); ing++) {
+    std::string liquid	= ing->name.c_str();
+    float have        	= liquids[liquid];
+    float need        	= ing->amount;
+    bool found        	= liquids.count(liquid) > 0;
+
+    debug("    need %.1f / %.1f of %s", need, have, liquid.c_str());
+    if (!found)                     	return new MissingLiquid();
+    if (have - need < LIQUID_CUTOFF)	return new Insufficient();
+    liquids[liquid] = have - need; // update total
+  }
+
+  debug("making recipe %s", name.c_str());
+  update_user(user);
+  update_state(new Mixing());
+
+  for (auto ing = recipe->ingredients.begin(); ing != recipe->ingredients.end(); ing++) {
+    Processed *err = add_liquid(user, ing->name, ing->amount);
+    if (err) {
+      update_state(new Done());
+      return err;
+    }
+  }
+
+  update_state(new Done());
+  return new Success();
 }
 
 Processed* Pump::drain(float amount) {
@@ -1561,8 +1578,15 @@ void update_config_state(time_t ts) {
   all_status[ID_TIMESTAMP]->update(s.c_str());
 }
 
-void update_user(User user) {
-  current_user = user;
+User current_user() {
+  User user = recipe_queue.empty() ? USER_UNKNOWN : recipe_queue.front().user;
+
+  String s = String(user);
+  all_status[ID_USER]->update(s.c_str());
+}
+
+void update_user(User user) { // FIXME
+  // current_user = user;
   String s = String(user);
   all_status[ID_USER]->update(s.c_str());
 }
