@@ -1,7 +1,7 @@
 // general system settings
 #define BLE_NAME             	"Cocktail Machine ESP32"	// bluetooth server name
 #define CORE_DEBUG_LEVEL     	4                       	// 1 = error; 3 = info ; 4 = debug
-const unsigned int VERSION   	= 6;                    	// version number (used for configs etc)
+const unsigned int VERSION   	= 7;                    	// version number (used for configs etc)
 const unsigned char MAX_PUMPS	= 1 + 4*8;              	// maximum number of supported pumps;
 const float LIQUID_CUTOFF    	= 0.1;                  	// minimum amount of liquid we round off
 
@@ -99,17 +99,22 @@ struct Pump {
   String liquid;
   float volume;
 
+  bool calibrated;
   dur_t time_init;
   dur_t time_reverse;
   float rate;
 
+  Pump(PumpSlot *slot, String liquid, float volume, dur_t time_init, dur_t time_reverse, float rate, bool calibrated)
+    : slot(slot), liquid(liquid), volume(volume),
+      time_init(time_init), time_reverse(time_reverse), rate(rate), calibrated(calibrated) {};
+
   Pump(PumpSlot *slot, String liquid, float volume, dur_t time_init, dur_t time_reverse, float rate)
     : slot(slot), liquid(liquid), volume(volume),
-      time_init(time_init), time_reverse(time_reverse), rate(rate) {};
+      time_init(time_init), time_reverse(time_reverse), rate(rate), calibrated(false) {};
 
   Pump(PumpSlot *slot, String liquid, float volume)
     : slot(slot), liquid(liquid), volume(volume),
-      time_init(MS(1)), time_reverse(MS(1)), rate(1.0) {};
+      time_init(S(5)), time_reverse(S(5)), rate(350.0 / MIN(1)), calibrated(false) {};
 
   Processed* drain(float amount);
   Processed* refill(float volume);
@@ -191,7 +196,8 @@ struct CommCB: BLECharacteristicCallbacks {
 #define ID_COCKTAIL 	4
 #define ID_TIMESTAMP	5
 #define ID_USER     	6
-#define NUM_STATUS  	7
+#define ID_SCALE    	7
+#define NUM_STATUS  	8
                     	
 #define ID_MSG_USER 	0
 #define ID_MSG_ADMIN	1
@@ -210,6 +216,7 @@ struct CommCB: BLECharacteristicCallbacks {
 #define UUID_STATUS_COCKTAIL 	"7344136f-c552-3efc-b04f-a43793f16d43"
 #define UUID_STATUS_TIMESTAMP	"586b5706-5856-34e1-ad17-94f840298816"
 #define UUID_STATUS_USER     	"2ce478ea-8d6f-30ba-9ac6-2389c8d5b172"
+#define UUID_STATUS_SCALE    	"ff18f0ac-f039-4cd0-bee3-b546e3de5551"
                              	
 #define UUID_COMM            	"dad995d1-f228-38ec-8b0f-593953973406"
 #define UUID_COMM_USER       	"eb61e31a-f00b-335f-ad14-d654aac8353d"
@@ -461,6 +468,7 @@ Preferences preferences;
 bool sdcard_available = false;
 
 bool scale_available  = false;
+bool scale_calibrated = false;
 HX711 scale;
 
 PumpSlot* pump_slots[MAX_PUMPS];
@@ -526,6 +534,7 @@ bool is_admin(User user);
 // update machine state
 void update_cocktail(void);
 void update_liquids(void);
+void update_scale(void);
 void update_recipes(void);
 void update_state(Processed *state);
 void update_config_state(time_t ts);
@@ -636,6 +645,7 @@ void setup() {
 
   // update all states
   update_liquids();
+  update_scale();
   update_recipes();
   update_cocktail();
   update_user(USER_UNKNOWN);
@@ -908,6 +918,7 @@ Processed* CmdFactoryReset::execute() {
   update_cocktail();
   update_recipes();
   update_liquids();
+  update_scale();
   update_state(new Ready());
   update_user(USER_UNKNOWN);
 
@@ -938,6 +949,7 @@ Processed* CmdRunPump::execute() {
 
   update_liquids();
   update_possible_recipes(p->liquid);
+  update_scale();
   update_cocktail();
   update_state(new Done());
 
@@ -953,7 +965,9 @@ Processed* CmdCalibratePump::execute() {
   }
   Pump *p = pumps[slot];
 
-  return p->calibrate(this->time1, this->time2, this->volume1, this->volume2);
+  Processed *err = p->calibrate(this->time1, this->time2, this->volume1, this->volume2);
+  if (err) return err;
+  return new Success();
 };
 
 Processed* CmdSetPumpTimes::execute() {
@@ -968,6 +982,7 @@ Processed* CmdSetPumpTimes::execute() {
   p->time_init    = this->time_init;
   p->time_reverse = this->time_reverse;
   p->rate         = this->rate;
+  p->calibrated   = true;
   config_save();
 
   return new Success();
@@ -978,6 +993,9 @@ Processed* CmdCalibrateScale::execute() {
 
   Processed *err = scale_calibrate(this->weight);
   if (err) return err;
+
+  update_scale();
+
   return new Success();
 };
 
@@ -986,6 +1004,9 @@ Processed* CmdTareScale::execute() {
 
   Processed *err = scale_tare();
   if (err) return err;
+
+  update_scale();
+
   return new Success();
 };
 
@@ -994,6 +1015,9 @@ Processed* CmdSetScaleFactor::execute() {
 
   Processed *err = scale_set_factor(this->factor);
   if (err) return err;
+
+  update_scale();
+
   return new Success();
 };
 
@@ -1016,6 +1040,7 @@ Processed* CmdAbort::execute() {
   // update machine state
   update_cocktail();
   update_liquids();
+  update_scale();
   update_recipes();
 
   if (cocktail.empty()) {
@@ -1037,6 +1062,7 @@ Processed* CmdReset::execute() {
 
   // update machine state
   update_cocktail();
+  update_scale();
   update_user(USER_UNKNOWN);
   update_state(new Ready());
 
@@ -1330,6 +1356,7 @@ Processed* add_liquid(User user, const String liquid, float amount) {
 
   // update state
   update_liquids();
+  update_scale();
   update_cocktail();
   update_possible_recipes(liquid);
   update_state(new Done());
@@ -1389,6 +1416,23 @@ void update_cocktail() {
   all_status[ID_COCKTAIL]->update(out.c_str());
 }
 
+void update_scale() {
+  // generate json output
+  debug("updating scale state");
+
+  float weight = scale_weigh();
+
+  String out = String("{\"weight\":");
+  out.concat(String(weight, 1));
+
+  out.concat(",\"calibrated\":");
+  out.concat(scale_calibrated ? "true" : "false");
+
+  out.concat('}');
+
+  all_status[ID_SCALE]->update(out.c_str());
+}
+
 void update_liquids() {
   std::unordered_map<std::string, float> liquids = {};
 
@@ -1416,6 +1460,14 @@ void update_liquids() {
       out.concat(pump->liquid);
       out.concat("\",\"volume\":");
       out.concat(String(pump->volume, 1));
+      out.concat("\",\"calibrated\":");
+      out.concat(pump->calibrated ? "true" : "false");
+      out.concat("\",\"rate\":");
+      out.concat(String(pump->rate, 1));
+      out.concat("\",\"time_init\":");
+      out.concat(String(pump->time_init));
+      out.concat("\",\"time_reverse\":");
+      out.concat(String(pump->time_reverse));
       out.concat('}');
 
       prev = true;
@@ -1584,6 +1636,7 @@ bool ble_start(void) {
   all_status[ID_COCKTAIL] 	= new Status(UUID_STATUS_COCKTAIL, 	"[]");
   all_status[ID_TIMESTAMP]	= new Status(UUID_STATUS_TIMESTAMP,	"0");
   all_status[ID_USER]     	= new Status(UUID_STATUS_USER,     	"-1");
+  all_status[ID_SCALE]    	= new Status(UUID_STATUS_SCALE,    	"{}");
                           	
   all_comm[ID_MSG_USER]   	= new Comm(UUID_COMM_USER);
   all_comm[ID_MSG_ADMIN]  	= new Comm(UUID_COMM_ADMIN);
@@ -1806,8 +1859,13 @@ bool config_save(void) {
     }
 
     if (scale_available) { // scale
-      preferences.putFloat("scale/t", scale.get_offset());
-      preferences.putFloat("scale/f", scale.get_scale());
+      if (scale_calibrated) {
+        preferences.putBool("scale", true);
+        preferences.putFloat("scale/t", scale.get_offset());
+        preferences.putFloat("scale/f", scale.get_scale());
+      } else {
+        preferences.putBool("scale", false);
+      }
     }
 
     { // pumps
@@ -1824,6 +1882,9 @@ bool config_save(void) {
 
         snprintf(key, sizeof(key), "pump_%d/v", i);
         preferences.putFloat(key, p->volume);
+
+        snprintf(key, sizeof(key), "pump_%d/c", i);
+        preferences.putBool(key, p->calibrated);
 
         snprintf(key, sizeof(key), "pump_%d/ti", i);
         preferences.putULong64(key, p->time_init);
@@ -1912,10 +1973,16 @@ bool config_load(void) {
   }
 
   if (scale_available) { // scale
-    float tare = preferences.getFloat("scale/t");
-    float factor = preferences.getFloat("scale/f");
-    scale.set_scale(factor);
-    scale.set_offset(tare);
+    bool calibrated = preferences.getBool("scale");
+    if (calibrated) {
+      float tare = preferences.getFloat("scale/t");
+      float factor = preferences.getFloat("scale/f");
+      scale.set_scale(factor);
+      scale.set_offset(tare);
+      scale_calibrated = true;
+    } else {
+      scale_calibrated = false;
+    }
   }
 
   { // pumps
@@ -1935,6 +2002,9 @@ bool config_load(void) {
       snprintf(key, sizeof(key), "pump_%d/v", i);
       float volume = preferences.getFloat(key);
 
+      snprintf(key, sizeof(key), "pump_%d/c", i);
+      bool calibrated = preferences.getBool(key);
+
       snprintf(key, sizeof(key), "pump_%d/ti", i);
       time_t time_init = preferences.getULong64(key);
 
@@ -1946,7 +2016,7 @@ bool config_load(void) {
 
       PumpSlot *pump_slot = pump_slots[i];
       // if (pump_slot == NULL) continue; // pump slot missing
-      pumps[i] = new Pump(pump_slot, liquid, volume, time_init, time_reverse, rate);
+      pumps[i] = new Pump(pump_slot, liquid, volume, time_init, time_reverse, rate, calibrated);
     }
   }
 
@@ -2078,6 +2148,7 @@ Processed* Pump::calibrate(dur_t time1, dur_t time2, float volume1, float volume
   this->time_reverse = init; // TODO should this be different?
   debug("time init: %d, reverse: %d", time_init, time_reverse);
 
+  this->calibrated = true;
   config_save();
   return new Success();
 }
@@ -2103,6 +2174,7 @@ Processed* scale_calibrate(float weight) {
   if (weight <= 0.0) return new InvalidWeight();
 
   scale.calibrate_scale(weight);
+  scale_calibrated = true;
   config_save();
   return NULL;
 }
@@ -2119,6 +2191,7 @@ Processed* scale_set_factor(float factor) {
   if (!scale_available) return NULL;
 
   scale.set_scale(factor);
+  scale_calibrated = true;
   config_save();
   return NULL;
 }

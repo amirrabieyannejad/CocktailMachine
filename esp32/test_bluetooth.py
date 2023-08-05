@@ -24,6 +24,7 @@ STATUS = {
   "cocktail": 	"7344136f-c552-3efc-b04f-a43793f16d43",
   "timestamp":	"586b5706-5856-34e1-ad17-94f840298816",
   "user":     	"2ce478ea-8d6f-30ba-9ac6-2389c8d5b172",
+  "scale":    	"ff18f0ac-f039-4cd0-bee3-b546e3de5551",
 }
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s %(asctime)s: %(message)s', datefmt='%y-%m-%d %H:%M:%S')
