@@ -26,6 +26,7 @@ Pin PIN_BUILTIN_PUMP_IN2	= 27;
 
 // c++ standard library
 #include <algorithm>
+#include <deque>
 #include <forward_list>
 #include <inttypes.h>
 #include <map>
@@ -462,7 +463,7 @@ struct CommandQueued {
 
 struct RecipeQueued {
   User user;
-  String recipe;
+  Recipe *recipe;
 };
 
 // global state
@@ -492,7 +493,7 @@ std::forward_list<Recipe>     recipes;
 std::forward_list<Ingredient> cocktail;
 
 std::queue<CommandQueued> command_queue;
-std::queue<RecipeQueued>  recipe_queue;
+std::deque<RecipeQueued>  recipe_queue;
 
 // function declarations
 
@@ -535,6 +536,7 @@ Processed* scale_set_factor(float factor);
 Processed* add_to_queue(const String json, uint16_t conn_id);
 Parsed parse_command(const String json);
 bool is_admin(User user);
+User current_user();
 
 // update machine state
 void update_cocktail(void);
@@ -543,7 +545,7 @@ void update_scale(void);
 void update_recipes(void);
 void update_state(Processed *state);
 void update_config_state(time_t ts);
-void update_user(User user);
+void update_user();
 void update_all_possible_recipes();
 void update_possible_recipes(String liquid);
 
@@ -623,8 +625,8 @@ void setup() {
     for (int i=0; i<MAX_PUMPS; i++) 	pumps[i]     	= NULL;
 
     while (!command_queue.empty())	command_queue.pop();
-    while (!recipe_queue.empty()) 	recipe_queue.pop();
 
+    recipe_queue.clear();
     recipes.clear();
     cocktail.clear();
 
@@ -654,16 +656,15 @@ void setup() {
   update_scale();
   update_recipes();
   update_cocktail();
-  update_user(USER_UNKNOWN);
+  update_user();
   update_state(new Ready());
 
   debug("ready");
 }
 
 void loop() {
-  // FIXME handle recipe queue
-
-  if (!command_queue.empty()) {
+  // empty out command queue
+  while (!command_queue.empty()) {
     CommandQueued q = command_queue.front();
     command_queue.pop();
 
@@ -676,6 +677,15 @@ void loop() {
     // send response
     q.comm->respond(q.conn_id, p);
   }
+
+  // handle recipe queue
+  // if (!recipe_queue.empty()) {
+  //   RecipeQueued r = recipe_queue.front();
+  //   recipe_queue.pop_front();
+
+  //   // FIXME where does p go?
+  //   Processed* p = make_recipe(r.user, r.recipe);
+  // }
 }
 
 // command processing
@@ -912,9 +922,9 @@ Processed* CmdFactoryReset::execute() {
       scale.set_scale(1.0);
     }
 
-    while (!command_queue.empty())	command_queue.pop();
-    while (!recipe_queue.empty()) 	recipe_queue.pop();
+    while (!command_queue.empty()) command_queue.pop();
 
+    recipe_queue.clear();
     recipes.clear();
     cocktail.clear();
 
@@ -929,7 +939,7 @@ Processed* CmdFactoryReset::execute() {
   update_liquids();
   update_scale();
   update_state(new Ready());
-  update_user(USER_UNKNOWN);
+  update_user();
 
   return new Success();
 }
@@ -945,7 +955,7 @@ Processed* CmdRunPump::execute() {
   Pump *p = pumps[slot];
 
   debug("running pump %d for %dms", slot, time);
-  update_user(user);
+  update_user();
   update_state(new Pumping());
   p->run(time, false);
 
@@ -1054,7 +1064,7 @@ Processed* CmdAbort::execute() {
 
   if (cocktail.empty()) {
     update_state(new Ready());
-    update_user(USER_UNKNOWN);
+    update_user();
   } else {
     update_state(new Done());
   }
@@ -1072,7 +1082,7 @@ Processed* CmdReset::execute() {
   // update machine state
   update_cocktail();
   update_scale();
-  update_user(USER_UNKNOWN);
+  update_user();
   update_state(new Ready());
 
   return new Success();
@@ -1252,11 +1262,24 @@ Processed* CmdDeleteRecipe::execute() {
 
 Processed* CmdMakeRecipe::execute() {
   const String name = this->recipe;
+  Recipe *recipe = NULL;
 
-  // FIXME add recipe to queue
-  Processed* ret = make_recipe(this->user, name);
+  // look for recipe
+  for (auto &r : recipes) {
+    if (r.name == name) {
+      recipe = &r;
+      break;
+    }
+  }
+  if (!recipe) return new MissingRecipe();
 
-  return ret;
+  Processed *err = check_recipe(user, recipe);
+  if (err != NULL) return err;
+
+  // add to recipe queue
+  recipe_queue.push_front(RecipeQueued{this->user, recipe});
+
+  return new Success();
 };
 
 bool is_admin(User user) {
@@ -1294,7 +1317,7 @@ Processed* add_liquid(User user, const String liquid, float amount) {
   Processed *err = scale_tare();
   if (err) return err;
 
-  update_user(user);
+  update_user();
   update_state(new Pumping());
 
   // add the liquid
@@ -1331,17 +1354,10 @@ Processed* add_liquid(User user, const String liquid, float amount) {
   return NULL;
 }
 
-Processed* make_recipe(User user, String name) {
-  const Recipe *recipe = NULL;
-  for (auto const &r : recipes) {
-    if (r.name == name) {
-      recipe = &r;
-      break;
-    }
-  }
+Processed* check_recipe(User user, Recipe *recipe) {
   if (!recipe) return new MissingRecipe();
 
-  debug("checking if recipe %s is possible", name.c_str());
+  debug("checking if recipe %s is possible", recipe->name.c_str());
 
   debug("  summing up all available liquids");
   std::unordered_map<std::string, float> liquids = {};
@@ -1370,8 +1386,15 @@ Processed* make_recipe(User user, String name) {
     liquids[liquid] = have - need; // update total
   }
 
-  debug("making recipe %s", name.c_str());
-  update_user(user);
+  return NULL;
+}
+
+Processed* make_recipe(User user, Recipe *recipe) {
+  Processed *err = check_recipe(user, recipe);
+  if (err != NULL) return err;
+
+  debug("making recipe %s", recipe->name.c_str());
+  update_user();
   update_state(new Mixing());
 
   for (auto ing = recipe->ingredients.begin(); ing != recipe->ingredients.end(); ing++) {
@@ -1579,16 +1602,20 @@ void update_config_state(time_t ts) {
 }
 
 User current_user() {
-  User user = recipe_queue.empty() ? USER_UNKNOWN : recipe_queue.front().user;
-
-  String s = String(user);
-  all_status[ID_USER]->update(s.c_str());
+  return recipe_queue.empty() ? USER_UNKNOWN : recipe_queue.front().user;
 }
 
-void update_user(User user) { // FIXME
-  // current_user = user;
-  String s = String(user);
-  all_status[ID_USER]->update(s.c_str());
+void update_user() {
+  String out = String('[');
+  bool prev = false;
+  for(auto const &r : recipe_queue) {
+    if (prev) out.concat(',');
+    out.concat(String(r.user));
+    prev = true;
+  }
+  out.concat(']');
+
+  all_status[ID_USER]->update(out.c_str());
 }
 
 void update_all_possible_recipes() {
@@ -1659,7 +1686,7 @@ bool ble_start(void) {
   all_status[ID_RECIPES]  	= new Status(UUID_STATUS_RECIPES,  	"{}");
   all_status[ID_COCKTAIL] 	= new Status(UUID_STATUS_COCKTAIL, 	"[]");
   all_status[ID_TIMESTAMP]	= new Status(UUID_STATUS_TIMESTAMP,	"0");
-  all_status[ID_USER]     	= new Status(UUID_STATUS_USER,     	"-1");
+  all_status[ID_USER]     	= new Status(UUID_STATUS_USER,     	"[]");
   all_status[ID_SCALE]    	= new Status(UUID_STATUS_SCALE,    	"{}");
                           	
   all_comm[ID_MSG_USER]   	= new Comm(UUID_COMM_USER);
