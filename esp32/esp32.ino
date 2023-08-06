@@ -4,6 +4,7 @@
 const unsigned int VERSION   	= 7;                    	// version number (used for configs etc)
 const unsigned char MAX_PUMPS	= 1 + 4*8;              	// maximum number of supported pumps;
 const float LIQUID_CUTOFF    	= 0.1;                  	// minimum amount of liquid we round off
+const float EMPTY_SCALE      	= 10.0;                 	// what counts as an empty scale
 
 // general chip functionality
 #include <Arduino.h>
@@ -86,17 +87,29 @@ typedef int32_t User;
 enum struct State {
   init,
   ready,
+  wait_container,
   pumping,
   mixing,
   done,
+  cal_empty,
+  cal_weight,
+  cal_pump1,
+  cal_pump2,
+  cal_done,
 };
 
 const char* state_str[] = {
   "init",
   "ready",
+  "waiting for container",
   "pumping",
   "mixing",
   "cocktail done",
+  "calibration empty container",
+  "calibration known weight",
+  "calibration first pumping",
+  "calibration second pumping",
+  "calibration done",
 };
 
 // return codes
@@ -507,9 +520,9 @@ Comm*   all_comm[NUM_COMM];
 std::forward_list<Recipe>     recipes;
 std::forward_list<Ingredient> cocktail;
 
-
 std::queue<CommandQueued> command_queue;
 std::deque<RecipeQueued>  recipe_queue;
+RecipeQueued *active_recipe;
 
 // function declarations
 
@@ -544,9 +557,14 @@ void ble_stop(void);
 
 // scale
 float scale_weigh();
+bool scale_empty();
 Retcode scale_calibrate(float weight);
 Retcode scale_tare();
 Retcode scale_set_factor(float factor);
+
+// pumps
+Retcode add_liquid();
+Retcode reset_cocktail();
 
 // command processing
 Retcode add_to_queue(const String json, uint16_t conn_id);
@@ -642,6 +660,7 @@ void setup() {
 
     while (!command_queue.empty())	command_queue.pop();
 
+    active_recipe = NULL;
     recipe_queue.clear();
     recipes.clear();
     cocktail.clear();
@@ -710,14 +729,67 @@ void loop() {
     }
   }
 
-  // handle recipe queue
-  // if (!recipe_queue.empty()) {
-  //   RecipeQueued r = recipe_queue.front();
-  //   recipe_queue.pop_front();
+  switch (machine_state) {
+  case State::ready:
+    {
+      // process recipe queue
+      if (!recipe_queue.empty()) {
+        RecipeQueued r = recipe_queue.front();
+        recipe_queue.pop_front();
+        active_recipe = &r;
 
-  //   // FIXME where does p go?
-  //   Retcode p = make_recipe(r.user, r.recipe);
-  // }
+        debug("making recipe %s for %d", r.recipe->name.c_str(), r.user);
+        update_user();
+
+        // FIXME where does the error go?
+        Retcode err = check_recipe(r.user, r.recipe);
+        if (err != Retcode::success) return;
+
+        debug("waiting for container");
+        update_state(State::wait_container);
+      }
+    }
+    break;
+
+  case State::wait_container:
+    // FIXME implement; do some kinda transition (just skip this for now)
+    // FIXME automatic transition
+    if (active_recipe != NULL) { // FIXME else?
+      update_state(State::mixing);
+    }
+    break;
+
+  case State::mixing:
+    {
+      if (active_recipe != NULL) { // FIXME else?
+        RecipeQueued *r = active_recipe;
+
+        debug("starting with recipe %s for %d", r->recipe->name.c_str(), r->user);
+        Retcode err = make_recipe(r->user, r->recipe);
+        // FIXME where does the error go?
+        if (err != Retcode::success) return;
+      }
+    }
+
+  case State::done:
+    // wait for reset
+    if (scale_empty()) {
+      reset_cocktail();
+    }
+    break;
+
+  // FIXME automatic calibration
+  case State::cal_empty:
+  case State::cal_weight:
+  case State::cal_pump1:
+  case State::cal_pump2:
+  case State::cal_done:
+    break;
+
+  default:
+    // nothing to do, skip
+    break;
+  }
 }
 
 // command processing
@@ -954,6 +1026,7 @@ Retcode CmdFactoryReset::execute() {
 
     while (!command_queue.empty()) command_queue.pop();
 
+    active_recipe = NULL;
     recipe_queue.clear();
     recipes.clear();
     cocktail.clear();
@@ -1102,18 +1175,7 @@ Retcode CmdAbort::execute() {
 
 Retcode CmdReset::execute() {
   // TODO restart hardware modules, like the sd card reader?
-  cocktail.clear();
-
-  Retcode err = scale_tare();
-  if (err != Retcode::success) return err;
-
-  // update machine state
-  update_cocktail();
-  update_scale();
-  update_user();
-  update_state(State::ready);
-
-  return Retcode::success;
+  return reset_cocktail();
 };
 
 Retcode CmdInitUser::execute() {
@@ -1303,7 +1365,7 @@ Retcode CmdMakeRecipe::execute() {
   if (err != Retcode::success) return err;
 
   // add to recipe queue
-  recipe_queue.push_front(RecipeQueued{this->user, recipe});
+  recipe_queue.push_back(RecipeQueued{this->user, recipe});
 
   return Retcode::success;
 };
@@ -1311,6 +1373,23 @@ Retcode CmdMakeRecipe::execute() {
 bool is_admin(User user) {
   // TODO use roles etc
   return (user == USER_ADMIN);
+}
+
+Retcode reset_cocktail() {
+  cocktail.clear();
+  if (active_recipe != NULL) delete active_recipe;
+  active_recipe = NULL;
+
+  Retcode err = scale_tare();
+  if (err != Retcode::success) return err;
+
+  // update machine state
+  update_cocktail();
+  update_scale();
+  update_user();
+  update_state(State::ready);
+
+  return Retcode::success;
 }
 
 Retcode add_liquid(User user, const String liquid, float amount) {
@@ -1416,12 +1495,11 @@ Retcode check_recipe(User user, Recipe *recipe) {
 }
 
 Retcode make_recipe(User user, Recipe *recipe) {
+  // quick sanity check
   Retcode err = check_recipe(user, recipe);
   if (err != Retcode::success) return err;
 
-  debug("making recipe %s", recipe->name.c_str());
-  update_user();
-  update_state(State::mixing);
+  update_state(State::mixing); // just be sure it's in the right state
 
   for (auto ing = recipe->ingredients.begin(); ing != recipe->ingredients.end(); ing++) {
     Retcode err = add_liquid(user, ing->name, ing->amount);
@@ -1620,12 +1698,18 @@ void update_config_state(time_t ts) {
 }
 
 User current_user() {
-  return recipe_queue.empty() ? USER_UNKNOWN : recipe_queue.front().user;
+  return active_recipe == NULL ? USER_UNKNOWN : active_recipe->user;
 }
 
 void update_user() {
   String out = String('[');
   bool prev = false;
+
+  if (active_recipe != NULL) {
+    prev = true;
+    out.concat(String(active_recipe->user));
+  }
+
   for(auto const &r : recipe_queue) {
     if (prev) out.concat(',');
     out.concat(String(r.user));
@@ -2240,6 +2324,10 @@ float scale_weigh() {
   // TODO maybe use a different read command or times value?
   float weight = scale.read_median();
   return weight;
+}
+
+bool scale_empty() {
+  return scale_weigh() <= EMPTY_SCALE;
 }
 
 Retcode scale_calibrate(float weight) {
