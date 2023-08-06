@@ -83,8 +83,69 @@ typedef int32_t User;
 #define USER_ADMIN  	User(0)
 #define USER_UNKNOWN	User(-1)
 
-struct Processed {
-  virtual const String json();
+enum struct State {
+  init,
+  ready,
+  pumping,
+  mixing,
+  done,
+};
+
+const char* state_str[] = {
+  "init",
+  "ready",
+  "pumping",
+  "mixing",
+  "cocktail done",
+};
+
+// return codes
+enum struct Retcode {
+  success,
+  processing,
+  unsupported,
+  unauthorized,
+  invalid,
+  too_big,
+  incomplete,
+  unknown_command,
+  missing_command,
+  wrong_comm,
+  invalid_slot,
+  invalid_volume,
+  invalid_weight,
+  invalid_times,
+  insufficient,
+  missing_liquid,
+  missing_recipe,
+  duplicate_recipe,
+  missing_ingredients,
+  invalid_calibration,
+  user_id, // nb: the return of the user id is handled separately!
+};
+
+const char* retcode_str[] = {
+  "ok",
+  "processing",
+  "unsupported",
+  "unauthorized",
+  "invalid json",
+  "message too big",
+  "missing arguments",
+  "unknown command",
+  "command missing even though it parsed right",
+  "wrong comm channel",
+  "invalid pump slot",
+  "invalid volume",
+  "invalid weight",
+  "invalid times",
+  "insufficient amounts of liquid available",
+  "liquid unavailable",
+  "recipe not found",
+  "recipe already exists",
+  "missing ingredients",
+  "invalid calibration data",
+  "new user id", // placeholder label
 };
 
 struct PumpSlot {
@@ -117,16 +178,16 @@ struct Pump {
     : slot(slot), liquid(liquid), volume(volume),
       time_init(S(5)), time_reverse(S(5)), rate(350.0 / MIN(1)), calibrated(false) {};
 
-  Processed* drain(float amount);
-  Processed* refill(float volume);
-  Processed* empty();
+  Retcode drain(float amount);
+  Retcode refill(float volume);
+  Retcode empty();
 
   void run(dur_t time, bool reverse);
   void start(bool reverse);
   void stop();
   void pump(float amount);
 
-  Processed* calibrate(dur_t time1, dur_t time2, float volume1, float volume2);
+  Retcode calibrate(dur_t time1, dur_t time2, float volume1, float volume2);
 };
 
 struct Ingredient {
@@ -141,7 +202,7 @@ struct Recipe {
 
   Recipe(String name, std::forward_list<Ingredient> ingredients) : name(name), ingredients(ingredients), can_make(false) {};
   float total_volume();
-  Processed* make(User user);
+  Retcode make(User user);
 };
 
 // services
@@ -151,21 +212,22 @@ struct Service {
 };
 
 struct ID : Service {
-  ID(const char *uuid_char, const char *init_value);
-  void update(const char *value);
+  ID(const char *uuid_char, const String init_value);
+  void update(const String value);
 };
 
 struct Status : Service {
-  Status(const char *uuid_char, const char *init_value);
-  void update(const char *value);
+  Status(const char *uuid_char, const String init_value);
+  void update(const String value);
 };
 
 struct Comm : Service {
   // FIXME conn_id isn't stable across reconnections, so we should switch to MAC or something similar
-  std::unordered_map<uint16_t, Processed *> responses;
+  std::unordered_map<uint16_t, String*> responses;
   Comm(const char *uuid_char);
 
-  void respond(uint16_t id, Processed *ret);
+  void respond(uint16_t id, Retcode ret);
+  void respond(uint16_t id, String *ret);
   bool is_id(int id);
 };
 
@@ -226,56 +288,9 @@ struct CommCB: BLECharacteristicCallbacks {
 #define UUID_ID              	"8ccbf239-1cd2-4eb7-8872-1cb76c980d14"
 #define UUID_ID_NAME         	"c0605c38-3f94-33f6-ace6-7a5504544a80"
 
-
-// return codes
-#define def_ret(cls, msg)                                               \
-  struct cls : public Processed {                                       \
-    static constexpr char *_json = "\"" msg "\"";                       \
-    const String json() override { return String(_json); }              \
-  };
-
-def_ret(Init,              	"init");
-def_ret(Success,           	"ok");
-def_ret(Processing,        	"processing");
-def_ret(Ready,             	"ready");
-def_ret(Pumping,           	"pumping");
-def_ret(Mixing,            	"mixing");
-def_ret(Done,              	"cocktail done");
-def_ret(Unsupported,       	"unsupported");
-def_ret(Unauthorized,      	"unauthorized");
-def_ret(Invalid,           	"invalid json");
-def_ret(TooBig,            	"message too big");
-def_ret(Incomplete,        	"missing arguments");
-def_ret(UnknownCommand,    	"unknown command");
-def_ret(MissingCommand,    	"command missing even though it parsed right");
-def_ret(WrongComm,         	"wrong comm channel");
-def_ret(InvalidSlot,       	"invalid pump slot");
-def_ret(InvalidVolume,     	"invalid volume");
-def_ret(InvalidWeight,     	"invalid weight");
-def_ret(InvalidTimes,      	"invalid times");
-def_ret(Insufficient,      	"insufficient amounts of liquid available");
-def_ret(MissingLiquid,     	"liquid unavailable");
-def_ret(MissingRecipe,     	"recipe not found");
-def_ret(DuplicateRecipe,   	"recipe already exists");
-def_ret(MissingIngredients,	"missing ingredients");
-def_ret(InvalidCalibration,	"invalid calibration data");
-
-struct RetUserID : Processed {
-  User user;
-  RetUserID(User user) : user(user) {}
-  static char out[BUF_RESPONSE]; // FIXME make this a string or something
-
-  const String json() override {
-    snprintf(out, sizeof(out), "{\"user\": %d}", user);
-    debug("json: %s", out);
-    return String(out);
-  }
-};
-char RetUserID::out[BUF_RESPONSE];
-
 // commands
 struct Command {
-  virtual Processed* execute();
+  virtual Retcode execute();
   virtual const char* cmd_name();
   virtual bool is_valid_comm(Comm *comm);
 };
@@ -283,7 +298,7 @@ struct Command {
 #define def_cmd(name, channel)                                          \
   static constexpr char *json_name = name;                              \
   const char* cmd_name() override { return json_name; }                 \
-  Processed* execute() override;                                        \
+  Retcode execute() override;                                        \
   bool is_valid_comm(Comm *comm) override {                             \
     return comm->is_id(ID_MSG_ ## channel);                             \
   }                                                                     \
@@ -452,7 +467,7 @@ struct CmdTareScale : public Command {
 
 struct Parsed {
   Command *command;
-  Processed *err;
+  Retcode err;
 };
 
 struct CommandQueued {
@@ -480,7 +495,7 @@ HX711 scale;
 PumpSlot* pump_slots[MAX_PUMPS];
 Pump* pumps[MAX_PUMPS];
 
-Processed* machine_state;
+State machine_state;
 
 std::map<User, String> users;
 
@@ -491,6 +506,7 @@ Comm*   all_comm[NUM_COMM];
 
 std::forward_list<Recipe>     recipes;
 std::forward_list<Ingredient> cocktail;
+
 
 std::queue<CommandQueued> command_queue;
 std::deque<RecipeQueued>  recipe_queue;
@@ -528,12 +544,12 @@ void ble_stop(void);
 
 // scale
 float scale_weigh();
-Processed* scale_calibrate(float weight);
-Processed* scale_tare();
-Processed* scale_set_factor(float factor);
+Retcode scale_calibrate(float weight);
+Retcode scale_tare();
+Retcode scale_set_factor(float factor);
 
 // command processing
-Processed* add_to_queue(const String json, uint16_t conn_id);
+Retcode add_to_queue(const String json, uint16_t conn_id);
 Parsed parse_command(const String json);
 bool is_admin(User user);
 User current_user();
@@ -543,7 +559,7 @@ void update_cocktail(void);
 void update_liquids(void);
 void update_scale(void);
 void update_recipes(void);
-void update_state(Processed *state);
+void update_state(Retcode state);
 void update_config_state(time_t ts);
 void update_user();
 void update_all_possible_recipes();
@@ -633,7 +649,7 @@ void setup() {
     users.clear();
     users[0] = "admin";
 
-    machine_state = new Init();
+    machine_state = State::init;
 
     ble_server = NULL;
   }
@@ -657,7 +673,7 @@ void setup() {
   update_recipes();
   update_cocktail();
   update_user();
-  update_state(new Ready());
+  update_state(State::ready);
 
   debug("ready");
 }
@@ -669,13 +685,29 @@ void loop() {
     command_queue.pop();
 
     debug("processing queue (#%d): %s (%d)", command_queue.size(), q.command->cmd_name(), q.conn_id);
-    Processed* p = q.command->execute();
+    Retcode p = q.command->execute();
 
     // cleanup
     delete q.command;
 
     // send response
-    q.comm->respond(q.conn_id, p);
+    switch (p) {
+    case Retcode::user_id:
+    { // TODO this isn't thread-safe or anything
+      User id = users.size() - 1;
+
+      String *out = new String("{\"user\": ");
+      out->concat(id);
+      out->concat('}');
+
+      q.comm->respond(q.conn_id, out);
+    }
+      break;
+
+    default:
+      q.comm->respond(q.conn_id, p);
+      break;
+    }
   }
 
   // handle recipe queue
@@ -684,24 +716,24 @@ void loop() {
   //   recipe_queue.pop_front();
 
   //   // FIXME where does p go?
-  //   Processed* p = make_recipe(r.user, r.recipe);
+  //   Retcode p = make_recipe(r.user, r.recipe);
   // }
 }
 
 // command processing
-Processed* add_to_queue(const String json, Comm *comm, uint16_t conn_id) {
+Retcode add_to_queue(const String json, Comm *comm, uint16_t conn_id) {
   Parsed p = parse_command(json);
-  if (p.err) return p.err;
+  if (p.err != Retcode::success) return p.err;
 
   if (p.command == NULL) {
     error("command missing even though there wasn't a parse error");
-    return new MissingCommand();
+    return Retcode::missing_command;
   }
 
   // enforce comm separation
   if (!p.command->is_valid_comm(comm)) {
     delete p.command; // cleanup
-    return new WrongComm();
+    return Retcode::wrong_comm;
   }
 
   debug("parsed, adding to queue: %d, %s", conn_id, p.command->cmd_name());
@@ -710,7 +742,7 @@ Processed* add_to_queue(const String json, Comm *comm, uint16_t conn_id) {
   CommandQueued q = {p.command, comm, conn_id};
   command_queue.push(q);
 
-  return NULL;
+  return Retcode::success;
 }
 
 Parsed parse_command(const String json) {
@@ -724,14 +756,14 @@ Parsed parse_command(const String json) {
     case DeserializationError::EmptyInput:
     case DeserializationError::IncompleteInput:
     case DeserializationError::InvalidInput:
-      return Parsed{NULL, new Invalid()};
+      return Parsed{NULL, Retcode::invalid};
 
     case DeserializationError::NoMemory:
     case DeserializationError::TooDeep:
-      return Parsed{NULL, new TooBig()};
+      return Parsed{NULL, Retcode::too_big};
 
     default:
-      return Parsed{NULL, new Invalid()};
+      return Parsed{NULL, Retcode::invalid};
     }
   }
 
@@ -741,11 +773,9 @@ Parsed parse_command(const String json) {
   // helper macros
 #define match_name(cls) (!strcmp(cmd_name, cls::json_name))
 
-  // TODO pass the missing argument in Incomplete(field)
-
-#define parse_array(field)                                    \
-  JsonArray field = doc[#field];                              \
-  if (field.isNull()) return Parsed{NULL, new Incomplete()};
+#define parse_array(field)                                      \
+  JsonArray field = doc[#field];                                \
+  if (field.isNull()) return Parsed{NULL, Retcode::incomplete};
 
 #define parse_ingredients(array)                                        \
   std::forward_list<Ingredient> ingredients = {};                       \
@@ -753,7 +783,7 @@ Parsed parse_command(const String json) {
   for (JsonVariant _v : array) {                                        \
     JsonArray _tuple = _v.as<JsonArray>();                              \
     if (_tuple.isNull() || _tuple.size() != 2)                          \
-      return Parsed{NULL, new Incomplete()};                            \
+      return Parsed{NULL, Retcode::incomplete};                         \
                                                                         \
     String _name   	= String(_tuple[0].as<const char*>());             \
     float _amount  	= _tuple[1].as<float>();                           \
@@ -762,14 +792,14 @@ Parsed parse_command(const String json) {
     ingredients.push_front(_ing);                                       \
   }
 
-#define parse_str(field)                                 \
-  const char *_##field = doc[#field];                    \
-  if (!_##field) return Parsed{NULL, new Incomplete()};  \
+#define parse_str(field)                                    \
+  const char *_##field = doc[#field];                       \
+  if (!_##field) return Parsed{NULL, Retcode::incomplete};  \
   const String field = String(_##field)
 
-#define parse_as(field, type)                                     \
-  JsonVariant j_##field = doc[#field];                            \
-  if (j_##field.isNull()) return Parsed{NULL, new Incomplete()};  \
+#define parse_as(field, type)                                       \
+  JsonVariant j_##field = doc[#field];                              \
+  if (j_##field.isNull()) return Parsed{NULL, Retcode::incomplete}; \
   const type field = j_##field.as<type>();
 
 #define parse_bool(field)    	parse_as(field, bool)
@@ -779,7 +809,7 @@ Parsed parse_command(const String json) {
 #define parse_user()         	parse_as(user,  int32_t)
 
   const char *cmd_name = doc["cmd"];
-  if (!cmd_name) return Parsed{NULL, new Incomplete()};
+  if (!cmd_name) return Parsed{NULL, Retcode::incomplete};
 
   if (match_name(CmdTest)) {
     cmd = new CmdTest();
@@ -894,23 +924,23 @@ Parsed parse_command(const String json) {
     cmd = new CmdSetScaleFactor(user, factor);
 
   } else {
-    return Parsed{NULL, new UnknownCommand()};
+    return Parsed{NULL, Retcode::unknown_command};
   }
 
-  return Parsed{cmd, NULL};
+  return Parsed{cmd, Retcode::success};
 }
 
 // command logic
-Processed* CmdTest::execute() { return new Success(); };
+Retcode CmdTest::execute() { return Retcode::success; };
 
-Processed* CmdRestart::execute() {
-  if (!is_admin(this->user)) return new Unauthorized();
+Retcode CmdRestart::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
 
   ESP.restart();
 }
 
-Processed* CmdFactoryReset::execute() {
-  if (!is_admin(this->user)) return new Unauthorized();
+Retcode CmdFactoryReset::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
 
   { // reset settings
     config_clear();
@@ -938,25 +968,25 @@ Processed* CmdFactoryReset::execute() {
   update_recipes();
   update_liquids();
   update_scale();
-  update_state(new Ready());
+  update_state(State::ready);
   update_user();
 
-  return new Success();
+  return Retcode::success;
 }
 
-Processed* CmdRunPump::execute() {
-  if (!is_admin(this->user)) return new Unauthorized();
+Retcode CmdRunPump::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
 
   int32_t slot  = this->slot;
   dur_t time = this->time;
   if (slot < 0 || slot >= MAX_PUMPS || pumps[slot] == NULL) {
-    return new InvalidSlot();
+    return Retcode::invalid_slot;
   }
   Pump *p = pumps[slot];
 
   debug("running pump %d for %dms", slot, time);
   update_user();
-  update_state(new Pumping());
+  update_state(State::pumping);
   p->run(time, false);
 
   // nb: this will always fuck up our internal data unless the pump is already calibrated,
@@ -970,31 +1000,29 @@ Processed* CmdRunPump::execute() {
   update_possible_recipes(p->liquid);
   update_scale();
   update_cocktail();
-  update_state(new Done());
+  update_state(State::done);
 
-  return new Success();
+  return Retcode::success;
 };
 
-Processed* CmdCalibratePump::execute() {
-  if (!is_admin(this->user)) return new Unauthorized();
+Retcode CmdCalibratePump::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
 
   int32_t slot = this->slot;
   if (slot < 0 || slot >= MAX_PUMPS || pumps[slot] == NULL) {
-    return new InvalidSlot();
+    return Retcode::invalid_slot;
   }
   Pump *p = pumps[slot];
 
-  Processed *err = p->calibrate(this->time1, this->time2, this->volume1, this->volume2);
-  if (err) return err;
-  return new Success();
+  return p->calibrate(this->time1, this->time2, this->volume1, this->volume2);
 };
 
-Processed* CmdSetPumpTimes::execute() {
-  if (!is_admin(this->user)) return new Unauthorized();
+Retcode CmdSetPumpTimes::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
 
   int32_t slot = this->slot;
   if (slot < 0 || slot >= MAX_PUMPS || pumps[slot] == NULL) {
-    return new InvalidSlot();
+    return Retcode::invalid_slot;
   }
   Pump *p = pumps[slot];
 
@@ -1004,54 +1032,54 @@ Processed* CmdSetPumpTimes::execute() {
   p->calibrated   = true;
   config_save();
 
-  return new Success();
+  return Retcode::success;
 };
 
-Processed* CmdCalibrateScale::execute() {
-  if (!is_admin(this->user)) return new Unauthorized();
+Retcode CmdCalibrateScale::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
 
-  Processed *err = scale_calibrate(this->weight);
-  if (err) return err;
+  Retcode err = scale_calibrate(this->weight);
+  if (err != Retcode::success) return err;
 
   update_scale();
 
-  return new Success();
+  return Retcode::success;
 };
 
-Processed* CmdTareScale::execute() {
-  if (!is_admin(this->user)) return new Unauthorized();
+Retcode CmdTareScale::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
 
-  Processed *err = scale_tare();
-  if (err) return err;
+  Retcode err = scale_tare();
+  if (err != Retcode::success) return err;
 
   update_scale();
 
-  return new Success();
+  return Retcode::success;
 };
 
-Processed* CmdSetScaleFactor::execute() {
-  if (!is_admin(this->user)) return new Unauthorized();
+Retcode CmdSetScaleFactor::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
 
-  Processed *err = scale_set_factor(this->factor);
-  if (err) return err;
+  Retcode err = scale_set_factor(this->factor);
+  if (err != Retcode::success) return err;
 
   update_scale();
 
-  return new Success();
+  return Retcode::success;
 };
 
-Processed* CmdClean::execute() {
+Retcode CmdClean::execute() {
   // FIXME implement
-  if (!is_admin(this->user)) return new Unauthorized();
-  return new Unsupported();
+  if (!is_admin(this->user)) return Retcode::unauthorized;
+  return Retcode::unsupported;
 };
 
-Processed* CmdAbort::execute() {
+Retcode CmdAbort::execute() {
   User c = current_user();
 
   // only allowed for admin or the current user
   if (c != USER_UNKNOWN && c != this->user && !is_admin(this->user))
-    return new Unauthorized();
+    return Retcode::unauthorized;
 
   // TODO stop active pumps
   // TODO abort remaining cocktail
@@ -1063,51 +1091,52 @@ Processed* CmdAbort::execute() {
   update_recipes();
 
   if (cocktail.empty()) {
-    update_state(new Ready());
+    update_state(State::ready);
     update_user();
   } else {
-    update_state(new Done());
+    update_state(State::done);
   }
 
-  return new Success();
+  return Retcode::success;
 };
 
-Processed* CmdReset::execute() {
+Retcode CmdReset::execute() {
   // TODO restart hardware modules, like the sd card reader?
   cocktail.clear();
 
-  Processed *err = scale_tare();
-  if (err) return err;
+  Retcode err = scale_tare();
+  if (err != Retcode::success) return err;
 
   // update machine state
   update_cocktail();
   update_scale();
   update_user();
-  update_state(new Ready());
+  update_state(State::ready);
 
-  return new Success();
+  return Retcode::success;
 };
 
-Processed* CmdInitUser::execute() {
+Retcode CmdInitUser::execute() {
   User id = users.size();
   users[id] = this->name;
 
   config_save();
-  return new RetUserID(id);
+
+  return Retcode::user_id;
 }
 
-Processed* CmdDefinePump::execute() {
-  if (!is_admin(this->user)) return new Unauthorized();
+Retcode CmdDefinePump::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
 
   int32_t slot = this->slot;
   float volume = this->volume;
 
   if (slot < 0 || slot >= MAX_PUMPS) {
-    return new InvalidSlot();
+    return Retcode::invalid_slot;
   }
 
   if (volume < 0) {
-    return new InvalidVolume();
+    return Retcode::invalid_volume;
   }
 
   // clear out old pump
@@ -1124,27 +1153,27 @@ Processed* CmdDefinePump::execute() {
   update_liquids();
   update_config_state(timestamp_ms());
 
-  return new Success();
+  return Retcode::success;
 }
 
-Processed* CmdEditPump::execute() {
-  if (!is_admin(this->user)) return new Unauthorized();
+Retcode CmdEditPump::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
 
   int32_t slot = this->slot;
 
   if (slot < 0 || slot >= MAX_PUMPS) {
-    return new InvalidSlot();
+    return Retcode::invalid_slot;
   }
 
   if (volume < 0) {
-    return new InvalidVolume();
+    return Retcode::invalid_volume;
   }
 
   // edit pump
   Pump *pump = pumps[slot];
 
   if (pump == NULL) {
-    return new InvalidSlot();
+    return Retcode::invalid_slot;
   }
 
   pump->liquid = this->liquid;
@@ -1154,61 +1183,58 @@ Processed* CmdEditPump::execute() {
   update_liquids();
   update_config_state(timestamp_ms());
 
-  return new Success();
+  return Retcode::success;
 }
 
-Processed* CmdRefillPump::execute() {
-  if (!is_admin(this->user)) return new Unauthorized();
+Retcode CmdRefillPump::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
 
   int32_t slot = this->slot;
   float volume = this->volume;
 
   if (slot < 0 || slot >= MAX_PUMPS || pumps[slot] == NULL) {
-    return new InvalidSlot();
+    return Retcode::invalid_slot;
   }
 
   if (volume < 0) {
-    return new InvalidVolume();
+    return Retcode::invalid_volume;
   }
 
   // refill pump
   Pump *p = pumps[slot];
-  Processed *err = p->refill(volume);
-  if (err) return err;
+  Retcode err = p->refill(volume);
+  if (err != Retcode::success) return err;
 
   // update machine state
   update_liquids();
   update_possible_recipes(p->liquid);
 
-  return new Success();
+  return Retcode::success;
 }
 
-Processed* CmdAddLiquid::execute() {
+Retcode CmdAddLiquid::execute() {
   // only allowed for admin or the current user
   User c = current_user();
 
   if (c == this->user || c == USER_UNKNOWN || is_admin(this->user)) {
-    Processed *err = add_liquid(this->user, this->liquid, this->volume);
-    if (err) return err;
-    return new Success();
-
+    return add_liquid(this->user, this->liquid, this->volume);
   } else {
-    return new Unauthorized();
+    return Retcode::unauthorized;
   }
 }
 
-Processed* CmdDefineRecipe::execute() {
+Retcode CmdDefineRecipe::execute() {
   // make sure the recipe is unique
   const String name = this->name;
 
   for (auto const &r : recipes) {
-    if (r.name == name) return new DuplicateRecipe();
+    if (r.name == name) return Retcode::duplicate_recipe;
   }
 
   size_t num = 0;
   for (auto const &it : this->ingredients) num += 1;
 
-  if (num < 1) return new MissingIngredients();
+  if (num < 1) return Retcode::missing_ingredients;
 
   // add it
   debug("adding recipe %s with %d ingredients", name, num);
@@ -1218,15 +1244,15 @@ Processed* CmdDefineRecipe::execute() {
   // update state
   update_recipes();
 
-  return new Success();
+  return Retcode::success;
 }
 
-Processed* CmdEditRecipe::execute() {
+Retcode CmdEditRecipe::execute() {
   // check ingredients
   const String name = this->name;
   size_t num = 0;
   for (auto const &it : this->ingredients) num += 1;
-  if (num < 1) return new MissingIngredients();
+  if (num < 1) return Retcode::missing_ingredients;
 
   debug("updating recipe %s with %d ingredients", name, num);
 
@@ -1238,16 +1264,16 @@ Processed* CmdEditRecipe::execute() {
       // update state
       update_recipes();
 
-      return new Success();
+      return Retcode::success;
     }
   }
 
 
-  return new MissingRecipe();
+  return Retcode::missing_recipe;
 }
 
-Processed* CmdDeleteRecipe::execute() {
-  if (!is_admin(this->user)) return new Unauthorized();
+Retcode CmdDeleteRecipe::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
 
   const String name = this->name;
 
@@ -1257,10 +1283,10 @@ Processed* CmdDeleteRecipe::execute() {
   // update state
   update_recipes();
 
-  return new Success();
+  return Retcode::success;
 }
 
-Processed* CmdMakeRecipe::execute() {
+Retcode CmdMakeRecipe::execute() {
   const String name = this->recipe;
   Recipe *recipe = NULL;
 
@@ -1271,15 +1297,15 @@ Processed* CmdMakeRecipe::execute() {
       break;
     }
   }
-  if (!recipe) return new MissingRecipe();
+  if (!recipe) return Retcode::missing_recipe;
 
-  Processed *err = check_recipe(user, recipe);
-  if (err != NULL) return err;
+  Retcode err = check_recipe(user, recipe);
+  if (err != Retcode::success) return err;
 
   // add to recipe queue
   recipe_queue.push_front(RecipeQueued{this->user, recipe});
 
-  return new Success();
+  return Retcode::success;
 };
 
 bool is_admin(User user) {
@@ -1287,12 +1313,12 @@ bool is_admin(User user) {
   return (user == USER_ADMIN);
 }
 
-Processed* add_liquid(User user, const String liquid, float amount) {
+Retcode add_liquid(User user, const String liquid, float amount) {
   float need   	= amount;
   float have   	= 0;
 
   if (need < 0) {
-    return new InvalidVolume();
+    return Retcode::invalid_volume;
   }
 
   debug("attempting to add %.1f of %s to cocktail", need, liquid.c_str());
@@ -1310,15 +1336,15 @@ Processed* add_liquid(User user, const String liquid, float amount) {
     }
   }
 
-  if (!found)                     	return new MissingLiquid();
-  if (have - need < LIQUID_CUTOFF)	return new Insufficient();
+  if (!found)                     	return Retcode::missing_liquid;
+  if (have - need < LIQUID_CUTOFF)	return Retcode::insufficient;
 
   // tare the scale if the cocktail is empty
-  Processed *err = scale_tare();
-  if (err) return err;
+  Retcode err = scale_tare();
+  if (err != Retcode::success) return err;
 
   update_user();
-  update_state(new Pumping());
+  update_state(State::pumping);
 
   // add the liquid
   float used = 0;
@@ -1329,8 +1355,8 @@ Processed* add_liquid(User user, const String liquid, float amount) {
     if (p->liquid == liquid) {
       debug("  need %.1f, using pump %d: %.1f", need, i, p->volume);
       float use = std::min(p->volume, need);
-      Processed *err = p->drain(use);
-      if (err) return err;
+      Retcode err = p->drain(use);
+      if (err != Retcode::success) return err;
       need -= use;
       used += use;
     }
@@ -1344,18 +1370,18 @@ Processed* add_liquid(User user, const String liquid, float amount) {
   update_scale();
   update_cocktail();
   update_possible_recipes(liquid);
-  update_state(new Done());
+  update_state(State::done);
 
   // shouldn't happen, but do a sanity check
   if (need >= LIQUID_CUTOFF) {
-    return new Insufficient();
+    return Retcode::insufficient;
   }
 
-  return NULL;
+  return Retcode::success;
 }
 
-Processed* check_recipe(User user, Recipe *recipe) {
-  if (!recipe) return new MissingRecipe();
+Retcode check_recipe(User user, Recipe *recipe) {
+  if (!recipe) return Retcode::missing_recipe;
 
   debug("checking if recipe %s is possible", recipe->name.c_str());
 
@@ -1381,53 +1407,53 @@ Processed* check_recipe(User user, Recipe *recipe) {
     bool found        	= liquids.count(liquid) > 0;
 
     debug("    need %.1f / %.1f of %s", need, have, liquid.c_str());
-    if (!found)                     	return new MissingLiquid();
-    if (have - need < LIQUID_CUTOFF)	return new Insufficient();
+    if (!found)                     	return Retcode::missing_liquid;
+    if (have - need < LIQUID_CUTOFF)	return Retcode::insufficient;
     liquids[liquid] = have - need; // update total
   }
 
-  return NULL;
+  return Retcode::success;
 }
 
-Processed* make_recipe(User user, Recipe *recipe) {
-  Processed *err = check_recipe(user, recipe);
-  if (err != NULL) return err;
+Retcode make_recipe(User user, Recipe *recipe) {
+  Retcode err = check_recipe(user, recipe);
+  if (err != Retcode::success) return err;
 
   debug("making recipe %s", recipe->name.c_str());
   update_user();
-  update_state(new Mixing());
+  update_state(State::mixing);
 
   for (auto ing = recipe->ingredients.begin(); ing != recipe->ingredients.end(); ing++) {
-    Processed *err = add_liquid(user, ing->name, ing->amount);
-    if (err) {
-      update_state(new Done());
+    Retcode err = add_liquid(user, ing->name, ing->amount);
+    if (err != Retcode::success) {
+      update_state(State::done);
       return err;
     }
   }
 
-  update_state(new Done());
-  return new Success();
+  update_state(State::done);
+  return Retcode::success;
 }
 
-Processed* Pump::drain(float amount) {
-  if (amount < 0) return new InvalidVolume();
-  if (this->volume - amount < LIQUID_CUTOFF) return new Insufficient();
+Retcode Pump::drain(float amount) {
+  if (amount < 0) return Retcode::invalid_volume;
+  if (this->volume - amount < LIQUID_CUTOFF) return Retcode::insufficient;
 
   this->pump(amount);
   this->volume -= amount;
-  return NULL;
+  return Retcode::success;
 }
 
-Processed* Pump::refill(float amount) {
-  if (amount < 0) return new InvalidVolume();
+Retcode Pump::refill(float amount) {
+  if (amount < 0) return Retcode::invalid_volume;
 
   this->volume = amount;
-  return NULL;
+  return Retcode::success;
 }
 
-Processed* Pump::empty() {
+Retcode Pump::empty() {
   this->volume = 0;
-  return NULL;
+  return Retcode::success;
 }
 
 void update_cocktail() {
@@ -1453,7 +1479,7 @@ void update_cocktail() {
   }
   out.concat("]}");
 
-  all_status[ID_COCKTAIL]->update(out.c_str());
+  all_status[ID_COCKTAIL]->update(out);
 }
 
 void update_scale() {
@@ -1470,7 +1496,7 @@ void update_scale() {
 
   out.concat('}');
 
-  all_status[ID_SCALE]->update(out.c_str());
+  all_status[ID_SCALE]->update(out);
 }
 
 void update_liquids() {
@@ -1513,7 +1539,7 @@ void update_liquids() {
       prev = true;
     }
     out.concat('}');
-    all_status[ID_PUMPS]->update(out.c_str());
+    all_status[ID_PUMPS]->update(out);
   }
 
   { debug("updating liquid state");
@@ -1533,7 +1559,7 @@ void update_liquids() {
     }
     out.concat('}');
 
-    all_status[ID_LIQUIDS]->update(out.c_str());
+    all_status[ID_LIQUIDS]->update(out);
   }
 
   config_save();
@@ -1573,32 +1599,24 @@ void update_recipes() {
   }
   out.concat('}');
 
-  all_status[ID_RECIPES]->update(out.c_str());
+  all_status[ID_RECIPES]->update(out);
 
   update_config_state(timestamp_ms());
   config_save();
 };
 
-void update_state(Processed *state) {
-  if (state == NULL) {
-    error("invalid state");
-    error_loop();
-  }
-
-  String json = state->json();
+void update_state(State state) {
+  String json = String(state_str[static_cast<int>(state)]);
   debug("updating machine state: %s", json.c_str());
 
-  // remove old state
-  if (machine_state) delete machine_state;
-
   machine_state = state;
-  all_status[ID_STATE]->update(json.c_str());
+  all_status[ID_STATE]->update(json);
 }
 
 void update_config_state(time_t ts) {
   config_state = timestamp_ms();
   String s = String(ts);
-  all_status[ID_TIMESTAMP]->update(s.c_str());
+  all_status[ID_TIMESTAMP]->update(s);
 }
 
 User current_user() {
@@ -1615,7 +1633,7 @@ void update_user() {
   }
   out.concat(']');
 
-  all_status[ID_USER]->update(out.c_str());
+  all_status[ID_USER]->update(out);
 }
 
 void update_all_possible_recipes() {
@@ -1678,16 +1696,16 @@ bool ble_start(void) {
   ble_server->setCallbacks(new ServerCB());
 
   // init services
-  all_id[ID_NAME]         	= new ID(UUID_ID_NAME,             	BLE_NAME);
+  all_id[ID_NAME]         	= new ID(UUID_ID_NAME,             	String(BLE_NAME));
                           	                                   	
-  all_status[ID_STATE]    	= new Status(UUID_STATUS_STATE,    	"\"init\"");
-  all_status[ID_LIQUIDS]  	= new Status(UUID_STATUS_LIQUIDS,  	"{}");
-  all_status[ID_PUMPS]    	= new Status(UUID_STATUS_PUMPS,    	"{}");
-  all_status[ID_RECIPES]  	= new Status(UUID_STATUS_RECIPES,  	"{}");
-  all_status[ID_COCKTAIL] 	= new Status(UUID_STATUS_COCKTAIL, 	"[]");
-  all_status[ID_TIMESTAMP]	= new Status(UUID_STATUS_TIMESTAMP,	"0");
-  all_status[ID_USER]     	= new Status(UUID_STATUS_USER,     	"[]");
-  all_status[ID_SCALE]    	= new Status(UUID_STATUS_SCALE,    	"{}");
+  all_status[ID_STATE]    	= new Status(UUID_STATUS_STATE,    	String("\"init\""));
+  all_status[ID_LIQUIDS]  	= new Status(UUID_STATUS_LIQUIDS,  	String("{}"));
+  all_status[ID_PUMPS]    	= new Status(UUID_STATUS_PUMPS,    	String("{}"));
+  all_status[ID_RECIPES]  	= new Status(UUID_STATUS_RECIPES,  	String("{}"));
+  all_status[ID_COCKTAIL] 	= new Status(UUID_STATUS_COCKTAIL, 	String("[]"));
+  all_status[ID_TIMESTAMP]	= new Status(UUID_STATUS_TIMESTAMP,	String("0"));
+  all_status[ID_USER]     	= new Status(UUID_STATUS_USER,     	String("[]"));
+  all_status[ID_SCALE]    	= new Status(UUID_STATUS_SCALE,    	String("{}"));
                           	
   all_comm[ID_MSG_USER]   	= new Comm(UUID_COMM_USER);
   all_comm[ID_MSG_ADMIN]  	= new Comm(UUID_COMM_ADMIN);
@@ -1737,31 +1755,31 @@ Service::Service(const char *uuid_service, const char *uuid_char, const uint32_t
   this->ble_char->addDescriptor(new BLE2902());
 }
 
-ID::ID(const char *uuid_char, const char *init_value)
+ID::ID(const char *uuid_char, const String init_value)
   : Service(UUID_ID, uuid_char,
             BLECharacteristic::PROPERTY_READ |
             BLECharacteristic::PROPERTY_NOTIFY,
             NUM_ID) {
   this->ble_char->setCallbacks(new CharCB());
-  this->ble_char->setValue(init_value);
+  this->ble_char->setValue(init_value.c_str());
 }
 
-void ID::update(const char *value) {
-  this->ble_char->setValue(value);
+void ID::update(const String value) {
+  this->ble_char->setValue(value.c_str());
   this->ble_char->notify();
 }
 
-Status::Status(const char *uuid_char, const char *init_value)
+Status::Status(const char *uuid_char, const String init_value)
   : Service(UUID_STATUS, uuid_char,
             BLECharacteristic::PROPERTY_READ |
             BLECharacteristic::PROPERTY_NOTIFY,
             NUM_STATUS) {
   this->ble_char->setCallbacks(new CharCB());
-  this->ble_char->setValue(init_value);
+  this->ble_char->setValue(init_value.c_str());
 }
 
-void Status::update(const char *value) {
-  this->ble_char->setValue(value);
+void Status::update(const String value) {
+  this->ble_char->setValue(value.c_str());
   this->ble_char->notify();
 }
 
@@ -1775,13 +1793,16 @@ Comm::Comm(const char *uuid_char)
   this->responses = {};
 }
 
-void Comm::respond(const uint16_t id, Processed *ret) {
-  if (!ret) {
-    debug("tried to send empty respond");
-    return;
-  }
+void Comm::respond(const uint16_t id, Retcode ret) {
+  String *s = new String(retcode_str[static_cast<int>(ret)]);
+  debug("sending response to %d: %s", id, s->c_str());
+  delete this->responses[id];
+  this->responses[id] = s;
+  this->ble_char->notify();
+}
 
-  debug("sending response to %d: %s", id, ret->json().c_str());
+void Comm::respond(const uint16_t id, String *ret) {
+  debug("sending response to %d: %s", id, ret->c_str());
   delete this->responses[id];
   this->responses[id] = ret;
   this->ble_char->notify();
@@ -1800,7 +1821,8 @@ void ServerCB::onConnect(BLEServer *server, esp_ble_gatts_cb_param_t* param) {
   uint16_t id = param->connect.conn_id;
 
   for (int i=0; i<NUM_COMM; i++) {
-    all_comm[i]->responses[id] = new Ready();
+    String *s = new String(state_str[static_cast<int>(State::ready)]);
+    all_comm[i]->responses[id] = s;
   }
   debug("  %s -> %d", remote_addr.toString().c_str(), id);
 }
@@ -1832,16 +1854,15 @@ void CommCB::onRead(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *param
 
   // we need to set the value for each active connection to multiplex properly,
   // or default to a dummy value
-  String value;
-  if (this->comm->responses.
-      count(id)) {
-    value = this->comm->responses[id]->json();
+  String *value;
+  if (this->comm->responses.count(id)) {
+    value = this->comm->responses[id];
   } else {
-    value = String("");
+    value = new String("");
   }
 
-  debug("read: %d (%s) -> %s", id, ble_char->getUUID().toString().c_str(), value.c_str());
-  ble_char->setValue(value.c_str());
+  debug("read: %d (%s) -> %s", id, ble_char->getUUID().toString().c_str(), value->c_str());
+  ble_char->setValue(value->c_str());
 }
 
 void CommCB::onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *param) {
@@ -1852,14 +1873,16 @@ void CommCB::onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *para
 
     debug("write: %d (%s) -> %s", id, ble_char->getUUID().toString().c_str(), v.c_str());
 
-    Processed *err = add_to_queue(String(v.c_str()), this->comm, id);
+    Retcode err = add_to_queue(String(v.c_str()), this->comm, id);
 
-    if (err) {
-      debug("failed to parse: %s", err->json().c_str());
+    // TODO does this make sense like this?
+    if (err != Retcode::success) {
+      const char *s = retcode_str[static_cast<int>(err)];
+      debug("failed to parse: %s", s);
       this->comm->respond(id, err);
     } else {
       debug("parsed, waiting for queue");
-      this->comm->responses[id] = new Processing();
+      this->comm->responses[id] = new String("processing");
     }
   }
 }
@@ -2173,17 +2196,17 @@ void Pump::pump(float amount) {
   }
 }
 
-Processed* Pump::calibrate(dur_t time1, dur_t time2, float volume1, float volume2) {
-  if (volume1 <= 0.0 || volume2 <= 0.0)	return new InvalidVolume();
-  if (volume1 == volume2)              	return new InvalidVolume();
-  if (time1 == time2)                  	return new InvalidTimes();
+Retcode Pump::calibrate(dur_t time1, dur_t time2, float volume1, float volume2) {
+  if (volume1 <= 0.0 || volume2 <= 0.0)	return Retcode::invalid_volume;
+  if (volume1 == volume2)              	return Retcode::invalid_volume;
+  if (time1 == time2)                  	return Retcode::invalid_times;
 
   float vol_diff  = volume1 - volume2;
   float time_diff = (float) time1 - (float) time2;
   float rate = vol_diff / time_diff;
   debug("calibration raw data: %0.1f, %0.1f, %f", vol_diff, time_diff, rate);
 
-  if (rate <= 0.0) return new InvalidCalibration();
+  if (rate <= 0.0) return Retcode::invalid_calibration;
 
   this->rate = rate;
   debug("rate: %f", rate);
@@ -2192,7 +2215,7 @@ Processed* Pump::calibrate(dur_t time1, dur_t time2, float volume1, float volume
   float init2 = std::round((float) time2 - (volume2 / rate));
 
   // check for implausible results
-  if (std::abs(init1 - init2) > S(1)) return new InvalidCalibration();
+  if (std::abs(init1 - init2) > S(1)) return Retcode::invalid_calibration;
 
   dur_t init = std::round((init1 + init2) / 2.0);
   this->time_init = init;
@@ -2201,7 +2224,7 @@ Processed* Pump::calibrate(dur_t time1, dur_t time2, float volume1, float volume
 
   this->calibrated = true;
   config_save();
-  return new Success();
+  return Retcode::success;
 }
 
 // scale
@@ -2219,32 +2242,32 @@ float scale_weigh() {
   return weight;
 }
 
-Processed* scale_calibrate(float weight) {
-  if (!scale_available) return NULL;
+Retcode scale_calibrate(float weight) {
+  if (!scale_available) return Retcode::success;
 
-  if (weight <= 0.0) return new InvalidWeight();
+  if (weight <= 0.0) return Retcode::invalid_weight;
 
   scale.calibrate_scale(weight);
   scale_calibrated = true;
   config_save();
-  return NULL;
+  return Retcode::success;
 }
 
-Processed* scale_tare() {
-  if (!scale_available) return NULL;
+Retcode scale_tare() {
+  if (!scale_available) return Retcode::success;
 
   scale.tare();
   config_save();
-  return NULL;
+  return Retcode::success;
 }
 
-Processed* scale_set_factor(float factor) {
-  if (!scale_available) return NULL;
+Retcode scale_set_factor(float factor) {
+  if (!scale_available) return Retcode::success;
 
   scale.set_scale(factor);
   scale_calibrated = true;
   config_save();
-  return NULL;
+  return Retcode::success;
 }
 
 // sd card
