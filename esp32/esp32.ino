@@ -463,16 +463,41 @@ struct CmdRunPump : public Command {
   CmdRunPump(User user, int32_t slot, dur_t time) : user(user), slot(slot), time(time) {}
 };
 
-struct CmdStartCalibration : public Command {
-  def_cmd("start_calibration", ADMIN);
+struct CmdCalibrationStart : public Command {
+  def_cmd("calibration_start", ADMIN);
   User user;
-  CmdStartCalibration(User user) : user(user) {};
+  CmdCalibrationStart(User user) : user(user) {};
 };
 
-struct CmdCancelCalibration : public Command {
-  def_cmd("cancel_calibration", ADMIN);
+struct CmdCalibrationCancel : public Command {
+  def_cmd("calibration_cancel", ADMIN);
   User user;
-  CmdCancelCalibration(User user) : user(user) {};
+  CmdCalibrationCancel(User user) : user(user) {};
+};
+
+struct CmdCalibrationFinish : public Command {
+  def_cmd("calibration_finish", ADMIN);
+  User user;
+  CmdCalibrationFinish(User user) : user(user) {};
+};
+
+struct CmdCalibrationAddWeight : public Command {
+  def_cmd("calibration_add_weight", ADMIN);
+  User user;
+  float weight;
+  CmdCalibrationAddWeight(User user, float weight) : user(user), weight(weight) {};
+};
+
+struct CmdCalibrationRemoveWeight : public Command {
+  def_cmd("calibration_remove_weight", ADMIN);
+  User user;
+  CmdCalibrationRemoveWeight(User user) : user(user) {};
+};
+
+struct CmdCalibrationEmpty : public Command {
+  def_cmd("calibration_empty", ADMIN);
+  User user;
+  CmdCalibrationEmpty(User user) : user(user) {};
 };
 
 struct CmdCalibratePump : public Command {
@@ -1057,13 +1082,30 @@ Parsed parse_command(const String json) {
     parse_duration(time);
     cmd = new CmdRunPump(user, slot, time);
 
-  } else if (match_name(CmdStartCalibration)) {
+  } else if (match_name(CmdCalibrationStart)) {
     parse_user();
-    cmd = new CmdStartCalibration(user);
+    cmd = new CmdCalibrationStart(user);
 
-  } else if (match_name(CmdCancelCalibration)) {
+  } else if (match_name(CmdCalibrationCancel)) {
     parse_user();
-    cmd = new CmdCancelCalibration(user);
+    cmd = new CmdCalibrationCancel(user);
+
+  } else if (match_name(CmdCalibrationFinish)) {
+    parse_user();
+    cmd = new CmdCalibrationFinish(user);
+
+  } else if (match_name(CmdCalibrationAddWeight)) {
+    parse_user();
+    parse_float(weight);
+    cmd = new CmdCalibrationAddWeight(user, weight);
+
+  } else if (match_name(CmdCalibrationRemoveWeight)) {
+    parse_user();
+    cmd = new CmdCalibrationRemoveWeight(user);
+
+  } else if (match_name(CmdCalibrationEmpty)) {
+    parse_user();
+    cmd = new CmdCalibrationEmpty(user);
 
   } else if (match_name(CmdCalibratePump)) {
     parse_user();
@@ -1145,98 +1187,6 @@ Retcode CmdFactoryReset::execute() {
 
   return Retcode::success;
 }
-
-Retcode CmdRunPump::execute() {
-  if (!is_admin(this->user)) return Retcode::unauthorized;
-
-  int32_t slot  = this->slot;
-  dur_t time = this->time;
-  if (slot < 0 || slot >= MAX_PUMPS || pumps[slot] == NULL) {
-    return Retcode::invalid_slot;
-  }
-  Pump *p = pumps[slot];
-
-  debug("running pump %d for %dms", slot, time);
-  update_user();
-  p->run(time, false);
-
-  // nb: this will always fuck up our internal data unless the pump is already calibrated,
-  // so you should refill the pump afterwards
-
-  float volume = time * p->rate;
-  // cocktail.push_front(Ingredient{"<calibration>", volume}); // FIXME add a dummy recipe instead
-  p->volume = std::max(p->volume - volume, 0.0f);
-
-  update_liquids();
-  update_possible_recipes(p->liquid);
-  update_scale();
-  update_cocktail();
-
-  return Retcode::success;
-};
-
-Retcode CmdCalibratePump::execute() {
-  if (!is_admin(this->user)) return Retcode::unauthorized;
-
-  int32_t slot = this->slot;
-  if (slot < 0 || slot >= MAX_PUMPS || pumps[slot] == NULL) {
-    return Retcode::invalid_slot;
-  }
-  Pump *p = pumps[slot];
-
-  return p->calibrate(this->time1, this->time2, this->volume1, this->volume2);
-};
-
-Retcode CmdSetPumpTimes::execute() {
-  if (!is_admin(this->user)) return Retcode::unauthorized;
-
-  int32_t slot = this->slot;
-  if (slot < 0 || slot >= MAX_PUMPS || pumps[slot] == NULL) {
-    return Retcode::invalid_slot;
-  }
-  Pump *p = pumps[slot];
-
-  p->time_init    = this->time_init;
-  p->time_reverse = this->time_reverse;
-  p->rate         = this->rate;
-  p->calibrated   = true;
-  config_save();
-
-  return Retcode::success;
-};
-
-Retcode CmdCalibrateScale::execute() {
-  if (!is_admin(this->user)) return Retcode::unauthorized;
-
-  Retcode err = scale_calibrate(this->weight);
-  if (err != Retcode::success) return err;
-
-  update_scale();
-
-  return Retcode::success;
-};
-
-Retcode CmdTareScale::execute() {
-  if (!is_admin(this->user)) return Retcode::unauthorized;
-
-  Retcode err = scale_tare();
-  if (err != Retcode::success) return err;
-
-  update_scale();
-
-  return Retcode::success;
-};
-
-Retcode CmdSetScaleFactor::execute() {
-  if (!is_admin(this->user)) return Retcode::unauthorized;
-
-  Retcode err = scale_set_factor(this->factor);
-  if (err != Retcode::success) return err;
-
-  update_scale();
-
-  return Retcode::success;
-};
 
 Retcode CmdClean::execute() {
   // FIXME implement
@@ -1529,12 +1479,126 @@ Retcode CmdTakeCocktail::execute() {
   return Retcode::missing_recipe;
 };
 
-Retcode CmdStartCalibration::execute() {
+Retcode CmdCalibrationStart::execute() {
+  // FIXME
   return Retcode::unsupported;
 };
 
-Retcode CmdCancelCalibration::execute() {
+Retcode CmdCalibrationCancel::execute() {
+  // FIXME
   return Retcode::unsupported;
+};
+
+Retcode CmdCalibrationFinish::execute() {
+  // FIXME
+  return Retcode::unsupported;
+};
+
+Retcode CmdCalibrationAddWeight::execute() {
+  // FIXME
+  return Retcode::unsupported;
+};
+
+Retcode CmdCalibrationRemoveWeight::execute() {
+  // FIXME
+  return Retcode::unsupported;
+};
+
+Retcode CmdCalibrationEmpty::execute() {
+  // FIXME
+  return Retcode::unsupported;
+};
+
+Retcode CmdRunPump::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
+
+  int32_t slot  = this->slot;
+  dur_t time = this->time;
+  if (slot < 0 || slot >= MAX_PUMPS || pumps[slot] == NULL) {
+    return Retcode::invalid_slot;
+  }
+  Pump *p = pumps[slot];
+
+  debug("running pump %d for %dms", slot, time);
+  update_user();
+  p->run(time, false);
+
+  // nb: this will always fuck up our internal data unless the pump is already calibrated,
+  // so you should refill the pump afterwards
+
+  float volume = time * p->rate;
+  // cocktail.push_front(Ingredient{"<calibration>", volume}); // FIXME add a dummy recipe instead
+  p->volume = std::max(p->volume - volume, 0.0f);
+
+  update_liquids();
+  update_possible_recipes(p->liquid);
+  update_scale();
+  update_cocktail();
+
+  return Retcode::success;
+};
+
+Retcode CmdCalibratePump::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
+
+  int32_t slot = this->slot;
+  if (slot < 0 || slot >= MAX_PUMPS || pumps[slot] == NULL) {
+    return Retcode::invalid_slot;
+  }
+  Pump *p = pumps[slot];
+
+  return p->calibrate(this->time1, this->time2, this->volume1, this->volume2);
+};
+
+Retcode CmdSetPumpTimes::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
+
+  int32_t slot = this->slot;
+  if (slot < 0 || slot >= MAX_PUMPS || pumps[slot] == NULL) {
+    return Retcode::invalid_slot;
+  }
+  Pump *p = pumps[slot];
+
+  p->time_init    = this->time_init;
+  p->time_reverse = this->time_reverse;
+  p->rate         = this->rate;
+  p->calibrated   = true;
+  config_save();
+
+  return Retcode::success;
+};
+
+Retcode CmdCalibrateScale::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
+
+  Retcode err = scale_calibrate(this->weight);
+  if (err != Retcode::success) return err;
+
+  update_scale();
+
+  return Retcode::success;
+};
+
+Retcode CmdTareScale::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
+
+  Retcode err = scale_tare();
+  if (err != Retcode::success) return err;
+
+  update_scale();
+
+  return Retcode::success;
+};
+
+Retcode CmdSetScaleFactor::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
+
+  Retcode err = scale_set_factor(this->factor);
+  if (err != Retcode::success) return err;
+
+  update_scale();
+
+  return Retcode::success;
 };
 
 bool is_admin(User user) {
