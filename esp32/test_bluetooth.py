@@ -73,10 +73,10 @@ def j(obj):
   return json.dumps(obj, ensure_ascii=False).encode('utf8')
 
 async def test_run(client):
-  async def user(obj):
+  async def user(obj, rec_wait=None):
     await comm_msg(client, UUID_COMM_USER, j(obj))
 
-  async def admin(obj):
+  async def admin(obj, cal_wait=None):
     await comm_msg(client, UUID_COMM_ADMIN, j(obj))
 
   # reset machine settings
@@ -88,10 +88,9 @@ async def test_run(client):
   await user({"cmd": "init_user", "name": "test-user"})
 
   # admin commands
-  await user({"cmd": "reset",  "user": 0})
   await admin({"cmd": "clean", "user": 0})
 
-  # calibrate scale (with arbitrary values)
+  # manually calibrate scale (with arbitrary values)
   await admin({"cmd": "tare_scale", "user": 0})
   await admin({"cmd": "calibrate_scale",  "user": 0, "weight": 100})
   await admin({"cmd": "set_scale_factor", "user": 0, "factor": 1.0})
@@ -101,22 +100,24 @@ async def test_run(client):
   await admin({"cmd": "define_pump", "user": 0, "liquid": "beer",     "volume": 2000, "slot": 2})
   await admin({"cmd": "define_pump", "user": 0, "liquid": "lemonade", "volume": 3000, "slot": 7})
 
-  # calibrate pumps
-  await admin({"cmd": "run_pump", "user": 0, "slot": 1, "time": 1 * 1000})
-  await admin({"cmd": "run_pump", "user": 0, "slot": 2, "time": 1 * 1000})
-  await admin({"cmd": "run_pump", "user": 0, "slot": 7, "time": 1 * 1000})
+  # manually calibrate pumps
+  await admin({"cmd": "run_pump", "user": 0, "slot": 1, "time": 10})
+  await admin({"cmd": "run_pump", "user": 0, "slot": 2, "time": 10})
+  await admin({"cmd": "run_pump", "user": 0, "slot": 7, "time": 10})
 
   await admin({"cmd": "calibrate_pump", "user": 0, "slot": 1,
-               "time1": 10 * 1000, "volume1": 5.0,
-               "time2": 20 * 1000, "volume2": 15.0})
+               "time1": 10, "volume1": 5.0,
+               "time2": 20, "volume2": 15.0})
   await admin({"cmd": "set_pump_times", "user": 0, "slot": 2,
-               "time_init": 1000, "time_reverse": 1000, "rate": 1.0})
+               "time_init": 10, "time_reverse": 10, "rate": 1.0})
   await admin({"cmd": "set_pump_times", "user": 0, "slot": 7,
                "time_init": 0, "time_reverse": 0, "rate": 0.0})
 
     # refill and reset pumps
   await admin({"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1})
-  await user({"cmd": "reset", "user": 0})
+  await admin({"cmd": "refill_pump", "user": 0, "volume": 2000, "slot": 2})
+  await admin({"cmd": "refill_pump", "user": 0, "volume": 3000, "slot": 7})
+
   await read_status(client)
 
   # define recipes
@@ -125,31 +126,47 @@ async def test_run(client):
   await user({"cmd":  "edit_recipe",   "user": 1, "name": "cheap beer", "liquids": [["beer", 100], ["water", 400]]})
   await admin({"cmd": "delete_recipe", "user": 0, "name": "cheap beer"})
 
-  await read_status(client)
-
-    # test all pumps
-  await user({"cmd": "reset", "user": 0})
-  await user({"cmd": "add_liquid", "user": 1, "liquid": "water",    "volume": 100})
-  await user({"cmd": "add_liquid", "user": 1, "liquid": "beer",     "volume": 100})
-  await user({"cmd": "add_liquid", "user": 1, "liquid": "lemonade", "volume": 100})
-
-  await user({"cmd": "reset", "user": 0})
+  await user({"cmd": "take_cocktail", "user": 0})
   await read_status(client)
 
   # make recipes
-  await user({"cmd": "make_recipe", "user": 1, "recipe": "radler"})
-  await user({"cmd": "add_liquid",  "user": 1, "liquid": "beer", "volume": 100})
-  await user({"cmd": "reset", "user": 0})
-
-  await user({"cmd": "make_recipe", "user": 1, "recipe": "radler"})
-  await user({"cmd": "add_liquid",  "user": 1, "liquid": "beer", "volume": 100})
+  await user({"cmd": "queue_recipe",   "user": 1, "recipe": "radler"})
+  await user({"cmd": "start_recipe",  "user": 1}, rec_wait="waiting for container")
+  await user({"cmd": "take_cocktail", "user": 1}, rec_wait="cocktail done")
 
   await read_status(client)
 
+  await user({"cmd": "queue_recipe",  "user": 1, "recipe": "radler"})
+  await user({"cmd": "add_liquid",   "user": 1, "liquid": "beer", "volume": 100})
+  await user({"cmd": "start_recipe", "user": 1}, rec_wait="waiting for container")
+  await user({"cmd": "take_cocktail", "user": 1}, rec_wait="cocktail done")
+
+  await read_status(client)
+
+  await user({"cmd": "queue_recipe",   "user": 1, "recipe": "radler"})
+  await user({"cmd": "start_recipe",  "user": 1}, rec_wait="waiting for container")
+  await user({"cmd": "add_liquid",    "user": 1, "liquid": "beer", "volume": 100})
+  await user({"cmd": "take_cocktail", "user": 1}, rec_wait="cocktail done")
+
+  await read_status(client)
+
+  # TODO should fail
+  await user({"cmd": "add_liquid", "user": 1, "liquid": "beer", "volume": 100})
+  await read_status(client)
+
+    # test all pumps
+  # await user({"cmd": "reset", "user": 0})
+  # await user({"cmd": "add_liquid", "user": 1, "liquid": "water",    "volume": 100})
+  # await user({"cmd": "add_liquid", "user": 1, "liquid": "beer",     "volume": 100})
+  # await user({"cmd": "add_liquid", "user": 1, "liquid": "lemonade", "volume": 100})
+
+  # await user({"cmd": "reset", "user": 0})
+  # await read_status(client)
+
   # refill pump
-  await user({"cmd":  "add_liquid", "user": 1, "volume": 10, "liquid": "water"})
-  await user({"cmd":  "add_liquid", "user": 1, "volume": 10, "liquid": "beer"})
-  await user({"cmd":  "add_liquid", "user": 1, "volume": 10, "liquid": "water"})
+  await user({"cmd":  "add_liquid",  "user": 1, "volume": 10, "liquid": "water"})
+  await user({"cmd":  "add_liquid",  "user": 1, "volume": 10, "liquid": "beer"})
+  await user({"cmd":  "add_liquid",  "user": 1, "volume": 10, "liquid": "water"})
   await admin({"cmd": "refill_pump", "user": 0, "volume": 5000, "slot": 1})
   await read_status(client)
 

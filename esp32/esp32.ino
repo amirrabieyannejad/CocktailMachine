@@ -237,7 +237,7 @@ struct ActiveRecipe {
   std::queue<Ingredient> ingredients;
   RecipeState state;
 
-  ActiveRecipe(User user, String name, std::queue<Ingredient> ingredients, RecipeState state) : user(user), name(name), ingredients(ingredients), state(state) {};
+  ActiveRecipe(User user, String name, std::queue<Ingredient> ingredients) : user(user), name(name), ingredients(ingredients), state(RecipeState::ready) {};
 };
 
 // services
@@ -1164,7 +1164,7 @@ Retcode CmdRunPump::execute() {
   // so you should refill the pump afterwards
 
   float volume = time * p->rate;
-  cocktail.push_front(Ingredient{"<calibration>", volume}); // FIXME necessary?
+  // cocktail.push_front(Ingredient{"<calibration>", volume}); // FIXME add a dummy recipe instead
   p->volume = std::max(p->volume - volume, 0.0f);
 
   update_liquids();
@@ -1543,10 +1543,15 @@ bool is_admin(User user) {
 }
 
 Retcode add_to_recipe_queue(Recipe *recipe, User user) {
-  // FIXME
-  // recipe_queue.push_back(RecipeQueued{this->user, recipe, RecipeState::ready});
+  std::queue<Ingredient> queue;
+  for (auto const ing : recipe->ingredients) {
+    queue.push(Ingredient{ing.name, ing.amount});
+  }
+  ActiveRecipe *r = new ActiveRecipe(user, recipe->name, queue);
 
-  return Retcode::unsupported;
+  recipe_queue.push_back(r);
+
+  return Retcode::success;
 }
 
 Retcode reset_cocktail() {
