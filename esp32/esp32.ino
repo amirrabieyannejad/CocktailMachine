@@ -85,36 +85,35 @@ typedef int32_t User;
 #define USER_ADMIN  	User(0)
 #define USER_UNKNOWN	User(-1)
 
-enum struct State {
-  // generic states
-  init,
-
-  // recipe states
-  rec_ready,
-  rec_wait_container,
-  rec_mixing,
-  rec_pumping,
-  rec_cocktail_done,
-
-  // calibration states
-  cal_empty,
-  cal_weight,
-  cal_pump1,
-  cal_pump2,
-  cal_done,
+// recipe states
+enum struct RecipeState {
+  ready,
+  wait_container,
+  mixing,
+  pumping,
+  cocktail_done,
 };
 
-const char* state_str[] = {
-  "init",
-
-  // recipe states
+const char* rec_state_str[] = {
   "ready",
   "waiting for container",
   "mixing",
   "pumping",
   "cocktail done",
+};
 
-  // calibration states
+// calibration states
+enum struct CalibrationState {
+  inactive,
+  empty,
+  weight,
+  pump1,
+  pump2,
+  done,
+};
+
+const char* cal_state_str[] = {
+  "no calibration active",
   "calibration empty container",
   "calibration known weight",
   "calibration first pumping",
@@ -124,6 +123,7 @@ const char* state_str[] = {
 
 // return codes
 enum struct Retcode {
+  init,
   success,
   processing,
   unsupported,
@@ -150,6 +150,7 @@ enum struct Retcode {
 };
 
 const char* retcode_str[] = {
+  "init",
   "ok",
   "processing",
   "unsupported",
@@ -234,9 +235,9 @@ struct ActiveRecipe {
   User user;
   String name;
   std::queue<Ingredient> ingredients;
-  State state;
+  RecipeState state;
 
-  ActiveRecipe(User user, String name, std::queue<Ingredient> ingredients, State state) : user(user), name(name), ingredients(ingredients), state(state) {};
+  ActiveRecipe(User user, String name, std::queue<Ingredient> ingredients, RecipeState state) : user(user), name(name), ingredients(ingredients), state(state) {};
 };
 
 // services
@@ -462,6 +463,18 @@ struct CmdRunPump : public Command {
   CmdRunPump(User user, int32_t slot, dur_t time) : user(user), slot(slot), time(time) {}
 };
 
+struct CmdStartCalibration : public Command {
+  def_cmd("start_calibration", ADMIN);
+  User user;
+  CmdStartCalibration(User user) : user(user) {};
+};
+
+struct CmdCancelCalibration : public Command {
+  def_cmd("cancel_calibration", ADMIN);
+  User user;
+  CmdCancelCalibration(User user) : user(user) {};
+};
+
 struct CmdCalibratePump : public Command {
   def_cmd("calibrate_pump", ADMIN);
   User user;
@@ -544,6 +557,8 @@ std::forward_list<Ingredient> cocktail;
 std::queue<CommandQueued> command_queue;
 std::deque<ActiveRecipe*> recipe_queue;
 
+CalibrationState cal_state;
+
 // function declarations
 
 // various sleeps
@@ -595,6 +610,7 @@ User current_user(void);
 
 // update machine state
 void update_cocktail(void);
+void update_state(void);
 void update_liquids(void);
 void update_scale(void);
 void update_recipes(void);
@@ -687,6 +703,8 @@ void setup() {
     users.clear();
     users[0] = "admin";
 
+    cal_state = CalibrationState::inactive;
+
     ble_server = NULL;
   }
 
@@ -746,25 +764,50 @@ void loop() {
     }
   }
 
+  // advance calibration state
+  if (cal_state != CalibrationState::inactive) {
+    // FIXME
+    switch (cal_state) {
+    case CalibrationState::empty:
+      break;
+
+    case CalibrationState::weight:
+      break;
+
+    case CalibrationState::pump1:
+      break;
+
+    case CalibrationState::pump2:
+      break;
+
+    case CalibrationState::done:
+      break;
+
+    default:
+      error("calibration in illegal state: %d", cal_state);
+      error_loop();
+    }
+  }
+
   // advance the recipe queue
   if (!recipe_queue.empty()) {
     ActiveRecipe *active = recipe_queue.front();
 
     // FIXME
     switch (active->state) {
-    case State::rec_ready:
+    case RecipeState::ready:
       break;
 
-    case State::rec_wait_container:
+    case RecipeState::wait_container:
       break;
 
-    case State::rec_mixing:
+    case RecipeState::mixing:
       break;
 
-    case State::rec_pumping:
+    case RecipeState::pumping:
       break;
 
-    case State::rec_cocktail_done:
+    case RecipeState::cocktail_done:
       break;
 
     default:
@@ -775,7 +818,7 @@ void loop() {
 
   ////////////////////
 
-  // case State::ready:
+  // case RecipeState::ready:
   //   {
   //     // process recipe queue
   //     if (!recipe_queue.empty()) {
@@ -791,20 +834,20 @@ void loop() {
   //       if (err != Retcode::success) return;
 
   //       debug("waiting for container");
-  //       update_state(State::wait_container);
+  //       update_state(RecipeState::wait_container);
   //     }
   //   }
   //   break;
 
-  // case State::wait_container:
+  // case RecipeState::wait_container:
   //   // FIXME implement; do some kinda transition (just skip this for now)
   //   // FIXME automatic transition
   //   if (active_recipe != NULL) { // FIXME else?
-  //     update_state(State::mixing);
+  //     update_state(RecipeState::mixing);
   //   }
   //   break;
 
-  // case State::mixing:
+  // case RecipeState::mixing:
   //   {
   //     if (active_recipe != NULL) { // FIXME else?
   //       RecipeQueued *r = active_recipe;
@@ -817,7 +860,7 @@ void loop() {
   //   }
   //   break;
 
-  // case State::done:
+  // case RecipeState::done:
   //   // wait for reset
   //   if (scale_empty()) {
   //     reset_cocktail();
@@ -825,11 +868,11 @@ void loop() {
   //   break;
 
   // FIXME automatic calibration
-  // case State::cal_empty:
-  // case State::cal_weight:
-  // case State::cal_pump1:
-  // case State::cal_pump2:
-  // case State::cal_done:
+  // case RecipeState::cal_empty:
+  // case RecipeState::cal_weight:
+  // case RecipeState::cal_pump1:
+  // case RecipeState::cal_pump2:
+  // case RecipeState::cal_done:
   //   break;
 
   // default:
@@ -1013,6 +1056,14 @@ Parsed parse_command(const String json) {
     parse_int32(slot);
     parse_duration(time);
     cmd = new CmdRunPump(user, slot, time);
+
+  } else if (match_name(CmdStartCalibration)) {
+    parse_user();
+    cmd = new CmdStartCalibration(user);
+
+  } else if (match_name(CmdCancelCalibration)) {
+    parse_user();
+    cmd = new CmdCancelCalibration(user);
 
   } else if (match_name(CmdCalibratePump)) {
     parse_user();
@@ -1397,8 +1448,8 @@ Retcode CmdAddLiquid::execute() {
 Retcode CmdStartRecipe::execute() {
   for(auto &r : recipe_queue) {
     if (r->user == this->user || is_admin(this->user)) {
-      if (r->state == State::rec_wait_container) {
-        r->state = State::rec_mixing;
+      if (r->state == RecipeState::wait_container) {
+        r->state = RecipeState::mixing;
       } else {
         return Retcode::cant_start_recipe;
       }
@@ -1414,8 +1465,8 @@ Retcode CmdCancelRecipe::execute() {
 
     if (r->user == this->user || is_admin(this->user)) {
       switch (r->state) {
-      case State::rec_ready:
-      case State::rec_wait_container:
+      case RecipeState::ready:
+      case RecipeState::wait_container:
         // remove the recipe
         recipe_queue.erase(it);
 
@@ -1424,12 +1475,12 @@ Retcode CmdCancelRecipe::execute() {
 
         return Retcode::success;
 
-      case State::rec_mixing:
-      case State::rec_pumping:
+      case RecipeState::mixing:
+      case RecipeState::pumping:
         // TODO stop active pumps
         // switch to done
         while (!r->ingredients.empty()) r->ingredients.pop();
-        r->state = State::rec_cocktail_done;
+        r->state = RecipeState::cocktail_done;
 
         // update machine state
         update_cocktail();
@@ -1439,7 +1490,7 @@ Retcode CmdCancelRecipe::execute() {
 
         return Retcode::success;
 
-      case State::rec_cocktail_done:
+      case RecipeState::cocktail_done:
         // nothing to do, just stay in this state
         return Retcode::success;
 
@@ -1459,7 +1510,7 @@ Retcode CmdTakeCocktail::execute() {
     ActiveRecipe *r = *it;
 
     if (r->user == this->user || is_admin(this->user)) {
-      if (r->state == State::rec_cocktail_done) {
+      if (r->state == RecipeState::cocktail_done) {
         // remove the recipe
         recipe_queue.erase(it);
         reset_cocktail();
@@ -1478,6 +1529,14 @@ Retcode CmdTakeCocktail::execute() {
   return Retcode::missing_recipe;
 };
 
+Retcode CmdStartCalibration::execute() {
+  return Retcode::unsupported;
+};
+
+Retcode CmdCancelCalibration::execute() {
+  return Retcode::unsupported;
+};
+
 bool is_admin(User user) {
   // TODO use roles etc
   return (user == USER_ADMIN);
@@ -1485,7 +1544,7 @@ bool is_admin(User user) {
 
 Retcode add_to_recipe_queue(Recipe *recipe, User user) {
   // FIXME
-  // recipe_queue.push_back(RecipeQueued{this->user, recipe, State::rec_ready});
+  // recipe_queue.push_back(RecipeQueued{this->user, recipe, RecipeState::ready});
 
   return Retcode::unsupported;
 }
@@ -1527,7 +1586,7 @@ Retcode add_liquid(User user, const String liquid, float amount) {
   // if (err != Retcode::success) return err;
 
   // update_user();
-  // update_state(State::rec_pumping);
+  // update_state(RecipeState::pumping);
 
   // // add the liquid
   // float used = 0;
@@ -1553,7 +1612,7 @@ Retcode add_liquid(User user, const String liquid, float amount) {
   // update_scale();
   // update_cocktail();
   // update_possible_recipes(liquid);
-  // update_state(State::rec_cocktail_done);
+  // update_state(RecipeState::cocktail_done);
 
   // // shouldn't happen, but do a sanity check
   // if (need >= LIQUID_CUTOFF) {
@@ -1632,17 +1691,17 @@ Retcode make_recipe(User user, Recipe *recipe) {
   // Retcode err = check_recipe(user, recipe);
   // if (err != Retcode::success) return err;
 
-  // update_state(State::rec_mixing); // just be sure it's in the right state
+  // update_state(RecipeState::mixing); // just be sure it's in the right state
 
   // for (auto ing = recipe->ingredients.begin(); ing != recipe->ingredients.end(); ing++) {
   //   Retcode err = add_liquid(user, ing->name, ing->amount);
   //   if (err != Retcode::success) {
-  //     update_state(State::rec_cocktail_done);
+  //     update_state(RecipeState::cocktail_done);
   //     return err;
   //   }
   // }
 
-  // update_state(State::rec_cocktail_done);
+  // update_state(RecipeState::cocktail_done);
   // return Retcode::success;
 
   return Retcode::unsupported;
@@ -1694,14 +1753,23 @@ void update_cocktail() {
 
   all_status[ID_COCKTAIL]->update(out);
 
-  // update machine state
-  State state = State::rec_ready;
-  if (!recipe_queue.empty()) {
-    ActiveRecipe *r = recipe_queue.front();
-    state = r->state;
+  update_state();
+}
+
+void update_state() {
+  String json;
+
+  if (cal_state != CalibrationState::inactive) {
+    json = String(cal_state_str[static_cast<int>(cal_state)]);
+  } else {
+    RecipeState state = RecipeState::ready;
+    if (!recipe_queue.empty()) {
+      ActiveRecipe *r = recipe_queue.front();
+      state = r->state;
+    }
+    json = String(rec_state_str[static_cast<int>(state)]);
   }
 
-  String json = String(state_str[static_cast<int>(state)]);
   debug("updating machine state: %s", json.c_str());
 
   all_status[ID_STATE]->update(json);
@@ -2050,7 +2118,7 @@ void ServerCB::onConnect(BLEServer *server, esp_ble_gatts_cb_param_t* param) {
   uint16_t id = param->connect.conn_id;
 
   for (int i=0; i<NUM_COMM; i++) {
-    String *s = new String(state_str[static_cast<int>(State::rec_ready)]);
+    String *s = new String(retcode_str[static_cast<int>(Retcode::init)]);
     all_comm[i]->responses[id] = s;
   }
   debug("  %s -> %d", remote_addr.toString().c_str(), id);
