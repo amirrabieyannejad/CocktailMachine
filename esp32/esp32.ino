@@ -1821,7 +1821,7 @@ void update_liquids() {
       out.concat(String(pump->volume, 1));
       out.concat("\",\"calibrated\":");
       out.concat(pump->calibrated ? "true" : "false");
-      out.concat("\",\"rate\":");
+      out.concat(",\"rate\":");
       out.concat(String(pump->rate, 1));
       out.concat("\",\"time_init\":");
       out.concat(String(pump->time_init));
