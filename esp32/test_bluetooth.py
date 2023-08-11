@@ -53,12 +53,25 @@ async def read_status(client):
     except Exception as e:
       logging.error(f"\t{char} ({uuid}) -> {e}")
 
-async def comm_msg(client, uuid, message):
+async def comm_msg(client, uuid, message, wait=None):
   notification_received = asyncio.Event()
   def notification_handler(_sender, _data):
     notification_received.set()
 
   await client.start_notify(uuid, notification_handler)
+
+  if wait:
+    logging.info(f"waiting for {wait}")
+
+    while True:
+      state = STATUS["state"]
+      value = bytes(await client.read_gatt_char(state)).decode('utf8')
+      logging.info(f"  is: {value}")
+
+      if value == wait:
+        break
+
+      await notification_received.wait()
 
   logging.info(f"message: {message.decode('utf8')}")
   await client.write_gatt_char(uuid, message)
@@ -74,10 +87,10 @@ def j(obj):
 
 async def test_run(client):
   async def user(obj, rec_wait=None):
-    await comm_msg(client, UUID_COMM_USER, j(obj))
+    await comm_msg(client, UUID_COMM_USER, j(obj), wait=rec_wait)
 
   async def admin(obj, cal_wait=None):
-    await comm_msg(client, UUID_COMM_ADMIN, j(obj))
+    await comm_msg(client, UUID_COMM_ADMIN, j(obj), wait=cal_wait)
 
   # reset machine settings
   await admin({"cmd": "factory_reset", "user": 0})
@@ -130,7 +143,7 @@ async def test_run(client):
   await read_status(client)
 
   # make recipes
-  await user({"cmd": "queue_recipe",   "user": 1, "recipe": "radler"})
+  await user({"cmd": "queue_recipe",   "user": 1, "recipe": "radler"}, rec_wait="ready")
   await user({"cmd": "start_recipe",  "user": 1}, rec_wait="waiting for container")
   await user({"cmd": "take_cocktail", "user": 1}, rec_wait="cocktail done")
 
