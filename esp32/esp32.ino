@@ -225,19 +225,19 @@ struct Ingredient {
 
 struct Recipe {
   String name;
-  std::forward_list<Ingredient> ingredients;
+  std::deque<Ingredient> ingredients;
   bool can_make;
 
-  Recipe(String name, std::forward_list<Ingredient> ingredients) : name(name), ingredients(ingredients), can_make(false) {};
+  Recipe(String name, std::deque<Ingredient> ingredients) : name(name), ingredients(ingredients), can_make(false) {};
 };
 
 struct ActiveRecipe {
   User user;
   String name;
-  std::queue<Ingredient> ingredients;
+  std::deque<Ingredient> ingredients;
   RecipeState state;
 
-  ActiveRecipe(User user, String name, std::queue<Ingredient> ingredients) : user(user), name(name), ingredients(ingredients), state(RecipeState::ready) {};
+  ActiveRecipe(User user, String name, std::deque<Ingredient> ingredients) : user(user), name(name), ingredients(ingredients), state(RecipeState::ready) {};
 };
 
 // services
@@ -257,7 +257,7 @@ struct Status : Service {
 };
 
 struct Comm : Service {
-  // FIXME conn_id isn't stable across reconnections, so we should switch to MAC or something similar
+  // TODO conn_id isn't stable across reconnections, so it might be better to switch to MAC or something similar for some persistence
   std::unordered_map<uint16_t, String*> responses;
   Comm(const char *uuid_char);
 
@@ -295,7 +295,8 @@ struct CommCB: BLECharacteristicCallbacks {
 #define ID_TIMESTAMP	5
 #define ID_USER     	6
 #define ID_SCALE    	7
-#define NUM_STATUS  	8
+#define ID_ERROR    	8
+#define NUM_STATUS  	9
                     	
 #define ID_MSG_USER 	0
 #define ID_MSG_ADMIN	1
@@ -315,6 +316,7 @@ struct CommCB: BLECharacteristicCallbacks {
 #define UUID_STATUS_TIMESTAMP	"586b5706-5856-34e1-ad17-94f840298816"
 #define UUID_STATUS_USER     	"2ce478ea-8d6f-30ba-9ac6-2389c8d5b172"
 #define UUID_STATUS_SCALE    	"ff18f0ac-f039-4cd0-bee3-b546e3de5551"
+#define UUID_STATUS_ERROR    	"2e03aa0c-b25f-456a-a327-bd175771111a"
                              	
 #define UUID_COMM            	"dad995d1-f228-38ec-8b0f-593953973406"
 #define UUID_COMM_USER       	"eb61e31a-f00b-335f-ad14-d654aac8353d"
@@ -347,6 +349,12 @@ struct CmdInitUser : public Command {
   def_cmd("init_user", USER);
   String name;
   CmdInitUser(String name) : name(name) {}
+};
+
+struct CmdResetError : public Command {
+  def_cmd("reset_error", USER);
+  User user;
+  CmdResetError(User user) : user(user) {}
 };
 
 struct CmdQueueRecipe : public Command {
@@ -415,8 +423,8 @@ struct CmdDefineRecipe : public Command {
   def_cmd("define_recipe", USER);
   User user;
   String name;
-  std::forward_list<Ingredient> ingredients;
-  CmdDefineRecipe(User user, String name, std::forward_list<Ingredient> ingredients)
+  std::deque<Ingredient> ingredients;
+  CmdDefineRecipe(User user, String name, std::deque<Ingredient> ingredients)
     : user(user), name(name), ingredients(ingredients) {}
 };
 
@@ -424,8 +432,8 @@ struct CmdEditRecipe : public Command {
   def_cmd("edit_recipe", USER);
   User user;
   String name;
-  std::forward_list<Ingredient> ingredients;
-  CmdEditRecipe(User user, String name, std::forward_list<Ingredient> ingredients)
+  std::deque<Ingredient> ingredients;
+  CmdEditRecipe(User user, String name, std::deque<Ingredient> ingredients)
     : user(user), name(name), ingredients(ingredients) {}
 };
 
@@ -454,7 +462,6 @@ struct CmdClean : public Command {
   CmdClean(User user) : user(user) {}
 };
 
-// FIXME redo the calibration cycle
 struct CmdRunPump : public Command {
   def_cmd("run_pump", ADMIN);
   User user;
@@ -576,13 +583,16 @@ ID*     all_id[NUM_ID];
 Status* all_status[NUM_STATUS];
 Comm*   all_comm[NUM_COMM];
 
-std::forward_list<Recipe>     recipes;
-std::forward_list<Ingredient> cocktail;
+std::forward_list<Recipe> recipes;
+std::deque<Ingredient> cocktail;
 
 std::queue<CommandQueued> command_queue;
 std::deque<ActiveRecipe*> recipe_queue;
 
 CalibrationState cal_state;
+
+Retcode error_state;
+User error_user;
 
 // function declarations
 
@@ -626,6 +636,7 @@ Retcode scale_set_factor(float factor);
 Retcode add_to_recipe_queue(Recipe *recipe, User user);
 Retcode add_liquid(User user, const String liquid, float amount);
 Retcode reset_cocktail(void);
+Retcode check_recipe(String name, std::deque<Ingredient> ingredients);
 
 // command processing
 Retcode add_to_command_queue(const String json, uint16_t conn_id);
@@ -643,6 +654,7 @@ void update_config_state(time_t ts);
 void update_user(void);
 void update_all_possible_recipes(void);
 void update_possible_recipes(String liquid);
+void update_error(Retcode error, User user);
 
 // init
 
@@ -730,6 +742,9 @@ void setup() {
 
     cal_state = CalibrationState::inactive;
 
+    error_state = Retcode::success;
+    error_user  = USER_UNKNOWN;
+
     ble_server = NULL;
   }
 
@@ -789,6 +804,16 @@ void loop() {
     }
   }
 
+  // next, process one of three situations, whichever applies first:
+  // - errors
+  // - calibration
+  // - recipes
+
+  if (error_state != Retcode::success) {
+    // currently in an error state that needs acknowledgment
+    return;
+  }
+
   // advance calibration state
   if (cal_state != CalibrationState::inactive) {
     // FIXME
@@ -812,6 +837,8 @@ void loop() {
       error("calibration in illegal state: %d", cal_state);
       error_loop();
     }
+
+    return; // done processing
   }
 
   // advance the recipe queue
@@ -839,6 +866,8 @@ void loop() {
       error("recipe in illegal state: %d", active->state);
       error_loop();
     }
+
+    return;
   }
 
   ////////////////////
@@ -854,7 +883,7 @@ void loop() {
   //       debug("making recipe %s for %d", r.recipe->name.c_str(), r.user);
   //       update_user();
 
-  //       // FIXME where does the error go?
+  //       // FIXME where does the error go? -> error_state
   //       Retcode err = check_recipe(r.user, r.recipe);
   //       if (err != Retcode::success) return;
 
@@ -892,18 +921,6 @@ void loop() {
   //   }
   //   break;
 
-  // FIXME automatic calibration
-  // case RecipeState::cal_empty:
-  // case RecipeState::cal_weight:
-  // case RecipeState::cal_pump1:
-  // case RecipeState::cal_pump2:
-  // case RecipeState::cal_done:
-  //   break;
-
-  // default:
-  //   // nothing to do, skip
-  //   break;
-  // }
 }
 
 // command processing
@@ -964,7 +981,7 @@ Parsed parse_command(const String json) {
   if (field.isNull()) return Parsed{NULL, Retcode::incomplete};
 
 #define parse_ingredients(array)                                        \
-  std::forward_list<Ingredient> ingredients = {};                       \
+  std::deque<Ingredient> ingredients = {};                              \
   parse_array(array);                                                   \
   for (JsonVariant _v : array) {                                        \
     JsonArray _tuple = _v.as<JsonArray>();                              \
@@ -975,7 +992,7 @@ Parsed parse_command(const String json) {
     float _amount  	= _tuple[1].as<float>();                           \
     Ingredient _ing	= Ingredient{_name, _amount};                      \
                                                                         \
-    ingredients.push_front(_ing);                                       \
+    ingredients.push_back(_ing);                                        \
   }
 
 #define parse_str(field)                                    \
@@ -1003,6 +1020,10 @@ Parsed parse_command(const String json) {
   } else if (match_name(CmdInitUser)) {
     parse_str(name);
     cmd = new CmdInitUser{name};
+
+  } else if (match_name(CmdResetError)) {
+    parse_user();
+    cmd = new CmdResetError(user);
 
   } else if (match_name(CmdQueueRecipe)) {
     parse_user();
@@ -1203,6 +1224,11 @@ Retcode CmdInitUser::execute() {
   return Retcode::user_id;
 }
 
+Retcode CmdResetError::execute() {
+  // FIXME
+  return Retcode::unsupported;
+}
+
 Retcode CmdDefinePump::execute() {
   if (!is_admin(this->user)) return Retcode::unauthorized;
 
@@ -1325,7 +1351,7 @@ Retcode CmdEditRecipe::execute() {
 
   for (auto it = recipes.begin(); it != recipes.end(); it++) {
     if (it->name == name) {
-      // FIXME memory leak?
+      // TODO memory leak?
       it->ingredients = this->ingredients;
 
       // update state
@@ -1365,7 +1391,7 @@ Retcode CmdQueueRecipe::execute() {
   }
   if (!recipe) return Retcode::missing_recipe;
 
-  Retcode err = check_recipe(user, recipe);
+  Retcode err = check_recipe(name, recipe->ingredients);
   if (err != Retcode::success) return err;
 
   // add to recipe queue
@@ -1386,7 +1412,7 @@ Retcode CmdAddLiquid::execute() {
   // look for active recipe and add the liquid
   for(auto &r : recipe_queue) {
     if (r->user == this->user || is_admin(this->user)) {
-      r->ingredients.push(Ingredient{this->liquid, this->volume});
+      r->ingredients.push_back(Ingredient{this->liquid, this->volume});
     }
     return Retcode::success;
   }
@@ -1429,7 +1455,7 @@ Retcode CmdCancelRecipe::execute() {
       case RecipeState::pumping:
         // TODO stop active pumps
         // switch to done
-        while (!r->ingredients.empty()) r->ingredients.pop();
+        r->ingredients.clear();
         r->state = RecipeState::cocktail_done;
 
         // update machine state
@@ -1607,9 +1633,9 @@ bool is_admin(User user) {
 }
 
 Retcode add_to_recipe_queue(Recipe *recipe, User user) {
-  std::queue<Ingredient> queue;
+  std::deque<Ingredient> queue;
   for (auto const ing : recipe->ingredients) {
-    queue.push(Ingredient{ing.name, ing.amount});
+    queue.push_back(Ingredient{ing.name, ing.amount});
   }
   ActiveRecipe *r = new ActiveRecipe(user, recipe->name, queue);
 
@@ -1716,12 +1742,8 @@ Retcode check_liquid(String liquid, float volume) {
   return Retcode::success;
 }
 
-Retcode check_recipe(User user, Recipe *recipe) {
-  // FIXME handle active ingredient state
-
-  if (!recipe) return Retcode::missing_recipe;
-
-  debug("checking if recipe %s is possible", recipe->name.c_str());
+Retcode check_recipe(String name, std::deque<Ingredient> ingredients) {
+  debug("checking if recipe %s is possible", name.c_str());
 
   debug("  summing up all available liquids");
   std::unordered_map<std::string, float> liquids = {};
@@ -1738,10 +1760,10 @@ Retcode check_recipe(User user, Recipe *recipe) {
   }
 
   debug("  checking necessary ingredients");
-  for (auto ing = recipe->ingredients.begin(); ing != recipe->ingredients.end(); ing++) {
-    std::string liquid	= ing->name.c_str();
+  for (auto &ing : ingredients) {
+    std::string liquid	= ing.name.c_str();
     float have        	= liquids[liquid];
-    float need        	= ing->amount;
+    float need        	= ing.amount;
     bool found        	= liquids.count(liquid) > 0;
 
     debug("    need %.1f / %.1f of %s", need, have, liquid.c_str());
@@ -1807,16 +1829,18 @@ void update_cocktail() {
   out.concat(String(weight, 1));
 
   out.concat(",\"content\":[");
-  for (auto ing = cocktail.begin(); ing != cocktail.end(); ing++) {
-    debug("  ingredient: %s, amount: %.1f", ing->name.c_str(), ing->amount);
+  bool prev = false;
+  for (auto const ing : cocktail) {
+    debug("  ingredient: %s, amount: %.1f", ing.name.c_str(), ing.amount);
 
+    if (prev) out.concat(',');
     out.concat("[\"");
-    out.concat(ing->name);
+    out.concat(ing.name);
     out.concat("\",");
-    out.concat(String(ing->amount, 1));
+    out.concat(String(ing.amount, 1));
     out.concat(']');
 
-    if (next(ing) != cocktail.end()) out.concat(',');
+    prev = true;
   }
   out.concat("]}");
 
@@ -1842,6 +1866,15 @@ void update_state() {
   debug("updating machine state: %s", json.c_str());
 
   all_status[ID_STATE]->update(json);
+}
+
+void update_error(Retcode error, User user) {
+  String json = String(retcode_str[static_cast<int>(error)]);
+  error_state = error;
+  error_user  = user;
+
+  debug("updating error state: %s", json.c_str());
+  all_status[ID_ERROR]->update(json);
 }
 
 void update_scale() {
@@ -1942,16 +1975,17 @@ void update_recipes() {
     out.concat(r->name);
     out.concat("\":{\"ingredients\":[");
 
-    for (auto ing = r->ingredients.begin(); ing != r->ingredients.end(); ing++) {
-      debug("    ingredient: %s, amount: %.1f", ing->name.c_str(), ing->amount);
+    bool prev = false;
+    for (auto const ing : r->ingredients) {
+      debug("    ingredient: %s, amount: %.1f", ing.name.c_str(), ing.amount);
 
-      out.concat("[\"");
-      out.concat(ing->name);
+      if (prev) out.concat("[\"");
+      out.concat(ing.name);
       out.concat("\",");
-      out.concat(String(ing->amount, 1));
+      out.concat(String(ing.amount, 1));
       out.concat(']');
 
-      if (next(ing) != r->ingredients.end()) out.concat(',');
+      prev = true;
     }
     out.concat("],\"can_make\":");
     out.concat(r->can_make ? "true" : "false");
@@ -2072,6 +2106,7 @@ bool ble_start(void) {
   all_status[ID_TIMESTAMP]	= new Status(UUID_STATUS_TIMESTAMP,	String("0"));
   all_status[ID_USER]     	= new Status(UUID_STATUS_USER,     	String("[]"));
   all_status[ID_SCALE]    	= new Status(UUID_STATUS_SCALE,    	String("{}"));
+  all_status[ID_ERROR]    	= new Status(UUID_STATUS_ERROR,    	String(""));
                           	
   all_comm[ID_MSG_USER]   	= new Comm(UUID_COMM_USER);
   all_comm[ID_MSG_ADMIN]  	= new Comm(UUID_COMM_ADMIN);
@@ -2469,7 +2504,7 @@ bool config_load(void) {
       snprintf(key, sizeof(key), "recipe_%d", i);
       String name = preferences.getString(key);
 
-      std::forward_list<Ingredient> ingredients = {};
+      std::deque<Ingredient> ingredients = {};
 
       snprintf(key, sizeof(key), "recipe_%d/num", i);
       int num_ingredients = preferences.getUInt(key, 0);
@@ -2597,8 +2632,8 @@ Retcode Pump::calibrate(dur_t time1, dur_t time2, float volume1, float volume2) 
 float scale_weigh() {
   if (!scale_available) {
     float weight = 0.0;
-    for (auto ing = cocktail.begin(); ing != cocktail.end(); ing++) {
-      weight += ing->amount;
+    for (auto const ing : cocktail) {
+      weight += ing.amount;
     }
     return weight;
   }
