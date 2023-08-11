@@ -5,6 +5,7 @@ const unsigned int VERSION   	= 7;                    	// version number (used f
 const unsigned char MAX_PUMPS	= 1 + 4*8;              	// maximum number of supported pumps;
 const float LIQUID_CUTOFF    	= 0.1;                  	// minimum amount of liquid we round off
 const float EMPTY_SCALE      	= 10.0;                 	// what counts as an empty scale
+const float CONTAINER_WEIGHT 	= 50.0;                 	// what counts as a container
 const bool AUTOMATIC_SCALE   	= false;                	// progress automatically based on scale changes?
 
 // general chip functionality
@@ -237,7 +238,7 @@ struct ActiveRecipe {
   std::deque<Ingredient> ingredients;
   RecipeState state;
 
-  ActiveRecipe(User user, String name, std::deque<Ingredient> ingredients) : user(user), name(name), ingredients(ingredients), state(RecipeState::ready) {};
+  ActiveRecipe(User user, String name, std::deque<Ingredient> ingredients, RecipeState state) : user(user), name(name), ingredients(ingredients), state(state) {};
 };
 
 // services
@@ -628,13 +629,13 @@ void ble_stop(void);
 // scale
 float scale_weigh(void);
 bool scale_empty(void);
+bool scale_has_container(void);
 Retcode scale_calibrate(float weight);
 Retcode scale_tare(void);
 Retcode scale_set_factor(float factor);
 
 // recipes
 Retcode add_to_recipe_queue(Recipe *recipe, User user);
-Retcode add_liquid(User user, const String liquid, float amount);
 Retcode reset_cocktail(void);
 Retcode check_recipe(String name, std::deque<Ingredient> ingredients);
 
@@ -810,6 +811,7 @@ void loop() {
   // - recipes
 
   if (error_state != Retcode::success) {
+    // FIXME
     // currently in an error state that needs acknowledgment
     return;
   }
@@ -844,22 +846,52 @@ void loop() {
   // advance the recipe queue
   if (!recipe_queue.empty()) {
     ActiveRecipe *active = recipe_queue.front();
+    Retcode err;
 
-    // FIXME
     switch (active->state) {
     case RecipeState::ready:
+      err = check_recipe(active->name, active->ingredients);
+      if (err != Retcode::success) update_error(err, active->user);
+
+      debug("waiting for container");
+      active->state = RecipeState::wait_container;
+      update_state();
       break;
 
     case RecipeState::wait_container:
+      // automatic transition using the scale
+      if (AUTOMATIC_SCALE && scale_has_container()) {
+        active->state = RecipeState::mixing;
+        update_state();
+      }
+
+      // just wait otherwise
       break;
 
     case RecipeState::mixing:
+      err = advance_recipe(active);
+      if (err != Retcode::success) update_error(err, active->user);
       break;
 
     case RecipeState::pumping:
+      // this shouldn't really happen, but regardless, there's nothing to do, so just wait
+      debug("machine is currently pumping");
       break;
 
     case RecipeState::cocktail_done:
+      // automatic transition using the scale
+      if (AUTOMATIC_SCALE && scale_empty()) {
+        // remove the recipe
+        recipe_queue.pop_front();
+        delete active;
+        reset_cocktail();
+
+        // update machine state
+        update_state();
+        update_user();
+      }
+
+      // just wait otherwise
       break;
 
     default:
@@ -869,58 +901,6 @@ void loop() {
 
     return;
   }
-
-  ////////////////////
-
-  // case RecipeState::ready:
-  //   {
-  //     // process recipe queue
-  //     if (!recipe_queue.empty()) {
-  //       RecipeQueued r = recipe_queue.front();
-  //       recipe_queue.pop_front();
-  //       active_recipe = &r;
-
-  //       debug("making recipe %s for %d", r.recipe->name.c_str(), r.user);
-  //       update_user();
-
-  //       // FIXME where does the error go? -> error_state
-  //       Retcode err = check_recipe(r.user, r.recipe);
-  //       if (err != Retcode::success) return;
-
-  //       debug("waiting for container");
-  //       update_state(RecipeState::wait_container);
-  //     }
-  //   }
-  //   break;
-
-  // case RecipeState::wait_container:
-  //   // FIXME implement; do some kinda transition (just skip this for now)
-  //   // FIXME automatic transition
-  //   if (active_recipe != NULL) { // FIXME else?
-  //     update_state(RecipeState::mixing);
-  //   }
-  //   break;
-
-  // case RecipeState::mixing:
-  //   {
-  //     if (active_recipe != NULL) { // FIXME else?
-  //       RecipeQueued *r = active_recipe;
-
-  //       debug("starting with recipe %s for %d", r->recipe->name.c_str(), r->user);
-  //       Retcode err = make_recipe(r->user, r->recipe);
-  //       // FIXME where does the error go?
-  //       if (err != Retcode::success) return;
-  //     }
-  //   }
-  //   break;
-
-  // case RecipeState::done:
-  //   // wait for reset
-  //   if (scale_empty()) {
-  //     reset_cocktail();
-  //   }
-  //   break;
-
 }
 
 // command processing
@@ -1395,6 +1375,7 @@ Retcode CmdQueueRecipe::execute() {
   if (err != Retcode::success) return err;
 
   // add to recipe queue
+  debug("recipe %s (%d) valid, adding to queue", name.c_str(), this->user);
   return add_to_recipe_queue(recipe, this->user);
 };
 
@@ -1426,6 +1407,7 @@ Retcode CmdStartRecipe::execute() {
     if (r->user == this->user || is_admin(this->user)) {
       if (r->state == RecipeState::wait_container) {
         r->state = RecipeState::mixing;
+        return Retcode::success;
       } else {
         return Retcode::cant_start_recipe;
       }
@@ -1489,6 +1471,7 @@ Retcode CmdTakeCocktail::execute() {
       if (r->state == RecipeState::cocktail_done) {
         // remove the recipe
         recipe_queue.erase(it);
+        delete r;
         reset_cocktail();
 
         // update machine state
@@ -1637,7 +1620,7 @@ Retcode add_to_recipe_queue(Recipe *recipe, User user) {
   for (auto const ing : recipe->ingredients) {
     queue.push_back(Ingredient{ing.name, ing.amount});
   }
-  ActiveRecipe *r = new ActiveRecipe(user, recipe->name, queue);
+  ActiveRecipe *r = new ActiveRecipe(user, recipe->name, queue, RecipeState::ready);
 
   recipe_queue.push_back(r);
 
@@ -1645,78 +1628,17 @@ Retcode add_to_recipe_queue(Recipe *recipe, User user) {
 }
 
 Retcode reset_cocktail() {
-  // FIXME
-  // cocktail.clear();
-  // if (active_recipe != NULL) delete active_recipe;
-  // active_recipe = NULL;
+  cocktail.clear();
 
-  // Retcode err = scale_tare();
-  // if (err != Retcode::success) return err;
+  Retcode err = scale_tare();
+  if (err != Retcode::success) return err;
 
-  // // update machine state
-  // update_cocktail();
-  // update_scale();
-  // update_user();
+  // update machine state
+  update_cocktail();
+  update_scale();
+  update_user();
 
-  // return Retcode::success;
-
-  return Retcode::unsupported;
-}
-
-Retcode add_liquid(User user, const String liquid, float amount) {
-  float need = amount;
-
-  if (need < 0) {
-    return Retcode::invalid_volume;
-  }
-
-  // debug("attempting to add %.1f of %s to cocktail", need, liquid.c_str());
-
-  // check that we have enough liquid first
-  // Retcode err = check_liquid(liquid, amount);
-  // if (err != Retcode::success) return err;
-
-  // // tare the scale if the cocktail is empty
-  // Retcode err = scale_tare();
-  // if (err != Retcode::success) return err;
-
-  // update_user();
-  // update_state(RecipeState::pumping);
-
-  // // add the liquid
-  // float used = 0;
-  // for (int i=0; i<MAX_PUMPS && need >= LIQUID_CUTOFF; i++) {
-  //   Pump *p = pumps[i];
-  //   if (p == NULL) continue;
-
-  //   if (p->liquid == liquid) {
-  //     debug("  need %.1f, using pump %d: %.1f", need, i, p->volume);
-  //     float use = std::min(p->volume, need);
-  //     Retcode err = p->drain(use);
-  //     if (err != Retcode::success) return err;
-  //     need -= use;
-  //     used += use;
-  //   }
-  // }
-
-  // // update cocktail state
-  // cocktail.push_front(Ingredient{liquid, used});
-
-  // // update state
-  // update_liquids();
-  // update_scale();
-  // update_cocktail();
-  // update_possible_recipes(liquid);
-  // update_state(RecipeState::cocktail_done);
-
-  // // shouldn't happen, but do a sanity check
-  // if (need >= LIQUID_CUTOFF) {
-  //   return Retcode::insufficient;
-  // }
-
-  // return Retcode::success;
-
-  return Retcode::unsupported;
+  return Retcode::success;
 }
 
 Retcode check_liquid(String liquid, float volume) {
@@ -1743,6 +1665,8 @@ Retcode check_liquid(String liquid, float volume) {
 }
 
 Retcode check_recipe(String name, std::deque<Ingredient> ingredients) {
+  if (ingredients.empty()) return Retcode::success;
+
   debug("checking if recipe %s is possible", name.c_str());
 
   debug("  summing up all available liquids");
@@ -1775,27 +1699,67 @@ Retcode check_recipe(String name, std::deque<Ingredient> ingredients) {
   return Retcode::success;
 }
 
-Retcode make_recipe(User user, Recipe *recipe) {
-  // FIXME
+Retcode advance_recipe(ActiveRecipe *recipe) {
+  // quick sanity check
+  Retcode err = check_recipe(recipe->name, recipe->ingredients);
+  if (err != Retcode::success) return err;
 
-  // // quick sanity check
-  // Retcode err = check_recipe(user, recipe);
-  // if (err != Retcode::success) return err;
+  if (recipe->ingredients.empty()) { // nothing left to do
+    recipe->state = RecipeState::cocktail_done;
+    update_state();
 
-  // update_state(RecipeState::mixing); // just be sure it's in the right state
+    return Retcode::success;
+  }
 
-  // for (auto ing = recipe->ingredients.begin(); ing != recipe->ingredients.end(); ing++) {
-  //   Retcode err = add_liquid(user, ing->name, ing->amount);
-  //   if (err != Retcode::success) {
-  //     update_state(RecipeState::cocktail_done);
-  //     return err;
-  //   }
-  // }
+  recipe->state = RecipeState::mixing; // just to be sure it's in the right state
+  update_state();
 
-  // update_state(RecipeState::cocktail_done);
-  // return Retcode::success;
+  Ingredient next_ing = recipe->ingredients.front();
+  float need = next_ing.amount;
+  float used = 0;
 
-  return Retcode::unsupported;
+  // sanity check
+  if (need < 0) { return Retcode::invalid_volume; }
+
+  // add the liquid
+  recipe->state = RecipeState::pumping;
+  update_state();
+
+  for (int i=0; i<MAX_PUMPS && need >= LIQUID_CUTOFF; i++) {
+    Pump *p = pumps[i];
+    if (p == NULL) continue;
+
+    if (p->liquid == next_ing.name) {
+      debug("  need %.1f, using pump %d: %.1f", need, i, p->volume);
+      float use = std::min(p->volume, need);
+      Retcode err = p->drain(use);
+      if (err != Retcode::success) {
+        recipe->state = RecipeState::mixing;
+        return err;
+      }
+      need -= use;
+      used += use;
+    }
+  }
+
+  // done pumping
+  recipe->state = RecipeState::mixing;
+  recipe->ingredients.pop_front();
+  update_state();
+
+  // update cocktail state
+  cocktail.push_back(Ingredient{next_ing.name, used});
+
+  // update machine state
+  update_liquids();
+  update_scale();
+  update_cocktail();
+  update_possible_recipes(next_ing.name);
+
+  // shouldn't happen, but do a sanity check
+  if (need >= LIQUID_CUTOFF) return Retcode::insufficient;
+
+  return Retcode::success;
 }
 
 Retcode Pump::drain(float amount) {
@@ -1846,7 +1810,7 @@ void update_cocktail() {
 
   all_status[ID_COCKTAIL]->update(out);
 
-  update_state();
+  update_state(); // FIXME necessary?
 }
 
 void update_state() {
@@ -2645,6 +2609,10 @@ float scale_weigh() {
 
 bool scale_empty() {
   return scale_weigh() <= EMPTY_SCALE;
+}
+
+bool scale_has_container() {
+  return scale_weigh() >= CONTAINER_WEIGHT;
 }
 
 Retcode scale_calibrate(float weight) {

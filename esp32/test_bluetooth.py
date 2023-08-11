@@ -25,6 +25,7 @@ STATUS = {
   "timestamp":	"586b5706-5856-34e1-ad17-94f840298816",
   "user":     	"2ce478ea-8d6f-30ba-9ac6-2389c8d5b172",
   "scale":    	"ff18f0ac-f039-4cd0-bee3-b546e3de5551",
+  "error":    	"2e03aa0c-b25f-456a-a327-bd175771111a",
 }
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s %(asctime)s: %(message)s', datefmt='%y-%m-%d %H:%M:%S')
@@ -62,13 +63,19 @@ async def comm_msg(client, uuid, message, wait=None):
 
   if wait:
     logging.info(f"waiting for {wait}")
+    state_uuid = STATUS["state"]
 
+    await client.start_notify(state_uuid, notification_handler)
+
+    prev = None
     while True:
-      state = STATUS["state"]
-      value = bytes(await client.read_gatt_char(state)).decode('utf8')
-      logging.info(f"  is: {value}")
+      value = bytes(await client.read_gatt_char(state_uuid)).decode('utf8')
+      if value != prev:
+        logging.info(f"  is: {value}")
+        prev = value
 
       if value == wait:
+        await client.stop_notify(state_uuid)
         break
 
       await notification_received.wait()
@@ -139,11 +146,12 @@ async def test_run(client):
   await user({"cmd":  "edit_recipe",   "user": 1, "name": "cheap beer", "liquids": [["beer", 100], ["water", 400]]})
   await admin({"cmd": "delete_recipe", "user": 0, "name": "cheap beer"})
 
+  # FIXME this shouldn't fail, but it depends on the calibration loop
   await user({"cmd": "take_cocktail", "user": 0})
   await read_status(client)
 
   # make recipes
-  await user({"cmd": "queue_recipe",   "user": 1, "recipe": "radler"}, rec_wait="ready")
+  await user({"cmd": "queue_recipe",  "user": 1, "recipe": "radler"}, rec_wait="ready")
   await user({"cmd": "start_recipe",  "user": 1}, rec_wait="waiting for container")
   await user({"cmd": "take_cocktail", "user": 1}, rec_wait="cocktail done")
 
@@ -156,7 +164,7 @@ async def test_run(client):
 
   await read_status(client)
 
-  await user({"cmd": "queue_recipe",   "user": 1, "recipe": "radler"})
+  await user({"cmd": "queue_recipe",  "user": 1, "recipe": "radler"})
   await user({"cmd": "start_recipe",  "user": 1}, rec_wait="waiting for container")
   await user({"cmd": "add_liquid",    "user": 1, "liquid": "beer", "volume": 100})
   await user({"cmd": "take_cocktail", "user": 1}, rec_wait="cocktail done")
@@ -175,13 +183,6 @@ async def test_run(client):
 
   # await user({"cmd": "reset", "user": 0})
   # await read_status(client)
-
-  # refill pump
-  await user({"cmd":  "add_liquid",  "user": 1, "volume": 10, "liquid": "water"})
-  await user({"cmd":  "add_liquid",  "user": 1, "volume": 10, "liquid": "beer"})
-  await user({"cmd":  "add_liquid",  "user": 1, "volume": 10, "liquid": "water"})
-  await admin({"cmd": "refill_pump", "user": 0, "volume": 5000, "slot": 1})
-  await read_status(client)
 
   await read_all_chars(client)
 

@@ -1,0 +1,14 @@
+notifications ok?
+
+tare_scale is weird, think it over
+
+transition states
+	- calibration
+		- implement stages (like with recipe)
+		- test
+		- document
+
+	- recipe making
+		- check the test log that it's ok
+		- check that error_state is handled right
+		- document the new process
