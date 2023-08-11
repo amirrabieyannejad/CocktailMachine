@@ -1885,13 +1885,13 @@ void update_liquids() {
       out.concat(pump->liquid);
       out.concat("\",\"volume\":");
       out.concat(String(pump->volume, 1));
-      out.concat("\",\"calibrated\":");
+      out.concat(",\"calibrated\":");
       out.concat(pump->calibrated ? "true" : "false");
       out.concat(",\"rate\":");
       out.concat(String(pump->rate, 1));
-      out.concat("\",\"time_init\":");
+      out.concat(",\"time_init\":");
       out.concat(String(pump->time_init));
-      out.concat("\",\"time_reverse\":");
+      out.concat(",\"time_reverse\":");
       out.concat(String(pump->time_reverse));
       out.concat('}');
 
