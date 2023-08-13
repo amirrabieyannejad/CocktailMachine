@@ -2,11 +2,17 @@
 #define BLE_NAME             	"Cocktail Machine ESP32"	// bluetooth server name
 #define CORE_DEBUG_LEVEL     	4                       	// 1 = error; 3 = info ; 4 = debug
 const unsigned int VERSION   	= 7;                    	// version number (used for configs etc)
+                             	                        	
 const unsigned char MAX_PUMPS	= 1 + 4*8;              	// maximum number of supported pumps;
+                             	                        	
 const float LIQUID_CUTOFF    	= 0.1;                  	// minimum amount of liquid we round off
 const float EMPTY_SCALE      	= 10.0;                 	// what counts as an empty scale
 const float CONTAINER_WEIGHT 	= 50.0;                 	// what counts as a container
+                             	                        	
 const bool AUTOMATIC_SCALE   	= false;                	// progress automatically based on scale changes?
+                             	                        	
+const int CAL_TIME1          	= 1 * 1000;             	// calibration times to use (in ms)
+const int CAL_TIME2          	= 2 * 1000;             	
 
 // general chip functionality
 #include <Arduino.h>
@@ -108,8 +114,8 @@ enum struct CalibrationState {
   inactive,
   empty,
   weight,
-  pump1,
-  pump2,
+  pumps,
+  calc,
   done,
 };
 
@@ -117,8 +123,8 @@ const char* cal_state_str[] = {
   "no calibration active",
   "calibration empty container",
   "calibration known weight",
-  "calibration first pumping",
-  "calibration second pumping",
+  "calibration pumps",
+  "calibration calculation",
   "calibration done",
 };
 
@@ -148,6 +154,7 @@ enum struct Retcode {
   user_id, // nb: the return of the user id is handled separately!
   cant_start_recipe,
   cant_take_cocktail,
+  invalid_cal_state,
 };
 
 const char* retcode_str[] = {
@@ -175,6 +182,7 @@ const char* retcode_str[] = {
   "new user id", // placeholder label
   "can't start recipe yet"
   "can't take cocktail yet"
+  "calibration command invalid at this time"
 };
 
 struct PumpSlot {
@@ -211,7 +219,7 @@ struct Pump {
   Retcode refill(float volume);
   Retcode empty();
 
-  void run(dur_t time, bool reverse);
+  Retcode run(dur_t time, bool reverse);
   void start(bool reverse);
   void stop();
   void pump(float amount);
@@ -352,8 +360,14 @@ struct CmdInitUser : public Command {
   CmdInitUser(String name) : name(name) {}
 };
 
+struct CmdReset : public Command {
+  def_cmd("reset", ADMIN);
+  User user;
+  CmdReset(User user) : user(user) {}
+};
+
 struct CmdResetError : public Command {
-  def_cmd("reset_error", USER);
+  def_cmd("reset_error", ADMIN);
   User user;
   CmdResetError(User user) : user(user) {}
 };
@@ -489,23 +503,17 @@ struct CmdCalibrationFinish : public Command {
   CmdCalibrationFinish(User user) : user(user) {};
 };
 
+struct CmdCalibrationAddEmpty : public Command {
+  def_cmd("calibration_add_empty", ADMIN);
+  User user;
+  CmdCalibrationAddEmpty(User user) : user(user) {};
+};
+
 struct CmdCalibrationAddWeight : public Command {
   def_cmd("calibration_add_weight", ADMIN);
   User user;
   float weight;
   CmdCalibrationAddWeight(User user, float weight) : user(user), weight(weight) {};
-};
-
-struct CmdCalibrationRemoveWeight : public Command {
-  def_cmd("calibration_remove_weight", ADMIN);
-  User user;
-  CmdCalibrationRemoveWeight(User user) : user(user) {};
-};
-
-struct CmdCalibrationEmpty : public Command {
-  def_cmd("calibration_empty", ADMIN);
-  User user;
-  CmdCalibrationEmpty(User user) : user(user) {};
 };
 
 struct CmdCalibratePump : public Command {
@@ -591,6 +599,9 @@ std::queue<CommandQueued> command_queue;
 std::deque<ActiveRecipe*> recipe_queue;
 
 CalibrationState cal_state;
+int cal_pass;
+int cal_pump;
+time_t cal_volumes[MAX_PUMPS][2];
 
 Retcode error_state;
 User error_user;
@@ -811,33 +822,84 @@ void loop() {
   // - recipes
 
   if (error_state != Retcode::success) {
-    // FIXME
     // currently in an error state that needs acknowledgment
     return;
   }
 
   // advance calibration state
   if (cal_state != CalibrationState::inactive) {
-    // FIXME
+    Retcode err;
+
     switch (cal_state) {
-    case CalibrationState::empty:
-      break;
+    case CalibrationState::pumps:
+      debug("calibration pass: %d", cal_pass);
 
-    case CalibrationState::weight:
-      break;
+      if (cal_pump >= MAX_PUMPS) {
+        switch (cal_pass) {
+        case 1:
+          cal_pump  = 0;
+          cal_pass += 1;
+          return;
 
-    case CalibrationState::pump1:
-      break;
+        case 2:
+          cal_state = CalibrationState::calc;
+          update_state();
+          return;
 
-    case CalibrationState::pump2:
-      break;
+        default:
+          error("unknown calibration pass");
+          error_loop();
+          return;
+        }
+      }
 
-    case CalibrationState::done:
-      break;
+      { // calibrate pump
+        Pump *pump = pumps[cal_pump];
+        cal_pump += 1;
+        if (pump == NULL) return; // skip missing pumps
+
+        time_t time = (cal_pass == 1) ? CAL_TIME1 : CAL_TIME2;
+        debug("calibrating pump for %dms: %d", time, cal_pump);
+
+        // run pump
+        err = pump->run(time, false);
+        if (err != Retcode::success) update_error(err, USER_ADMIN);
+
+        // reverse a bit to clear the pump
+        err = pump->run(S(1), true);
+        if (err != Retcode::success) update_error(err, USER_ADMIN);
+
+        float weight = scale_weigh();
+        pump->volume = std::max(pump->volume - weight, 0.0f);
+
+        cal_volumes[cal_pump][cal_pass-1] = weight;
+      }
+
+      cal_state = CalibrationState::empty;
+      update_state();
+
+      return;
+
+    case CalibrationState::calc:
+      debug("calculation calibration data...");
+
+      for (int i=0; i<MAX_PUMPS; i++) {
+        Pump *pump = pumps[i];
+        if (pump != NULL) continue;
+
+        err = pump->calibrate(CAL_TIME1, CAL_TIME2,
+                              cal_volumes[i][0], cal_volumes[i][1]);
+        if (err != Retcode::success) update_error(err, USER_ADMIN);
+
+      }
+      cal_state = CalibrationState::done;
+      update_state();
+
+      return;
 
     default:
-      error("calibration in illegal state: %d", cal_state);
-      error_loop();
+      // waiting for some calibration command, skipping
+      break;
     }
 
     return; // done processing
@@ -1001,6 +1063,10 @@ Parsed parse_command(const String json) {
     parse_str(name);
     cmd = new CmdInitUser{name};
 
+  } else if (match_name(CmdReset)) {
+    parse_user();
+    cmd = new CmdReset(user);
+
   } else if (match_name(CmdResetError)) {
     parse_user();
     cmd = new CmdResetError(user);
@@ -1095,18 +1161,14 @@ Parsed parse_command(const String json) {
     parse_user();
     cmd = new CmdCalibrationFinish(user);
 
+  } else if (match_name(CmdCalibrationAddEmpty)) {
+    parse_user();
+    cmd = new CmdCalibrationAddEmpty(user);
+
   } else if (match_name(CmdCalibrationAddWeight)) {
     parse_user();
     parse_float(weight);
     cmd = new CmdCalibrationAddWeight(user, weight);
-
-  } else if (match_name(CmdCalibrationRemoveWeight)) {
-    parse_user();
-    cmd = new CmdCalibrationRemoveWeight(user);
-
-  } else if (match_name(CmdCalibrationEmpty)) {
-    parse_user();
-    cmd = new CmdCalibrationEmpty(user);
 
   } else if (match_name(CmdCalibratePump)) {
     parse_user();
@@ -1205,8 +1267,10 @@ Retcode CmdInitUser::execute() {
 }
 
 Retcode CmdResetError::execute() {
-  // FIXME
-  return Retcode::unsupported;
+  if (!is_admin(this->user)) return Retcode::unauthorized;
+  error_state = Retcode::success;
+
+  return Retcode::success;
 }
 
 Retcode CmdDefinePump::execute() {
@@ -1488,34 +1552,81 @@ Retcode CmdTakeCocktail::execute() {
   return Retcode::missing_recipe;
 };
 
+Retcode CmdReset::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
+
+  reset_cocktail();
+  update_cocktail();
+
+  return Retcode::success;
+};
+
+
 Retcode CmdCalibrationStart::execute() {
-  // FIXME
-  return Retcode::unsupported;
+  if (cal_state != CalibrationState::inactive) return Retcode::invalid_cal_state;
+
+  cal_pass = 0;
+  cal_pump = 0;
+  for (int i; i<MAX_PUMPS; i++) {
+    cal_volumes[i][0] = 0;
+    cal_volumes[i][1] = 0;
+  }
+
+  cal_state = CalibrationState::empty;
+  update_state();
+
+  return Retcode::success;
 };
 
 Retcode CmdCalibrationCancel::execute() {
-  // FIXME
-  return Retcode::unsupported;
+  scale_tare();
+  cal_state = CalibrationState::inactive;
+  update_state();
+  return Retcode::success;
 };
 
 Retcode CmdCalibrationFinish::execute() {
-  // FIXME
-  return Retcode::unsupported;
+  scale_tare();
+  cal_state = CalibrationState::inactive;
+  update_state();
+  return Retcode::success;
+};
+
+Retcode CmdCalibrationAddEmpty::execute() {
+  if (cal_state != CalibrationState::empty) return Retcode::invalid_cal_state;
+
+  scale_tare();
+
+  switch (cal_pass) {
+  case 0:
+    cal_state = CalibrationState::weight;
+    update_state();
+    break;
+
+  case 1:
+  case 2:
+    cal_state = CalibrationState::pumps;
+    update_state();
+    break;
+
+  default:
+    error("unknown calibration pass");
+    error_loop();
+    break;
+  }
+
+  return Retcode::success;
 };
 
 Retcode CmdCalibrationAddWeight::execute() {
-  // FIXME
-  return Retcode::unsupported;
-};
+  if (cal_state != CalibrationState::weight) return Retcode::invalid_cal_state;
 
-Retcode CmdCalibrationRemoveWeight::execute() {
-  // FIXME
-  return Retcode::unsupported;
-};
+  scale_calibrate(this->weight);
+  cal_pass += 1;
+  cal_state = CalibrationState::empty;
+  update_state();
 
-Retcode CmdCalibrationEmpty::execute() {
-  // FIXME
-  return Retcode::unsupported;
+  return Retcode::success;
 };
 
 Retcode CmdRunPump::execute() {
@@ -1536,7 +1647,7 @@ Retcode CmdRunPump::execute() {
   // so you should refill the pump afterwards
 
   float volume = time * p->rate;
-  // cocktail.push_front(Ingredient{"<calibration>", volume}); // FIXME add a dummy recipe instead
+  cocktail.push_front(Ingredient{"<manual>", volume}); // TODO add a dummy recipe instead
   p->volume = std::max(p->volume - volume, 0.0f);
 
   update_liquids();
@@ -2513,12 +2624,14 @@ PumpSlot::PumpSlot(PCF8574 *pcf, Pin in1, Pin in2)
   }
 }
 
-void Pump::run(dur_t time, bool reverse=false) {
-  if (this->slot == NULL) return; // simulation
+Retcode Pump::run(dur_t time, bool reverse=false) {
+  if (this->slot == NULL) return Retcode::success; // simulation
 
   this->start(reverse);
   sleep_idle(time);
   this->stop();
+
+  return Retcode::success;
 }
 
 void Pump::start(bool reverse=false) {
@@ -2578,11 +2691,12 @@ Retcode Pump::calibrate(dur_t time1, dur_t time2, float volume1, float volume2) 
 
   float init1 = std::round((float) time1 - (volume1 / rate));
   float init2 = std::round((float) time2 - (volume2 / rate));
+  dur_t init  = std::round((init1 + init2) / 2.0);
 
   // check for implausible results
   if (std::abs(init1 - init2) > S(1)) return Retcode::invalid_calibration;
+  if (init <= 0) return Retcode::invalid_calibration;
 
-  dur_t init = std::round((init1 + init2) / 2.0);
   this->time_init = init;
   this->time_reverse = init; // TODO should this be different?
   debug("time init: %d, reverse: %d", time_init, time_reverse);

@@ -133,11 +133,31 @@ async def test_run(client):
   await admin({"cmd": "set_pump_times", "user": 0, "slot": 7,
                "time_init": 0, "time_reverse": 0, "rate": 0.0})
 
-    # refill and reset pumps
+  # refill and reset pumps
   await admin({"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1})
   await admin({"cmd": "refill_pump", "user": 0, "volume": 2000, "slot": 2})
   await admin({"cmd": "refill_pump", "user": 0, "volume": 3000, "slot": 7})
 
+  await admin({"cmd": "reset", "user": 0})
+  await read_status(client)
+
+  # automatically calibrate pumps
+  await admin({"cmd": "calibration_start", "user": 0})
+  await admin({"cmd": "calibration_cancel", "user": 0}) # try cancelling immediately
+
+  await admin({"cmd": "calibration_start", "user": 0})
+  await admin({"cmd": "calibration_add_empty",  "user": 0},                 	cal_wait="calibration empty container")
+  await admin({"cmd": "calibration_add_weight", "user": 0, "weight": 100.0},	cal_wait="calibration known weight")
+
+  # first pass
+  for i in range(3):
+    await admin({"cmd": "calibration_add_empty",  "user": 0},	cal_wait="calibration empty container")
+
+  # second pass
+  for i in range(3):
+    await admin({"cmd": "calibration_add_empty",  "user": 0},	cal_wait="calibration empty container")
+
+  await admin({"cmd": "calibration_finish", "user": 0}, cal_wait="calibration done")
   await read_status(client)
 
   # define recipes
