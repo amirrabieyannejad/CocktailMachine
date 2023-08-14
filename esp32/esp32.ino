@@ -832,8 +832,6 @@ void loop() {
 
     switch (cal_state) {
     case CalibrationState::pumps:
-      debug("calibration pass: %d", cal_pass);
-
       if (cal_pump >= MAX_PUMPS) {
         switch (cal_pass) {
         case 1:
@@ -881,11 +879,11 @@ void loop() {
       return;
 
     case CalibrationState::calc:
-      debug("calculation calibration data...");
+      debug("calculating calibration data...");
 
       for (int i=0; i<MAX_PUMPS; i++) {
         Pump *pump = pumps[i];
-        if (pump != NULL) continue;
+        if (pump == NULL) continue;
 
         err = pump->calibrate(CAL_TIME1, CAL_TIME2,
                               cal_volumes[i][0], cal_volumes[i][1]);

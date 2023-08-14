@@ -39,8 +39,8 @@ async def read_all_chars(client):
     for char in service.characteristics:
       if "read" in char.properties:
         try:
-          value = bytes(await client.read_gatt_char(char.uuid))
-          logging.info(f"  - read: {char.uuid} -> {value.decode('utf-8')}")
+          value = bytes(await client.read_gatt_char(char.uuid)).decode('utf-8')
+          logging.info(f"  - read: {char.uuid} -> {value}")
         except Exception as e:
           logging.error(f"\t[Characteristic] {char} ({','.join(char.properties)}), Value: {e}")
 
@@ -49,8 +49,8 @@ async def read_status(client):
 
   for char, uuid in STATUS.items():
     try:
-      value = bytes(await client.read_gatt_char(uuid))
-      logging.info(f"  - {char} -> {value.decode('utf-8')}")
+      value = bytes(await client.read_gatt_char(uuid)).decode('utf-8')
+      logging.info(f"  - {char} -> {value}")
     except Exception as e:
       logging.error(f"\t{char} ({uuid}) -> {e}")
 
@@ -58,8 +58,6 @@ async def comm_msg(client, uuid, message, wait=None):
   notification_received = asyncio.Event()
   def notification_handler(_sender, _data):
     notification_received.set()
-
-  await client.start_notify(uuid, notification_handler)
 
   if wait:
     logging.info(f"waiting for {wait}")
@@ -80,12 +78,17 @@ async def comm_msg(client, uuid, message, wait=None):
 
       await notification_received.wait()
 
+  await client.start_notify(uuid, notification_handler)
+
   logging.info(f"message: {message.decode('utf8')}")
   await client.write_gatt_char(uuid, message)
 
-  await notification_received.wait()
-  value = bytes(await client.read_gatt_char(uuid))
-  logging.info(f"-> response: {value.decode('utf8')}")
+  while True:
+    await notification_received.wait()
+    value = bytes(await client.read_gatt_char(uuid)).decode('utf8')
+    if value != "processing":
+      logging.info(f"-> response: {value}")
+      break
 
   await client.stop_notify(uuid)  # stop notifications
 
@@ -148,14 +151,11 @@ async def test_run(client):
   await admin({"cmd": "calibration_start", "user": 0})
   await admin({"cmd": "calibration_add_empty",  "user": 0},                 	cal_wait="calibration empty container")
   await admin({"cmd": "calibration_add_weight", "user": 0, "weight": 100.0},	cal_wait="calibration known weight")
+  await admin({"cmd": "calibration_add_empty",  "user": 0},                 	cal_wait="calibration empty container")
 
-  # first pass
-  for i in range(3):
-    await admin({"cmd": "calibration_add_empty",  "user": 0},	cal_wait="calibration empty container")
-
-  # second pass
-  for i in range(3):
-    await admin({"cmd": "calibration_add_empty",  "user": 0},	cal_wait="calibration empty container")
+  for p in range(2):
+    for i in range(3):
+      await admin({"cmd": "calibration_add_empty",  "user": 0},	cal_wait="calibration empty container")
 
   await admin({"cmd": "calibration_finish", "user": 0}, cal_wait="calibration done")
   await read_status(client)

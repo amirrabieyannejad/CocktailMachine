@@ -6,9 +6,9 @@ transition states
 	- calibration
 		# - implement stages (like with recipe)
 		# - test
-		- check for race conditions / clean up transitions
+		# - check for race conditions / clean up transitions
 		- reduce noisiness of the debug
-		- test with real hardware lol
+		- test with real hardware
 		- document process
 
 	- recipe making
