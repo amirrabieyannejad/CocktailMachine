@@ -2019,7 +2019,7 @@ void update_liquids() {
       if (prev) out.concat(',');
       out.concat('"');
       out.concat(String(i));
-      out.concat("\":{\"liquid\":");
+      out.concat("\":{\"liquid\":\"");
       out.concat(pump->liquid);
       out.concat("\",\"volume\":");
       out.concat(String(pump->volume, 1));
