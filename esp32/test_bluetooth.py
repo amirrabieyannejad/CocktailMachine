@@ -55,15 +55,19 @@ async def read_status(client):
       logging.error(f"\t{char} ({uuid}) -> {e}")
 
 async def comm_msg(client, uuid, message, wait=None):
-  notification_received = asyncio.Event()
-  def notification_handler(_sender, _data):
-    notification_received.set()
+  notification_received1 = asyncio.Event()
+  notification_received2 = asyncio.Event()
+
+  def notification_handler1(_sender, _data):
+    notification_received1.set()
+  def notification_handler2(_sender, _data):
+    notification_received2.set()
 
   if wait:
     logging.info(f"waiting for {wait}")
     state_uuid = STATUS["state"]
 
-    await client.start_notify(state_uuid, notification_handler)
+    await client.start_notify(state_uuid, notification_handler1)
 
     prev = None
     while True:
@@ -76,15 +80,16 @@ async def comm_msg(client, uuid, message, wait=None):
         await client.stop_notify(state_uuid)
         break
 
-      await notification_received.wait()
+      await notification_received1.wait()
+      notification_received1.clear()
 
-  await client.start_notify(uuid, notification_handler)
+  await client.start_notify(uuid, notification_handler2)
 
   logging.info(f"message: {message.decode('utf8')}")
   await client.write_gatt_char(uuid, message)
 
   while True:
-    await notification_received.wait()
+    await notification_received2.wait()
     value = bytes(await client.read_gatt_char(uuid)).decode('utf8')
     if value != "processing":
       logging.info(f"-> response: {value}")
@@ -129,12 +134,12 @@ async def test_run(client):
   await admin({"cmd": "run_pump", "user": 0, "slot": 7, "time": 10})
 
   await admin({"cmd": "calibrate_pump", "user": 0, "slot": 1,
-               "time1": 10, "volume1": 5.0,
-               "time2": 20, "volume2": 15.0})
+               "time1": 11, "volume1": 10.0,
+               "time2": 21, "volume2": 20.0})
   await admin({"cmd": "set_pump_times", "user": 0, "slot": 2,
-               "time_init": 10, "time_reverse": 10, "rate": 1.0})
+               "time_init": 1, "time_reverse": 1, "rate": 1.0})
   await admin({"cmd": "set_pump_times", "user": 0, "slot": 7,
-               "time_init": 0, "time_reverse": 0, "rate": 0.0})
+               "time_init": 1, "time_reverse": 1, "rate": 1.0})
 
   # refill and reset pumps
   await admin({"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1})
@@ -160,15 +165,19 @@ async def test_run(client):
   await admin({"cmd": "calibration_finish", "user": 0}, cal_wait="calibration done")
   await read_status(client)
 
+    # refill and reset pumps
+  await admin({"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1})
+  await admin({"cmd": "refill_pump", "user": 0, "volume": 2000, "slot": 2})
+  await admin({"cmd": "refill_pump", "user": 0, "volume": 3000, "slot": 7})
+
+  await admin({"cmd": "reset", "user": 0})
+  await read_status(client)
+
   # define recipes
   await user({"cmd":  "define_recipe", "user": 1, "name": "radler",     "liquids": [["beer", 250], ["lemonade", 250]]})
   await user({"cmd":  "define_recipe", "user": 1, "name": "cheap beer", "liquids": [["beer", 250], ["water", 250]]})
   await user({"cmd":  "edit_recipe",   "user": 1, "name": "cheap beer", "liquids": [["beer", 100], ["water", 400]]})
   await admin({"cmd": "delete_recipe", "user": 0, "name": "cheap beer"})
-
-  # FIXME this shouldn't fail, but it depends on the calibration loop
-  await user({"cmd": "take_cocktail", "user": 0})
-  await read_status(client)
 
   # make recipes
   await user({"cmd": "queue_recipe",  "user": 1, "recipe": "radler"}, rec_wait="ready")
@@ -195,7 +204,7 @@ async def test_run(client):
   await user({"cmd": "add_liquid", "user": 1, "liquid": "beer", "volume": 100})
   await read_status(client)
 
-    # test all pumps
+  # test all pumps
   # await user({"cmd": "reset", "user": 0})
   # await user({"cmd": "add_liquid", "user": 1, "liquid": "water",    "volume": 100})
   # await user({"cmd": "add_liquid", "user": 1, "liquid": "beer",     "volume": 100})

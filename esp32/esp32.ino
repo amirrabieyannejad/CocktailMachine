@@ -11,8 +11,8 @@ const float CONTAINER_WEIGHT 	= 50.0;                 	// what counts as a conta
                              	                        	
 const bool AUTOMATIC_SCALE   	= false;                	// progress automatically based on scale changes?
                              	                        	
-const int CAL_TIME1          	= 1 * 1000;             	// calibration times to use (in ms)
-const int CAL_TIME2          	= 2 * 1000;             	
+const int CAL_TIME1          	= 10 * 1000;            	// calibration times to use (in ms)
+const int CAL_TIME2          	= 20 * 1000;            	
 
 // general chip functionality
 #include <Arduino.h>
@@ -203,17 +203,25 @@ struct Pump {
   dur_t time_reverse;
   float rate;
 
+  float cal_volume[2];
+
   Pump(PumpSlot *slot, String liquid, float volume, dur_t time_init, dur_t time_reverse, float rate, bool calibrated)
     : slot(slot), liquid(liquid), volume(volume),
-      time_init(time_init), time_reverse(time_reverse), rate(rate), calibrated(calibrated) {};
+      time_init(time_init), time_reverse(time_reverse), rate(rate),
+      calibrated(calibrated), cal_volume()
+    {};
 
   Pump(PumpSlot *slot, String liquid, float volume, dur_t time_init, dur_t time_reverse, float rate)
     : slot(slot), liquid(liquid), volume(volume),
-      time_init(time_init), time_reverse(time_reverse), rate(rate), calibrated(false) {};
+      time_init(time_init), time_reverse(time_reverse), rate(rate),
+      calibrated(false), cal_volume()
+    {};
 
   Pump(PumpSlot *slot, String liquid, float volume)
     : slot(slot), liquid(liquid), volume(volume),
-      time_init(S(5)), time_reverse(S(5)), rate(350.0 / MIN(1)), calibrated(false) {};
+      time_init(S(5)), time_reverse(S(5)), rate(350.0 / MIN(1)),
+      calibrated(false), cal_volume()
+    {};
 
   Retcode drain(float amount);
   Retcode refill(float volume);
@@ -224,6 +232,7 @@ struct Pump {
   void stop();
   void pump(float amount);
 
+  Retcode calibrate(dur_t time1, dur_t time2);
   Retcode calibrate(dur_t time1, dur_t time2, float volume1, float volume2);
 };
 
@@ -601,7 +610,6 @@ std::deque<ActiveRecipe*> recipe_queue;
 CalibrationState cal_state;
 int cal_pass;
 int cal_pump;
-time_t cal_volumes[MAX_PUMPS][2];
 
 Retcode error_state;
 User error_user;
@@ -702,7 +710,7 @@ void setup() {
       PIN_BUILTIN_PUMP_IN2,
     };
 
-    for(int i=0; i<8; i++) {
+    for (int i=0; i<8; i++) {
       int address = 0x20 + i;
       PCF8574 *pcf = new PCF8574(address);
 
@@ -716,6 +724,7 @@ void setup() {
         continue;
       }
     }
+
     info("total pump slots: %d/%d", used_slots, MAX_PUMPS);
   }
 
@@ -827,6 +836,7 @@ void loop() {
   }
 
   // advance calibration state
+calibration:
   if (cal_state != CalibrationState::inactive) {
     Retcode err;
 
@@ -852,27 +862,40 @@ void loop() {
       }
 
       { // calibrate pump
+        debug("calibrating pump %d (#%d)", cal_pump, cal_pass);
+
         Pump *pump = pumps[cal_pump];
         cal_pump += 1;
-        if (pump == NULL) return; // skip missing pumps
+        if (pump == NULL) goto calibration; // skip missing pumps
 
         time_t time = (cal_pass == 1) ? CAL_TIME1 : CAL_TIME2;
-        debug("calibrating pump for %dms: %d", time, cal_pump);
+        if (!scale_available) time /= S(1); // reduce the time for simulations
+        debug("running pump %d (#%d) for %dms", cal_pump-1, cal_pass, time);
 
         // run pump
         err = pump->run(time, false);
         if (err != Retcode::success) update_error(err, USER_ADMIN);
 
-        // reverse a bit to clear the pump
-        err = pump->run(S(1), true);
+        // reverse to clear the pump
+        err = pump->run(pump->time_reverse, true);
         if (err != Retcode::success) update_error(err, USER_ADMIN);
 
-        float weight = scale_available ? scale_weigh() : time * pump->rate;
+        sleep_idle(S(1));
+
+        float weight;
+        if (scale_available) {
+          weight = scale_weigh();
+        } else { // simulate a weight
+          dur_t t = ((pump->time_init) < time) ? (time - pump->time_init) : MS(1);
+          weight = t * pump->rate;
+        }
+
         cocktail.push_front(Ingredient{"<calibration>", weight});
+        debug("  -> weight: %f", weight);
 
         pump->volume = std::max(pump->volume - weight, 0.0f);
 
-        cal_volumes[cal_pump][cal_pass-1] = weight;
+        pump->cal_volume[cal_pass-1] = weight;
       }
 
       cal_state = CalibrationState::empty;
@@ -887,8 +910,7 @@ void loop() {
         Pump *pump = pumps[i];
         if (pump == NULL) continue;
 
-        err = pump->calibrate(CAL_TIME1, CAL_TIME2,
-                              cal_volumes[i][0], cal_volumes[i][1]);
+        err = pump->calibrate(CAL_TIME1, CAL_TIME2);
         if (err != Retcode::success) update_error(err, USER_ADMIN);
 
       }
@@ -1567,9 +1589,13 @@ Retcode CmdCalibrationStart::execute() {
 
   cal_pass = 0;
   cal_pump = 0;
-  for (int i; i<MAX_PUMPS; i++) {
-    cal_volumes[i][0] = 0;
-    cal_volumes[i][1] = 0;
+  for (int i=0; i<MAX_PUMPS; i++) {
+    Pump *pump = pumps[i];
+    if (pump == NULL) continue; // skip missing pumps
+
+    for (int n=0; n<2; n++) {
+      pump->cal_volume[n] = 0;
+    }
   }
 
   cal_state = CalibrationState::empty;
@@ -2627,6 +2653,7 @@ PumpSlot::PumpSlot(PCF8574 *pcf, Pin in1, Pin in2)
 
 Retcode Pump::run(dur_t time, bool reverse=false) {
   if (this->slot == NULL) return Retcode::success; // simulation
+  if (time == 0) return Retcode::success; // nothing to do
 
   this->start(reverse);
   sleep_idle(time);
@@ -2675,7 +2702,13 @@ void Pump::pump(float amount) {
   }
 }
 
+Retcode Pump::calibrate(dur_t time1, dur_t time2) {
+  return this->calibrate(time1, time2, this->cal_volume[0], this->cal_volume[1]);
+}
+
 Retcode Pump::calibrate(dur_t time1, dur_t time2, float volume1, float volume2) {
+  debug("trying to calibrate pump with t1: %d, t2: %d, v1: %.1f, v2: %.1f",
+        time1, time2, volume1, volume2);
   if (volume1 <= 0.0 || volume2 <= 0.0)	return Retcode::invalid_volume;
   if (volume1 == volume2)              	return Retcode::invalid_volume;
   if (time1 == time2)                  	return Retcode::invalid_times;

@@ -7,7 +7,7 @@ transition states
 		# - implement stages (like with recipe)
 		# - test
 		# - check for race conditions / clean up transitions
-		- reduce noisiness of the debug
+		# - reduce noisiness of the debug
 		- test with real hardware
 		- document process
 
