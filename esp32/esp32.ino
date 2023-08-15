@@ -867,7 +867,9 @@ void loop() {
         err = pump->run(S(1), true);
         if (err != Retcode::success) update_error(err, USER_ADMIN);
 
-        float weight = scale_weigh();
+        float weight = scale_available ? scale_weigh() : time * pump->rate;
+        cocktail.push_front(Ingredient{"<calibration>", weight});
+
         pump->volume = std::max(pump->volume - weight, 0.0f);
 
         cal_volumes[cal_pump][cal_pass-1] = weight;
@@ -1593,6 +1595,7 @@ Retcode CmdCalibrationFinish::execute() {
 Retcode CmdCalibrationAddEmpty::execute() {
   if (cal_state != CalibrationState::empty) return Retcode::invalid_cal_state;
 
+  reset_cocktail();
   scale_tare();
 
   switch (cal_pass) {
