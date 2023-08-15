@@ -462,7 +462,7 @@ struct CmdEditRecipe : public Command {
 };
 
 struct CmdDeleteRecipe : public Command {
-  def_cmd("delete_recipe", ADMIN);
+  def_cmd("delete_recipe", USER);
   User user;
   String name;
   CmdDeleteRecipe(User user, String name) : user(user), name(name) {}
