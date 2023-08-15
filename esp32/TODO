@@ -9,9 +9,9 @@ transition states
 		# - check for race conditions / clean up transitions
 		# - reduce noisiness of the debug
 		- test with real hardware
-		- document process
+		# - document process
 
 	- recipe making
 		# - check the test log that it's ok
 		# - check that error_state is handled right
-		- document the new process
+		# - document the new process
