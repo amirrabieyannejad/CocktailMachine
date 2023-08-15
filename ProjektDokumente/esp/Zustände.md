@@ -12,7 +12,7 @@ Der aktuelle Zustand kann im Status-Service ausgelesen werden. (s. [Services.md]
 
 ## Kalibrierung
 
-- `no calibration active`: aktuell nicht im Kalibrierungs-Modus
+- `ready`: Maschine ist bereit für eine Kalibrierung
 - `calibration empty container`: Kalibrierung wartet auf ein leeres Gefäß. Es sollte `calibration_add_empty` ausgeführt werden.
 - `calibration known weight`: Kalibrierung wartet auf ein Gewicht. Es sollte `calibration_add_weight` ausgeführt werden.
 - `calibration pumps`: Kalibrierung pumpt Flüssigkeiten
