@@ -2115,14 +2115,14 @@ public class BluetoothSingleton {
     }
 
     /**
-     * adminReadCurrentUser: all users in the queue for whom a
+     * adminReadUserQueue (ADMIN): all users in the queue for whom a
      * cocktail is being made. If no user is active, the value is `[]`.
      * Sample: [1, 4, 2]
      * like described in ProjektDokumente/esp/Services.md
      * receives a message along with Read on {@code BluetoothGattCharacteristic}
      * from the Device.
      *
-     * @return JSONObject
+     * @return JSONArray
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")

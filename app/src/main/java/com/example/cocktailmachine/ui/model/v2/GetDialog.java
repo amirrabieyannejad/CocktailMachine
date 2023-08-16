@@ -110,7 +110,7 @@ public class GetDialog {
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Abgeholt!", (dialog, which) -> {
             int count = 4;
             try {
-                BluetoothSingleton.getInstance().reset();
+                BluetoothSingleton.getInstance().adminReset();
                 CocktailMachine.isCollected();
                 GetDialog.showTopics( activity,  recipe);
                 dialog.dismiss();
