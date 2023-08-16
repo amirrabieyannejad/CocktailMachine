@@ -19,6 +19,8 @@ import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.settings.SettingsActivity;
 import com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice;
 
+import org.json.JSONException;
+
 /**
  * Menu class
  * is the Main Activity and is intended to provide the shortcuts to the Recipe List/Creation,
@@ -59,7 +61,13 @@ public class Menue extends AppCompatActivity {
             binding.activityMenueLogout.setVisibility(View.GONE);
             binding.activityMenueLogin.setVisibility(View.VISIBLE);
         }
-        //CocktailMachineCalibration.start(this);
+        try {
+            CocktailMachineCalibration.start(this);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

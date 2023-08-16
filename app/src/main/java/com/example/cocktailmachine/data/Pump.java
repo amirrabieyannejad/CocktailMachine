@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 
 public interface Pump extends Comparable<Pump>, DataBaseElement {
+    //300ml/min
     String TAG = "Pump";
 
     /**
@@ -529,7 +530,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
          */
         try {
-            BluetoothSingleton.getInstance().adminRunPump(
+            BluetoothSingleton.getInstance().adminManuelCalibrateRunPump(
                     this.getSlot(),
                     time);
         } catch (JSONException | InterruptedException e) {
@@ -569,7 +570,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         //TO DO calibrate
         //TO DO: AMIR
         try {
-            BluetoothSingleton.getInstance().adminCalibratePump(
+            BluetoothSingleton.getInstance().adminManuelCalibratePump(
                     this.getSlot(),
                     time1,
                     time2,
@@ -607,7 +608,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         //TO DO: AMIR
 
         try {
-            BluetoothSingleton.getInstance().adminSetPumpTimes(this.getSlot(), timeInit, timeReverse, rate);
+            BluetoothSingleton.getInstance().adminManuelCalibrateSetPumpTimes(this.getSlot(), timeInit, timeReverse, rate);
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }

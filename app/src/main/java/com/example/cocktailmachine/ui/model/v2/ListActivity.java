@@ -16,7 +16,7 @@ import com.example.cocktailmachine.ui.model.FragmentType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListActivity extends BasicAcitivity {
+public class ListActivity extends BasicActivity {
     private ActivityListBinding binding;
     private TitleListAdapter adapter;
     private ArrayList<Long> IDs = new ArrayList<>();
@@ -37,6 +37,7 @@ public class ListActivity extends BasicAcitivity {
 
     @Override
     void setUpPump() {
+        binding.textViewListAcTitle.setText("Pumpen");
         List<Pump> pumps = Pump.getPumps();
         for(Pump pump: pumps){
             IDs.add(pump.getID());
@@ -55,6 +56,7 @@ public class ListActivity extends BasicAcitivity {
 
     @Override
     void setUpTopic() {
+        binding.textViewListAcTitle.setText("Topics");
         List<Topic> elms = Topic.getTopics();
         for(Topic e: elms){
             IDs.add(e.getID());
@@ -64,6 +66,7 @@ public class ListActivity extends BasicAcitivity {
 
     @Override
     void setUpIngredient() {
+        binding.textViewListAcTitle.setText("Zutaten");
         List<Ingredient> elms = Ingredient.getAllIngredients();
         for(Ingredient e: elms){
             IDs.add(e.getID());
@@ -73,6 +76,7 @@ public class ListActivity extends BasicAcitivity {
 
     @Override
     void setUpRecipe() {
+        binding.textViewListAcTitle.setText("Rezepte");
         List<Recipe> elms = Recipe.getRecipes();
         for(Recipe e: elms){
             IDs.add(e.getID());

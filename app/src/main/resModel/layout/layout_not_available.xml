@@ -15,7 +15,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:minHeight="32dp"
         android:minWidth="32dp"
-        app:srcCompat="@android:drawable/presence_offline" />
+        android:src="@android:drawable/presence_offline" />
 
     <TextView
         android:id="@+id/textView_not_available"

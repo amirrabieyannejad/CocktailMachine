@@ -2,7 +2,6 @@ package com.example.cocktailmachine.data;
 
 
 import android.app.Activity;
-import android.app.AlertDialog;
 
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
@@ -12,8 +11,6 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
-import com.example.cocktailmachine.ui.model.v2.GetDialog;
-import com.example.cocktailmachine.ui.model.v2.WaitingQueueCountDown;
 
 
 import org.json.JSONArray;
@@ -26,16 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface Recipe extends Comparable<Recipe>, DataBaseElement {
-
-
-
-    WaitingQueueCountDown getWaitingQueueCountDown();
-    void setWaitingQueueCountDown(Activity activity);
-
-    void addDialogWaitingQueueCountDown(Activity activity, AlertDialog alertDialog);
-
-
-
     //Getter
 
     /**
@@ -206,56 +193,23 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
     //Use Bluetooth
 
-
-    //Mixing
-
     /**
      * send to be mixed
      *   {"cmd": "make_recipe", "user": 8858, "recipe": "radler"}
-     *   starts dialog,
-     *      countdown
-     *      ping for next notification
-     *      demands glas placement and los
-     *      fillanimation activity start
-     *      finish check show finish dialog
-     *      show topics
-     *      go to recipe or selected topic
-     *
-     * TO DO:show topics to user!
+     * TODO:show topics to user!
      */
     default void send(Activity activity) {
         //service.
         //BluetoothSingleton.getInstance().mBluetoothLeService.makeRecipe(AdminRights.getUserId(), );
         BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
         try {
-            bluetoothSingleton.makeRecipe(this.getName());
-            setWaitingQueueCountDown(activity);
-            CocktailMachine.setCurrentRecipe(this);
-            GetDialog.sendRecipe(activity, this);
+            bluetoothSingleton.userStartRecipe(this.getID());
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }
         //TO DO: Bluetooth send to mix
         //TO DO: AMIR **DONE**
     }
-
-    //waiting
-    default boolean isWaiting(){
-        return (getWaitingQueueCountDown() != null) && (getWaitingQueueCountDown().isWaiting());
-    }
-
-    default boolean isNext(){
-        return (getWaitingQueueCountDown() != null) && (getWaitingQueueCountDown().isNext());
-    }
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -290,7 +244,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
             //jsonObject.put("liquids", array);
 
             BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
-            bluetoothSingleton.defineRecipe(this.getName(),array);
+            bluetoothSingleton.userDefineRecipe(this.getID(),this.getName(),array);
 
             return true;
         } catch (JSONException | TooManyTimesSettedIngredientEcxception |
@@ -302,7 +256,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
     default boolean sendDelete(Activity activity){
         try {
-            BluetoothSingleton.getInstance().deleteRecipe(
+            BluetoothSingleton.getInstance().userDeleteRecipe(this.getID(),
                     this.getName()
             );
             return true;
