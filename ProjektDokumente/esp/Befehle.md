@@ -205,7 +205,7 @@ JSON-Beispiel:
 
 JSON-Beispiel:
 
-    {"cmd": "calibration_start", "user": 0}
+    {"cmd": "calibration_finish", "user": 0}
 
 ### calibration_add_empty (ADMIN): leeres Gefäß ist bereit
 - user: User
