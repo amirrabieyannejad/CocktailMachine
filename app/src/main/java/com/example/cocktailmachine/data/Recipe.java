@@ -2,6 +2,7 @@ package com.example.cocktailmachine.data;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
 
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
@@ -11,6 +12,8 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.ui.model.v2.GetDialog;
+import com.example.cocktailmachine.ui.model.v2.WaitingQueueCountDown;
 
 
 import org.json.JSONArray;
@@ -23,12 +26,18 @@ import java.util.List;
 import java.util.Map;
 
 public interface Recipe extends Comparable<Recipe>, DataBaseElement {
-    //Getter
+
+    WaitingQueueCountDown getWaitingQueueCountDown();
+    void setWaitingQueueCountDown(Activity activity);
+
+    void addDialogWaitingQueueCountDown(Activity activity, AlertDialog alertDialog);
 
     /**
      * Get id.
      * @return id
      */
+
+
     long getID();
 
     /**
