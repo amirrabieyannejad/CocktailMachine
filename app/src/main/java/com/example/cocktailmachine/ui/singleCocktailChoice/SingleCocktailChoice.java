@@ -14,6 +14,8 @@ import android.view.View;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.SingeltonTestdata;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Orientation;
 import com.example.cocktailmachine.data.Recipe;
@@ -66,7 +68,11 @@ public class SingleCocktailChoice extends AppCompatActivity {
 
 
         testData = new LinkedList<>();
-        testData = Recipe.getAllRecipes();
+        counter = 0;
+        while (testData.size() == 0 && counter++ < 9){
+            testData = Recipe.getAllRecipes();
+        }
+
 
 
         recipes.add(singeltonCocktail.getRecipe());
@@ -182,7 +188,15 @@ public class SingleCocktailChoice extends AppCompatActivity {
             }
 
             String newText = testData.get(counter).getName();
-            fragment1 fragment = fragment1.newInstance(newText);
+            //fragment1 fragment = fragment1.newInstance(newText);
+            fragment1 fragment = null;
+            try {
+                fragment = fragment1.newInstance(testData.get(counter));
+            } catch (TooManyTimesSettedIngredientEcxception e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchIngredientSettedException e) {
+                throw new RuntimeException(e);
+            }
             replaceFragmentWithOrientation(fragment,flingOrientation);
 
             return true;
