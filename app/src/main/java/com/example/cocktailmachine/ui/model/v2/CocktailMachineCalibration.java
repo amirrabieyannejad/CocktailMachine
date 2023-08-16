@@ -10,6 +10,8 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.enums.AdminRights;
 
+import org.json.JSONException;
+
 import java.util.Random;
 
 /**
@@ -18,7 +20,7 @@ import java.util.Random;
  * @project CocktailMachine
  */
 public class CocktailMachineCalibration {
-    public static void start(Activity activity){
+    public static void start(Activity activity) throws JSONException, InterruptedException {
         AdminRights.login(activity, activity.getLayoutInflater(), dialog -> {});
         AdminRights.initUser(activity, String.valueOf(new Random().nextInt()));
         if(CocktailMachine.isCocktailMachineSet(activity)){

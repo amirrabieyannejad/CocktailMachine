@@ -26,8 +26,6 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
                 (result != null);
     }
 
-
-
     public JSONObject getResult() {
         return jsonObject;
     }
@@ -50,6 +48,8 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
                 Thread.sleep(500);
                 timeout = timeout + 500;
                 if (timeout == 5000) {
+                    Log.w(TAG, "waitforBraodcastReceiver: timeout...");
+                    break;
                 }
 
             } catch (InterruptedException e) {
@@ -59,6 +59,7 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
 
         }
         result = singleton.getEspResponseValue();
+        Log.w(TAG, "waitForBroadcastReceiver: " + result);
         try {
             jsonObject = new JSONObject(result);
             //jsonArray = jsonObject.getJSONArray(result);
@@ -75,11 +76,15 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
 
 
         @Override
+        @SuppressLint("MissingPermission")
     protected void onPostExecute(JSONObject result) {
         super.onPostExecute(result);
             Log.w(TAG, "we are in WaitForBroadcast Post Execute!");
             try {
                 toSave();
+                singleton.mBluetoothGatt.disconnect();
+                singleton.connect = false;
+                singleton.value = null;
             } catch (InterruptedException | NotInitializedDBException e) {
                 e.printStackTrace();
             } catch (JSONException e) {

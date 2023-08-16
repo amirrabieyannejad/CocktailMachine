@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -15,9 +14,6 @@ import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 
 import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.Date;
 
 public class BluetoothTestEnviroment extends AppCompatActivity {
 
@@ -39,7 +35,7 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
         textView = findViewById(R.id.ESPData);
 
         // Step2: Only at the very first time Connect to Device
-        singleton.connectGatt(BluetoothTestEnviroment.this);
+        //singleton.connectGatt(BluetoothTestEnviroment.this);
 
 
     }
@@ -50,10 +46,10 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
         //singleton.initUser(user,textView,BluetoothTestEnviroment.this);
         //TODO: als Rückgabe JSON Datei
 
-        singleton.initUser(user,BluetoothTestEnviroment.this);
+        singleton.userInitUser(user,BluetoothTestEnviroment.this);
         //singleton.adminDefinePump("beer", 1000,1);
         //singleton.adminReadCurrentUser();
-        Log.w("Activity", "is everything is a right place??");
+        Log.w("Activity", "bluetoothTestEnvironment: is everything in a right place??");
         //textView.setText(json.toString());
         //singleton.connectGatt(BluetoothTestEnviroment.this);
     }

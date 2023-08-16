@@ -57,11 +57,15 @@ public class SampleGattAttributes {
         attributes.put("Status Cocktail Characteristic","7344136f-c552-3efc-b04f-a43793f16d43");
         // ok Current user Characteristic: the current user for whom a cocktail is being
         // made or is ready.If no user is active, the value is -1.
-        attributes.put("Status Current user Characteristic","2ce478ea-8d6f-30ba-9ac6-2389c8d5b172");
+        attributes.put("Status User Queue Characteristic","2ce478ea-8d6f-30ba-9ac6-2389c8d5b172");
         // Last Change Characteristic: If the timestamp has not changed, the available recipes
         // and ingredients are still the same.The timestamp is an internal value of the ESP and
         // has no relation to the real time.
         attributes.put("Status Last Change Characteristic","586b5706-5856-34e1-ad17-94f840298816");
+        // Scale Characteristic: Status of Scale
+        attributes.put("Status Scale Characteristic","ff18f0ac-f039-4cd0-bee3-b546e3de5551");
+        // Error Characteristic: Value: current error (if any)
+        attributes.put("Status Error Characteristic","2e03aa0c-b25f-456a-a327-bd175771111a");
 
 
 

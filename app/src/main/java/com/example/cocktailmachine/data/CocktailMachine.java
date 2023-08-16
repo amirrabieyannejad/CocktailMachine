@@ -42,7 +42,7 @@ public class CocktailMachine {
     public static void tareScale(Activity activity){
         //TO DO: tareScale
         try {
-            BluetoothSingleton.getInstance().adminTareScale();
+            BluetoothSingleton.getInstance().adminManuelCalibrateTareScale();
             Toast.makeText(activity, "Tarierung der Waage eingeleitet.",Toast.LENGTH_SHORT).show();
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
@@ -66,7 +66,7 @@ public class CocktailMachine {
     public static void sendCalibrateScale(Activity activity, float weight){
         //TO DO: calibrateScale
         try {
-            BluetoothSingleton.getInstance().adminCalibrateScale(weight);
+            BluetoothSingleton.getInstance().adminManuelCalibrateScale(weight);
             Toast.makeText(activity, "Kalibrierung der Waage mit Gewicht: "+weight+" g",Toast.LENGTH_SHORT).show();
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
@@ -107,7 +107,7 @@ public class CocktailMachine {
     public static void sendScaleFactor(Activity activity, Float factor){
         //TO DO: send scale factor
         try {
-            BluetoothSingleton.getInstance().adminSetScaleFactor(factor);
+            BluetoothSingleton.getInstance().adminManuelCalibrateSetScaleFactor(factor);
             Toast.makeText(activity, "Skalierung der Waage mit Faktor: "+factor,Toast.LENGTH_SHORT).show();
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
@@ -122,13 +122,13 @@ public class CocktailMachine {
      * @author Johanna Reidt
      * @param activity
      */
-    public static void abort(Activity activity){
+    public static void resetError(Activity activity){
 
         try {
-            BluetoothSingleton.getInstance().abort();
+            BluetoothSingleton.getInstance().adminResetError();
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
-            Log.i(TAG, "abort failed");
+            Log.i(TAG, "Reset stored error");
         }
     }
 
@@ -176,7 +176,7 @@ public class CocktailMachine {
 
     public static int getCurrentUser(Activity activity){
         try {
-            BluetoothSingleton.getInstance().adminReadCurrentUser();
+            BluetoothSingleton.getInstance().adminReadUserQueue();
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
             Log.i(TAG, "getCurrentUser failed");
@@ -207,6 +207,7 @@ public class CocktailMachine {
     }
 
 
+    // TODO: Johanna change to array setCurrentUser is now queueUser
     public static void setCurrentUser(String res) {
         currentUser = Integer.parseInt(res);
     }
