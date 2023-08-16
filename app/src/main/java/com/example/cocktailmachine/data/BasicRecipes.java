@@ -51,11 +51,11 @@ public class BasicRecipes {
         Ingredient limettensaft = Ingredient.makeNew("Limettensaft", false, Color.WHITE);
 
          */
-        Ingredient wodka = Ingredient.makeNew("Wodka", true, 0);
+        Ingredient wodka = Ingredient.makeNew("Wodka", true, Color.BLUE);
         wodka.save();
-        Ingredient rum = Ingredient.makeNew("Rum", true, 0);
+        Ingredient rum = Ingredient.makeNew("Rum", true, Color.GRAY);
         rum.save();
-        Ingredient cola = Ingredient.makeNew("Cola", false, 0);
+        Ingredient cola = Ingredient.makeNew("Cola", false, Color.BLACK);
         cola.save();
 
         //DatabaseConnection.localRefresh();

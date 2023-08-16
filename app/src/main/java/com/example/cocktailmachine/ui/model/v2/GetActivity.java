@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.cocktailmachine.data.Recipe;
+import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
 import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
@@ -18,7 +19,7 @@ public class GetActivity {
     public static final String ID = "ID";
     public static final String MODELTYPE = "MODELTYPE";
     public static final String FRAGMENTTYPE = "FRAGMENTTYPE";
-    public static void goTo(Activity activity, FragmentType fragmentType, ModelType modelType){
+    public static void goToDisplay(Activity activity, FragmentType fragmentType, ModelType modelType){
         //TO DO
         /*
         Intent intent = new Intent(this, ModelActivity.class);
@@ -39,10 +40,10 @@ public class GetActivity {
         bundle.putString(MODELTYPE, modelType.toString());
         intent.putExtras(bundle);
         activity.startActivity(intent);
-        activity.finish();
+        //activity.finish();
     }
 
-    public static void goTo(Activity activity, FragmentType fragmentType, ModelType modelType, Long id){
+    public static void goToDisplay(Activity activity, FragmentType fragmentType, ModelType modelType, Long id){
         //TO DO
         /*
         Intent intent = new Intent(this, ModelActivity.class);
@@ -61,7 +62,7 @@ public class GetActivity {
         bundle.putString(FRAGMENTTYPE, fragmentType.toString());
         intent.putExtras(bundle);
         activity.startActivity(intent);
-        activity.finish();
+        //activity.finish();
     }
 
     public static void startAgain(Activity activity) {
@@ -74,6 +75,12 @@ public class GetActivity {
         bundle.putLong(ID, recipe.getID());
         intent.putExtras(bundle);
         activity.startActivity(intent);
-        activity.finish();
+        //activity.finish();
+    }
+
+    public static void goToMenu(Activity activity) {
+        Intent intent = new Intent(activity, Menue.class);
+        activity.startActivity(intent);
+        //activity.finish();
     }
 }

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="JavadocGenerationManager">
@@ -10,5 +11,8 @@
   <component name="ProjectRootManager" version="2" languageLevel="JDK_17" project-jdk-name="jbr-17" project-jdk-type="JavaSDK" />
   <component name="ProjectType">
     <option name="id" value="Android" />
+  </component>
+  <component name="PyCharmDSProjectLayout">
+    <option name="id" value="JupyterRightHiddenStructureLayout" />
   </component>
 </project>

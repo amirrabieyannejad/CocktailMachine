@@ -109,13 +109,13 @@ public class TitleVolumeListAdapter extends RecyclerView.Adapter<TitleVolumeList
             this.title.setText(this.ingredient.getName());
             this.vol.setText(this.ingredient.getVolume());
             this.title.setOnClickListener(v ->
-                    GetActivity.goTo(
+                    GetActivity.goToDisplay(
                             activity,
                             FragmentType.Model,
                             ModelType.INGREDIENT,
                             this.ingredient.getID()));
             this.vol.setOnClickListener(v ->
-                    GetActivity.goTo(
+                    GetActivity.goToDisplay(
                             activity,
                             FragmentType.Model,
                             ModelType.PUMP,

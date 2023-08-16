@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 
 public interface Pump extends Comparable<Pump>, DataBaseElement {
+    //300ml/min
     String TAG = "Pump";
 
     /**

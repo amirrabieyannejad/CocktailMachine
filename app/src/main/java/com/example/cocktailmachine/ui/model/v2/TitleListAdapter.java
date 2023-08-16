@@ -88,7 +88,7 @@ public class TitleListAdapter extends RecyclerView.Adapter<TitleListAdapter.Titl
             this.modelType = modelType;
             this.title.setText(text);
             this.title.setOnClickListener(v ->
-                    GetActivity.goTo(
+                    GetActivity.goToDisplay(
                             activity,
                             FragmentType.Model,
                             modelType,

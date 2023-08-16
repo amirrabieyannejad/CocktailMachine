@@ -14,7 +14,7 @@ import com.example.cocktailmachine.ui.model.ModelType;
  * @created Di. 27.Jun 2023 - 13:16
  * @project CocktailMachine
  */
-public abstract class BasicAcitivity extends AppCompatActivity {
+public abstract class BasicActivity extends AppCompatActivity {
 
     private Long id;
     private FragmentType fragmentType;

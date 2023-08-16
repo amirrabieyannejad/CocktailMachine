@@ -16,7 +16,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_dialog_alert"
+        android:src="@android:drawable/ic_dialog_alert"
         app:tint="@color/material_dynamic_neutral70" />
 
     <TextView

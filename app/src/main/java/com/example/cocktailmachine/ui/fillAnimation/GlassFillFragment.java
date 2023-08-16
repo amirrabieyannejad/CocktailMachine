@@ -21,12 +21,6 @@ import com.example.cocktailmachine.R;
  */
 public class GlassFillFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String TEXT = "param1";
-    private static final String IMAGE = "param2";
-
-    // TODO: Rename and change types of parameters
     private String text = "";
     private Bitmap image = null;
 
@@ -34,7 +28,6 @@ public class GlassFillFragment extends Fragment {
     ImageView imageView;
     TextView textView;
     View view;
-    Context context;
 
 
     public static GlassFillFragment newInstance(String text, Bitmap image) {

@@ -1,6 +1,7 @@
 package com.example.cocktailmachine;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.graphics.Color;
 
 import com.example.cocktailmachine.data.Ingredient;
@@ -12,6 +13,7 @@ import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.ui.model.v2.WaitingQueueCountDown;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,6 +45,23 @@ public class SingeltonTestdata {
             @Override
             public int compareTo(Recipe o) {
                 return 0;
+            }
+
+            @Override
+            public WaitingQueueCountDown getWaitingQueueCountDown() {
+                 return null;
+            }
+
+            @Override
+            public void setWaitingQueueCountDown(Activity activity) {
+
+
+            }
+
+            @Override
+            public void addDialogWaitingQueueCountDown(Activity activity, AlertDialog alertDialog) {
+
+
             }
 
             @Override
@@ -515,6 +534,23 @@ public class SingeltonTestdata {
             @Override
             public int compareTo(Recipe o) {
                 return 0;
+            }
+
+            @Override
+            public WaitingQueueCountDown getWaitingQueueCountDown() {
+                return null;
+            }
+
+            @Override
+            public void setWaitingQueueCountDown(Activity activity) {
+
+
+            }
+
+            @Override
+            public void addDialogWaitingQueueCountDown(Activity activity, AlertDialog alertDialog) {
+
+
             }
 
             @Override
