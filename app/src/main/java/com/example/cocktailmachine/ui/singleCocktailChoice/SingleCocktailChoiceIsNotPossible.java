@@ -2,9 +2,12 @@ package com.example.cocktailmachine.ui.singleCocktailChoice;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.ui.Menue;
+import com.example.cocktailmachine.ui.settings.SettingsActivity;
 
 public class SingleCocktailChoiceIsNotPossible extends AppCompatActivity {
 
@@ -18,5 +21,8 @@ public class SingleCocktailChoiceIsNotPossible extends AppCompatActivity {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+        Intent intent = new Intent(this, Menue.class);
+        startActivity(intent);
     }
 }
