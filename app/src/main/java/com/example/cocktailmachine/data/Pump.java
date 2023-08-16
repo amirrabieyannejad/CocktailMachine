@@ -570,7 +570,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         //TO DO calibrate
         //TO DO: AMIR
         try {
-            BluetoothSingleton.getInstance().adminManuelCalibPump(
+            BluetoothSingleton.getInstance().adminManuelCalibratePump(
                     this.getSlot(),
                     time1,
                     time2,
