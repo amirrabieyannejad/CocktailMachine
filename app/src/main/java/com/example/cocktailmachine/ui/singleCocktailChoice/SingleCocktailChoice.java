@@ -14,6 +14,7 @@ import android.view.View;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.SingeltonTestdata;
+import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Orientation;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
@@ -38,19 +39,34 @@ public class SingleCocktailChoice extends AppCompatActivity {
     SingeltonTestdata singeltonCocktail = SingeltonTestdata.getSingelton();
     List<Recipe> recipes = new LinkedList();
 
+    private static final String TAG = "CocktailList";
 
-
-    List<String> testData;
+    List<Recipe> testData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_cocktail_choice);
 
+        if(!DatabaseConnection.isInitialized()) {
+            Log.i(TAG, "onCreate: DataBase is not yet initialized");
+            DatabaseConnection.initializeSingleton(this, AdminRights.getUserPrivilegeLevel());// UserPrivilegeLevel.Admin);
+            try {
+                DatabaseConnection.getDataBase();
+                Log.i(TAG, "onCreate: DataBase is initialized");
+                //Log.i(TAG, Recipe.getAllRecipesAsMessage().toString());
+            } catch (NotInitializedDBException e) {
+                e.printStackTrace();
+                Log.e(TAG, "onCreate: DataBase is not initialized");
+            }
+        }else{
+            Log.i(TAG, "onCreate: DataBase is already initialized");
+        }
+
+
+
         testData = new LinkedList<>();
-        testData.add("a");
-        testData.add("b");
-        testData.add("c");
+        testData = Recipe.getAllRecipes();
 
 
         recipes.add(singeltonCocktail.getRecipe());
@@ -148,7 +164,7 @@ public class SingleCocktailChoice extends AppCompatActivity {
 
             Orientation flingOrientation = FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY);
 
-            String oldText = testData.get(counter);
+            String oldText = testData.get(counter).getName();
             fragment1 oldFragment = fragment1.newInstance(oldText);
             setSlideOutAnimationFragment(oldFragment,flingOrientation);
 
@@ -165,7 +181,7 @@ public class SingleCocktailChoice extends AppCompatActivity {
                 }
             }
 
-            String newText = testData.get(counter);
+            String newText = testData.get(counter).getName();
             fragment1 fragment = fragment1.newInstance(newText);
             replaceFragmentWithOrientation(fragment,flingOrientation);
 
