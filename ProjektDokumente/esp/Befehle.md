@@ -212,7 +212,7 @@ JSON-Beispiel:
 
 JSON-Beispiel:
 
-    {"cmd": "calibration_start", "user": 0}
+    {"cmd": "calibration_add_empty", "user": 0}
 
 ### calibration_add_weight (ADMIN): Gefäß ist mit einer Menge Wasser gefüllt
 - user: User
@@ -258,7 +258,7 @@ JSON-Beispiel:
 - time_reverse: int
 - rate: float
 
-`time_init` ist die Vorlaufzeit und `time_init` die Rücklaufzeit in Millisekunden. Normalerweise sollten diese Werte ähnlich oder gleich sein. Die Rate wird in mL/ms angegeben.
+`time_init` ist die Vorlaufzeit und `time_reverse` die Rücklaufzeit in Millisekunden. Normalerweise sollten diese Werte ähnlich oder gleich sein. Die Rate wird in mL/ms angegeben.
 
 JSON-Beispiel:
 
