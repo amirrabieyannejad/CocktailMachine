@@ -4,13 +4,13 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 
 public class Loader {
-    public void load(String fileName, SQLiteDatabase db){
+    public void load(String fileName, SQLiteDatabase db, String tableName) throws IOException {
         FileReader file = new FileReader(fileName);
         BufferedReader buffer = new BufferedReader(file);
         String line = "";
-        String tableName ="TABLE_NAME";
         String columns = "_id, name, dt1, dt2, dt3";
         String str1 = "INSERT INTO " + tableName + " (" + columns + ") values(";
         String str2 = ");";
