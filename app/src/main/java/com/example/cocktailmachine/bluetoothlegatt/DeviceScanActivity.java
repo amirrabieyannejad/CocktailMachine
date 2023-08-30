@@ -230,19 +230,26 @@ public class DeviceScanActivity extends ListActivity {
             }
 
             // filter only CocktailMachine
+
             ArrayList<ScanFilter> filters = new ArrayList<>();
             ScanFilter.Builder builder = new ScanFilter.Builder();
             String serviceUuidMaskString = "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF";
             ParcelUuid parcelUuidMask = ParcelUuid.fromString(serviceUuidMaskString);
             builder.setServiceUuid(new ParcelUuid(UUID_COCKTAIL_MACHINE), parcelUuidMask);
             filters.add(builder.build());
+            if (filters.isEmpty()) {
+                Toast.makeText(this, "UUID has not found!",
+                        Toast.LENGTH_LONG).show();
+            }
+
             scanning = true;
             bluetoothLeScanner.startScan(filters,bleScanSettings,leScanCallback);
+            //bluetoothLeScanner.startScan(leScanCallback);
         } else {
             scanning = false;
             bluetoothLeScanner.stopScan(leScanCallback);
         }
-        invalidateOptionsMenu();
+        //invalidateOptionsMenu();
     }
 
     // Adapter for holding devices found through scanning.

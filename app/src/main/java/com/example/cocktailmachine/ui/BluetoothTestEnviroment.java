@@ -47,6 +47,24 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
         //TODO: als Rückgabe JSON Datei
 
         singleton.userInitUser(user,BluetoothTestEnviroment.this);
+
+
+        // empty buttle should be placed- in GUI we should ask to put empty buttle  wait for ok
+        //singleton.adminAutoCalibrateAddEmpty();
+        //singleton.adminReadState();
+        //Status wert gespeichert auf DB
+        //durch while warten auf "calibration known weight"
+        //
+        // GUI put 100ml water in glass. we should ask to fill empty buttle with 100ml water wait for ok
+        //singleton.adminAutoCalibrateAddWeight();
+        //singleton.adminReadState();
+        //Status wert gespeichert auf DB
+        //durch while warten auf "calibration emtpty container"
+
+        // we should wait empty buttle and User should tip ok
+        //singleton.adminAutoCalibrateAddEmpty();
+        //singleton.adminReadState();
+
         //singleton.adminDefinePump("beer", 1000,1);
         //singleton.adminReadCurrentUser();
         Log.w("Activity", "bluetoothTestEnvironment: is everything in a right place??");

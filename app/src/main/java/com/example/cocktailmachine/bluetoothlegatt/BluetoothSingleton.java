@@ -374,6 +374,8 @@ public class BluetoothSingleton {
 
         //Log.w(TAG, "try to connect: " + singleton.EspDeviceAddress);
         singleton.connect(activity, "78:E3:6D:1A:87:9E");
+        //singleton.connect(activity, "54:43:B2:A9:32:26");
+        //singleton.connect(activity, singleton.getEspDeviceAddress());
         return true;
     }
 
@@ -1416,7 +1418,7 @@ public class BluetoothSingleton {
 
     /**
      * refill_pump (ADMIN): Fills pump
-     * like described in ProjektDokumente/esp/Befehle.md
+     * like described in ProjecktDokumente/esp/Befehle.md
      * JSON-sample: {"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1}
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
      *
