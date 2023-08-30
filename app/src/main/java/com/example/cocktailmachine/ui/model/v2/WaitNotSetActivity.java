@@ -31,7 +31,7 @@ public class WaitNotSetActivity extends AppCompatActivity {
                 dialog.dismiss();
                 if(AdminRights.isAdmin()) {
                     GetDialog.startAutomaticCalibration(a);
-                    GetActivity.goToMenu(a);
+                    //GetActivity.goToMenu(a);
                 }
             }
         });

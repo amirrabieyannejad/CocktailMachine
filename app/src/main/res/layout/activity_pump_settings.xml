@@ -30,4 +30,15 @@
         android:text="Setze Pumpzeiten"
         android:textSize="20sp" />
 
+    <TextView
+        android:id="@+id/textViewSettingsAutomatic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:onClick="automatic"
+        android:padding="8dp"
+        android:paddingStart="16dp"
+        android:text="Automatische Kalibrierung"
+        android:textSize="20sp" />
+
 </LinearLayout>

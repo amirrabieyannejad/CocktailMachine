@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.example.cocktailmachine.Dummy;
+import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
@@ -67,7 +69,12 @@ public class GetActivity {
 
     public static void startAgain(Activity activity) {
         //TODO: go back to device scan
-        goToMenu(activity);
+        if(Dummy.isDummy) {
+            goToMenu(activity);
+        }else{
+            Intent intent = new Intent(activity, DeviceScanActivity.class);
+            activity.startActivity(intent);
+        }
     }
 
     public static void goToFill(Activity activity, Recipe recipe){
