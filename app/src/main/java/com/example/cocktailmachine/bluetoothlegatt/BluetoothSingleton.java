@@ -294,7 +294,6 @@ public class BluetoothSingleton {
 
     @SuppressLint("MissingPermission")
     private boolean connect(Activity activity, String address) {
-
         singleton = BluetoothSingleton.getInstance();
         if (singleton.mBluetoothAdapter == null || address == null) {
             Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
@@ -374,7 +373,8 @@ public class BluetoothSingleton {
         // Automatically connects to the device upon successful start-up initialization.
 
         //Log.w(TAG, "try to connect: " + singleton.EspDeviceAddress);
-        singleton.connect(activity, "54:43:B2:A9:32:26");
+        singleton.connect(activity, "78:E3:6D:1A:87:9E");
+        //singleton.connect(activity, "54:43:B2:A9:32:26");
         //singleton.connect(activity, singleton.getEspDeviceAddress());
         return true;
     }

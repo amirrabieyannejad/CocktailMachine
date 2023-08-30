@@ -53,7 +53,10 @@
         android:roundIcon="@mipmap/ic_app_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CocktailMachine"
-        tools:targetApi="26">
+        tools:targetApi="21">
+        <activity
+            android:name=".ui.calibration.scale.calibrationScale"
+            android:exported="false" />
         <activity
             android:name=".ui.model.v2.WaitNotSetActivity"
             android:exported="false" />
