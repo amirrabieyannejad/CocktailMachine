@@ -177,6 +177,7 @@ public class GetDialog {
      */
     public static void startAutomaticCalibration(Activity activity){
         CocktailMachineCalibration.setIsDone(true);
+        CocktailMachine.automaticCalibration(activity);
         Log.i(TAG, "startAutomaticCalibration");
         DatabaseConnection.initializeSingleton(activity);
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -200,7 +201,8 @@ public class GetDialog {
                 "Gemeint ist der Bereich an dem später die Gläser stehen." +
                 "Auch das Auffangbecken muss leer sein!");
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
-            CocktailMachine.tareScale(activity);
+            //CocktailMachine.tareScale(activity);
+            CocktailMachine.automaticEmpty();
             enterNumberOfPumps(activity);
             dialog.dismiss();
         });
@@ -235,7 +237,8 @@ public class GetDialog {
         builder.setMessage("Bitte stelle ein Gefäss mit 100ml Flüssigkeit unter die Cocktailmaschine. ");
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
             dialog.dismiss();
-            CocktailMachine.automaticCalibration(activity);
+            //CocktailMachine.automaticCalibration(activity);
+            CocktailMachine.automaticWeight();
             waitingAutomaticCalibration(activity);
         });
         builder.show();
