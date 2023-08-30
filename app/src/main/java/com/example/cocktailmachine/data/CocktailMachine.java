@@ -296,6 +296,16 @@ public class CocktailMachine {
 
 
 
+
+
+
+
+
+
+
+
+    //Calibrations
+
     public static void automaticCalibration(Activity activity){
         /**
          * a.	Bitte erst wasser beim ersten Durchgang
@@ -327,6 +337,29 @@ public class CocktailMachine {
     }
 
 
+    public static void automaticEmpty(){
+        try{
+        BluetoothSingleton.getInstance().adminAutoCalibrateAddEmpty();
+        } catch (JSONException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void automaticWeight(){
+        try{
+            BluetoothSingleton.getInstance().adminAutoCalibrateAddWeight(100);
+        } catch (JSONException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void automaticEnd(){
+        try {
+            BluetoothSingleton.getInstance().adminAutoCalibrateFinish();
+        } catch (JSONException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
 

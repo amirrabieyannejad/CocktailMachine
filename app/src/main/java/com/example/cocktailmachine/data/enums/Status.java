@@ -20,10 +20,10 @@ public enum Status {
 - `pumping`: Maschine pumpt Flüssigkeiten
 - `cocktail done`: Cocktail ist fertig zubereitet und kann entnommen werden. Danach sollte `reset` ausgeführt werden.
      */
-    init, ready, mixing, pumping, cocktail_done,
+    init, ready, mixing, pumping, cocktail_done,not
     ;
 
-    static Status currentState = Status.ready;
+    static Status currentState = Status.not;
 
     @NonNull
     @Override
@@ -40,14 +40,14 @@ public enum Status {
      * @param activity
      * @return
      */
-    public static Status getCurrentStatus(Activity activity) {
-        BluetoothSingleton blSingelton = BluetoothSingleton.getInstance();
-        blSingelton.connectGatt(activity);
+    public static Status getCurrentStatus(Activity activity, Postexecute postexecute) {
+        //BluetoothSingleton blSingelton = BluetoothSingleton.getInstance();
+        //blSingelton.connectGatt(activity);
         //TO DO: Bluetoothlegatt
         //BluetoothSingleton.getInstance().mBluetoothLeService;
         //TO DO: AMIR
         try {
-            blSingelton.adminReadState();
+            BluetoothSingleton.getInstance().adminReadState(postexecute);
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -60,8 +60,23 @@ public enum Status {
      * @param activity
      * @return
      */
-    public static String getCurrentStatusMessage(Activity activity) {
-        Status status = getCurrentStatus(activity);
+    public static Status getCurrentStatus() {
+        //BluetoothSingleton blSingelton = BluetoothSingleton.getInstance();
+        //blSingelton.connectGatt(activity);
+        //TO DO: Bluetoothlegatt
+        //BluetoothSingleton.getInstance().mBluetoothLeService;
+        //TO DO: AMIR
+        return currentState;
+    }
+
+    /**
+     * return current Status
+     *
+     * @param activity
+     * @return
+     */
+    public static String getCurrentStatusMessage(Activity activity, Postexecute postexecute) {
+        Status status = getCurrentStatus(activity, postexecute);
         StringBuilder builder = new StringBuilder();
         builder.append("Die Cocktailmaschine ");
         switch (status) {

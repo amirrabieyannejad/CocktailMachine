@@ -33,6 +33,7 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.AdminRights;
+import com.example.cocktailmachine.data.enums.Postexecute;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -2042,10 +2043,16 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReadState() throws JSONException, InterruptedException {
+    public void adminReadState(Postexecute postexecute) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.sendStatus(CHARACTERISTIC_STATUS_STATE);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+
+            @Override
+            public void post() {
+                postexecute.post();
+            }
+
             @Override
             public void toSave() throws InterruptedException, JSONException {
                 if (!check()) {

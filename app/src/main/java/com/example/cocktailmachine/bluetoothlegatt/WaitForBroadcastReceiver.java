@@ -19,6 +19,8 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
     JSONArray jsonArray;
     String result;
 
+    public abstract void post();
+
     public abstract void toSave() throws InterruptedException, JSONException, NotInitializedDBException, MissingIngredientPumpException;
 
     public Boolean check() {
@@ -85,6 +87,7 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
             Log.w(TAG, "we are in WaitForBroadcast Post Execute!");
             try {
                 toSave();
+                post();
                 singleton.mBluetoothGatt.disconnect();
                 singleton.connect = false;
                 singleton.value = null;

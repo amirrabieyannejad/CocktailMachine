@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
+import com.example.cocktailmachine.data.enums.Postexecute;
 
 import org.json.JSONException;
 
@@ -17,13 +18,23 @@ public class calibrationScale extends AppCompatActivity {
         setContentView(R.layout.activity_calibration_scale);
         blSingelton.connectGatt(this);
         try {
-            blSingelton.adminReadState();
+            blSingelton.adminReadState(new Postexecute() {
+                @Override
+                public void post() {
+                    System.out.println("Wurde gelesen");
+                }
+            });
         } catch (JSONException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
         System.out.println("Die NAchricht ist");
-        System.out.println("Der momentane Status ist" + com.example.cocktailmachine.data.enums.Status.getCurrentStatus(this));
+        System.out.println("Der momentane Status ist" + com.example.cocktailmachine.data.enums.Status.getCurrentStatus(this, new Postexecute() {
+            @Override
+            public void post() {
+                System.out.println("dkjflkjldsök");
+            }
+        }));
     }
 }

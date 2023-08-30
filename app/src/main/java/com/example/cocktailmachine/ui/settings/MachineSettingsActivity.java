@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Pump;
+import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.data.enums.Status;
 import com.example.cocktailmachine.ui.model.v2.GetDialog;
 
@@ -73,7 +74,12 @@ public class MachineSettingsActivity extends AppCompatActivity {
     public void status(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Cocktailmaschinenstatus");
-        builder.setMessage(Status.getCurrentStatusMessage(this));
+        builder.setMessage(Status.getCurrentStatusMessage(this, new Postexecute() {
+            @Override
+            public void post() {
+                builder.setMessage(Status.getCurrentStatus().toString());
+            }
+        }));
         builder.setNeutralButton("Fertig!", (dialog, which) -> {});
         builder.show();
     }
