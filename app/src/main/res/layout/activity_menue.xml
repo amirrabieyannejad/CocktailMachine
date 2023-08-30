@@ -102,6 +102,15 @@
                 android:onClick="login"
                 app:srcCompat="@drawable/ic_login" />
 
+            <ImageView
+                android:id="@+id/calibration"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
+                app:contentDescription="calibration"
+                android:onClick="calibration"
+                app:srcCompat="@drawable/ic_reload" />
+
         </LinearLayout>
     </ScrollView>
 

@@ -245,4 +245,7 @@
     </string>
     <string name="nicht_alkoholisch">nicht alkoholisch</string>
 
+
+    <string name="listitem_device_foundDevices">Folgende Geräte wurden gefunden. Bitte wählen Sie ihre Cocktailmaschiene aus.</string>
+
 </resources>

@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
+import com.example.cocktailmachine.ui.calibration.scale.calibrationScale;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
 import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
@@ -61,6 +62,7 @@ public class Menue extends AppCompatActivity {
             binding.activityMenueLogout.setVisibility(View.GONE);
             binding.activityMenueLogin.setVisibility(View.VISIBLE);
         }
+        /**
         try {
             CocktailMachineCalibration.start(this);
         } catch (JSONException e) {
@@ -68,6 +70,7 @@ public class Menue extends AppCompatActivity {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+         **/
     }
 
     /**
@@ -221,6 +224,12 @@ public class Menue extends AppCompatActivity {
      */
     public void testEnviroment(View view){
         Intent success = new Intent(this, BluetoothTestEnviroment.class);
+        startActivity(success);
+
+    }
+
+    public void calibration(View view){
+        Intent success = new Intent(this, calibrationScale.class);
         startActivity(success);
 
     }

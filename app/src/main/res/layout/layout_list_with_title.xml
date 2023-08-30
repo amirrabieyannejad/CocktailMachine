@@ -13,7 +13,6 @@
 
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:text="TextView"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
     <androidx.recyclerview.widget.RecyclerView
