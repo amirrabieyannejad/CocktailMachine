@@ -788,6 +788,7 @@ void setup() {
   update_recipes();
   update_cocktail();
   update_user();
+  update_state();
 
   debug("ready");
 }
