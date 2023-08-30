@@ -41,11 +41,13 @@ public enum Status {
      * @return
      */
     public static Status getCurrentStatus(Activity activity) {
+        BluetoothSingleton blSingelton = BluetoothSingleton.getInstance();
+        blSingelton.connectGatt(activity);
         //TO DO: Bluetoothlegatt
         //BluetoothSingleton.getInstance().mBluetoothLeService;
         //TO DO: AMIR
         try {
-            BluetoothSingleton.getInstance().adminReadState();
+            blSingelton.adminReadState();
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }

@@ -23,5 +23,7 @@ public class calibrationScale extends AppCompatActivity {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+        System.out.println("Die NAchricht ist");
+        System.out.println("Der momentane Status ist" + com.example.cocktailmachine.data.enums.Status.getCurrentStatus(this));
     }
 }
