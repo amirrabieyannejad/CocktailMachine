@@ -67,6 +67,7 @@ public class GetActivity {
 
     public static void startAgain(Activity activity) {
         //TODO: go back to device scan
+        goToMenu(activity);
     }
 
     public static void goToFill(Activity activity, Recipe recipe){
@@ -82,5 +83,10 @@ public class GetActivity {
         Intent intent = new Intent(activity, Menue.class);
         activity.startActivity(intent);
         //activity.finish();
+    }
+
+    public static void waitNotSet(Activity activity) {
+        Intent intent = new Intent(activity, WaitNotSetActivity.class);
+        activity.startActivity(intent);
     }
 }

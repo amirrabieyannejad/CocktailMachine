@@ -173,6 +173,7 @@ public class GetDialog {
      * g.	Angabe von Zutaten
      */
     public static void startAutomaticCalibration(Activity activity){
+        CocktailMachineCalibration.setIsDone(true);
         Log.i("GetDialog", "startAutomaticCalibration");
         DatabaseConnection.initializeSingleton(activity);
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -180,12 +181,9 @@ public class GetDialog {
         builder.setMessage("Bitte folge den Anweisungen schrittweise. " +
                 "Zur Kalibrierung der Pumpen darf zunächst nur Wasser angeschlossen sein. " +
                 "Bitte stelle sicher, dass an allen Pumpen nur Wassergefässe angeschlossen sind.");
-        builder.setPositiveButton("Erledigt!", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                firstTaring(activity);
-                dialog.dismiss();
-            }
+        builder.setPositiveButton("Erledigt!", (dialog, which) -> {
+            firstTaring(activity);
+            dialog.dismiss();
         });
         builder.show();
 
@@ -1051,7 +1049,8 @@ public class GetDialog {
 
         builder.setPositiveButton("Speichern", (dialog, which) -> {
             pumpNumberChangeView.save();
-            Pump.calibratePumpsAndTimes(activity);
+            //Pump.calibratePumpsAndTimes(activity);
+            GetDialog.startAutomaticCalibration(activity);
 
         });
         builder.setNeutralButton("Abbrechen", (dialog, which) -> {

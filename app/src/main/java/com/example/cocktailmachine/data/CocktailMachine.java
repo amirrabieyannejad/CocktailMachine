@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.v2.GetDialog;
 
 import org.json.JSONArray;
@@ -330,10 +332,16 @@ public class CocktailMachine {
 
 
     public static boolean isCocktailMachineSet(Activity activity){
-        //TODO: add bluetooth /esp implementation
-        Random r = new Random(42);
+
+        if(Dummy.isDummy){
+            return CocktailMachineCalibration.isIsDone();
+        }else{
+            //TODO: add bluetooth /esp implementation
+            Random r = new Random(42);
+            return r.nextBoolean();
+        }
         //return r.nextDouble() >= 0.5;
-        return false;
+        //return false;
     }
 
     /**

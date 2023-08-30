@@ -55,6 +55,9 @@
         android:theme="@style/Theme.CocktailMachine"
         tools:targetApi="26">
         <activity
+            android:name=".ui.model.v2.WaitNotSetActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.singleCocktailChoice.SingleCocktailChoiceIsNotPossible"
             android:exported="false" />
         <activity
@@ -84,7 +87,7 @@
         <activity
             android:name=".ui.BluetoothTestEnviroment"
             android:exported="true"
-            android:label="BluetoothTestEnviroment"></activity>
+            android:label="BluetoothTestEnviroment" />
         <activity
             android:name=".ui.cocktail.cocktailList.CocktailList"
             android:exported="false">

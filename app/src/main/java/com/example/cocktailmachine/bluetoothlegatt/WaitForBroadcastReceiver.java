@@ -64,9 +64,12 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
             jsonObject = new JSONObject(result);
             //jsonArray = jsonObject.getJSONArray(result);
 
+        }catch(NullPointerException e){
+            Log.w(TAG, "waitForBroadcastReceiver: result is null");
+            return new JSONObject();
         } catch (JSONException e) {
             //throw new RuntimeException(e);
-            Log.w(TAG, "the response Value is no JSON Format..!");
+            Log.w(TAG, "waitForBroadcastReceiver: the response Value is no JSON Format..!");
 
 
         }
