@@ -8,6 +8,8 @@ import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.data.enums.AdminRights;
+import com.example.cocktailmachine.data.enums.CocktailStatus;
 import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.v2.GetDialog;
 
@@ -15,7 +17,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Random;
 
 public class CocktailMachine {
@@ -30,33 +34,14 @@ public class CocktailMachine {
     //static Recipe currentRecipe;
 
     static LinkedHashMap<Ingredient, Integer> current;
+    //
     static int currentUser = -1;
     static Recipe currentRecipe;
+    static List<Integer> queue;
 
-    public static int getNumberOfUsersUntilThisUsersTurn(){
-        /*TODO:
-        BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
-        try {
-            bluetoothSingleton.makeRecipe(this.getName());
-        } catch (JSONException | InterruptedException e) {
-            e.printStackTrace();
-        }h
 
-         */
-        return 0;
-    }
-    public static int getNumberOfUsersUntilThisUsersTurn(int tick){
-        /*TODO:
-        BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
-        try {
-            bluetoothSingleton.makeRecipe(this.getName());
-        } catch (JSONException | InterruptedException e) {
-            e.printStackTrace();
-        }
 
-         */
-        return tick-1;
-    }
+
 
 
     public static void setCurrentRecipe(Recipe currentRecipe) {
@@ -67,32 +52,8 @@ public class CocktailMachine {
         return currentRecipe;
     }
 
-    /**
-     * checks if cocktails mixing is done
-     * @author Johanna Reidt
-     */
-    public static boolean isFinished(Activity activity){
-        if(currentRecipe == null){
-            return false;
-        }
-        LinkedHashMap<Ingredient, Integer> temp =
-                CocktailMachine.getCurrentCocktailStatus(activity);
-        if(currentRecipe.getIngredients().size()==temp.size()) {
-            for(Ingredient i:temp.keySet() ) {
-                try {
-                    int t = temp.get(i);
-                    if(0!=Integer.compare(currentRecipe.getSpecificIngredientVolume(i),t)){
-                        return false;
-                    }
-                } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
-                    e.printStackTrace();
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
-    }
+
+
 
     public static void isCollected(){
         currentRecipe = null;
@@ -247,6 +208,12 @@ public class CocktailMachine {
         return current;
     }
 
+    /**
+     * get user id of currently mixing cocktail
+     * @author Johanna Reidt
+     * @param activity
+     * @return
+     */
     public static int getCurrentUser(Activity activity){
         try {
             BluetoothSingleton.getInstance().adminReadUserQueue();
@@ -256,6 +223,27 @@ public class CocktailMachine {
         }
         return currentUser;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -280,9 +268,25 @@ public class CocktailMachine {
     }
 
 
-    // TODO: Johanna change to array setCurrentUser is now queueUser
+    // TO DO: Johanna change to array setCurrentUser is now queueUser DONE
+    /**
+     * set current users and the queue
+     * @author Johanna Reidt
+     * @param res
+     */
     public static void setCurrentUser(String res) {
-        currentUser = Integer.parseInt(res);
+        res = res.replace("[","");
+        res = res.replace("]","");
+        if(res.length()==0){
+            queue = new ArrayList<>();
+            currentUser = -1;
+        }
+        String[] users = res.split(",");
+        queue = new ArrayList<Integer>();
+        for (String number : users) {
+            queue.add(Integer.parseInt(number.trim()));
+        }
+        currentUser = queue.get(0);
     }
 
 
@@ -293,6 +297,157 @@ public class CocktailMachine {
             dbChanged = true;
         }
     }
+
+
+
+
+    //Mix Recipe
+
+    /**
+     * queues a recipe for mixing
+     * @author Johanna Reidt
+     * @param recipe
+     */
+    public static void queueRecipe(Recipe recipe){
+        Log.i(TAG,  "queueRecipe");
+        if(Dummy.isDummy){
+            Log.i(TAG,  "queueRecipe: Dummy queue");
+        }else {
+            try {
+                BluetoothSingleton.getInstance().userQueueRecipe(AdminRights.getUserId(), recipe.getName());
+                Log.i(TAG,  "queueRecipe: queued");
+            } catch (JSONException | InterruptedException e) {
+                Log.i(TAG,  "queueRecipe: error");
+                e.printStackTrace();
+                Log.e(TAG, e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * reads the queue
+     * @author Johanna Reidt
+     */
+    public static void readUserQueue(){
+        Log.i(TAG,  "readUserQueue");
+        if(Dummy.isDummy){
+            Log.i(TAG,  "readUserQueue: Dummy queue");
+        }else {
+            try {
+                BluetoothSingleton.getInstance().adminReadUserQueue();
+                //BluetoothSingleton.getInstance().userQueueRecipe(AdminRights.getUserId(), recipe.getName());
+                Log.i(TAG,  "readUserQueue: queued");
+            } catch (JSONException | InterruptedException e) {
+                Log.i(TAG,  "readUserQueue: error");
+                e.printStackTrace();
+                Log.e(TAG, e.getMessage());
+            }
+        }
+    }
+
+    public static int getNumberOfUsersUntilThisUsersTurn() {
+        /*TODO:
+        BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
+        try {
+            bluetoothSingleton.makeRecipe(this.getName());
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }h
+
+         */
+        readUserQueue();
+        return queue.indexOf(AdminRights.getUserId());
+    }
+    public static int getNumberOfUsersUntilThisUsersTurn(int tick){
+        /*TODO:
+        BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
+        try {
+            bluetoothSingleton.makeRecipe(this.getName());
+        } catch (JSONException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
+         */
+        if(Dummy.isDummy) {
+            return tick - 1;
+        }else{
+            return getNumberOfUsersUntilThisUsersTurn();
+        }
+    }
+
+    public static void startMixing(){
+        Log.i(TAG,  "startMixing");
+        if(Dummy.isDummy){
+            Log.i(TAG,  "startMixing: Dummy queue");
+        }else {
+            try {
+                BluetoothSingleton.getInstance().userStartRecipe(AdminRights.getUserId());
+                //BluetoothSingleton.getInstance().userQueueRecipe(AdminRights.getUserId(), recipe.getName());
+                Log.i(TAG,  "startMixing: started");
+            } catch (JSONException | InterruptedException e) {
+                Log.i(TAG,  "startMixing: error");
+                e.printStackTrace();
+                Log.e(TAG, e.getMessage());
+            }
+        }
+    }
+
+    public static boolean isMixingThisUsersCocktail(){
+        readUserQueue();
+        return (currentUser==AdminRights.getUserId());
+    }
+
+    /**
+     * checks if cocktails mixing is done
+     * @author Johanna Reidt
+     */
+    public static boolean isFinished(){
+
+        /*
+        if(currentRecipe == null){
+            return false;
+        }
+        LinkedHashMap<Ingredient, Integer> temp =
+                CocktailMachine.getCurrentCocktailStatus(activity);
+        if(currentRecipe.getIngredients().size()==temp.size()) {
+            for(Ingredient i:temp.keySet() ) {
+                try {
+                    int t = temp.get(i);
+                    if(0!=Integer.compare(currentRecipe.getSpecificIngredientVolume(i),t)){
+                        return false;
+                    }
+                } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+
+         */
+        return CocktailStatus.getCurrentStatus()==CocktailStatus.cocktail_done;
+    }
+
+
+    public static void takeCocktail(){
+        Log.i(TAG,  "takeCocktail");
+        if(Dummy.isDummy){
+            Log.i(TAG,  "takeCocktail: Dummy taken");
+        }else {
+            try {
+                BluetoothSingleton.getInstance().userTakeCocktail(AdminRights.getUserId());
+                Log.i(TAG,  "takeCocktail: done");
+            } catch (JSONException | InterruptedException e) {
+                Log.i(TAG,  "takeCocktail: error");
+                e.printStackTrace();
+                Log.e(TAG, e.getMessage());
+            }
+        }
+    }
+
+
+
 
 
 
