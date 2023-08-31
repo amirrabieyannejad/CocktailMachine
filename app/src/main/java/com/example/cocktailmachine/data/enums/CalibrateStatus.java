@@ -2,6 +2,8 @@ package com.example.cocktailmachine.data.enums;
 
 import androidx.annotation.NonNull;
 
+import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
+
 public enum CalibrateStatus {
     /**
      * Kalibrierung
@@ -22,8 +24,28 @@ public enum CalibrateStatus {
     calibration_done
     ;
 
-    /*
-    static CalibrateStatus valueOf(String value) {
+    private static CalibrateStatus status;
+
+
+    public static void setStatus(String result) {
+        status = valueStringOf(result);
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        switch (this) {
+            case ready:return "ready";
+            case calibration_empty_container:return "calibration empty container";
+            case calibration_known_weight:return "calibration known weight";
+            case calibration_pumps:return "calibration pumps";
+            case calibration_calculation:return "calibration calculation";
+            case calibration_done:return "calibration done";
+        }
+        return "not";
+    }
+
+    public static CalibrateStatus valueStringOf(String value) {
         switch (value) {
             case "ready":
                 return ready;
@@ -42,19 +64,10 @@ public enum CalibrateStatus {
 
     }
 
-     */
 
-    @NonNull
-    @Override
-    public String toString() {
-        switch (this) {
-            case ready:return "ready";
-            case calibration_empty_container:return "calibration empty container";
-            case calibration_known_weight:return "calibration known weight";
-            case calibration_pumps:return "calibration pumps";
-            case calibration_calculation:return "calibration calculation";
-            case calibration_done:return "calibration done";
-        }
-        return "not";
+
+
+    public static void getCurrent(){
+        BluetoothSingleton.getInstance().statu
     }
 }

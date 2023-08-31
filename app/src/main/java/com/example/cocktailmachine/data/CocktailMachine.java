@@ -37,6 +37,8 @@ public class CocktailMachine {
     static Recipe currentRecipe;
     static List<Integer> queue;
 
+    static double currentWeight;
+
 
 
 
@@ -47,8 +49,26 @@ public class CocktailMachine {
         CocktailMachine.currentRecipe = currentRecipe;
     }
 
-    public static Recipe getCurrentRecipe() {
-        return currentRecipe;
+
+
+
+    public static void setCurrentWeight(JSONObject weight) {
+        try {
+            currentWeight = weight.getDouble("weight");
+        } catch (JSONException e) {
+            currentWeight = -1.0;
+        }
+    }
+
+    public static double getCurrentWeight() {
+        try {
+            BluetoothSingleton.getInstance().adminReadScaleStatus();
+        } catch (JSONException | InterruptedException e) {
+            Log.i(TAG,"getCurrentWeight: error");
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
+        }
+        return currentWeight;
     }
 
 
@@ -191,21 +211,7 @@ public class CocktailMachine {
     }
 
 
-    /**
-     * get user id of currently mixing cocktail
-     * @author Johanna Reidt
-     * @param activity
-     * @return
-     */
-    public static int getCurrentUser(Activity activity){
-        try {
-            BluetoothSingleton.getInstance().adminReadUserQueue();
-        } catch (JSONException | InterruptedException e) {
-            e.printStackTrace();
-            Log.i(TAG, "getCurrentUser failed");
-        }
-        return currentUser;
-    }
+
 
 
 
@@ -273,13 +279,15 @@ public class CocktailMachine {
     }
 
 
-    public static void setLastChange(JSONObject jsonObject){
+    public static void setLastChange(String n){
         int old_time = time;
-        time = jsonObject.optInt("", -1);
+        time = Integer.parseInt(n);
         if(old_time<time){
             dbChanged = true;
         }
     }
+
+
 
 
 
@@ -529,7 +537,7 @@ public class CocktailMachine {
 
     //Calibrations
 
-    public static void automaticCalibration(Activity activity){
+    public static void automaticCalibration(){
         /**
          * a.	Bitte erst wasser beim ersten Durchgang
          * b.	Tarierung
@@ -549,7 +557,7 @@ public class CocktailMachine {
         }
     }
 
-    public static boolean isAutomaticCalibrationDone(Activity activity){
+    public static boolean isAutomaticCalibrationDone(){
         //TODO: bluetooth connection
         if(Dummy.isDummy) {
             return new Random(42).nextBoolean();
@@ -557,6 +565,10 @@ public class CocktailMachine {
             //TODO: Bluetooth connection
             return new Random(42).nextBoolean();
         }
+    }
+
+    public static boolean needsEmptyingGlas() {
+        return
     }
 
 
@@ -575,6 +587,10 @@ public class CocktailMachine {
             throw new RuntimeException(e);
         }
     }
+
+
+
+    public static void automaticEmptyPumping(){}
 
     public static void automaticEnd(){
         try {

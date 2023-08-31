@@ -33,6 +33,7 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.AdminRights;
+import com.example.cocktailmachine.data.enums.CalibrateStatus;
 import com.example.cocktailmachine.data.enums.CocktailStatus;
 import com.example.cocktailmachine.data.enums.ErrorStatus;
 import com.example.cocktailmachine.data.enums.Postexecute;
@@ -1994,7 +1995,8 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                Pump.updatePumpStatus(this.getResult());
+                //Pump.updatePumpStatus(this.getResult());
+                CocktailMachine.setLastChange(this.result);
                 Log.w(TAG, "To Save: " + this.getResult());
             }
         };
@@ -2055,7 +2057,8 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
                 CocktailStatus.
-                        setStatus(this.getResult());
+                        setStatus(this.result);
+                CalibrateStatus.setStatus(this.result);
                 Log.w(TAG, "To Save: " + this.getResult());
             }
         };
@@ -2166,7 +2169,7 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                //TODO: ask Johanna to implement a data bank entity
+                CocktailMachine.setCurrentWeight(this.getResult());
                 Log.w(TAG, "To Save: " + this.getResult());
             }
         };

@@ -72,6 +72,7 @@ public class GetDialog {
 
     //Recipe Send
     public static void sendRecipe(Activity activity, Recipe recipe){
+        CocktailMachine.queueRecipe(recipe);
         countDown(activity, recipe);
     }
     //Count down
@@ -89,6 +90,12 @@ public class GetDialog {
         recipe.addDialogWaitingQueueCountDown(activity, alertDialog);
     }
 
+    /**
+     * Let the user go to the Cocktailmachine.
+     * @author Johanna Reidt
+     * @param activity
+     * @param recipe
+     */
     public static void isUsersTurn(Activity activity, Recipe recipe){
         //Better solution
         //https://stackoverflow.com/questions/10780651/display-a-countdown-timer-in-the-alert-dialog-box
@@ -97,51 +104,58 @@ public class GetDialog {
         //countDown(activity, recipe, countDownThread);
         AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
         alertDialog.setTitle("Du bist dran!");
-        alertDialog.setMessage("Bitte, geh zur Cocktailmaschine und stelle dein Glas unter die MAschine. ");
+        alertDialog.setMessage("Bitte, geh zur Cocktailmaschine und stelle dein Glas unter die Maschine. ");
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Los!", (dialog, which) -> {
-            //TODO: send force start bluetooth thing
+            //TO DO: send force start bluetooth thing
+            CocktailMachine.startMixing();
             GetActivity.goToFill(activity, recipe);
             dialog.dismiss();
         });
         alertDialog.show();   //
     }
 
+    /**
+     * Let user get the mixed Cocktail.
+     * @author Johanna Reidt
+     * @param activity
+     * @param recipe
+     */
     public static void isDone(Activity activity, Recipe recipe){
         AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
         alertDialog.setTitle("Fertig!");
         alertDialog.setMessage("Hole deinen Cocktail ab! ");
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Abgeholt!", (dialog, which) -> {
-            int count = 4;
-            try {
-                BluetoothSingleton.getInstance().adminReset();
-                CocktailMachine.isCollected();
-                GetDialog.showTopics( activity,  recipe);
-                dialog.dismiss();
-                Intent success = new Intent(activity, Menue.class);
-                activity.startActivity(success);
-            } catch (JSONException | InterruptedException e) {
-                e.printStackTrace();
-                count--;
-                if(count == 0){
-                    GetDialog.showTopics( activity,  recipe);
-                    CocktailMachine.isCollected();
-                    dialog.dismiss();
-                }
-            }
+            //BluetoothSingleton.getInstance().adminReset();
+            //CocktailMachine.isCollected();
+            dialog.dismiss();
+            CocktailMachine.takeCocktail();
+            GetDialog.showTopics( activity,  recipe);
+            //GetActivity.goToMenu(activity);
+
         });
         alertDialog.show();   //
 
     }
 
+    /**
+     * show topics if there are any
+     * @author Johanna Reidt
+     * @param activity
+     * @param recipe
+     */
     public static void showTopics(Activity activity, Recipe recipe){
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
         alertDialog.setTitle("Serviervorschläge!");
         alertDialog.setMessage("Füge noch einen oder mehrer der Serviervorschläge hinzu!");
-        alertDialog.setOnDismissListener(dialog -> GetActivity.goToDisplay(activity,
-                FragmentType.Model,
-                ModelType.RECIPE,
-                recipe.getID()));
+        alertDialog.setOnDismissListener(dialog -> {
+                dialog.dismiss();
+                GetActivity.goToMenu(activity);
+        });
         List<Topic> topics = Topic.getTopics(recipe);
+        if(topics.size()==0){
+            GetActivity.goToMenu(activity);
+            return;
+        }
         ArrayList<String> topicsName = new ArrayList<>();
         for(Topic t: topics){
             topicsName.add(t.getName());
@@ -152,11 +166,11 @@ public class GetDialog {
                 topicsName);
         alertDialog.setAdapter(adapter,
                 (dialog, which) -> {
+            dialog.dismiss();
             GetActivity.goToDisplay(activity,
                         FragmentType.Model,
                         ModelType.TOPIC,
                         topics.get(which).getID());
-            dialog.dismiss();
         });
         alertDialog.show();
     }
@@ -176,8 +190,7 @@ public class GetDialog {
      * g.	Angabe von Zutaten
      */
     public static void startAutomaticCalibration(Activity activity){
-        CocktailMachineCalibration.setIsDone(true);
-        CocktailMachine.automaticCalibration(activity);
+        CocktailMachine.automaticCalibration();
         Log.i(TAG, "startAutomaticCalibration");
         DatabaseConnection.initializeSingleton(activity);
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -239,10 +252,77 @@ public class GetDialog {
             dialog.dismiss();
             //CocktailMachine.automaticCalibration(activity);
             CocktailMachine.automaticWeight();
-            waitingAutomaticCalibration(activity);
+            waitingForPumps(activity);
         });
         builder.show();
     }
+
+    private static void emptyGlass(Activity activity){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Leere das Glass!");
+        builder.setMessage("Leere das Glass und stell es wieder unter die Cocktailmaschine!");
+        builder.setPositiveButton("Erledigt!", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+    }
+
+    private static void waitingForPumps(Activity activity){
+        Log.i("GetDialog", "waitingForPumps");
+        //setIngredientsForPumps(activity);
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Bitte Warten!");
+        builder.setMessage("Die automatische Kalibration der Pumpen läuft!");
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        WaitingQueueCountDown waitingQueueCountDown = new WaitingQueueCountDown(5000) {
+            boolean isDone = false;
+            @Override
+            public void onTick() {
+                Log.i("GetDialog", "waitingQueueCountDown:  isAutomaticCalibrationDone false");
+            }
+
+            @Override
+            public void reduceTick() {
+                isDone = CocktailMachine.isAutomaticCalibrationDone();
+                Log.i("GetDialog", "waitingQueueCountDown:  isDone: " +isDone);
+                if(isDone){
+                    setTick(0);
+                }else {
+                    setTick(1);
+                }
+            }
+
+            @Override
+            public void onNext() {
+
+            }
+
+            @Override
+            public void onFinish() {
+                Log.i("GetDialog", "waitingQueueCountDown: onFinish");
+                this.cancel();
+                //this.stop();
+                Log.i("GetDialog", "waitingQueueCountDown: onFinish: this canceled");
+                //ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+                //toneGen1.startTone(ToneGenerator.TONE_PROP_BEEP,150);
+                //toneGen1.release();
+                Toast.makeText(activity, "Das Setup ist vollständig!", Toast.LENGTH_LONG).show();
+                dialog.dismiss();
+
+                Log.i("GetDialog", "waitingQueueCountDown: onFinish: dialog dimissed");
+                GetDialog.setIngredientsForPumps(activity);
+                this.cancel();
+            }
+        };
+        waitingQueueCountDown.start();
+    }
+
+
+    /**
 
     private static void waitingAutomaticCalibration(Activity activity){
         //TODO
@@ -298,6 +378,7 @@ public class GetDialog {
 
 
     }
+            **/
 
     private static void setIngredientsForPumps(Activity activity){
         //TO DO
