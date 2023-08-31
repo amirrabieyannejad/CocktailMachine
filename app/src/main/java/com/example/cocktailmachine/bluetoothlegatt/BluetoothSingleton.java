@@ -33,6 +33,8 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.AdminRights;
+import com.example.cocktailmachine.data.enums.CocktailStatus;
+import com.example.cocktailmachine.data.enums.ErrorStatus;
 import com.example.cocktailmachine.data.enums.Postexecute;
 
 import org.json.JSONArray;
@@ -2046,19 +2048,13 @@ public class BluetoothSingleton {
     public void adminReadState(Postexecute postexecute) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.sendStatus(CHARACTERISTIC_STATUS_STATE);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
-
-            @Override
-            public void post() {
-                postexecute.post();
-            }
-
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
             @Override
             public void toSave() throws InterruptedException, JSONException {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                com.example.cocktailmachine.data.enums.Status.
+                CocktailStatus.
                         setStatus(this.getResult());
                 Log.w(TAG, "To Save: " + this.getResult());
             }
@@ -2197,7 +2193,7 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                //TODO: ask Johanna to implement a data bank entity
+                ErrorStatus.setError(this.result);
                 Log.w(TAG, "To Save: " + this.getResult());
             }
         };

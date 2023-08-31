@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.data.enums.Postexecute;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,7 +20,18 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
     JSONArray jsonArray;
     String result;
 
-    public abstract void post();
+    Postexecute postexecute = null;
+
+    public WaitForBroadcastReceiver(){}
+    public WaitForBroadcastReceiver(Postexecute postexecute){
+        this.postexecute = postexecute;
+    }
+
+    public void post(){
+        if(postexecute != null){
+            postexecute.post();
+        }
+    }
 
     public abstract void toSave() throws InterruptedException, JSONException, NotInitializedDBException, MissingIngredientPumpException;
 
@@ -31,6 +43,7 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
     public JSONObject getResult() {
         return jsonObject;
     }
+
     public JSONArray getJSONArrayResult() throws JSONException {
         jsonArray = jsonObject.getJSONArray("");
         return jsonArray;
@@ -91,12 +104,11 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
                 singleton.mBluetoothGatt.disconnect();
                 singleton.connect = false;
                 singleton.value = null;
-            } catch (InterruptedException | NotInitializedDBException e) {
+            } catch (InterruptedException
+                     | NotInitializedDBException
+                     | JSONException |
+                     MissingIngredientPumpException e) {
                 e.printStackTrace();
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            } catch (MissingIngredientPumpException e) {
-                throw new RuntimeException(e);
             }
 
 
