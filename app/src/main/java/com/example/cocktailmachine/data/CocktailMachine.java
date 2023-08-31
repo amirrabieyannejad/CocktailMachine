@@ -6,8 +6,6 @@ import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
-import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
-import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.CocktailStatus;
 import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
@@ -44,6 +42,7 @@ public class CocktailMachine {
 
 
 
+
     public static void setCurrentRecipe(Recipe currentRecipe) {
         CocktailMachine.currentRecipe = currentRecipe;
     }
@@ -52,12 +51,6 @@ public class CocktailMachine {
         return currentRecipe;
     }
 
-
-
-
-    public static void isCollected(){
-        currentRecipe = null;
-    }
 
 
 
@@ -197,16 +190,6 @@ public class CocktailMachine {
         }
     }
 
-    public static LinkedHashMap<Ingredient, Integer> getCurrentCocktailStatus(Activity activity){
-        try {
-            BluetoothSingleton.getInstance().adminReadCurrentCocktail();
-        } catch (JSONException | InterruptedException e) {
-            e.printStackTrace();
-            Log.i(TAG, "getCurrentCocktailStatus failed");
-            //count down
-        }
-        return current;
-    }
 
     /**
      * get user id of currently mixing cocktail
@@ -345,6 +328,11 @@ public class CocktailMachine {
         }
     }
 
+    /**
+     * number of users before this one in the queue
+     * @author Johanna Reidt
+     * @return
+     */
     public static int getNumberOfUsersUntilThisUsersTurn() {
         /*TODO:
         BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
@@ -375,6 +363,16 @@ public class CocktailMachine {
         }
     }
 
+    /**
+     * check if user is the current one
+     * @author Johanna Reidt
+     * @return
+     */
+    public static boolean isCurrentUser(){
+        readUserQueue();
+        return (currentUser==AdminRights.getUserId());
+    }
+
     public static void startMixing(){
         Log.i(TAG,  "startMixing");
         if(Dummy.isDummy){
@@ -392,10 +390,79 @@ public class CocktailMachine {
         }
     }
 
-    public static boolean isMixingThisUsersCocktail(){
-        readUserQueue();
-        return (currentUser==AdminRights.getUserId());
+
+
+    public static LinkedHashMap<Ingredient, Integer> getCurrentCocktailStatus(){
+        if(isCurrentUser()) {
+            try {
+                BluetoothSingleton.getInstance().adminReadCurrentCocktail();
+            } catch (JSONException | InterruptedException e) {
+                e.printStackTrace();
+                Log.i(TAG, "getCurrentCocktailStatus failed");
+                //count down
+            }
+        }else{
+            current = null;
+        }
+        return current;
     }
+
+    public static boolean isMixing(){
+
+        /*
+        if(currentRecipe == null){
+            return false;
+        }
+        LinkedHashMap<Ingredient, Integer> temp =
+                CocktailMachine.getCurrentCocktailStatus(activity);
+        if(currentRecipe.getIngredients().size()==temp.size()) {
+            for(Ingredient i:temp.keySet() ) {
+                try {
+                    int t = temp.get(i);
+                    if(0!=Integer.compare(currentRecipe.getSpecificIngredientVolume(i),t)){
+                        return false;
+                    }
+                } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+
+         */
+        return CocktailStatus.getCurrentStatus()==CocktailStatus.mixing;
+    }
+
+    public static boolean isPumping(){
+
+        /*
+        if(currentRecipe == null){
+            return false;
+        }
+        LinkedHashMap<Ingredient, Integer> temp =
+                CocktailMachine.getCurrentCocktailStatus(activity);
+        if(currentRecipe.getIngredients().size()==temp.size()) {
+            for(Ingredient i:temp.keySet() ) {
+                try {
+                    int t = temp.get(i);
+                    if(0!=Integer.compare(currentRecipe.getSpecificIngredientVolume(i),t)){
+                        return false;
+                    }
+                } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+
+         */
+        return CocktailStatus.getCurrentStatus()==CocktailStatus.pumping;
+    }
+
 
     /**
      * checks if cocktails mixing is done
@@ -445,6 +512,7 @@ public class CocktailMachine {
             }
         }
     }
+
 
 
 
@@ -535,7 +603,7 @@ public class CocktailMachine {
 
 
 
-    public static boolean isCocktailMachineSet(Activity activity){
+    public static boolean isCocktailMachineSet(){
 
         if(Dummy.isDummy){
             return CocktailMachineCalibration.isIsDone();
