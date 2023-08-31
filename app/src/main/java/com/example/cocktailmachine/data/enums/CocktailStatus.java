@@ -1,17 +1,15 @@
 package com.example.cocktailmachine.data.enums;
 
 import android.app.Activity;
-import android.content.Context;
 
 import androidx.annotation.NonNull;
 
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public enum Status {
+public enum CocktailStatus {
     //TO DO: USE THIS AMIR
     /*
     - `init`: Maschine wird initialisiert
@@ -23,7 +21,7 @@ public enum Status {
     init, ready, mixing, pumping, cocktail_done,not
     ;
 
-    static Status currentState = Status.not;
+    static CocktailStatus currentState = CocktailStatus.not;
 
     @NonNull
     @Override
@@ -37,10 +35,9 @@ public enum Status {
     /**
      * return current Status
      *
-     * @param activity
      * @return
      */
-    public static Status getCurrentStatus(Activity activity, Postexecute postexecute) {
+    public static CocktailStatus getCurrentStatus(Postexecute postexecute) {
         //BluetoothSingleton blSingelton = BluetoothSingleton.getInstance();
         //blSingelton.connectGatt(activity);
         //TO DO: Bluetoothlegatt
@@ -57,10 +54,9 @@ public enum Status {
     /**
      * return current Status
      *
-     * @param activity
      * @return
      */
-    public static Status getCurrentStatus() {
+    public static CocktailStatus getCurrentStatus() {
         //BluetoothSingleton blSingelton = BluetoothSingleton.getInstance();
         //blSingelton.connectGatt(activity);
         //TO DO: Bluetoothlegatt
@@ -75,8 +71,8 @@ public enum Status {
      * @param activity
      * @return
      */
-    public static String getCurrentStatusMessage(Activity activity, Postexecute postexecute) {
-        Status status = getCurrentStatus(activity, postexecute);
+    public static String getCurrentStatusMessage(Postexecute postexecute) {
+        CocktailStatus status = getCurrentStatus(postexecute);
         StringBuilder builder = new StringBuilder();
         builder.append("Die Cocktailmaschine ");
         switch (status) {
@@ -106,12 +102,12 @@ public enum Status {
     public  static void setStatus(String status) {
         //TODO: figure out if only string or JSON Object and put in currentStatus
         try {
-            currentState = Status.valueOf(status);
+            currentState = CocktailStatus.valueOf(status);
         }catch (IllegalArgumentException e){
             if(status == "cocktail done"){
-                currentState = Status.cocktail_done;
+                currentState = CocktailStatus.cocktail_done;
             }else{
-                currentState = Status.ready;
+                currentState = CocktailStatus.ready;
             }
 
         }
