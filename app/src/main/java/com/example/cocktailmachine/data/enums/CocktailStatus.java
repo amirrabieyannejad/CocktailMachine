@@ -68,7 +68,6 @@ public enum CocktailStatus {
     /**
      * return current Status
      *
-     * @param activity
      * @return
      */
     public static String getCurrentStatusMessage(Postexecute postexecute) {

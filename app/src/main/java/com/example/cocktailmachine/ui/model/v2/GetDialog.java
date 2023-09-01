@@ -263,12 +263,7 @@ public class GetDialog {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Leere das Glass!");
         builder.setMessage("Leere das Glass und stell es wieder unter die Cocktailmaschine!");
-        builder.setPositiveButton("Erledigt!", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                GetDialog.waitingForPumps(activity);
-            }
-        });
+        builder.setPositiveButton("Erledigt!", (dialog, which) -> GetDialog.waitingForPumps(activity));
     }
 
     private static void waitingForPumps(Activity activity){
