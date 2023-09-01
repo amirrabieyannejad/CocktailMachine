@@ -1270,6 +1270,7 @@ Retcode CmdFactoryReset::execute() {
   update_liquids();
   update_scale();
   update_user();
+  update_state();
 
   return Retcode::success;
 }
@@ -1532,6 +1533,7 @@ Retcode CmdCancelRecipe::execute() {
         update_liquids();
         update_scale();
         update_user();
+        update_state();
 
         return Retcode::success;
 
@@ -1580,6 +1582,7 @@ Retcode CmdReset::execute() {
 
   reset_cocktail();
   update_cocktail();
+  update_state();
 
   return Retcode::success;
 };
@@ -1682,6 +1685,7 @@ Retcode CmdRunPump::execute() {
   update_possible_recipes(p->liquid);
   update_scale();
   update_cocktail();
+  update_state();
 
   return Retcode::success;
 };
@@ -1776,6 +1780,7 @@ Retcode reset_cocktail() {
   update_cocktail();
   update_scale();
   update_user();
+  update_state();
 
   return Retcode::success;
 }
@@ -1948,8 +1953,6 @@ void update_cocktail() {
   out.concat("]}");
 
   all_status[ID_COCKTAIL]->update(out);
-
-  update_state(); // FIXME necessary?
 }
 
 void update_state() {
