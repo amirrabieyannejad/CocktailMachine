@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 
+import org.json.JSONException;
+
 public enum CalibrateStatus {
     /**
      * Kalibrierung
@@ -29,6 +31,9 @@ public enum CalibrateStatus {
 
     public static void setStatus(String result) {
         status = valueStringOf(result);
+    }
+    public static void setStatus(CalibrateStatus result) {
+        status = result;
     }
 
     @NonNull
@@ -67,7 +72,13 @@ public enum CalibrateStatus {
 
 
 
-    public static void getCurrent(){
-        BluetoothSingleton.getInstance().statu
+    public static CalibrateStatus getCurrent(){
+        CocktailStatus.getCurrentStatus();
+        return status;
+    }
+
+    public static CalibrateStatus getCurrent(Postexecute postexecute){
+        CocktailStatus.getCurrentStatus(postexecute);
+        return status;
     }
 }

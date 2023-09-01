@@ -27,6 +27,7 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.data.enums.CalibrateStatus;
 import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
@@ -197,7 +198,8 @@ public class GetDialog {
         builder.setTitle("Automatische Kalibrierung");
         builder.setMessage("Bitte folge den Anweisungen schrittweise. " +
                 "Zur Kalibrierung der Pumpen darf zunächst nur Wasser angeschlossen sein. " +
-                "Bitte stelle sicher, dass an allen Pumpen nur Wassergefässe angeschlossen sind.");
+                "Bitte stelle sicher, dass an allen Pumpen nur Wassergefässe angeschlossen sind." +
+                "Die Wassermmenge je Pumpe sollte um die 150ml betragen.");
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
             firstTaring(activity);
             dialog.dismiss();
@@ -264,7 +266,7 @@ public class GetDialog {
         builder.setPositiveButton("Erledigt!", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
+                GetDialog.waitingForPumps(activity);
             }
         });
     }
@@ -283,11 +285,14 @@ public class GetDialog {
             @Override
             public void onTick() {
                 Log.i("GetDialog", "waitingQueueCountDown:  isAutomaticCalibrationDone false");
+                if(CalibrateStatus.getCurrent()==CalibrateStatus.calibration_calculation){
+                    dialog.setMessage("Die Pumpeneinstellungen werden kalkuliert! Bitte warten!");
+                }
             }
 
             @Override
             public void reduceTick() {
-                isDone = CocktailMachine.isAutomaticCalibrationDone();
+                isDone = CocktailMachine.isAutomaticCalibrationDone()||CocktailMachine.needsEmptyingGlass();
                 Log.i("GetDialog", "waitingQueueCountDown:  isDone: " +isDone);
                 if(isDone){
                     setTick(0);
@@ -310,11 +315,15 @@ public class GetDialog {
                 //ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
                 //toneGen1.startTone(ToneGenerator.TONE_PROP_BEEP,150);
                 //toneGen1.release();
-                Toast.makeText(activity, "Das Setup ist vollständig!", Toast.LENGTH_LONG).show();
                 dialog.dismiss();
 
                 Log.i("GetDialog", "waitingQueueCountDown: onFinish: dialog dimissed");
-                GetDialog.setIngredientsForPumps(activity);
+                if(CocktailMachine.isAutomaticCalibrationDone()) {
+                    Toast.makeText(activity, "Das Setup ist vollständig!", Toast.LENGTH_LONG).show();
+                    GetDialog.setIngredientsForPumps(activity);
+                } else if (CocktailMachine.needsEmptyingGlass()) {
+                    GetDialog.emptyGlass(activity);
+                }
                 this.cancel();
             }
         };

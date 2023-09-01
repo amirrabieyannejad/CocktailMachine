@@ -1,12 +1,15 @@
 package com.example.cocktailmachine.data;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.enums.AdminRights;
+import com.example.cocktailmachine.data.enums.CalibrateStatus;
 import com.example.cocktailmachine.data.enums.CocktailStatus;
 import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.v2.GetDialog;
@@ -558,17 +561,24 @@ public class CocktailMachine {
     }
 
     public static boolean isAutomaticCalibrationDone(){
-        //TODO: bluetooth connection
+        //TO DO: bluetooth connection
         if(Dummy.isDummy) {
             return new Random(42).nextBoolean();
         }else{
-            //TODO: Bluetooth connection
-            return new Random(42).nextBoolean();
+            //TO  DO: Bluetooth connection
+            //return new Random(42).nextBoolean();
+            return CalibrateStatus.getCurrent()==CalibrateStatus.calibration_done;
         }
     }
 
-    public static boolean needsEmptyingGlas() {
-        return
+    public static boolean needsEmptyingGlass() {
+        if(Dummy.isDummy) {
+            return new Random(42).nextBoolean();
+        }else{
+            //TO DO: Bluetooth connection
+            //return new Random(42).nextBoolean();
+            return CalibrateStatus.getCurrent()==CalibrateStatus.calibration_empty_container;
+        }
     }
 
 
@@ -576,7 +586,8 @@ public class CocktailMachine {
         try{
         BluetoothSingleton.getInstance().adminAutoCalibrateAddEmpty();
         } catch (JSONException | InterruptedException e) {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
@@ -584,19 +595,28 @@ public class CocktailMachine {
         try{
             BluetoothSingleton.getInstance().adminAutoCalibrateAddWeight(100);
         } catch (JSONException | InterruptedException e) {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
 
 
-    public static void automaticEmptyPumping(){}
+    public static void automaticEmptyPumping(){
+        try {
+            BluetoothSingleton.getInstance().adminAutoCalibrateAddEmpty();
+        } catch (JSONException | InterruptedException e) {
+            //throw new RuntimeException(e);
+            e.printStackTrace();
+        }
+    }
 
     public static void automaticEnd(){
         try {
             BluetoothSingleton.getInstance().adminAutoCalibrateFinish();
-        } catch (JSONException | InterruptedException e) {
-            throw new RuntimeException(e);
+        } catch (JSONException | InterruptedException e){
+            //throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 

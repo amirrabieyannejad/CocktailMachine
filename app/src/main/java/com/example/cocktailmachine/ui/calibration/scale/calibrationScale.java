@@ -28,7 +28,7 @@ public class calibrationScale extends AppCompatActivity {
         } catch (JSONException | InterruptedException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Die NAchricht ist");
+        System.out.println("Die Nachricht ist");
         System.out.println("Der momentane Status ist" + CocktailStatus.getCurrentStatus( new Postexecute() {
             @Override
             public void post() {
