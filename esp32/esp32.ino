@@ -22,8 +22,6 @@ const int CAL_TIME2          	= 20 * 1000;
 
 // pinout
 typedef const unsigned char Pin;
-Pin PIN_SDCARD_CS       	= 14;
-                        	
 Pin PIN_HX711_DOUT      	= 4;
 Pin PIN_HX711_SCK       	= 5;
                         	
@@ -46,10 +44,6 @@ Pin PIN_BUILTIN_PUMP_IN2	= 27;
 
 // json
 #include <ArduinoJson.h>
-
-// sd card
-#include <FS.h>
-#include <SD.h>
 
 // scale
 #include <HX711.h>
@@ -585,8 +579,6 @@ struct CommandQueued {
 time_t config_state = 0;
 Preferences preferences;
 
-bool sdcard_available = false;
-
 bool scale_available  = false;
 bool scale_calibrated = false;
 HX711 scale;
@@ -634,12 +626,6 @@ void blink_leds(dur_t on, dur_t off);
 bool config_save(void);
 bool config_load(void);
 bool config_clear(void);
-
-// sdcard
-bool sdcard_setup(void);
-bool sdcard_start(void);
-void sdcard_stop(void);
-bool sdcard_save(void);
 
 // bluetooth
 bool ble_start(void);
@@ -697,9 +683,6 @@ void setup() {
 
   // setup eeprom
   preferences.begin("CoMa", false);
-
-  // setup sd card
-  sdcard_start();
 
   { // setup pump slots
     for (int i=0; i<MAX_PUMPS; i++)	pump_slots[i]	= NULL;
@@ -2397,24 +2380,6 @@ void CommCB::onWrite(BLECharacteristic *ble_char, esp_ble_gatts_cb_param_t *para
 // configs
 
 bool config_save(void) {
-  if (sdcard_available) { // save state to SD card
-    char *config = "FIXME";
-    debug("saving state to SD card");
-
-    File file = SD.open("/config.json", FILE_WRITE);
-    if (!file) {
-      debug("failed to open config file");
-      return false;
-    }
-    file.print(config);
-    file.close();
-
-    uint64_t mb  	= 1024 * 1024;
-    uint64_t used	= SD.usedBytes();
-    uint64_t size	= SD.totalBytes();
-    debug("SD card: %lluMB / %lluMB used", used/mb, size/mb);
-  }
-
   { // save state to flash memory
     preferences.clear(); // always start fresh
 
@@ -2793,56 +2758,6 @@ Retcode scale_set_factor(float factor) {
   scale_calibrated = true;
   config_save();
   return Retcode::success;
-}
-
-// sd card
-
-bool sdcard_setup(void) {
-  if (!SD.begin(PIN_SDCARD_CS)){
-    error("failed to load SD card reader");
-    return false;
-  }
-  debug("SD card init");
-
-  uint8_t ct = SD.cardType();
-  if(ct == CARD_NONE){
-    error("no SD card found");
-    return false;
-  }
-
-  // we read the sd card to force the reader to actually access it
-  File root = SD.open("/");
-  if(!root) {
-    error("failed to read SD card");
-    return false;
-  }
-
-  File file = root.openNextFile();
-  debug("SD card contents:");
-  while(file){
-    if(file.isDirectory()){
-      debug(" DIR : %s", file.name());
-    } else {
-      debug(" FILE: %16s  SIZE: %d", file.name(), file.size());
-    }
-    file = root.openNextFile();
-  }
-
-  return true;
-}
-
-bool sdcard_start(void) {
-  if (sdcard_available) sdcard_stop();
-
-  sdcard_available = sdcard_setup();
-  return sdcard_available;
-}
-
-void sdcard_stop(void) {
-  if (sdcard_available) SD.end();
-}
-
-bool sdcard_save(void) {
 }
 
 // utilities
