@@ -2801,11 +2801,11 @@ void blink_leds(dur_t on, dur_t off) {
 #endif
 
 void error_loop(void) {
+  error("[HALT]");
   while(1) {
 #if defined(LED_BUILTIN)
     blink_leds(MS(100), MS(100));
 #else
-    error("[HALT]");
     sleep_idle(MS(100));
 #endif
   }
