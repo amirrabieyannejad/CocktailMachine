@@ -27,7 +27,10 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.CalibrateStatus;
+import com.example.cocktailmachine.data.enums.ErrorStatus;
+import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
@@ -57,16 +60,22 @@ public class GetDialog {
         builder.setNeutralButton("Abbrechen", (dialog, which) -> {
 
         });
-        builder.setPositiveButton("Aktualisieren", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Pump.sync(activity);
-                Recipe.syncRecipeDBWithCocktailmachine(activity);
-                Toast.makeText(activity,"Synchronisierung läuft!",Toast.LENGTH_SHORT).show();
-            }
+        builder.setPositiveButton("Aktualisieren", (dialog, which) -> {
+            Pump.sync(activity);
+            Recipe.syncRecipeDBWithCocktailmachine(activity);
+            Toast.makeText(activity,"Synchronisierung läuft!",Toast.LENGTH_SHORT).show();
         });
         builder.show();
     }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -180,6 +189,18 @@ public class GetDialog {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     //Automatic calibration
     /**
      * a.	Bitte erst wasser beim ersten Durchgang
@@ -263,7 +284,10 @@ public class GetDialog {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Leere das Glass!");
         builder.setMessage("Leere das Glass und stell es wieder unter die Cocktailmaschine!");
-        builder.setPositiveButton("Erledigt!", (dialog, which) -> GetDialog.waitingForPumps(activity));
+        builder.setPositiveButton("Erledigt!", (dialog, which) -> {
+            GetDialog.waitingForPumps(activity);
+            CocktailMachine.automaticEmptyPumping();
+        });
     }
 
     private static void waitingForPumps(Activity activity){
@@ -315,6 +339,7 @@ public class GetDialog {
                 Log.i("GetDialog", "waitingQueueCountDown: onFinish: dialog dimissed");
                 if(CocktailMachine.isAutomaticCalibrationDone()) {
                     Toast.makeText(activity, "Das Setup ist vollständig!", Toast.LENGTH_LONG).show();
+                    CocktailMachine.automaticEnd();
                     GetDialog.setIngredientsForPumps(activity);
                 } else if (CocktailMachine.needsEmptyingGlass()) {
                     GetDialog.emptyGlass(activity);
@@ -525,6 +550,18 @@ public class GetDialog {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     //Title
 
     /**
@@ -558,6 +595,7 @@ public class GetDialog {
         });
         builder.show();
     }
+
 
     public static class TitleChangeView{
 
@@ -1592,4 +1630,119 @@ public class GetDialog {
                 recipe.removeIngredient(ID);
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //ErrorHandling
+    public static void handleCmdError(Activity activity, ErrorStatus status) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Command Error");
+        builder.setMessage("ESP gab folgende ErrorMessage zurück: "+status+
+                " Bitte zeig diese Nachricht dem Adminstratoren-Team!");
+        builder.setNeutralButton("Gezeigt!", (dialog, which) -> {});
+        builder.show();
+    }
+
+
+    public static void handleBluetoothFailed(Activity activity) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Bluetoothverbindung fehlerhaft");
+        builder.setMessage("Bitte überprüf die Bluetoothverbindung. ");
+        builder.setPositiveButton("Alles ok!", (dialog, which) -> {});
+        builder.setNegativeButton("Neu verbinden!", (dialog, which) -> {
+            GetActivity.startAgain(activity);
+        });
+        builder.show();
+    }
+
+
+
+    public static void handleInvalidCalibrationData(Activity activity) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Die Kalibrierung ist fehlerhaft.");
+        builder.setMessage("Bitte kalibriere neu!");
+        builder.setPositiveButton("Kalibrieren", (dialog, which) -> {
+            CocktailMachine.isCocktailMachineSet(new Postexecute() {
+                                                        @Override
+                                                        public void post() {
+                                                            dialog.dismiss();
+                                                            GetActivity.goToMenu(activity);
+                                                        }
+                                                    },
+                    new Postexecute() {
+                        @Override
+                        public void post() {
+                            dialog.dismiss();
+                        }
+                    });
+        });
+        builder.setNegativeButton("Abbrechen", (dialog, which) -> {
+            CocktailMachine.isCocktailMachineSet(new Postexecute() {
+                                                     @Override
+                                                     public void post() {
+                                                         dialog.dismiss();
+                                                         GetActivity.waitNotSet(activity);
+                                                     }
+                                                 },
+                    new Postexecute() {
+                        @Override
+                        public void post() {
+                            dialog.dismiss();
+                        }
+                    });
+        });
+
+        builder.show();
+    }
+
+
+    public static void handleUnauthorized(Activity activity) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Administratorenrechte erforderlich!");
+        builder.setMessage("Bitte melde dich als Administrator an. ");
+        builder.setPositiveButton("Login!", (dialog, which) -> {
+            dialog.dismiss();
+            Log.i(TAG, "handleUnauthorized: user choosed to login");
+            AdminRights.login(activity, activity.getLayoutInflater(), dialog1 -> {        });
+            });
+        builder.setNegativeButton("Abbrechen!", (dialog, which) -> {
+            Log.i(TAG, "handleUnauthorized: user choosed to do nothing");
+        });
+        builder.show();
+    }
+
+
+
 }

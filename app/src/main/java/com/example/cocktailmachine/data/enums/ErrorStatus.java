@@ -1,39 +1,376 @@
 package com.example.cocktailmachine.data.enums;
 
+import android.app.Activity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
+import com.example.cocktailmachine.ui.model.v2.GetDialog;
 
 import org.json.JSONException;
+
+import java.util.Random;
 
 /**
  * @author Johanna Reidt
  * @created Do. 31.Aug 2023 - 14:35
  * @project CocktailMachine
+ *
+ * Fehler-Rückgaben der Cocktail-Maschine
+ *
+ * Mögliche Fehler, die vom ESP zurückgegeben werden können. (s. Befehle.md)
+ *
+ *     init: ESP wird noch initialisiert
+ *     ok: alles in Ordnung
+ *     processing: Befehl wird geparset (kein Fehler; kommt nur, wenn der Wert zu früh ausgelesen wird)
+ *     unsupported: Befehl noch nicht implementiert
+ *     unauthorized: Befehl nur für Admin verfügbar
+ *     invalid json: ungültiges JSON
+ *     message too big: JSON-Nachricht zu lang
+ *     missing arguments: Argumente im JSON-Befehl fehlen
+ *     unknown command: unbekannter Befehl
+ *     command missing even though it parsed right: Befehl wurde im ESP fehlerhaft implementiert :)
+ *     wrong comm channel: falscher Channel für den Befehl (Admin vs. User)
+ *     invalid pump slot: ungültige Pumpe ausgewählt
+ *     invalid volume: ungültige Menge (z.B. -5)
+ *     invalid weight: ungültiges Gewicht (z.B. -5)
+ *     invalid times: ungültige Zeit (z.B. -5)
+ *     insufficient amounts of liquid available: nicht genug Flüssigkeit vorhanden
+ *     liquid unavailable: Flüssigkeit fehlt im ESP
+ *     recipe not found: unbekanntes Rezept
+ *     recipe already exists: Rezept mit dem gleichen Namen existiert bereits
+ *     missing ingredients: Zutaten fehlen im Rezept
+ *     invalid calibration data: Kalibrierungs-Werte sind ungültig (z.B. 2x die gleichen Werte)
+ *     can't start recipe yet: Rezept ist noch nicht bereit
+ *     can't take cocktail yet: Cocktail ist noch nicht fertig
+ *     calibration command invalid at this time: Kalibrierungsbefehl zur falschen Zeit geschickt
  */
-public class ErrorStatus {
+public enum ErrorStatus {
+    not,
+    init,
+    ok,
+    processing,
+    unsupported,
+    unauthorized,
+    invalid_json,
+    message_too_big, missing_arguments, unknown_command,
+    command_missing_even_though_it_parsed_right,
+    wrong_comm_channel,
+    invalid_pump_slot,
+    invalid_volume,
+    invalid_weight,
+    invalid_times,
+    insufficient_amounts_of_liquid_available,
+    liquid_unavailable,
+    recipe_not_found,
+    recipe_already_exists,
+    missing_ingredients,
+    invalid_calibration_data,
+    cant_start_recipe_yet,
+    cant_take_cocktail_yet,
+    calibration_command_invalid_at_this_time
+    ;
+
+
+
+
+
+
     private static final String TAG = "ErrorStatus";
     static String error;
 
+    static ErrorStatus status;
+
+    private static ErrorStatus valueOfString(String n){
+        n.replace(" ", "_");
+        n.replace("'", "");
+        for(ErrorStatus s: ErrorStatus.values()){
+            if(s.name()==n){
+                return s;
+            }
+        }
+        return ErrorStatus.not;
+    }
+
     public static void setError(String mesg){
         error = mesg;
+        status = valueOfString(error);
     }
 
-    public static String getError(){
-        return error;
+
+    private static boolean isError(){
+        if(status==ErrorStatus.ok){
+            return false;
+        }
+        if(status == ErrorStatus.init){
+            return false;
+        }
+        if(status == ErrorStatus.processing){
+            return false;
+        }
+        return true;
     }
+
+
+
+
+
+
+
+
+
 
     //Error
-    public static String getErrorMessage(){
-        Log.i(TAG, "getErrorMessage");
+
+    public static void updateError(){
         try {
             BluetoothSingleton.getInstance().adminReadErrorStatus();
-            return error;
         } catch (JSONException | InterruptedException e) {
             Log.i(TAG, "getErrorMessage: errored");
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
+            setError("not");
         }
-        return "not";
     }
+
+    private static void updateError(Postexecute afterReading){
+        try {
+            BluetoothSingleton.getInstance().adminReadErrorStatus(afterReading);
+        } catch (JSONException | InterruptedException e) {
+            Log.i(TAG, "getErrorMessage: errored");
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
+            setError("not");
+        }
+    }
+
+    private static void updateErrorDoIfError(Postexecute ifErrored){
+        updateError(new Postexecute() {
+            @Override
+            public void post() {
+                if(isError()){
+                    ifErrored.post();
+                }
+            }
+        });
+    }
+
+
+
+
+    /**
+     * get error message
+     * @return
+     * @author Johanna Reidt
+     */
+    private static String getErrorMessage(){
+        Log.i(TAG, "getErrorMessage");
+        updateError();
+        return error;
+    }
+
+    /**
+     * get error message
+     * an do afterwards
+     * @param afterReading
+     * @return
+     * @author Johanna Reidt
+     */
+    public static String getErrorMessage(Postexecute afterReading){
+        Log.i(TAG, "getErrorMessage");
+        updateError(afterReading);
+        return error;
+    }
+
+
+    /**
+     * checks if cocktailmachine is erroring
+     * @return
+     * @author Johanna Reidt
+     */
+    public static boolean getErrorBoolean(){
+        updateError();
+        return isError();
+    }
+
+    /**
+     * checks if cocktailmachine is erroring
+     * if erroring do, what is in toDoIfErrored's post
+     * @param toDoIfErrored
+     * @return
+     * @author Johanna Reidt
+     */
+    public static boolean getErrorBoolean(Postexecute toDoIfErrored){
+        updateErrorDoIfError(toDoIfErrored);
+        return isError();
+    }
+
+
+    /**
+     * checks if cocktailmachine is erroring
+     * @return
+     * @author Johanna Reidt
+     */
+    public static ErrorStatus getErrorStatus(){
+        updateError();
+        return status;
+    }
+
+    /**
+     * checks if cocktailmachine is erroring
+     * afterwards do: afterReading
+     * @param afterReading
+     * @return
+     * @author Johanna Reidt
+     */
+    public static ErrorStatus getErrorStatus(Postexecute afterReading){
+        updateError(afterReading);
+        return status;
+    }
+
+
+
+
+
+
+    //reset error -----Error handling-------
+
+
+    /**
+     * called to get out of error mode into handling
+     * @author Johanna Reidt
+     */
+    private static void reset(){
+        try {
+            BluetoothSingleton.getInstance().adminResetError();
+            Log.i(TAG, "resetted");
+        } catch (JSONException | InterruptedException e) {
+            Log.i(TAG, "reset: errored");
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
+            setError("not");
+        }
+    }
+
+
+    public static void handleIfExistingError(Activity activity){
+        reset();
+        if(isCmdError()){
+            GetDialog.handleCmdError(activity, status);
+        } else if (!statusRequestWorked()) {
+            GetDialog.handleBluetoothFailed(activity);
+        } else if (isRecipeError()) {
+            handleRecipeError(activity);
+        } else if (isCalibrationError()) {
+            if(status == invalid_calibration_data){
+                GetDialog.handleInvalidCalibrationData(activity);
+            } else if (status == calibration_command_invalid_at_this_time) {
+                Toast.makeText(activity, "Bitte warten!", Toast.LENGTH_SHORT).show();
+            }
+        } else if (isAccessTrouble()){
+            GetDialog.handleUnauthorized(activity);
+        } else {
+            Log.i(TAG, "handleIfExistingError: no error, status: "+status);
+        }
+
+
+    }
+
+    private static void handleRecipeError(Activity activity){
+        //TODO: handle all cases
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Error
+    public static boolean statusRequestWorked(){
+        return status  != ErrorStatus.not;
+    }
+
+    public static boolean isInit(){
+        return status  == ErrorStatus.init;
+    }
+
+    public static boolean isOk(){
+        return status  == ErrorStatus.ok;
+    }
+
+    public static boolean isProcessing(){
+        return status == ErrorStatus.processing;
+    }
+
+    /**
+     * only accesable by user or admin
+     * @return
+     * @author Johanna Reidt
+     */
+    public static boolean isAccessTrouble(){
+        return (status == ErrorStatus.unauthorized
+                || status == ErrorStatus.wrong_comm_channel);
+
+    }
+
+    /**
+     * is true if command to ESP is not valid
+     * either not supported
+     * missing arguments
+     * etc.
+     * @return
+     * @author Johanna Reidt
+     */
+    public static boolean isCmdError(){
+        return (status ==  unsupported
+        || status == invalid_json
+        || status ==  message_too_big
+        || status == missing_arguments
+        || status == unknown_command
+        || status == command_missing_even_though_it_parsed_right);
+    }
+
+    /**
+     * problems with recipe
+     * either while mixing, saving
+     * @return
+     * @author Johanna Reidt
+     */
+    public static boolean isRecipeError(){
+        return (status == invalid_pump_slot
+        || status == invalid_volume
+        || status == invalid_weight
+        || status == invalid_times
+        || status == insufficient_amounts_of_liquid_available
+        || status == liquid_unavailable
+        || status == recipe_not_found
+        || status == recipe_already_exists
+        || status == missing_ingredients
+        || status == cant_start_recipe_yet
+        || status == cant_take_cocktail_yet);
+    }
+
+    /**
+     * problems with calibrations
+     * either while or during the start of it
+     * @return
+     * @author Johanna Reidt
+     */
+    public static boolean isCalibrationError(){
+        return (status == calibration_command_invalid_at_this_time
+        || status==invalid_calibration_data);
+    }
+
+
+
+
+
 }
