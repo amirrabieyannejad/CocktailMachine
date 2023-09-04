@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 
@@ -23,7 +24,7 @@ public class AdminRights {
     private static final String TAG = "AdminRights";
     public static final String PASSWORD = "admin";
     private static AdminRights singleton = null;
-    private static BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
+
     private UserPrivilegeLevel privilege = UserPrivilegeLevel.User;
     private int userId = -1;
 
@@ -79,17 +80,12 @@ public class AdminRights {
      */
     public static void initUser(Activity activity, String name)
             throws JSONException, InterruptedException {
-        //TODO: init user  Dummy Function **OK**
-        //TODO: AMIR  ** JOHANNA bitte kontrollieren **
-        bluetoothSingleton.userInitUser(name,activity);
-
-        /*
-
-        JSONObject getQuestion = getUserIdAsMessage();
-        JSONObject answer = new JSONObject();
-        setUser(answer);
-
-         */
+        //TODO: DUMMY
+        if(Dummy.isDummy) {
+            getSingleton().userId = 3;
+        }else{
+            BluetoothSingleton.getInstance().userInitUser(name,activity);
+        }
     }
 
     /**
@@ -114,10 +110,12 @@ public class AdminRights {
     public static void abortUser(Activity acitvity, String name){
         //TODO: abort user
 
-        JSONObject getQuestion = getUserAbortMessage();
-        JSONObject answer = new JSONObject();
-        //setUser(answer);
-        setUserId(-1);
+
+        if(Dummy.isDummy) {
+            setUserId(-1);
+        }else{
+            //BluetoothSingleton.getInstance().(name,activity);
+        }
     }
 
     public static boolean isUserIntialized(){

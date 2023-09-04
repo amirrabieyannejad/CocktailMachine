@@ -58,6 +58,9 @@
             android:name=".ui.calibration.scale.calibrationScale"
             android:exported="false" />
         <activity
+            android:name=".ui.model.v2.WaitNotSetActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.singleCocktailChoice.SingleCocktailChoiceIsNotPossible"
             android:exported="false" />
         <activity

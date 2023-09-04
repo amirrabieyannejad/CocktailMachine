@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.data.enums.Postexecute;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,6 +20,19 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
     JSONArray jsonArray;
     String result;
 
+    Postexecute postexecute = null;
+
+    public WaitForBroadcastReceiver(){}
+    public WaitForBroadcastReceiver(Postexecute postexecute){
+        this.postexecute = postexecute;
+    }
+
+    public void post(){
+        if(postexecute != null){
+            postexecute.post();
+        }
+    }
+
     public abstract void toSave() throws InterruptedException, JSONException, NotInitializedDBException, MissingIngredientPumpException;
 
     public Boolean check() {
@@ -29,6 +43,7 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
     public JSONObject getResult() {
         return jsonObject;
     }
+
     public JSONArray getJSONArrayResult() throws JSONException {
         jsonArray = jsonObject.getJSONArray("");
         return jsonArray;
@@ -64,9 +79,12 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
             jsonObject = new JSONObject(result);
             //jsonArray = jsonObject.getJSONArray(result);
 
+        }catch(NullPointerException e){
+            Log.w(TAG, "waitForBroadcastReceiver: result is null");
+            return new JSONObject();
         } catch (JSONException e) {
             //throw new RuntimeException(e);
-            Log.w(TAG, "the response Value is no JSON Format..!");
+            Log.w(TAG, "waitForBroadcastReceiver: the response Value is no JSON Format..!");
 
 
         }
@@ -82,15 +100,15 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
             Log.w(TAG, "we are in WaitForBroadcast Post Execute!");
             try {
                 toSave();
+                post();
                 singleton.mBluetoothGatt.disconnect();
                 singleton.connect = false;
                 singleton.value = null;
-            } catch (InterruptedException | NotInitializedDBException e) {
+            } catch (InterruptedException
+                     | NotInitializedDBException
+                     | JSONException |
+                     MissingIngredientPumpException e) {
                 e.printStackTrace();
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            } catch (MissingIngredientPumpException e) {
-                throw new RuntimeException(e);
             }
 
 

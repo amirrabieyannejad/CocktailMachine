@@ -74,4 +74,13 @@ public class PumpSettingsActivity extends AppCompatActivity {
 
     }
 
+
+    public void automatic(View view){
+
+        //open alert dialog pick pump
+        //Pump pump = Pump.getPump(0);
+        //pump.sendPumpTimes(this, 0,0,0);
+        GetDialog.startAutomaticCalibration(this);
+
+    }
 }

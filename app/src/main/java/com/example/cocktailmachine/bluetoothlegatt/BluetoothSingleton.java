@@ -33,6 +33,10 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.AdminRights;
+import com.example.cocktailmachine.data.enums.CalibrateStatus;
+import com.example.cocktailmachine.data.enums.CocktailStatus;
+import com.example.cocktailmachine.data.enums.ErrorStatus;
+import com.example.cocktailmachine.data.enums.Postexecute;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -1348,6 +1352,39 @@ public class BluetoothSingleton {
     }
 
     /**
+     * reset (ADMIN): Reset the machine
+     * JSON-sample: {"cmd": "reset", "user": 0}
+     * like described in ProjektDokumente/esp/Befehle.md
+     * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     *
+     * @return
+     * @throws JSONException
+     */
+    @SuppressLint("MissingPermission")
+    public void adminReset(Postexecute postexecute) throws JSONException, InterruptedException {
+        singleton = BluetoothSingleton.getInstance();
+        //generate JSON Format
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cmd", "reset");
+        jsonObject.put("user", 0);
+        singleton.sendReadWrite(jsonObject, true, true);
+
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+            @Override
+            public void toSave() throws InterruptedException {
+                if (!check()) {
+                    throw new InterruptedException();
+                }
+
+                Log.w(TAG, "returned result is now:" + this.getResult());
+            }
+        };
+        wfb.execute();
+        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+
+    }
+
+    /**
      * reset_error (ADMIN): Reset stored error.The command removes the current
      * error and continues in normal operation. This usually only happens when
      * a recipe had a problem and the machine could not fix the problem.
@@ -1969,6 +2006,33 @@ public class BluetoothSingleton {
         wfb.execute();
         Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
+    /**
+     * adminPumpsStatus: Map of all available pumps and their level
+     * JSON-Sample: {"1":{"liquid":"water","volume":1000.0,"calibrated":true,
+     * "rate":0.0,"time_init":1000,"time_reverse":1000}
+     * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
+     * like described in ProjektDokumente/esp/Services.md
+     *
+     * @return
+     * @throws JSONException
+     */
+    @SuppressLint("MissingPermission")
+    public void adminReadPumpsStatus(Postexecute postexecute) throws JSONException, InterruptedException {
+        singleton = BluetoothSingleton.getInstance();
+        singleton.sendStatus(CHARACTERISTIC_STATUS_PUMPS);
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+            @Override
+            public void toSave() throws InterruptedException, NotInitializedDBException, JSONException, MissingIngredientPumpException {
+                if (!check()) {
+                    throw new InterruptedException();
+                }
+                Pump.updatePumpStatus(this.getResult());
+                Log.w(TAG, "To Save: " + this.getResult());
+            }
+        };
+        wfb.execute();
+        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+    }
 
     /**
      * adminReadLastChange: Last Change Characteristic: If the timestamp has not changed,
@@ -1991,7 +2055,8 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                Pump.updatePumpStatus(this.getResult());
+                //Pump.updatePumpStatus(this.getResult());
+                CocktailMachine.setLastChange(this.result);
                 Log.w(TAG, "To Save: " + this.getResult());
             }
         };
@@ -2042,17 +2107,18 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReadState() throws JSONException, InterruptedException {
+    public void adminReadState(Postexecute postexecute) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.sendStatus(CHARACTERISTIC_STATUS_STATE);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
             @Override
             public void toSave() throws InterruptedException, JSONException {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                com.example.cocktailmachine.data.enums.Status.
-                        setStatus(this.getResult());
+                CocktailStatus.
+                        setStatus(this.result);
+                CalibrateStatus.setStatus(this.result);
                 Log.w(TAG, "To Save: " + this.getResult());
             }
         };
@@ -2163,7 +2229,7 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                //TODO: ask Johanna to implement a data bank entity
+                CocktailMachine.setCurrentWeight(this.getResult());
                 Log.w(TAG, "To Save: " + this.getResult());
             }
         };
@@ -2190,7 +2256,34 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                //TODO: ask Johanna to implement a data bank entity
+                ErrorStatus.setError(this.result);
+                Log.w(TAG, "To Save: " + this.getResult());
+            }
+        };
+        wfb.execute();
+        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+    }
+
+    /**
+     * adminReadScaleStatus: current error (if any)
+     * Sample: "invalid volume"
+     * like described in ProjektDokumente/esp/Services.md
+     * receives a message along with Read on {@code BluetoothGattCharacteristic}
+     * from the Device.
+     *
+     * @return JSONObject
+     * @throws JSONException
+     */
+    @SuppressLint("MissingPermission")
+    public void adminReadErrorStatus(Postexecute postexecute) throws JSONException, InterruptedException {
+        singleton.sendStatus(CHARACTERISTIC_STATUS_ERROR);
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+            @Override
+            public void toSave() throws InterruptedException {
+                if (!check()) {
+                    throw new InterruptedException();
+                }
+                ErrorStatus.setError(this.result);
                 Log.w(TAG, "To Save: " + this.getResult());
             }
         };

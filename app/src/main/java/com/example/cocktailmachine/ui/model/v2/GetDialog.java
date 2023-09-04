@@ -16,6 +16,7 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.CocktailMachine;
@@ -26,6 +27,10 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.data.enums.AdminRights;
+import com.example.cocktailmachine.data.enums.CalibrateStatus;
+import com.example.cocktailmachine.data.enums.ErrorStatus;
+import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
@@ -44,6 +49,8 @@ import java.util.Objects;
  */
 public class GetDialog {
 
+    private static final String TAG = "GetDialog";
+
     //ERROR
     public static void errorMessage(Activity activity){
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -53,13 +60,10 @@ public class GetDialog {
         builder.setNeutralButton("Abbrechen", (dialog, which) -> {
 
         });
-        builder.setPositiveButton("Aktualisieren", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Pump.sync(activity);
-                Recipe.syncRecipeDBWithCocktailmachine(activity);
-                Toast.makeText(activity,"Synchronisierung läuft!",Toast.LENGTH_SHORT).show();
-            }
+        builder.setPositiveButton("Aktualisieren", (dialog, which) -> {
+            Pump.sync(activity);
+            Recipe.syncRecipeDBWithCocktailmachine(activity);
+            Toast.makeText(activity,"Synchronisierung läuft!",Toast.LENGTH_SHORT).show();
         });
         builder.show();
     }
@@ -67,8 +71,18 @@ public class GetDialog {
 
 
 
+
+
+
+
+
+
+
+
+
     //Recipe Send
     public static void sendRecipe(Activity activity, Recipe recipe){
+        CocktailMachine.queueRecipe(recipe);
         countDown(activity, recipe);
     }
     //Count down
@@ -86,6 +100,12 @@ public class GetDialog {
         recipe.addDialogWaitingQueueCountDown(activity, alertDialog);
     }
 
+    /**
+     * Let the user go to the Cocktailmachine.
+     * @author Johanna Reidt
+     * @param activity
+     * @param recipe
+     */
     public static void isUsersTurn(Activity activity, Recipe recipe){
         //Better solution
         //https://stackoverflow.com/questions/10780651/display-a-countdown-timer-in-the-alert-dialog-box
@@ -94,51 +114,58 @@ public class GetDialog {
         //countDown(activity, recipe, countDownThread);
         AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
         alertDialog.setTitle("Du bist dran!");
-        alertDialog.setMessage("Bitte, geh zur Cocktailmaschine und stelle dein Glas unter die MAschine. ");
+        alertDialog.setMessage("Bitte, geh zur Cocktailmaschine und stelle dein Glas unter die Maschine. ");
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Los!", (dialog, which) -> {
-            //TODO: send force start bluetooth thing
+            //TO DO: send force start bluetooth thing
+            CocktailMachine.startMixing();
             GetActivity.goToFill(activity, recipe);
             dialog.dismiss();
         });
         alertDialog.show();   //
     }
 
+    /**
+     * Let user get the mixed Cocktail.
+     * @author Johanna Reidt
+     * @param activity
+     * @param recipe
+     */
     public static void isDone(Activity activity, Recipe recipe){
         AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
         alertDialog.setTitle("Fertig!");
         alertDialog.setMessage("Hole deinen Cocktail ab! ");
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Abgeholt!", (dialog, which) -> {
-            int count = 4;
-            try {
-                BluetoothSingleton.getInstance().adminReset();
-                CocktailMachine.isCollected();
-                GetDialog.showTopics( activity,  recipe);
-                dialog.dismiss();
-                Intent success = new Intent(activity, Menue.class);
-                activity.startActivity(success);
-            } catch (JSONException | InterruptedException e) {
-                e.printStackTrace();
-                count--;
-                if(count == 0){
-                    GetDialog.showTopics( activity,  recipe);
-                    CocktailMachine.isCollected();
-                    dialog.dismiss();
-                }
-            }
+            //BluetoothSingleton.getInstance().adminReset();
+            //CocktailMachine.isCollected();
+            dialog.dismiss();
+            CocktailMachine.takeCocktail();
+            GetDialog.showTopics( activity,  recipe);
+            //GetActivity.goToMenu(activity);
+
         });
         alertDialog.show();   //
 
     }
 
+    /**
+     * show topics if there are any
+     * @author Johanna Reidt
+     * @param activity
+     * @param recipe
+     */
     public static void showTopics(Activity activity, Recipe recipe){
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
         alertDialog.setTitle("Serviervorschläge!");
         alertDialog.setMessage("Füge noch einen oder mehrer der Serviervorschläge hinzu!");
-        alertDialog.setOnDismissListener(dialog -> GetActivity.goToDisplay(activity,
-                FragmentType.Model,
-                ModelType.RECIPE,
-                recipe.getID()));
+        alertDialog.setOnDismissListener(dialog -> {
+                dialog.dismiss();
+                GetActivity.goToMenu(activity);
+        });
         List<Topic> topics = Topic.getTopics(recipe);
+        if(topics.size()==0){
+            GetActivity.goToMenu(activity);
+            return;
+        }
         ArrayList<String> topicsName = new ArrayList<>();
         for(Topic t: topics){
             topicsName.add(t.getName());
@@ -149,14 +176,26 @@ public class GetDialog {
                 topicsName);
         alertDialog.setAdapter(adapter,
                 (dialog, which) -> {
+            dialog.dismiss();
             GetActivity.goToDisplay(activity,
                         FragmentType.Model,
                         ModelType.TOPIC,
                         topics.get(which).getID());
-            dialog.dismiss();
         });
         alertDialog.show();
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -173,44 +212,41 @@ public class GetDialog {
      * g.	Angabe von Zutaten
      */
     public static void startAutomaticCalibration(Activity activity){
-        Log.i("GetDialog", "startAutomaticCalibration");
+        CocktailMachine.automaticCalibration();
+        Log.i(TAG, "startAutomaticCalibration");
         DatabaseConnection.initializeSingleton(activity);
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Automatische Kalibrierung");
         builder.setMessage("Bitte folge den Anweisungen schrittweise. " +
                 "Zur Kalibrierung der Pumpen darf zunächst nur Wasser angeschlossen sein. " +
-                "Bitte stelle sicher, dass an allen Pumpen nur Wassergefässe angeschlossen sind.");
-        builder.setPositiveButton("Erledigt!", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                firstTaring(activity);
-                dialog.dismiss();
-            }
+                "Bitte stelle sicher, dass an allen Pumpen nur Wassergefässe angeschlossen sind." +
+                "Die Wassermmenge je Pumpe sollte um die 150ml betragen.");
+        builder.setPositiveButton("Erledigt!", (dialog, which) -> {
+            firstTaring(activity);
+            dialog.dismiss();
         });
         builder.show();
 
     }
 
     private static void firstTaring(Activity activity){
-        Log.i("GetDialog", "firstTaring");
+        Log.i(TAG, "firstTaring");
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Waagentarierung");
         builder.setMessage("Bitte stelle sicher, dass keine Gefässe, Gewichte oder Ähnliches unter der Cocktailmaschine steht. " +
                 "Gemeint ist der Bereich an dem später die Gläser stehen." +
                 "Auch das Auffangbecken muss leer sein!");
-        builder.setPositiveButton("Erledigt!", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                CocktailMachine.tareScale(activity);
-                enterNumberOfPumps(activity);
-                dialog.dismiss();
-            }
+        builder.setPositiveButton("Erledigt!", (dialog, which) -> {
+            //CocktailMachine.tareScale(activity);
+            CocktailMachine.automaticEmpty();
+            enterNumberOfPumps(activity);
+            dialog.dismiss();
         });
         builder.show();
     }
 
     private static void enterNumberOfPumps(Activity activity){
-        Log.i("GetDialog", "enterNumberOfPumps");
+        Log.i(TAG, "enterNumberOfPumps");
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Setze die Anzahl der Pumpen:");
 
@@ -235,16 +271,87 @@ public class GetDialog {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Waagenkalibrierung");
         builder.setMessage("Bitte stelle ein Gefäss mit 100ml Flüssigkeit unter die Cocktailmaschine. ");
-        builder.setPositiveButton("Erledigt!", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                CocktailMachine.automaticCalibration(activity);
-                waitingAutomaticCalibration(activity);
-            }
+        builder.setPositiveButton("Erledigt!", (dialog, which) -> {
+            dialog.dismiss();
+            //CocktailMachine.automaticCalibration(activity);
+            CocktailMachine.automaticWeight();
+            waitingForPumps(activity);
         });
         builder.show();
     }
+
+    private static void emptyGlass(Activity activity){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Leere das Glass!");
+        builder.setMessage("Leere das Glass und stell es wieder unter die Cocktailmaschine!");
+        builder.setPositiveButton("Erledigt!", (dialog, which) -> {
+            GetDialog.waitingForPumps(activity);
+            CocktailMachine.automaticEmptyPumping();
+        });
+    }
+
+    private static void waitingForPumps(Activity activity){
+        Log.i("GetDialog", "waitingForPumps");
+        //setIngredientsForPumps(activity);
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Bitte Warten!");
+        builder.setMessage("Die automatische Kalibration der Pumpen läuft!");
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        WaitingQueueCountDown waitingQueueCountDown = new WaitingQueueCountDown(5000) {
+            boolean isDone = false;
+            @Override
+            public void onTick() {
+                Log.i("GetDialog", "waitingQueueCountDown:  isAutomaticCalibrationDone false");
+                if(CalibrateStatus.getCurrent()==CalibrateStatus.calibration_calculation){
+                    dialog.setMessage("Die Pumpeneinstellungen werden kalkuliert! Bitte warten!");
+                }
+            }
+
+            @Override
+            public void reduceTick() {
+                isDone = CocktailMachine.isAutomaticCalibrationDone()||CocktailMachine.needsEmptyingGlass();
+                Log.i("GetDialog", "waitingQueueCountDown:  isDone: " +isDone);
+                if(isDone){
+                    setTick(0);
+                }else {
+                    setTick(1);
+                }
+            }
+
+            @Override
+            public void onNext() {
+
+            }
+
+            @Override
+            public void onFinish() {
+                Log.i("GetDialog", "waitingQueueCountDown: onFinish");
+                this.cancel();
+                //this.stop();
+                Log.i("GetDialog", "waitingQueueCountDown: onFinish: this canceled");
+                //ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+                //toneGen1.startTone(ToneGenerator.TONE_PROP_BEEP,150);
+                //toneGen1.release();
+                dialog.dismiss();
+
+                Log.i("GetDialog", "waitingQueueCountDown: onFinish: dialog dimissed");
+                if(CocktailMachine.isAutomaticCalibrationDone()) {
+                    Toast.makeText(activity, "Das Setup ist vollständig!", Toast.LENGTH_LONG).show();
+                    CocktailMachine.automaticEnd();
+                    GetDialog.setIngredientsForPumps(activity);
+                } else if (CocktailMachine.needsEmptyingGlass()) {
+                    GetDialog.emptyGlass(activity);
+                }
+                this.cancel();
+            }
+        };
+        waitingQueueCountDown.start();
+    }
+
+
+    /**
 
     private static void waitingAutomaticCalibration(Activity activity){
         //TODO
@@ -300,12 +407,14 @@ public class GetDialog {
 
 
     }
+            **/
 
     private static void setIngredientsForPumps(Activity activity){
         //TO DO
 
         Log.i("GetDialog", "setIngredientsForPumps");
         List<Pump> pumps = Pump.getPumps();
+        Log.i(TAG, "setIngredientsForPumps: pumps len "+pumps.size());
 
         Pump p = pumps.get(0);
         pumps.remove(0);
@@ -314,6 +423,8 @@ public class GetDialog {
     }
 
     private static void setFixedPumpIngredient(Activity activity, Pump pump, List<Pump> next){
+        Log.i(TAG, "setFixedPumpIngredient");
+        Log.i(TAG, "setFixedPumpIngredient: next len "+next.size());
         if (pump != null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setTitle("Setze die Zutat für Slot "+pump.getSlot()+":");
@@ -336,16 +447,22 @@ public class GetDialog {
                     });
 
             builder.setPositiveButton("Speichern", (dialog, which) -> {
+                Log.i(TAG, "setFixedPumpIngredient: ingredient "+pump.getIngredientName());
+                dialog.dismiss();
                 pump.sendSave(activity);
+                //Log.i(TAG, "setFixedPumpIngredient: ingredient "+pump.getIngredientName());
                 setFixedPumpVolume(activity, pump, next);
+
             });
             builder.show();
         }else{
+            Log.i(TAG, "setFixedPumpIngredient: pump is null");
             errorMessage(activity);
         }
     }
 
     private static void setFixedPumpVolume(Activity activity, Pump pump, List<Pump> next){
+        Log.i(TAG, "setFixedPumpVolume");
         if (pump != null) {
             pump.sendRefill(activity);
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -362,11 +479,20 @@ public class GetDialog {
             builder.setView(v);
 
             builder.setPositiveButton("Speichern", (dialog, which) -> {
+                dialog.dismiss();
                 volumeChangeView.save();
                 volumeChangeView.send();
-                setFixedPumpMinVolume(activity, pump, next);
+                //setFixedPumpMinVolume(activity, pump, next);
+                if(next.isEmpty()){
+                    GetActivity.goToMenu(activity);
 
+                }else {
+                    Pump p = next.get(0);
+                    next.remove(0);
+                    setFixedPumpIngredient(activity,p,next);
+                }
 
+                return;
             });
             builder.show();
         }else{
@@ -376,6 +502,7 @@ public class GetDialog {
 
 
     private static void setFixedPumpMinVolume(Activity activity, Pump pump, List<Pump> next){
+        Log.i(TAG, "setFixedPumpMinVolume");
         if (pump != null) {
             pump.sendRefill(activity);
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -423,6 +550,18 @@ public class GetDialog {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     //Title
 
     /**
@@ -456,6 +595,7 @@ public class GetDialog {
         });
         builder.show();
     }
+
 
     public static class TitleChangeView{
 
@@ -1051,7 +1191,8 @@ public class GetDialog {
 
         builder.setPositiveButton("Speichern", (dialog, which) -> {
             pumpNumberChangeView.save();
-            Pump.calibratePumpsAndTimes(activity);
+            //Pump.calibratePumpsAndTimes(activity);
+            GetDialog.startAutomaticCalibration(activity);
 
         });
         builder.setNeutralButton("Abbrechen", (dialog, which) -> {
@@ -1489,4 +1630,119 @@ public class GetDialog {
                 recipe.removeIngredient(ID);
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //ErrorHandling
+    public static void handleCmdError(Activity activity, ErrorStatus status) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Command Error");
+        builder.setMessage("ESP gab folgende ErrorMessage zurück: "+status+
+                " Bitte zeig diese Nachricht dem Adminstratoren-Team!");
+        builder.setNeutralButton("Gezeigt!", (dialog, which) -> {});
+        builder.show();
+    }
+
+
+    public static void handleBluetoothFailed(Activity activity) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Bluetoothverbindung fehlerhaft");
+        builder.setMessage("Bitte überprüf die Bluetoothverbindung. ");
+        builder.setPositiveButton("Alles ok!", (dialog, which) -> {});
+        builder.setNegativeButton("Neu verbinden!", (dialog, which) -> {
+            GetActivity.startAgain(activity);
+        });
+        builder.show();
+    }
+
+
+
+    public static void handleInvalidCalibrationData(Activity activity) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Die Kalibrierung ist fehlerhaft.");
+        builder.setMessage("Bitte kalibriere neu!");
+        builder.setPositiveButton("Kalibrieren", (dialog, which) -> {
+            CocktailMachine.isCocktailMachineSet(new Postexecute() {
+                                                        @Override
+                                                        public void post() {
+                                                            dialog.dismiss();
+                                                            GetActivity.goToMenu(activity);
+                                                        }
+                                                    },
+                    new Postexecute() {
+                        @Override
+                        public void post() {
+                            dialog.dismiss();
+                        }
+                    });
+        });
+        builder.setNegativeButton("Abbrechen", (dialog, which) -> {
+            CocktailMachine.isCocktailMachineSet(new Postexecute() {
+                                                     @Override
+                                                     public void post() {
+                                                         dialog.dismiss();
+                                                         GetActivity.waitNotSet(activity);
+                                                     }
+                                                 },
+                    new Postexecute() {
+                        @Override
+                        public void post() {
+                            dialog.dismiss();
+                        }
+                    });
+        });
+
+        builder.show();
+    }
+
+
+    public static void handleUnauthorized(Activity activity) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Administratorenrechte erforderlich!");
+        builder.setMessage("Bitte melde dich als Administrator an. ");
+        builder.setPositiveButton("Login!", (dialog, which) -> {
+            dialog.dismiss();
+            Log.i(TAG, "handleUnauthorized: user choosed to login");
+            AdminRights.login(activity, activity.getLayoutInflater(), dialog1 -> {        });
+            });
+        builder.setNegativeButton("Abbrechen!", (dialog, which) -> {
+            Log.i(TAG, "handleUnauthorized: user choosed to do nothing");
+        });
+        builder.show();
+    }
+
+
+
 }
