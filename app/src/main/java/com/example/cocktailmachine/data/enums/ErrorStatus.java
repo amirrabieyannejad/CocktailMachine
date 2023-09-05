@@ -135,7 +135,7 @@ public enum ErrorStatus {
     public static void updateError(){
         try {
             BluetoothSingleton.getInstance().adminReadErrorStatus();
-        } catch (JSONException | InterruptedException e) {
+        } catch (JSONException | InterruptedException | NullPointerException e) {
             Log.i(TAG, "getErrorMessage: errored");
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
@@ -144,13 +144,15 @@ public enum ErrorStatus {
     }
 
     private static void updateError(Postexecute afterReading){
+
         try {
             BluetoothSingleton.getInstance().adminReadErrorStatus(afterReading);
-        } catch (JSONException | InterruptedException e) {
+        } catch (JSONException | InterruptedException | NullPointerException e) {
             Log.i(TAG, "getErrorMessage: errored");
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
             setError("not");
+            afterReading.post();
         }
     }
 
@@ -254,7 +256,7 @@ public enum ErrorStatus {
         try {
             BluetoothSingleton.getInstance().adminResetError();
             Log.i(TAG, "resetted");
-        } catch (JSONException | InterruptedException e) {
+        } catch (JSONException | InterruptedException| NullPointerException e) {
             Log.i(TAG, "reset: errored");
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
