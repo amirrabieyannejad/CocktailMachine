@@ -290,6 +290,84 @@ public enum ErrorStatus {
 
 
     /**
+     * if esp not ready for calibration start
+     * ERROR CODE: calibration_command_invalid_at_this_time
+     * show Dialog
+     * @param activity
+     * @param dialog
+     * @author Johanna Reidt
+     */
+    public static void handleAutoCalNotReadyStart(Activity activity, DialogInterface dialog){
+        Postexecute doAgain = new Postexecute() {
+            @Override
+            public void post() {
+                CocktailMachine.automaticCalibration();
+            }
+        };
+
+        Postexecute continueHere = new Postexecute() {
+            @Override
+            public void post() {
+                GetDialog.firstAutomaticDialog(activity);
+            }
+        };
+        handleAutomaticCalibrationNotReady(activity, dialog,
+                doAgain, continueHere);
+    }
+
+    /**
+     * if esp not ready for calibration start
+     * ERROR CODE: calibration_command_invalid_at_this_time
+     * show Dialog
+     * @param activity
+     * @param dialog
+     * @author Johanna Reidt
+     */
+    public static void handleAutoCalNotReadyEmptyAfterTaring(Activity activity, AlertDialog dialog){
+        Postexecute doAgain = new Postexecute() {
+            @Override
+            public void post() {
+                CocktailMachine.automaticEmpty();
+            }
+        };
+
+        Postexecute continueHere = new Postexecute() {
+            @Override
+            public void post() {
+                GetDialog.enterNumberOfPumps(activity);
+            }
+        };
+        handleAutomaticCalibrationNotReady(activity, dialog,
+                doAgain, continueHere);
+    }
+    /**
+     * if esp not ready for calibration start
+     * ERROR CODE: calibration_command_invalid_at_this_time
+     * show Dialog
+     * @param activity
+     * @param dialog
+     * @author Johanna Reidt
+     */
+    public static void handleAutoCalNotReadyWeight(Activity activity, AlertDialog dialog){
+        Postexecute doAgain = new Postexecute() {
+            @Override
+            public void post() {
+                CocktailMachine.automaticWeight();
+            }
+        };
+
+        Postexecute continueHere = new Postexecute() {
+            @Override
+            public void post() {
+                GetDialog.emptyGlass(activity);
+            }
+        };
+        handleAutomaticCalibrationNotReady(activity, dialog,
+                doAgain, continueHere);
+    }
+
+
+    /**
      * if esp not ready for calibration
      * ERROR CODE: calibration_command_invalid_at_this_time
      * show Dialog
@@ -297,7 +375,11 @@ public enum ErrorStatus {
      * @param dialog
      * @author Johanna Reidt
      */
-    public static void handleAutomaticCalibrationNotReady(Activity activity, AlertDialog dialog){
+    public static void handleAutomaticCalibrationNotReady(Activity activity,
+                                                          DialogInterface dialog,
+                                                          Postexecute doAgain,
+                                                          Postexecute continueHere){
+        doAgain.post();
         getErrorStatus(new Postexecute() {
             @Override
             public void post() {
@@ -309,7 +391,8 @@ public enum ErrorStatus {
                     builder.setMessage("Der ESP ist noch nicht bereit. Bitte versuche es erneut");
                     builder.setPositiveButton("Nochmal", (dialog1, which) -> {
                         Log.i(TAG, "handleAutomaticCalibrationNotReady: Nochmal Button: call ESP calibration start");
-                        CocktailMachine.automaticCalibration();
+                        //CocktailMachine.automaticCalibration();
+                        doAgain.post();
                         Log.i(TAG, "handleAutomaticCalibrationNotReady: Nochmal Button: check error");
                         getErrorStatus(new Postexecute() {
                             @Override
@@ -319,21 +402,21 @@ public enum ErrorStatus {
                                     Toast.makeText(activity,"Nicht bereit!", Toast.LENGTH_SHORT).show();
                                 } else if (isError()) {
                                     Log.i(TAG, "handleAutomaticCalibrationNotReady: Nochmal Button: different error");
+                                    dialog1.cancel();
                                     handleIfExistingError(activity);
                                 }else {
                                     Log.i(TAG, "handleAutomaticCalibrationNotReady: Nochmal Button: continue dialog");
-                                    GetDialog.firstAutomaticDialog(activity);
+                                    //GetDialog.firstAutomaticDialog(activity);
+                                    dialog1.cancel();
+                                    continueHere.post();
                                 }
                             }
                         });
                     });
-                    builder.setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Log.i(TAG, "handleAutomaticCalibrationNotReady: Abbrechen Button");
-                            dialog.cancel();
-                            GetActivity.waitNotSet(activity);
-                        }
+                    builder.setNegativeButton("Abbrechen", (dialog12, which) -> {
+                        Log.i(TAG, "handleAutomaticCalibrationNotReady: Abbrechen Button");
+                        dialog12.cancel();
+                        GetActivity.waitNotSet(activity);
                     });
                     builder.show();
                 } else if(isError()){
@@ -347,7 +430,6 @@ public enum ErrorStatus {
             }
         });
     }
-
 
 
 

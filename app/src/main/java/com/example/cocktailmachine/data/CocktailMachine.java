@@ -46,6 +46,9 @@ public class CocktailMachine {
     static double currentWeight;
 
 
+    private static int dummyCounter=0;
+
+
 
 
 
@@ -662,6 +665,10 @@ public class CocktailMachine {
 
     //Calibrations
 
+    /**
+     * call auto calibration start
+     * @author Johanna Reidt
+     */
     public static void automaticCalibration(){
         /**
          * a.	Bitte erst wasser beim ersten Durchgang
@@ -684,10 +691,16 @@ public class CocktailMachine {
         }
     }
 
+    /**
+     * check if calibration is done
+     * @return
+     * @author Johanna Reidt
+     */
     public static boolean isAutomaticCalibrationDone(){
         //TO DO: bluetooth connection
         if(Dummy.isDummy) {
-            return new Random(42).nextBoolean();
+            //return new Random(42).nextBoolean();
+            return dummyCounter==Pump.getPumps().size();
         }else{
             //TO  DO: Bluetooth connection
             //return new Random(42).nextBoolean();
@@ -695,6 +708,11 @@ public class CocktailMachine {
         }
     }
 
+    /**
+     * checks if admin has to empty the glass to continue the calibration process
+     * @return
+     * @author Johanna Reidt
+     */
     public static boolean needsEmptyingGlass() {
         if(Dummy.isDummy) {
             return new Random(42).nextBoolean();
@@ -706,40 +724,64 @@ public class CocktailMachine {
     }
 
 
+    /**
+     * tells the esp that user hsa emptied the glass
+     * @author Johanna Reidt
+     */
     public static void automaticEmpty(){
         try{
-        BluetoothSingleton.getInstance().adminAutoCalibrateAddEmpty();
+            BluetoothSingleton.getInstance().adminAutoCalibrateAddEmpty();
         } catch (JSONException | InterruptedException e) {
             //throw new RuntimeException(e);
+            Log.e(TAG,"automaticEmpty");
+            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
             e.printStackTrace();
         }
     }
 
+    /**
+     * tells esp that the glass with 100 ml water has been places
+     * @author Johanna Reidt
+     */
     public static void automaticWeight(){
         try{
             BluetoothSingleton.getInstance().adminAutoCalibrateAddWeight(100);
         } catch (JSONException | InterruptedException e) {
             //throw new RuntimeException(e);
+            Log.e(TAG,"automaticWeight");
+            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
             e.printStackTrace();
         }
     }
 
 
-
+    /**
+     * empty glass is ready
+     * @author Johanna Reidt
+     */
     public static void automaticEmptyPumping(){
+        dummyCounter = dummyCounter+1;
         try {
             BluetoothSingleton.getInstance().adminAutoCalibrateAddEmpty();
         } catch (JSONException | InterruptedException e) {
             //throw new RuntimeException(e);
+            Log.e(TAG,"automaticEmptyPumping");
+            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
             e.printStackTrace();
         }
     }
 
+    /**
+     * last call for calibration
+     * @author Johanna Reidt
+     */
     public static void automaticEnd(){
         try {
             BluetoothSingleton.getInstance().adminAutoCalibrateFinish();
         } catch (JSONException | InterruptedException e){
             //throw new RuntimeException(e);
+            Log.e(TAG,"automaticEnd");
+            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
             e.printStackTrace();
         }
     }

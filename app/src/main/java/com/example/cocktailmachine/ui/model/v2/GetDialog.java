@@ -213,12 +213,12 @@ public class GetDialog {
      */
     public static void startAutomaticCalibration(Activity activity){
         Log.i(TAG, "startAutomaticCalibration");
-        CocktailMachine.automaticCalibration();
-        AlertDialog dialog = firstAutomaticDialog(activity);
-        ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog);
+        //CocktailMachine.automaticCalibration();
+        firstAutomaticDialog(activity);
+        //ErrorStatus.handleAutoCalNotReadyStart(activity, dialog);
     }
 
-    public static AlertDialog firstAutomaticDialog(Activity activity){
+    public static void firstAutomaticDialog(Activity activity){
         DatabaseConnection.initializeSingleton(activity);
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Automatische Kalibrierung");
@@ -227,10 +227,24 @@ public class GetDialog {
                 "Bitte stelle sicher, dass an allen Pumpen nur Wassergefässe angeschlossen sind." +
                 "Die Wassermmenge je Pumpe sollte um die 150ml betragen.");
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
-            firstTaring(activity);
-            dialog.dismiss();
+            Postexecute doAgain = new Postexecute() {
+                @Override
+                public void post() {
+                    CocktailMachine.automaticCalibration();
+                }
+            };
+            Postexecute continueHere = new Postexecute(){
+
+                @Override
+                public void post() {
+                    firstTaring(activity);
+                }
+            };
+            ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
+            //firstTaring(activity);
+            //dialog.dismiss();
         });
-        return builder.show();
+        builder.show();
     }
 
     private static void firstTaring(Activity activity){
@@ -242,14 +256,16 @@ public class GetDialog {
                 "Auch das Auffangbecken muss leer sein!");
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
             //CocktailMachine.tareScale(activity);
-            CocktailMachine.automaticEmpty();
-            enterNumberOfPumps(activity);
+
+            //CocktailMachine.automaticEmpty();
+            //TODO: TARIERUNG pflicht????
             dialog.dismiss();
+            enterNumberOfPumps(activity);
         });
         builder.show();
     }
 
-    private static void enterNumberOfPumps(Activity activity){
+    public static void enterNumberOfPumps(Activity activity){
         Log.i(TAG, "enterNumberOfPumps");
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Setze die Anzahl der Pumpen:");
@@ -261,11 +277,10 @@ public class GetDialog {
                         v);
 
         builder.setView(v);
-
         builder.setPositiveButton("Speichern", (dialog, which) -> {
+            dialog.dismiss();
             pumpNumberChangeView.save();
             getGlass(activity);
-            dialog.dismiss();
         });
         builder.show();
     }
@@ -276,22 +291,44 @@ public class GetDialog {
         builder.setTitle("Waagenkalibrierung");
         builder.setMessage("Bitte stelle ein Gefäss mit 100ml Flüssigkeit unter die Cocktailmaschine. ");
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
-            dialog.dismiss();
+            Postexecute doAgain = new Postexecute() {
+                @Override
+                public void post() {
+                    CocktailMachine.automaticWeight();
+                }
+            };
+            Postexecute continueHere = new Postexecute() {
+                @Override
+                public void post() {
+                    emptyGlass(activity);
+                }
+            };
+            ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
             //CocktailMachine.automaticCalibration(activity);
-            CocktailMachine.automaticWeight();
-            waitingForPumps(activity);
         });
         builder.show();
     }
 
-    private static void emptyGlass(Activity activity){
+    public static void emptyGlass(Activity activity){
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Leere das Glass!");
         builder.setMessage("Leere das Glass und stell es wieder unter die Cocktailmaschine!");
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
-            GetDialog.waitingForPumps(activity);
-            CocktailMachine.automaticEmptyPumping();
+            Postexecute doAgain = new Postexecute() {
+                @Override
+                public void post() {
+                    CocktailMachine.automaticEmptyPumping();
+                }
+            };
+            Postexecute continueHere = new Postexecute() {
+                @Override
+                public void post() {
+                    GetDialog.waitingForPumps(activity);
+                }
+            };
+            ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
         });
+        builder.show();
     }
 
     private static void waitingForPumps(Activity activity){
@@ -343,8 +380,21 @@ public class GetDialog {
                 Log.i("GetDialog", "waitingQueueCountDown: onFinish: dialog dimissed");
                 if(CocktailMachine.isAutomaticCalibrationDone()) {
                     Toast.makeText(activity, "Das Setup ist vollständig!", Toast.LENGTH_LONG).show();
-                    CocktailMachine.automaticEnd();
-                    GetDialog.setIngredientsForPumps(activity);
+
+                    Postexecute doAgain = new Postexecute() {
+                        @Override
+                        public void post() {
+                            CocktailMachine.automaticEnd();
+                        }
+                    };
+                    Postexecute continueHere = new Postexecute() {
+                        @Override
+                        public void post() {
+                            GetDialog.setIngredientsForPumps(activity);
+                        }
+                    };
+                    ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
+
                 } else if (CocktailMachine.needsEmptyingGlass()) {
                     GetDialog.emptyGlass(activity);
                 }
