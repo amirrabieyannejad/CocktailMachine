@@ -68,9 +68,6 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
 
     //Slot
-
-    void setSlot(int slot);
-
     int getSlot();
 
 
