@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class CocktailMachine {
@@ -671,12 +672,14 @@ public class CocktailMachine {
          * f.	Warten auf fertig
          * g.	Angabe von Zutaten
          */
-        //TODO: call bluetooth
+        //TO DO: call bluetooth
         if(!Dummy.isDummy){
             try {
                 BluetoothSingleton.getInstance().adminAutoCalibrateStart();
             } catch (JSONException | InterruptedException e) {
-                throw new RuntimeException(e);
+                Log.e(TAG,"automaticCalibration");
+                Log.e(TAG, Objects.requireNonNull(e.getMessage()));
+                e.printStackTrace();
             }
         }
     }

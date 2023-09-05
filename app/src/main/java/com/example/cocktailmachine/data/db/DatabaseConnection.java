@@ -8,6 +8,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.BasicRecipes;
 import com.example.cocktailmachine.data.Ingredient;
@@ -87,15 +88,17 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         try {
             Log.i(TAG, "initialize_singleton: start loading");
             DatabaseConnection.singleton.emptyAll();
-            BasicRecipes.loadTopics();
-            BasicRecipes.loadIngredients();
-            BasicRecipes.loadPumps();
-            BasicRecipes.loadMargarita();
-            BasicRecipes.loadLongIslandIceTea();
+            if(Dummy.isDummy) {
+                BasicRecipes.loadTopics();
+                BasicRecipes.loadIngredients();
+                //BasicRecipes.loadPumps();
+                BasicRecipes.loadMargarita();
+                BasicRecipes.loadLongIslandIceTea();
+            }
             DatabaseConnection.singleton.checkAllAvailability();
             DatabaseConnection.singleton.print();
             Log.i(TAG, "initialize_singleton: finished loading");
-        } catch (NotInitializedDBException | MissingIngredientPumpException e) {
+        } catch (NotInitializedDBException e) {
             Log.i(TAG, "initialize_singleton: Exception");
             e.printStackTrace();
         }
@@ -107,15 +110,17 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         try {
             Log.i(TAG, "initialize_singleton: start loading");
             DatabaseConnection.singleton.emptyAll();
-            BasicRecipes.loadTopics();
-            BasicRecipes.loadIngredients();
-            BasicRecipes.loadPumps();
-            BasicRecipes.loadMargarita();
-            BasicRecipes.loadLongIslandIceTea();
+            if(Dummy.isDummy) {
+                BasicRecipes.loadTopics();
+                BasicRecipes.loadIngredients();
+                //BasicRecipes.loadPumps();
+                BasicRecipes.loadMargarita();
+                BasicRecipes.loadLongIslandIceTea();
+            }
             DatabaseConnection.singleton.checkAllAvailability();
             DatabaseConnection.singleton.print();
             Log.i(TAG, "initialize_singleton: finished loading");
-        }  catch (NotInitializedDBException | MissingIngredientPumpException e) {
+        }  catch (NotInitializedDBException e) {
             Log.i(TAG, "initialize_singleton: Exception");
             e.printStackTrace();
         }

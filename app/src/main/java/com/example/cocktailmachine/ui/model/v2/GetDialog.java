@@ -212,8 +212,13 @@ public class GetDialog {
      * g.	Angabe von Zutaten
      */
     public static void startAutomaticCalibration(Activity activity){
-        CocktailMachine.automaticCalibration();
         Log.i(TAG, "startAutomaticCalibration");
+        CocktailMachine.automaticCalibration();
+        AlertDialog dialog = firstAutomaticDialog(activity);
+        ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog);
+    }
+
+    public static AlertDialog firstAutomaticDialog(Activity activity){
         DatabaseConnection.initializeSingleton(activity);
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Automatische Kalibrierung");
@@ -225,8 +230,7 @@ public class GetDialog {
             firstTaring(activity);
             dialog.dismiss();
         });
-        builder.show();
-
+        return builder.show();
     }
 
     private static void firstTaring(Activity activity){

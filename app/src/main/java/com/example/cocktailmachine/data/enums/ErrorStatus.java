@@ -1,10 +1,15 @@
 package com.example.cocktailmachine.data.enums;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
+import com.example.cocktailmachine.data.CocktailMachine;
+import com.example.cocktailmachine.ui.model.v2.GetActivity;
 import com.example.cocktailmachine.ui.model.v2.GetDialog;
 
 import org.json.JSONException;
@@ -92,13 +97,16 @@ public enum ErrorStatus {
         return ErrorStatus.not;
     }
 
-    public static void setError(String mesg){
-        error = mesg;
+    public static void setError(String msg){
+        error = msg;
         status = valueOfString(error);
     }
 
 
     private static boolean isError(){
+        if(Dummy.isDummy){
+            return false;
+        }
         if(status==ErrorStatus.ok){
             return false;
         }
@@ -278,6 +286,66 @@ public enum ErrorStatus {
 
     private static void handleRecipeError(Activity activity){
         //TODO: handle all cases
+    }
+
+
+    /**
+     * if esp not ready for calibration
+     * ERROR CODE: calibration_command_invalid_at_this_time
+     * show Dialog
+     * @param activity
+     * @param dialog
+     * @author Johanna Reidt
+     */
+    public static void handleAutomaticCalibrationNotReady(Activity activity, AlertDialog dialog){
+        getErrorStatus(new Postexecute() {
+            @Override
+            public void post() {
+                if(status==calibration_command_invalid_at_this_time){
+                    reset();
+                    dialog.cancel();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                    builder.setTitle("Einen Moment...");
+                    builder.setMessage("Der ESP ist noch nicht bereit. Bitte versuche es erneut");
+                    builder.setPositiveButton("Nochmal", (dialog1, which) -> {
+                        Log.i(TAG, "handleAutomaticCalibrationNotReady: Nochmal Button: call ESP calibration start");
+                        CocktailMachine.automaticCalibration();
+                        Log.i(TAG, "handleAutomaticCalibrationNotReady: Nochmal Button: check error");
+                        getErrorStatus(new Postexecute() {
+                            @Override
+                            public void post() {
+                                if(status == calibration_command_invalid_at_this_time){
+                                    Log.i(TAG, "handleAutomaticCalibrationNotReady: Nochmal Button: not ready esp");
+                                    Toast.makeText(activity,"Nicht bereit!", Toast.LENGTH_SHORT).show();
+                                } else if (isError()) {
+                                    Log.i(TAG, "handleAutomaticCalibrationNotReady: Nochmal Button: different error");
+                                    handleIfExistingError(activity);
+                                }else {
+                                    Log.i(TAG, "handleAutomaticCalibrationNotReady: Nochmal Button: continue dialog");
+                                    GetDialog.firstAutomaticDialog(activity);
+                                }
+                            }
+                        });
+                    });
+                    builder.setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Log.i(TAG, "handleAutomaticCalibrationNotReady: Abbrechen Button");
+                            dialog.cancel();
+                            GetActivity.waitNotSet(activity);
+                        }
+                    });
+                    builder.show();
+                } else if(isError()){
+                    Log.i(TAG, "handleAutomaticCalibrationNotReady: different error");
+                    dialog.cancel();
+                    Toast.makeText(activity, "Ein Fehler ist aufgetreten!", Toast.LENGTH_SHORT).show();
+                    handleIfExistingError(activity);
+                }else{
+                    Log.i(TAG, "handleAutomaticCalibrationNotReady: no error");
+                }
+            }
+        });
     }
 
 
