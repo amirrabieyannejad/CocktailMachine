@@ -2,23 +2,15 @@ package com.example.cocktailmachine.ui.model.v2;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.media.AudioManager;
-import android.media.ToneGenerator;
-import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
@@ -31,14 +23,11 @@ import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.CalibrateStatus;
 import com.example.cocktailmachine.data.enums.ErrorStatus;
 import com.example.cocktailmachine.data.enums.Postexecute;
-import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
-import com.example.cocktailmachine.ui.model.v1.ModelActivity;
-
-import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -82,11 +71,34 @@ public class GetDialog {
 
     //Recipe Send
     public static void sendRecipe(Activity activity, Recipe recipe){
-        CocktailMachine.queueRecipe(recipe);
-        countDown(activity, recipe);
+        Postexecute doAgain = new Postexecute() {
+            @Override
+            public void post() {
+                CocktailMachine.queueRecipe(recipe);
+            }
+        };
+        Postexecute continueHere = new Postexecute() {
+            @Override
+            public void post() {
+                GetDialog.countDown(activity, recipe);
+            }
+        };
+        Postexecute notFound = new Postexecute(){
+
+            @Override
+            public void post() {
+                recipe.sendSave(activity);
+                CocktailMachine.queueRecipe(recipe);
+            }
+        };
+
+        HashMap<ErrorStatus, Postexecute> errorHandle=new HashMap<>();
+        errorHandle.put(ErrorStatus.recipe_not_found, notFound);
+        errorHandle.put(ErrorStatus.cant_start_recipe_yet, doAgain);
+        ErrorStatus.handleSpecificErrorMethod(activity, doAgain, continueHere, errorHandle);
     }
     //Count down
-    private static void countDown(Activity activity, Recipe recipe){
+    public static void countDown(Activity activity, Recipe recipe){
         //Better solution
         //https://stackoverflow.com/questions/10780651/display-a-countdown-timer-in-the-alert-dialog-box
         //CountDownRun countDownThread = new CountDownRun();
@@ -117,9 +129,19 @@ public class GetDialog {
         alertDialog.setMessage("Bitte, geh zur Cocktailmaschine und stelle dein Glas unter die Maschine. ");
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Los!", (dialog, which) -> {
             //TO DO: send force start bluetooth thing
-            CocktailMachine.startMixing();
-            GetActivity.goToFill(activity, recipe);
-            dialog.dismiss();
+            Postexecute doAgain = new Postexecute() {
+                @Override
+                public void post() {
+                    CocktailMachine.startMixing();
+                }
+            };
+            Postexecute continueHere = new Postexecute() {
+                @Override
+                public void post() {
+                    GetActivity.goToFill(activity, recipe);
+                }
+            };
+            ErrorStatus.handleSpecificErrorRepeat(activity, dialog, ErrorStatus.cant_start_recipe_yet, doAgain, continueHere);
         });
         alertDialog.show();   //
     }
@@ -137,11 +159,20 @@ public class GetDialog {
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Abgeholt!", (dialog, which) -> {
             //BluetoothSingleton.getInstance().adminReset();
             //CocktailMachine.isCollected();
-            dialog.dismiss();
-            CocktailMachine.takeCocktail();
-            GetDialog.showTopics( activity,  recipe);
             //GetActivity.goToMenu(activity);
-
+            Postexecute doAgain = new Postexecute() {
+                @Override
+                public void post() {
+                    CocktailMachine.takeCocktail();
+                }
+            };
+            Postexecute continueHere = new Postexecute() {
+                @Override
+                public void post() {
+                    GetDialog.showTopics( activity,  recipe);
+                }
+            };
+            ErrorStatus.handleSpecificErrorRepeat(activity, dialog, ErrorStatus.cant_take_cocktail_yet, doAgain, continueHere);
         });
         alertDialog.show();   //
 
@@ -158,9 +189,12 @@ public class GetDialog {
         alertDialog.setTitle("Serviervorschläge!");
         alertDialog.setMessage("Füge noch einen oder mehrer der Serviervorschläge hinzu!");
         alertDialog.setOnDismissListener(dialog -> {
-                dialog.dismiss();
                 GetActivity.goToMenu(activity);
         });
+        alertDialog.setOnCancelListener(dialog -> {
+            GetActivity.goToMenu(activity);
+        });
+        alertDialog.setCancelable(true);
         List<Topic> topics = Topic.getTopics(recipe);
         if(topics.size()==0){
             GetActivity.goToMenu(activity);
