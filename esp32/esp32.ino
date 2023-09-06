@@ -265,7 +265,7 @@ struct ID : Service {
 
 struct Status : Service {
   Status(const char *uuid_char, const String init_value);
-  void update(const String value);
+  void update(const String value, bool force=true);
 };
 
 struct Comm : Service {
@@ -1935,7 +1935,7 @@ void update_cocktail() {
   }
   out.concat("]}");
 
-  all_status[ID_COCKTAIL]->update(out);
+  all_status[ID_COCKTAIL]->update(out, false);
 }
 
 void update_state() {
@@ -1954,7 +1954,7 @@ void update_state() {
 
   debug("updating machine state: %s", json.c_str());
 
-  all_status[ID_STATE]->update(json);
+  all_status[ID_STATE]->update(json, false);
 }
 
 void update_error(Retcode error, User user) {
@@ -1980,7 +1980,7 @@ void update_scale() {
 
   out.concat('}');
 
-  all_status[ID_SCALE]->update(out);
+  all_status[ID_SCALE]->update(out, false);
 }
 
 void update_liquids() {
@@ -2023,7 +2023,7 @@ void update_liquids() {
       prev = true;
     }
     out.concat('}');
-    all_status[ID_PUMPS]->update(out);
+    all_status[ID_PUMPS]->update(out, false);
   }
 
   { debug("updating liquid state");
@@ -2043,7 +2043,7 @@ void update_liquids() {
     }
     out.concat('}');
 
-    all_status[ID_LIQUIDS]->update(out);
+    all_status[ID_LIQUIDS]->update(out, false);
   }
 
   config_save();
@@ -2084,7 +2084,7 @@ void update_recipes() {
   }
   out.concat('}');
 
-  all_status[ID_RECIPES]->update(out);
+  all_status[ID_RECIPES]->update(out, false);
 
   update_config_state(timestamp_ms());
   config_save();
@@ -2093,7 +2093,7 @@ void update_recipes() {
 void update_config_state(time_t ts) {
   config_state = timestamp_ms();
   String s = String(ts);
-  all_status[ID_TIMESTAMP]->update(s);
+  all_status[ID_TIMESTAMP]->update(s, false);
 }
 
 User current_user() {
@@ -2122,7 +2122,7 @@ void update_user() {
   }
   out.concat(']');
 
-  all_status[ID_USER]->update(out);
+  all_status[ID_USER]->update(out, false);
 }
 
 void update_all_possible_recipes() {
@@ -2268,7 +2268,12 @@ Status::Status(const char *uuid_char, const String init_value)
   this->ble_char->setValue(init_value.c_str());
 }
 
-void Status::update(const String value) {
+void Status::update(const String value, bool force) {
+  if (!force) {
+    std::string old = this->ble_char->getValue();
+    if (value.equals(String(old.c_str()))) return; // skip if the value hasn't changed
+  }
+
   this->ble_char->setValue(value.c_str());
   this->ble_char->notify();
 }
