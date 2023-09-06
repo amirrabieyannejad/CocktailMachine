@@ -1,7 +1,10 @@
 package com.example.cocktailmachine.data.enums;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 
 import org.json.JSONException;
@@ -26,6 +29,7 @@ public enum CalibrateStatus {
     calibration_done
     ;
 
+    private static final String TAG = "CalibrateStatus" ;
     private static CalibrateStatus status;
 
 
@@ -73,12 +77,19 @@ public enum CalibrateStatus {
 
 
     public static CalibrateStatus getCurrent(){
-        CocktailStatus.getCurrentStatus();
+        if(!Dummy.isDummy){
+            CocktailStatus.getCurrentStatus();
+        }
+        Log.i(TAG, "getCurrent: "+status);
         return status;
     }
 
     public static CalibrateStatus getCurrent(Postexecute postexecute){
-        CocktailStatus.getCurrentStatus(postexecute);
+        if(!Dummy.isDummy) {
+            CocktailStatus.getCurrentStatus(postexecute);
+        }else{
+            postexecute.post();
+        }
         return status;
     }
 }

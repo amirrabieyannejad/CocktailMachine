@@ -696,8 +696,14 @@ public class CocktailMachine {
      * @author Johanna Reidt
      */
     public static boolean isAutomaticCalibrationDone(){
+        Log.i(TAG, "isAutomaticCalibrationDone");
         //TO DO: bluetooth connection
         if(Dummy.isDummy) {
+            if(dummyCounter<0){
+                Log.i(TAG, "isAutomaticCalibrationDone: dummycounter = 0");
+                dummyCounter = 0;
+                Log.i(TAG, "isAutomaticCalibrationDone: pumpe.size = "+Pump.getPumps().size());
+            }
             //return new Random(42).nextBoolean();
             if( dummyCounter==Pump.getPumps().size()){
                 if(CalibrateStatus.getCurrent()==CalibrateStatus.calibration_calculation){
@@ -719,7 +725,7 @@ public class CocktailMachine {
                 }else if(CalibrateStatus.getCurrent()==CalibrateStatus.calibration_empty_container){
                     CalibrateStatus.setStatus(CalibrateStatus.calibration_pumps);
                     Log.i(TAG, "isAutomaticCalibrationDone: Dummy: calibration_empty_container-> calibration_pumps");
-                    dummyCounter = dummyCounter+1;
+                    //dummyCounter = dummyCounter+1;
                     Log.i(TAG,"isAutomaticCalibrationDone: dummyCounter +1: "+dummyCounter);
                 }
                 return false;
@@ -738,6 +744,7 @@ public class CocktailMachine {
      * @author Johanna Reidt
      */
     public static boolean needsEmptyingGlass() {
+        Log.i(TAG, "needsEmptyingGlass");
         if(Dummy.isDummy) {
             return CalibrateStatus.getCurrent()==CalibrateStatus.calibration_empty_container;
             //return new Random(42).nextBoolean();
@@ -785,7 +792,7 @@ public class CocktailMachine {
      * @author Johanna Reidt
      */
     public static void automaticEmptyPumping(){
-        //dummyCounter = dummyCounter+1;
+        dummyCounter = dummyCounter+1;
         try {
             BluetoothSingleton.getInstance().adminAutoCalibrateAddEmpty();
         } catch (JSONException | InterruptedException|NullPointerException e) {

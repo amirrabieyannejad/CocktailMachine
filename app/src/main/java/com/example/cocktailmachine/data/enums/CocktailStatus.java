@@ -48,6 +48,10 @@ public enum CocktailStatus {
         //TO DO: Bluetoothlegatt
         //BluetoothSingleton.getInstance().mBluetoothLeService;
         //TO DO: AMIR
+        if(Dummy.isDummy){
+            Log.i(TAG, "getCurrentStatus: state: "+ CocktailStatus.currentState);
+            return CocktailStatus.currentState;
+        }
         try {
             BluetoothSingleton.getInstance().adminReadState(postexecute);
         } catch (JSONException | InterruptedException|NullPointerException e) {
