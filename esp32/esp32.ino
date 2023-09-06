@@ -174,9 +174,9 @@ const char* retcode_str[] = {
   "missing ingredients",
   "invalid calibration data",
   "new user id", // placeholder label
-  "can't start recipe yet"
-  "can't take cocktail yet"
-  "calibration command invalid at this time"
+  "can't start recipe yet",
+  "can't take cocktail yet",
+  "calibration command invalid at this time",
 };
 
 struct PumpSlot {
