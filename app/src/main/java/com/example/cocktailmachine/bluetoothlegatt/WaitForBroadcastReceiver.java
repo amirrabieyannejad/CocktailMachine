@@ -46,6 +46,7 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
         return jsonObject;
     }
     public String getStringResult() {
+        result = result.replaceAll("\"", "");
         return result;
     }
 
