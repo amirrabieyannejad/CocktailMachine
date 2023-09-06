@@ -2239,7 +2239,7 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                CocktailMachine.setCurrentUser(getJSONArrayResult());
+                //CocktailMachine.setCurrentUser(getJSONArrayResult());
                 Log.w(TAG, "To Save: " + this.getJSONArrayResult());
             }
         };
