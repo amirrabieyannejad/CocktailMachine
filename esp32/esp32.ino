@@ -1548,6 +1548,7 @@ Retcode CmdTakeCocktail::execute() {
 
         // update machine state
         update_user();
+        update_state();
 
         return Retcode::success;
 
@@ -1763,7 +1764,6 @@ Retcode reset_cocktail() {
   update_cocktail();
   update_scale();
   update_user();
-  update_state();
 
   return Retcode::success;
 }
