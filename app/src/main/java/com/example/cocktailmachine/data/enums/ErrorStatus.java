@@ -133,6 +133,11 @@ public enum ErrorStatus {
     //Error
 
     public static void updateError(){
+        if(Dummy.isDummy){
+            Log.i(TAG, "getErrorMessage: dummy");
+            setError("not");
+            return;
+        }
         try {
             BluetoothSingleton.getInstance().adminReadErrorStatus();
         } catch (JSONException | InterruptedException | NullPointerException e) {
@@ -144,13 +149,18 @@ public enum ErrorStatus {
     }
 
     private static void updateError(Postexecute afterReading){
-
+        if(Dummy.isDummy){
+            Log.i(TAG, "getErrorMessage: dummy");
+            setError("not");
+            afterReading.post();
+            return;
+        }
         try {
             BluetoothSingleton.getInstance().adminReadErrorStatus(afterReading);
         } catch (JSONException | InterruptedException | NullPointerException e) {
             Log.i(TAG, "getErrorMessage: errored");
             e.printStackTrace();
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
             setError("not");
             afterReading.post();
         }
@@ -253,6 +263,10 @@ public enum ErrorStatus {
      * @author Johanna Reidt
      */
     private static void reset(){
+        if(Dummy.isDummy){
+            setError("not");
+            return;
+        }
         try {
             BluetoothSingleton.getInstance().adminResetError();
             Log.i(TAG, "resetted");
@@ -308,6 +322,7 @@ public enum ErrorStatus {
                                                           DialogInterface dialog,
                                                           Postexecute doAgain,
                                                           Postexecute continueHere){
+        Log.i(TAG, "handleAutomaticCalibrationNotReady");
         handleSpecificErrorRepeat(activity, dialog, calibration_command_invalid_at_this_time, doAgain, continueHere);
     }
 
@@ -333,6 +348,7 @@ public enum ErrorStatus {
                                                  ErrorStatus specificError,
                                                  Postexecute doAgain,
                                                  Postexecute continueHere){
+        Log.i(TAG, "handleSpecificErrorRepeat");
         HashMap<ErrorStatus, Postexecute> errorHandle = new HashMap<>();
         errorHandle.put(specificError, doAgain);
         handleSpecificErrorMethod(activity,dialog, doAgain, continueHere, errorHandle);
@@ -370,10 +386,23 @@ public enum ErrorStatus {
                                                  Postexecute start,
                                                  Postexecute continueHere,
                                                  HashMap<ErrorStatus, Postexecute> errorHandle){
+        Log.i(TAG, "handleSpecificErrorMethod");
+        if(Dummy.isDummy){
+            Log.i(TAG, "handleSpecificErrorMethod: dummy");
+            start.post();
+            Log.i(TAG, "handleSpecificErrorMethod: dummy: start");
+            continueHere.post();
+            Log.i(TAG, "handleSpecificErrorMethod: dummy: continue");
+            return;
+        }
+
+        Log.i(TAG, "handleSpecificErrorMethod: no dummy");
         start.post();
+        Log.i(TAG, "handleSpecificErrorMethod: start called");
         getErrorStatus(new Postexecute() {
             @Override
             public void post() {
+                Log.i(TAG, "handleSpecificErrorMethod: post called");
                 if(errorHandle.containsKey(status)){
                     reset();
                     dialog.cancel();
@@ -411,6 +440,7 @@ public enum ErrorStatus {
                         GetActivity.waitNotSet(activity);
                     });
                     builder.show();
+                    Log.i(TAG, "handleSpecificErrorMethod: dialog show");
                 } else if(isError()){
                     Log.i(TAG, "handleSpecificError: different error");
                     dialog.cancel();
@@ -435,7 +465,18 @@ public enum ErrorStatus {
                                                  Postexecute start,
                                                  Postexecute continueHere,
                                                  HashMap<ErrorStatus, Postexecute> errorHandle){
+        Log.i(TAG, "handleSpecificErrorMethod");
+        if(Dummy.isDummy){
+            Log.i(TAG, "handleSpecificErrorMethod: dummy");
+            start.post();
+            Log.i(TAG, "handleSpecificErrorMethod: dummy: start");
+            continueHere.post();
+            Log.i(TAG, "handleSpecificErrorMethod: dummy: continue");
+            return;
+        }
+        Log.i(TAG, "handleSpecificErrorMethod: no dummy");
         start.post();
+        Log.i(TAG, "handleSpecificErrorMethod: start called");
         getErrorStatus(new Postexecute() {
             @Override
             public void post() {

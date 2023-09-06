@@ -1,13 +1,17 @@
 package com.example.cocktailmachine.data.enums;
 
 import android.app.Activity;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Objects;
 
 public enum CocktailStatus {
     //TO DO: USE THIS AMIR
@@ -21,6 +25,7 @@ public enum CocktailStatus {
     init, ready, mixing, pumping, cocktail_done,not
     ;
 
+    private static final String TAG = "CocktailStatus";
     static CocktailStatus currentState = CocktailStatus.not;
 
     @NonNull
@@ -45,7 +50,9 @@ public enum CocktailStatus {
         //TO DO: AMIR
         try {
             BluetoothSingleton.getInstance().adminReadState(postexecute);
-        } catch (JSONException | InterruptedException e) {
+        } catch (JSONException | InterruptedException|NullPointerException e) {
+            Log.e(TAG, "getCurrentStatus");
+            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
             e.printStackTrace();
         }
         return currentState;
@@ -62,6 +69,14 @@ public enum CocktailStatus {
         //TO DO: Bluetoothlegatt
         //BluetoothSingleton.getInstance().mBluetoothLeService;
         //TO DO: AMIR
+        if(!Dummy.isDummy){
+            getCurrentStatus(new Postexecute() {
+                @Override
+                public void post() {
+
+                }
+            });
+        }
         return currentState;
     }
 
@@ -103,7 +118,7 @@ public enum CocktailStatus {
         try {
             currentState = CocktailStatus.valueOf(status);
         }catch (IllegalArgumentException e){
-            if(status == "cocktail done"){
+            if(Objects.equals(status, "cocktail done")){
                 currentState = CocktailStatus.cocktail_done;
             }else{
                 currentState = CocktailStatus.ready;

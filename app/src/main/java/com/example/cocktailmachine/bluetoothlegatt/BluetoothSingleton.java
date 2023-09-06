@@ -2281,10 +2281,11 @@ public class BluetoothSingleton {
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
+                    Log.i(TAG, "adminReadErrorStatus: interrupt");
                     throw new InterruptedException();
                 }
                 ErrorStatus.setError(this.result);
-                Log.w(TAG, "To Save: " + this.getResult());
+                Log.i(TAG, "adminReadErrorStatus: To Save: " + this.getResult());
             }
         };
         wfb.execute();

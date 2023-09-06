@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
@@ -170,6 +171,7 @@ public class GetDialog {
                 @Override
                 public void post() {
                     GetDialog.showTopics( activity,  recipe);
+                    CocktailMachine.setCurrentRecipe(null);
                 }
             };
             ErrorStatus.handleSpecificErrorRepeat(activity, dialog, ErrorStatus.cant_take_cocktail_yet, doAgain, continueHere);
@@ -264,6 +266,7 @@ public class GetDialog {
             Postexecute doAgain = new Postexecute() {
                 @Override
                 public void post() {
+                    Log.i(TAG, "firstAutomaticDialog: automaticCalibration");
                     CocktailMachine.automaticCalibration();
                 }
             };
@@ -271,6 +274,7 @@ public class GetDialog {
 
                 @Override
                 public void post() {
+                    Log.i(TAG, "firstAutomaticDialog: firstTaring");
                     firstTaring(activity);
                 }
             };
@@ -299,7 +303,7 @@ public class GetDialog {
         builder.show();
     }
 
-    public static void enterNumberOfPumps(Activity activity){
+    private static void enterNumberOfPumps(Activity activity){
         Log.i(TAG, "enterNumberOfPumps");
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Setze die Anzahl der Pumpen:");
@@ -343,7 +347,7 @@ public class GetDialog {
         builder.show();
     }
 
-    public static void emptyGlass(Activity activity){
+    private static void emptyGlass(Activity activity){
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Leere das Glass!");
         builder.setMessage("Leere das Glass und stell es wieder unter die Cocktailmaschine!");
@@ -1765,6 +1769,9 @@ public class GetDialog {
 
 
     public static void handleBluetoothFailed(Activity activity) {
+        if(Dummy.isDummy){
+            return;
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Bluetoothverbindung fehlerhaft");
         builder.setMessage("Bitte überprüf die Bluetoothverbindung. ");
