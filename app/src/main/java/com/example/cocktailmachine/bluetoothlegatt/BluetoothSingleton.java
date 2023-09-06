@@ -2150,8 +2150,8 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
                 CocktailStatus.
-                        setStatus(this.result);
-                CalibrateStatus.setStatus(this.result);
+                        setStatus(getStringResult());
+                CalibrateStatus.setStatus(getStringResult());
                 Log.w(TAG, "returned result is now:" + getStringResult());
             }
         };
@@ -2235,12 +2235,12 @@ public class BluetoothSingleton {
         singleton.sendStatus(CHARACTERISTIC_STATUS_USER_QUEUE);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
-            public void toSave() throws InterruptedException {
+            public void toSave() throws InterruptedException, JSONException {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                CocktailMachine.setCurrentUser(this.getJsonResult().toString());
-                Log.w(TAG, "To Save: " + this.getJsonResult());
+                CocktailMachine.setCurrentUser(getJSONArrayResult());
+                Log.w(TAG, "To Save: " + this.getJSONArrayResult());
             }
         };
         wfb.execute();
