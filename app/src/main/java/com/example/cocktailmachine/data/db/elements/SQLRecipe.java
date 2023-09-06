@@ -1,17 +1,23 @@
 package com.example.cocktailmachine.data.db.elements;
 
+
+import android.app.Activity;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.Ingredient;
-import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.exceptions.AlreadySetIngredientException;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,6 +31,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SQLRecipe extends SQLDataBaseElement implements Recipe {
+    private static final String TAG = "SQLRecipe";
     private String name = "";
     //private List<Long> ingredientIds;
     //private HashMap<Long, Integer> ingredientVolume;
@@ -71,6 +78,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         this.topics = topics;
         this.addOrUpdateIDs(ingredientVolumes);
         this.loaded = true;
+        this.loadAvailable();
     }
 
     public SQLRecipe(long ID,
@@ -88,18 +96,25 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         this.topics = topics;
         this.addOrUpdateElements(ingredientVolumes);
         this.loaded = true;
+        this.loadAvailable();
     }
 
     //LOADER
 
 
+    /**
+     * laod recipe ingredient, image urls, topics
+     * @throws NotInitializedDBException
+     */
     private void load() throws NotInitializedDBException {
         this.imageUrls = DatabaseConnection.getDataBase().getUrlElements(this);
         this.topics = DatabaseConnection.getDataBase().getTopicIDs(this);
         this.ingredientVolumes = DatabaseConnection.getDataBase().getIngredientVolumes(this);
+        this.loadAvailable();
         this.loaded = true;
-
     }
+
+
 
 
     //GETTER
@@ -118,6 +133,15 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         }
         return Helper.getrecipeingredienthelper().getIds(this.ingredientVolumes);
 
+    }
+
+    @Override
+    public List<String> getIngredientNames() {
+        ArrayList<String> names = new ArrayList<>();
+        for(SQLRecipeIngredient ri: this.ingredientVolumes){
+            names.add(ri.getIngredient().getName());
+        }
+      return names;
     }
 
     @Override
@@ -187,8 +211,62 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         return this.available;
     }
 
+    /**
+     * check for ingredient pump connection
+     * true, if ingredient pump connection exists
+     *
+     * @return
+     */
+    @Override
+    public boolean loadAvailable() {
+        Log.i(TAG, "loadAvailable");
+        boolean res = this.privateLoadAvailable();
+        if(res != this.available){
+            Log.i(TAG, "loadAvailable: has changed: "+res);
+            this.available = res;
+            this.wasChanged();
+        }
+        return this.available;
+    }
+
+    /**
+     * @return if all ingredients available, with sufficient amounts of volume
+     */
+    boolean privateLoadAvailable(){
+        Log.i(TAG, "privateLoadAvailable");
+
+        for(SQLRecipeIngredient i: this.ingredientVolumes){
+            i.loadAvailable();
+        }
+        for(Ingredient i: getIngredients()){
+            if(i.isAvailable()){
+                try {
+                    if(i.getVolume()>this.getSpecificIngredientVolume(i)){
+                        Log.i(TAG, "privateLoadAvailable: is available "+i);
+                    }else{
+                        Log.i(TAG, "privateLoadAvailable: is NOT available "+i);
+                        return false;
+                    }
+                } catch (TooManyTimesSettedIngredientEcxception |
+                         NoSuchIngredientSettedException e) {
+                    e.printStackTrace();
+
+                    Log.i(TAG, "privateLoadAvailable: is setted multiple times "+i);
+                    return false;
+                }
+            }else{
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+
+
     @Override
     public List<String> getImageUrls() {
+        Log.i(TAG, "getImageUrls");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.imageUrls.stream().map(SQLImageUrlElement::getUrl).collect(Collectors.toList());
         }
@@ -197,12 +275,17 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
     @Override
     public List<Long> getTopics() {
-        return this.getTopics();
+        return this.topics;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
     }
 
 
     //ADDER
-    public void add(Ingredient ingredient, int timeInMilliseconds)
+    public void add(Ingredient ingredient, int volume)
             throws AlreadySetIngredientException {
         if(ingredient.getID()==-1L){
             try {
@@ -211,15 +294,15 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
                 e.printStackTrace();
             }
         }
-        this.add(ingredient.getID(), timeInMilliseconds);
+        this.add(ingredient.getID(), volume);
     }
 
-    public void add(long ingredientId, int timeInMilliseconds)
+    public void add(long ingredientId, int volume)
             throws AlreadySetIngredientException {
         if(this.getIngredientIds().contains(ingredientId)){
             throw new AlreadySetIngredientException(this, ingredientId);
         }
-        this.ingredientVolumes.add(new SQLRecipeIngredient(ingredientId, this.getID(), timeInMilliseconds));
+        this.ingredientVolumes.add(new SQLRecipeIngredient(ingredientId, this.getID(), volume));
     }
 
     @Override
@@ -236,14 +319,40 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
     @Override
     public void addOrUpdate(long ingredientId, int volume) {
+
+        boolean newNeeded=true;
+        for(SQLRecipeIngredient ri: ingredientVolumes){
+            if(ri.getIngredientID()==ingredientId){
+                ri.setVolume(volume);
+                newNeeded = false;
+            }
+        }
+        if(newNeeded){
+            SQLRecipeIngredient ri = new SQLRecipeIngredient(ingredientId, this.getID(), volume);
+            try {
+                ri.save();
+            } catch (NotInitializedDBException ignored) {
+                ignored.printStackTrace();
+                Log.i(TAG, "should not happen");
+                //throw new RuntimeException(e);
+            }
+            this.ingredientVolumes.add(ri);
+        }
+        this.wasChanged();
+        /*
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if(this.ingredientVolumes.stream()
                     .filter(pt -> pt.getIngredientID() == ingredientId)
-                    .peek(pt -> pt.setVolume(volume)).count() == 0){
+                    .peek(pt -> pt.setVolume(volume))
+                    .count()
+                    == 0){
                 this.ingredientVolumes.add(new SQLRecipeIngredient(ingredientId, this.getID(), volume));
             }
         }
         this.wasChanged();
+
+         */
     }
 
     public void addOrUpdateIDs(HashMap<Long, Integer> ingredientVolumes){
@@ -291,7 +400,9 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     //REMOVER
     @Override
     public void remove(Ingredient ingredient) {
-        this.removeIngredient(ingredient.getID());
+        if(ingredient!=null) {
+            this.removeIngredient(ingredient.getID());
+        }
     }
 
     @Override
@@ -354,28 +465,6 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         }
     }
 
-    @Override
-    public void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException {
-        //[{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}, {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
-        for(int i=0; i<json.length(); i++){
-            JSONObject j = json.optJSONObject(i);
-            Recipe temp = Recipe.searchOrNew(j.optString("name", "Default"));
-            JSONArray a = j.optJSONArray("liquids");
-            if(a != null){
-                for(int l=0; l<a.length(); l++){
-                    JSONArray liq = a.optJSONArray(l);
-                    if(liq!=null){
-                        String name = a.getString(l);
-                        int volume = a.getInt(1);
-                        Ingredient ig = Ingredient.searchOrNew(name);
-                        temp.addOrUpdate(ig, volume);
-                    }
-                }
-            }
-            temp.save();
-        }
-    }
-
     //general
     @Override
     public void delete() throws NotInitializedDBException {
@@ -387,6 +476,13 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         DatabaseConnection.getDataBase().addOrUpdate(this);
         for(SQLRecipeImageUrlElement url: this.imageUrls) {
             DatabaseConnection.getDataBase().addOrUpdate(url);
+        }
+        for(SQLRecipeIngredient ri: this.ingredientVolumes){
+            if(ri.getRecipeID()!=this.getID()){
+                ri.setRecipeID(this.getID());
+                ri.save();
+            }
+            DatabaseConnection.getDataBase().addOrUpdate(ri);
         }
         this.wasSaved();
     }

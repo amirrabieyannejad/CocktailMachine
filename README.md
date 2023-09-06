@@ -11,4 +11,3 @@ ESP: esp32-wroom-32
 
 ## zukünftige Projekt
 Adminrechte auf ESP speichern, statt in der Android-App
-

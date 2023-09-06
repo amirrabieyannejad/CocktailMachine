@@ -9,10 +9,17 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *
+ * @created Fr. 23.Jun 2023 - 12:51
+ * @project CocktailMachine
+ * @author Johanna Reidt
+ */
 public class RecipeTopicTable extends BasicColumn<SQLRecipeTopic> {
 
     public static final String TABLE_NAME = "RecipeTopic";

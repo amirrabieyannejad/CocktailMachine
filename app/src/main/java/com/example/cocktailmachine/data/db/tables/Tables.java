@@ -1,12 +1,26 @@
 package com.example.cocktailmachine.data.db.tables;
 
+import android.database.sqlite.SQLiteDatabase;
+
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *
+ * is a collection point for all database tables.
+ * This class has a static attribute for each table.
+ * It also offers two functions each to regenerate and delete all tables.
+ * The difference lies in the variant:
+ * - once an SQL-DB is given and thus deleted
+ * - once the commands are output as a list of strings
+ * @created Fr. 23.Jun 2023 - 12:51
+ * @project CocktailMachine
+ * @author Johanna Reidt
+ */
 public class Tables {
 
     static final String TYPE_LONG = "LONG";
-    static final String TYPE_ID = "LONG PRIMARY KEY";
+    static final String TYPE_ID = "INTEGER PRIMARY KEY AUTOINCREMENT";
     static final String TYPE_INTEGER = "INTEGER";
     static final String TYPE_TEXT = "TEXT";
     static final String TYPE_BOOLEAN = "BOOLEAN";
@@ -26,32 +40,64 @@ public class Tables {
     public static final RecipeTopicTable TABLE_RECIPE_TOPIC = new RecipeTopicTable();
     public static final IngredientPumpTable TABLE_INGREDIENT_PUMP = new IngredientPumpTable();
 
-    public static List<String> getCreates(){
+    /**
+     * gives list of sql cmds as strings, that create each a table
+     * @return list of sql cmds as strings, that create each a table
+     * @author Johanna Reidt
+     */
+    private static List<String> getCreateCmds(){
         List<String> res = new ArrayList<>();
-        res.add(TABLE_RECIPE.createTable());
-        res.add(TABLE_INGREDIENT.createTable());
-        res.add(TABLE_RECIPE_URL.createTable());
-        res.add(TABLE_PUMP.createTable());
-        res.add(TABLE_INGREDIENT_URL.createTable());
-        res.add(TABLE_TOPIC.createTable());
-        res.add(TABLE_RECIPE_INGREDIENT.createTable());
-        res.add(TABLE_RECIPE_TOPIC.createTable());
-        res.add(TABLE_INGREDIENT_PUMP.createTable());
+        res.add(TABLE_RECIPE.createTableCmd());
+        res.add(TABLE_INGREDIENT.createTableCmd());
+        res.add(TABLE_RECIPE_URL.createTableCmd());
+        res.add(TABLE_PUMP.createTableCmd());
+        res.add(TABLE_INGREDIENT_URL.createTableCmd());
+        res.add(TABLE_TOPIC.createTableCmd());
+        res.add(TABLE_RECIPE_INGREDIENT.createTableCmd());
+        res.add(TABLE_RECIPE_TOPIC.createTableCmd());
+        res.add(TABLE_INGREDIENT_PUMP.createTableCmd());
         return res;
     }
 
-    public static List<String> getDeletes(){
+    /**
+     * gives list of sql cmds as strings, that delete each a table
+     * @author Johanna Reidt
+     * @return list of sql cmds as strings, that delete each a table
+     */
+    private static List<String> getDeleteCmds(){
         List<String> res = new ArrayList<>();
-        res.add(TABLE_RECIPE.deleteTable());
-        res.add(TABLE_INGREDIENT.deleteTable());
-        res.add(TABLE_RECIPE_URL.deleteTable());
-        res.add(TABLE_PUMP.deleteTable());
-        res.add(TABLE_INGREDIENT_URL.deleteTable());
-        res.add(TABLE_TOPIC.deleteTable());
-        res.add(TABLE_RECIPE_INGREDIENT.deleteTable());
-        res.add(TABLE_RECIPE_TOPIC.deleteTable());
-        res.add(TABLE_INGREDIENT_PUMP.deleteTable());
+        res.add(TABLE_RECIPE.deleteTableCmd());
+        res.add(TABLE_INGREDIENT.deleteTableCmd());
+        res.add(TABLE_RECIPE_URL.deleteTableCmd());
+        res.add(TABLE_PUMP.deleteTableCmd());
+        res.add(TABLE_INGREDIENT_URL.deleteTableCmd());
+        res.add(TABLE_TOPIC.deleteTableCmd());
+        res.add(TABLE_RECIPE_INGREDIENT.deleteTableCmd());
+        res.add(TABLE_RECIPE_TOPIC.deleteTableCmd());
+        res.add(TABLE_INGREDIENT_PUMP.deleteTableCmd());
         return res;
+    }
+
+    /**
+     * deletes all tables from given db
+     * @author Johanna Reidt
+     * @param db
+     */
+    public static void deleteAll(SQLiteDatabase db){
+        for(String cmd: getDeleteCmds()){
+            db.execSQL(cmd);
+        }
+    }
+
+    /**
+     * deletes all tables for given db
+     * @author Johanna Reidt
+     * @param db
+     */
+    public static void createAll(SQLiteDatabase db){
+        for(String cmd: getCreateCmds()){
+            db.execSQL(cmd);
+        }
     }
 
 
