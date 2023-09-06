@@ -76,7 +76,7 @@ async def comm_msg(client, uuid, message, wait=None):
         logging.info(f"  is: {value}")
         prev = value
 
-      if value == wait:
+      if value == "\"" + wait + "\"":
         await client.stop_notify(state_uuid)
         break
 

@@ -86,6 +86,8 @@ typedef int32_t User;
 #define USER_ADMIN  	User(0)
 #define USER_UNKNOWN	User(-1)
 
+#define J(str) ("\"" str "\"")
+
 // recipe states
 enum struct RecipeState {
   ready,
@@ -96,11 +98,11 @@ enum struct RecipeState {
 };
 
 const char* rec_state_str[] = {
-  "ready",
-  "waiting for container",
-  "mixing",
-  "pumping",
-  "cocktail done",
+  J("ready"),
+  J("waiting for container"),
+  J("mixing"),
+  J("pumping"),
+  J("cocktail done"),
 };
 
 // calibration states
@@ -114,12 +116,12 @@ enum struct CalibrationState {
 };
 
 const char* cal_state_str[] = {
-  "no calibration active",
-  "calibration empty container",
-  "calibration known weight",
-  "calibration pumps",
-  "calibration calculation",
-  "calibration done",
+  J("no calibration active"),
+  J("calibration empty container"),
+  J("calibration known weight"),
+  J("calibration pumps"),
+  J("calibration calculation"),
+  J("calibration done"),
 };
 
 // return codes
@@ -152,31 +154,31 @@ enum struct Retcode {
 };
 
 const char* retcode_str[] = {
-  "init",
-  "ok",
-  "processing",
-  "unsupported",
-  "unauthorized",
-  "invalid json",
-  "message too big",
-  "missing arguments",
-  "unknown command",
-  "command missing even though it parsed right",
-  "wrong comm channel",
-  "invalid pump slot",
-  "invalid volume",
-  "invalid weight",
-  "invalid times",
-  "insufficient amounts of liquid available",
-  "liquid unavailable",
-  "recipe not found",
-  "recipe already exists",
-  "missing ingredients",
-  "invalid calibration data",
-  "new user id", // placeholder label
-  "can't start recipe yet",
-  "can't take cocktail yet",
-  "calibration command invalid at this time",
+  J("init"),
+  J("ok"),
+  J("processing"),
+  J("unsupported"),
+  J("unauthorized"),
+  J("invalid json"),
+  J("message too big"),
+  J("missing arguments"),
+  J("unknown command"),
+  J("command missing even though it parsed right"),
+  J("wrong comm channel"),
+  J("invalid pump slot"),
+  J("invalid volume"),
+  J("invalid weight"),
+  J("invalid times"),
+  J("insufficient amounts of liquid available"),
+  J("liquid unavailable"),
+  J("recipe not found"),
+  J("recipe already exists"),
+  J("missing ingredients"),
+  J("invalid calibration data"),
+  J("new user id"), // placeholder label
+  J("can't start recipe yet"),
+  J("can't take cocktail yet"),
+  J("calibration command invalid at this time"),
 };
 
 struct PumpSlot {
