@@ -7,5 +7,5 @@ package com.example.cocktailmachine.ui.model;
  */
 public enum FragmentType {
 
-    Edit, Model, List;
+    Edit, Model, List
 }

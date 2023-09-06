@@ -450,7 +450,7 @@ public class EditModelFragment extends Fragment {
             builder.setMultiChoiceItems(
                     temp,
                     tempB,
-                    (DialogInterface.OnMultiChoiceClickListener) (dialog, which, isChecked) -> {
+                    (dialog, which, isChecked) -> {
                         if(isChecked){
                             chosen.add(ingredients.get(which));
                         }else{
@@ -716,8 +716,8 @@ public class EditModelFragment extends Fragment {
             super(itemView);
             this.recipe = recipe;
             this.activity = activity;
-            name = (TextView) this.activity.findViewById(R.id.textView_edit_text);
-            vol = (EditText) this.activity.findViewById(R.id.editText_edit_text);
+            name = this.activity.findViewById(R.id.textView_edit_text);
+            vol = this.activity.findViewById(R.id.editText_edit_text);
 
         }
 

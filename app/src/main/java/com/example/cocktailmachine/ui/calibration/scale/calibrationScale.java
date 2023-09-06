@@ -12,7 +12,7 @@ import com.example.cocktailmachine.data.enums.Postexecute;
 import org.json.JSONException;
 
 public class calibrationScale extends AppCompatActivity {
-    private BluetoothSingleton blSingelton = BluetoothSingleton.getInstance();
+    private final BluetoothSingleton blSingelton = BluetoothSingleton.getInstance();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,7 +24,7 @@ public class calibrationScale extends AppCompatActivity {
                 public void post() {
                     System.out.println("Wurde gelesen");
                 }
-            });
+            },this);
         } catch (JSONException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -34,6 +34,6 @@ public class calibrationScale extends AppCompatActivity {
             public void post() {
                 System.out.println("dkjflkjldsök");
             }
-        }));
+        },this));
     }
 }

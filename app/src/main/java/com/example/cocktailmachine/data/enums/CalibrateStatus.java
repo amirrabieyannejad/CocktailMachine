@@ -1,5 +1,7 @@
 package com.example.cocktailmachine.data.enums;
 
+import android.app.Activity;
+
 import androidx.annotation.NonNull;
 
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
@@ -77,8 +79,8 @@ public enum CalibrateStatus {
         return status;
     }
 
-    public static CalibrateStatus getCurrent(Postexecute postexecute){
-        CocktailStatus.getCurrentStatus(postexecute);
+    public static CalibrateStatus getCurrent(Postexecute postexecute, Activity activity){
+        CocktailStatus.getCurrentStatus(postexecute,activity);
         return status;
     }
 }

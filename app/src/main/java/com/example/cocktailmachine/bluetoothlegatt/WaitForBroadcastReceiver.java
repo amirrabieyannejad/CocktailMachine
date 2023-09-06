@@ -33,15 +33,19 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
         }
     }
 
-    public abstract void toSave() throws InterruptedException, JSONException, NotInitializedDBException, MissingIngredientPumpException;
+    public abstract void toSave() throws InterruptedException, JSONException,
+            NotInitializedDBException, MissingIngredientPumpException;
 
     public Boolean check() {
         return (jsonObject != null) ||
                 (result != null);
     }
 
-    public JSONObject getResult() {
+    public JSONObject getJsonResult() {
         return jsonObject;
+    }
+    public String getStringResult() {
+        return result;
     }
 
     public JSONArray getJSONArrayResult() throws JSONException {
@@ -53,6 +57,7 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
     @Override
     protected JSONObject doInBackground(Void... voids) {
         int timeout = 500;
+        int timeoutMax = 0;
         while (singleton.getEspResponseValue() == null
                 || singleton.getEspResponseValue().equals("\"processing\"")) {
             Log.w(TAG, "we are in WaitForBroadcast doInBackground before try-catch!");
@@ -60,9 +65,9 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
                 Log.w(TAG, "waitForBroadcastReceiverAsyncTask: Waiting for target value.." +
                         singleton.getEspResponseValue());
 
-                Thread.sleep(500);
-                timeout = timeout + 500;
-                if (timeout == 5000) {
+                Thread.sleep(timeout);
+                timeoutMax = timeoutMax + 500;
+                if (timeoutMax == 5000) {
                     Log.w(TAG, "waitforBraodcastReceiver: timeout...");
                     break;
                 }

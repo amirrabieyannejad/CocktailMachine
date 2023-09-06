@@ -85,7 +85,7 @@ public class FillAnimation extends AppCompatActivity {
                 Bitmap image = null;
                 if(true){
                     try {
-                        image = BildgeneratorGlas.bildgenerationGlas(context,recipe,(float)animatedValue);
+                        image = BildgeneratorGlas.bildgenerationGlas(context,recipe, animatedValue);
                     } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
                         e.printStackTrace();
                     }

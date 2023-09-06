@@ -212,7 +212,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         //BluetoothSingleton.getInstance().mBluetoothLeService.makeRecipe(AdminRights.getUserId(), );
         BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
         try {
-            bluetoothSingleton.userStartRecipe(this.getID());
+            bluetoothSingleton.userStartRecipe(this.getID(),activity);
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -253,7 +253,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
             //jsonObject.put("liquids", array);
 
             BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
-            bluetoothSingleton.userDefineRecipe(this.getID(),this.getName(),array);
+            bluetoothSingleton.userDefineRecipe(this.getID(),this.getName(),array,activity);
 
             return true;
         } catch (JSONException | TooManyTimesSettedIngredientEcxception |
@@ -266,7 +266,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     default boolean sendDelete(Activity activity){
         try {
             BluetoothSingleton.getInstance().userDeleteRecipe(this.getID(),
-                    this.getName()
+                    this.getName(),activity
             );
             return true;
         } catch (JSONException | InterruptedException e) {
@@ -324,7 +324,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
          */
         Pump.readPumpStatus(activity);
-        CocktailMachine.updateRecipeListIfChanged();
+        CocktailMachine.updateRecipeListIfChanged(activity);
         DatabaseConnection.localRefresh();
     }
 

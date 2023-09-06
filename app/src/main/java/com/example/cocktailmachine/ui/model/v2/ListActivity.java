@@ -19,8 +19,8 @@ import java.util.List;
 public class ListActivity extends BasicActivity {
     private ActivityListBinding binding;
     private TitleListAdapter adapter;
-    private ArrayList<Long> IDs = new ArrayList<>();
-    private ArrayList<String> names = new ArrayList<>();
+    private final ArrayList<Long> IDs = new ArrayList<>();
+    private final ArrayList<String> names = new ArrayList<>();
 
 
     @Override

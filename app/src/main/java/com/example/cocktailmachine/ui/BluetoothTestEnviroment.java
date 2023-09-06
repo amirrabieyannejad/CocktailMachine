@@ -3,6 +3,7 @@ package com.example.cocktailmachine.ui;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,14 +23,14 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
 
 
     // Step1
-    BluetoothSingleton singleton=BluetoothSingleton.getInstance();
+    BluetoothSingleton singleton = BluetoothSingleton.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_test_enviroment);
         //initializieurng von Datenbank
-        DatabaseConnection.initializeSingleton(this);
+        //DatabaseConnection.initializeSingleton(this);
 
         editText = findViewById(R.id.editTextTextPersonName);
         textView = findViewById(R.id.ESPData);
@@ -37,16 +38,13 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
         // Step2: Only at the very first time Connect to Device
         //singleton.connectGatt(BluetoothTestEnviroment.this);
 
-
     }
+
     public void addUser(View view) throws JSONException, InterruptedException {
-
-        //Step5: Call initUser() Method
         String user = editText.getText().toString();
-        //singleton.initUser(user,textView,BluetoothTestEnviroment.this);
-        //TODO: als Rückgabe JSON Datei
-
-        singleton.userInitUser(user,BluetoothTestEnviroment.this);
+        //singleton.adminAutoCalibrateStart(BluetoothTestEnviroment.this);
+        //singleton.adminAutoCalibrateAddEmpty(BluetoothTestEnviroment.this);
+        singleton.adminAutoCalibrateFinish(BluetoothTestEnviroment.this);
 
 
         // empty buttle should be placed- in GUI we should ask to put empty buttle  wait for ok
@@ -71,6 +69,7 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
         //textView.setText(json.toString());
         //singleton.connectGatt(BluetoothTestEnviroment.this);
     }
+
     public void showUser(View view) throws JSONException {
 
 
