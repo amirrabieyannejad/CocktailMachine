@@ -2,6 +2,7 @@
 
 Mögliche Fehler, die vom ESP zurückgegeben werden können. (s. [Befehle.md]())
 
+- `init`: ESP wird noch initialisiert
 - `ok`: alles in Ordnung
 - `processing`: Befehl wird geparset (kein Fehler; kommt nur, wenn der Wert zu früh ausgelesen wird)
 - `unsupported`: Befehl noch nicht implementiert
@@ -22,4 +23,7 @@ Mögliche Fehler, die vom ESP zurückgegeben werden können. (s. [Befehle.md]())
 - `recipe already exists`: Rezept mit dem gleichen Namen existiert bereits
 - `missing ingredients`: Zutaten fehlen im Rezept
 - `invalid calibration data`: Kalibrierungs-Werte sind ungültig (z.B. 2x die gleichen Werte)
+- `can't start recipe yet`: Rezept ist noch nicht bereit
+- `can't take cocktail yet`: Cocktail ist noch nicht fertig
+- `calibration command invalid at this time`: Kalibrierungsbefehl zur falschen Zeit geschickt
 

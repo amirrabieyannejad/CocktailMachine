@@ -50,11 +50,11 @@ Die ID ist also 100 und kann dann in anderen Befehlen mit angegeben werden.
 ### Pumpen
 - UUID Characteristic: 1a9a598a-17ce-3fcd-be03-40a48587d04e
 
-Wert: Map aller verfügbaren Pumpen und deren Füllstand
+Wert: Map aller verfügbaren Pumpen und deren Füllstand und Kalibrierung
 
 Beispiel:
 
-    {"1": {"liquid": "lemonade", "volume": 200}}
+    {"1":{"liquid":"water","volume":1000.0,"calibrated":true,"rate":0.0,"time_init":1000,"time_reverse":1000}
 
 ### Flüssigkeiten
 - UUID Characteristic: fc60afb0-2b00-3af2-877a-69ae6815ca2f
@@ -93,16 +93,16 @@ Beispiel:
 
     {"weight": 500.0, "content": [["beer", 250], ["lemonade", 250]]}
 
-### Aktueller Benutzer
+### Benutzer in der Warteschlange
 - UUID Characteristic: 2ce478ea-8d6f-30ba-9ac6-2389c8d5b172
 
-Wert: der aktuelle Benutzer, für den ein Cocktail gemacht wird oder bereit steht
+Wert: alle Benutzer in der Warteschlange, für die ein Cocktail gemacht wird
 
-Wenn kein Benutzer aktiv ist, ist der Wert `-1`.
+Wenn kein Benutzer aktiv ist, ist der Wert `[]`.
 
 Beispiel:
 
-    5
+    [1, 4, 2]
     
 ### Letzte Ändererung
 - UUID Characteristic: 586b5706-5856-34e1-ad17-94f840298816
@@ -116,3 +116,21 @@ Der Timestamp ist ein interner Wert des ESP und hat keinen Bezug zur echten Zeit
 Beispiel:
 
     275492
+
+### Waage
+- UUID Characteristic: ff18f0ac-f039-4cd0-bee3-b546e3de5551
+
+Wert: Zustand der Waage
+
+Beispiel:
+
+    {"weight":0.0,"calibrated":true}
+
+### Fehler
+- UUID Characteristic: 2e03aa0c-b25f-456a-a327-bd175771111a
+
+Wert: aktueller Fehler (falls vorhanden)
+
+Beispiel:
+
+    "invalid volume"
