@@ -45,6 +45,8 @@ public enum CalibrateStatus {
     @NonNull
     @Override
     public String toString() {
+        return super.toString().replace("_", " ");
+        /*
         switch (this) {
             case ready:return "ready";
             case calibration_empty_container:return "calibration empty container";
@@ -54,10 +56,16 @@ public enum CalibrateStatus {
             case calibration_done:return "calibration done";
         }
         return "not";
+
+         */
     }
 
     public static CalibrateStatus valueStringOf(String value) {
-        switch (value) {
+        String res = value.replace(" ", "_");
+        //return super(res);
+        return CalibrateStatus.valueOf(res);
+        /*
+        switch (res) {
             case "ready":
                 return ready;
             case "calibration empty container":
@@ -72,6 +80,8 @@ public enum CalibrateStatus {
                 return calibration_done;
         }
         return not;
+
+         */
 
     }
 

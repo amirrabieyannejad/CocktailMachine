@@ -31,10 +31,7 @@ public enum CocktailStatus {
     @NonNull
     @Override
     public String toString() {
-        if (this.ordinal() == cocktail_done.ordinal()) {
-            return "cocktail done";
-        }
-        return super.toString();
+        return super.toString().replace("_", " ");
     }
 
     /**
@@ -115,20 +112,19 @@ public enum CocktailStatus {
     }
 
     public  static void setStatus(JSONObject jsonObject) {
-        //TODO: figure out if only string or JSON Object and put in currentStatus
+        //TO DO: figure out if only string or JSON Object and put in currentStatus
+        setStatus(jsonObject.toString());
     }
 
     public  static void setStatus(String status) {
-        //TODO: figure out if only string or JSON Object and put in currentStatus
+        //TO DO: figure out if only string or JSON Object and put in currentStatus
+        status = status.replace("\"", "");
+        status = status.replace("'", "");
+        status = status.replace("_", " ");
         try {
             currentState = CocktailStatus.valueOf(status);
         }catch (IllegalArgumentException e){
-            if(Objects.equals(status, "cocktail done")){
-                currentState = CocktailStatus.cocktail_done;
-            }else{
-                currentState = CocktailStatus.ready;
-            }
-
+            currentState = CocktailStatus.not;
         }
 
     }
