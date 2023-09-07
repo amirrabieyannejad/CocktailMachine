@@ -31,6 +31,7 @@ public enum CalibrateStatus {
     calibration_done
     ;
 
+    private static final String TAG = "CalibrateStatus";
     private static CalibrateStatus status;
 
 
@@ -85,14 +86,12 @@ public enum CalibrateStatus {
         return status;
     }
 
-    public static CalibrateStatus getCurrent(Postexecute postexecute){
+    public static CalibrateStatus getCurrent(Postexecute postexecute, Activity activity){
         if(!Dummy.isDummy) {
-            CocktailStatus.getCurrentStatus(postexecute);
+            CocktailStatus.getCurrentStatus(postexecute,activity);
         }else{
             postexecute.post();
         }
-    public static CalibrateStatus getCurrent(Postexecute postexecute, Activity activity){
-        CocktailStatus.getCurrentStatus(postexecute,activity);
         return status;
     }
 }

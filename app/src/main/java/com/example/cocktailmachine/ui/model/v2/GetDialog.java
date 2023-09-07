@@ -90,7 +90,7 @@ public class GetDialog {
             @Override
             public void post() {
                 recipe.sendSave(activity);
-                CocktailMachine.queueRecipe(recipe);
+                CocktailMachine.queueRecipe(recipe, activity);
             }
         };
 
@@ -136,7 +136,7 @@ public class GetDialog {
             Postexecute doAgain = new Postexecute() {
                 @Override
                 public void post() {
-                    CocktailMachine.startMixing();
+                    CocktailMachine.startMixing(activity);
                 }
             };
             Postexecute continueHere = new Postexecute() {
@@ -169,7 +169,7 @@ public class GetDialog {
             Postexecute doAgain = new Postexecute() {
                 @Override
                 public void post() {
-                    CocktailMachine.takeCocktail();
+                    CocktailMachine.takeCocktail(activity);
                 }
             };
             Postexecute continueHere = new Postexecute() {
@@ -272,7 +272,7 @@ public class GetDialog {
                 @Override
                 public void post() {
                     Log.i(TAG, "firstAutomaticDialog: automaticCalibration");
-                    CocktailMachine.automaticCalibration();
+                    CocktailMachine.automaticCalibration(activity);
                 }
             };
             Postexecute continueHere = new Postexecute(){
@@ -438,7 +438,7 @@ public class GetDialog {
                     Postexecute doAgain = new Postexecute() {
                         @Override
                         public void post() {
-                            CocktailMachine.automaticEnd();
+                            CocktailMachine.automaticEnd(activity);
                         }
                     };
                     Postexecute continueHere = new Postexecute() {
