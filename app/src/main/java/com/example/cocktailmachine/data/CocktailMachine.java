@@ -800,7 +800,7 @@ public class CocktailMachine {
      * empty glass is ready
      * @author Johanna Reidt
      */
-    public static void automaticEmptyPumping(){
+    public static void automaticEmptyPumping(Activity activity){
         dummyCounter = dummyCounter+1;
         try {
             BluetoothSingleton.getInstance().adminAutoCalibrateAddEmpty(activity);

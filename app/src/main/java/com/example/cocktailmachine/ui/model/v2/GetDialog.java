@@ -341,7 +341,7 @@ public class GetDialog {
             Postexecute doAgain = new Postexecute() {
                 @Override
                 public void post() {
-                    CocktailMachine.automaticWeight();
+                    CocktailMachine.automaticWeight(activity);
                 }
             };
             Postexecute continueHere = new Postexecute() {
@@ -367,7 +367,7 @@ public class GetDialog {
             Postexecute doAgain = new Postexecute() {
                 @Override
                 public void post() {
-                    CocktailMachine.automaticEmptyPumping();
+                    CocktailMachine.automaticEmptyPumping(activity);
                 }
             };
             Postexecute continueHere = new Postexecute() {
