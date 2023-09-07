@@ -22,8 +22,7 @@ public enum CocktailStatus {
 - `pumping`: Maschine pumpt Flüssigkeiten
 - `cocktail done`: Cocktail ist fertig zubereitet und kann entnommen werden. Danach sollte `reset` ausgeführt werden.
      */
-    init, ready, mixing, pumping, cocktail_done,not
-    ;
+    init, ready, mixing, pumping, cocktail_done, not;
 
     private static final String TAG = "CocktailStatus";
     static CocktailStatus currentState = CocktailStatus.not;

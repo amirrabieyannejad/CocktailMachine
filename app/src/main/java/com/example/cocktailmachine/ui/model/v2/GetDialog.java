@@ -464,7 +464,7 @@ public class GetDialog {
     /**
 
     private static void waitingAutomaticCalibration(Activity activity){
-        //TODO
+        //TO DO
         Log.i("GetDialog", "waitingAutomaticCalibration");
         //setIngredientsForPumps(activity);
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
