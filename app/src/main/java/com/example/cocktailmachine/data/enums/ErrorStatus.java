@@ -396,6 +396,8 @@ public enum ErrorStatus {
             return;
         }
 
+        //final Activity acc = activity;
+
         Log.i(TAG, "handleSpecificErrorMethod: no dummy");
         start.post();
         Log.i(TAG, "handleSpecificErrorMethod: start called");
@@ -404,7 +406,7 @@ public enum ErrorStatus {
             public void post() {
                 Log.i(TAG, "handleSpecificErrorMethod: post called");
                 if(errorHandle.containsKey(status)){
-                    reset();
+                    reset(activity);
                     dialog.cancel();
                     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                     builder.setTitle("Einen Moment...");
@@ -432,7 +434,7 @@ public enum ErrorStatus {
                                     continueHere.post();
                                 }
                             }
-                        });
+                        }, activity);
                     });
                     builder.setNegativeButton("Abbrechen", (dialog12, which) -> {
                         Log.i(TAG, "handleAutomaticCalibrationNotReady: Abbrechen Button");
@@ -450,7 +452,7 @@ public enum ErrorStatus {
                     Log.i(TAG, "handleSpecificError: no error");
                 }
             }
-        });
+        }, activity);
     }
 
 
@@ -481,7 +483,7 @@ public enum ErrorStatus {
             @Override
             public void post() {
                 if(errorHandle.containsKey(status)){
-                    reset();
+                    reset(activity);
                     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                     builder.setTitle("Einen Moment...");
                     builder.setMessage("Der ESP ist noch nicht bereit. Bitte versuche es erneut");
@@ -508,7 +510,7 @@ public enum ErrorStatus {
                                     continueHere.post();
                                 }
                             }
-                        });
+                        }, activity);
                     });
                     builder.setNegativeButton("Abbrechen", (dialog12, which) -> {
                         Log.i(TAG, "handleAutomaticCalibrationNotReady: Abbrechen Button");
@@ -524,7 +526,7 @@ public enum ErrorStatus {
                     Log.i(TAG, "handleSpecificError: no error");
                 }
             }
-        });
+        }, activity);
     }
 
 
