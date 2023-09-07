@@ -68,7 +68,7 @@ public enum CocktailStatus {
      *
      * @return
      */
-    public static CocktailStatus getCurrentStatus() {
+    public static CocktailStatus getCurrentStatus(Activity activity) {
         //BluetoothSingleton blSingelton = BluetoothSingleton.getInstance();
         //blSingelton.connectGatt(activity);
         //TO DO: Bluetoothlegatt
@@ -80,7 +80,7 @@ public enum CocktailStatus {
                 public void post() {
 
                 }
-            });
+            }, activity);
         }
         return currentState;
     }

@@ -538,7 +538,7 @@ public class CocktailMachine {
      * @author Johanna Reidt
      * @return
      */
-    public static boolean isMixing(){
+    public static boolean isMixing(Activity activity){
 
         /*
         if(currentRecipe == null){
@@ -563,14 +563,14 @@ public class CocktailMachine {
         return false;
 
          */
-        return CocktailStatus.getCurrentStatus()==CocktailStatus.mixing;
+        return CocktailStatus.getCurrentStatus(activity)==CocktailStatus.mixing;
     }
 
     /**
      *
      * @return
      */
-    public static boolean isPumping(){
+    public static boolean isPumping(Activity activity){
 
         /*
         if(currentRecipe == null){
@@ -595,7 +595,7 @@ public class CocktailMachine {
         return false;
 
          */
-        return CocktailStatus.getCurrentStatus()==CocktailStatus.pumping;
+        return CocktailStatus.getCurrentStatus(activity)==CocktailStatus.pumping;
     }
 
 
@@ -603,7 +603,7 @@ public class CocktailMachine {
      * checks if cocktails mixing is done
      * @author Johanna Reidt
      */
-    public static boolean isFinished(){
+    public static boolean isFinished(Activity activity){
 
         /*
         if(currentRecipe == null){
@@ -628,7 +628,7 @@ public class CocktailMachine {
         return false;
 
          */
-        return CocktailStatus.getCurrentStatus()==CocktailStatus.cocktail_done;
+        return CocktailStatus.getCurrentStatus(activity)==CocktailStatus.cocktail_done;
     }
 
 
@@ -701,7 +701,7 @@ public class CocktailMachine {
      * @return
      * @author Johanna Reidt
      */
-    public static boolean isAutomaticCalibrationDone(){
+    public static boolean isAutomaticCalibrationDone(Activity activity){
         Log.i(TAG, "isAutomaticCalibrationDone");
         //TO DO: bluetooth connection
         if(Dummy.isDummy) {
@@ -712,7 +712,7 @@ public class CocktailMachine {
             }
             //return new Random(42).nextBoolean();
             if( dummyCounter==Pump.getPumps().size()){
-                if(CalibrateStatus.getCurrent()==CalibrateStatus.calibration_calculation){
+                if(CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_calculation){
                     CalibrateStatus.setStatus(CalibrateStatus.calibration_done);
                     Log.i(TAG, "isAutomaticCalibrationDone: Dummy: calibration_calculation->calibration_done=>fertig done ");
                     Log.i(TAG, "isAutomaticCalibrationDone: Dummy: FERITG");
@@ -724,11 +724,11 @@ public class CocktailMachine {
                     return false;
                 }
             } else if (dummyCounter<Pump.getPumps().size()) {
-                if(CalibrateStatus.getCurrent()==CalibrateStatus.calibration_pumps){
+                if(CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_pumps){
                     CalibrateStatus.setStatus(CalibrateStatus.calibration_empty_container);
                     Log.i(TAG, "isAutomaticCalibrationDone: Dummy: calibration_pumps-> calibration_empty_container");
                     Log.i(TAG,"isAutomaticCalibrationDone: dummyCounter schon: "+dummyCounter);
-                }else if(CalibrateStatus.getCurrent()==CalibrateStatus.calibration_empty_container){
+                }else if(CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_empty_container){
                     CalibrateStatus.setStatus(CalibrateStatus.calibration_pumps);
                     Log.i(TAG, "isAutomaticCalibrationDone: Dummy: calibration_empty_container-> calibration_pumps");
                     //dummyCounter = dummyCounter+1;
@@ -739,7 +739,7 @@ public class CocktailMachine {
         }else{
             //TO  DO: Bluetooth connection
             //return new Random(42).nextBoolean();
-            return CalibrateStatus.getCurrent()==CalibrateStatus.calibration_done;
+            return CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_done;
         }
         return false;
     }
@@ -749,15 +749,15 @@ public class CocktailMachine {
      * @return
      * @author Johanna Reidt
      */
-    public static boolean needsEmptyingGlass() {
+    public static boolean needsEmptyingGlass(Activity activity) {
         Log.i(TAG, "needsEmptyingGlass");
         if(Dummy.isDummy) {
-            return CalibrateStatus.getCurrent()==CalibrateStatus.calibration_empty_container;
+            return CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_empty_container;
             //return new Random(42).nextBoolean();
         }else{
             //TO DO: Bluetooth connection
             //return new Random(42).nextBoolean();
-            return CalibrateStatus.getCurrent()==CalibrateStatus.calibration_empty_container;
+            return CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_empty_container;
         }
     }
 

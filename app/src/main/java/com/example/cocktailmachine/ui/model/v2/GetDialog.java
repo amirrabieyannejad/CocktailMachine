@@ -398,14 +398,14 @@ public class GetDialog {
             @Override
             public void onTick() {
                 Log.i("GetDialog", "waitingQueueCountDown:  isAutomaticCalibrationDone false");
-                if(CalibrateStatus.getCurrent()==CalibrateStatus.calibration_calculation){
+                if(CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_calculation){
                     dialog.setMessage("Die Pumpeneinstellungen werden kalkuliert! Bitte warten!");
                 }
             }
 
             @Override
             public void reduceTick() {
-                isDone = CocktailMachine.isAutomaticCalibrationDone()||CocktailMachine.needsEmptyingGlass();
+                isDone = CocktailMachine.isAutomaticCalibrationDone(activity)||CocktailMachine.needsEmptyingGlass(activity);
                 Log.i("GetDialog", "waitingQueueCountDown:  isDone: " +isDone);
                 if(isDone){
                     setTick(0);
@@ -431,7 +431,7 @@ public class GetDialog {
                 dialog.dismiss();
 
                 Log.i("GetDialog", "waitingQueueCountDown: onFinish: dialog dimissed");
-                if(CocktailMachine.isAutomaticCalibrationDone()) {
+                if(CocktailMachine.isAutomaticCalibrationDone(activity)) {
                     Toast.makeText(activity, "Das Setup ist vollständig!", Toast.LENGTH_LONG).show();
 
 
@@ -451,7 +451,7 @@ public class GetDialog {
                     ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
                     //CocktailMachine.automaticEnd(activity);
                     //GetDialog.setIngredientsForPumps(activity);
-                } else if (CocktailMachine.needsEmptyingGlass()) {
+                } else if (CocktailMachine.needsEmptyingGlass(activity)) {
                     GetDialog.emptyGlass(activity);
                 }
                 this.cancel();

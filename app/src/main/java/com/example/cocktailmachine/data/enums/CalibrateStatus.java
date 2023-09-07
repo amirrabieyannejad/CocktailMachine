@@ -78,9 +78,9 @@ public enum CalibrateStatus {
 
 
 
-    public static CalibrateStatus getCurrent(){
+    public static CalibrateStatus getCurrent(Activity activity){
         if(!Dummy.isDummy){
-            CocktailStatus.getCurrentStatus();
+            CocktailStatus.getCurrentStatus(activity);
         }
         Log.i(TAG, "getCurrent: "+status);
         return status;
