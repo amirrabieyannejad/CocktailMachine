@@ -635,6 +635,7 @@ void ble_stop(void);
 
 // scale
 float scale_weigh(void);
+float scale_estimate(dur_t init, dur_t time, float rate);
 bool scale_empty(void);
 bool scale_has_container(void);
 Retcode scale_calibrate(float weight);
@@ -855,7 +856,7 @@ calibration:
         if (pump == NULL) goto calibration; // skip missing pumps
 
         time_t time = (cal_pass == 1) ? CAL_TIME1 : CAL_TIME2;
-        if (!scale_available) time /= S(1); // reduce the time for simulations
+        if (!scale_available && time > S(1)) time /= S(1); // reduce the time for simulations
         debug("running pump %d (#%d) for %dms", cal_pump-1, cal_pass, time);
 
         // run pump
@@ -868,14 +869,7 @@ calibration:
 
         sleep_idle(S(1));
 
-        float weight;
-        if (scale_available) {
-          weight = scale_weigh();
-        } else { // simulate a weight
-          dur_t t = ((pump->time_init) < time) ? (time - pump->time_init) : MS(1);
-          weight = t * pump->rate;
-        }
-
+        float weight = scale_estimate(pump->time_init, time, pump->rate);
         cocktail.push_front(Ingredient{"<calibration>", weight});
         debug("  -> weight: %f", weight);
 
@@ -1663,7 +1657,7 @@ Retcode CmdRunPump::execute() {
   // nb: this will always fuck up our internal data unless the pump is already calibrated,
   // so you should refill the pump afterwards
 
-  float volume = (scale_available && scale_calibrated) ? scale_weigh() : time * p->rate;
+  float volume = scale_estimate(p->time_init, time, p->rate);
   cocktail.push_front(Ingredient{"<manual>", volume}); // TODO add a dummy recipe instead
   p->volume = std::max(p->volume - volume, 0.0f);
 
@@ -2718,7 +2712,7 @@ Retcode Pump::calibrate(dur_t time1, dur_t time2, float volume1, float volume2) 
 
 // scale
 float scale_weigh() {
-  if (scale_available && scale_calibrated) {
+  if (scale_available) {
     // TODO maybe use a different read command or times value?
     return scale.read_median();
   } else {
@@ -2727,6 +2721,15 @@ float scale_weigh() {
       weight += ing.amount;
     }
     return weight;
+  }
+}
+
+float scale_estimate(dur_t init, dur_t time, float rate) {
+  if (scale_calibrated) {
+    return scale_weigh();
+  } else {
+    dur_t t = (init < time) ? (time - init) : MS(1);
+    return t * rate;
   }
 }
 
