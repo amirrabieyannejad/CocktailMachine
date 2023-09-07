@@ -1,5 +1,6 @@
 package com.example.cocktailmachine.ui;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -13,6 +14,8 @@ import android.widget.TextView;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.enums.CocktailStatus;
+import com.example.cocktailmachine.data.enums.Postexecute;
 
 import org.json.JSONException;
 
@@ -44,7 +47,35 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
         String user = editText.getText().toString();
         //singleton.adminAutoCalibrateStart(BluetoothTestEnviroment.this);
         //singleton.adminAutoCalibrateAddEmpty(BluetoothTestEnviroment.this);
-        singleton.adminAutoCalibrateFinish(BluetoothTestEnviroment.this);
+        //singleton.adminAutoCalibrateFinish(BluetoothTestEnviroment.this);
+        /*
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Cocktailmaschinenstatus");
+        builder.setMessage(CocktailStatus.getCurrentStatusMessage(new Postexecute() {
+            @Override
+            public void post() {
+                builder.setMessage(CocktailStatus.getCurrentStatus().toString());
+                builder.setNeutralButton("Fertig!", (dialog, which) -> {});
+                builder.show();
+            }
+        },this));
+
+         */
+        //singleton.adminManuelCalibrateTareScale(BluetoothTestEnviroment.this);
+
+        //singleton.adminManuelCalibrateScale(100,BluetoothTestEnviroment.this);
+        //singleton.adminDefinePump("wein",1000,1,this);
+        //singleton.adminDefinePump("beer",2000,2,this);
+        // manuelCalibration
+        //singleton.adminManuelCalibrateRunPump(1,10000,
+          //      BluetoothTestEnviroment.this);
+       // singleton.adminManuelCalibrateRunPump(1,20000,
+         //       BluetoothTestEnviroment.this);
+        //singleton.adminManuelCalibratePump(1,10000,20000,);
+
+
+
+
 
 
         // empty buttle should be placed- in GUI we should ask to put empty buttle  wait for ok

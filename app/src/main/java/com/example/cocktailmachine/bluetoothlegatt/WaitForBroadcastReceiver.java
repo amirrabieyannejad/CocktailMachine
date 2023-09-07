@@ -11,6 +11,7 @@ import com.example.cocktailmachine.data.enums.Postexecute;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONStringer;
 
 
 public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSONObject> {
@@ -45,6 +46,7 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
         return jsonObject;
     }
     public String getStringResult() {
+        result = result.replaceAll("\"", "");
         return result;
     }
 
