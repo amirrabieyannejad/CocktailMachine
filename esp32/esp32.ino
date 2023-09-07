@@ -1663,7 +1663,7 @@ Retcode CmdRunPump::execute() {
   // nb: this will always fuck up our internal data unless the pump is already calibrated,
   // so you should refill the pump afterwards
 
-  float volume = time * p->rate;
+  float volume = (scale_available && scale_calibrated) ? scale_weigh() : time * p->rate;
   cocktail.push_front(Ingredient{"<manual>", volume}); // TODO add a dummy recipe instead
   p->volume = std::max(p->volume - volume, 0.0f);
 
@@ -2718,17 +2718,16 @@ Retcode Pump::calibrate(dur_t time1, dur_t time2, float volume1, float volume2) 
 
 // scale
 float scale_weigh() {
-  if (!scale_available) {
+  if (scale_available && scale_calibrated) {
+    // TODO maybe use a different read command or times value?
+    return scale.read_median();
+  } else {
     float weight = 0.0;
     for (auto const ing : cocktail) {
       weight += ing.amount;
     }
     return weight;
   }
-
-  // TODO maybe use a different read command or times value?
-  float weight = scale.read_median();
-  return weight;
 }
 
 bool scale_empty() {
