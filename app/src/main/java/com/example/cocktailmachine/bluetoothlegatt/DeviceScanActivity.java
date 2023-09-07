@@ -231,7 +231,7 @@ public class DeviceScanActivity extends ListActivity {
 
             // filter only CocktailMachine
 
-            /*ArrayList<ScanFilter> filters = new ArrayList<>();
+            ArrayList<ScanFilter> filters = new ArrayList<>();
             ScanFilter.Builder builder = new ScanFilter.Builder();
             String serviceUuidMaskString = "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF";
             ParcelUuid parcelUuidMask = ParcelUuid.fromString(serviceUuidMaskString);
@@ -240,11 +240,11 @@ public class DeviceScanActivity extends ListActivity {
             if (filters.isEmpty()) {
                 Toast.makeText(this, "UUID has not found!",
                         Toast.LENGTH_LONG).show();
-            }*/
+            }
 
             scanning = true;
-            //bluetoothLeScanner.startScan(filters,bleScanSettings,leScanCallback);
-            bluetoothLeScanner.startScan(leScanCallback);
+            bluetoothLeScanner.startScan(filters,bleScanSettings,leScanCallback);
+            //bluetoothLeScanner.startScan(leScanCallback);
         } else {
             scanning = false;
             bluetoothLeScanner.stopScan(leScanCallback);

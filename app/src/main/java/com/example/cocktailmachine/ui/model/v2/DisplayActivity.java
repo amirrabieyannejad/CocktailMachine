@@ -55,7 +55,7 @@ public class DisplayActivity extends BasicActivity {
         Recipe recipe = Recipe.getRecipe(getID());
         assert recipe != null;
         recipe.loadAvailable();
-        binding.textViewDisplayTitle.setText(recipe.getName());;
+        binding.textViewDisplayTitle.setText(recipe.getName());
         //TO DO: AlertDialog to change title if admin
         setChangeTitleDialog();
         if(recipe.isAvailable()){
@@ -112,7 +112,7 @@ public class DisplayActivity extends BasicActivity {
     @Override
     void setUpIngredient(){
         Ingredient ingredient = Ingredient.getIngredient(getID());
-        binding.textViewDisplayTitle.setText(ingredient.getName());;
+        binding.textViewDisplayTitle.setText(ingredient.getName());
         //TO DO: AlertDialog to change title if admin
         binding.textViewDisplayTitle.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -164,7 +164,7 @@ public class DisplayActivity extends BasicActivity {
     @Override
     void setUpTopic(){
         Topic topic = Topic.getTopic(getID());
-        binding.textViewDisplayTitle.setText(topic.getName());;
+        binding.textViewDisplayTitle.setText(topic.getName());
         //TO DO: AlertDialog to change title if admin
         setChangeTitleDialog();
         binding.textViewDisplayDescription.setText(topic.getDescription());
@@ -193,7 +193,7 @@ public class DisplayActivity extends BasicActivity {
     @Override
     void setUpPump(){
         Pump pump = Pump.getPump(getID());
-        binding.textViewDisplayTitle.setText(String.valueOf(pump.getID()));;
+        binding.textViewDisplayTitle.setText(String.valueOf(pump.getID()));
         //TO DO: AlertDialog to change title if admin ----NOT BECAUSE PUMP NO NAME
         binding.includeDisplayPump.getRoot().setVisibility(View.VISIBLE);
         binding.includeDisplayPump.textViewPumpIngredientName.setText(pump.getIngredientName());

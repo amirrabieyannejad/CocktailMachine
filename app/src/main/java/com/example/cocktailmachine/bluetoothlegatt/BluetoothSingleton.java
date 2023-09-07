@@ -43,6 +43,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -68,7 +69,7 @@ public class BluetoothSingleton {
     public String EspDeviceName;
     public String EspDeviceAddress;
     public BluetoothLeService mBluetoothLeService;
-    private Boolean state = false;
+    private final Boolean state = false;
     private BluetoothSingleton singleton;
     // Code to manage Service lifecycle.
 
@@ -215,12 +216,13 @@ public class BluetoothSingleton {
                 //broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
                 singleton = BluetoothSingleton.getInstance();
                 byte[] data = characteristic.getValue();
-                String finalValue = new String(data, Charset.forName("UTF-8"));
+                String finalValue = new String(data, StandardCharsets.UTF_8);
 
                 // START
-                if (finalValue.equals("\"processing\"") ||
-                        finalValue.equals("\"ready\"") || finalValue == "") {
-                    Log.w(TAG, "onCharacteristicRead: read Alert Notification: " +
+                //if (finalValue.equals("\"processing\"") ||
+                //        finalValue.equals("\"ready\"") || finalValue == "") {
+                if (finalValue.equals("\"processing\"")) {
+                Log.w(TAG, "onCharacteristicRead: read Alert Notification: " +
                             finalValue);
                     singleton.mBluetoothGatt.readCharacteristic(characteristic);
                 } else {
@@ -306,7 +308,8 @@ public class BluetoothSingleton {
         singleton.requestBlePermissions(activity);
         Log.w(TAG, "BluetoothAdapter is initialized! Address is specified!");
         // Previously connected device.  Try to reconnect.
-        if (address.equals("54:43:B2:A9:32:26")
+        //if (address.equals("54:43:B2:A9:32:26")
+        if (address.equals(singleton.getEspDeviceAddress())
                 && singleton.mBluetoothGatt != null) {
             Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
             return singleton.mBluetoothGatt.connect();
@@ -326,8 +329,8 @@ public class BluetoothSingleton {
             @Override
             public void run() {
                 int timeout = 1500;
-                int timeoutMax = 1000;
-                while (connect == false) {
+                int timeoutMax = 0;
+                while (!connect) {
                     try {
                         Log.w(TAG, "Connection: Connection to ESP GATT Server Failed!" +
                                 " try again after ..."
@@ -337,7 +340,7 @@ public class BluetoothSingleton {
                                         false, singleton.mGattCallback);
                         Thread.sleep(timeout);
                         timeoutMax = timeoutMax + 500;
-                        if (timeout == 3000) {
+                        if (timeoutMax == 2000) {
                             Log.w(TAG, "Connection: Timeout, unable to " +
                                     "connect ESP");
                             break;
@@ -377,9 +380,8 @@ public class BluetoothSingleton {
         // Automatically connects to the device upon successful start-up initialization.
 
         //Log.w(TAG, "try to connect: " + singleton.EspDeviceAddress);
-        singleton.connect(activity, "78:E3:6D:1A:87:9E");
-        //singleton.connect(activity, "54:43:B2:A9:32:26");
-        //singleton.connect(activity, singleton.getEspDeviceAddress());
+        //singleton.connect(activity, "78:E3:6D:1A:87:9E");
+        singleton.connect(activity, singleton.getEspDeviceAddress());
         return true;
     }
 
@@ -501,6 +503,7 @@ public class BluetoothSingleton {
                 @Override
                 public void run() {
                     int timeout = 500;
+                    int timeoutMax = 0;
                     while (!singleton.mBluetoothGatt.readCharacteristic(mGattCharacteristics)) {
                         Log.w(TAG, "run2: Is reading Characteristic  in Process!");
 
@@ -509,8 +512,8 @@ public class BluetoothSingleton {
                                     + timeout);
 
                             Thread.sleep(timeout);
-                            timeout = timeout + 500;
-                            if (timeout == 3000) {
+                            timeoutMax = timeoutMax + 500;
+                            if (timeoutMax == 3000) {
                                 Log.w(TAG, "run: read Characteristic: Timeout, unable to " +
                                         "read value from ESP");
                                 break;
@@ -590,7 +593,8 @@ public class BluetoothSingleton {
             @Override
             public void run() {
                 int timeout = 500;
-                while (connect != true) {
+                int timeoutMax = 0;
+                while (!connect) {
                     Log.w(TAG, "writeCharacteristic: wait for Connection!");
 
                     try {
@@ -598,8 +602,8 @@ public class BluetoothSingleton {
                                 + timeout);
 
                         Thread.sleep(timeout);
-                        timeout = timeout + 500;
-                        if (timeout == 3000) {
+                        timeoutMax = timeoutMax + 500;
+                        if (timeoutMax == 3000) {
                             Log.w(TAG, "writeCharacteristic:  " +
                                     "Timeout, unable to " +
                                     "connect ESP");
@@ -797,7 +801,7 @@ public class BluetoothSingleton {
     public void registerReceiver(Activity activity) {
         singleton = BluetoothSingleton.getInstance();
         activity.registerReceiver(singleton.mGattUpdateReceiver,
-                singleton.makeGattUpdateIntentFilter());
+                makeGattUpdateIntentFilter());
         if (singleton.mBluetoothGatt == null) {
             final boolean status = singleton.connectGatt(activity);
             Log.d("onResume:", "Connect request: " + status);
@@ -826,15 +830,16 @@ public class BluetoothSingleton {
             @Override
             public void run() {
                 int timeout = 500;
+                int timeoutMax = 0;
                 Log.w(TAG, "wait for broadcastreceiver: " + singleton.getEspResponseValue());
                 Log.w(TAG, "wait for broadcastreceiver: " + finalValue);
                 while (singleton.getEspResponseValue() == null) {
                     try {
                         Thread.sleep(timeout);
-                        timeout = timeout + 500;
+                        timeoutMax = timeoutMax + 500;
                         Log.w("onClickListener", "We wait to receive a Broadcast" +
                                 "Update!");
-                        if (timeout == 5000) {
+                        if (timeoutMax == 5000) {
                             Log.w(TAG, "Timeout has been trigger");
                             break;
                         }
@@ -883,9 +888,9 @@ public class BluetoothSingleton {
                             try {
                                 Log.w(TAG, "wait for target value...!" +
                                         singleton.getEspResponseValue());
-                                Thread.sleep(500);
-                                timeout = timeout + 500;
-                                if (timeout == 5000) {
+                                Thread.sleep(timeout);
+                                timeoutMax = timeoutMax + 500;
+                                if (timeoutMax == 5000) {
                                     break;
                                 }
 
@@ -978,13 +983,12 @@ public class BluetoothSingleton {
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
             public void toSave() {
-                AdminRights.setUser(this.getResult());
-                Log.w(TAG, "To Save: " + this.getResult());
+                AdminRights.setUser(this.getJsonResult());
+                Log.w(TAG, "To Save: " + this.getJsonResult());
             }
         };
         wfb.execute();
         Log.w(TAG, "this is the end of world!" + singleton.getEspResponseValue());
-        return;
     }
 
 
@@ -998,9 +1002,10 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminDefinePump(String liquid, float volume, int slot)
+    public void adminDefinePump(String liquid, float volume, int slot,Activity activity)
             throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         // generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "define_pump");
@@ -1017,11 +1022,12 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "To Save: " + this.getResult());
+                Log.w(TAG, "To Save: " + this.getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        //
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -1033,9 +1039,10 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminEditPump(String liquid, float volume, int slot)
+    public void adminEditPump(String liquid, float volume, int slot, Activity activity)
             throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         // generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "edit_pump");
@@ -1052,11 +1059,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "To Save: " + this.getResult());
+                Log.w(TAG, "To Save: " + this.getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
 
@@ -1070,10 +1077,11 @@ public class BluetoothSingleton {
      * @return
      * @throws JSONException
      */
-    public void userDefineRecipe(long user,String name, JSONArray ingredients)
+    public void userDefineRecipe(long user,String name, JSONArray ingredients, Activity activity)
     //public void defineRecipe(float user,String name, JSONArray liquids)
             throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         // generate JSON Format
        /*JSONArray arrayLiquids = new JSONArray();
         int i = 0;
@@ -1101,12 +1109,11 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-
-                Log.w(TAG, "To Save: " + this.getResult());
+                Log.w(TAG, "To Save: " + this.getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+       // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -1119,9 +1126,11 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void userEditRecipe(float user,String name, ArrayList<Pair<String, Float>> ingredients)
+    public void userEditRecipe(float user,String name, ArrayList<Pair<String, Float>> ingredients
+            , Activity activity)
             throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         // generate JSON Format
         JSONArray arrayIngredients = new JSONArray();
         int i = 0;
@@ -1147,11 +1156,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "To Save: " + this.getResult());
+                Log.w(TAG, "To Save: " + this.getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -1163,10 +1172,11 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void userStartRecipe(long user) throws
+    public void userStartRecipe(long user, Activity activity) throws
             JSONException, InterruptedException {
 
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "start_recipe");
@@ -1179,11 +1189,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned result is now:" + this.getJsonResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -1195,10 +1205,11 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void userCancelRecipe(long user) throws
+    public void userCancelRecipe(long user, Activity activity) throws
             JSONException, InterruptedException {
 
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "cancel_recipe");
@@ -1211,11 +1222,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned result is now:" + this.getJsonResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        //  Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -1227,10 +1238,11 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void userTakeCocktail(long user) throws
+    public void userTakeCocktail(long user, Activity activity) throws
             JSONException, InterruptedException {
 
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "take_cocktail");
@@ -1243,11 +1255,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned result is now:" + this.getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
 
@@ -1261,10 +1273,11 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void userDeleteRecipe(long user, String name) throws
+    public void userDeleteRecipe(long user, String name, Activity activity) throws
             JSONException, InterruptedException {
 
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "delete_recipe");
@@ -1278,11 +1291,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned result is now:" + this.getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
     /**
      * queue_recipe (USER): commissions a recipe
@@ -1294,10 +1307,11 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void userQueueRecipe(long user, String recipe) throws
+    public void userQueueRecipe(long user, String recipe, Activity activity) throws
             JSONException, InterruptedException {
 
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "queue_recipe");
@@ -1311,11 +1325,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned result is now:" + this.getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -1328,8 +1342,9 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReset() throws JSONException, InterruptedException {
+    public void adminReset(Activity activity) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "reset");
@@ -1343,11 +1358,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned result is now:" + getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        //  Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
 
     }
 
@@ -1361,8 +1376,9 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReset(Postexecute postexecute) throws JSONException, InterruptedException {
+    public void adminReset(Postexecute postexecute, Activity activity) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "reset");
@@ -1376,11 +1392,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned result is now:" + getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
 
     }
 
@@ -1396,8 +1412,9 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminResetError() throws JSONException, InterruptedException {
+    public void adminResetError(Activity activity) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "reset_error");
@@ -1411,11 +1428,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned result is now:" + getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        //  Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
 
     }
 
@@ -1429,9 +1446,10 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void userAddLiquid(float user, String liquid, float volume)
+    public void userAddLiquid(float user, String liquid, float volume, Activity activity)
             throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "add_liquid");
@@ -1446,11 +1464,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned result is now:" + getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -1463,9 +1481,10 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminRefillPump(float volume, int slot) throws JSONException, InterruptedException {
+    public void adminRefillPump(float volume, int slot, Activity activity) throws JSONException, InterruptedException {
 
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "refill_pump");
@@ -1480,11 +1499,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned result is now:" + getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
 
     }
 
@@ -1499,9 +1518,10 @@ public class BluetoothSingleton {
      */
 
     @SuppressLint("MissingPermission")
-    public void adminManuelCalibrateRunPump(int slot, int time) throws JSONException,
+    public void adminManuelCalibrateRunPump(int slot, int time, Activity activity) throws JSONException,
             InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "run_pump");
@@ -1516,11 +1536,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned result is now:" + getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /** Automatic Calibration
@@ -1534,10 +1554,11 @@ public class BluetoothSingleton {
      */
 
     @SuppressLint("MissingPermission")
-    public void adminAutoCalibrateStart() throws JSONException,
+    public void adminAutoCalibrateStart(Activity activity) throws JSONException,
             InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         //generate JSON Format
+        singleton.connectGatt(activity);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "calibration_start");
         jsonObject.put("user", 0);
@@ -1549,13 +1570,47 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned <String> result is now:" + this.getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
+
+    /** Automatic Calibration
+     * calibration_add_empty (ADMIN): empty vessel is ready
+     * like described in ProjektDokumente/esp/Befehle.md
+     * JSON-sample: {"cmd": "calibration_add_empty", "user": 0}
+     * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     *
+     * @return
+     * @throws JSONException
+     */
+
+    @SuppressLint("MissingPermission")
+    public void adminAutoCalibrateAddEmpty(Activity activity) throws JSONException,
+            InterruptedException {
+        singleton = BluetoothSingleton.getInstance();
+        //generate JSON Format
+        singleton.connectGatt(activity);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cmd", "calibration_add_empty");
+        jsonObject.put("user", 0);
+        singleton.sendReadWrite(jsonObject, true, true);
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+            @Override
+            public void toSave() throws InterruptedException {
+                if (!check()) {
+                    throw new InterruptedException();
+                }
+
+                Log.w(TAG, "returned result is now:" + this.getStringResult());
+            }
+        };
+        wfb.execute();
+        //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+    }
 
     /** Automatic Calibration
      * calibration_cancel (ADMIN): Cancel automated calibration
@@ -1568,9 +1623,10 @@ public class BluetoothSingleton {
      */
 
     @SuppressLint("MissingPermission")
-    public void adminAutoCalibrateCancel() throws JSONException,
+    public void adminAutoCalibrateCancel(Activity activity) throws JSONException,
             InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "calibration_cancel");
@@ -1583,11 +1639,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned result is now:" + getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /** Automatic Calibration
@@ -1601,10 +1657,11 @@ public class BluetoothSingleton {
      */
 
     @SuppressLint("MissingPermission")
-    public void adminAutoCalibrateFinish() throws JSONException,
+    public void adminAutoCalibrateFinish(Activity activity) throws JSONException,
             InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         //generate JSON Format
+        singleton.connectGatt(activity);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "calibration_finish");
         jsonObject.put("user", 0);
@@ -1616,45 +1673,13 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned result is now:" + this.getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
-    /** Automatic Calibration
-     * calibration_add_empty (ADMIN): empty vessel is ready
-     * like described in ProjektDokumente/esp/Befehle.md
-     * JSON-sample: {"cmd": "calibration_add_empty", "user": 0}
-     * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
-     *
-     * @return
-     * @throws JSONException
-     */
 
-    @SuppressLint("MissingPermission")
-    public void adminAutoCalibrateAddEmpty() throws JSONException,
-            InterruptedException {
-        singleton = BluetoothSingleton.getInstance();
-        //generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "calibration_add_empty");
-        jsonObject.put("user", 0);
-        singleton.sendReadWrite(jsonObject, true, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
-
-                Log.w(TAG, "returned result is now:" + this.getResult());
-            }
-        };
-        wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
-    }
 
     /** Automatic Calibration
      * calibration_add_weight (ADMIN): Vessel is filled with a quantity of water
@@ -1668,9 +1693,10 @@ public class BluetoothSingleton {
      */
 
     @SuppressLint("MissingPermission")
-    public void adminAutoCalibrateAddWeight(float weight) throws JSONException,
+    public void adminAutoCalibrateAddWeight(float weight, Activity activity) throws JSONException,
             InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "calibration_add_weight");
@@ -1684,11 +1710,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned result is now:" + getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
 
@@ -1708,9 +1734,10 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminManuelCalibratePump(int slot, int time1, int time2,
-                                     float volume1, float volume2)
+                                     float volume1, float volume2, Activity activity)
             throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "calibrate_pump");
@@ -1728,11 +1755,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned result is now:" + getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+       // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /** Manuel Calibration
@@ -1748,10 +1775,12 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminManuelCalibrateSetPumpTimes(int slot, int timeInit, int timeReverse, float rate) throws
+    public void adminManuelCalibrateSetPumpTimes(int slot, int timeInit, int timeReverse,
+                                                 float rate, Activity activity) throws
             JSONException, InterruptedException {
 
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "set_pump_times");
@@ -1769,11 +1798,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned result is now:" + getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /** Manuel Calibration
@@ -1786,8 +1815,9 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminManuelCalibrateTareScale() throws JSONException, InterruptedException {
+    public void adminManuelCalibrateTareScale( Activity activity) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "tare_scale");
@@ -1801,11 +1831,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned result is now:" + getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+      //  Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /** Manuel Calibration
@@ -1818,8 +1848,9 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminManuelCalibrateScale(float weight) throws JSONException, InterruptedException {
+    public void adminManuelCalibrateScale(float weight, Activity activity) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "calibrate_scale");
@@ -1834,11 +1865,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned result is now:" + getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+       // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
 
@@ -1852,8 +1883,9 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminManuelCalibrateSetScaleFactor(float factor) throws JSONException, InterruptedException {
+    public void adminManuelCalibrateSetScaleFactor(float factor, Activity activity) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "set_scale_factor");
@@ -1868,11 +1900,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned result is now:" + getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+       // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -1885,8 +1917,9 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminRestart() throws JSONException, InterruptedException {
+    public void adminRestart( Activity activity) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         //generate JSON Format
 
         JSONObject jsonObject = new JSONObject();
@@ -1901,11 +1934,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned result is now:" + getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+       // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -1918,8 +1951,9 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminFactoryReset() throws JSONException, InterruptedException {
+    public void adminFactoryReset( Activity activity) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         //generate JSON Format
 
         JSONObject jsonObject = new JSONObject();
@@ -1934,11 +1968,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned result is now:" + getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -1951,8 +1985,9 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminClean() throws JSONException, InterruptedException {
+    public void adminClean(Activity activity) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         //generate JSON Format
 
         JSONObject jsonObject = new JSONObject();
@@ -1967,11 +2002,11 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
 
-                Log.w(TAG, "returned result is now:" + this.getResult());
+                Log.w(TAG, "returned result is now:" + getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
 
@@ -1990,8 +2025,9 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReadPumpsStatus() throws JSONException, InterruptedException {
+    public void adminReadPumpsStatus(Activity activity) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_PUMPS);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
@@ -1999,12 +2035,12 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                Pump.updatePumpStatus(this.getResult());
-                Log.w(TAG, "To Save: " + this.getResult());
+                Pump.updatePumpStatus(this.getJsonResult());
+                Log.w(TAG, "To Save: " + this.getJsonResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
     /**
      * adminPumpsStatus: Map of all available pumps and their level
@@ -2017,8 +2053,9 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReadPumpsStatus(Postexecute postexecute) throws JSONException, InterruptedException {
+    public void adminReadPumpsStatus(Postexecute postexecute, Activity activity) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_PUMPS);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
             @Override
@@ -2026,12 +2063,12 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                Pump.updatePumpStatus(this.getResult());
-                Log.w(TAG, "To Save: " + this.getResult());
+                Pump.updatePumpStatus(this.getJsonResult());
+                Log.w(TAG, "To Save: " + this.getJsonResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+       // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -2046,8 +2083,9 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReadLastChange() throws JSONException, InterruptedException {
+    public void adminReadLastChange( Activity activity) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_LAST_CHANGE);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
@@ -2057,11 +2095,11 @@ public class BluetoothSingleton {
                 }
                 //Pump.updatePumpStatus(this.getResult());
                 CocktailMachine.setLastChange(this.result);
-                Log.w(TAG, "To Save: " + this.getResult());
+                Log.w(TAG, "To Save: " + this.getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+      //  Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -2074,8 +2112,9 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReadLiquidsStatus() throws JSONException, InterruptedException {
+    public void adminReadLiquidsStatus(Activity activity) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_LIQUIDS);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
@@ -2083,12 +2122,12 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                Pump.updateLiquidStatus(this.getResult());
-                Log.w(TAG, "To Save: " + this.getResult());
+                Pump.updateLiquidStatus(this.getJsonResult());
+                Log.w(TAG, "To Save: " + this.getJsonResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+       // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -2107,8 +2146,9 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReadState(Postexecute postexecute) throws JSONException, InterruptedException {
+    public void adminReadState(Postexecute postexecute, Activity activity) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_STATE);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
             @Override
@@ -2119,11 +2159,11 @@ public class BluetoothSingleton {
                 CocktailStatus.
                         setStatus(this.result);
                 CalibrateStatus.setStatus(this.result);
-                Log.w(TAG, "To Save: " + this.getResult());
+                Log.w(TAG, "returned result is now:" + getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -2137,8 +2177,9 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReadRecipesStatus() throws JSONException, InterruptedException {
+    public void adminReadRecipesStatus(Activity activity) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_RECIPES);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
@@ -2152,7 +2193,7 @@ public class BluetoothSingleton {
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -2165,8 +2206,9 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReadCurrentCocktail() throws JSONException, InterruptedException {
+    public void adminReadCurrentCocktail(Activity activity) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_COCKTAIL);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
@@ -2174,12 +2216,12 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                CocktailMachine.setCurrentCocktail(this.getResult());
-                Log.w(TAG, "To Save: " + this.getResult());
+                CocktailMachine.setCurrentCocktail(this.getJsonResult());
+                Log.w(TAG, "To Save: " + this.getJsonResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -2194,7 +2236,9 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReadUserQueue() throws JSONException, InterruptedException {
+    public void adminReadUserQueue(Activity activity) throws JSONException, InterruptedException {
+        singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_USER_QUEUE);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
@@ -2202,12 +2246,12 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                CocktailMachine.setCurrentUser(this.getResult().toString());
-                Log.w(TAG, "To Save: " + this.getResult());
+                CocktailMachine.setCurrentUser(this.getJsonResult().toString());
+                Log.w(TAG, "To Save: " + this.getJsonResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        //  Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -2221,7 +2265,9 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReadScaleStatus() throws JSONException, InterruptedException {
+    public void adminReadScaleStatus(Activity activity) throws JSONException, InterruptedException {
+        singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_SCALE);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
@@ -2229,12 +2275,12 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                CocktailMachine.setCurrentWeight(this.getResult());
-                Log.w(TAG, "To Save: " + this.getResult());
+                CocktailMachine.setCurrentWeight(this.getJsonResult());
+                Log.w(TAG, "To Save: " + this.getJsonResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        //   Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -2248,7 +2294,9 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReadErrorStatus() throws JSONException, InterruptedException {
+    public void adminReadErrorStatus(Activity activity) throws JSONException, InterruptedException {
+        singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_ERROR);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
             @Override
@@ -2257,7 +2305,7 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
                 ErrorStatus.setError(this.result);
-                Log.w(TAG, "To Save: " + this.getResult());
+                Log.w(TAG, "To Save: " + this.getStringResult());
             }
         };
         wfb.execute();
@@ -2275,21 +2323,22 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReadErrorStatus(Postexecute postexecute) throws JSONException, InterruptedException {
+    public void adminReadErrorStatus(Postexecute postexecute, Activity activity) throws JSONException, InterruptedException {
+        singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_ERROR);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
-                    Log.i(TAG, "adminReadErrorStatus: interrupt");
                     throw new InterruptedException();
                 }
                 ErrorStatus.setError(this.result);
-                Log.i(TAG, "adminReadErrorStatus: To Save: " + this.getResult());
+                Log.w(TAG, "To Save: " + this.getStringResult());
             }
         };
         wfb.execute();
-        Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
 

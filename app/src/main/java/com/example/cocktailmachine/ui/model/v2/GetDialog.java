@@ -72,10 +72,11 @@ public class GetDialog {
 
     //Recipe Send
     public static void sendRecipe(Activity activity, Recipe recipe){
+
         Postexecute doAgain = new Postexecute() {
             @Override
             public void post() {
-                CocktailMachine.queueRecipe(recipe);
+                CocktailMachine.queueRecipe(recipe, activity);
             }
         };
         Postexecute continueHere = new Postexecute() {
@@ -97,6 +98,7 @@ public class GetDialog {
         errorHandle.put(ErrorStatus.recipe_not_found, notFound);
         errorHandle.put(ErrorStatus.cant_start_recipe_yet, doAgain);
         ErrorStatus.handleSpecificErrorMethod(activity, doAgain, continueHere, errorHandle);
+
     }
     //Count down
     public static void countDown(Activity activity, Recipe recipe){
@@ -130,6 +132,7 @@ public class GetDialog {
         alertDialog.setMessage("Bitte, geh zur Cocktailmaschine und stelle dein Glas unter die Maschine. ");
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Los!", (dialog, which) -> {
             //TO DO: send force start bluetooth thing
+
             Postexecute doAgain = new Postexecute() {
                 @Override
                 public void post() {
@@ -143,6 +146,7 @@ public class GetDialog {
                 }
             };
             ErrorStatus.handleSpecificErrorRepeat(activity, dialog, ErrorStatus.cant_start_recipe_yet, doAgain, continueHere);
+
         });
         alertDialog.show();   //
     }
@@ -160,6 +164,7 @@ public class GetDialog {
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Abgeholt!", (dialog, which) -> {
             //BluetoothSingleton.getInstance().adminReset();
             //CocktailMachine.isCollected();
+
             //GetActivity.goToMenu(activity);
             Postexecute doAgain = new Postexecute() {
                 @Override
@@ -295,8 +300,12 @@ public class GetDialog {
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
             //CocktailMachine.tareScale(activity);
 
+
             //CocktailMachine.automaticEmpty();
             //TODO: TARIERUNG pflicht????
+
+            //CocktailMachine.automaticEmpty(activity);
+            //enterNumberOfPumps(activity);
             dialog.dismiss();
             enterNumberOfPumps(activity);
         });
@@ -343,6 +352,8 @@ public class GetDialog {
             };
             ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
             //CocktailMachine.automaticCalibration(activity);
+            //CocktailMachine.automaticWeight(activity);
+            //waitingForPumps(activity);
         });
         builder.show();
     }
@@ -352,6 +363,7 @@ public class GetDialog {
         builder.setTitle("Leere das Glass!");
         builder.setMessage("Leere das Glass und stell es wieder unter die Cocktailmaschine!");
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
+
             Postexecute doAgain = new Postexecute() {
                 @Override
                 public void post() {
@@ -365,6 +377,9 @@ public class GetDialog {
                 }
             };
             ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
+
+            //GetDialog.waitingForPumps(activity);
+            //CocktailMachine.automaticEmptyPumping(activity);
         });
         builder.show();
     }
@@ -419,6 +434,7 @@ public class GetDialog {
                 if(CocktailMachine.isAutomaticCalibrationDone()) {
                     Toast.makeText(activity, "Das Setup ist vollständig!", Toast.LENGTH_LONG).show();
 
+
                     Postexecute doAgain = new Postexecute() {
                         @Override
                         public void post() {
@@ -428,11 +444,13 @@ public class GetDialog {
                     Postexecute continueHere = new Postexecute() {
                         @Override
                         public void post() {
+
                             GetDialog.setIngredientsForPumps(activity);
                         }
                     };
                     ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
-
+                    //CocktailMachine.automaticEnd(activity);
+                    //GetDialog.setIngredientsForPumps(activity);
                 } else if (CocktailMachine.needsEmptyingGlass()) {
                     GetDialog.emptyGlass(activity);
                 }
@@ -584,7 +602,6 @@ public class GetDialog {
                     setFixedPumpIngredient(activity,p,next);
                 }
 
-                return;
             });
             builder.show();
         }else{
@@ -617,13 +634,11 @@ public class GetDialog {
                 if(next.isEmpty()){
                     GetActivity.goToMenu(activity);
                     dialog.dismiss();
-                    return;
                 }else {
                     Pump p = next.get(0);
                     next.remove(0);
                     setFixedPumpIngredient(activity,p,next);
                     dialog.dismiss();
-                    return;
                 }
             });
             builder.show();
@@ -699,8 +714,8 @@ public class GetDialog {
         private final Activity activity;
         private TitleChangeView(Activity activity, ModelType modelType, long ID, View v) {
             this.activity = activity;
-            this.t = (TextView) v.findViewById(R.id.textView_edit_text);
-            this.e = (EditText) v.findViewById(R.id.editText_edit_text);
+            this.t = v.findViewById(R.id.textView_edit_text);
+            this.e = v.findViewById(R.id.editText_edit_text);
             String name = getNameFromDB();
             this.e.setHint(name);
             this.e.setText(name);
@@ -835,8 +850,8 @@ public class GetDialog {
         private final Activity activity;
         private VolumeChangeView(Activity activity, Pump pump, View v, boolean minimum) {
             this.activity = activity;
-            this.t = (TextView) v.findViewById(R.id.textView_edit_text);
-            this.e = (EditText) v.findViewById(R.id.editText_edit_text);
+            this.t = v.findViewById(R.id.textView_edit_text);
+            this.e = v.findViewById(R.id.editText_edit_text);
 
             this.t.setText("Volumen: ");
             this.e.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -967,10 +982,10 @@ public class GetDialog {
         private final Activity activity;
         private CalibratePumpChangeView(Activity activity, Pump pump, View v) {
             this.activity = activity;
-            this.time1 = (EditText) v.findViewById(R.id.editText_time1);
-            this.time2 = (EditText) v.findViewById(R.id.editText_time2);
-            this.vol1 = (EditText) v.findViewById(R.id.editText_vol1);
-            this.vol2 = (EditText) v.findViewById(R.id.editText_vol2);
+            this.time1 = v.findViewById(R.id.editText_time1);
+            this.time2 = v.findViewById(R.id.editText_time2);
+            this.vol1 = v.findViewById(R.id.editText_vol1);
+            this.vol2 = v.findViewById(R.id.editText_vol2);
 
             this.pump = pump;
             this.v = v;
@@ -1058,10 +1073,10 @@ public class GetDialog {
         private final Activity activity;
         private CalibrateAllPumpChangeView(Activity activity, View v) {
             this.activity = activity;
-            this.time1 = (EditText) v.findViewById(R.id.editText_time1);
-            this.time2 = (EditText) v.findViewById(R.id.editText_time2);
-            this.vol1 = (EditText) v.findViewById(R.id.editText_vol1);
-            this.vol2 = (EditText) v.findViewById(R.id.editText_vol2);
+            this.time1 = v.findViewById(R.id.editText_time1);
+            this.time2 = v.findViewById(R.id.editText_time2);
+            this.vol1 = v.findViewById(R.id.editText_vol1);
+            this.vol2 = v.findViewById(R.id.editText_vol2);
             this.v = v;
         }
 
@@ -1154,9 +1169,9 @@ public class GetDialog {
         private final Activity activity;
         private CalibratePumpTimesChangeView(Activity activity, Pump pump, View v) {
             this.activity = activity;
-            this.timeInit = (EditText) v.findViewById(R.id.editText_times_timeInit);
-            this.timeRev = (EditText) v.findViewById(R.id.editText_times_timeRev);
-            this.rate = (EditText) v.findViewById(R.id.editText_times_rate);
+            this.timeInit = v.findViewById(R.id.editText_times_timeInit);
+            this.timeRev = v.findViewById(R.id.editText_times_timeRev);
+            this.rate = v.findViewById(R.id.editText_times_rate);
 
             this.pump = pump;
             this.v = v;
@@ -1215,9 +1230,9 @@ public class GetDialog {
         private final Activity activity;
         private CalibrateAllPumpTimesChangeView(Activity activity, View v) {
             this.activity = activity;
-            this.timeInit = (EditText) v.findViewById(R.id.editText_times_timeInit);
-            this.timeRev = (EditText) v.findViewById(R.id.editText_times_timeRev);
-            this.rate = (EditText) v.findViewById(R.id.editText_times_rate);
+            this.timeInit = v.findViewById(R.id.editText_times_timeInit);
+            this.timeRev = v.findViewById(R.id.editText_times_timeRev);
+            this.rate = v.findViewById(R.id.editText_times_rate);
             this.v = v;
         }
 
@@ -1405,8 +1420,8 @@ public class GetDialog {
         final Activity activity;
         private FloatChangeView(Activity activity, View v, String title ) {
             this.activity = activity;
-            this.t = (TextView) v.findViewById(R.id.textView_edit_text);
-            this.e = (EditText) v.findViewById(R.id.editText_edit_text);
+            this.t = v.findViewById(R.id.textView_edit_text);
+            this.e = v.findViewById(R.id.editText_edit_text);
 
             this.t.setText(title+": ");
             this.e.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
@@ -1417,7 +1432,7 @@ public class GetDialog {
         }
 
         private String getPreFloat(){
-            return String.valueOf("9738");
+            return "9738";
         }
         public float getFloat(){
             return Float.valueOf(e.getText().toString());
@@ -1490,8 +1505,8 @@ public class GetDialog {
         private final Topic topic;
         private final View v;
         private LongEditChangeView( Topic topic, View v) {
-            this.t = (TextView) v.findViewById(R.id.textView_long_edit_title);
-            this.e = (EditText) v.findViewById(R.id.editText_long_edit_txt);
+            this.t = v.findViewById(R.id.textView_long_edit_title);
+            this.e = v.findViewById(R.id.editText_long_edit_txt);
 
             this.t.setText("Beschreibung: ");
             this.e.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -1801,7 +1816,7 @@ public class GetDialog {
                         public void post() {
                             dialog.dismiss();
                         }
-                    });
+                    },activity);
         });
         builder.setNegativeButton("Abbrechen", (dialog, which) -> {
             CocktailMachine.isCocktailMachineSet(new Postexecute() {
@@ -1816,7 +1831,7 @@ public class GetDialog {
                         public void post() {
                             dialog.dismiss();
                         }
-                    });
+                    },activity);
         });
 
         builder.show();

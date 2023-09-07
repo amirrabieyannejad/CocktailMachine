@@ -115,10 +115,7 @@ public enum ErrorStatus {
         if(status == ErrorStatus.init){
             return false;
         }
-        if(status == ErrorStatus.processing){
-            return false;
-        }
-        return true;
+        return status != ErrorStatus.processing;
     }
 
 
@@ -132,15 +129,17 @@ public enum ErrorStatus {
 
     //Error
 
-    public static void updateError(){
+
+    public static void updateError(Activity activity){
         if(Dummy.isDummy){
             Log.i(TAG, "getErrorMessage: dummy");
             setError("not");
             return;
         }
         try {
-            BluetoothSingleton.getInstance().adminReadErrorStatus();
+            BluetoothSingleton.getInstance().adminReadErrorStatus(activity);
         } catch (JSONException | InterruptedException | NullPointerException e) {
+
             Log.i(TAG, "getErrorMessage: errored");
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
@@ -148,7 +147,7 @@ public enum ErrorStatus {
         }
     }
 
-    private static void updateError(Postexecute afterReading){
+    private static void updateError(Postexecute afterReading, Activity activity){
         if(Dummy.isDummy){
             Log.i(TAG, "getErrorMessage: dummy");
             setError("not");
@@ -156,8 +155,9 @@ public enum ErrorStatus {
             return;
         }
         try {
-            BluetoothSingleton.getInstance().adminReadErrorStatus(afterReading);
+            BluetoothSingleton.getInstance().adminReadErrorStatus(afterReading,activity);
         } catch (JSONException | InterruptedException | NullPointerException e) {
+
             Log.i(TAG, "getErrorMessage: errored");
             e.printStackTrace();
             Log.e(TAG, Objects.requireNonNull(e.getMessage()));
@@ -166,7 +166,7 @@ public enum ErrorStatus {
         }
     }
 
-    private static void updateErrorDoIfError(Postexecute ifErrored){
+    private static void updateErrorDoIfError(Postexecute ifErrored, Activity activity){
         updateError(new Postexecute() {
             @Override
             public void post() {
@@ -174,7 +174,7 @@ public enum ErrorStatus {
                     ifErrored.post();
                 }
             }
-        });
+        },activity);
     }
 
 
@@ -185,9 +185,9 @@ public enum ErrorStatus {
      * @return
      * @author Johanna Reidt
      */
-    private static String getErrorMessage(){
+    private static String getErrorMessage(Activity activity){
         Log.i(TAG, "getErrorMessage");
-        updateError();
+        updateError(activity);
         return error;
     }
 
@@ -198,9 +198,9 @@ public enum ErrorStatus {
      * @return
      * @author Johanna Reidt
      */
-    public static String getErrorMessage(Postexecute afterReading){
+    public static String getErrorMessage(Postexecute afterReading, Activity activity){
         Log.i(TAG, "getErrorMessage");
-        updateError(afterReading);
+        updateError(afterReading,activity);
         return error;
     }
 
@@ -210,8 +210,8 @@ public enum ErrorStatus {
      * @return
      * @author Johanna Reidt
      */
-    public static boolean getErrorBoolean(){
-        updateError();
+    public static boolean getErrorBoolean(Activity activity){
+        updateError(activity);
         return isError();
     }
 
@@ -222,8 +222,8 @@ public enum ErrorStatus {
      * @return
      * @author Johanna Reidt
      */
-    public static boolean getErrorBoolean(Postexecute toDoIfErrored){
-        updateErrorDoIfError(toDoIfErrored);
+    public static boolean getErrorBoolean(Postexecute toDoIfErrored,Activity activity){
+        updateErrorDoIfError(toDoIfErrored,activity);
         return isError();
     }
 
@@ -233,8 +233,8 @@ public enum ErrorStatus {
      * @return
      * @author Johanna Reidt
      */
-    public static ErrorStatus getErrorStatus(){
-        updateError();
+    public static ErrorStatus getErrorStatus(Activity activity){
+        updateError(activity);
         return status;
     }
 
@@ -245,8 +245,8 @@ public enum ErrorStatus {
      * @return
      * @author Johanna Reidt
      */
-    public static ErrorStatus getErrorStatus(Postexecute afterReading){
-        updateError(afterReading);
+    public static ErrorStatus getErrorStatus(Postexecute afterReading,Activity activity){
+        updateError(afterReading,activity);
         return status;
     }
 
@@ -262,13 +262,13 @@ public enum ErrorStatus {
      * called to get out of error mode into handling
      * @author Johanna Reidt
      */
-    private static void reset(){
+    private static void reset(Activity activity){
         if(Dummy.isDummy){
             setError("not");
             return;
         }
         try {
-            BluetoothSingleton.getInstance().adminResetError();
+            BluetoothSingleton.getInstance().adminResetError(activity);
             Log.i(TAG, "resetted");
         } catch (JSONException | InterruptedException| NullPointerException e) {
             Log.i(TAG, "reset: errored");
@@ -280,7 +280,7 @@ public enum ErrorStatus {
 
 
     public static void handleIfExistingError(Activity activity){
-        reset();
+        reset(activity);
         if(isCmdError()){
             GetDialog.handleCmdError(activity, status);
         } else if (!statusRequestWorked()) {

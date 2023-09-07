@@ -6,5 +6,5 @@ package com.example.cocktailmachine.ui.dialogs;
  * @project CocktailMachine
  */
 public enum EditType {
-    Float, String, Int;
+    Float, String, Int
 }

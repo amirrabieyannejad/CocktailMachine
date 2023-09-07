@@ -180,8 +180,8 @@ public class AdminRights {
         private final View v;
         public LoginView(Context context, View v) {
             this.v = v;
-            t = (TextView) v.findViewById(R.id.textView_edit_text);
-            e = (EditText) v.findViewById(R.id.editText_edit_text);
+            t = v.findViewById(R.id.textView_edit_text);
+            e = v.findViewById(R.id.editText_edit_text);
             e.setHint("");
             t.setText("Passwort: ");
             e.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);

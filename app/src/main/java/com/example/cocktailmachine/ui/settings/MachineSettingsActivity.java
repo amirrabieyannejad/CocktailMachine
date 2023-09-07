@@ -77,7 +77,7 @@ public class MachineSettingsActivity extends AppCompatActivity {
             public void post() {
                 builder.setMessage(CocktailStatus.getCurrentStatus().toString());
             }
-        }));
+        },this));
         builder.setNeutralButton("Fertig!", (dialog, which) -> {});
         builder.show();
     }

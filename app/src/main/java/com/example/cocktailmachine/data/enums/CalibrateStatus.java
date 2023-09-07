@@ -2,6 +2,8 @@ package com.example.cocktailmachine.data.enums;
 
 import android.util.Log;
 
+import android.app.Activity;
+
 import androidx.annotation.NonNull;
 
 import com.example.cocktailmachine.Dummy;
@@ -29,7 +31,6 @@ public enum CalibrateStatus {
     calibration_done
     ;
 
-    private static final String TAG = "CalibrateStatus" ;
     private static CalibrateStatus status;
 
 
@@ -90,6 +91,8 @@ public enum CalibrateStatus {
         }else{
             postexecute.post();
         }
+    public static CalibrateStatus getCurrent(Postexecute postexecute, Activity activity){
+        CocktailStatus.getCurrentStatus(postexecute,activity);
         return status;
     }
 }

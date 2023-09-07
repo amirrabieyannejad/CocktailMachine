@@ -42,18 +42,19 @@ public enum CocktailStatus {
      *
      * @return
      */
-    public static CocktailStatus getCurrentStatus(Postexecute postexecute) {
+    public static CocktailStatus getCurrentStatus(Postexecute postexecute,Activity activity) {
         //BluetoothSingleton blSingelton = BluetoothSingleton.getInstance();
         //blSingelton.connectGatt(activity);
         //TO DO: Bluetoothlegatt
         //BluetoothSingleton.getInstance().mBluetoothLeService;
         //TO DO: AMIR
         if(Dummy.isDummy){
-            Log.i(TAG, "getCurrentStatus: state: "+ CocktailStatus.currentState);
+            Log.i(TAG, "getCurrentStatus: dummy state: "+ CocktailStatus.currentState);
+            postexecute.post();
             return CocktailStatus.currentState;
         }
         try {
-            BluetoothSingleton.getInstance().adminReadState(postexecute);
+            BluetoothSingleton.getInstance().adminReadState(postexecute,activity);
         } catch (JSONException | InterruptedException|NullPointerException e) {
             Log.e(TAG, "getCurrentStatus");
             Log.e(TAG, Objects.requireNonNull(e.getMessage()));
@@ -89,8 +90,8 @@ public enum CocktailStatus {
      *
      * @return
      */
-    public static String getCurrentStatusMessage(Postexecute postexecute) {
-        CocktailStatus status = getCurrentStatus(postexecute);
+    public static String getCurrentStatusMessage(Postexecute postexecute,Activity activity) {
+        CocktailStatus status = getCurrentStatus(postexecute,activity);
         StringBuilder builder = new StringBuilder();
         builder.append("Die Cocktailmaschine ");
         switch (status) {

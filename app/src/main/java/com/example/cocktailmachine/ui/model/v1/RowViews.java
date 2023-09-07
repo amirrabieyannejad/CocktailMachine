@@ -85,16 +85,16 @@ public class RowViews {
             }if(itemView.getContext()==null){
                 Log.i(TAG, "itemView is null");
             }
-            checkBox = (CheckBox) itemView.findViewById(R.id.checkBox_item);
+            checkBox = itemView.findViewById(R.id.checkBox_item);
             checkBox.setVisibility(View.GONE);
             if(checkBox == null){
                 Log.i(TAG, "checkBox is null");
             }
-            name = (TextView) itemView.findViewById(R.id.textView_item_name);
+            name = itemView.findViewById(R.id.textView_item_name);
             if(name == null){
                 Log.i(TAG, "name is null");
             }
-            desc = (TextView) itemView.findViewById(R.id.textView_item_desc);
+            desc = itemView.findViewById(R.id.textView_item_desc);
             desc.setVisibility(View.GONE);
             if(desc == null){
                 Log.i(TAG, "desc is null");
