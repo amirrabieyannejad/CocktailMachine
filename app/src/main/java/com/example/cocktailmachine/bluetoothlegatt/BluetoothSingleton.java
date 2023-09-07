@@ -24,6 +24,7 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.util.Pair;
 
@@ -826,34 +827,31 @@ public class BluetoothSingleton {
     private void waitForBroadcastReceiver1(TextView textView) {
         singleton = BluetoothSingleton.getInstance();
 
-        Runnable myRunnable = new Runnable() {
-            @Override
-            public void run() {
-                int timeout = 500;
-                int timeoutMax = 0;
-                Log.w(TAG, "wait for broadcastreceiver: " + singleton.getEspResponseValue());
-                Log.w(TAG, "wait for broadcastreceiver: " + finalValue);
-                while (singleton.getEspResponseValue() == null) {
-                    try {
-                        Thread.sleep(timeout);
-                        timeoutMax = timeoutMax + 500;
-                        Log.w("onClickListener", "We wait to receive a Broadcast" +
-                                "Update!");
-                        if (timeoutMax == 5000) {
-                            Log.w(TAG, "Timeout has been trigger");
-                            break;
-                        }
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
+        Runnable myRunnable = () -> {
+            int timeout = 500;
+            int timeoutMax = 0;
+            Log.w(TAG, "wait for broadcastreceiver: " + singleton.getEspResponseValue());
+            Log.w(TAG, "wait for broadcastreceiver: " + finalValue);
+            while (singleton.getEspResponseValue() == null) {
+                try {
+                    Thread.sleep(timeout);
+                    timeoutMax = timeoutMax + 500;
+                    Log.w("onClickListener", "We wait to receive a Broadcast" +
+                            "Update!");
+                    if (timeoutMax == 5000) {
+                        Log.w(TAG, "Timeout has been trigger");
+                        break;
                     }
-                    String updateWords = singleton.getEspResponseValue();
-                    textView.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            textView.setText(updateWords);
-                        }
-                    });
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
+                String updateWords = singleton.getEspResponseValue();
+                textView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        textView.setText(updateWords);
+                    }
+                });
             }
         };
         Thread myThread = new Thread(myRunnable);
@@ -867,7 +865,7 @@ public class BluetoothSingleton {
         singleton.result = null;
         @SuppressLint("HandlerLeak") Handler handle = new Handler() {
             @Override
-            public void handleMessage(Message msg) {
+            public void handleMessage(@NonNull Message msg) {
                 //singleton.value = finalValue;
                 result = singleton.getEspResponseValue();
                 Log.w(TAG, "waitForBroadcastReceiver"
@@ -879,6 +877,7 @@ public class BluetoothSingleton {
             @Override
             public void run() {
                 int timeout = 500;
+                int timeoutMax = 0;
                 try {
 
 
