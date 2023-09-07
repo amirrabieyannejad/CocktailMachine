@@ -325,9 +325,15 @@ public class GetDialog {
 
         builder.setView(v);
         builder.setPositiveButton("Speichern", (dialog, which) -> {
-            dialog.dismiss();
-            pumpNumberChangeView.save();
-            getGlass(activity);
+            try {
+                pumpNumberChangeView.save();
+                dialog.dismiss();
+                getGlass(activity);
+            }catch (IllegalStateException e){
+                Log.e(TAG, "enterNumberOfPumps pumpNumberChangeView save error");
+                Log.e(TAG, e.toString());
+                e.printStackTrace();
+            }
         });
         builder.show();
     }
@@ -406,6 +412,9 @@ public class GetDialog {
             @Override
             public void reduceTick() {
                 isDone = CocktailMachine.isAutomaticCalibrationDone(activity)||CocktailMachine.needsEmptyingGlass(activity);
+                if(Dummy.isDummy){
+                    isDone = CocktailMachine.dummyCounter>=Pump.getPumps().size();
+                }
                 Log.i("GetDialog", "waitingQueueCountDown:  isDone: " +isDone);
                 if(isDone){
                     setTick(0);
@@ -1297,9 +1306,16 @@ public class GetDialog {
         builder.setView(v);
 
         builder.setPositiveButton("Speichern", (dialog, which) -> {
-            pumpNumberChangeView.save();
-            //Pump.calibratePumpsAndTimes(activity);
-            GetDialog.startAutomaticCalibration(activity);
+            try {
+                pumpNumberChangeView.save();
+                //Pump.calibratePumpsAndTimes(activity);
+                dialog.dismiss();
+                GetDialog.startAutomaticCalibration(activity);
+            }catch (IllegalStateException e){
+                Log.e(TAG, "setPumpNumber pumpNumberChangeView save error");
+                Log.e(TAG, e.toString());
+                e.printStackTrace();
+            }
 
         });
         builder.setNeutralButton("Abbrechen", (dialog, which) -> {
@@ -1312,12 +1328,17 @@ public class GetDialog {
         private PumpNumberChangeView(Activity activity, View v) {
             super(activity, v, "Anzahl");
         }
-        public void save(){
+        public void save() throws IllegalStateException{
             if(!DatabaseConnection.isInitialized()) {
                 DatabaseConnection.initializeSingleton(super.activity);
             }
-
-            Pump.setOverrideEmptyPumps((int) super.getFloat());
+            int res = (int) super.getFloat();
+            if(res == -1){
+                Toast.makeText(super.activity, "Gib bitte eine valide Zahle ein.", Toast.LENGTH_SHORT).show();
+                throw new IllegalStateException("Missing number!");
+            } else {
+                Pump.setOverrideEmptyPumps(res);
+            }
         }
 
         @Override
@@ -1432,10 +1453,17 @@ public class GetDialog {
         }
 
         private String getPreFloat(){
-            return "9738";
+            return "2";
         }
         public float getFloat(){
-            return Float.valueOf(e.getText().toString());
+            try {
+                return Float.parseFloat(e.getText().toString());
+            }catch (NumberFormatException e){
+                Log.e(TAG, "FloatChangeView getFloat error");
+                Log.e(TAG, e.toString());
+                e.printStackTrace();
+            }
+            return -1;
         }
 
         public abstract void send();

@@ -46,7 +46,7 @@ public class CocktailMachine {
     static double currentWeight;
 
 
-    private static int dummyCounter=0;
+    public static int dummyCounter=0;
 
 
 
@@ -767,6 +767,7 @@ public class CocktailMachine {
      * tells the esp that user hsa emptied the glass
      * @author Johanna Reidt
      */
+    /*
     public static void automaticEmpty(Activity activity){
         try{
             BluetoothSingleton.getInstance().adminAutoCalibrateAddEmpty(activity);
@@ -777,6 +778,8 @@ public class CocktailMachine {
             e.printStackTrace();
         }
     }
+
+     */
 
 
     /**
@@ -801,7 +804,10 @@ public class CocktailMachine {
      * @author Johanna Reidt
      */
     public static void automaticEmptyPumping(Activity activity){
-        dummyCounter = dummyCounter+1;
+        if(Dummy.isDummy) {
+            dummyCounter = dummyCounter + 1;
+            Log.i(TAG,"automaticEmptyPumping "+dummyCounter );
+        }
         try {
             BluetoothSingleton.getInstance().adminAutoCalibrateAddEmpty(activity);
         } catch (JSONException | InterruptedException|NullPointerException e) {
