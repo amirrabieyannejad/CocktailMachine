@@ -1,15 +1,22 @@
 package com.example.cocktailmachine.data.enums;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
+import com.example.cocktailmachine.data.CocktailMachine;
+import com.example.cocktailmachine.data.Recipe;
+import com.example.cocktailmachine.ui.model.v2.GetActivity;
 import com.example.cocktailmachine.ui.model.v2.GetDialog;
 
 import org.json.JSONException;
 
-import java.util.Random;
+import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * @author Johanna Reidt
@@ -92,13 +99,16 @@ public enum ErrorStatus {
         return ErrorStatus.not;
     }
 
-    public static void setError(String mesg){
-        error = mesg;
+    public static void setError(String msg){
+        error = msg;
         status = valueOfString(error);
     }
 
 
     private static boolean isError(){
+        if(Dummy.isDummy){
+            return false;
+        }
         if(status==ErrorStatus.ok){
             return false;
         }
@@ -119,10 +129,17 @@ public enum ErrorStatus {
 
     //Error
 
+
     public static void updateError(Activity activity){
+        if(Dummy.isDummy){
+            Log.i(TAG, "getErrorMessage: dummy");
+            setError("not");
+            return;
+        }
         try {
             BluetoothSingleton.getInstance().adminReadErrorStatus(activity);
-        } catch (JSONException | InterruptedException e) {
+        } catch (JSONException | InterruptedException | NullPointerException e) {
+
             Log.i(TAG, "getErrorMessage: errored");
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
@@ -131,13 +148,21 @@ public enum ErrorStatus {
     }
 
     private static void updateError(Postexecute afterReading, Activity activity){
+        if(Dummy.isDummy){
+            Log.i(TAG, "getErrorMessage: dummy");
+            setError("not");
+            afterReading.post();
+            return;
+        }
         try {
             BluetoothSingleton.getInstance().adminReadErrorStatus(afterReading,activity);
-        } catch (JSONException | InterruptedException e) {
+        } catch (JSONException | InterruptedException | NullPointerException e) {
+
             Log.i(TAG, "getErrorMessage: errored");
             e.printStackTrace();
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
             setError("not");
+            afterReading.post();
         }
     }
 
@@ -238,10 +263,14 @@ public enum ErrorStatus {
      * @author Johanna Reidt
      */
     private static void reset(Activity activity){
+        if(Dummy.isDummy){
+            setError("not");
+            return;
+        }
         try {
             BluetoothSingleton.getInstance().adminResetError(activity);
             Log.i(TAG, "resetted");
-        } catch (JSONException | InterruptedException e) {
+        } catch (JSONException | InterruptedException| NullPointerException e) {
             Log.i(TAG, "reset: errored");
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
@@ -276,6 +305,231 @@ public enum ErrorStatus {
     private static void handleRecipeError(Activity activity){
         //TODO: handle all cases
     }
+
+
+
+
+
+    /**
+     * if esp not ready for calibration
+     * ERROR CODE: calibration_command_invalid_at_this_time
+     * show Dialog
+     * @param activity
+     * @param dialog
+     * @author Johanna Reidt
+     */
+    public static void handleAutomaticCalibrationNotReady(Activity activity,
+                                                          DialogInterface dialog,
+                                                          Postexecute doAgain,
+                                                          Postexecute continueHere){
+        Log.i(TAG, "handleAutomaticCalibrationNotReady");
+        handleSpecificErrorRepeat(activity, dialog, calibration_command_invalid_at_this_time, doAgain, continueHere);
+    }
+
+
+
+
+
+
+
+
+
+
+    /**
+     * if esp not ready for calibration
+     * ERROR CODE: calibration_command_invalid_at_this_time
+     * show Dialog
+     * @param activity
+     * @param dialog
+     * @author Johanna Reidt
+     */
+    public static void handleSpecificErrorRepeat(Activity activity,
+                                                 DialogInterface dialog,
+                                                 ErrorStatus specificError,
+                                                 Postexecute doAgain,
+                                                 Postexecute continueHere){
+        Log.i(TAG, "handleSpecificErrorRepeat");
+        HashMap<ErrorStatus, Postexecute> errorHandle = new HashMap<>();
+        errorHandle.put(specificError, doAgain);
+        handleSpecificErrorMethod(activity,dialog, doAgain, continueHere, errorHandle);
+    }
+
+
+    /**
+     * if esp not ready for calibration
+     * ERROR CODE: calibration_command_invalid_at_this_time
+     * show Dialog
+     * @param activity
+     * @author Johanna Reidt
+     */
+    public static void handleSpecificErrorRepeat(Activity activity,
+                                                 ErrorStatus specificError,
+                                                 Postexecute doAgain,
+                                                 Postexecute continueHere){
+        HashMap<ErrorStatus, Postexecute> errorHandle = new HashMap<>();
+        errorHandle.put(specificError, doAgain);
+        handleSpecificErrorMethod(activity, doAgain, continueHere, errorHandle);
+    }
+
+
+
+    /**
+     * if esp not ready for calibration
+     * ERROR CODE: calibration_command_invalid_at_this_time
+     * show Dialog
+     * @param activity
+     * @param dialog
+     * @author Johanna Reidt
+     */
+    public static void handleSpecificErrorMethod(Activity activity,
+                                                 DialogInterface dialog,
+                                                 Postexecute start,
+                                                 Postexecute continueHere,
+                                                 HashMap<ErrorStatus, Postexecute> errorHandle){
+        Log.i(TAG, "handleSpecificErrorMethod");
+        if(Dummy.isDummy){
+            Log.i(TAG, "handleSpecificErrorMethod: dummy");
+            start.post();
+            Log.i(TAG, "handleSpecificErrorMethod: dummy: start");
+            continueHere.post();
+            Log.i(TAG, "handleSpecificErrorMethod: dummy: continue");
+            return;
+        }
+
+        //final Activity acc = activity;
+
+        Log.i(TAG, "handleSpecificErrorMethod: no dummy");
+        start.post();
+        Log.i(TAG, "handleSpecificErrorMethod: start called");
+        getErrorStatus(new Postexecute() {
+            @Override
+            public void post() {
+                Log.i(TAG, "handleSpecificErrorMethod: post called");
+                if(errorHandle.containsKey(status)){
+                    reset(activity);
+                    dialog.cancel();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                    builder.setTitle("Einen Moment...");
+                    builder.setMessage("Der ESP ist noch nicht bereit. Bitte versuche es erneut");
+                    builder.setPositiveButton("Nochmal", (dialog1, which) -> {
+                        Log.i(TAG, "handleSpecificError: Nochmal Button: call ESP calibration start");
+                        //CocktailMachine.automaticCalibration();
+                        //doAgain.post();
+                        Objects.requireNonNull(errorHandle.get(status)).post();
+                        Log.i(TAG, "handleSpecificError: Nochmal Button: check error");
+                        getErrorStatus(new Postexecute() {
+                            @Override
+                            public void post() {
+                                if(status == calibration_command_invalid_at_this_time){
+                                    Log.i(TAG, "handleSpecificError: Nochmal Button: not ready esp");
+                                    Toast.makeText(activity,"Nicht bereit!", Toast.LENGTH_SHORT).show();
+                                } else if (isError()) {
+                                    Log.i(TAG, "handleSpecificError: Nochmal Button: different error");
+                                    dialog1.cancel();
+                                    handleIfExistingError(activity);
+                                }else {
+                                    Log.i(TAG, "handleSpecificError: Nochmal Button: continue dialog");
+                                    //GetDialog.firstAutomaticDialog(activity);
+                                    dialog1.cancel();
+                                    continueHere.post();
+                                }
+                            }
+                        }, activity);
+                    });
+                    builder.setNegativeButton("Abbrechen", (dialog12, which) -> {
+                        Log.i(TAG, "handleAutomaticCalibrationNotReady: Abbrechen Button");
+                        dialog12.cancel();
+                        GetActivity.waitNotSet(activity);
+                    });
+                    builder.show();
+                    Log.i(TAG, "handleSpecificErrorMethod: dialog show");
+                } else if(isError()){
+                    Log.i(TAG, "handleSpecificError: different error");
+                    dialog.cancel();
+                    Toast.makeText(activity, "Ein Fehler ist aufgetreten!", Toast.LENGTH_SHORT).show();
+                    handleIfExistingError(activity);
+                }else{
+                    Log.i(TAG, "handleSpecificError: no error");
+                }
+            }
+        }, activity);
+    }
+
+
+    /**
+     * if esp not ready for calibration
+     * ERROR CODE: calibration_command_invalid_at_this_time
+     * show Dialog
+     * @param activity
+     * @author Johanna Reidt
+     */
+    public static void handleSpecificErrorMethod(Activity activity,
+                                                 Postexecute start,
+                                                 Postexecute continueHere,
+                                                 HashMap<ErrorStatus, Postexecute> errorHandle){
+        Log.i(TAG, "handleSpecificErrorMethod");
+        if(Dummy.isDummy){
+            Log.i(TAG, "handleSpecificErrorMethod: dummy");
+            start.post();
+            Log.i(TAG, "handleSpecificErrorMethod: dummy: start");
+            continueHere.post();
+            Log.i(TAG, "handleSpecificErrorMethod: dummy: continue");
+            return;
+        }
+        Log.i(TAG, "handleSpecificErrorMethod: no dummy");
+        start.post();
+        Log.i(TAG, "handleSpecificErrorMethod: start called");
+        getErrorStatus(new Postexecute() {
+            @Override
+            public void post() {
+                if(errorHandle.containsKey(status)){
+                    reset(activity);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                    builder.setTitle("Einen Moment...");
+                    builder.setMessage("Der ESP ist noch nicht bereit. Bitte versuche es erneut");
+                    builder.setPositiveButton("Nochmal", (dialog1, which) -> {
+                        Log.i(TAG, "handleSpecificError: Nochmal Button: call ESP calibration start");
+                        //CocktailMachine.automaticCalibration();
+                        //doAgain.post();
+                        Objects.requireNonNull(errorHandle.get(status)).post();
+                        Log.i(TAG, "handleSpecificError: Nochmal Button: check error");
+                        getErrorStatus(new Postexecute() {
+                            @Override
+                            public void post() {
+                                if(status == calibration_command_invalid_at_this_time){
+                                    Log.i(TAG, "handleSpecificError: Nochmal Button: not ready esp");
+                                    Toast.makeText(activity,"Nicht bereit!", Toast.LENGTH_SHORT).show();
+                                } else if (isError()) {
+                                    Log.i(TAG, "handleSpecificError: Nochmal Button: different error");
+                                    dialog1.cancel();
+                                    handleIfExistingError(activity);
+                                }else {
+                                    Log.i(TAG, "handleSpecificError: Nochmal Button: continue dialog");
+                                    //GetDialog.firstAutomaticDialog(activity);
+                                    dialog1.cancel();
+                                    continueHere.post();
+                                }
+                            }
+                        }, activity);
+                    });
+                    builder.setNegativeButton("Abbrechen", (dialog12, which) -> {
+                        Log.i(TAG, "handleAutomaticCalibrationNotReady: Abbrechen Button");
+                        dialog12.cancel();
+                        GetActivity.waitNotSet(activity);
+                    });
+                    builder.show();
+                } else if(isError()){
+                    Log.i(TAG, "handleSpecificError: different error");
+                    Toast.makeText(activity, "Ein Fehler ist aufgetreten!", Toast.LENGTH_SHORT).show();
+                    handleIfExistingError(activity);
+                }else{
+                    Log.i(TAG, "handleSpecificError: no error");
+                }
+            }
+        }, activity);
+    }
+
+
 
 
 

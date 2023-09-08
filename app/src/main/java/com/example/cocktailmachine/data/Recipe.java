@@ -205,17 +205,24 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     /**
      * send to be mixed
      *   {"cmd": "make_recipe", "user": 8858, "recipe": "radler"}
-     * TODO:show topics to user!
+     * TO DO:show topics to user!
      */
     default void send(Activity activity) {
         //service.
         //BluetoothSingleton.getInstance().mBluetoothLeService.makeRecipe(AdminRights.getUserId(), );
+
+        GetDialog.sendRecipe(activity, this);
+        CocktailMachine.setCurrentRecipe(this);
+        /*
+
         BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
         try {
             bluetoothSingleton.userStartRecipe(this.getID(),activity);
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }
+
+         */
         //TO DO: Bluetooth send to mix
         //TO DO: AMIR **DONE**
     }
@@ -257,7 +264,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
             return true;
         } catch (JSONException | TooManyTimesSettedIngredientEcxception |
-                 NoSuchIngredientSettedException | InterruptedException e) {
+                 NoSuchIngredientSettedException | InterruptedException|NullPointerException e) {
             e.printStackTrace();
         }
         return false;
@@ -269,7 +276,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
                     this.getName(),activity
             );
             return true;
-        } catch (JSONException | InterruptedException e) {
+        } catch (JSONException | InterruptedException|NullPointerException e) {
             e.printStackTrace();
         }
         return false;
@@ -338,7 +345,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @param json
      * @throws NotInitializedDBException
      */
-    static void setRecipes(JSONArray json) throws NotInitializedDBException, JSONException{
+    static void setRecipes(JSONArray json) throws JSONException{
         //TO DO: USE THIS AMIR **DONE**
         //[{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}, {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
         for(int i=0; i<json.length(); i++){

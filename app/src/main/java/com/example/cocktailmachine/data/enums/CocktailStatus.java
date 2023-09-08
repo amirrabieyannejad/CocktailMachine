@@ -1,13 +1,17 @@
 package com.example.cocktailmachine.data.enums;
 
 import android.app.Activity;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Objects;
 
 public enum CocktailStatus {
     //TO DO: USE THIS AMIR
@@ -18,18 +22,15 @@ public enum CocktailStatus {
 - `pumping`: Maschine pumpt Flüssigkeiten
 - `cocktail done`: Cocktail ist fertig zubereitet und kann entnommen werden. Danach sollte `reset` ausgeführt werden.
      */
-    init, ready, mixing, pumping, cocktail_done,not
-    ;
+    init, ready, mixing, pumping, cocktail_done, not;
 
+    private static final String TAG = "CocktailStatus";
     static CocktailStatus currentState = CocktailStatus.not;
 
     @NonNull
     @Override
     public String toString() {
-        if (this.ordinal() == cocktail_done.ordinal()) {
-            return "cocktail done";
-        }
-        return super.toString();
+        return super.toString().replace("_", " ");
     }
 
     /**
@@ -43,9 +44,16 @@ public enum CocktailStatus {
         //TO DO: Bluetoothlegatt
         //BluetoothSingleton.getInstance().mBluetoothLeService;
         //TO DO: AMIR
+        if(Dummy.isDummy){
+            Log.i(TAG, "getCurrentStatus: dummy state: "+ CocktailStatus.currentState);
+            postexecute.post();
+            return CocktailStatus.currentState;
+        }
         try {
             BluetoothSingleton.getInstance().adminReadState(postexecute,activity);
-        } catch (JSONException | InterruptedException e) {
+        } catch (JSONException | InterruptedException|NullPointerException e) {
+            Log.e(TAG, "getCurrentStatus");
+            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
             e.printStackTrace();
         }
         return currentState;
@@ -56,12 +64,20 @@ public enum CocktailStatus {
      *
      * @return
      */
-    public static CocktailStatus getCurrentStatus() {
+    public static CocktailStatus getCurrentStatus(Activity activity) {
         //BluetoothSingleton blSingelton = BluetoothSingleton.getInstance();
         //blSingelton.connectGatt(activity);
         //TO DO: Bluetoothlegatt
         //BluetoothSingleton.getInstance().mBluetoothLeService;
         //TO DO: AMIR
+        if(!Dummy.isDummy){
+            getCurrentStatus(new Postexecute() {
+                @Override
+                public void post() {
+
+                }
+            }, activity);
+        }
         return currentState;
     }
 
@@ -95,20 +111,19 @@ public enum CocktailStatus {
     }
 
     public  static void setStatus(JSONObject jsonObject) {
-        //TODO: figure out if only string or JSON Object and put in currentStatus
+        //TO DO: figure out if only string or JSON Object and put in currentStatus
+        setStatus(jsonObject.toString());
     }
 
     public  static void setStatus(String status) {
-        //TODO: figure out if only string or JSON Object and put in currentStatus
+        //TO DO: figure out if only string or JSON Object and put in currentStatus
+        status = status.replace("\"", "");
+        status = status.replace("'", "");
+        status = status.replace("_", " ");
         try {
             currentState = CocktailStatus.valueOf(status);
         }catch (IllegalArgumentException e){
-            if(status == "cocktail done"){
-                currentState = CocktailStatus.cocktail_done;
-            }else{
-                currentState = CocktailStatus.ready;
-            }
-
+            currentState = CocktailStatus.not;
         }
 
     }

@@ -1,9 +1,12 @@
 package com.example.cocktailmachine.data.enums;
 
+import android.util.Log;
+
 import android.app.Activity;
 
 import androidx.annotation.NonNull;
 
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 
 import org.json.JSONException;
@@ -28,6 +31,7 @@ public enum CalibrateStatus {
     calibration_done
     ;
 
+    private static final String TAG = "CalibrateStatus";
     private static CalibrateStatus status;
 
 
@@ -41,6 +45,8 @@ public enum CalibrateStatus {
     @NonNull
     @Override
     public String toString() {
+        return super.toString().replace("_", " ");
+        /*
         switch (this) {
             case ready:return "ready";
             case calibration_empty_container:return "calibration empty container";
@@ -50,10 +56,16 @@ public enum CalibrateStatus {
             case calibration_done:return "calibration done";
         }
         return "not";
+
+         */
     }
 
     public static CalibrateStatus valueStringOf(String value) {
-        switch (value) {
+        String res = value.replace(" ", "_");
+        //return super(res);
+        return CalibrateStatus.valueOf(res);
+        /*
+        switch (res) {
             case "ready":
                 return ready;
             case "calibration empty container":
@@ -69,18 +81,27 @@ public enum CalibrateStatus {
         }
         return not;
 
+         */
+
     }
 
 
 
 
-    public static CalibrateStatus getCurrent(){
-        CocktailStatus.getCurrentStatus();
+    public static CalibrateStatus getCurrent(Activity activity){
+        if(!Dummy.isDummy){
+            CocktailStatus.getCurrentStatus(activity);
+        }
+        Log.i(TAG, "getCurrent: "+status);
         return status;
     }
 
     public static CalibrateStatus getCurrent(Postexecute postexecute, Activity activity){
-        CocktailStatus.getCurrentStatus(postexecute,activity);
+        if(!Dummy.isDummy) {
+            CocktailStatus.getCurrentStatus(postexecute,activity);
+        }else{
+            postexecute.post();
+        }
         return status;
     }
 }

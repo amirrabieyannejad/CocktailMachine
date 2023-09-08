@@ -18,12 +18,12 @@ Momentan unterstützt der ESP noch keine verschlüsselten Nachricht.
 
 ## Allgemeine Befehle
 
-### test: Dummy-Befehl, der nichts macht
+### test (USER): Dummy-Befehl, der nichts macht
 JSON-Beispiel:
 
     {"cmd": "test"}
 
-### init_user: als neuer Benutzer registrieren und eine User-ID erhalten
+### init_user (USER): als neuer Benutzer registrieren und eine User-ID erhalten
 - name: str
 
 JSON-Beispiel:
@@ -32,31 +32,115 @@ JSON-Beispiel:
 
     --> {"user": 100}
 
-## User-Befehle
+### reset (ADMIN): die Maschine zurücksetzen 
+- user: User
 
-### abort: bricht das aktuelle Rezept ab
+Der Befehl entfernt den aktuellen Cocktail und setzt die Maschine wieder in den normalen Zustand zurück. Das ist nur beim Testen notwendig.
+
+JSON-Beispiel:
+
+    {"cmd": "reset", "user": 0}
+
+### reset_error (ADMIN): gespeicherten Fehler zurücksetzen
+- user: User
+
+Der Befehl entfernt den aktuellen Fehler und macht im normalen Betrieb weiter. Das kommt meistens nur vor, wenn ein Rezept ein Problem hatte und die Maschine das Problem nicht beheben konnte.
+
+JSON-Beispiel:
+
+    {"cmd": "reset_error", "user": 0}
+
+### clean (ADMIN): reinigt die Maschine
 - user: User
 
 JSON-Beispiel:
 
-    {"cmd": "abort", "user": 483}
+    {"cmd": "clean", "user": 0}
 
-### reset: die Maschine zurücksetzen, damit sie einen neuen Cocktail machen kann
+### restart (ADMIN): startet die Maschine neu 
 - user: User
 
 JSON-Beispiel:
 
-    {"cmd": "reset", "user": 9650}
+    {"cmd": "restart", "user": 0}
 
-### make_recipe: mischt das Rezept
+### factory_reset (ADMIN): setzt alle Einstellungen zurück
+- user: User
+
+JSON-Beispiel:
+
+    {"cmd": "factory_reset", "user": 0}
+
+## Rezepte definieren
+
+### define_recipe (USER): definiert ein neues Rezept
+- user: User
+- name: str
+- ingredients: List[Tuple[str, float]]
+
+JSON-Beispiel:
+
+    {"cmd": "define_recipe", "user": 0, "name": "radler", "ingredients": [["beer", 250], ["lemonade", 250]]}
+
+### edit_recipe (USER): editiert ein Rezept
+- user: User
+- name: str
+- ingredients: List[Tuple[str, float]]
+
+JSON-Beispiel:
+
+    {"cmd": "edit_recipe", "user": 0, "name": "radler", "ingredients": [["beer", 250], ["lemonade", 250]]}
+
+### delete_recipe (USER): löscht ein Rezept
+- user: User
+- name: str
+
+JSON-Beispiel:
+
+    {"cmd": "delete_recipe", "user": 0, "name": "radler"}
+
+## Rezepte machen
+
+Der Ablauf um ein Rezept zu machen ist:
+
+1. Das Rezept mit `queue_recipe` in Auftrag geben. Das Rezept kommmt in die Warteschlange. Die aktuellen Benutzer in der Warteschlange können mit dem Status `user` ausgelesen werden.
+
+2. Wenn die Maschine bereit ist, wird der Status `state` auf `waiting for container` gesetzt. Sobald ein Gefäß in der Maschine ist, kann das Rezept mit dem Befehl `start_recipe` gestartet werden.
+
+3. Wenn das Rezept fertig ist, wird der Status `state` auf `cocktail done` gesetzt. Der Cocktail kann entnommen werden. Das Rezept wird mit `take_cocktail` beendet. 
+
+4. Die Maschine beginnt dann mit dem nächsten Rezept in der Warteschlange.
+
+### queue_recipe (USER): gibt ein Rezept in Auftrag
 - user: User
 - recipe: str
 
 JSON-Beispiel:
 
-    {"cmd": "make_recipe", "user": 8858, "recipe": "radler"}
+    {"cmd": "queue_recipe", "user": 8858, "recipe": "radler"}
 
-### add_liquid: fügt Flüssigkeit zum Cocktail hinzu
+### start_recipe (USER): fängt das Rezept an, wenn die Maschine bereit ist
+- user: User
+
+JSON-Beispiel:
+
+    {"cmd": "start_recipe", "user": 8858}
+
+### cancel_recipe (USER): bricht das aktuelle Rezept ab
+- user: User
+
+JSON-Beispiel:
+
+    {"cmd": "cancel_recipe", "user": 483}
+
+### take_cocktail (USER): gibt Bescheid, dass der Cocktail entnommen wurde
+- user: User
+
+JSON-Beispiel:
+
+    {"cmd": "take_cocktail", "user": 483}
+
+### add_liquid (USER): fügt Flüssigkeit zum aktuellen Rezept hinzu
 - user: User
 - liquid: str
 - volume: float
@@ -65,18 +149,9 @@ JSON-Beispiel:
 
     {"cmd": "add_liquid", "user": 0, "liquid": "water", "volume": 30}
 
-### define_recipe: definiert ein neues Rezept oder ändert ein bestehendes Rezept
-- user: User
-- name: str
-- liquids: List[Tuple[str, float]]
+## Pumpen
 
-JSON-Beispiel:
-
-    {"cmd": "define_recipe", "user": 0, "name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}
-
-## Admin-Befehle
-
-### define_pump: fügt Pumpe zu ESP hinzu
+### define_pump (ADMIN): fügt Pumpe zu ESP hinzu
 - user: User
 - liquid: str
 - volume: float
@@ -86,7 +161,19 @@ JSON-Beispiel:
 
     {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
 
-### refill_pump: füllt Pumpe auf
+### edit_pump (ADMIN): editiert eine Pumpe
+- user: User
+- liquid: str
+- volume: float
+- slot: int
+
+Nur die Flüssigkeit und das Volumen werden angepasst. Die Kalibrierung bleibt erhalten.
+
+JSON-Beispiel:
+
+    {"cmd": "edit_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
+
+### refill_pump (ADMIN): füllt Pumpe auf
 - user: User
 - liquid: str
 - slot: int
@@ -95,7 +182,49 @@ JSON-Beispiel:
 
     {"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1}
 
-### run_pump: lässt die Pumpe für eine bestimmte Zeit laufen 
+## automatische Kalibrierung
+
+siehe [Kalibrierung.md]()
+
+### calibration_start (ADMIN): Kalibrierung anfangen
+- user: User
+
+JSON-Beispiel:
+
+    {"cmd": "calibration_start", "user": 0}
+
+### calibration_cancel (ADMIN): Kalibrierung abbrechen
+- user: User
+
+JSON-Beispiel:
+
+    {"cmd": "calibration_cancel", "user": 0}
+
+### calibration_finish (ADMIN): Kalibrierung fertig 
+- user: User
+
+JSON-Beispiel:
+
+    {"cmd": "calibration_finish", "user": 0}
+
+### calibration_add_empty (ADMIN): leeres Gefäß ist bereit
+- user: User
+
+JSON-Beispiel:
+
+    {"cmd": "calibration_add_empty", "user": 0}
+
+### calibration_add_weight (ADMIN): Gefäß ist mit einer Menge Wasser gefüllt
+- user: User
+- weight: float (in Gramm)
+
+JSON-Beispiel:
+
+    {"cmd": "calibration_add_weight", "user": 0, "weight": 100.0}
+
+## manuelle Kalibrierung
+
+### run_pump (ADMIN): lässt die Pumpe für eine bestimmte Zeit laufen 
 - user: User
 - slot: int
 - time: int
@@ -106,7 +235,7 @@ JSON-Beispiel:
 
     {"cmd": "run_pump", "user": 0, "slot": 1, "time": 1000}
 
-### calibrate_pump: kalibriert die Pumpe mit vorhandenen Messwerten
+### calibrate_pump (ADMIN): kalibriert die Pumpe mit vorhandenen Messwerten
 - user: User
 - slot: int
 - time1: int
@@ -122,27 +251,27 @@ JSON-Beispiel:
 
     {"cmd": "calibrate_pump", "user": 0, "slot": 1, "time1": 10000, "time2": 20000, "volume1": 15.0, "volume2": 20.0}
 
-### set_pump_times: setzt die Kalibrierungswerte für eine Pumpe
+### set_pump_times (ADMIN): setzt die Kalibrierungswerte für eine Pumpe
 - user: User
 - slot: int
 - time_init: int
 - time_reverse: int
 - rate: float
 
-`time_init` ist die Vorlaufzeit und `time_init` die Rücklaufzeit in Millisekunden. Normalerweise sollten diese Werte ähnlich oder gleich sein. Die Rate wird in mL/ms angegeben.
+`time_init` ist die Vorlaufzeit und `time_reverse` die Rücklaufzeit in Millisekunden. Normalerweise sollten diese Werte ähnlich oder gleich sein. Die Rate wird in mL/ms angegeben.
 
 JSON-Beispiel:
 
     {"cmd": "set_pump_times", "user": 0, "slot": 1, "time_init": 1000, "time_reverse": 1000, "rate": 1.0}
 
-### tare_scale: tariert die Waage
+### tare_scale (ADMIN): tariert die Waage
 - user: User
 
 JSON-Beispiel:
 
     {"cmd": "tare_scale", "user": 0}
 
-### calibrate_scale: kalibriert die Waage
+### calibrate_scale (ADMIN): kalibriert die Waage
 - user: User
 - weight: float
 
@@ -152,7 +281,7 @@ JSON-Beispiel:
 
     {"cmd": "calibrate_scale", "user": 0, "weight": 100.0}
 
-### set_scale_factor: setzt den Kalibrierungswert für die Waage
+### set_scale_factor (ADMIN): setzt den Kalibrierungswert für die Waage
 - user: User
 - factor: float
 
@@ -160,24 +289,4 @@ JSON-Beispiel:
 
     {"cmd": "set_scale_factor", "user": 0, "factor": 1.0}
 
-### clean: reinigt die Maschine
-- user: User
-
-JSON-Beispiel:
-
-    {"cmd": "clean", "user": 0}
-
-### restart: startet die Maschine neu 
-- user: User
-
-JSON-Beispiel:
-
-    {"cmd": "restart", "user": 0}
-
-### factory_reset: setzt alle Einstellungen zurück
-- user: User
-
-JSON-Beispiel:
-
-    {"cmd": "factory_reset", "user": 0}
 

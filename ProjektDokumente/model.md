@@ -1,0 +1,32 @@
+DB-Darstellungen
+- Listen von Objekten (Rezepte/Serviervorschläge/Zutaten/Pumpen)
+    - Objekterstellung
+    - Auswahl:
+        - kurz: Obj.darstellung
+        - lang: Obj.löschung -> Update Liste
+- Objektdarstellung
+    - Editierfunktion (bei entsprechender Berechtigung)
+    - Löschfkt. -> Obj.liste
+    - Innerhalb der Objekte
+        - Rezepte->Zutat,Serviervorschlag
+        - Zutat->Pumpe
+        - Pumpe->Zutat
+        - Rezept
+            - Alkoholisch
+            - Name
+            - Verfügbarkeit
+            - Zutaten
+            - Serviervorschläge
+        - Zutat
+            - Alkoholisch
+            - Name
+            - Verfügbarkeit
+            - Menge
+            - Admin:
+                - Pumpe
+        - Serviervorschlag
+            - Name
+            - Beschreibung
+        - Pumpe (Admin)
+            - Zutat
+            - Menge

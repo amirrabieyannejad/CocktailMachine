@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class CocktailMachine {
@@ -43,6 +44,9 @@ public class CocktailMachine {
     static List<Integer> queue;
 
     static double currentWeight;
+
+
+    public static int dummyCounter=0;
 
 
 
@@ -157,7 +161,7 @@ public class CocktailMachine {
     public static double getCurrentWeight(Activity activity) {
         try {
             BluetoothSingleton.getInstance().adminReadScaleStatus(activity);
-        } catch (JSONException | InterruptedException e) {
+        } catch (JSONException | InterruptedException|NullPointerException  e) {
             Log.i(TAG,"getCurrentWeight: error");
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
@@ -194,7 +198,7 @@ public class CocktailMachine {
                     }
                 },activity);
                 Log.i(TAG, "isCocktailMachineSet: done");
-            } catch (JSONException | InterruptedException e) {
+            } catch (JSONException | InterruptedException|NullPointerException e) {
                 Log.i(TAG, "isCocktailMachineSet: failed");
                 Log.e(TAG, e.getMessage());
                 e.printStackTrace();
@@ -214,13 +218,10 @@ public class CocktailMachine {
         if(Dummy.isDummy){
             return CocktailMachineCalibration.isIsDone();
         }else{
-            //TODO: add bluetooth /esp implementation
-            //Random r = new Random(42);
-            //return r.nextBoolean();
             try {
                 BluetoothSingleton.getInstance().adminReadPumpsStatus(activity);
                 Log.i(TAG, "isCocktailMachineSet: done");
-            } catch (JSONException | InterruptedException e) {
+            } catch (JSONException | InterruptedException |NullPointerException e) {
                 Log.i(TAG, "isCocktailMachineSet: failed");
                 Log.e(TAG, e.getMessage());
                 e.printStackTrace();
@@ -256,7 +257,7 @@ public class CocktailMachine {
         try {
             BluetoothSingleton.getInstance().adminManuelCalibrateTareScale(activity);
             Toast.makeText(activity, "Tarierung der Waage eingeleitet.",Toast.LENGTH_SHORT).show();
-        } catch (JSONException | InterruptedException e) {
+        } catch (JSONException | InterruptedException |NullPointerException e) {
             e.printStackTrace();
             Log.i(TAG, "tareScale failed");
             Toast.makeText(activity, "Die Tarierung ist fehlgeschlagen!",Toast.LENGTH_SHORT).show();
@@ -280,7 +281,7 @@ public class CocktailMachine {
         try {
             BluetoothSingleton.getInstance().adminManuelCalibrateScale(weight,activity);
             Toast.makeText(activity, "Kalibrierung der Waage mit Gewicht: "+weight+" g",Toast.LENGTH_SHORT).show();
-        } catch (JSONException | InterruptedException e) {
+        } catch (JSONException | InterruptedException  |NullPointerException e) {
             e.printStackTrace();
             Log.i(TAG, "sendCalibrateScale failed");
             Toast.makeText(activity, "Die Kalibrierung ist fehlgeschlagen!",Toast.LENGTH_SHORT).show();
@@ -323,7 +324,7 @@ public class CocktailMachine {
         try {
             BluetoothSingleton.getInstance().adminManuelCalibrateSetScaleFactor(factor,activity);
             Toast.makeText(activity, "Skalierung der Waage mit Faktor: "+factor,Toast.LENGTH_SHORT).show();
-        } catch (JSONException | InterruptedException e) {
+        } catch (JSONException | InterruptedException |NullPointerException e) {
             e.printStackTrace();
             Log.i(TAG, "sendScaleFactor failed");
             Toast.makeText(activity, "ERROR",Toast.LENGTH_SHORT).show();
@@ -352,7 +353,7 @@ public class CocktailMachine {
     public static void getLastChange(Activity activity){
         try {
             BluetoothSingleton.getInstance().adminReadLastChange(activity);
-        } catch (JSONException | InterruptedException e) {
+        } catch (JSONException | InterruptedException|NullPointerException e) {
             e.printStackTrace();
             Log.i(TAG, "getLastChange failed");
         }
@@ -367,7 +368,7 @@ public class CocktailMachine {
         if(dbChanged){
             try {
                 BluetoothSingleton.getInstance().adminReadRecipesStatus(activity);
-            } catch (JSONException | InterruptedException e) {
+            } catch (JSONException | InterruptedException|NullPointerException e) {
                 e.printStackTrace();
                 Log.i(TAG, "updateRecipeListIfChanged failed");
             }
@@ -420,10 +421,10 @@ public class CocktailMachine {
                 BluetoothSingleton.getInstance().userQueueRecipe(AdminRights.getUserId()
                         , recipe.getName(),activity);
                 Log.i(TAG,  "queueRecipe: queued");
-            } catch (JSONException | InterruptedException e) {
+            } catch (JSONException | InterruptedException|NullPointerException e) {
                 Log.i(TAG,  "queueRecipe: error");
                 e.printStackTrace();
-                Log.e(TAG, e.getMessage());
+                Log.e(TAG, Objects.requireNonNull(e.getMessage()));
             }
         }
     }
@@ -441,10 +442,10 @@ public class CocktailMachine {
                 BluetoothSingleton.getInstance().adminReadUserQueue(activity);
                 //BluetoothSingleton.getInstance().userQueueRecipe(AdminRights.getUserId(), recipe.getName());
                 Log.i(TAG,  "readUserQueue: queued");
-            } catch (JSONException | InterruptedException e) {
+            } catch (JSONException | InterruptedException|NullPointerException e) {
                 Log.i(TAG,  "readUserQueue: error");
                 e.printStackTrace();
-                Log.e(TAG, e.getMessage());
+                Log.e(TAG, Objects.requireNonNull(e.getMessage()));
             }
         }
     }
@@ -503,10 +504,10 @@ public class CocktailMachine {
                 BluetoothSingleton.getInstance().userStartRecipe(AdminRights.getUserId(),activity);
                 //BluetoothSingleton.getInstance().userQueueRecipe(AdminRights.getUserId(), recipe.getName());
                 Log.i(TAG,  "startMixing: started");
-            } catch (JSONException | InterruptedException e) {
+            } catch (JSONException | InterruptedException |NullPointerException e) {
                 Log.i(TAG,  "startMixing: error");
                 e.printStackTrace();
-                Log.e(TAG, e.getMessage());
+                Log.e(TAG, Objects.requireNonNull(e.getMessage()));
             }
         }
     }
@@ -521,7 +522,7 @@ public class CocktailMachine {
         if(isCurrentUser(activity)) {
             try {
                 BluetoothSingleton.getInstance().adminReadCurrentCocktail(activity);
-            } catch (JSONException | InterruptedException e) {
+            } catch (JSONException | InterruptedException|NullPointerException e) {
                 e.printStackTrace();
                 Log.i(TAG, "getCurrentCocktailStatus failed");
                 //count down
@@ -537,7 +538,7 @@ public class CocktailMachine {
      * @author Johanna Reidt
      * @return
      */
-    public static boolean isMixing(){
+    public static boolean isMixing(Activity activity){
 
         /*
         if(currentRecipe == null){
@@ -562,14 +563,14 @@ public class CocktailMachine {
         return false;
 
          */
-        return CocktailStatus.getCurrentStatus()==CocktailStatus.mixing;
+        return CocktailStatus.getCurrentStatus(activity)==CocktailStatus.mixing;
     }
 
     /**
      *
      * @return
      */
-    public static boolean isPumping(){
+    public static boolean isPumping(Activity activity){
 
         /*
         if(currentRecipe == null){
@@ -594,7 +595,7 @@ public class CocktailMachine {
         return false;
 
          */
-        return CocktailStatus.getCurrentStatus()==CocktailStatus.pumping;
+        return CocktailStatus.getCurrentStatus(activity)==CocktailStatus.pumping;
     }
 
 
@@ -602,7 +603,7 @@ public class CocktailMachine {
      * checks if cocktails mixing is done
      * @author Johanna Reidt
      */
-    public static boolean isFinished(){
+    public static boolean isFinished(Activity activity){
 
         /*
         if(currentRecipe == null){
@@ -627,7 +628,7 @@ public class CocktailMachine {
         return false;
 
          */
-        return CocktailStatus.getCurrentStatus()==CocktailStatus.cocktail_done;
+        return CocktailStatus.getCurrentStatus(activity)==CocktailStatus.cocktail_done;
     }
 
 
@@ -639,10 +640,10 @@ public class CocktailMachine {
             try {
                 BluetoothSingleton.getInstance().userTakeCocktail(AdminRights.getUserId(),activity);
                 Log.i(TAG,  "takeCocktail: done");
-            } catch (JSONException | InterruptedException e) {
+            } catch (JSONException | InterruptedException|NullPointerException e) {
                 Log.i(TAG,  "takeCocktail: error");
                 e.printStackTrace();
-                Log.e(TAG, e.getMessage());
+                Log.e(TAG, Objects.requireNonNull(e.getMessage()));
             }
         }
     }
@@ -663,7 +664,13 @@ public class CocktailMachine {
 
     //Calibrations
 
+
+    /**
+     * call auto calibration start
+     * @author Johanna Reidt
+     */
     public static void automaticCalibration(Activity activity){
+
         /**
          * a.	Bitte erst wasser beim ersten Durchgang
          * b.	Tarierung
@@ -673,72 +680,158 @@ public class CocktailMachine {
          * f.	Warten auf fertig
          * g.	Angabe von Zutaten
          */
-        //TODO: call bluetooth
+        //TO DO: call bluetooth
         if(!Dummy.isDummy){
             try {
+
                 BluetoothSingleton.getInstance().adminAutoCalibrateStart(activity);
-            } catch (JSONException | InterruptedException e) {
-                throw new RuntimeException(e);
+            } catch (JSONException | InterruptedException|NullPointerException e) {
+                Log.e(TAG,"automaticCalibration");
+                Log.e(TAG, Objects.requireNonNull(e.getMessage()));
+                e.printStackTrace();
+
             }
+        }else{
+            Log.i(TAG, "automaticCalibration");
         }
     }
 
-    public static boolean isAutomaticCalibrationDone(){
+    /**
+     * check if calibration is done
+     * @return
+     * @author Johanna Reidt
+     */
+    public static boolean isAutomaticCalibrationDone(Activity activity){
+        Log.i(TAG, "isAutomaticCalibrationDone");
         //TO DO: bluetooth connection
         if(Dummy.isDummy) {
-            return new Random(42).nextBoolean();
+            if(dummyCounter<0){
+                Log.i(TAG, "isAutomaticCalibrationDone: dummycounter = 0");
+                dummyCounter = 0;
+                Log.i(TAG, "isAutomaticCalibrationDone: pumpe.size = "+Pump.getPumps().size());
+            }
+            //return new Random(42).nextBoolean();
+            if( dummyCounter==Pump.getPumps().size()){
+                if(CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_calculation){
+                    CalibrateStatus.setStatus(CalibrateStatus.calibration_done);
+                    Log.i(TAG, "isAutomaticCalibrationDone: Dummy: calibration_calculation->calibration_done=>fertig done ");
+                    Log.i(TAG, "isAutomaticCalibrationDone: Dummy: FERITG");
+                    return true;
+                }else{
+                    CalibrateStatus.setStatus(CalibrateStatus.calibration_calculation);
+                    Log.i(TAG, "isAutomaticCalibrationDone: Dummy: dummyCounter, alle Pumpen fertig ->calibration_calculation  ");
+                    Log.i(TAG, "isAutomaticCalibrationDone: Dummy: ");
+                    return false;
+                }
+            } else if (dummyCounter<Pump.getPumps().size()) {
+                if(CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_pumps){
+                    CalibrateStatus.setStatus(CalibrateStatus.calibration_empty_container);
+                    Log.i(TAG, "isAutomaticCalibrationDone: Dummy: calibration_pumps-> calibration_empty_container");
+                    Log.i(TAG,"isAutomaticCalibrationDone: dummyCounter schon: "+dummyCounter);
+                }else if(CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_empty_container){
+                    CalibrateStatus.setStatus(CalibrateStatus.calibration_pumps);
+                    Log.i(TAG, "isAutomaticCalibrationDone: Dummy: calibration_empty_container-> calibration_pumps");
+                    //dummyCounter = dummyCounter+1;
+                    Log.i(TAG,"isAutomaticCalibrationDone: dummyCounter +1: "+dummyCounter);
+                }
+                return false;
+            }
         }else{
             //TO  DO: Bluetooth connection
             //return new Random(42).nextBoolean();
-            return CalibrateStatus.getCurrent()==CalibrateStatus.calibration_done;
+            return CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_done;
         }
+        return false;
     }
 
-    public static boolean needsEmptyingGlass() {
+    /**
+     * checks if admin has to empty the glass to continue the calibration process
+     * @return
+     * @author Johanna Reidt
+     */
+    public static boolean needsEmptyingGlass(Activity activity) {
+        Log.i(TAG, "needsEmptyingGlass");
         if(Dummy.isDummy) {
-            return new Random(42).nextBoolean();
+            return CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_empty_container;
+            //return new Random(42).nextBoolean();
         }else{
             //TO DO: Bluetooth connection
             //return new Random(42).nextBoolean();
-            return CalibrateStatus.getCurrent()==CalibrateStatus.calibration_empty_container;
+            return CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_empty_container;
         }
     }
 
 
+
+    /**
+     * tells the esp that user hsa emptied the glass
+     * @author Johanna Reidt
+     */
+    /*
     public static void automaticEmpty(Activity activity){
         try{
-        BluetoothSingleton.getInstance().adminAutoCalibrateAddEmpty(activity);
-        } catch (JSONException | InterruptedException e) {
+            BluetoothSingleton.getInstance().adminAutoCalibrateAddEmpty(activity);
+        } catch (JSONException | InterruptedException|NullPointerException e) {
             //throw new RuntimeException(e);
+            Log.e(TAG,"automaticEmpty");
+            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
             e.printStackTrace();
         }
     }
 
+     */
+
+
+    /**
+     * tells esp that the glass with 100 ml water has been places
+     * @author Johanna Reidt
+     */
     public static void automaticWeight(Activity activity){
         try{
             BluetoothSingleton.getInstance().adminAutoCalibrateAddWeight(100,activity);
-        } catch (JSONException | InterruptedException e) {
+        } catch (JSONException | InterruptedException|NullPointerException e) {
+
             //throw new RuntimeException(e);
+            Log.e(TAG,"automaticWeight");
+            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
             e.printStackTrace();
         }
     }
 
 
-
+    /**
+     * empty glass is ready
+     * @author Johanna Reidt
+     */
     public static void automaticEmptyPumping(Activity activity){
+        if(Dummy.isDummy) {
+            dummyCounter = dummyCounter + 1;
+            Log.i(TAG,"automaticEmptyPumping "+dummyCounter );
+        }
         try {
             BluetoothSingleton.getInstance().adminAutoCalibrateAddEmpty(activity);
-        } catch (JSONException | InterruptedException e) {
+        } catch (JSONException | InterruptedException|NullPointerException e) {
+
             //throw new RuntimeException(e);
+            Log.e(TAG,"automaticEmptyPumping");
+            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
             e.printStackTrace();
         }
     }
 
+
+    /**
+     * last call for calibration
+     * @author Johanna Reidt
+     */
     public static void automaticEnd(Activity activity){
         try {
             BluetoothSingleton.getInstance().adminAutoCalibrateFinish(activity);
-        } catch (JSONException | InterruptedException e){
+        } catch (JSONException | InterruptedException|NullPointerException e){
+
             //throw new RuntimeException(e);
+            Log.e(TAG,"automaticEnd");
+            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
             e.printStackTrace();
         }
     }
@@ -775,9 +868,9 @@ public class CocktailMachine {
             BluetoothSingleton.getInstance().adminClean(activity);
             Toast.makeText(activity, "Reinigung wurde gestartet!", Toast.LENGTH_SHORT).show();
             Log.i(TAG, "clean: done");
-        } catch (JSONException | InterruptedException e) {
+        } catch (JSONException | InterruptedException|NullPointerException e) {
             Log.i(TAG, "clean: failed");
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
             e.printStackTrace();
             Toast.makeText(activity,
                     "Der Reinigungsablauf konnten NICHT gestartet werden.",
@@ -804,9 +897,9 @@ public class CocktailMachine {
             BluetoothSingleton.getInstance().adminRestart(activity);
             Log.i(TAG, "restart: done");
 
-        } catch (JSONException | InterruptedException e) {
+        } catch (JSONException | InterruptedException|NullPointerException e) {
             Log.i(TAG, "restart: failed");
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
             e.printStackTrace();
             Toast.makeText(activity,
                     "Die Cocktailmaschine konnten NICHT neugestartet werden.",
@@ -834,7 +927,7 @@ public class CocktailMachine {
         try {
             BluetoothSingleton.getInstance().adminFactoryReset(activity);
             Log.i(TAG, "factoryReset: done");
-        } catch (JSONException | InterruptedException e) {
+        } catch (JSONException | InterruptedException|NullPointerException e) {
             Log.i(TAG, "factoryReset: failed");
             Log.e(TAG, e.getMessage());
             e.printStackTrace();
@@ -858,8 +951,9 @@ public class CocktailMachine {
                 public void post() {
                     Toast.makeText(activity, "Reset erledigt!",Toast.LENGTH_SHORT).show();
                 }
+
             },activity);
-        } catch (JSONException | InterruptedException e) {
+        } catch (JSONException | InterruptedException|NullPointerException e) {
             e.printStackTrace();
             Toast.makeText(activity, "Reset ist fehlgeschlagen!", Toast.LENGTH_SHORT).show();
             Log.i(TAG, "Reset stored error");

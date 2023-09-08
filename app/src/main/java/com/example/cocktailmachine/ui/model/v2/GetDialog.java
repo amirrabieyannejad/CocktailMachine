@@ -2,23 +2,16 @@ package com.example.cocktailmachine.ui.model.v2;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.media.AudioManager;
-import android.media.ToneGenerator;
-import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
@@ -31,14 +24,11 @@ import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.CalibrateStatus;
 import com.example.cocktailmachine.data.enums.ErrorStatus;
 import com.example.cocktailmachine.data.enums.Postexecute;
-import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
-import com.example.cocktailmachine.ui.model.v1.ModelActivity;
-
-import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -82,11 +72,36 @@ public class GetDialog {
 
     //Recipe Send
     public static void sendRecipe(Activity activity, Recipe recipe){
-        CocktailMachine.queueRecipe(recipe,activity);
-        countDown(activity, recipe);
+
+        Postexecute doAgain = new Postexecute() {
+            @Override
+            public void post() {
+                CocktailMachine.queueRecipe(recipe, activity);
+            }
+        };
+        Postexecute continueHere = new Postexecute() {
+            @Override
+            public void post() {
+                GetDialog.countDown(activity, recipe);
+            }
+        };
+        Postexecute notFound = new Postexecute(){
+
+            @Override
+            public void post() {
+                recipe.sendSave(activity);
+                CocktailMachine.queueRecipe(recipe, activity);
+            }
+        };
+
+        HashMap<ErrorStatus, Postexecute> errorHandle=new HashMap<>();
+        errorHandle.put(ErrorStatus.recipe_not_found, notFound);
+        errorHandle.put(ErrorStatus.cant_start_recipe_yet, doAgain);
+        ErrorStatus.handleSpecificErrorMethod(activity, doAgain, continueHere, errorHandle);
+
     }
     //Count down
-    private static void countDown(Activity activity, Recipe recipe){
+    public static void countDown(Activity activity, Recipe recipe){
         //Better solution
         //https://stackoverflow.com/questions/10780651/display-a-countdown-timer-in-the-alert-dialog-box
         //CountDownRun countDownThread = new CountDownRun();
@@ -117,9 +132,21 @@ public class GetDialog {
         alertDialog.setMessage("Bitte, geh zur Cocktailmaschine und stelle dein Glas unter die Maschine. ");
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Los!", (dialog, which) -> {
             //TO DO: send force start bluetooth thing
-            CocktailMachine.startMixing(activity);
-            GetActivity.goToFill(activity, recipe);
-            dialog.dismiss();
+
+            Postexecute doAgain = new Postexecute() {
+                @Override
+                public void post() {
+                    CocktailMachine.startMixing(activity);
+                }
+            };
+            Postexecute continueHere = new Postexecute() {
+                @Override
+                public void post() {
+                    GetActivity.goToFill(activity, recipe);
+                }
+            };
+            ErrorStatus.handleSpecificErrorRepeat(activity, dialog, ErrorStatus.cant_start_recipe_yet, doAgain, continueHere);
+
         });
         alertDialog.show();   //
     }
@@ -137,11 +164,22 @@ public class GetDialog {
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Abgeholt!", (dialog, which) -> {
             //BluetoothSingleton.getInstance().adminReset();
             //CocktailMachine.isCollected();
-            dialog.dismiss();
-            CocktailMachine.takeCocktail(activity);
-            GetDialog.showTopics( activity,  recipe);
-            //GetActivity.goToMenu(activity);
 
+            //GetActivity.goToMenu(activity);
+            Postexecute doAgain = new Postexecute() {
+                @Override
+                public void post() {
+                    CocktailMachine.takeCocktail(activity);
+                }
+            };
+            Postexecute continueHere = new Postexecute() {
+                @Override
+                public void post() {
+                    GetDialog.showTopics( activity,  recipe);
+                    CocktailMachine.setCurrentRecipe(null);
+                }
+            };
+            ErrorStatus.handleSpecificErrorRepeat(activity, dialog, ErrorStatus.cant_take_cocktail_yet, doAgain, continueHere);
         });
         alertDialog.show();   //
 
@@ -158,9 +196,12 @@ public class GetDialog {
         alertDialog.setTitle("Serviervorschläge!");
         alertDialog.setMessage("Füge noch einen oder mehrer der Serviervorschläge hinzu!");
         alertDialog.setOnDismissListener(dialog -> {
-                dialog.dismiss();
                 GetActivity.goToMenu(activity);
         });
+        alertDialog.setOnCancelListener(dialog -> {
+            GetActivity.goToMenu(activity);
+        });
+        alertDialog.setCancelable(true);
         List<Topic> topics = Topic.getTopics(recipe);
         if(topics.size()==0){
             GetActivity.goToMenu(activity);
@@ -212,8 +253,13 @@ public class GetDialog {
      * g.	Angabe von Zutaten
      */
     public static void startAutomaticCalibration(Activity activity){
-        CocktailMachine.automaticCalibration(activity);
         Log.i(TAG, "startAutomaticCalibration");
+        //CocktailMachine.automaticCalibration();
+        firstAutomaticDialog(activity);
+        //ErrorStatus.handleAutoCalNotReadyStart(activity, dialog);
+    }
+
+    public static void firstAutomaticDialog(Activity activity){
         DatabaseConnection.initializeSingleton(activity);
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Automatische Kalibrierung");
@@ -222,11 +268,26 @@ public class GetDialog {
                 "Bitte stelle sicher, dass an allen Pumpen nur Wassergefässe angeschlossen sind." +
                 "Die Wassermmenge je Pumpe sollte um die 150ml betragen.");
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
-            firstTaring(activity);
-            dialog.dismiss();
+            Postexecute doAgain = new Postexecute() {
+                @Override
+                public void post() {
+                    Log.i(TAG, "firstAutomaticDialog: automaticCalibration");
+                    CocktailMachine.automaticCalibration(activity);
+                }
+            };
+            Postexecute continueHere = new Postexecute(){
+
+                @Override
+                public void post() {
+                    Log.i(TAG, "firstAutomaticDialog: firstTaring");
+                    firstTaring(activity);
+                }
+            };
+            ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
+            //firstTaring(activity);
+            //dialog.dismiss();
         });
         builder.show();
-
     }
 
     private static void firstTaring(Activity activity){
@@ -238,9 +299,15 @@ public class GetDialog {
                 "Auch das Auffangbecken muss leer sein!");
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
             //CocktailMachine.tareScale(activity);
-            CocktailMachine.automaticEmpty(activity);
-            enterNumberOfPumps(activity);
+
+
+            //CocktailMachine.automaticEmpty();
+            //TODO: TARIERUNG pflicht????
+
+            //CocktailMachine.automaticEmpty(activity);
+            //enterNumberOfPumps(activity);
             dialog.dismiss();
+            enterNumberOfPumps(activity);
         });
         builder.show();
     }
@@ -257,11 +324,16 @@ public class GetDialog {
                         v);
 
         builder.setView(v);
-
         builder.setPositiveButton("Speichern", (dialog, which) -> {
-            pumpNumberChangeView.save();
-            getGlass(activity);
-            dialog.dismiss();
+            try {
+                pumpNumberChangeView.save();
+                dialog.dismiss();
+                getGlass(activity);
+            }catch (IllegalStateException e){
+                Log.e(TAG, "enterNumberOfPumps pumpNumberChangeView save error");
+                Log.e(TAG, e.toString());
+                e.printStackTrace();
+            }
         });
         builder.show();
     }
@@ -272,10 +344,22 @@ public class GetDialog {
         builder.setTitle("Waagenkalibrierung");
         builder.setMessage("Bitte stelle ein Gefäss mit 100ml Flüssigkeit unter die Cocktailmaschine. ");
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
-            dialog.dismiss();
+            Postexecute doAgain = new Postexecute() {
+                @Override
+                public void post() {
+                    CocktailMachine.automaticWeight(activity);
+                }
+            };
+            Postexecute continueHere = new Postexecute() {
+                @Override
+                public void post() {
+                    emptyGlass(activity);
+                }
+            };
+            ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
             //CocktailMachine.automaticCalibration(activity);
-            CocktailMachine.automaticWeight(activity);
-            waitingForPumps(activity);
+            //CocktailMachine.automaticWeight(activity);
+            //waitingForPumps(activity);
         });
         builder.show();
     }
@@ -285,9 +369,25 @@ public class GetDialog {
         builder.setTitle("Leere das Glass!");
         builder.setMessage("Leere das Glass und stell es wieder unter die Cocktailmaschine!");
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
-            GetDialog.waitingForPumps(activity);
-            CocktailMachine.automaticEmptyPumping(activity);
+
+            Postexecute doAgain = new Postexecute() {
+                @Override
+                public void post() {
+                    CocktailMachine.automaticEmptyPumping(activity);
+                }
+            };
+            Postexecute continueHere = new Postexecute() {
+                @Override
+                public void post() {
+                    GetDialog.waitingForPumps(activity);
+                }
+            };
+            ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
+
+            //GetDialog.waitingForPumps(activity);
+            //CocktailMachine.automaticEmptyPumping(activity);
         });
+        builder.show();
     }
 
     private static void waitingForPumps(Activity activity){
@@ -304,14 +404,17 @@ public class GetDialog {
             @Override
             public void onTick() {
                 Log.i("GetDialog", "waitingQueueCountDown:  isAutomaticCalibrationDone false");
-                if(CalibrateStatus.getCurrent()==CalibrateStatus.calibration_calculation){
+                if(CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_calculation){
                     dialog.setMessage("Die Pumpeneinstellungen werden kalkuliert! Bitte warten!");
                 }
             }
 
             @Override
             public void reduceTick() {
-                isDone = CocktailMachine.isAutomaticCalibrationDone()||CocktailMachine.needsEmptyingGlass();
+                isDone = CocktailMachine.isAutomaticCalibrationDone(activity)||CocktailMachine.needsEmptyingGlass(activity);
+                if(Dummy.isDummy){
+                    isDone = CocktailMachine.dummyCounter>=Pump.getPumps().size();
+                }
                 Log.i("GetDialog", "waitingQueueCountDown:  isDone: " +isDone);
                 if(isDone){
                     setTick(0);
@@ -337,11 +440,27 @@ public class GetDialog {
                 dialog.dismiss();
 
                 Log.i("GetDialog", "waitingQueueCountDown: onFinish: dialog dimissed");
-                if(CocktailMachine.isAutomaticCalibrationDone()) {
+                if(CocktailMachine.isAutomaticCalibrationDone(activity)) {
                     Toast.makeText(activity, "Das Setup ist vollständig!", Toast.LENGTH_LONG).show();
-                    CocktailMachine.automaticEnd(activity);
-                    GetDialog.setIngredientsForPumps(activity);
-                } else if (CocktailMachine.needsEmptyingGlass()) {
+
+
+                    Postexecute doAgain = new Postexecute() {
+                        @Override
+                        public void post() {
+                            CocktailMachine.automaticEnd(activity);
+                        }
+                    };
+                    Postexecute continueHere = new Postexecute() {
+                        @Override
+                        public void post() {
+
+                            GetDialog.setIngredientsForPumps(activity);
+                        }
+                    };
+                    ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
+                    //CocktailMachine.automaticEnd(activity);
+                    //GetDialog.setIngredientsForPumps(activity);
+                } else if (CocktailMachine.needsEmptyingGlass(activity)) {
                     GetDialog.emptyGlass(activity);
                 }
                 this.cancel();
@@ -354,7 +473,7 @@ public class GetDialog {
     /**
 
     private static void waitingAutomaticCalibration(Activity activity){
-        //TODO
+        //TO DO
         Log.i("GetDialog", "waitingAutomaticCalibration");
         //setIngredientsForPumps(activity);
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -1187,9 +1306,16 @@ public class GetDialog {
         builder.setView(v);
 
         builder.setPositiveButton("Speichern", (dialog, which) -> {
-            pumpNumberChangeView.save();
-            //Pump.calibratePumpsAndTimes(activity);
-            GetDialog.startAutomaticCalibration(activity);
+            try {
+                pumpNumberChangeView.save();
+                //Pump.calibratePumpsAndTimes(activity);
+                dialog.dismiss();
+                GetDialog.startAutomaticCalibration(activity);
+            }catch (IllegalStateException e){
+                Log.e(TAG, "setPumpNumber pumpNumberChangeView save error");
+                Log.e(TAG, e.toString());
+                e.printStackTrace();
+            }
 
         });
         builder.setNeutralButton("Abbrechen", (dialog, which) -> {
@@ -1202,12 +1328,17 @@ public class GetDialog {
         private PumpNumberChangeView(Activity activity, View v) {
             super(activity, v, "Anzahl");
         }
-        public void save(){
+        public void save() throws IllegalStateException{
             if(!DatabaseConnection.isInitialized()) {
                 DatabaseConnection.initializeSingleton(super.activity);
             }
-
-            Pump.setOverrideEmptyPumps((int) super.getFloat());
+            int res = (int) super.getFloat();
+            if(res == -1){
+                Toast.makeText(super.activity, "Gib bitte eine valide Zahle ein.", Toast.LENGTH_SHORT).show();
+                throw new IllegalStateException("Missing number!");
+            } else {
+                Pump.setOverrideEmptyPumps(res);
+            }
         }
 
         @Override
@@ -1322,10 +1453,17 @@ public class GetDialog {
         }
 
         private String getPreFloat(){
-            return "9738";
+            return "2";
         }
         public float getFloat(){
-            return Float.valueOf(e.getText().toString());
+            try {
+                return Float.parseFloat(e.getText().toString());
+            }catch (NumberFormatException e){
+                Log.e(TAG, "FloatChangeView getFloat error");
+                Log.e(TAG, e.toString());
+                e.printStackTrace();
+            }
+            return -1;
         }
 
         public abstract void send();
@@ -1674,6 +1812,9 @@ public class GetDialog {
 
 
     public static void handleBluetoothFailed(Activity activity) {
+        if(Dummy.isDummy){
+            return;
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Bluetoothverbindung fehlerhaft");
         builder.setMessage("Bitte überprüf die Bluetoothverbindung. ");
