@@ -79,18 +79,18 @@ public class TitleVolumeListAdapter extends RecyclerView.Adapter<TitleVolumeList
         public TitleVolumeRow(@NonNull View itemView) {
             super(itemView);
             if (itemView == null) {
-                Log.i(TAG, "itemView is null");
+                Log.e(TAG, "itemView is null");
             }
             if (itemView.getContext() == null) {
-                Log.i(TAG, "itemView is null");
+                Log.e(TAG, "itemView is null");
             }
             title = itemView.findViewById(R.id.textView_title_volume_titel);
             if (title == null) {
-                Log.i(TAG, "TextView title is null");
+                Log.e(TAG, "TextView title is null");
             }
             vol = itemView.findViewById(R.id.textView_title_volume_volume);
             if (vol == null) {
-                Log.i(TAG, "TextView title is null");
+                Log.e(TAG, "TextView title is null");
             }
         }
 
@@ -107,7 +107,8 @@ public class TitleVolumeListAdapter extends RecyclerView.Adapter<TitleVolumeList
             this.ingredient = ingredient;
             this.modelType = modelType;
             this.title.setText(this.ingredient.getName());
-            this.vol.setText(this.ingredient.getVolume());
+            Log.w(TAG, "TitleVolumeRow: set: hier tritt der Fehler auf ================ Gibt es eine Variante wo es klappt?");
+            this.vol.setText(String.valueOf(this.ingredient.getVolume()));
             this.title.setOnClickListener(v ->
                     GetActivity.goToDisplay(
                             activity,
