@@ -2,6 +2,7 @@ package com.example.cocktailmachine.ui.model.v2;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import com.example.cocktailmachine.ui.model.ModelType;
  */
 public abstract class BasicActivity extends AppCompatActivity {
 
+    private static final String TAG = "BasicActivity" ;
     private Long id;
     private FragmentType fragmentType;
     private ModelType modelType;
@@ -72,9 +74,16 @@ public abstract class BasicActivity extends AppCompatActivity {
     private void readIntent(){
         Intent i = getIntent();
         Bundle bundle = i.getExtras();
+        if(bundle == null){
+            Log.e(TAG, "readIntent: bundle null");
+            return;
+        }
         id = bundle.getLong(GetActivity.ID);
         modelType = ModelType.valueOf(bundle.getString(GetActivity.MODELTYPE, ModelType.RECIPE.toString()));
         fragmentType = FragmentType.valueOf(bundle.getString(GetActivity.FRAGMENTTYPE, FragmentType.List.toString()));
+        Log.i(TAG, "readIntent: id "+id );
+        Log.i(TAG, "readIntent: modelType "+modelType );
+        Log.i(TAG, "readIntent: fragmentType "+fragmentType );
     }
 
 
