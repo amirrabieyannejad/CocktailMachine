@@ -851,13 +851,15 @@ calibration:
       { // calibrate pump
         debug("calibrating pump %d (#%d)", cal_pump, cal_pass);
 
-        Pump *pump = pumps[cal_pump];
+        int slot = cal_pump;
         cal_pump += 1;
+
+        Pump *pump = pumps[slot];
         if (pump == NULL) goto calibration; // skip missing pumps
 
         time_t time = (cal_pass == 1) ? CAL_TIME1 : CAL_TIME2;
         if (!scale_available && time > S(1)) time /= S(1); // reduce the time for simulations
-        debug("running pump %d (#%d) for %dms", cal_pump-1, cal_pass, time);
+        debug("running pump %d (#%d) for %dms", slot, cal_pass, time);
 
         // run pump
         err = pump->run(time, false);
@@ -869,8 +871,12 @@ calibration:
 
         sleep_idle(S(1));
 
+        String ingredient = String("<calibration ");
+        ingredient.concat(slot);
+        ingredient.concat('>');
+
         float weight = scale_estimate(pump->time_init, time, pump->rate);
-        cocktail.push_front(Ingredient{"<calibration>", weight});
+        cocktail.push_front(Ingredient{ingredient, weight});
         debug("  -> weight: %f", weight);
 
         pump->volume = std::max(pump->volume - weight, 0.0f);
@@ -1657,8 +1663,12 @@ Retcode CmdRunPump::execute() {
   // nb: this will always fuck up our internal data unless the pump is already calibrated,
   // so you should refill the pump afterwards
 
+  String ingredient = String("<run_pump ");
+  ingredient.concat(slot);
+  ingredient.concat('>');
+
   float volume = scale_estimate(p->time_init, time, p->rate);
-  cocktail.push_front(Ingredient{"<manual>", volume}); // TODO add a dummy recipe instead
+  cocktail.push_front(Ingredient{ingredient, volume}); // TODO add a dummy recipe instead
   p->volume = std::max(p->volume - volume, 0.0f);
 
   update_liquids();

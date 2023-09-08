@@ -132,6 +132,7 @@ async def test_run(client):
   await admin({"cmd": "run_pump", "user": 0, "slot": 1, "time": 10})
   await admin({"cmd": "run_pump", "user": 0, "slot": 2, "time": 10})
   await admin({"cmd": "run_pump", "user": 0, "slot": 7, "time": 10})
+  await read_status(client)
 
   await admin({"cmd": "calibrate_pump", "user": 0, "slot": 1,
                "time1": 11, "volume1": 10.0,
