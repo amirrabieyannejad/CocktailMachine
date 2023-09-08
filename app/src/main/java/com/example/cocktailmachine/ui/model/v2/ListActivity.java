@@ -97,7 +97,7 @@ public class ListActivity extends BasicActivity {
         binding.recyclerViewListAc.setLayoutManager(llm);
         binding.recyclerViewListAc.setAdapter(adapter);
         Activity activity = this;
-        binding.floatingActionButtonList.setOnClickListener(v -> GetActivity.goToDisplay(activity, FragmentType.Edit, getModelType()));
+        binding.floatingActionButtonList.setOnClickListener(v -> GetActivity.goToAdd(activity, getModelType()));
     }
 
 

@@ -67,6 +67,14 @@ public class GetActivity {
         //activity.finish();
     }
 
+    public static void goToAdd(Activity activity, ModelType modelType){
+        Intent intent = new Intent(activity, AddActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString(MODELTYPE, modelType.toString());
+        intent.putExtras(bundle);
+        activity.startActivity(intent);
+    }
+
     public static void startAgain(Activity activity) {
         //TODO: go back to device scan
         if(Dummy.isDummy) {
