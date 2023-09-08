@@ -343,6 +343,7 @@ public class BluetoothLeService extends Service {
                 if (mNotifyCharacteristic != null) {
                     setCharacteristicNotification(
                             mNotifyCharacteristic, false);
+
                     mNotifyCharacteristic = null;
                 }
                 Handler handler = new Handler();

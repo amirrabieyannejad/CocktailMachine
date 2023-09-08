@@ -13,7 +13,9 @@ import android.widget.TextView;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
+import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.CocktailStatus;
 import com.example.cocktailmachine.data.enums.Postexecute;
 
@@ -33,7 +35,7 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_test_enviroment);
         //initializieurng von Datenbank
-        //DatabaseConnection.initializeSingleton(this);
+        DatabaseConnection.initializeSingleton(this);
 
         editText = findViewById(R.id.editTextTextPersonName);
         textView = findViewById(R.id.ESPData);
@@ -43,7 +45,7 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
 
     }
 
-    public void addUser(View view) throws JSONException, InterruptedException {
+    public void addUser(View view) throws JSONException, InterruptedException, NotInitializedDBException {
         String user = editText.getText().toString();
         //singleton.adminAutoCalibrateStart(BluetoothTestEnviroment.this);
         //singleton.adminAutoCalibrateAddEmpty(BluetoothTestEnviroment.this);
@@ -72,6 +74,19 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
        // singleton.adminManuelCalibrateRunPump(1,20000,
          //       BluetoothTestEnviroment.this);
         //singleton.adminManuelCalibratePump(1,10000,20000,);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("PumpsStatus");
+        singleton.adminReadPumpsStatus(new Postexecute() {
+            @Override
+            public void post() {
+                try {
+                    Pump.getPumpStatus();
+                }
+              catch (NotInitializedDBException | JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        },this);
 
 
 

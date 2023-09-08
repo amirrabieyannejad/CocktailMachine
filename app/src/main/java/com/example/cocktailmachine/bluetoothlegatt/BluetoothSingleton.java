@@ -2052,7 +2052,8 @@ public class BluetoothSingleton {
         singleton.sendStatus(CHARACTERISTIC_STATUS_PUMPS);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
             @Override
-            public void toSave() throws InterruptedException, NotInitializedDBException, JSONException, MissingIngredientPumpException {
+            public void toSave() throws InterruptedException, NotInitializedDBException
+                    , JSONException, MissingIngredientPumpException {
                 if (!check()) {
                     throw new InterruptedException();
                 }
