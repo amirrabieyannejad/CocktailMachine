@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
@@ -17,6 +18,7 @@ import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
 import com.example.cocktailmachine.ui.model.v1.ModelActivity;
 import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
+import com.example.cocktailmachine.ui.model.v2.GetActivity;
 import com.example.cocktailmachine.ui.settings.SettingsActivity;
 import com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice;
 
@@ -62,7 +64,9 @@ public class Menue extends AppCompatActivity {
             binding.activityMenueLogout.setVisibility(View.GONE);
             binding.activityMenueLogin.setVisibility(View.VISIBLE);
         }
-        if(!CocktailMachineCalibration.isIsDone()) {
+        if(Dummy.isDummy && !Dummy.withSetCalibration ){
+            CocktailMachineCalibration.setIsDone(true);
+        }else if (!CocktailMachineCalibration.isIsDone()){
             CocktailMachineCalibration.start(this);
         }
 
@@ -74,12 +78,17 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void openRecipeList(View view) {
+        /*
         Intent success = new Intent(this, ModelActivity.class);
         Bundle b = new Bundle();
         b.putString("FragmentType", FragmentType.List.toString());
         b.putString("ModelType", ModelType.RECIPE.toString());
         success.putExtras(b);
         startActivity(success);
+
+         */
+
+        GetActivity.goToDisplay(this,FragmentType.List, ModelType.RECIPE );
     }
 
     /**

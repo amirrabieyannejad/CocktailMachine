@@ -42,10 +42,10 @@ public abstract class BasicActivity extends AppCompatActivity {
     protected void setUp(){
         preSetUp();
         switch (getModelType()){
-            case RECIPE: setUpRecipe();
-            case INGREDIENT: setUpIngredient();
-            case TOPIC: setUpTopic();
-            case PUMP: setUpPump();
+            case RECIPE: setUpRecipe(); break;
+            case INGREDIENT: setUpIngredient();break;
+            case TOPIC: setUpTopic();break;
+            case PUMP: setUpPump();break;
         }
         postSetUp();
     }

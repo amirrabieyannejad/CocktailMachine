@@ -5,6 +5,7 @@ package com.example.cocktailmachine.data;
 import android.util.Log;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
@@ -198,6 +199,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @param id k
      * @return
      */
+    @Nullable
     static Ingredient getIngredient(Long id) {
         try {
             return DatabaseConnection.getDataBase().getIngredient(id);

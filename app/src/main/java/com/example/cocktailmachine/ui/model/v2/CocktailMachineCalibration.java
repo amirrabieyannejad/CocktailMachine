@@ -21,7 +21,7 @@ import java.util.Random;
  */
 public class CocktailMachineCalibration {
     private static final String TAG = "CocktailMachineCalibr" ;
-    private static boolean isDone = false;
+    private static boolean isDone = true;
 
     public static void start(Activity activity) {
         AdminRights.login(activity, activity.getLayoutInflater(), dialog -> {
