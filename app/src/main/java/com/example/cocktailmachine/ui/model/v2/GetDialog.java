@@ -2,6 +2,7 @@ package com.example.cocktailmachine.ui.model.v2;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
@@ -708,6 +709,21 @@ public class GetDialog {
         });
         builder.setNeutralButton("Abbrechen", (dialog, which) -> {
 
+        });
+        builder.show();
+    }
+
+    static void deleteAddElement(Activity activity, String name, Postexecute pickedDeleted){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Löschen");
+        builder.setMessage("Möchtest du wirklich "+name+" aus dem Rezept löschen?");
+        builder.setNegativeButton("Nein", (dialog, which) -> {
+            dialog.dismiss();
+            pickedDeleted.post();
+        });
+        builder.setCancelable(false);
+        builder.setPositiveButton("Ja", (dialog, which) -> {
+            dialog.dismiss();
         });
         builder.show();
     }
