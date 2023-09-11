@@ -1,5 +1,6 @@
 package com.example.cocktailmachine.ui.model.v2;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -44,9 +45,8 @@ public class AddActivity extends BasicActivity {
         binding.includeNotAlcoholic.getRoot().setVisibility(View.GONE);
         binding.editTextDescription.setVisibility(View.GONE);
         binding.textViewAddTitle.setVisibility(View.GONE);
+        binding.textViewError.setVisibility(View.GONE);
 
-        //for all
-        binding.buttonStop.setOnClickListener(v -> GetActivity.goBack(activity));
 
     }
 
@@ -80,7 +80,7 @@ public class AddActivity extends BasicActivity {
             binding.buttonSave.setOnClickListener(v -> {
                 topic = Topic.makeNew(binding.editTextAddTitle.getText().toString(), binding.editTextDescription.getText().toString());
                 if(!topic.save()){
-                    error();
+                    error("Datenbankfehler: Der Serviervorschlag konnte nicht gespeichert werden.");
                     return;
                 }
                 GetActivity.goToDisplay(activity, FragmentType.Model, ModelType.TOPIC, topic.getID());
@@ -135,11 +135,25 @@ public class AddActivity extends BasicActivity {
     @Override
     void postSetUp() {
 
+        //for all
+        binding.buttonStop.setOnClickListener(v -> GetActivity.goBack(activity));
+
     }
 
     void error(){
+        error(null);
+    }
+
+    @Nullable
+    void error(String msg){
         preSetUp();
+        binding.textViewAddTitle.setVisibility(View.VISIBLE);
         binding.textViewAddTitle.setText("Fehler!");
+        if(msg != null) {
+            binding.textViewError.setVisibility(View.VISIBLE);
+            binding.textViewError.setText(msg);
+        }
+        binding.subLayoutSave.setVisibility(View.GONE);
     }
 
 
