@@ -19,6 +19,7 @@
 
 
 
+
             <LinearLayout
                 android:id="@+id/sub_layout_name"
                 android:layout_width="match_parent"
@@ -38,7 +39,9 @@
                     android:id="@+id/editTextAddTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
                     android:ems="10"
+                    android:gravity="bottom|start"
                     android:hint="Füge einen Namen ein."
                     android:inputType="text"
                     android:minHeight="48dp"
@@ -49,6 +52,7 @@
                     android:id="@+id/textView_error"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
                     android:padding="8dp"
                     android:text="Fehlerbeschreibung!"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
@@ -61,8 +65,10 @@
                 style="@style/Widget.AppCompat.EditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="16dp"
                 android:ems="10"
-                android:gravity="start|center_vertical"
+                android:gravity="bottom|start"
                 android:hint="Füge eine Beschreibung ein."
                 android:inputType="textMultiLine"
                 android:minHeight="48dp"
@@ -79,8 +85,18 @@
                 android:id="@+id/sub_layout_alcohol"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
+                android:orientation="vertical">
+
+                <Switch
+                    android:id="@+id/switch_alcohol"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:padding="8dp"
+                    android:paddingStart="40dp"
+                    android:switchTextAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:text="ist alkoholisch"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
                 <include
                     android:id="@+id/include_alcoholic"
@@ -96,15 +112,39 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp" />
 
-                <Switch
-                    android:id="@+id/switch_alcohol"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sub_layout_color"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:focusable="true"
+                android:orientation="horizontal"
+                android:padding="8dp">
+
+                <ImageView
+                    android:id="@+id/imageView_color_show"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
+                    android:focusable="false"
+                    android:minWidth="48dp"
                     android:minHeight="48dp"
                     android:padding="8dp"
                     android:paddingStart="40dp"
-                    android:switchTextAppearance="@style/TextAppearance.AppCompat.Medium"
-                    android:text="ist alkoholisch"
+                    android:src="@tools:sample/avatars"
+                    app:tint="#FFEB3B"
+                    tools:srcCompat="@android:drawable/ic_notification_overlay" />
+
+                <TextView
+                    android:id="@+id/textView_change_color"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:focusable="false"
+                    android:gravity="center_vertical"
+                    android:minHeight="40dp"
+                    android:text="Ändere die Farbe!"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             </LinearLayout>
@@ -113,11 +153,14 @@
                 android:id="@+id/sub_layout_save"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal"
+                android:padding="8dp"
+                android:paddingTop="16dp">
 
                 <Button
                     android:id="@+id/button_stop"
-                    style="@style/Widget.Material3.Button.IconButton.Outlined"
+                    style="@style/Widget.Material3.Button.TonalButton.Icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

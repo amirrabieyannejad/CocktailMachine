@@ -1,11 +1,13 @@
 package com.example.cocktailmachine.ui.model.v2;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CompoundButton;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Ingredient;
@@ -17,6 +19,9 @@ import com.example.cocktailmachine.databinding.ActivityAddBinding;
 import com.example.cocktailmachine.databinding.ActivityDisplayBinding;
 import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
+import com.mrudultora.colorpicker.ColorPickerPopUp;
+
+import java.util.Random;
 
 public class AddActivity extends BasicActivity {
     ActivityAddBinding binding;
@@ -106,15 +111,83 @@ public class AddActivity extends BasicActivity {
 
     @Override
     void setUpIngredient() {
+        ingredient = Ingredient.getIngredient(this.getID());
         //nedded
         binding.editTextAddTitle.setVisibility(View.VISIBLE);
         binding.textViewAddTitle.setVisibility(View.VISIBLE);
         binding.switchAlcohol.setVisibility(View.VISIBLE);
+        binding.subLayoutColor.setVisibility(View.VISIBLE);
 
         //maybe needed
         binding.includeAlcoholic.getRoot().setVisibility(View.GONE);
         binding.includeNotAlcoholic.getRoot().setVisibility(View.GONE);
 
+        //saving instances
+        final int[] set_color = {new Random().nextInt()};
+        
+
+        if(ingredient == null){
+            binding.imageViewColorShow.setColorFilter(set_color[0]);
+            binding.buttonSave.setOnClickListener(v -> {
+                ingredient = Ingredient.makeNew(
+                        binding.editTextAddTitle.getText().toString(),
+                        binding.switchAlcohol.isChecked(),
+                        set_color[0]
+                );
+                if(!ingredient.save()){
+                    error("Datenbankfehler: Die Zutat konnte nicht gespeichert werden.");
+                    return;
+                }
+                GetActivity.goToDisplay(activity, FragmentType.Model, ModelType.INGREDIENT, ingredient.getID());
+            });
+
+        }else{
+            set_color[0] = ingredient.getColor();
+            binding.imageViewColorShow.setColorFilter(set_color[0]);
+            binding.editTextAddTitle.setText(ingredient.getName());
+            binding.switchAlcohol.setChecked(ingredient.isAlcoholic());
+
+            binding.buttonSave.setOnClickListener(v -> {
+                ingredient.setName(binding.editTextAddTitle.getText().toString());
+                ingredient.setAlcoholic(binding.switchAlcohol.isChecked());
+                ingredient.setColor(set_color[0]);
+                if(!ingredient.save()){
+                    error("Datenbankfehler: Die Zutat konnte nicht gespeichert werden.");
+                    return;
+                }
+                GetActivity.goToDisplay(activity, FragmentType.Model, ModelType.INGREDIENT, ingredient.getID());
+            });
+        }
+        binding.switchAlcohol.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked){
+                binding.includeAlcoholic.getRoot().setVisibility(View.VISIBLE);
+                binding.includeNotAlcoholic.getRoot().setVisibility(View.GONE);
+            }else{
+                binding.includeAlcoholic.getRoot().setVisibility(View.GONE);
+                binding.includeNotAlcoholic.getRoot().setVisibility(View.VISIBLE);
+            }
+        });
+        binding.subLayoutColor.setClickable(true);
+        binding.subLayoutColor.setOnClickListener(v -> {
+            ColorPickerPopUp colorPickerPopUp = new ColorPickerPopUp(activity);	// Pass the context.
+            colorPickerPopUp.setShowAlpha(true)			// By default show alpha is true.
+                    .setDefaultColor(ingredient.getColor())
+                    .setDialogTitle("Wähle eine Farbe!")
+                    .setOnPickColorListener(new ColorPickerPopUp.OnPickColorListener() {
+                        @Override
+                        public void onColorPicked(int color) {
+                            // handle the use of color
+                            set_color[0] = color;
+                            binding.imageViewColorShow.setColorFilter(color);
+                        }
+
+                        @Override
+                        public void onCancel() {
+                            colorPickerPopUp.dismissDialog();	// Dismiss the dialog.
+                        }
+                    })
+                    .show();
+        });
     }
 
     @Override
