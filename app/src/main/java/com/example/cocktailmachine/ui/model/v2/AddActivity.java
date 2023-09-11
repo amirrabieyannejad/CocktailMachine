@@ -218,22 +218,15 @@ public class AddActivity extends BasicActivity {
 
 
         binding.subLayoutAddIngredient.setVisibility(View.VISIBLE);
-        binding.subLayoutAddIngredient.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        binding.subLayoutAddIngredient.setOnClickListener(v -> {
 
-            }
         });
-        binding.recyclerViewIngredients.setVisibility(View.VISIBLE);
         updateIngredients();
 
 
         binding.subLayoutAddTopic.setVisibility(View.VISIBLE);
-        binding.subLayoutAddTopic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        binding.subLayoutAddTopic.setOnClickListener(v -> {
 
-            }
         });
         updateTopics();
 
@@ -271,19 +264,29 @@ public class AddActivity extends BasicActivity {
     }
 
     private void updateIngredients(){
-        binding.recyclerViewIngredients.setLayoutManager(getNewLinearLayoutManager());
-        binding.recyclerViewIngredients.setAdapter(new IngredientVolAdapter());
+        if(ingredientVolumeHashMap.size()>0) {
+            binding.recyclerViewIngredients.setVisibility(View.VISIBLE);
+            binding.recyclerViewIngredients.setLayoutManager(getNewLinearLayoutManager());
+            binding.recyclerViewIngredients.setAdapter(new IngredientVolAdapter());
+        }else{
+            binding.recyclerViewIngredients.setVisibility(View.GONE);
+        }
 
     }
 
 
     private void updateTopics() {
-        binding.recyclerViewTopics.setLayoutManager(getNewLinearLayoutManager());
-        binding.recyclerViewTopics.setAdapter(new TopicAdapter());
+        if(topics.size()>0) {
+            binding.recyclerViewTopics.setVisibility(View.VISIBLE);
+            binding.recyclerViewTopics.setLayoutManager(getNewLinearLayoutManager());
+            binding.recyclerViewTopics.setAdapter(new TopicAdapter());
+        }else{
+            binding.recyclerViewTopics.setVisibility(View.GONE);
+        }
     }
 
     private class StringView extends RecyclerView.ViewHolder {
-        //for layout item_title
+        //for layout item_little_title
         private final TextView txt;
         private Ingredient ingredient;
         private int volume;
@@ -291,7 +294,7 @@ public class AddActivity extends BasicActivity {
 
         public StringView(@NonNull View itemView) {
             super(itemView);
-            txt = itemView.findViewById(R.id.textView_item_title);
+            txt = itemView.findViewById(R.id.textView_item_little_title);
         }
 
         private void setTxt(@NonNull Ingredient ingredient, int volume){
@@ -334,7 +337,7 @@ public class AddActivity extends BasicActivity {
         @Override
         public StringView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             return new StringView(LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_name, parent, false));
+                    .inflate(R.layout.item_little_title, parent, false));
         }
 
         @Override
@@ -355,7 +358,7 @@ public class AddActivity extends BasicActivity {
         @Override
         public StringView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             return new StringView(LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_name, parent, false));
+                    .inflate(R.layout.item_little_title, parent, false));
         }
 
         @Override
