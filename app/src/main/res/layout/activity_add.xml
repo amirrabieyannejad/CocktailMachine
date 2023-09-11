@@ -18,8 +18,6 @@
             android:orientation="vertical" >
 
 
-
-
             <LinearLayout
                 android:id="@+id/sub_layout_name"
                 android:layout_width="match_parent"
@@ -96,7 +94,8 @@
                     android:paddingStart="40dp"
                     android:switchTextAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:text="ist alkoholisch"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:visibility="gone" />
 
                 <include
                     android:id="@+id/include_alcoholic"
@@ -120,7 +119,8 @@
                 android:layout_height="match_parent"
                 android:focusable="true"
                 android:orientation="horizontal"
-                android:padding="8dp">
+                android:padding="8dp"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/imageView_color_show"
@@ -148,6 +148,78 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/sub_layout_add_ingredient"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView_ingredient_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
+                    android:gravity="center_vertical"
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:padding="8dp"
+                    android:paddingStart="40dp"
+                    android:text="Füge eine Zutat hinzu. "
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+                <ImageButton
+                    android:id="@+id/imageButton_add_ingredient"
+                    style="@style/Widget.AppCompat.ImageButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="4"
+                    android:contentDescription="add ingredient"
+                    android:background="@color/cardview_shadow_end_color"
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_add"
+                    app:tint="@color/design_default_color_primary" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/sub_layout_add_topic"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView_topic_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
+                    android:gravity="center_vertical"
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:padding="8dp"
+                    android:paddingStart="40dp"
+                    android:text="Füge einen Serviervorschlag hinzu. "
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+                <ImageButton
+                    android:id="@+id/imageButton_add_topic"
+                    style="@style/Widget.AppCompat.ImageButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:contentDescription="add topic"
+                    android:layout_weight="4"
+                    android:background="@color/cardview_shadow_end_color"
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_add"
+                    app:tint="@color/design_default_color_primary" />
+            </LinearLayout>
+
+
 
             <LinearLayout
                 android:id="@+id/sub_layout_save"

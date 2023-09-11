@@ -124,7 +124,7 @@ public class AddActivity extends BasicActivity {
 
         //saving instances
         final int[] set_color = {new Random().nextInt()};
-        
+
 
         if(ingredient == null){
             binding.imageViewColorShow.setColorFilter(set_color[0]);
@@ -202,6 +202,15 @@ public class AddActivity extends BasicActivity {
         //maybe needed
         binding.includeAlcoholic.getRoot().setVisibility(View.GONE);
         binding.includeNotAlcoholic.getRoot().setVisibility(View.GONE);
+
+
+        binding.subLayoutAddIngredient.setVisibility(View.VISIBLE);
+        binding.subLayoutAddIngredient.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
     }
 
