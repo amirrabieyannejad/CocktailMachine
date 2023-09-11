@@ -18,24 +18,111 @@
             android:orientation="vertical" >
 
 
-            <TextView
-                android:id="@+id/textViewAddTitle"
+
+            <LinearLayout
+                android:id="@+id/sub_layout_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:text="@string/title"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display3"
-                android:textStyle="bold" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textViewAddTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:text="@string/title"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display3"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/editTextAddTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Füge einen Namen ein."
+                    android:inputType="text"
+                    android:minHeight="48dp"
+                    android:padding="8dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+            </LinearLayout>
 
             <EditText
-                android:id="@+id/editTextAddTitle"
+                android:id="@+id/editTextDescription"
+                style="@style/Widget.AppCompat.EditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="text"
+                android:gravity="start|center_vertical"
+                android:hint="Füge eine Beschreibung ein."
+                android:inputType="textMultiLine"
                 android:minHeight="48dp"
-                android:text="Title" />
+                android:minLines="5"
+                android:nestedScrollingEnabled="true"
+                android:padding="8dp"
+                android:scrollbars="vertical"
+                android:textAlignment="gravity"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textIsSelectable="true"
+                android:visibility="gone" />
 
+            <LinearLayout
+                android:id="@+id/sub_layout_alcohol"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <include
+                    android:id="@+id/include_alcoholic"
+                    layout="@layout/layout_alcoholic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp" />
+
+                <include
+                    android:id="@+id/include_not_alcoholic"
+                    layout="@layout/layout_not_alcoholic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp" />
+
+                <Switch
+                    android:id="@+id/switch_alcohol"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:padding="8dp"
+                    android:paddingStart="40dp"
+                    android:switchTextAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:text="ist alkoholisch"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sub_layout_save"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/button_stop"
+                    style="@style/Widget.Material3.Button.IconButton.Outlined"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Abbruch" />
+
+                <Button
+                    android:id="@+id/button_save"
+                    style="@style/Widget.Material3.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Speichern" />
+
+            </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>
