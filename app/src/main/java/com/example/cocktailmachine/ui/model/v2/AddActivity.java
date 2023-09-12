@@ -56,15 +56,23 @@ public class AddActivity extends BasicActivity {
 
     @Override
     void preSetUp() {
+        binding.textViewAddTitle.setVisibility(View.GONE);
+
         binding.editTextAddTitle.setVisibility(View.GONE);
+
         binding.switchAlcohol.setVisibility(View.GONE);
         binding.includeAlcoholic.getRoot().setVisibility(View.GONE);
         binding.includeNotAlcoholic.getRoot().setVisibility(View.GONE);
+        binding.subLayoutAlcohol.setVisibility(View.GONE);
+
         binding.editTextDescription.setVisibility(View.GONE);
-        binding.textViewAddTitle.setVisibility(View.GONE);
-        binding.textViewError.setVisibility(View.GONE);
+
         binding.subLayoutAddTopic.setVisibility(View.GONE);
         binding.subLayoutAddIngredient.setVisibility(View.GONE);
+
+
+
+        binding.textViewError.setVisibility(View.GONE);
 
 
     }

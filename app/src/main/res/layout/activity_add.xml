@@ -15,7 +15,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
 
             <LinearLayout
@@ -83,7 +83,8 @@
                 android:id="@+id/sub_layout_alcohol"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <Switch
                     android:id="@+id/switch_alcohol"
@@ -154,7 +155,8 @@
                 android:id="@+id/sub_layout_add_ingredient"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:id="@+id/sub_layout_add_row_ingredient"
@@ -207,45 +209,58 @@
                 android:id="@+id/sub_layout_add_topic"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:visibility="gone">
 
-                <TextView
-                    android:id="@+id/textView_topic_text"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="0"
-                    android:gravity="center_vertical"
-                    android:minWidth="48dp"
-                    android:minHeight="48dp"
-                    android:padding="8dp"
-                    android:paddingStart="40dp"
-                    android:text="Füge einen Serviervorschlag hinzu. "
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                    android:orientation="horizontal">
 
-                <ImageButton
-                    android:id="@+id/imageButton_add_topic"
-                    style="@style/Widget.AppCompat.ImageButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:contentDescription="add topic"
-                    android:layout_weight="4"
-                    android:background="@color/cardview_shadow_end_color"
-                    android:minWidth="48dp"
-                    android:minHeight="48dp"
+                    <TextView
+                        android:id="@+id/textView_topic_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0"
+                        android:gravity="center_vertical"
+                        android:minWidth="48dp"
+                        android:minHeight="48dp"
+                        android:padding="8dp"
+                        android:paddingStart="40dp"
+                        android:text="Füge einen Serviervorschlag hinzu. "
+                        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+                    <ImageButton
+                        android:id="@+id/imageButton_add_topic"
+                        style="@style/Widget.AppCompat.ImageButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="4"
+                        android:background="@color/cardview_shadow_end_color"
+                        android:contentDescription="add topic"
+                        android:minWidth="48dp"
+                        android:minHeight="48dp"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_add"
+                        app:tint="@color/design_default_color_primary" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView_topics"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:padding="8dp"
-                    android:src="@drawable/ic_add"
-                    app:tint="@color/design_default_color_primary" />
+                    android:paddingStart="56dp"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/item_little_title" />
+
             </LinearLayout>
 
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView_topics"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:paddingStart="56dp"
-                tools:itemCount="3"
-                tools:listitem="@layout/item_little_title" />
+                android:layout_height="match_parent"
+                android:orientation="vertical"></LinearLayout>
 
             <LinearLayout
                 android:id="@+id/sub_layout_save"
