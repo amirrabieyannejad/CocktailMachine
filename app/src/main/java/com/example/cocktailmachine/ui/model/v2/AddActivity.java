@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Ingredient;
@@ -18,17 +19,17 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.databinding.ActivityAddBinding;
 import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
-import com.example.cocktailmachine.ui.model.v1.RowViews;
 import com.mrudultora.colorpicker.ColorPickerPopUp;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class AddActivity extends BasicActivity {
@@ -38,7 +39,7 @@ public class AddActivity extends BasicActivity {
     private Recipe recipe;
     private Ingredient ingredient;
 
-    private LinkedHashMap<Ingredient, Integer> ingredientVolumeHashMap;
+    private HashMap<Ingredient, Integer> ingredientVolumeHashMap;
     private List<Topic> topics;
 
     final private Activity activity = this;
@@ -73,15 +74,17 @@ public class AddActivity extends BasicActivity {
 
         //nedded
         binding.textViewAddTitle.setVisibility(View.VISIBLE);
+        binding.textViewAddTitle.setText("Pumpe: ");
 
         //maybe needed
-
-
-
         pump = Pump.getPump(this.getID());
 
+        //TODO
     }
 
+    /**
+     * set up topic
+     */
     @Override
     void setUpTopic() {
         String title_tag = "Serviervorschlag: ";
@@ -122,6 +125,9 @@ public class AddActivity extends BasicActivity {
 
     }
 
+    /**
+     * setup ingredient
+     */
     @Override
     void setUpIngredient() {
         ingredient = Ingredient.getIngredient(this.getID());
@@ -137,6 +143,38 @@ public class AddActivity extends BasicActivity {
 
         //saving instances
         final int[] set_color = {new Random().nextInt()};
+
+
+        binding.switchAlcohol.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked){
+                binding.includeAlcoholic.getRoot().setVisibility(View.VISIBLE);
+                binding.includeNotAlcoholic.getRoot().setVisibility(View.GONE);
+            }else{
+                binding.includeAlcoholic.getRoot().setVisibility(View.GONE);
+                binding.includeNotAlcoholic.getRoot().setVisibility(View.VISIBLE);
+            }
+        });
+        binding.subLayoutColor.setClickable(true);
+        binding.subLayoutColor.setOnClickListener(v -> {
+            ColorPickerPopUp colorPickerPopUp = new ColorPickerPopUp(activity);	// Pass the context.
+            colorPickerPopUp.setShowAlpha(true)			// By default show alpha is true.
+                    .setDefaultColor(ingredient.getColor())
+                    .setDialogTitle("Wähle eine Farbe!")
+                    .setOnPickColorListener(new ColorPickerPopUp.OnPickColorListener() {
+                        @Override
+                        public void onColorPicked(int color) {
+                            // handle the use of color
+                            set_color[0] = color;
+                            binding.imageViewColorShow.setColorFilter(color);
+                        }
+
+                        @Override
+                        public void onCancel() {
+                            colorPickerPopUp.dismissDialog();	// Dismiss the dialog.
+                        }
+                    })
+                    .show();
+        });
 
 
         if(ingredient == null){
@@ -171,65 +209,76 @@ public class AddActivity extends BasicActivity {
                 GetActivity.goToDisplay(activity, FragmentType.Model, ModelType.INGREDIENT, ingredient.getID());
             });
         }
-        binding.switchAlcohol.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if(isChecked){
-                binding.includeAlcoholic.getRoot().setVisibility(View.VISIBLE);
-                binding.includeNotAlcoholic.getRoot().setVisibility(View.GONE);
-            }else{
-                binding.includeAlcoholic.getRoot().setVisibility(View.GONE);
-                binding.includeNotAlcoholic.getRoot().setVisibility(View.VISIBLE);
-            }
-        });
-        binding.subLayoutColor.setClickable(true);
-        binding.subLayoutColor.setOnClickListener(v -> {
-            ColorPickerPopUp colorPickerPopUp = new ColorPickerPopUp(activity);	// Pass the context.
-            colorPickerPopUp.setShowAlpha(true)			// By default show alpha is true.
-                    .setDefaultColor(ingredient.getColor())
-                    .setDialogTitle("Wähle eine Farbe!")
-                    .setOnPickColorListener(new ColorPickerPopUp.OnPickColorListener() {
-                        @Override
-                        public void onColorPicked(int color) {
-                            // handle the use of color
-                            set_color[0] = color;
-                            binding.imageViewColorShow.setColorFilter(color);
-                        }
-
-                        @Override
-                        public void onCancel() {
-                            colorPickerPopUp.dismissDialog();	// Dismiss the dialog.
-                        }
-                    })
-                    .show();
-        });
     }
 
+    /**
+     * set up recipe
+     */
     @Override
     void setUpRecipe() {
+        this.recipe = Recipe.getRecipe(this.getID());
 
 
         //nedded
-        binding.editTextAddTitle.setVisibility(View.VISIBLE);
         binding.textViewAddTitle.setVisibility(View.VISIBLE);
+        binding.textViewAddTitle.setText("Rezepte: ");
 
+        binding.editTextAddTitle.setVisibility(View.VISIBLE);
+        binding.editTextAddTitle.setHint("Name des Cocktails");
 
-        //maybe needed
-        binding.includeAlcoholic.getRoot().setVisibility(View.GONE);
-        binding.includeNotAlcoholic.getRoot().setVisibility(View.GONE);
+        if(this.recipe != null){
+            binding.editTextAddTitle.setText(this.recipe.getName());
+            this.ingredientVolumeHashMap = this.recipe.getIngredientVolumes();
+            this.topics = this.recipe.getTopics();
+        }else{
+            this.ingredientVolumeHashMap = new HashMap<>();
+            this.topics = new ArrayList<>();
+        }
 
 
         binding.subLayoutAddIngredient.setVisibility(View.VISIBLE);
-        binding.subLayoutAddIngredient.setOnClickListener(v -> {
-
-        });
+        binding.subLayoutAddIngredient.setOnClickListener(v ->
+                GetDialog.getIngredientVolume(activity,
+                    !AdminRights.isAdmin(),
+                    (ingredient, tippedName, volume) -> {
+                        if(ingredient == null){
+                            ingredient = Ingredient.makeNew(tippedName);
+                        }
+                        AddActivity.this.ingredientVolumeHashMap.put(ingredient, volume);
+                    }));
         updateIngredients();
 
 
         binding.subLayoutAddTopic.setVisibility(View.VISIBLE);
-        binding.subLayoutAddTopic.setOnClickListener(v -> {
-
-        });
+        binding.subLayoutAddTopic.setOnClickListener(v ->
+            GetDialog.addTopic(activity,
+                    topic -> AddActivity.this.topics.add(topic)));
         updateTopics();
 
+
+        //save
+        binding.buttonSave.setOnClickListener(v -> {
+            if(AddActivity.this.recipe == null){
+                AddActivity.this.recipe =
+                        Recipe.makeNew(binding.editTextAddTitle.getText().toString());
+            }else{
+                AddActivity.this.recipe.setName(binding.editTextAddTitle.getText().toString());
+            }
+            AddActivity.this.recipe.addOrUpdateAndRemoveNotMentioned(
+                    AddActivity.this.ingredientVolumeHashMap);
+            AddActivity.this.recipe.addOrUpdateAndRemoveNotMentioned(
+                    AddActivity.this.topics);
+            if(AddActivity.this.recipe.sendSave(
+                    activity)){
+                GetActivity.goToDisplay(
+                        activity,
+                        FragmentType.Model,
+                        ModelType.RECIPE,
+                        AddActivity.this.recipe.getID());
+            }else{
+                Toast.makeText(activity, "Speicher nochmal!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -240,10 +289,17 @@ public class AddActivity extends BasicActivity {
 
     }
 
+    /**
+     * fehler
+     */
     void error(){
         error(null);
     }
 
+    /**
+     * Fehler
+     * @param msg
+     */
     @Nullable
     void error(String msg){
         preSetUp();
@@ -256,6 +312,37 @@ public class AddActivity extends BasicActivity {
         binding.subLayoutSave.setVisibility(View.GONE);
     }
 
+
+
+
+
+
+    private boolean isAlcoholic(){
+        boolean isAlcoholic = false;
+        for(Ingredient i:this.ingredientVolumeHashMap.keySet()){
+            isAlcoholic = isAlcoholic || i.isAlcoholic();
+        }
+        return isAlcoholic;
+    }
+
+    private void setAlcoholic(){
+        if (this.ingredientVolumeHashMap.size() == 0) {
+            binding.includeAlcoholic.getRoot().setVisibility(View.GONE);
+            binding.includeNotAlcoholic.getRoot().setVisibility(View.GONE);
+        }
+        if(isAlcoholic()){
+            binding.includeAlcoholic.getRoot().setVisibility(View.VISIBLE);
+            binding.includeNotAlcoholic.getRoot().setVisibility(View.GONE);
+        }else{
+            binding.includeAlcoholic.getRoot().setVisibility(View.GONE);
+            binding.includeNotAlcoholic.getRoot().setVisibility(View.VISIBLE);
+        }
+    }
+
+    /**
+     * get a new vertical LinearLayoutManager
+     * @return LinearLayoutManager
+     */
     private LinearLayoutManager getNewLinearLayoutManager(){
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
@@ -263,6 +350,9 @@ public class AddActivity extends BasicActivity {
         return llm;
     }
 
+    /**
+     * is supposed to reload the current ingredient list
+     */
     private void updateIngredients(){
         if(ingredientVolumeHashMap.size()>0) {
             binding.recyclerViewIngredients.setVisibility(View.VISIBLE);
@@ -271,10 +361,13 @@ public class AddActivity extends BasicActivity {
         }else{
             binding.recyclerViewIngredients.setVisibility(View.GONE);
         }
+        setAlcoholic();
 
     }
 
-
+    /**
+     * is supposed to reload the current topic list
+     */
     private void updateTopics() {
         if(topics.size()>0) {
             binding.recyclerViewTopics.setVisibility(View.VISIBLE);
@@ -285,6 +378,9 @@ public class AddActivity extends BasicActivity {
         }
     }
 
+    /**
+     * basic string view, ergo row element of topic and ingredient diplay
+     */
     private class StringView extends RecyclerView.ViewHolder {
         //for layout item_little_title
         private final TextView txt;
@@ -330,6 +426,9 @@ public class AddActivity extends BasicActivity {
 
     }
 
+    /**
+     * topic row
+     */
     private class TopicAdapter extends RecyclerView.Adapter<StringView>{
 
 
@@ -351,6 +450,9 @@ public class AddActivity extends BasicActivity {
         }
     }
 
+    /**
+     * ingredient row
+     */
     private class IngredientVolAdapter extends RecyclerView.Adapter<StringView>{
 
 

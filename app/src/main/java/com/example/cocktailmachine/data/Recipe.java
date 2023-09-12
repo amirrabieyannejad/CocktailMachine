@@ -92,7 +92,14 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * Get recommended topics.
      * @return recommended topics
      */
-    List<Long> getTopics();
+    List<Long> getTopicIDs();
+
+
+    /**
+     * Get recommended topics.
+     * @return recommended topics
+     */
+    List<Topic> getTopics();
 
 
     //Zutaten Getter
@@ -101,7 +108,14 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * Get ingredients ids and their associated pumptimes in milliseconds
      * @return hashmap ids, pump time
      */
-    HashMap<Long, Integer> getIngredientVolumes();
+    HashMap<Long, Integer> getIngredientNameVolumes();
+
+
+    /**
+     * Get ingredients ids and their associated pumptimes in milliseconds
+     * @return hashmap ids, pump time
+     */
+    HashMap<Ingredient, Integer> getIngredientVolumes();
 
     /**
      * Get ingredients names and their associated pumptimes in milliseconds
@@ -148,6 +162,38 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     void addOrUpdate(Topic topic);
 
     void addOrUpdate(String imageUrls);
+
+
+    default void addOrUpdateAndRemoveNotMentioned(HashMap<Ingredient, Integer> ingredientVol){
+        this.removeAllIngredients();
+        for(Ingredient i: ingredientVol.keySet()){
+            this.addOrUpdate(i, ingredientVol.get(i));
+        }
+    }
+
+    default void addOrUpdateAndRemoveNotMentioned(List<Topic> topics){
+        this.removeAllTopics();
+        for(Topic i: topics){
+            this.addOrUpdate(i);
+        }
+    }
+
+
+    default void removeAllIngredients(){
+        for(Ingredient i: this.getIngredients()){
+            this.remove(i);
+        }
+    }
+
+    default void removeAllTopics(){
+        for(Topic i: this.getTopics()){
+            this.remove(i);
+        }
+    }
+
+
+
+
 
     /**
      * Remove Ingredient from Recipe.
@@ -248,6 +294,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
             jsonObject.put("recipe", this.getName());
 
              */
+        save();
         try {
             JSONArray array = new JSONArray();
             List<Ingredient> is = this.getIngredients();
@@ -258,9 +305,11 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
                 array.put(temp);
             }
             //jsonObject.put("liquids", array);
-
-            BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
-            bluetoothSingleton.userDefineRecipe(this.getID(),this.getName(),array,activity);
+            BluetoothSingleton.getInstance().userDefineRecipe(
+                    this.getID(),
+                    this.getName(),
+                    array,
+                    activity);
 
             return true;
         } catch (JSONException | TooManyTimesSettedIngredientEcxception |

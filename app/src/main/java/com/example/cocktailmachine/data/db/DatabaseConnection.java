@@ -729,7 +729,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     public List<Topic> getTopics(SQLRecipe newSQLRecipe) {
         Log.i(TAG, "getTopics");
-        return this.getTopics(newSQLRecipe.getTopics());
+        return this.getTopics(newSQLRecipe.getTopicIDs());
     }
 
     public Topic getTopic(long id) {
@@ -831,7 +831,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     public List<Topic> getTopics(Recipe recipe) {
         Log.i(TAG, "getTopics");
-        return this.getTopics(recipe.getTopics());
+        return this.getTopics(recipe.getTopicIDs());
     }
 
     public List<Topic> getTopics() {

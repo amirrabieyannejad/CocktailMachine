@@ -163,6 +163,20 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
         }
     }
 
+    /**
+     * Static Access to ingredients.
+     * Get all ingredient names
+     * @return List of ingredients.
+     */
+    static List<String> getAllIngredientNames() {
+        List<Ingredient> ings = getAllIngredients();
+        ArrayList<String> names = new ArrayList<>();
+        for(Ingredient i: ings){
+            names.add(i.getName());
+        }
+        return names;
+    }
+
 
     /**
      * Static Access to ingredients.
@@ -176,6 +190,20 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
             e.printStackTrace();
             return new ArrayList<>();
         }
+    }
+
+    /**
+     * Static Access to ingredients.
+     * Get all available ingredient names.
+     * @return List of ingredients.
+     */
+    static List<String> getAvailableIngredientNames() {
+        List<Ingredient> ings = getAvailableIngredients();
+        ArrayList<String> names = new ArrayList<>();
+        for(Ingredient i: ings){
+            names.add(i.getName());
+        }
+        return names;
     }
 
     /**

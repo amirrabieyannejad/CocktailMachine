@@ -102,4 +102,12 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
         }
     }
 
+    static List<String> getTopicTitles(){
+        ArrayList<String> names = new ArrayList<>();
+        for(Topic t: getTopics()){
+            names.add(t.getName());
+        }
+        return names;
+    }
+
 }
