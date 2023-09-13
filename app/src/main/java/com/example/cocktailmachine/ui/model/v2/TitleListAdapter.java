@@ -24,7 +24,7 @@ import java.util.List;
  * @project CocktailMachine
  */
 public class TitleListAdapter extends RecyclerView.Adapter<TitleListAdapter.TitleRow>{
-    private static String TAG = "TitleListAdapter";
+    private static final String TAG = "TitleListAdapter";
 
     List<Long> IDs = new ArrayList<>();
     List<String> names = new ArrayList<>();

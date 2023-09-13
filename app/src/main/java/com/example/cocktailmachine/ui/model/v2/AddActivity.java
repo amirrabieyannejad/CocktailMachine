@@ -486,7 +486,7 @@ public class AddActivity extends BasicActivity {
 
         public StringView(@NonNull View itemView) {
             super(itemView);
-            txt = (TextView) itemView.findViewById(R.id.textView_item_little_title);
+            txt = itemView.findViewById(R.id.textView_item_little_title);
         }
 
         private void setTxt(@NonNull Ingredient ingredient, int volume){

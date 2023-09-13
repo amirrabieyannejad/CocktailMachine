@@ -17,7 +17,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     private static final String TAG = "SQLPump";
     private int minimumPumpVolume = 1;
 
-    private int slot = -1;
+    private final int slot = -1;
     private SQLIngredientPump ingredientPump = null;
     private boolean available = false;
 
