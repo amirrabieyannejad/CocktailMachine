@@ -85,7 +85,6 @@
                 app:srcCompat="@drawable/ic_bluetooth_test" />
 
             <ImageView
-                android:id="@+id/activity_menue_logout"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
@@ -94,7 +93,6 @@
                 app:srcCompat="@drawable/ic_logout" />
 
             <ImageView
-                android:id="@+id/activity_menue_login"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
@@ -103,7 +101,6 @@
                 app:srcCompat="@drawable/ic_login" />
 
             <ImageView
-                android:id="@+id/calibration"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"

@@ -6,7 +6,6 @@
     tools:context=".ui.model.v1.ListFragment">
 
     <include
-        android:id="@+id/include_list"
         layout="@layout/layout_name_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

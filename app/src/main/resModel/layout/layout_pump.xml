@@ -19,7 +19,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView_pump_ingredient_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -47,7 +46,6 @@
         app:layout_constraintTop_toBottomOf="@+id/textView_name_desc" />
 
     <TextView
-        android:id="@+id/textView_pump_volume"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -76,7 +74,6 @@
         app:layout_constraintTop_toBottomOf="@+id/textView_pump_volume_desc" />
 
     <TextView
-        android:id="@+id/textView_min_pump_volume"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"

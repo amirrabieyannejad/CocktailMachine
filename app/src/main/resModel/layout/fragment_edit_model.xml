@@ -2,7 +2,6 @@
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layout_edit_model"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:maxHeight="48dp"
@@ -14,14 +13,12 @@
         android:orientation="vertical">
 
         <include
-            android:id="@+id/include_name"
             layout="@layout/layout_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp" />
 
         <EditText
-            android:id="@+id/editText_topic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
@@ -32,14 +29,12 @@
             android:visibility="gone" />
 
         <LinearLayout
-            android:id="@+id/layout_ingredient"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:visibility="gone">
 
             <CheckBox
-                android:id="@+id/checkBox_alcoholic"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
@@ -48,14 +43,12 @@
                 android:textSize="16sp" />
 
             <LinearLayout
-                android:id="@+id/layout_pick_color"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
                 android:padding="8dp">
 
                 <ImageButton
-                    android:id="@+id/imageButton_glass_color"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:contentDescription="glass"
@@ -65,7 +58,6 @@
                     tools:ignore="TouchTargetSizeCheck" />
 
                 <TextView
-                    android:id="@+id/textView_pick_a_color"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -77,21 +69,18 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/layout_recipe"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:visibility="gone">
 
             <include
-                android:id="@+id/include_edit_recipe_ingredients"
                 layout="@layout/layout_volume_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp" />
 
             <include
-                android:id="@+id/include_edit_recipe_topics"
                 layout="@layout/fragment_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -99,7 +88,6 @@
         </LinearLayout>
 
         <include
-            android:id="@+id/include_new_pump"
             layout="@layout/layout_new_pump"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
