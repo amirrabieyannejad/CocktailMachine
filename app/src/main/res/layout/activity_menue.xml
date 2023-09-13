@@ -24,7 +24,7 @@
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="openRecipeList"
-                app:contentDescription="Show available Cocktails"
+                android:contentDescription="Show available Cocktails"
                 app:srcCompat="@drawable/ic_list" />
 
             <ImageView
@@ -32,7 +32,7 @@
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="openRecipeCreator"
-                app:contentDescription="add recipe"
+                android:contentDescription="add recipe"
                 app:srcCompat="@drawable/ic_list_add" />
 
             <ImageView
@@ -40,7 +40,7 @@
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="openGlassFillAnimationView"
-                app:contentDescription="FillAnimation"
+                android:contentDescription="FillAnimation"
                 app:srcCompat="@drawable/ic_list_add" />
 
 
@@ -49,7 +49,7 @@
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="openSingelCocktailView"
-                app:contentDescription="swipe thing"
+                android:contentDescription="swipe thing"
                 app:srcCompat="@drawable/ic_single_cocktail_choice_2" />
 
             <ImageView
@@ -57,7 +57,7 @@
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="openDeviceScan"
-                app:contentDescription="FindBluetooth"
+                android:contentDescription="FindBluetooth"
                 app:srcCompat="@drawable/ic_find_bluetooth" />
 
             <ImageView
@@ -65,7 +65,7 @@
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="openSettings"
-                app:contentDescription="Settings"
+                android:contentDescription="Settings"
                 app:srcCompat="@drawable/ic_options" />
 
             <ImageView
@@ -73,7 +73,7 @@
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="openGrafik"
-                app:contentDescription="Grafik"
+                android:contentDescription="Grafik"
                 app:srcCompat="@drawable/ic_glass" />
 
             <ImageView
@@ -85,6 +85,7 @@
                 app:srcCompat="@drawable/ic_bluetooth_test" />
 
             <ImageView
+                android:id = "@+id/activityMenueLogout"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
@@ -93,6 +94,7 @@
                 app:srcCompat="@drawable/ic_logout" />
 
             <ImageView
+                android:id = "@+id/activityMenueLogin"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
