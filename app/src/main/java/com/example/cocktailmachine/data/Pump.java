@@ -68,9 +68,6 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
 
     //Slot
-
-    void setSlot(int slot);
-
     int getSlot();
 
 
@@ -414,7 +411,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             BluetoothSingleton.getInstance().adminDefinePump(
                     this.getIngredientName(),
                     this.getVolume(),
-                    this.getSlot());
+                    this.getSlot(),activity);
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -494,7 +491,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
          */
         try {
             BluetoothSingleton.getInstance().adminRefillPump(this.getVolume(),
-                    this.getSlot());
+                    this.getSlot(),activity);
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -532,7 +529,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         try {
             BluetoothSingleton.getInstance().adminManuelCalibrateRunPump(
                     this.getSlot(),
-                    time);
+                    time,activity);
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -575,7 +572,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                     time1,
                     time2,
                     volume1,
-                    volume2);
+                    volume2,activity);
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -584,7 +581,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
 
     default void pumpTimes(Activity activity) {
-        GetDialog.calibratePumpTimes(activity, this);
+        GetDialog.calibratePumpTimes(activity,
+                this);
     }
 
 
@@ -601,14 +599,16 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * <p>
      * JSON-Beispiel:
      * <p>
-     * {"cmd": "set_pump_times", "user": 0, "slot": 1, "time_init": 1000, "time_reverse": 1000, "rate": 1.0}
+     * {"cmd": "set_pump_times", "user": 0, "slot": 1, "time_init": 1000, "time_reverse": 1000,
+     * "rate": 1.0}
      */
-    public default void sendPumpTimes(Activity activity, int timeInit, int timeReverse, float rate) {
+    default void sendPumpTimes(Activity activity, int timeInit, int timeReverse, float rate) {
         //TO  DO: setPumpTimes
         //TO DO: AMIR
 
         try {
-            BluetoothSingleton.getInstance().adminManuelCalibrateSetPumpTimes(this.getSlot(), timeInit, timeReverse, rate);
+            BluetoothSingleton.getInstance().adminManuelCalibrateSetPumpTimes(this.getSlot(),
+                    timeInit, timeReverse, rate,activity);
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -636,7 +636,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     static void readPumpStatus(Activity activity) {
         try {
-            BluetoothSingleton.getInstance().adminReadPumpsStatus();
+            BluetoothSingleton.getInstance().adminReadPumpsStatus(activity);
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -651,7 +651,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     static void readLiquidStatus(Activity activity) {
 
         try {
-            BluetoothSingleton.getInstance().adminReadLiquidsStatus();
+            BluetoothSingleton.getInstance().adminReadLiquidsStatus(activity);
         } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }

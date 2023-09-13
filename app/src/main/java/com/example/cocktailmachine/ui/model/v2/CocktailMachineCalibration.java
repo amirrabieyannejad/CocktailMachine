@@ -33,7 +33,7 @@ public class CocktailMachineCalibration {
                 Log.e(CocktailMachineCalibration.TAG, e.toString());
                 e.printStackTrace();
             }
-            if(CocktailMachine.isCocktailMachineSet()){
+            if(CocktailMachine.isCocktailMachineSet(activity)){
                 isDone = true;
                 Log.i(CocktailMachineCalibration.TAG, "is set");
                 Toast.makeText(activity, "Cocktailmaschine ist bereit.", Toast.LENGTH_SHORT).show();

@@ -74,7 +74,9 @@ dependencies {
     testImplementation 'com.android.support.test:monitor:1.0.2'
     testImplementation 'com.android.support.test:exposed-instrumentation-api-publish:0.6-alpha'
     testImplementation 'androidx.test:core:1.5.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestImplementation 'androidx.test:core:1.5.0'
+    
 }

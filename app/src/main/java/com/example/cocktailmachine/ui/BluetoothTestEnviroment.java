@@ -1,8 +1,10 @@
 package com.example.cocktailmachine.ui;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,7 +13,11 @@ import android.widget.TextView;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
+import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.data.enums.CocktailStatus;
+import com.example.cocktailmachine.data.enums.Postexecute;
 
 import org.json.JSONException;
 
@@ -22,7 +28,7 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
 
 
     // Step1
-    BluetoothSingleton singleton=BluetoothSingleton.getInstance();
+    BluetoothSingleton singleton = BluetoothSingleton.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,16 +43,54 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
         // Step2: Only at the very first time Connect to Device
         //singleton.connectGatt(BluetoothTestEnviroment.this);
 
-
     }
-    public void addUser(View view) throws JSONException, InterruptedException {
 
-        //Step5: Call initUser() Method
+    public void addUser(View view) throws JSONException, InterruptedException, NotInitializedDBException {
         String user = editText.getText().toString();
-        //singleton.initUser(user,textView,BluetoothTestEnviroment.this);
-        //TODO: als Rückgabe JSON Datei
+        //singleton.adminAutoCalibrateStart(BluetoothTestEnviroment.this);
+        //singleton.adminAutoCalibrateAddEmpty(BluetoothTestEnviroment.this);
+        //singleton.adminAutoCalibrateFinish(BluetoothTestEnviroment.this);
+        /*
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Cocktailmaschinenstatus");
+        builder.setMessage(CocktailStatus.getCurrentStatusMessage(new Postexecute() {
+            @Override
+            public void post() {
+                builder.setMessage(CocktailStatus.getCurrentStatus().toString());
+                builder.setNeutralButton("Fertig!", (dialog, which) -> {});
+                builder.show();
+            }
+        },this));
 
-        singleton.userInitUser(user,BluetoothTestEnviroment.this);
+         */
+        //singleton.adminManuelCalibrateTareScale(BluetoothTestEnviroment.this);
+
+        //singleton.adminManuelCalibrateScale(100,BluetoothTestEnviroment.this);
+        //singleton.adminDefinePump("wein",1000,1,this);
+        //singleton.adminDefinePump("beer",2000,2,this);
+        // manuelCalibration
+        //singleton.adminManuelCalibrateRunPump(1,10000,
+          //      BluetoothTestEnviroment.this);
+       // singleton.adminManuelCalibrateRunPump(1,20000,
+         //       BluetoothTestEnviroment.this);
+        //singleton.adminManuelCalibratePump(1,10000,20000,);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("PumpsStatus");
+        singleton.adminReadPumpsStatus(new Postexecute() {
+            @Override
+            public void post() {
+                try {
+                    Pump.getPumpStatus();
+                }
+              catch (NotInitializedDBException | JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        },this);
+
+
+
+
 
 
         // empty buttle should be placed- in GUI we should ask to put empty buttle  wait for ok
@@ -71,6 +115,7 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
         //textView.setText(json.toString());
         //singleton.connectGatt(BluetoothTestEnviroment.this);
     }
+
     public void showUser(View view) throws JSONException {
 
 

@@ -67,7 +67,7 @@ public class TitleListAdapter extends RecyclerView.Adapter<TitleListAdapter.Titl
         private long ID;
         private String text;
 
-        private TextView title;
+        private final TextView title;
 
         public TitleRow(@NonNull View itemView) {
             super(itemView);
@@ -76,7 +76,7 @@ public class TitleListAdapter extends RecyclerView.Adapter<TitleListAdapter.Titl
             }if(itemView.getContext()==null){
                 Log.i(TAG, "itemView is null");
             }
-            title = (TextView) itemView.findViewById(R.id.textView_item_title);
+            title = itemView.findViewById(R.id.textView_item_title);
             if(title == null){
                 Log.i(TAG, "TextView title is null");
             }

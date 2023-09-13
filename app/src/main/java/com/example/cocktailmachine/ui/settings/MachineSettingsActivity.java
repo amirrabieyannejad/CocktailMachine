@@ -3,6 +3,7 @@ package com.example.cocktailmachine.ui.settings;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -70,14 +71,15 @@ public class MachineSettingsActivity extends AppCompatActivity {
      * @author Johanna Reidt
      */
     public void status(View view) {
+        final Activity acc = this;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Cocktailmaschinenstatus");
         builder.setMessage(CocktailStatus.getCurrentStatusMessage(new Postexecute() {
             @Override
             public void post() {
-                builder.setMessage(CocktailStatus.getCurrentStatus().toString());
+                builder.setMessage(CocktailStatus.getCurrentStatus(acc).toString());
             }
-        }));
+        },acc));
         builder.setNeutralButton("Fertig!", (dialog, which) -> {});
         builder.show();
     }

@@ -73,8 +73,8 @@ public class TitleVolumeListAdapter extends RecyclerView.Adapter<TitleVolumeList
         private ModelType modelType = ModelType.INGREDIENT;
         private Ingredient ingredient;
 
-        private TextView title;
-        private TextView vol;
+        private final TextView title;
+        private final TextView vol;
 
         public TitleVolumeRow(@NonNull View itemView) {
             super(itemView);
@@ -84,11 +84,11 @@ public class TitleVolumeListAdapter extends RecyclerView.Adapter<TitleVolumeList
             if (itemView.getContext() == null) {
                 Log.i(TAG, "itemView is null");
             }
-            title = (TextView) itemView.findViewById(R.id.textView_title_volume_titel);
+            title = itemView.findViewById(R.id.textView_title_volume_titel);
             if (title == null) {
                 Log.i(TAG, "TextView title is null");
             }
-            vol = (TextView) itemView.findViewById(R.id.textView_title_volume_volume);
+            vol = itemView.findViewById(R.id.textView_title_volume_volume);
             if (vol == null) {
                 Log.i(TAG, "TextView title is null");
             }

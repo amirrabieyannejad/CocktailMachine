@@ -63,12 +63,12 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @return Integer representative of color
      */
     @ColorInt
-    public int getColor();
+    int getColor();
 
     //Setter
-    public void setColor(@ColorInt int color);
+    void setColor(@ColorInt int color);
 
-    public void setAlcoholic(boolean alcoholic);
+    void setAlcoholic(boolean alcoholic);
 
 
     void setName(String name);
@@ -109,7 +109,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * Get Pump representative class, where the ingredient is within.
      * @return pump
      */
-    public Long getPumpId();
+    Long getPumpId();
 
 
     /**
@@ -153,7 +153,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * Get all ingredients.
      * @return List of ingredients.
      */
-    public static List<Ingredient> getAllIngredients() {
+    static List<Ingredient> getAllIngredients() {
         try {
             return (List<Ingredient>) DatabaseConnection.getDataBase().getAllIngredients();
         } catch (NotInitializedDBException e) {
@@ -168,7 +168,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * Get all available ingredients.
      * @return List of ingredients.
      */
-    public static List<Ingredient> getAvailableIngredients() {
+    static List<Ingredient> getAvailableIngredients() {
         try {
             return (List<Ingredient>) DatabaseConnection.getDataBase().getAvailableIngredients();
         } catch (NotInitializedDBException e) {

@@ -152,8 +152,8 @@ public class DialogBuilder {
         private boolean isDone = false;
         public EditView(View v, String editText,String editHint, int inputType) {
             this.v = v;
-            t = (TextView) v.findViewById(R.id.textView_edit_text);
-            e = (EditText) v.findViewById(R.id.editText_edit_text);
+            t = v.findViewById(R.id.textView_edit_text);
+            e = v.findViewById(R.id.editText_edit_text);
             e.setHint(editHint);
             t.setText(editText);
             e.setInputType(inputType);

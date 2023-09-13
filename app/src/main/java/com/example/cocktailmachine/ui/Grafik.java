@@ -99,7 +99,7 @@ public class Grafik extends AppCompatActivity {
         System.out.println(drink);
         Context context = this;
 
-        ImageView iv =(ImageView) findViewById(R.id.ivtest);
+        ImageView iv = findViewById(R.id.ivtest);
 
         ValueAnimator animation = ValueAnimator.ofFloat(0f, 1f);
         animation.setDuration(10000);

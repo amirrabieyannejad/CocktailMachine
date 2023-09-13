@@ -172,7 +172,7 @@ public class ListLayout {
                     builder.setMultiChoiceItems(
                             temp,
                             tempB,
-                            (DialogInterface.OnMultiChoiceClickListener) (dialog, which, isChecked) -> {
+                            (dialog, which, isChecked) -> {
                                 if (isChecked) {
                                     chosenIngredients.add(ingredients.get(which));
                                 } else {
@@ -212,7 +212,7 @@ public class ListLayout {
                     builder.setMultiChoiceItems(
                             temp,
                             tempB,
-                            (DialogInterface.OnMultiChoiceClickListener) (dialog, which, isChecked) -> {
+                            (dialog, which, isChecked) -> {
                                 if (isChecked) {
                                     chosenTopics.add(topics.get(which));
 
@@ -271,7 +271,7 @@ public class ListLayout {
                     builder.setMultiChoiceItems(
                             temp,
                             tempB,
-                            (DialogInterface.OnMultiChoiceClickListener) (dialog, which, isChecked) -> {
+                            (dialog, which, isChecked) -> {
                                 if (isChecked) {
                                     chosenIngredients.add(ingredients.get(which));
                                 } else {
@@ -318,7 +318,7 @@ public class ListLayout {
                     builder.setMultiChoiceItems(
                             temp,
                             tempB,
-                            (DialogInterface.OnMultiChoiceClickListener) (dialog, which, isChecked) -> {
+                            (dialog, which, isChecked) -> {
                                 if (isChecked) {
                                     chosenTopics.add(topics.get(which));
 

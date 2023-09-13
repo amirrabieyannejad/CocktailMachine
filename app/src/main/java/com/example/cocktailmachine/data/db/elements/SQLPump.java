@@ -11,6 +11,7 @@ import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 
 import java.util.List;
+import java.util.Objects;
 
 public class SQLPump extends SQLDataBaseElement implements Pump {
     private static final String TAG = "SQLPump";
@@ -67,12 +68,14 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
 
     @Override
     public int getSlot() {
-        return slot;
-    }
-
-    @Override
-    public void setSlot(int slot) {
-        this.slot = slot;
+        try {
+            return Math.toIntExact(getID());
+        }catch (ArithmeticException e){
+            Log.e(TAG, "getSlot");
+            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
+            e.printStackTrace();
+            return -1;
+        }
     }
 
     @Override
