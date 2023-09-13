@@ -97,6 +97,7 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void openRecipeCreator(View view){
+        /*
 
         Intent success = new Intent(this,
                 ModelActivity.class);
@@ -107,6 +108,9 @@ public class Menue extends AppCompatActivity {
         b.putString("ModelType",
                 ModelType.RECIPE.toString());
         startActivity(success, b);
+
+         */
+        GetActivity.goToAdd(this, ModelType.RECIPE);
     }
 
     /**

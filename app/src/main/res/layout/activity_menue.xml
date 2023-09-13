@@ -81,7 +81,7 @@
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="testEnviroment"
-                app:contentDescription="TestSiteForBluetooth"
+                android:contentDescription="TestSiteForBluetooth"
                 app:srcCompat="@drawable/ic_bluetooth_test" />
 
             <ImageView
@@ -90,7 +90,7 @@
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="logout"
-                app:contentDescription="Logout"
+                android:contentDescription="logout"
                 app:srcCompat="@drawable/ic_logout" />
 
             <ImageView
@@ -99,7 +99,7 @@
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="login"
-                app:contentDescription="Login"
+                android:contentDescription="login"
                 app:srcCompat="@drawable/ic_login" />
 
             <ImageView
@@ -108,7 +108,7 @@
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="calibration"
-                app:contentDescription="calibration"
+                android:contentDescription="calibration"
                 app:srcCompat="@drawable/ic_reload" />
 
         </LinearLayout>

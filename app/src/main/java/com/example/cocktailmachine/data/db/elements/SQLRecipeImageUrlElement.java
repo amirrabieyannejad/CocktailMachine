@@ -6,7 +6,7 @@ import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 public class SQLRecipeImageUrlElement extends SQLImageUrlElement {
-    private static final String TAG = "SQLRecipeImageUrlElement" ;
+    private static final String TAG = "SQLRecipeImageUrlEl" ;
 
     public SQLRecipeImageUrlElement(long ID, String url, long ingredientID) {
         super(ID, url, ingredientID);

@@ -65,6 +65,9 @@ public class AddActivity extends BasicActivity {
         binding.switchAlcohol.setVisibility(View.GONE);
         binding.includeAlcoholic.getRoot().setVisibility(View.GONE);
         binding.includeNotAlcoholic.getRoot().setVisibility(View.GONE);
+        //binding.includeNotAlcoholic
+
+
         binding.subLayoutAlcohol.setVisibility(View.GONE);
 
         binding.editTextDescription.setVisibility(View.GONE);
@@ -72,7 +75,7 @@ public class AddActivity extends BasicActivity {
         binding.subLayoutAddTopic.setVisibility(View.GONE);
         binding.subLayoutAddIngredient.setVisibility(View.GONE);
 
-        binding.includePump.getRoot().setVisibility(View.GONE);
+        //binding.includePump;//.getRoot().setVisibility(View.GONE);
 
 
 
@@ -485,7 +488,7 @@ public class AddActivity extends BasicActivity {
 
         public StringView(@NonNull View itemView) {
             super(itemView);
-            txt = itemView.findViewById(R.id.textView_item_little_title);
+            txt = (TextView) itemView.findViewById(R.id.textView_item_little_title);
         }
 
         private void setTxt(@NonNull Ingredient ingredient, int volume){

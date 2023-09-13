@@ -48,7 +48,7 @@ android {
         includeInApk true
         includeInBundle true
     }
-    buildToolsVersion '33.0.1'
+    buildToolsVersion '33.0.0'
 }
 
 dependencies {

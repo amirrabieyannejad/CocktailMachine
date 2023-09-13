@@ -40,7 +40,7 @@
                     android:layout_marginStart="32dp"
                     android:ems="10"
                     android:gravity="bottom|start"
-                    android:hint="Füge einen Namen ein."
+                    android:hint="@string/add_name"
                     android:inputType="text"
                     android:minHeight="48dp"
                     android:padding="8dp"
@@ -52,7 +52,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:padding="8dp"
-                    android:text="Fehlerbeschreibung!"
+                    android:text="@string/fehlerbeschreibung"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:visibility="gone" />
 
@@ -67,7 +67,7 @@
                 android:layout_marginTop="16dp"
                 android:ems="10"
                 android:gravity="bottom|start"
-                android:hint="Füge eine Beschreibung ein."
+                android:hint="@string/add_desc"
                 android:inputType="textMultiLine"
                 android:minHeight="48dp"
                 android:minLines="5"
@@ -94,9 +94,10 @@
                     android:padding="8dp"
                     android:paddingStart="40dp"
                     android:switchTextAppearance="@style/TextAppearance.AppCompat.Medium"
-                    android:text="ist alkoholisch"
+                    android:text="@string/ist_alkoholisch"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 <include
                     android:id="@+id/include_alcoholic"
@@ -145,7 +146,7 @@
                     android:focusable="false"
                     android:gravity="center_vertical"
                     android:minHeight="40dp"
-                    android:text="Ändere die Farbe!"
+                    android:text="@string/change_color"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             </LinearLayout>
@@ -195,7 +196,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerView_ingredients"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_weight="0"
                     android:padding="8dp"
                     android:paddingStart="56dp"
@@ -227,7 +228,7 @@
                         android:minHeight="48dp"
                         android:padding="8dp"
                         android:paddingStart="40dp"
-                        android:text="Füge einen Serviervorschlag hinzu. "
+                        android:text="@string/add_topic"
                         android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
                     <ImageButton
@@ -237,7 +238,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="4"
                         android:background="@color/cardview_shadow_end_color"
-                        android:contentDescription="add topic"
+                        android:contentDescription="@string/add_topic"
                         android:minWidth="48dp"
                         android:minHeight="48dp"
                         android:padding="8dp"
@@ -262,7 +263,7 @@
                 layout="@layout/layout_search_ingredient"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="32dp"
+                android:layout_marginStart="32dp"
                 android:layout_marginTop="8dp" />
 
 
@@ -281,7 +282,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Abbruch" />
+                    android:text="@string/abbruch" />
 
                 <Button
                     android:id="@+id/button_save"
@@ -289,7 +290,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Speichern" />
+                    android:text="@string/speichern" />
 
             </LinearLayout>
         </LinearLayout>
