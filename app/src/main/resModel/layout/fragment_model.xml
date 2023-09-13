@@ -33,12 +33,12 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/textView_"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:layout_margin="8dp"
-            android:text="@string/large_text"
-            android:visibility="gone" />
+            android:layout_marginTop="16dp"
+            android:text="@string/large_text" />
 
         <include
             layout="@layout/layout_pump"
@@ -69,8 +69,7 @@
             layout="@layout/layout_ingredient_admin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:visibility="gone" />
+            android:layout_margin="8dp" />
 
         <include
             layout="@layout/layout_name_list"
