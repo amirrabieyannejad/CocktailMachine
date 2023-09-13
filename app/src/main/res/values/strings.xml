@@ -118,5 +118,6 @@
     <string name="add_name">Füge einen Namen ein.</string>
     <string name="fehlerbeschreibung">Fehlerbeschreibung!</string>
     <string name="bla">bla</string>
+    <string name="volum">Volumen:</string>
 
 </resources>

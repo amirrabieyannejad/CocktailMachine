@@ -13,28 +13,30 @@
         android:orientation="vertical">
 
         <include
+            android:id="@+id/includeName"
             layout="@layout/layout_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp" />
 
         <EditText
+            android:id="@+id/editTextTopic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:ems="10"
             android:gravity="start|top"
             android:hint="Bitte füge eine Beschreibung zu dem Serviervorschlag hinzu. Bspw. Der Limmettesirup steht direkt neben der Cocktailmaschine und ffür einen süß säuerlichen Geschmack hinzu."
-            android:inputType="textMultiLine"
-            android:visibility="gone" />
+            android:inputType="textMultiLine" />
 
         <LinearLayout
+            android:id="@+id/layoutIngredient"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone">
+            android:orientation="vertical">
 
             <CheckBox
+                android:id="@+id/checkBoxAlcoholic"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
@@ -43,12 +45,14 @@
                 android:textSize="16sp" />
 
             <LinearLayout
+                android:id="@+id/layoutPickColor"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
                 android:padding="8dp">
 
                 <ImageButton
+                    android:id="@+id/imageButtonGlassColor"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:contentDescription="glass"
@@ -58,6 +62,7 @@
                     tools:ignore="TouchTargetSizeCheck" />
 
                 <TextView
+                    android:id="@+id/textViewPickAColor"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -69,18 +74,20 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id = "@+id/layoutRecipe"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="gone">
+            android:orientation="vertical">
 
             <include
+                android:id="@+id/includeEditRecipeIngredients"
                 layout="@layout/layout_volume_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp" />
 
             <include
+                android:id="@+id/includeEditRecipeTopics"
                 layout="@layout/fragment_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -88,11 +95,11 @@
         </LinearLayout>
 
         <include
+            android:id="@+id/includeNewPump"
             layout="@layout/layout_new_pump"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:visibility="gone" />
+            android:layout_margin="8dp" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
