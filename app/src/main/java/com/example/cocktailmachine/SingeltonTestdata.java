@@ -373,6 +373,11 @@ public class SingeltonTestdata {
             }
 
             @Override
+            public HashMap<Ingredient, Integer> getIngredientVolumes() {
+                return null;
+            }
+
+            @Override
             public List<Map.Entry<String, Integer>> getIngredientNameNVolumes() {
                 return null;
             }
@@ -435,6 +440,11 @@ public class SingeltonTestdata {
 
             @Override
             public List<Long> getTopicIDs() {
+                return null;
+            }
+
+            @Override
+            public List<Topic> getTopics() {
                 return null;
             }
 
@@ -862,6 +872,11 @@ public class SingeltonTestdata {
             }
 
             @Override
+            public HashMap<Ingredient, Integer> getIngredientVolumes() {
+                return null;
+            }
+
+            @Override
             public List<Map.Entry<String, Integer>> getIngredientNameNVolumes() {
                 return null;
             }
@@ -924,6 +939,11 @@ public class SingeltonTestdata {
 
             @Override
             public List<Long> getTopicIDs() {
+                return null;
+            }
+
+            @Override
+            public List<Topic> getTopics() {
                 return null;
             }
 
