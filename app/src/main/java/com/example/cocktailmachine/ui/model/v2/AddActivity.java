@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.databinding.ActivityAddBinding;
@@ -70,6 +72,8 @@ public class AddActivity extends BasicActivity {
         binding.subLayoutAddTopic.setVisibility(View.GONE);
         binding.subLayoutAddIngredient.setVisibility(View.GONE);
 
+        binding.includePump.getRoot().setVisibility(View.GONE);
+
 
 
         binding.textViewError.setVisibility(View.GONE);
@@ -87,7 +91,39 @@ public class AddActivity extends BasicActivity {
         //maybe needed
         pump = Pump.getPump(this.getID());
 
-        //TODO
+        binding.includePump.getRoot().setVisibility(View.VISIBLE);
+        binding.includePump.editTextNumberSearchIngredientVol.setVisibility(View.VISIBLE);
+        search();
+
+        binding.buttonSave.setOnClickListener(v -> {
+            if(binding.includePump.editTextSearchIngredientIng.getText().toString().length()>0) {
+                getIngredient();
+            }else{
+                Toast.makeText(AddActivity.this, "Nenne die Zutat!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            AddActivity.this.pump.setCurrentIngredient(AddActivity.this.ingredient);
+            String vol = binding.includePump.editTextNumberSearchIngredientVol.getText().toString();
+            if(vol.length()==0){
+                Toast.makeText(AddActivity.this, "Gib das Volumen an!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            int level = -1;
+            try {
+                level = Integer.parseInt(vol);
+            }catch (NumberFormatException e){
+                Toast.makeText(AddActivity.this, "Gib eine ganze Zahl für das Volumen an!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            try {
+                AddActivity.this.pump.fill(level);
+            } catch (MissingIngredientPumpException e) {
+                e.printStackTrace();
+                Toast.makeText(AddActivity.this, "Nochmal!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            AddActivity.this.pump.sendSave(AddActivity.this);
+        });
     }
 
     /**
@@ -324,6 +360,57 @@ public class AddActivity extends BasicActivity {
 
 
 
+    //pump helper
+
+    private void search(){
+        binding.includePump.editTextSearchIngredientIng.setVisibility(View.VISIBLE);
+        binding.includePump.imageButtonSearchIngredientDone.setVisibility(View.VISIBLE);
+        binding.includePump.textViewSearchIngredientIng.setVisibility(View.GONE);
+
+        binding.includePump.imageButtonSearchIngredientDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(binding.includePump.editTextSearchIngredientIng.getText().toString().length()>0) {
+                    searchDone();
+                }else{
+                    Toast.makeText(AddActivity.this, "Nenne die Zutat!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
+
+
+    }
+    private void getIngredient(){
+        this.ingredient = Ingredient.searchOrNew(
+                binding.includePump.editTextSearchIngredientIng.getText().toString());
+    }
+    private void searchDone(){
+        getIngredient();
+        binding.includePump.editTextSearchIngredientIng.setVisibility(View.GONE);
+        binding.includePump.imageButtonSearchIngredientDone.setVisibility(View.GONE);
+        binding.includePump.textViewSearchIngredientIng.setVisibility(View.VISIBLE);
+        binding.includePump.textViewSearchIngredientIng.setText(this.ingredient.getName());
+        binding.includePump.textViewSearchIngredientIng.setOnClickListener(v -> search());
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //recipe helper
 
     private boolean isAlcoholic(){
         boolean isAlcoholic = false;

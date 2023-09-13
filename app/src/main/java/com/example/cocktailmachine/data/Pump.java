@@ -390,6 +390,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
      */
     default void sendSave(Activity activity) {
+        save();
         /*
         //TO DO: AMIR
         JSONObject request = new JSONObject();

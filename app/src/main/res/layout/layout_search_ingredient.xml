@@ -20,7 +20,7 @@
             android:minWidth="48dp"
             android:minHeight="48dp"
             android:padding="8dp"
-            android:text="Name"
+            android:hint="Name"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         <ImageButton

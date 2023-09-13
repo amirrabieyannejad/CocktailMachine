@@ -857,7 +857,7 @@ public class GetDialog {
         }
 
         Ingredient getIngredient(){
-            return Ingredient.getIngredient(search.getText().toString());
+            return Ingredient.searchOrNew(search.getText().toString());
         }
 
         String getIngredientTippedName(){
@@ -886,7 +886,7 @@ public class GetDialog {
 
         private void setSearchItems(){
             //this.search.setAutofillHints(this.ingredientNames);
-            //TODO: set sutotfill hints
+            //TODO: set autotfill hints
         }
 
     }

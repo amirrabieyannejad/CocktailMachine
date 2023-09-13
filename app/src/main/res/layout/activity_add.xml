@@ -257,10 +257,14 @@
             </LinearLayout>
 
 
-            <LinearLayout
+            <include
+                android:id="@+id/include_pump"
+                layout="@layout/layout_search_ingredient"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"></LinearLayout>
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="32dp"
+                android:layout_marginTop="8dp" />
+
 
             <LinearLayout
                 android:id="@+id/sub_layout_save"
