@@ -1,10 +1,10 @@
 package com.example.cocktailmachine.ui.model.v2;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;

@@ -1,13 +1,10 @@
 package com.example.cocktailmachine.ui.model.v2;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.example.cocktailmachine.data.CocktailMachine;
-import com.example.cocktailmachine.data.Pump;
-import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.enums.AdminRights;
 
 import org.json.JSONException;

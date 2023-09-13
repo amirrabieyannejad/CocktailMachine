@@ -1,9 +1,9 @@
 package com.example.cocktailmachine.ui.model.v2;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.app.Activity;
 import android.os.Bundle;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
@@ -11,7 +11,6 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.databinding.ActivityListBinding;
-import com.example.cocktailmachine.ui.model.FragmentType;
 
 import java.util.ArrayList;
 import java.util.List;
