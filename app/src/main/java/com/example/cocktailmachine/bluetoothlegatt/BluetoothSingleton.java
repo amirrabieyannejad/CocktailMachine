@@ -43,7 +43,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -222,7 +221,7 @@ public class BluetoothSingleton {
                 // START
                 //if (finalValue.equals("\"processing\"") ||
                 //        finalValue.equals("\"ready\"") || finalValue == "") {
-                if (finalValue.equals("\"processing\"")) {
+                if (finalValue.equals("processing")) {
                 Log.w(TAG, "onCharacteristicRead: read Alert Notification: " +
                             finalValue);
                     singleton.mBluetoothGatt.readCharacteristic(characteristic);
@@ -1375,7 +1374,7 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReset(Postexecute postexecute, Activity activity) throws JSONException, InterruptedException {
+    public void adminReset(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         //generate JSON Format
@@ -1733,7 +1732,7 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminManuelCalibratePump(int slot, int time1, int time2,
-                                     float volume1, float volume2, Activity activity)
+                                     double volume1, double  volume2, Activity activity)
             throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
@@ -1775,7 +1774,7 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminManuelCalibrateSetPumpTimes(int slot, int timeInit, int timeReverse,
-                                                 float rate, Activity activity) throws
+                                                 double rate, Activity activity) throws
             JSONException, InterruptedException {
 
         singleton = BluetoothSingleton.getInstance();
@@ -1814,7 +1813,8 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminManuelCalibrateTareScale( Activity activity) throws JSONException, InterruptedException {
+    public void adminManuelCalibrateTareScale( Activity activity) throws JSONException,
+            InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         //generate JSON Format
@@ -2052,7 +2052,8 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReadPumpsStatus(Postexecute postexecute, Activity activity) throws JSONException, InterruptedException {
+    public void adminReadPumpsStatus(Activity activity, Postexecute postexecute)
+            throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_PUMPS);
@@ -2146,7 +2147,8 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReadState(Postexecute postexecute, Activity activity) throws JSONException, InterruptedException {
+    public void adminReadState(Activity activity, Postexecute postexecute)
+            throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_STATE);
@@ -2206,11 +2208,12 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReadCurrentCocktail(Activity activity) throws JSONException, InterruptedException {
+    public void adminReadCurrentCocktail(Activity activity, Postexecute postexecute)
+            throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_COCKTAIL);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -2323,7 +2326,7 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReadErrorStatus(Postexecute postexecute, Activity activity) throws JSONException, InterruptedException {
+    public void adminReadErrorStatus(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_ERROR);
