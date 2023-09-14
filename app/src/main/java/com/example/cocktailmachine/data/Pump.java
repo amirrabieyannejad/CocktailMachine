@@ -4,6 +4,7 @@ package com.example.cocktailmachine.data;
 import android.app.Activity;
 import android.util.Log;
 
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
@@ -391,6 +392,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     default void sendSave(Activity activity) {
         save();
+        if(Dummy.isDummy){
+            return;
+        }
         /*
         //TO DO: AMIR
         JSONObject request = new JSONObject();

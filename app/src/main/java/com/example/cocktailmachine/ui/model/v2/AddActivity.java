@@ -323,18 +323,35 @@ public class AddActivity extends BasicActivity {
         binding.subLayoutAddIngredient.setVisibility(View.VISIBLE);
         binding.subLayoutAddIngredient.setOnClickListener(v ->{
                 Log.i(TAG, "subLayoutAddIngredient: clicked");
-                GetDialog.getIngredientVolume(activity,
-                    !AdminRights.isAdmin(),
-                    (ingredient, tippedName, volume) -> {
-                        if(ingredient == null){
-                            ingredient = Ingredient.makeNew(tippedName);
-                            Log.i(TAG, "subLayoutAddIngredient: Ingredient.makeNew");
-                        }
-                        AddActivity.this.ingredientVolumeHashMap.put(ingredient, volume);
-                        Log.i(TAG, "subLayoutAddIngredient: ing vol added");
-                        AddActivity.this.updateIngredients();
-                        Log.i(TAG, "subLayoutAddIngredient: updateIngredients");
-                    });
+                GetDialog.getIngVol(activity,
+                        !AdminRights.isAdmin(),
+                        new GetDialog.IngredientVolumeSaver() {
+                            private Ingredient ing;
+                            private int vol;
+                            private String tippedName;
+                            @Override
+                            public void save(Ingredient ingredient, String tippedName) {
+                                this.ing = ingredient;
+                                this.tippedName = tippedName;
+                                Log.i(TAG,"IngredientVolumeSaver: save: "+this.ing.toString() +this.tippedName);
+                            }
+
+                            @Override
+                            public void save(Integer volume) {
+                                this.vol = volume;
+                                Log.i(TAG,"IngredientVolumeSaver: save: "+this.vol);
+                            }
+
+                            @Override
+                            public void post() {
+                                Log.i(TAG,"IngredientVolumeSaver: post: ");
+                                AddActivity.this.ingredientVolumeHashMap.put(ing, vol);
+                                Log.i(TAG, "subLayoutAddIngredient: ing vol added");
+                                Log.i(TAG, AddActivity.this.ingredientVolumeHashMap.toString());
+                                AddActivity.this.updateIngredients();
+                                Log.i(TAG, "subLayoutAddIngredient: updateIngredients");
+                            }
+                        });
 
         });
         updateIngredients();
@@ -373,12 +390,12 @@ public class AddActivity extends BasicActivity {
                     AddActivity.this.topics);
             if(AddActivity.this.recipe.sendSave(
                     activity)){
+                Log.i(TAG, "buttonSave: show recipe");
                 GetActivity.goToDisplay(
                         activity,
                         FragmentType.Model,
                         ModelType.RECIPE,
                         AddActivity.this.recipe.getID());
-                Log.i(TAG, "buttonSave: show recipe");
             }else {
                 Log.i(TAG, "buttonSave: saving or sending failed -> toast \"nochmal\"");
                 Toast.makeText(activity, "Speicher nochmal!", Toast.LENGTH_SHORT).show();
@@ -514,10 +531,13 @@ public class AddActivity extends BasicActivity {
     private void updateIngredients(){
         Log.i(TAG, "updateIngredients");
         if(ingredientVolumeHashMap.size()>0) {
+            Log.i(TAG, "updateIngredients size> 0");
+            Log.i(TAG, AddActivity.this.ingredientVolumeHashMap.toString());
             binding.recyclerViewIngredients.setVisibility(View.VISIBLE);
             binding.recyclerViewIngredients.setLayoutManager(getNewLinearLayoutManager());
             binding.recyclerViewIngredients.setAdapter(new IngredientVolAdapter());
         }else{
+            Log.i(TAG, "updateIngredients size<= 0");
             binding.recyclerViewIngredients.setVisibility(View.GONE);
         }
         setAlcoholic();
@@ -660,7 +680,7 @@ public class AddActivity extends BasicActivity {
 
         @Override
         public int getItemCount() {
-            Log.i(TAG, "IngredientVolAdapter: getItemCount");
+            Log.i(TAG, "IngredientVolAdapter: getItemCount"+ingredientVolumeHashMap.size());
             return ingredientVolumeHashMap.size();
         }
     }

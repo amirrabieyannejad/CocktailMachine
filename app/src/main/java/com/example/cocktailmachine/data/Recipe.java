@@ -4,6 +4,7 @@ package com.example.cocktailmachine.data;
 import android.app.Activity;
 import android.app.AlertDialog;
 
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
@@ -295,6 +296,9 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
              */
         save();
+        if(Dummy.isDummy){
+            return true;
+        }
         try {
             JSONArray array = new JSONArray();
             List<Ingredient> is = this.getIngredients();

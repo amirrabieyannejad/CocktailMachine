@@ -82,6 +82,16 @@ public class GetActivity {
         activity.startActivity(intent);
     }
 
+    public static void goToEdit(Activity activity, ModelType modelType, Long id){
+        Log.i(TAG, "goToEdit: "+modelType.toString());
+        Intent intent = new Intent(activity, AddActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString(MODELTYPE, modelType.toString());
+        bundle.putLong(ID, id);
+        intent.putExtras(bundle);
+        activity.startActivity(intent);
+    }
+
     public static void startAgain(Activity activity) {
         Log.i(TAG, "startAgain");
         //TODO: go back to device scan

@@ -307,7 +307,8 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
     static Ingredient searchOrNew(String name){
         Ingredient ingredient = Ingredient.getIngredient(name);
         if(ingredient == null){
-            return Ingredient.makeNew(name);
+            ingredient =  Ingredient.makeNew(name);
+            ingredient.save();
         }
         return ingredient;
     }

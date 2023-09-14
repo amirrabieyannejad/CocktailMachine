@@ -812,6 +812,7 @@ public class GetDialog {
 
     //Get Ingredient + vol
 
+    /*
     public static void getIngredientVolume(Activity activity, boolean available, IngredientVolumeSaver saver){
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Wähle die Zutat und gib das Volumen an!");
@@ -828,10 +829,15 @@ public class GetDialog {
         builder.setNegativeButton("Abbrechen", (dialog, which) -> dialog.dismiss());
         builder.show();
     }
-    interface IngredientVolumeSaver{
-        void save(Ingredient ingredient,String tippedName, Integer volume);
-    }
 
+     */
+    interface IngredientVolumeSaver{
+        //void save(Ingredient ingredient,String tippedName, Integer volume);
+        void save(Ingredient ingredient, String tippedName);
+        void save(Integer volume);
+        void post();
+    }
+    /*
     private static class IngredientVolumeView{
         private final TextView ingredient;
         private final EditText search;
@@ -906,7 +912,140 @@ public class GetDialog {
 
     }
 
+    */
 
+
+
+    public static void getIngVol(Activity activity, boolean available, IngredientVolumeSaver saver){
+        //TODOsetTitle
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Bitte wähle die Zutat!");
+
+        View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
+        GetDialog.GetIngView getIngView =
+                new GetDialog.GetIngView(
+                        activity,
+                        v,
+                        available,
+                        saver);
+
+        builder.setView(v);
+
+        builder.setPositiveButton("Speichern", (dialog, which) -> {
+            Log.i(TAG, "getIngVol : save" );
+            getIngView.save();
+            //getIngView.send();
+            getIngVolVol(activity, saver);
+            dialog.dismiss();
+        });
+        builder.setNeutralButton("Abbrechen", (dialog, which) -> {
+
+            Log.i(TAG, "getIngVol : stop" );
+        });
+        builder.show();
+    }
+
+
+    public static class GetIngView{
+
+        private final TextView t;
+        private final EditText e;
+        private final boolean available;
+        private final View v;
+        private final IngredientVolumeSaver saver;
+        private final Activity activity;
+        private GetIngView(Activity activity, View v, boolean available,
+                           IngredientVolumeSaver saver) {
+            this.activity = activity;
+            this.v = v;
+            this.available = available;
+            this.saver = saver;
+            this.t = v.findViewById(R.id.textView_edit_text);
+            this.e = v.findViewById(R.id.editText_edit_text);
+            this.e.setHint("Wodka");
+            this.t.setText("Zutat: ");
+            this.e.setInputType(InputType.TYPE_CLASS_TEXT);
+
+        }
+
+        private String getName(){
+
+            Log.i(TAG, "GetIngView: getName " );
+            return e.getText().toString();
+        }
+        public void save(){
+            Log.i(TAG, "GetIngView: save " );
+            saver.save(Ingredient.searchOrNew(getName()), getName());
+        }
+
+    }
+
+    //public static void
+    private static void getIngVolVol(Activity activity, IngredientVolumeSaver saver){
+        //TO DO setTitle
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Gib das Volumen an!");
+
+        View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
+        GetDialog.GetIngVolView getIngVolView =
+                new GetDialog.GetIngVolView(
+                        activity,
+                        v,
+                        saver);
+
+        builder.setView(v);
+
+        builder.setPositiveButton("Speichern", (dialog, which) -> {
+            Log.i(TAG, "getIngVolVol : save" );
+            getIngVolView.save();
+            //getIngView.send();
+            saver.post();
+            dialog.dismiss();
+        });
+        builder.setNeutralButton("Abbrechen", (dialog, which) -> {
+            Log.i(TAG, "getIngVolVol : stop" );
+
+        });
+        builder.show();
+    }
+
+
+    public static class GetIngVolView{
+
+        private final TextView t;
+        private final EditText e;
+        private final View v;
+        private final IngredientVolumeSaver saver;
+        private final Activity activity;
+        private GetIngVolView(Activity activity, View v,
+                           IngredientVolumeSaver saver) {
+            this.activity = activity;
+            this.v = v;
+            this.saver = saver;
+            this.t = v.findViewById(R.id.textView_edit_text);
+            this.e = v.findViewById(R.id.editText_edit_text);
+            this.e.setHint("123 ml");
+            this.t.setText("Volumen: ");
+            this.e.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+        }
+
+        private int getVol(){
+            Log.i(TAG, "GetIngView: getVol " );
+            try {
+                return Integer.parseInt(e.getText().toString());
+            }catch (NumberFormatException e){
+                Log.i(TAG, "GetIngView: parse error " );
+                e.printStackTrace();
+            }
+            return -1;
+        }
+        public void save(){
+            Log.i(TAG, "GetIngView: save " );
+            saver.save(getVol());
+        }
+
+    }
 
 
 
