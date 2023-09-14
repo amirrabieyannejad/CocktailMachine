@@ -2,6 +2,7 @@ package com.example.cocktailmachine.ui.model.v2;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,8 @@ import java.util.List;
 import java.util.Random;
 
 public class AddActivity extends BasicActivity {
+    private static final String TAG = "AddActivity";
+
     private ActivityAddBinding binding;
     private Pump pump;
     private Topic topic;
@@ -47,6 +50,7 @@ public class AddActivity extends BasicActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_add);
         binding = ActivityAddBinding.inflate(getLayoutInflater());
@@ -56,6 +60,7 @@ public class AddActivity extends BasicActivity {
 
     @Override
     void preSetUp() {
+        Log.i(TAG, "preSetUp");
         binding.textViewAddTitle.setVisibility(View.GONE);
         binding.editTextAddTitle.setVisibility(View.GONE);
         binding.textViewError.setVisibility(View.GONE);
@@ -78,7 +83,7 @@ public class AddActivity extends BasicActivity {
 
         //binding.includePump;//.getRoot().setVisibility(View.GONE);
 
-        binding.includePump.getRoot().setVisibility(View.VISIBLE);
+        binding.includePump.getRoot().setVisibility(View.GONE);
 
 
 
@@ -86,6 +91,7 @@ public class AddActivity extends BasicActivity {
 
     @Override
     void setUpPump() {
+        Log.i(TAG, "setUpPump");
 
         //nedded
         binding.textViewAddTitle.setVisibility(View.VISIBLE);
@@ -99,33 +105,43 @@ public class AddActivity extends BasicActivity {
         search();
 
         binding.buttonSave.setOnClickListener(v -> {
+            Log.i(TAG, "setUpPump: buttonSave clicked");
             if(binding.includePump.editTextSearchIngredientIng.getText().toString().length()>0) {
+                Log.i(TAG, "setUpPump: buttonSave has title");
                 getIngredient();
             }else{
+                Log.i(TAG, "setUpPump: buttonSave has no title -> toast & stop");
                 Toast.makeText(AddActivity.this, "Nenne die Zutat!", Toast.LENGTH_SHORT).show();
                 return;
             }
             AddActivity.this.pump.setCurrentIngredient(AddActivity.this.ingredient);
             String vol = binding.includePump.editTextNumberSearchIngredientVol.getText().toString();
             if(vol.length()==0){
+                Log.i(TAG, "setUpPump: buttonSave has no vol -> toast & stop");
                 Toast.makeText(AddActivity.this, "Gib das Volumen an!", Toast.LENGTH_SHORT).show();
                 return;
             }
             int level = -1;
             try {
                 level = Integer.parseInt(vol);
+                Log.i(TAG, "setUpPump: buttonSave parsed vol");
             }catch (NumberFormatException e){
+                Log.i(TAG, "setUpPump: buttonSave error parsing vol -> toast & stop");
                 Toast.makeText(AddActivity.this, "Gib eine ganze Zahl für das Volumen an!", Toast.LENGTH_SHORT).show();
                 return;
             }
             try {
                 AddActivity.this.pump.fill(level);
             } catch (MissingIngredientPumpException e) {
+                Log.e(TAG, "setUpPump: buttonSave error missing ingredient -> toast & stop");
+                Log.e(TAG, "setUpPump: buttonSave error missing ingredient: "+e.getMessage());
                 e.printStackTrace();
                 Toast.makeText(AddActivity.this, "Nochmal!", Toast.LENGTH_SHORT).show();
                 return;
             }
             AddActivity.this.pump.sendSave(AddActivity.this);
+            GetActivity.goToDisplay(AddActivity.this, FragmentType.Model, ModelType.PUMP, AddActivity.this.pump.getID());
+            Log.i(TAG, "setUpPump:done");
         });
     }
 
@@ -134,6 +150,7 @@ public class AddActivity extends BasicActivity {
      */
     @Override
     void setUpTopic() {
+        Log.i(TAG, "setUpTopic");
         String title_tag = "Serviervorschlag: ";
 
         //nedded
@@ -145,26 +162,34 @@ public class AddActivity extends BasicActivity {
 
         topic = Topic.getTopic(this.getID());
         if(topic == null){
+            Log.i(TAG, "setUpPump: new topic");
             binding.buttonSave.setOnClickListener(v -> {
+                Log.i(TAG, "setUpPump: buttonSave: clicked");
                 topic = Topic.makeNew(binding.editTextAddTitle.getText().toString(), binding.editTextDescription.getText().toString());
                 if(!topic.save()){
+                    Log.i(TAG, "setUpPump: buttonSave: saving failed");
                     error("Datenbankfehler: Der Serviervorschlag konnte nicht gespeichert werden.");
                     return;
                 }
                 GetActivity.goToDisplay(activity, FragmentType.Model, ModelType.TOPIC, topic.getID());
+                Log.i(TAG, "setUpPump: done");
             });
 
         }else{
+            Log.i(TAG, "setUpPump: buttonSave: old topic");
             binding.editTextAddTitle.setText(topic.getName());
             binding.editTextDescription.setText(topic.getDescription());
             binding.buttonSave.setOnClickListener(v -> {
+                Log.i(TAG, "setUpPump: buttonSave: clicked");
                 topic.setName(binding.editTextAddTitle.getText().toString());
                 topic.setDescription(binding.editTextDescription.getText().toString());
                 if(!topic.save()){
-                    error();
+                    Log.i(TAG, "setUpPump: buttonSave: saving failed");
+                    error("Datenbankfehler: Die Änderung konnte nicht gespeichert werden.");
                     return;
                 }
                 GetActivity.goToDisplay(activity, FragmentType.Model, ModelType.TOPIC, topic.getID());
+                Log.i(TAG, "setUpPump: done");
             });
         }
 
@@ -177,6 +202,7 @@ public class AddActivity extends BasicActivity {
      */
     @Override
     void setUpIngredient() {
+        Log.i(TAG, "setUpIngredient");
         ingredient = Ingredient.getIngredient(this.getID());
         //nedded
         binding.editTextAddTitle.setVisibility(View.VISIBLE);
@@ -204,6 +230,7 @@ public class AddActivity extends BasicActivity {
 
         binding.subLayoutColor.setClickable(true);
         binding.subLayoutColor.setOnClickListener(v -> {
+            Log.i(TAG, "setUpIngredient: color picker clicked");
             ColorPickerPopUp colorPickerPopUp = new ColorPickerPopUp(activity);	// Pass the context.
             colorPickerPopUp.setShowAlpha(true)			// By default show alpha is true.
                     .setDefaultColor(ingredient.getColor())
@@ -214,10 +241,12 @@ public class AddActivity extends BasicActivity {
                             // handle the use of color
                             set_color[0] = color;
                             binding.imageViewColorShow.setColorFilter(color);
+                            Log.i(TAG, "setUpIngredient: color picked");
                         }
 
                         @Override
                         public void onCancel() {
+                            Log.i(TAG, "setUpIngredient: color picker canceled");
                             colorPickerPopUp.dismissDialog();	// Dismiss the dialog.
                         }
                     })
@@ -226,14 +255,17 @@ public class AddActivity extends BasicActivity {
 
 
         if(ingredient == null){
+            Log.i(TAG, "setUpIngredient: new ingredient");
             binding.imageViewColorShow.setColorFilter(set_color[0]);
             binding.buttonSave.setOnClickListener(v -> {
+                Log.i(TAG, "setUpIngredient:buttonSave: clicked");
                 ingredient = Ingredient.makeNew(
                         binding.editTextAddTitle.getText().toString(),
                         binding.switchAlcohol.isChecked(),
                         set_color[0]
                 );
                 if(!ingredient.save()){
+                    Log.i(TAG, "setUpIngredient:buttonSave: saving failed");
                     error("Datenbankfehler: Die Zutat konnte nicht gespeichert werden.");
                     return;
                 }
@@ -241,17 +273,20 @@ public class AddActivity extends BasicActivity {
             });
 
         }else{
+            Log.i(TAG, "setUpIngredient: old ingredient");
             set_color[0] = ingredient.getColor();
             binding.imageViewColorShow.setColorFilter(set_color[0]);
             binding.editTextAddTitle.setText(ingredient.getName());
             binding.switchAlcohol.setChecked(ingredient.isAlcoholic());
 
             binding.buttonSave.setOnClickListener(v -> {
+                Log.i(TAG, "setUpIngredient:buttonSave: clicked");
                 ingredient.setName(binding.editTextAddTitle.getText().toString());
                 ingredient.setAlcoholic(binding.switchAlcohol.isChecked());
                 ingredient.setColor(set_color[0]);
                 if(!ingredient.save()){
-                    error("Datenbankfehler: Die Zutat konnte nicht gespeichert werden.");
+                    Log.i(TAG, "setUpIngredient:buttonSave: saving failed");
+                    error("Datenbankfehler: Die Änderung konnte nicht gespeichert werden.");
                     return;
                 }
                 GetActivity.goToDisplay(activity, FragmentType.Model, ModelType.INGREDIENT, ingredient.getID());
@@ -264,6 +299,7 @@ public class AddActivity extends BasicActivity {
      */
     @Override
     void setUpRecipe() {
+        Log.i(TAG, "setUpRecipe");
         this.recipe = Recipe.getRecipe(this.getID());
 
 
@@ -285,7 +321,8 @@ public class AddActivity extends BasicActivity {
 
 
         binding.subLayoutAddIngredient.setVisibility(View.VISIBLE);
-        binding.subLayoutAddIngredient.setOnClickListener(v ->
+        binding.subLayoutAddIngredient.setOnClickListener(v ->{
+                Log.i(TAG, "subLayoutAddIngredient: clicked");
                 GetDialog.getIngredientVolume(activity,
                     !AdminRights.isAdmin(),
                     (ingredient, tippedName, volume) -> {
@@ -293,23 +330,27 @@ public class AddActivity extends BasicActivity {
                             ingredient = Ingredient.makeNew(tippedName);
                         }
                         AddActivity.this.ingredientVolumeHashMap.put(ingredient, volume);
-                    }));
+                    });});
         updateIngredients();
 
 
         binding.subLayoutAddTopic.setVisibility(View.VISIBLE);
-        binding.subLayoutAddTopic.setOnClickListener(v ->
+        binding.subLayoutAddTopic.setOnClickListener(v ->{
+            Log.i(TAG, "subLayoutAddTopic: clicked");
             GetDialog.addTopic(activity,
-                    topic -> AddActivity.this.topics.add(topic)));
+                    topic -> AddActivity.this.topics.add(topic));});
         updateTopics();
 
 
         //save
         binding.buttonSave.setOnClickListener(v -> {
+            Log.i(TAG, "buttonSave: clicked");
             if(AddActivity.this.recipe == null){
+                Log.i(TAG, "buttonSave: new recipe");
                 AddActivity.this.recipe =
                         Recipe.makeNew(binding.editTextAddTitle.getText().toString());
             }else{
+                Log.i(TAG, "buttonSave: old recipe");
                 AddActivity.this.recipe.setName(binding.editTextAddTitle.getText().toString());
             }
             AddActivity.this.recipe.addOrUpdateAndRemoveNotMentioned(
@@ -323,25 +364,22 @@ public class AddActivity extends BasicActivity {
                         FragmentType.Model,
                         ModelType.RECIPE,
                         AddActivity.this.recipe.getID());
-            }else{
+                Log.i(TAG, "buttonSave: show recipe");
+            }else {
+                Log.i(TAG, "buttonSave: saving or sending failed -> toast \"nochmal\"");
                 Toast.makeText(activity, "Speicher nochmal!", Toast.LENGTH_SHORT).show();
             }
+            Log.i(TAG, "buttonSave: done");
         });
     }
 
     @Override
     void postSetUp() {
+        Log.i(TAG, "postSetUp");
 
         //for all
         binding.buttonStop.setOnClickListener(v -> GetActivity.goBack(activity));
 
-    }
-
-    /**
-     * fehler
-     */
-    void error(){
-        error(null);
     }
 
     /**
@@ -350,6 +388,7 @@ public class AddActivity extends BasicActivity {
      */
     @Nullable
     void error(String msg){
+        Log.i(TAG, "error");
         preSetUp();
         binding.textViewAddTitle.setVisibility(View.VISIBLE);
         binding.textViewAddTitle.setText("Fehler!");
@@ -358,7 +397,6 @@ public class AddActivity extends BasicActivity {
             binding.textViewError.setText(msg);
         }
         binding.buttonSave.setVisibility(View.GONE);
-        binding.buttonStop.setOnClickListener(v -> GetActivity.goToMenu(AddActivity.this));
     }
 
 
@@ -368,6 +406,7 @@ public class AddActivity extends BasicActivity {
     //pump helper
 
     private void search(){
+        Log.i(TAG, "search");
         binding.includePump.editTextSearchIngredientIng.setVisibility(View.VISIBLE);
         binding.includePump.imageButtonSearchIngredientDone.setVisibility(View.VISIBLE);
         binding.includePump.textViewSearchIngredientIng.setVisibility(View.GONE);
@@ -388,10 +427,12 @@ public class AddActivity extends BasicActivity {
 
     }
     private void getIngredient(){
+        Log.i(TAG, "getIngredient");
         this.ingredient = Ingredient.searchOrNew(
                 binding.includePump.editTextSearchIngredientIng.getText().toString());
     }
     private void searchDone(){
+        Log.i(TAG, "searchDone");
         getIngredient();
         binding.includePump.editTextSearchIngredientIng.setVisibility(View.GONE);
         binding.includePump.imageButtonSearchIngredientDone.setVisibility(View.GONE);
@@ -418,6 +459,7 @@ public class AddActivity extends BasicActivity {
     //recipe helper
 
     private boolean isAlcoholic(){
+        Log.i(TAG, "isAlcoholic");
         boolean isAlcoholic = false;
         for(Ingredient i:this.ingredientVolumeHashMap.keySet()){
             isAlcoholic = isAlcoholic || i.isAlcoholic();
@@ -426,6 +468,7 @@ public class AddActivity extends BasicActivity {
     }
 
     private void setAlcoholic(){
+        Log.i(TAG, "setAlcoholic");
         if (this.ingredientVolumeHashMap.size() == 0) {
             binding.includeAlcoholic.getRoot().setVisibility(View.GONE);
             binding.includeNotAlcoholic.getRoot().setVisibility(View.GONE);
@@ -444,6 +487,7 @@ public class AddActivity extends BasicActivity {
      * @return LinearLayoutManager
      */
     private LinearLayoutManager getNewLinearLayoutManager(){
+        Log.i(TAG, "getNewLinearLayoutManager");
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
@@ -454,6 +498,7 @@ public class AddActivity extends BasicActivity {
      * is supposed to reload the current ingredient list
      */
     private void updateIngredients(){
+        Log.i(TAG, "updateIngredients");
         if(ingredientVolumeHashMap.size()>0) {
             binding.recyclerViewIngredients.setVisibility(View.VISIBLE);
             binding.recyclerViewIngredients.setLayoutManager(getNewLinearLayoutManager());
@@ -469,6 +514,7 @@ public class AddActivity extends BasicActivity {
      * is supposed to reload the current topic list
      */
     private void updateTopics() {
+        Log.i(TAG, "updateTopics");
         if(topics.size()>0) {
             binding.recyclerViewTopics.setVisibility(View.VISIBLE);
             binding.recyclerViewTopics.setLayoutManager(getNewLinearLayoutManager());
@@ -490,14 +536,17 @@ public class AddActivity extends BasicActivity {
 
         public StringView(@NonNull View itemView) {
             super(itemView);
+            Log.i(TAG, "StringView");
             txt = itemView.findViewById(R.id.textView_item_little_title);
         }
 
         private void setTxt(@NonNull Ingredient ingredient, int volume){
+            Log.i(TAG, "StringView: setTxt ingredient");
             this.ingredient = ingredient;
             this.volume = volume;
             this.txt.setText(String.format("%s: %s", ingredient.getName(), volume));
             this.txt.setOnLongClickListener(v -> {
+                Log.i(TAG, "StringView: setTxt ingredient clicked");
                 GetDialog.deleteAddElement(AddActivity.this.activity, "die Zutat "+ingredient.getName() ,new Postexecute() {
                     @Override
                     public void post() {
@@ -510,9 +559,11 @@ public class AddActivity extends BasicActivity {
         }
 
         private void setTxt(@NonNull Topic topic){
+            Log.i(TAG, "StringView: setTxt topic");
             this.topic = topic;
             this.txt.setText(topic.getName());
             this.txt.setOnLongClickListener(v -> {
+                Log.i(TAG, "StringView: setTxt topic clicked");
                 GetDialog.deleteAddElement(AddActivity.this.activity, "den Serviervorschlag "+topic.getName() ,new Postexecute() {
                     @Override
                     public void post() {
@@ -535,17 +586,20 @@ public class AddActivity extends BasicActivity {
         @NonNull
         @Override
         public StringView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            Log.i(TAG, "TopicAdapter: onCreateViewHolder");
             return new StringView(LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_little_title, parent, false));
         }
 
         @Override
         public void onBindViewHolder(@NonNull StringView holder, int position) {
+            Log.i(TAG, "TopicAdapter: onBindViewHolder");
             holder.setTxt(topics.get(position));
         }
 
         @Override
         public int getItemCount() {
+            Log.i(TAG, "TopicAdapter: getItemCount");
             return topics.size();
         }
     }
@@ -559,20 +613,26 @@ public class AddActivity extends BasicActivity {
         @NonNull
         @Override
         public StringView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            Log.i(TAG, "IngredientVolAdapter: onCreateViewHolder");
             return new StringView(LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_little_title, parent, false));
         }
 
         @Override
         public void onBindViewHolder(@NonNull StringView holder, int position) {
+            Log.i(TAG, "IngredientVolAdapter: onBindViewHolder");
             Ingredient i = ingredientVolumeHashMap.keySet().toArray(new Ingredient[]{})[position];
             if(i== null){
+                Log.e(TAG, "IngredientVolAdapter:onBindViewHolder getting ingredient failed");
                 return;
             }
             int vol;
             try {
                 vol = ingredientVolumeHashMap.get(i);
             }catch (NullPointerException e){
+                Log.e(TAG, "IngredientVolAdapter:onBindViewHolder getting vol failed");
+                Log.e(TAG, "IngredientVolAdapter:onBindViewHolder"+e.getMessage());
+                e.printStackTrace();
                 vol = -1;
             }
             holder.setTxt(i, vol);
@@ -580,6 +640,7 @@ public class AddActivity extends BasicActivity {
 
         @Override
         public int getItemCount() {
+            Log.i(TAG, "IngredientVolAdapter: getItemCount");
             return ingredientVolumeHashMap.size();
         }
     }

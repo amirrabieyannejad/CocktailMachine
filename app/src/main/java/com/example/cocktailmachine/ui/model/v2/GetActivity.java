@@ -3,6 +3,7 @@ package com.example.cocktailmachine.ui.model.v2;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
@@ -22,7 +23,10 @@ public class GetActivity {
     public static final String ID = "ID";
     public static final String MODELTYPE = "MODELTYPE";
     public static final String FRAGMENTTYPE = "FRAGMENTTYPE";
+    private static final String TAG = "GetActivity";
+
     public static void goToDisplay(Activity activity, FragmentType fragmentType, ModelType modelType){
+        Log.i(TAG, "goToDisplay: "+fragmentType.toString()+"  "+modelType.toString());
         //TO DO
         /*
         Intent intent = new Intent(this, ModelActivity.class);
@@ -47,6 +51,7 @@ public class GetActivity {
     }
 
     public static void goToDisplay(Activity activity, FragmentType fragmentType, ModelType modelType, Long id){
+        Log.i(TAG, "goToDisplay: "+fragmentType.toString()+"  "+modelType.toString()+ "   "+id.toString());
         //TO DO
         /*
         Intent intent = new Intent(this, ModelActivity.class);
@@ -69,6 +74,7 @@ public class GetActivity {
     }
 
     public static void goToAdd(Activity activity, ModelType modelType){
+        Log.i(TAG, "goToAdd: "+modelType.toString());
         Intent intent = new Intent(activity, AddActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString(MODELTYPE, modelType.toString());
@@ -77,16 +83,25 @@ public class GetActivity {
     }
 
     public static void startAgain(Activity activity) {
+        Log.i(TAG, "startAgain");
         //TODO: go back to device scan
         if(Dummy.isDummy) {
+            Log.i(TAG, "startAgain: dummy->menu");
             goToMenu(activity);
         }else{
-            Intent intent = new Intent(activity, DeviceScanActivity.class);
-            activity.startActivity(intent);
+            Log.i(TAG, "startAgain: real->scan");
+            goToScan(activity);
         }
     }
 
+    public static void goToScan(Activity activity){
+        Log.i(TAG, "goToScan");
+        Intent intent = new Intent(activity, DeviceScanActivity.class);
+        activity.startActivity(intent);
+    }
+
     public static void goToFill(Activity activity, Recipe recipe){
+        Log.i(TAG, "goToFill");
         Intent intent = new Intent(activity, FillAnimation.class);
         Bundle bundle = new Bundle();
         bundle.putLong(ID, recipe.getID());
@@ -96,23 +111,27 @@ public class GetActivity {
     }
 
     public static void goToMenu(Activity activity) {
+        Log.i(TAG, "goToMenu");
         Intent intent = new Intent(activity, Menue.class);
         activity.startActivity(intent);
         //activity.finish();
     }
 
     public static void waitNotSet(Activity activity) {
+        Log.i(TAG, "waitNotSet");
         Intent intent = new Intent(activity, WaitNotSetActivity.class);
         activity.startActivity(intent);
     }
 
     public static void goBack(Activity activity) {
+        Log.i(TAG, "goBack");
         if(!activity.moveTaskToBack(true)){
             error(activity);
         }
     }
 
     public static void error(Activity activity){
+        Log.i(TAG, "error");
         Toast.makeText(activity, "Fehler!", Toast.LENGTH_SHORT).show();
         GetActivity.goToMenu(activity);
     }
