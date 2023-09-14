@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.android.bluetoothlegatt"
     android:versionCode="1"
     android:versionName="1.0">
     <!-- Min/target SDK versions (<uses-sdk>) managed by build.gradle -->
@@ -53,15 +54,9 @@
         android:roundIcon="@mipmap/ic_app_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CocktailMachine"
-        tools:targetApi="21">
+        tools:targetApi="26">
         <activity
-            android:name=".ui.calibration.scale.calibrationScale"
-            android:exported="false" />
-        <activity
-            android:name=".ui.model.v2.WaitNotSetActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.singleCocktailChoice.SingleCocktailChoiceIsNotPossible"
+            android:name=".ui.ListOfIngredience.ListIngredience"
             android:exported="false" />
         <activity
             android:name=".ui.model.v2.ListActivity"
@@ -76,9 +71,6 @@
             android:name=".ui.settings.PumpSettingsActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.model.v1.ModelActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.settings.ScaleSettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_scale_settings"
@@ -88,12 +80,14 @@
             android:exported="false"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name=".ui.BluetoothTestEnviroment"
+            android:name=".ui.model.v1.ModelActivity"
             android:exported="true"
-            android:label="BluetoothTestEnviroment" >
-
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.CocktailMachine.NoActionBar">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
         </activity>
-
         <activity
             android:name=".ui.cocktail.cocktailList.CocktailList"
             android:exported="false">
@@ -110,18 +104,11 @@
         </activity>
         <activity
             android:name=".bluetoothlegatt.DeviceScanActivity"
-            android:exported="true">
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
         </activity>
-
         <activity
             android:name=".ui.singleCocktailChoice.SingleCocktailChoice"
             android:exported="true">
@@ -146,11 +133,15 @@
         <activity
             android:name=".ui.Menue"
             android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
-
-
         </activity>
 
         <service
