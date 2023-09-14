@@ -13,6 +13,7 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/textViewDisplayTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
@@ -21,6 +22,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/textViewDisplayDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
@@ -29,36 +31,42 @@
 
 
         <include
+            android:id="@+id/includeDisplayPump"
             layout="@layout/layout_pump"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp" />
 
         <include
+            android:id="@+id/includeDisplayAvailable"
             layout="@layout/layout_available"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp" />
 
         <include
+            android:id="@+id/includeDisplayNotAvailable"
             layout="@layout/layout_not_available"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp" />
 
         <include
+            android:id="@+id/includeDisplayAlcoholic"
             layout="@layout/layout_alcoholic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp" />
 
         <include
+            android:id="@+id/includeDisplayNotAlcoholic"
             layout="@layout/layout_not_alcoholic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp" />
 
         <include
+            android:id="@+id/includeDisplayIngredientAdmin"
             layout="@layout/layout_ingredient_admin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -66,11 +74,13 @@
 
 
         <include
+            android:id="@+id/includeRecipeIngredientsList"
             layout="@layout/layout_list_with_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <include
+            android:id="@+id/includeRecipeTopicsList"
             layout="@layout/layout_list_with_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

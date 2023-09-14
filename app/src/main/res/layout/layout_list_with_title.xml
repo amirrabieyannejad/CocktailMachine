@@ -6,6 +6,7 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/textViewListTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="8dp"
@@ -16,6 +17,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:listitem="@layout/item_title" />

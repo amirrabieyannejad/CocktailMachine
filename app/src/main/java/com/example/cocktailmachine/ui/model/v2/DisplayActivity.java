@@ -33,10 +33,10 @@ public class DisplayActivity extends BasicActivity {
         //PUMP
         binding.includeDisplayPump.getRoot().setVisibility(View.GONE);
         //Availabilities //Alcoholic
-        binding.includeDisplayAlcoholic.getRoot().setVisibility(View.GONE);
-        binding.includeDisplayNotAlcoholic.getRoot().setVisibility(View.GONE);
         binding.includeDisplayAvailable.getRoot().setVisibility(View.GONE);
         binding.includeDisplayNotAvailable.getRoot().setVisibility(View.GONE);
+        binding.includeDisplayAlcoholic.getRoot().setVisibility(View.GONE);
+        binding.includeDisplayNotAlcoholic.getRoot().setVisibility(View.GONE);
         //Ingredient
         binding.includeDisplayIngredientAdmin.getRoot().setVisibility(View.GONE);
         //RECIPE
