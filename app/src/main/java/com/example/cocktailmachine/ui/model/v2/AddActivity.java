@@ -57,27 +57,29 @@ public class AddActivity extends BasicActivity {
     @Override
     void preSetUp() {
         binding.textViewAddTitle.setVisibility(View.GONE);
-
         binding.editTextAddTitle.setVisibility(View.GONE);
+        binding.textViewError.setVisibility(View.GONE);
 
+        binding.editTextDescription.setVisibility(View.GONE);
+
+
+        binding.subLayoutAlcohol.setVisibility(View.GONE);
         binding.switchAlcohol.setVisibility(View.GONE);
         binding.includeAlcoholic.getRoot().setVisibility(View.GONE);
         binding.includeNotAlcoholic.getRoot().setVisibility(View.GONE);
         //binding.includeNotAlcoholic
 
 
-        binding.subLayoutAlcohol.setVisibility(View.GONE);
+        binding.subLayoutColor.setVisibility(View.GONE);
 
-        binding.editTextDescription.setVisibility(View.GONE);
 
-        binding.subLayoutAddTopic.setVisibility(View.GONE);
         binding.subLayoutAddIngredient.setVisibility(View.GONE);
+        binding.subLayoutAddTopic.setVisibility(View.GONE);
 
         //binding.includePump;//.getRoot().setVisibility(View.GONE);
 
+        binding.includePump.getRoot().setVisibility(View.VISIBLE);
 
-
-        binding.textViewError.setVisibility(View.GONE);
 
 
     }
@@ -199,6 +201,7 @@ public class AddActivity extends BasicActivity {
                 binding.includeNotAlcoholic.getRoot().setVisibility(View.VISIBLE);
             }
         });
+
         binding.subLayoutColor.setClickable(true);
         binding.subLayoutColor.setOnClickListener(v -> {
             ColorPickerPopUp colorPickerPopUp = new ColorPickerPopUp(activity);	// Pass the context.
@@ -354,7 +357,8 @@ public class AddActivity extends BasicActivity {
             binding.textViewError.setVisibility(View.VISIBLE);
             binding.textViewError.setText(msg);
         }
-        binding.subLayoutSave.setVisibility(View.GONE);
+        binding.buttonSave.setVisibility(View.GONE);
+        binding.buttonStop.setOnClickListener(v -> GetActivity.goToMenu(AddActivity.this));
     }
 
 

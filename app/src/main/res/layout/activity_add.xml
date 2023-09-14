@@ -46,6 +46,7 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
                 <TextView
+                    android:id="@+id/textViewError"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
@@ -76,11 +77,13 @@
                 android:textIsSelectable="true" />
 
             <LinearLayout
+                android:id="@+id/subLayoutAlcohol"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <Switch
+                    android:id="@+id/switchAlcohol"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minHeight="48dp"
@@ -92,12 +95,14 @@
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 <include
+                    android:id="@+id/includeAlcoholic"
                     layout="@layout/layout_alcoholic"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp" />
 
                 <include
+                    android:id="@+id/includeNotAlcoholic"
                     layout="@layout/layout_not_alcoholic"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -106,6 +111,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/subLayoutColor"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:focusable="true"
@@ -113,6 +119,7 @@
                 android:padding="8dp">
 
                 <ImageView
+                    android:id="@+id/imageViewColorShow"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="0"
@@ -138,8 +145,10 @@
 
 
             <LinearLayout
+                android:id="@+id/subLayoutAddIngredient"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:focusable="true"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -174,6 +183,7 @@
                 </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewIngredients"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="0"
@@ -186,6 +196,7 @@
 
 
             <LinearLayout
+                android:id="@+id/subLayoutAddTopic"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
@@ -222,6 +233,7 @@
                 </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewTopics"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
@@ -233,6 +245,7 @@
 
 
             <include
+                android:id="@+id/includePump"
                 layout="@layout/layout_search_ingredient"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -249,6 +262,7 @@
                 android:paddingTop="16dp">
 
                 <Button
+                    android:id="@+id/buttonStop"
                     style="@style/Widget.Material3.Button.TonalButton.Icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -256,6 +270,7 @@
                     android:text="@string/abbruch" />
 
                 <Button
+                    android:id="@+id/buttonSave"
                     style="@style/Widget.Material3.Button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
