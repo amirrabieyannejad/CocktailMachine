@@ -1,8 +1,6 @@
 package com.example.cocktailmachine.data;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -11,7 +9,6 @@ import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.CalibrateStatus;
 import com.example.cocktailmachine.data.enums.CocktailStatus;
-import com.example.cocktailmachine.data.enums.ErrorStatus;
 import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.v2.GetDialog;
@@ -24,7 +21,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 public class CocktailMachine {
     private static final String TAG = "CocktailMachine";
@@ -187,7 +183,7 @@ public class CocktailMachine {
         }else{
             //TODO: add bluetooth /esp implementation
             try{
-                BluetoothSingleton.getInstance().adminReadPumpsStatus(new Postexecute(){
+                BluetoothSingleton.getInstance().adminReadPumpsStatus(activity, new Postexecute(){
                     @Override
                     public void post() {
                         if(Pump.getPumps().size()==0){
@@ -196,7 +192,7 @@ public class CocktailMachine {
                             set.post();
                         }
                     }
-                },activity);
+                });
                 Log.i(TAG, "isCocktailMachineSet: done");
             } catch (JSONException | InterruptedException|NullPointerException e) {
                 Log.i(TAG, "isCocktailMachineSet: failed");
@@ -518,10 +514,11 @@ public class CocktailMachine {
      * @author Johanna Reidt
      * @return hashmap ingredient to filled volume in glas
      */
-    public static LinkedHashMap<Ingredient, Integer> getCurrentCocktailStatus(Activity activity){
+    public static LinkedHashMap<Ingredient, Integer> getCurrentCocktailStatus(
+            Postexecute postexecute,Activity activity){
         if(isCurrentUser(activity)) {
             try {
-                BluetoothSingleton.getInstance().adminReadCurrentCocktail(activity);
+                BluetoothSingleton.getInstance().adminReadCurrentCocktail(activity, postexecute);
             } catch (JSONException | InterruptedException|NullPointerException e) {
                 e.printStackTrace();
                 Log.i(TAG, "getCurrentCocktailStatus failed");
@@ -530,6 +527,9 @@ public class CocktailMachine {
         }else{
             current = null;
         }
+        return current;
+    }
+    public static LinkedHashMap<Ingredient, Integer> geterCurrentCocktailStatus() {
         return current;
     }
 
@@ -946,13 +946,13 @@ public class CocktailMachine {
     public static void reset(Activity activity){
 
         try {
-            BluetoothSingleton.getInstance().adminReset(new Postexecute(){
+            BluetoothSingleton.getInstance().adminReset(activity, new Postexecute(){
                 @Override
                 public void post() {
                     Toast.makeText(activity, "Reset erledigt!",Toast.LENGTH_SHORT).show();
                 }
 
-            },activity);
+            });
         } catch (JSONException | InterruptedException|NullPointerException e) {
             e.printStackTrace();
             Toast.makeText(activity, "Reset ist fehlgeschlagen!", Toast.LENGTH_SHORT).show();
