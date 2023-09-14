@@ -39,12 +39,14 @@ public class ListIngredience extends AppCompatActivity {
             Log.i(TAG, "onCreate: DataBase is already initialized");
         }
 
-        try {
-            listIngredients = (List<Ingredient>) DatabaseConnection.getDataBase().getAllIngredients();
+
+        listIngredients = Ingredient.getAllIngredients();
+        /**try {
+
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
             Log.e(TAG, "ListIngredience : Error "+ e.toString());
-        }
+        }*/
 
         System.out.println("");
     }
