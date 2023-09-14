@@ -17,7 +17,7 @@ public class RecyclerAdapterListIngredience {
 
         public IngtedienceViewHolder(View itemView) {
             super(itemView);
-            ingtedienceName = itemView.findViewById(R.id.textViewProjektBearbeitenNameDesNutzers);
+            ingtedienceName = itemView.findViewById(R.id.textViewListElementIngredientName);
         }
     }
 }
