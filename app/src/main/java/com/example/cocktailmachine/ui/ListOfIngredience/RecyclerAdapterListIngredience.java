@@ -11,16 +11,13 @@ public class RecyclerAdapterListIngredience {
 
 
     public static class IngtedienceViewHolder extends RecyclerView.ViewHolder {
-        public TextView userName;
-        public TextView bearbeiter;
-        public TextView verwalter;
+        public TextView ingtedienceName;
+
 
 
         public IngtedienceViewHolder(View itemView) {
             super(itemView);
-            userName = itemView.findViewById(R.id.textViewProjektBearbeitenNameDesNutzers);
-            bearbeiter = itemView.findViewById(R.id.textViewProjektBearbeitenBearbeiter);
-            verwalter = itemView.findViewById(R.id.textViewProjektBearbeitenVerwalter);
+            ingtedienceName = itemView.findViewById(R.id.textViewProjektBearbeitenNameDesNutzers);
         }
     }
 }
