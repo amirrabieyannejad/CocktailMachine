@@ -23,7 +23,9 @@ public class DisplayActivity extends BasicActivity {
         super.onCreate(savedInstanceState);//calls read Intent
         binding = ActivityDisplayBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        DatabaseConnection.initializeSingleton(this);
+        if(!DatabaseConnection.isInitialized()) {
+            DatabaseConnection.initializeSingleton(this);
+        }
     }
 
     @Override

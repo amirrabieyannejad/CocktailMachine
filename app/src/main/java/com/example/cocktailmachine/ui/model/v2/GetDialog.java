@@ -262,7 +262,10 @@ public class GetDialog {
     }
 
     public static void firstAutomaticDialog(Activity activity){
-        DatabaseConnection.initializeSingleton(activity);
+        //DatabaseConnection.initializeSingleton(activity);
+        if(!DatabaseConnection.isInitialized()) {
+            DatabaseConnection.initializeSingleton(activity);
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Automatische Kalibrierung");
         builder.setMessage("Bitte folge den Anweisungen schrittweise. " +

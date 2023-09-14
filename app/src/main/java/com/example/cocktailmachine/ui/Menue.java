@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
+import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
 import com.example.cocktailmachine.ui.calibration.scale.calibrationScale;
@@ -68,6 +69,10 @@ public class Menue extends AppCompatActivity {
             CocktailMachineCalibration.setIsDone(true);
         }else if (!CocktailMachineCalibration.isIsDone()){
             CocktailMachineCalibration.start(this);
+        }
+
+        if(!DatabaseConnection.isInitialized()){
+            DatabaseConnection.initializeSingleton(this);
         }
 
     }

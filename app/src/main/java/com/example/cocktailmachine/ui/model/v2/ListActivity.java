@@ -27,7 +27,9 @@ public class ListActivity extends BasicActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityListBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        DatabaseConnection.initializeSingleton(this);
+        if(!DatabaseConnection.isInitialized()) {
+            DatabaseConnection.initializeSingleton(this);
+        }
         //setContentView(R.layout.activity_list);
     }
     @Override

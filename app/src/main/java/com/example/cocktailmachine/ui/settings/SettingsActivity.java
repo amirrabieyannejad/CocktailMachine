@@ -41,6 +41,9 @@ public class SettingsActivity extends AppCompatActivity {
         Log.i(TAG, "onCreate: binding set");
         setContentView(binding.getRoot());
         Log.i(TAG, "onCreate: setContentView");
+        if(!DatabaseConnection.isInitialized()) {
+            DatabaseConnection.initializeSingleton(this);
+        }
         //setContentView(R.layout.activity_settings);
         /*
         if (savedInstanceState == null) {
@@ -211,7 +214,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     //DB
     /**
-     * TODO db title, maybe delete
+     * TO DO db title, maybe delete
      * @author Johanna Reidt
      * @param view
      */
@@ -225,7 +228,12 @@ public class SettingsActivity extends AppCompatActivity {
      * @param view
      */
     public void loadNew(View view) {
-        DatabaseConnection.initializeSingleton(this);
+        /*
+        if(!DatabaseConnection.isInitialized()) {
+            DatabaseConnection.initializeSingleton(this);
+        }
+
+         */
         DatabaseConnection.localRefresh();
         Toast.makeText(this,"Lade aus der Datenbank neu!",Toast.LENGTH_SHORT).show();
     }

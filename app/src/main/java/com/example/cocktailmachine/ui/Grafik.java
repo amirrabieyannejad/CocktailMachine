@@ -74,7 +74,10 @@ public class Grafik extends AppCompatActivity {
 
         DatabaseConnection.initialize_singleton(this.getBaseContext());
 */
-        DatabaseConnection.initializeSingleton(this);
+        //DatabaseConnection.initializeSingleton(this);
+        if(!DatabaseConnection.isInitialized()) {
+            DatabaseConnection.initializeSingleton(this);
+        }
         Integer idRecipe = 0;
 
         Ingredient tequila = new SQLIngredient(1,"Tequila", true, Color.RED);

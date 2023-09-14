@@ -55,7 +55,9 @@ public class AddActivity extends BasicActivity {
         //setContentView(R.layout.activity_add);
         binding = ActivityAddBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        DatabaseConnection.initializeSingleton(this);
+        if(!DatabaseConnection.isInitialized()) {
+            DatabaseConnection.initializeSingleton(this);
+        }
     }
 
     @Override
