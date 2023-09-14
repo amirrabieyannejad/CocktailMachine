@@ -53,9 +53,16 @@ public class DisplayActivity extends BasicActivity {
     @Override
     void setUpRecipe(){
         Recipe recipe = Recipe.getRecipe(getID());
-        assert recipe != null;
+        if(recipe == null){
+            binding.textViewDisplayTitle.setText("Fehler");
+            binding.textViewDisplayDescription.setText("Das Rezept konnte nicht gefunden werden.");
+            binding.textViewDisplayTitle.setVisibility(View.VISIBLE);
+            binding.textViewDisplayDescription.setVisibility(View.VISIBLE);
+            return;
+        }
         recipe.loadAvailable();
         binding.textViewDisplayTitle.setText(recipe.getName());
+        binding.textViewDisplayTitle.setVisibility(View.VISIBLE);
         //TO DO: AlertDialog to change title if admin
         setChangeTitleDialog();
         if(recipe.isAvailable()){
@@ -112,7 +119,15 @@ public class DisplayActivity extends BasicActivity {
     @Override
     void setUpIngredient(){
         Ingredient ingredient = Ingredient.getIngredient(getID());
+        if(ingredient == null){
+            binding.textViewDisplayTitle.setText("Fehler");
+            binding.textViewDisplayDescription.setText("Die Zutat konnte nicht gefunden werden.");
+            binding.textViewDisplayTitle.setVisibility(View.VISIBLE);
+            binding.textViewDisplayDescription.setVisibility(View.VISIBLE);
+            return;
+        }
         binding.textViewDisplayTitle.setText(ingredient.getName());
+        binding.textViewDisplayTitle.setVisibility(View.VISIBLE);
         //TO DO: AlertDialog to change title if admin
         binding.textViewDisplayTitle.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -164,7 +179,16 @@ public class DisplayActivity extends BasicActivity {
     @Override
     void setUpTopic(){
         Topic topic = Topic.getTopic(getID());
+        if(topic == null){
+            binding.textViewDisplayTitle.setText("Fehler");
+            binding.textViewDisplayDescription.setText("Der Serviervorschlag konnte nicht gefunden werden.");
+            binding.textViewDisplayTitle.setVisibility(View.VISIBLE);
+            binding.textViewDisplayDescription.setVisibility(View.VISIBLE);
+            return;
+        }
         binding.textViewDisplayTitle.setText(topic.getName());
+        binding.textViewDisplayTitle.setVisibility(View.VISIBLE);
+
         //TO DO: AlertDialog to change title if admin
         setChangeTitleDialog();
         binding.textViewDisplayDescription.setText(topic.getDescription());
@@ -193,6 +217,13 @@ public class DisplayActivity extends BasicActivity {
     @Override
     void setUpPump(){
         Pump pump = Pump.getPump(getID());
+        if(pump == null){
+            binding.textViewDisplayTitle.setText("Fehler");
+            binding.textViewDisplayDescription.setText("Der Pumpe konnte nicht gefunden werden.");
+            binding.textViewDisplayTitle.setVisibility(View.VISIBLE);
+            binding.textViewDisplayDescription.setVisibility(View.VISIBLE);
+            return;
+        }
         binding.textViewDisplayTitle.setText(String.valueOf(pump.getID()));
         //TO DO: AlertDialog to change title if admin ----NOT BECAUSE PUMP NO NAME
         binding.includeDisplayPump.getRoot().setVisibility(View.VISIBLE);

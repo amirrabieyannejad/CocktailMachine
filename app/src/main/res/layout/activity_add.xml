@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.model.v2.AddActivity">
+
+
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:id="@+id/sub_layout_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textViewAddTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:text="@string/title"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display3"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/editTextAddTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:ems="10"
+                    android:gravity="bottom|start"
+                    android:hint="Füge einen Namen ein."
+                    android:inputType="text"
+                    android:minHeight="48dp"
+                    android:padding="8dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+                <TextView
+                    android:id="@+id/textView_error"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:padding="8dp"
+                    android:text="Fehlerbeschreibung!"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/editTextDescription"
+                style="@style/Widget.AppCompat.EditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="16dp"
+                android:ems="10"
+                android:gravity="bottom|start"
+                android:hint="Füge eine Beschreibung ein."
+                android:inputType="textMultiLine"
+                android:minHeight="48dp"
+                android:minLines="5"
+                android:nestedScrollingEnabled="true"
+                android:padding="8dp"
+                android:scrollbars="vertical"
+                android:textAlignment="gravity"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textIsSelectable="true"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/sub_layout_alcohol"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <Switch
+                    android:id="@+id/switch_alcohol"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:padding="8dp"
+                    android:paddingStart="40dp"
+                    android:switchTextAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:text="ist alkoholisch"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:visibility="gone" />
+
+                <include
+                    android:id="@+id/include_alcoholic"
+                    layout="@layout/layout_alcoholic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp" />
+
+                <include
+                    android:id="@+id/include_not_alcoholic"
+                    layout="@layout/layout_not_alcoholic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sub_layout_color"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:focusable="true"
+                android:orientation="horizontal"
+                android:padding="8dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/imageView_color_show"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
+                    android:focusable="false"
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:padding="8dp"
+                    android:paddingStart="40dp"
+                    android:src="@tools:sample/avatars"
+                    app:tint="#FFEB3B"
+                    tools:srcCompat="@android:drawable/ic_notification_overlay" />
+
+                <TextView
+                    android:id="@+id/textView_change_color"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:focusable="false"
+                    android:gravity="center_vertical"
+                    android:minHeight="40dp"
+                    android:text="Ändere die Farbe!"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/sub_layout_add_ingredient"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:id="@+id/sub_layout_add_row_ingredient"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView_ingredient_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0"
+                        android:gravity="center_vertical"
+                        android:minWidth="48dp"
+                        android:minHeight="48dp"
+                        android:padding="8dp"
+                        android:paddingStart="40dp"
+                        android:text="Füge eine Zutat hinzu. "
+                        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+                    <ImageButton
+                        android:id="@+id/imageButton_add_ingredient"
+                        style="@style/Widget.AppCompat.ImageButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="4"
+                        android:background="@color/cardview_shadow_end_color"
+                        android:contentDescription="add ingredient"
+                        android:minWidth="48dp"
+                        android:minHeight="48dp"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_add"
+                        app:tint="@color/design_default_color_primary" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView_ingredients"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:padding="8dp"
+                    android:paddingStart="56dp"
+                    tools:itemCount="4"
+                    tools:listitem="@layout/item_little_title" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/sub_layout_add_topic"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView_topic_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0"
+                        android:gravity="center_vertical"
+                        android:minWidth="48dp"
+                        android:minHeight="48dp"
+                        android:padding="8dp"
+                        android:paddingStart="40dp"
+                        android:text="Füge einen Serviervorschlag hinzu. "
+                        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+                    <ImageButton
+                        android:id="@+id/imageButton_add_topic"
+                        style="@style/Widget.AppCompat.ImageButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="4"
+                        android:background="@color/cardview_shadow_end_color"
+                        android:contentDescription="add topic"
+                        android:minWidth="48dp"
+                        android:minHeight="48dp"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_add"
+                        app:tint="@color/design_default_color_primary" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView_topics"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:paddingStart="56dp"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/item_little_title" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"></LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sub_layout_save"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal"
+                android:padding="8dp"
+                android:paddingTop="16dp">
+
+                <Button
+                    android:id="@+id/button_stop"
+                    style="@style/Widget.Material3.Button.TonalButton.Icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Abbruch" />
+
+                <Button
+                    android:id="@+id/button_save"
+                    style="@style/Widget.Material3.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Speichern" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

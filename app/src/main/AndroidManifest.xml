@@ -55,6 +55,11 @@
         android:theme="@style/Theme.CocktailMachine"
         tools:targetApi="21">
         <activity
+            android:name=".ui.model.v2.AddActivity"
+            android:exported="false"
+            android:label="@string/title_activity_add"
+            android:theme="@style/Theme.CocktailMachine" />
+        <activity
             android:name=".ui.calibration.scale.calibrationScale"
             android:exported="false" />
         <activity

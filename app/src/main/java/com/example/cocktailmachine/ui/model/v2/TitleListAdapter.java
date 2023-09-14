@@ -24,6 +24,7 @@ import java.util.List;
  * @project CocktailMachine
  */
 public class TitleListAdapter extends RecyclerView.Adapter<TitleListAdapter.TitleRow>{
+    private static String TAG = "TitleListAdapter";
 
     List<Long> IDs = new ArrayList<>();
     List<String> names = new ArrayList<>();
@@ -36,6 +37,11 @@ public class TitleListAdapter extends RecyclerView.Adapter<TitleListAdapter.Titl
         this.modelType = modelType;
         this.activity = activity;
         this.names = names;
+        Log.i(TAG, "TitleListAdapter: ");
+        Log.i(TAG, "IDs: "+IDs.toString());
+        Log.i(TAG, "modelType: "+modelType.toString());
+        Log.i(TAG, "activity: "+activity.toString());
+        Log.i(TAG, "names: "+names.toString());
     }
 
 
@@ -72,13 +78,13 @@ public class TitleListAdapter extends RecyclerView.Adapter<TitleListAdapter.Titl
         public TitleRow(@NonNull View itemView) {
             super(itemView);
             if(itemView == null){
-                Log.i(TAG, "itemView is null");
+                Log.w(TAG, "itemView is null");
             }if(itemView.getContext()==null){
-                Log.i(TAG, "itemView is null");
+                Log.w(TAG, "itemView is null");
             }
             title = itemView.findViewById(R.id.textView_item_title);
             if(title == null){
-                Log.i(TAG, "TextView title is null");
+                Log.w(TAG, "TextView title is null");
             }
         }
 
