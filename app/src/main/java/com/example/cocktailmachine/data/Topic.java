@@ -73,7 +73,8 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
         try {
             return DatabaseConnection.getDataBase().getTopicWith(name);
         } catch (NotInitializedDBException e) {
-            Log.i(TAG, "getTopic: NotInitializedDBException");
+            Log.e(TAG, "getTopic: NotInitializedDBException");
+            Log.e(TAG, "getTopic: "+e.getMessage());
             e.printStackTrace();
             //return Topic.makeNew(name, "Füll bitte bei Gelegenheit aus!");
         }

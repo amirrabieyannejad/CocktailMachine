@@ -668,15 +668,20 @@ public class GetDialog {
 
 
     static void deleteAddElement(Activity activity, String name, Postexecute pickedDeleted){
+        Log.i(TAG, "deleteAddElement");
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Löschen");
         builder.setMessage("Möchtest du wirklich "+name+" aus dem Rezept löschen?");
         builder.setNegativeButton("Nein", (dialog, which) -> {
+            Log.i(TAG, "deleteAddElement: Nein");
             dialog.dismiss();
-            pickedDeleted.post();
         });
         builder.setCancelable(false);
         builder.setPositiveButton("Ja", (dialog, which) -> {
+            Log.i(TAG, "deleteAddElement: Ja");
+            Log.i(TAG, "deleteAddElement: pickedDeleted post");
+            pickedDeleted.post();
+            Log.i(TAG, "deleteAddElement: pickedDeleted post done");
             dialog.dismiss();
         });
         builder.show();
@@ -852,7 +857,7 @@ public class GetDialog {
                 this.ingredientNames = Ingredient.getAllIngredientNames();
             }
             setSearchItems();
-            search();
+            setSearch();
         }
 
         Ingredient getIngredient(){
@@ -864,18 +869,28 @@ public class GetDialog {
         }
 
         int getVolume(){
-            return Integer.parseInt(volume.getText().toString());
+            Log.i(TAG, "IngredientVolumeView: getVolume ");
+            try {
+                return Integer.parseInt(volume.getText().toString());
+            }catch (NumberFormatException e){
+                Log.e(TAG, "IngredientVolumeView: getVolume error");
+                Log.e(TAG, "IngredientVolumeView: getVolume "+e.getMessage());
+                e.printStackTrace();
+            }
+            return -1;
         }
 
         private void done(){
+            Log.i(TAG, "IngredientVolumeView: done ");
             this.search.setVisibility(View.GONE);
             this.done.setVisibility(View.GONE);
             this.ingredient.setVisibility(View.VISIBLE);
             this.ingredient.setText(this.getIngredient().getName());
-            this.ingredient.setOnClickListener(v -> search());
+            this.ingredient.setOnClickListener(v -> setSearch());
         }
 
-        private void search(){
+        private void setSearch(){
+            Log.i(TAG, "IngredientVolumeView: setSearch ");
             this.search.setVisibility(View.VISIBLE);
             this.done.setVisibility(View.VISIBLE);
             this.ingredient.setVisibility(View.GONE);
@@ -884,6 +899,7 @@ public class GetDialog {
         }
 
         private void setSearchItems(){
+            Log.i(TAG, "IngredientVolumeView: setSearchItems ");
             //this.search.setAutofillHints(this.ingredientNames);
             //TODO: set autotfill hints
         }
@@ -902,34 +918,26 @@ public class GetDialog {
 
     //Get Topic
     public static void addTopic(Activity activity, TopicSaver topicSaver){
+        Log.i(TAG, "addTopic");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Wähle einen Serviervorschlag!");
         String[] names = Topic.getTopicTitles().toArray(new String[0]);
-        ArrayList<Integer> choosen = new ArrayList<>();
-        builder.setItems(names, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //recipe.addOrUpdate(Topic.getTopic(names[which]));
-                choosen.add( which);
-            }
+        builder.setItems(names, (dialog, which) -> {
+            Log.i(TAG, "addTopic: picked "+names[which]);
+
+            //recipe.addOrUpdate(Topic.getTopic(names[which]));
+            topicSaver.save(Topic.getTopic(names[which]), dialog);
         });
-        builder.setPositiveButton("Ja", (dialog, which) -> {
-            //recipe.addOrUpdate(Topic.getTopic(choosen.get(choosen.size()-1)));
-            if(choosen.size()==0){
-                Toast.makeText(activity, "Nichts gewählt!", Toast.LENGTH_SHORT).show();
-            }else {
-                dialog.dismiss();
-                topicSaver.save(Topic.getTopic(names[choosen.get(choosen.size()-1)]));
-            }
-        });
-        builder.setNegativeButton("Abbrechen", (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton("Abbrechen", (dialog, which) -> {
+            Log.i(TAG, "addTopic: stop, none picked");
+            dialog.dismiss();});
         builder.show();
 
     }
 
     interface TopicSaver{
-        void save(Topic topic);
+        void save(Topic topic, DialogInterface dialogInterface);
     }
 
 

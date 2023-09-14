@@ -328,9 +328,15 @@ public class AddActivity extends BasicActivity {
                     (ingredient, tippedName, volume) -> {
                         if(ingredient == null){
                             ingredient = Ingredient.makeNew(tippedName);
+                            Log.i(TAG, "subLayoutAddIngredient: Ingredient.makeNew");
                         }
                         AddActivity.this.ingredientVolumeHashMap.put(ingredient, volume);
-                    });});
+                        Log.i(TAG, "subLayoutAddIngredient: ing vol added");
+                        AddActivity.this.updateIngredients();
+                        Log.i(TAG, "subLayoutAddIngredient: updateIngredients");
+                    });
+
+        });
         updateIngredients();
 
 
@@ -338,7 +344,15 @@ public class AddActivity extends BasicActivity {
         binding.subLayoutAddTopic.setOnClickListener(v ->{
             Log.i(TAG, "subLayoutAddTopic: clicked");
             GetDialog.addTopic(activity,
-                    topic -> AddActivity.this.topics.add(topic));});
+                    (t, d) -> {
+                        AddActivity.this.topics.add(t);
+                        Log.i(TAG, "subLayoutAddTopic: topic added");
+                        d.dismiss();
+                        Log.i(TAG, "subLayoutAddTopic: dialog dimiss");
+                        AddActivity.this.updateTopics();
+                        Log.i(TAG, "subLayoutAddTopic: updateTopics");
+            });
+        });
         updateTopics();
 
 
@@ -550,8 +564,11 @@ public class AddActivity extends BasicActivity {
                 GetDialog.deleteAddElement(AddActivity.this.activity, "die Zutat "+ingredient.getName() ,new Postexecute() {
                     @Override
                     public void post() {
+                        Log.i(TAG,"StringView: setTxt choose to delete");
                         AddActivity.this.ingredientVolumeHashMap.remove(ingredient);
+                        Log.i(TAG,"StringView: setTxt remove from hashmap");
                         AddActivity.this.updateIngredients();
+                        Log.i(TAG,"StringView: setTxt updateIngredients");
                     }
                 });
                 return true;
@@ -567,8 +584,11 @@ public class AddActivity extends BasicActivity {
                 GetDialog.deleteAddElement(AddActivity.this.activity, "den Serviervorschlag "+topic.getName() ,new Postexecute() {
                     @Override
                     public void post() {
+                        Log.i(TAG,"StringView: setTxt choose to delete");
                         AddActivity.this.topics.remove(topic);
+                        Log.i(TAG,"StringView: setTxt remove from list");
                         AddActivity.this.updateTopics();
+                        Log.i(TAG,"StringView: setTxt updateTopics");
                     }
                 });
                 return true;

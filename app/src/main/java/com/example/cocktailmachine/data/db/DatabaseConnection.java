@@ -790,7 +790,9 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         List<Topic> ts = getTopicsWith(needle);
         if(!ts.isEmpty()){
             Log.i(TAG, "getTopicWith not isEmpty");
-            return ts.get(0);
+            Topic res = ts.get(0);
+            Log.i(TAG, "getTopicWith topic. "+res.getName());
+            return res;
         }
         if(makeNew) {
             Log.i(TAG, "getTopicWith makeNew");
