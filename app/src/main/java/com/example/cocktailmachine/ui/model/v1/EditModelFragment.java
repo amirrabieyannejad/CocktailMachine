@@ -284,7 +284,7 @@ public class EditModelFragment extends Fragment {
             binding.includeNewPump.includeNewPumpFillEmpty.editTextPumpFillEmptyVolume.setText(null);
         });
         final List<Ingredient> ingredients;
-       ArrayList<String> ingredientNames = new ArrayList<>();
+        ArrayList<String> ingredientNames = new ArrayList<>();
         ingredients = Ingredient.getAllIngredients();
         for(Ingredient ingredient: ingredients){
             ingredientNames.add(ingredient.getName());

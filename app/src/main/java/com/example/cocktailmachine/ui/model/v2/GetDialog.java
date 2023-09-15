@@ -2,11 +2,13 @@ package com.example.cocktailmachine.ui.model.v2;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +32,7 @@ import com.example.cocktailmachine.ui.model.ModelType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -665,6 +668,20 @@ public class GetDialog {
 
 
 
+    static void deleteAddElement(Activity activity, String name, Postexecute pickedDeleted){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Löschen");
+        builder.setMessage("Möchtest du wirklich "+name+" aus dem Rezept löschen?");
+        builder.setNegativeButton("Nein", (dialog, which) -> {
+            dialog.dismiss();
+            pickedDeleted.post();
+        });
+        builder.setCancelable(false);
+        builder.setPositiveButton("Ja", (dialog, which) -> {
+            dialog.dismiss();
+        });
+        builder.show();
+    }
 
 
 
@@ -711,6 +728,7 @@ public class GetDialog {
         });
         builder.show();
     }
+
 
 
     public static class TitleChangeView{
@@ -774,6 +792,153 @@ public class GetDialog {
             }
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //Get Ingredient + vol
+
+    public static void getIngredientVolume(Activity activity, boolean available, IngredientVolumeSaver saver){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Wähle die Zutat und gib das Volumen an!");
+
+        View v = activity.getLayoutInflater().inflate(R.layout.layout_search_ingredient, null);
+        IngredientVolumeView iv = new IngredientVolumeView(activity, v, available);
+        builder.setView(v);
+        builder.setPositiveButton("Speichern", (dialog, which) -> {
+            saver.save(
+                    iv.getIngredient(),
+                    iv.getIngredientTippedName(),
+                    iv.getVolume());
+        });
+        builder.setNegativeButton("Abbrechen", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
+    interface IngredientVolumeSaver{
+        void save(Ingredient ingredient,String tippedName, Integer volume);
+    }
+
+    private static class IngredientVolumeView{
+        private final TextView ingredient;
+        private final EditText search;
+        private final ImageButton done;
+        private final EditText volume;
+        private final Activity activity;
+        private final View view;
+        private final List<String> ingredientNames;
+
+        private IngredientVolumeView(Activity activity,
+                                     View view,
+                                     boolean only_available){
+            this.activity = activity;
+            this.view = view;
+            this.search = activity.findViewById(R.id.editText_search_ingredient_ing);
+            this.done = activity.findViewById(R.id.imageButton_search_ingredient_done);
+            this.ingredient = activity.findViewById(R.id.textView_search_ingredient_ing);
+            this.volume = activity.findViewById(R.id.editTextNumber_search_ingredient_vol);
+
+            if(only_available) {
+                this.ingredientNames = Ingredient.getAvailableIngredientNames();
+            }else{
+                this.ingredientNames = Ingredient.getAllIngredientNames();
+            }
+            setSearchItems();
+            search();
+        }
+
+        Ingredient getIngredient(){
+            return Ingredient.getIngredient(search.getText().toString());
+        }
+
+        String getIngredientTippedName(){
+            return search.getText().toString();
+        }
+
+        int getVolume(){
+            return Integer.parseInt(volume.getText().toString());
+        }
+
+        private void done(){
+            this.search.setVisibility(View.GONE);
+            this.done.setVisibility(View.GONE);
+            this.ingredient.setVisibility(View.VISIBLE);
+            this.ingredient.setText(this.getIngredient().getName());
+            this.ingredient.setOnClickListener(v -> search());
+        }
+
+        private void search(){
+            this.search.setVisibility(View.VISIBLE);
+            this.done.setVisibility(View.VISIBLE);
+            this.ingredient.setVisibility(View.GONE);
+            this.done.setOnClickListener(v -> done());
+
+        }
+
+        private void setSearchItems(){
+            //this.search.setAutofillHints(this.ingredientNames);
+            //TODO: set sutotfill hints
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+    //Get Topic
+    public static void addTopic(Activity activity, TopicSaver topicSaver){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Wähle einen Serviervorschlag!");
+        String[] names = Topic.getTopicTitles().toArray(new String[0]);
+        ArrayList<Integer> choosen = new ArrayList<>();
+        builder.setItems(names, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //recipe.addOrUpdate(Topic.getTopic(names[which]));
+                choosen.add( which);
+            }
+        });
+        builder.setPositiveButton("Ja", (dialog, which) -> {
+            //recipe.addOrUpdate(Topic.getTopic(choosen.get(choosen.size()-1)));
+            if(choosen.size()==0){
+                Toast.makeText(activity, "Nichts gewählt!", Toast.LENGTH_SHORT).show();
+            }else {
+                dialog.dismiss();
+                topicSaver.save(Topic.getTopic(names[choosen.get(choosen.size()-1)]));
+            }
+        });
+        builder.setNegativeButton("Abbrechen", (dialog, which) -> dialog.dismiss());
+        builder.show();
+
+    }
+
+    interface TopicSaver{
+        void save(Topic topic);
+    }
+
+
+
+
+
+
+
 
 
 
@@ -939,6 +1104,15 @@ public class GetDialog {
             errorMessage(activity);
         }
     }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1140,6 +1314,13 @@ public class GetDialog {
 
 
 
+
+
+
+
+
+
+
     //Pumpen times
     public static void calibratePumpTimes(Activity activity, Pump pump){
         if (pump != null) {
@@ -1291,6 +1472,17 @@ public class GetDialog {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
     //Alle Pumpenkalibrieren
 
     public static void setPumpNumber(Activity activity) {
@@ -1356,6 +1548,19 @@ public class GetDialog {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
     //Calibrate Scale
 
     /**
@@ -1393,6 +1598,8 @@ public class GetDialog {
             CocktailMachine.sendCalibrateScale(super.activity, super.getFloat() );
         }
     }
+
+
 
 
 
@@ -1475,6 +1682,25 @@ public class GetDialog {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     //Alcoholic
     public static void setAlcoholic(Activity activity, Ingredient ingredient){
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -1497,6 +1723,23 @@ public class GetDialog {
         });
         builder.show();
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1563,6 +1806,21 @@ public class GetDialog {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     //Pick a ingredient for pump
     public static void chooseIngredient(Activity activity, Pump pump){
         List<Ingredient> ingredients= Ingredient.getAllIngredients();
@@ -1612,6 +1870,17 @@ public class GetDialog {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
     //DELETE FROM RECIPE
     /**
      * delete element with id from type modeltype is deleted
@@ -1644,6 +1913,18 @@ public class GetDialog {
         });
         builder.show();
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

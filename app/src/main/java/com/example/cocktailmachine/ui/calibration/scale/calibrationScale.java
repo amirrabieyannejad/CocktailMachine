@@ -19,12 +19,12 @@ public class calibrationScale extends AppCompatActivity {
         setContentView(R.layout.activity_calibration_scale);
         blSingelton.connectGatt(this);
         try {
-            blSingelton.adminReadState(new Postexecute() {
+            blSingelton.adminReadState(this, new Postexecute() {
                 @Override
                 public void post() {
                     System.out.println("Wurde gelesen");
                 }
-            },this);
+            });
         } catch (JSONException | InterruptedException e) {
             throw new RuntimeException(e);
         }

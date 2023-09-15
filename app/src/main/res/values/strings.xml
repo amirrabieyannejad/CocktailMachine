@@ -247,5 +247,6 @@
 
 
     <string name="listitem_device_foundDevices">Folgende Geräte wurden gefunden. Bitte wählen Sie ihre Cocktailmaschiene aus.</string>
+    <string name="title_activity_add">AddActivity</string>
 
 </resources>

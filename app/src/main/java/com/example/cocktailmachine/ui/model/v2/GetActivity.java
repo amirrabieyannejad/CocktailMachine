@@ -3,6 +3,7 @@ package com.example.cocktailmachine.ui.model.v2;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
@@ -67,6 +68,14 @@ public class GetActivity {
         //activity.finish();
     }
 
+    public static void goToAdd(Activity activity, ModelType modelType){
+        Intent intent = new Intent(activity, AddActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString(MODELTYPE, modelType.toString());
+        intent.putExtras(bundle);
+        activity.startActivity(intent);
+    }
+
     public static void startAgain(Activity activity) {
         //TODO: go back to device scan
         if(Dummy.isDummy) {
@@ -95,5 +104,16 @@ public class GetActivity {
     public static void waitNotSet(Activity activity) {
         Intent intent = new Intent(activity, WaitNotSetActivity.class);
         activity.startActivity(intent);
+    }
+
+    public static void goBack(Activity activity) {
+        if(!activity.moveTaskToBack(true)){
+            error(activity);
+        }
+    }
+
+    public static void error(Activity activity){
+        Toast.makeText(activity, "Fehler!", Toast.LENGTH_SHORT).show();
+        GetActivity.goToMenu(activity);
     }
 }

@@ -8,8 +8,6 @@ import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
-import com.example.cocktailmachine.data.CocktailMachine;
-import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.ui.model.v2.GetActivity;
 import com.example.cocktailmachine.ui.model.v2.GetDialog;
 
@@ -155,7 +153,7 @@ public enum ErrorStatus {
             return;
         }
         try {
-            BluetoothSingleton.getInstance().adminReadErrorStatus(afterReading,activity);
+            BluetoothSingleton.getInstance().adminReadErrorStatus(activity, afterReading);
         } catch (JSONException | InterruptedException | NullPointerException e) {
 
             Log.i(TAG, "getErrorMessage: errored");

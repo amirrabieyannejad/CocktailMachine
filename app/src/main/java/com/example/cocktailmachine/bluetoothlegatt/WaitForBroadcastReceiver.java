@@ -61,7 +61,7 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
         int timeout = 500;
         int timeoutMax = 0;
         while (singleton.getEspResponseValue() == null
-                || singleton.getEspResponseValue().equals("\"processing\"")) {
+                || singleton.getEspResponseValue().equals("processing")) {
             Log.w(TAG, "we are in WaitForBroadcast doInBackground before try-catch!");
             try {
                 Log.w(TAG, "waitForBroadcastReceiverAsyncTask: Waiting for target value.." +

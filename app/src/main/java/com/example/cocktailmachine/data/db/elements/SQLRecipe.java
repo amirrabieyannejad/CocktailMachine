@@ -165,7 +165,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     }
 
     @Override
-    public HashMap<Long, Integer> getIngredientVolumes() {
+    public HashMap<Long, Integer> getIngredientNameVolumes() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return (HashMap<Long, Integer>)
                     this.ingredientVolumes.stream()
@@ -174,6 +174,15 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
                                             SQLRecipeIngredient::getVolume));
         }
         return Helper.getrecipeingredienthelper().getIngredientVolumes(this.ingredientVolumes);
+    }
+
+    @Override
+    public HashMap<Ingredient, Integer> getIngredientVolumes() {
+        HashMap<Ingredient, Integer> ingVol = new HashMap<>();
+        for(SQLRecipeIngredient ri: this.ingredientVolumes){
+            ingVol.put(ri.getIngredient(), ri.getVolume());
+        }
+        return ingVol;
     }
 
     @Override
@@ -289,8 +298,13 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     }
 
     @Override
-    public List<Long> getTopics() {
+    public List<Long> getTopicIDs() {
         return this.topics;
+    }
+
+    @Override
+    public List<Topic> getTopics() {
+        return Topic.getTopics(this);
     }
 
     @Override

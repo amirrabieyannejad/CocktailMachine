@@ -87,19 +87,22 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         DatabaseConnection.singleton = new DatabaseConnection(context);
         try {
             Log.i(TAG, "initialize_singleton: start loading");
-            DatabaseConnection.singleton.emptyAll();
             if(Dummy.isDummy) {
+                DatabaseConnection.singleton.emptyAll();
                 BasicRecipes.loadTopics();
                 BasicRecipes.loadIngredients();
-                //BasicRecipes.loadPumps();
+                if(!Dummy.withSetCalibration) {
+                    BasicRecipes.loadPumps();
+                }
                 BasicRecipes.loadMargarita();
                 BasicRecipes.loadLongIslandIceTea();
             }
             DatabaseConnection.singleton.checkAllAvailability();
             DatabaseConnection.singleton.print();
             Log.i(TAG, "initialize_singleton: finished loading");
-        } catch (NotInitializedDBException e) {
+        } catch (NotInitializedDBException|MissingIngredientPumpException e) {
             Log.i(TAG, "initialize_singleton: Exception");
+            Log.e(TAG, e.toString());
             e.printStackTrace();
         }
     }
@@ -109,19 +112,22 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         DatabaseConnection.singleton = new DatabaseConnection(context, privilege);
         try {
             Log.i(TAG, "initialize_singleton: start loading");
-            DatabaseConnection.singleton.emptyAll();
             if(Dummy.isDummy) {
+                DatabaseConnection.singleton.emptyAll();
                 BasicRecipes.loadTopics();
                 BasicRecipes.loadIngredients();
-                //BasicRecipes.loadPumps();
+                if(!Dummy.withSetCalibration) {
+                    BasicRecipes.loadPumps();
+                }
                 BasicRecipes.loadMargarita();
                 BasicRecipes.loadLongIslandIceTea();
             }
             DatabaseConnection.singleton.checkAllAvailability();
             DatabaseConnection.singleton.print();
             Log.i(TAG, "initialize_singleton: finished loading");
-        }  catch (NotInitializedDBException e) {
+        }  catch (NotInitializedDBException|MissingIngredientPumpException e) {
             Log.i(TAG, "initialize_singleton: Exception");
+            Log.e(TAG, e.toString());
             e.printStackTrace();
         }
     }
@@ -723,7 +729,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     public List<Topic> getTopics(SQLRecipe newSQLRecipe) {
         Log.i(TAG, "getTopics");
-        return this.getTopics(newSQLRecipe.getTopics());
+        return this.getTopics(newSQLRecipe.getTopicIDs());
     }
 
     public Topic getTopic(long id) {
@@ -825,7 +831,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     public List<Topic> getTopics(Recipe recipe) {
         Log.i(TAG, "getTopics");
-        return this.getTopics(recipe.getTopics());
+        return this.getTopics(recipe.getTopicIDs());
     }
 
     public List<Topic> getTopics() {

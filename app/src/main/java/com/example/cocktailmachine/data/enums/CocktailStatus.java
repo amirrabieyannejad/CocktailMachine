@@ -50,7 +50,7 @@ public enum CocktailStatus {
             return CocktailStatus.currentState;
         }
         try {
-            BluetoothSingleton.getInstance().adminReadState(postexecute,activity);
+            BluetoothSingleton.getInstance().adminReadState(activity, postexecute);
         } catch (JSONException | InterruptedException|NullPointerException e) {
             Log.e(TAG, "getCurrentStatus");
             Log.e(TAG, Objects.requireNonNull(e.getMessage()));
