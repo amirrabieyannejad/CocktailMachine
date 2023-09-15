@@ -21,6 +21,7 @@ import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.AdminRights;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class ListIngredience extends AppCompatActivity implements RecyclerViewListenerListIngredience{
@@ -95,5 +96,16 @@ public class ListIngredience extends AppCompatActivity implements RecyclerViewLi
     public void selectIngredience(long Id) {
         Toast.makeText(this, "Es wurde eine Auswahl getroffen",Toast.LENGTH_LONG).show();
         //Todo Philipp hier musst du noch den Wert zurück geben
+    }
+
+    private List<Ingredient> ingredientListFilter(List<Ingredient> list,String searchterm){
+        List<Ingredient> output = new LinkedList<>();
+        for (Ingredient item : list){
+            if(item.getName().contains(searchterm)){
+                output.add(item);
+            }
+        }
+        return output;
+
     }
 }
