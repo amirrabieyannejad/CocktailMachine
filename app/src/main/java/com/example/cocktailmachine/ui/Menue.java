@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
+import com.example.cocktailmachine.ui.ListOfIngredience.ListIngredience;
 import com.example.cocktailmachine.ui.calibration.scale.calibrationScale;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
 import com.example.cocktailmachine.ui.model.FragmentType;
@@ -225,6 +226,12 @@ public class Menue extends AppCompatActivity {
 
     public void calibration(View view){
         Intent success = new Intent(this, calibrationScale.class);
+        startActivity(success);
+
+    }
+
+    public void listIngedients(View view){
+        Intent success = new Intent(this, ListIngredience.class);
         startActivity(success);
 
     }
