@@ -21,12 +21,22 @@ public class RecyclerAdapterListIngredience extends RecyclerView.Adapter<Recycle
     Context context;
     List<Ingredient> ingredients;
 
+    Ingredient chosenIngredient;
+
     RecyclerViewListenerListIngredience selectionListener;
 
     public RecyclerAdapterListIngredience(List<Ingredient> ingredients, Context context) {
         this.ingredients = ingredients;
         this.context = context;
         this.selectionListener=(ListIngredience)context;
+
+    }
+
+    public RecyclerAdapterListIngredience(Ingredient chosenIngredient, List<Ingredient> ingredients, Context context) {
+        this.ingredients = ingredients;
+        this.context = context;
+        this.selectionListener=(ListIngredience)context;
+        this.chosenIngredient = chosenIngredient;
 
     }
 

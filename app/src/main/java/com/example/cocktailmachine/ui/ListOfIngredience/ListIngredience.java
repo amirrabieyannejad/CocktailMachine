@@ -21,6 +21,7 @@ import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.AdminRights;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -28,9 +29,13 @@ public class ListIngredience extends AppCompatActivity implements RecyclerViewLi
 
 
     private List<Ingredient> listIngredients;
+    private List<Ingredient> filteredListIngredients;
     private RecyclerView recyclerView;
 
     private Context context;
+
+    Ingredient chosenIngredient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +60,7 @@ public class ListIngredience extends AppCompatActivity implements RecyclerViewLi
 
 
         listIngredients = Ingredient.getAllIngredients();
+        filteredListIngredients = new ArrayList<>(listIngredients);
         /**try {
 
         } catch (NotInitializedDBException e) {
@@ -107,7 +113,7 @@ public class ListIngredience extends AppCompatActivity implements RecyclerViewLi
     private List<Ingredient> ingredientListFilter(List<Ingredient> list,String searchterm){
         List<Ingredient> output = new LinkedList<>();
         for (Ingredient item : list){
-            if(item.getName().contains(searchterm)){
+            if(item.getName().toLowerCase().contains(searchterm.toLowerCase())){
                 output.add(item);
             }
         }
