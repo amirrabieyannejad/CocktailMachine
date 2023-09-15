@@ -1,12 +1,14 @@
 package com.example.cocktailmachine.ui.ListOfIngredience;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocktailmachine.R;
@@ -50,10 +52,15 @@ public class RecyclerAdapterListIngredience extends RecyclerView.Adapter<Recycle
     @Override
     public void onBindViewHolder(@NonNull IngtedienceViewHolder holder, int position) {
         holder.ingtedienceName.setText(this.ingredients.get(position).getName());
+        if (chosenIngredient != null && ingredients.get(position).getName().equals(chosenIngredient.getName())){
+            holder.cardElement.setCardBackgroundColor(Color.parseColor("#6750A3"));
+
+        }
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectionListener.selectIngredience(ingredients.get(holder.getAdapterPosition()).getID());
+                selectionListener.selectIngredience(ingredients.get(holder.getAdapterPosition()));
             }
         });
 
@@ -66,12 +73,14 @@ public class RecyclerAdapterListIngredience extends RecyclerView.Adapter<Recycle
 
     public static class IngtedienceViewHolder extends RecyclerView.ViewHolder {
         public TextView ingtedienceName;
+        public CardView cardElement;
 
 
 
         public IngtedienceViewHolder(View itemView) {
             super(itemView);
             ingtedienceName = itemView.findViewById(R.id.textViewListElementIngredientName);
+            cardElement = itemView.findViewById(R.id.cardViewListElementIngredient);
         }
     }
 }

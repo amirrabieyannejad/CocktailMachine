@@ -74,7 +74,7 @@ public class ListIngredience extends AppCompatActivity implements RecyclerViewLi
         //Einrichtung des RecyclerView
         recyclerView = findViewById(R.id.recyclerViewListIngredience);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(listIngredients,this);
+        RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,listIngredients,this);
         recyclerView.setAdapter(adapterComments);
 
 
@@ -94,9 +94,9 @@ public class ListIngredience extends AppCompatActivity implements RecyclerViewLi
             @Override
             public void afterTextChanged(Editable editable) {
                 String searchterm = searchFild.getText().toString();
-                List<Ingredient> temporareIngredientList = ingredientListFilter(listIngredients,searchterm);
+                filteredListIngredients = ingredientListFilter(listIngredients,searchterm);
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(temporareIngredientList,context);
+                RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,filteredListIngredients,context);
                 recyclerView.setAdapter(adapterComments);
 
             }
@@ -105,9 +105,13 @@ public class ListIngredience extends AppCompatActivity implements RecyclerViewLi
     }
 
     @Override
-    public void selectIngredience(long Id) {
+    public void selectIngredience(Ingredient ingredient) {
+        chosenIngredient = ingredient;
         Toast.makeText(this, "Es wurde eine Auswahl getroffen",Toast.LENGTH_LONG).show();
         //Todo Philipp hier musst du noch den Wert zurück geben
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,filteredListIngredients,context);
+        recyclerView.setAdapter(adapterComments);
     }
 
     private List<Ingredient> ingredientListFilter(List<Ingredient> list,String searchterm){
