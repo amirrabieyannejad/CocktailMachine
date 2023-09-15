@@ -62,6 +62,17 @@ public class ListIngredience extends AppCompatActivity implements RecyclerViewLi
             Log.e(TAG, "ListIngredience : Error "+ e.toString());
         }*/
 
+
+
+
+        //Einrichtung des RecyclerView
+        recyclerView = findViewById(R.id.recyclerViewListIngredience);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(listIngredients,this);
+        recyclerView.setAdapter(adapterComments);
+
+
+        //Einrichtung des Suchfeldes
         EditText searchFild = findViewById(R.id.editTextTextListIngredienceSearchTerm);
         searchFild.addTextChangedListener(new TextWatcher() {
             @Override
@@ -76,19 +87,14 @@ public class ListIngredience extends AppCompatActivity implements RecyclerViewLi
 
             @Override
             public void afterTextChanged(Editable editable) {
-                Toast.makeText(context, searchFild.getText().toString(),Toast.LENGTH_LONG).show();
-
+                String searchterm = searchFild.getText().toString();
+                List<Ingredient> temporareIngredientList = ingredientListFilter(listIngredients,searchterm);
+                recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(temporareIngredientList,context);
+                recyclerView.setAdapter(adapterComments);
 
             }
         });
-
-
-        //Einrichtung des RecyclerView für Personen
-        recyclerView = findViewById(R.id.recyclerViewListIngredience);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(listIngredients,this);
-        recyclerView.setAdapter(adapterComments);
-
         System.out.println("");
     }
 
