@@ -6,8 +6,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.widget.EditText;
 import android.widget.Toast;
 
 
@@ -24,10 +28,14 @@ public class ListIngredience extends AppCompatActivity implements RecyclerViewLi
 
     private List<Ingredient> listIngredients;
     private RecyclerView recyclerView;
+
+    private Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_ingredience);
+
+        this.context = this;
 
         if(!DatabaseConnection.isInitialized()) {
             Log.i(TAG, "onCreate: DataBase is not yet initialized");
@@ -52,6 +60,26 @@ public class ListIngredience extends AppCompatActivity implements RecyclerViewLi
             e.printStackTrace();
             Log.e(TAG, "ListIngredience : Error "+ e.toString());
         }*/
+
+        EditText searchFild = findViewById(R.id.editTextTextListIngredienceSearchTerm);
+        searchFild.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                Toast.makeText(context, searchFild.getText().toString(),Toast.LENGTH_LONG).show();
+
+
+            }
+        });
 
 
         //Einrichtung des RecyclerView für Personen
