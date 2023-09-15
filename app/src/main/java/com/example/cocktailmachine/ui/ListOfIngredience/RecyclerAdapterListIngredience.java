@@ -54,6 +54,7 @@ public class RecyclerAdapterListIngredience extends RecyclerView.Adapter<Recycle
         holder.ingtedienceName.setText(this.ingredients.get(position).getName());
         if (chosenIngredient != null && ingredients.get(position).getName().equals(chosenIngredient.getName())){
             holder.cardElement.setCardBackgroundColor(Color.parseColor("#6750A3"));
+            holder.ingtedienceName.setTextColor(Color.WHITE);
 
         }
 

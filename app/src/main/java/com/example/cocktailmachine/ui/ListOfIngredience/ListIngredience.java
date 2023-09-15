@@ -106,7 +106,12 @@ public class ListIngredience extends AppCompatActivity implements RecyclerViewLi
 
     @Override
     public void selectIngredience(Ingredient ingredient) {
-        chosenIngredient = ingredient;
+        if(ingredient.equals(chosenIngredient)){
+            chosenIngredient = null;
+        }else{
+            chosenIngredient = ingredient;
+        }
+
         Toast.makeText(this, "Es wurde eine Auswahl getroffen",Toast.LENGTH_LONG).show();
         //Todo Philipp hier musst du noch den Wert zurück geben
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -115,12 +120,20 @@ public class ListIngredience extends AppCompatActivity implements RecyclerViewLi
     }
 
     private List<Ingredient> ingredientListFilter(List<Ingredient> list,String searchterm){
-        List<Ingredient> output = new LinkedList<>();
+        if(searchterm == ""){
+            return list;
+        }
+        LinkedList<Ingredient> output = new LinkedList<>();
         for (Ingredient item : list){
             if(item.getName().toLowerCase().contains(searchterm.toLowerCase())){
                 output.add(item);
             }
         }
+        if(chosenIngredient !=null){
+            output.remove(chosenIngredient);
+            output.addFirst(chosenIngredient);
+        }
+
         return output;
 
     }
