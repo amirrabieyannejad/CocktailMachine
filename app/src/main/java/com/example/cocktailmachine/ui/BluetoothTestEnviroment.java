@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
+import com.example.cocktailmachine.data.CocktailMachine;
+import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.AdminRights;
@@ -100,15 +102,26 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
         },this);
 
          */
-        //TODO: Johana/Amir getCurrentCocktailStatus liefert null Object zurück
-        /*
+        //TODO: Johana/Amir getCurrentCocktailCocktail liefert null Object zurück
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("PumpsStatus");
+        CocktailMachine.getCurrentCocktailStatus(new Postexecute() {
+            @Override
+            public void post() {
+                //Pump.getPumpStatus();
+                builder.setMessage(CocktailMachine.current.toString());
+                builder.setNeutralButton("Fertig!", (dialog, which) -> {});
+                builder.show();
+            }
+        },BluetoothTestEnviroment.this);
+
+        /*
         singleton.adminReadCurrentCocktail(new Postexecute() {
             @Override
             public void post() {
                 try {
-                    Pump.getPumpStatus();
+                    //Pump.getPumpStatus();
                     builder.setMessage(CocktailMachine.getCurrentCocktailStatus(
                             BluetoothTestEnviroment.this).toString());
                     builder.setNeutralButton("Fertig!", (dialog, which) -> {});
@@ -119,6 +132,8 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
                 }
             }
         },BluetoothTestEnviroment.this);
+
+
 
          */
 
