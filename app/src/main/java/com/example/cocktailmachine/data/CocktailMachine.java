@@ -33,7 +33,7 @@ public class CocktailMachine {
     static boolean dbChanged = false;
     //static Recipe currentRecipe;
 
-    static LinkedHashMap<Ingredient, Integer> current;
+    public static LinkedHashMap<Ingredient, Integer> current;
     //
     static int currentUser = -1;
     static Recipe currentRecipe;
@@ -529,9 +529,7 @@ public class CocktailMachine {
         }
         return current;
     }
-    public static LinkedHashMap<Ingredient, Integer> geterCurrentCocktailStatus() {
-        return current;
-    }
+
 
     /**
      * checks if the current status is "mixing"
