@@ -19,6 +19,7 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
+import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
@@ -47,8 +48,8 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     private boolean alcoholic;
     private boolean available = false;
     private List<SQLRecipeImageUrlElement> imageUrls = new ArrayList<>();
-    private List<Long> topics = new ArrayList<>();
-    private List<SQLRecipeIngredient> ingredientVolumes = new ArrayList<>();
+    //private List<Long> topics = new ArrayList<>();
+    //private List<SQLRecipeIngredient> ingredientVolumes = new ArrayList<>();
     private boolean loaded = false;
 
 
@@ -73,11 +74,6 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         this.name = name;
         this.alcoholic = alcoholic;
         this.available = available;
-        try {
-            this.load();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
     }
 
     public SQLRecipe(long ID,
@@ -119,18 +115,6 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     //LOADER
 
 
-    /**
-     * laod recipe ingredient, image urls, topics
-     * @throws NotInitializedDBException
-     */
-    private void load() throws NotInitializedDBException {
-        //this.imageUrls = DatabaseConnection.getDataBase().getUrlElements(this);
-        this.topics = DatabaseConnection.getDataBase().getTopicIDs(this);
-        this.ingredientVolumes = DatabaseConnection.getDataBase().getIngredientVolumes(this);
-        this.loadAvailable();
-        this.loaded = true;
-    }
-
 
 
 
@@ -142,28 +126,18 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
     @Override
     public List<Long> getIngredientIds() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return this.ingredientVolumes
-                    .stream()
-                    .map(SQLRecipeIngredient::getIngredientID)
-                    .collect(Collectors.toList());
-        }
-        return Helper.getrecipeingredienthelper().getIds(this.ingredientVolumes);
+        return Buffer.getSingleton().getIngredientIds(this);
 
     }
 
     @Override
     public List<String> getIngredientNames() {
-        ArrayList<String> names = new ArrayList<>();
-        for(SQLRecipeIngredient ri: this.ingredientVolumes){
-            names.add(ri.getIngredient().getName());
-        }
-      return names;
+        return Buffer.getSingleton().getIngredientNames(Buffer.getSingleton().getIngredientIds(this));
     }
 
     @Override
     public List<Ingredient> getIngredients() {
-        return Ingredient.getAvailableIngredients(this.getIngredientIds());
+        return Buffer.getSingleton().getIngredients(this);
     }
 
     @Override
@@ -308,7 +282,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
     @Override
     public List<Long> getTopicIDs() {
-        return this.topics;
+        return Topic.getTopicIDs(this);
     }
 
     @Override
@@ -397,10 +371,16 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
     @Override
     public void addOrUpdate(Topic topic) {
+        /*
         if(topic.getID()==-1L){
             topic.save();
         }
-        if(this.topics.contains(topic.getID())){
+
+         */
+        if(topic.getID()==-1){
+            Buffer.getSingleton().addToBuffer();
+        }
+        if(this.getTopicIDs().contains(topic.getID())){
             return;
         }
         this.topics.add(topic.getID());
@@ -419,54 +399,39 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
     //REMOVER
     @Override
-    public void remove(Ingredient ingredient) {
+    public void remove(Context context, Ingredient ingredient) {
         if(ingredient!=null) {
-            this.removeIngredient(ingredient.getID());
+            DeleteFromDB.remove(context, this, ingredient);
         }
     }
 
     @Override
-    public void removeIngredient(long ingredientId) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-
-            this.ingredientVolumes.removeAll(this.ingredientVolumes.stream()
-                    .filter(ri -> ri.getIngredientID() == ingredientId)
-                    .peek(sqlRecipeIngredient -> {
-                        sqlRecipeIngredient.delete();
-
-                    })
-                    .collect(Collectors.toList()));
-
-        }else {
-            this.ingredientVolumes.removeAll(
-                    Helper.getrecipeingredienthelper()
-                            .getDeleteWithIdAsList(
-                                    this.ingredientVolumes,
-                                    ingredientId));
-        }
+    public void removeIngredient(Context context, long ingredientId) {
+        remove(context, Ingredient.getIngredient(ingredientId));
     }
 
     @Override
-    public void remove(Topic topic) {
-        this.topics.remove(topic.getID());
+    public void remove(Context context,Topic topic) {
+        DeleteFromDB.remove(context, this, topic);
     }
 
     @Override
-    public void removeTopic(long topicId) {
-        this.topics.remove(topicId);
+    public void removeTopic(Context context,long id) {
+        //this.topics.remove(topicId);
+        this.remove(context, Topic.getTopic(id));
     }
 
     @Override
-    public void remove(SQLRecipeImageUrlElement url) {
+    public void remove(Context context,SQLRecipeImageUrlElement url) {
         this.imageUrls.remove(url);
-        url.delete();
+        url.delete(context);
     }
 
     @Override
-    public void removeUrl(long urlId) {
+    public void removeUrl(Context context,long urlId) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             this.imageUrls.stream().filter(url-> url.getID()==urlId).forEach(url-> {
-                        url.delete();
+                        url.delete(context);
                         this.imageUrls.remove(url);
             });
         }else{

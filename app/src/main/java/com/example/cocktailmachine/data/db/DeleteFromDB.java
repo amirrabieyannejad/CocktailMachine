@@ -8,6 +8,7 @@ import android.util.Log;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
+import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
@@ -66,6 +67,12 @@ public class DeleteFromDB {
     public static void remove(Context context, SQLRecipeTopic sQLRecipeTopic) {
         Log.i(TAG, "remove");
         Tables.TABLE_RECIPE_TOPIC.deleteElement(getWritableDatabase(context), sQLRecipeTopic);
+        Buffer.getSingleton().removeFromBuffer(sQLRecipeTopic);
+    }
+
+    public static void remove(Context context, Recipe recipe, Topic topic) {
+        Log.i(TAG, "remove");
+        remove(context, Buffer.getSingleton().get(recipe, topic));
     }
 
     public static void remove(Context context, SQLTopic topic) {
@@ -79,6 +86,10 @@ public class DeleteFromDB {
         Log.i(TAG, "remove");
         Tables.TABLE_RECIPE_INGREDIENT.deleteElement(getWritableDatabase(context),recipeIngredient);
         Buffer.getSingleton().removeFromBuffer(recipeIngredient);
+    }
+    public static void remove(Context context, Recipe recipe, Ingredient ingredient) {
+        Log.i(TAG, "remove");
+        remove(context, Buffer.getSingleton().get(recipe, ingredient));
     }
 
     public static void remove(Context context, SQLIngredientPump ingredientPump) {

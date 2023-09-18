@@ -72,6 +72,11 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
         return Buffer.getSingleton().getTopics(recipe);
     }
 
+    static List<Long> getTopicIDs(Recipe recipe)  {
+        Log.i(TAG, "getTopics");
+        return Buffer.getSingleton().getTopicIDs(recipe);
+    }
+
     static List<Topic> getTopics(){
         Log.i(TAG, "getTopics");
         return Buffer.getSingleton().getTopics();

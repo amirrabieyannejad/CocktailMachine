@@ -350,6 +350,12 @@ class DatabaseConnection extends SQLiteOpenHelper {
 
     }
 
+    List<SQLRecipeTopic> loadRecipeTopic(){
+        Log.i(TAG, "loadIngredientVolumes");
+        //return Tables.TABLE_RECIPE_INGREDIENT.getAvailable(this.getReadableDatabase(), this.recipes);
+        return Tables.TABLE_RECIPE_TOPIC.getAllElements(this.getReadableDatabase());
+    }
+
     /*
     void checkForAvailablityInRecipes(){
         for(Recipe r: this.recipes){

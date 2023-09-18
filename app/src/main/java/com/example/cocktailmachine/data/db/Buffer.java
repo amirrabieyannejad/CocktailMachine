@@ -11,12 +11,14 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
+import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.exceptions.AccessDeniedException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Johanna Reidt
@@ -33,6 +35,7 @@ public class Buffer {
     private List<Pump> pumps;
     private List<SQLIngredientPump> ingredientPumps;
     private List<SQLRecipeIngredient> recipeIngredients;
+    private List<SQLRecipeTopic> recipeTopics;
 
 
     //Fast access
@@ -59,6 +62,19 @@ public class Buffer {
     private HashMap<Long, Recipe> fastIDAvailableRecipe;
 
 
+
+
+    private HashMap<Long, List<Long>> fastTopicRecipes;
+    private HashMap<Long, List<Long>> fastRecipeTopics;
+    private HashMap<Long, List<Long>> fastRecipeIngredient;
+    private HashMap<Long, List<Long>> fastIngredientRecipes;
+
+
+
+
+
+
+
     private Buffer(){}
 
     public static Buffer getSingleton(){
@@ -76,6 +92,7 @@ public class Buffer {
         this.pumps =  DatabaseConnection.getSingleton().loadPumps();
         this.topics =  DatabaseConnection.getSingleton().loadTopics();
         this.recipeIngredients = DatabaseConnection.getSingleton().loadIngredientVolumes();
+        this.recipeTopics = DatabaseConnection.getSingleton().loadRecipeTopic();
         loadFast();
     }
 
@@ -121,7 +138,55 @@ public class Buffer {
         for(Pump i: pumps){
             fastIDPump.put(i.getID() , i);
         }
+
+        fastTopicRecipes = new HashMap<>();
+        fastRecipeTopics = new HashMap<>();
+        for(SQLRecipeTopic rt: this.recipeTopics){
+            if(fastTopicRecipes.containsKey(rt.getTopicID())){
+                Objects.requireNonNull(fastTopicRecipes.get(rt.getTopicID())).add(rt.getRecipeID());
+            }else{
+                List<Long> elms = new ArrayList<>();
+                elms.add(rt.getRecipeID());
+                fastTopicRecipes.put(rt.getTopicID(), elms);
+            }
+            if(fastRecipeTopics.containsKey(rt.getRecipeID())){
+                Objects.requireNonNull(fastRecipeTopics.get(rt.getRecipeID())).add(rt.getTopicID());
+            }else{
+                List<Long> elms = new ArrayList<>();
+                elms.add(rt.getTopicID());
+                fastTopicRecipes.put(rt.getRecipeID(), elms);
+            }
+        }
+
+
+        fastIngredientRecipes = new HashMap<>();
+        fastRecipeIngredient = new HashMap<>();
+        for(SQLRecipeIngredient rt: this.recipeIngredients){
+            if(fastIngredientRecipes.containsKey(rt.getIngredientID())){
+                Objects.requireNonNull(fastIngredientRecipes.get(rt.getIngredientID())).add(rt.getRecipeID());
+            }else{
+                List<Long> elms = new ArrayList<>();
+                elms.add(rt.getRecipeID());
+                fastIngredientRecipes.put(rt.getIngredientID(), elms);
+            }
+            if(fastRecipeIngredient.containsKey(rt.getRecipeID())){
+                Objects.requireNonNull(fastRecipeIngredient.get(rt.getRecipeID())).add(rt.getIngredientID());
+            }else{
+                List<Long> elms = new ArrayList<>();
+                elms.add(rt.getIngredientID());
+                fastRecipeIngredient.put(rt.getRecipeID(), elms);
+            }
+        }
+
+
+
+
+
         isFast = true;
+
+
+
+
     }
 
     public void lowMemory(){
@@ -387,8 +452,10 @@ public class Buffer {
     public List<Ingredient> getAvailableIngredients(List<Long> ids){
         List<Ingredient> res = new ArrayList<>();
         if(isFast){
-            for(Long id: ids){
-                res.add(getAvailableIngredient(id));
+            for(Ingredient i: this.fastAvailableIngredient){
+                if(ids.contains(i.getID())){
+                    res.add(i);
+                }
             }
         }else{
             for(Ingredient recipe: this.ingredients){
@@ -400,6 +467,61 @@ public class Buffer {
             }
         }
         return res;
+    }
+
+
+
+    /**
+     * get recipes with ids
+     * @author Johanna Reidt
+     * @param ids
+     * @return
+     */
+    public List<Ingredient> getIngredients(List<Long> ids){
+        List<Ingredient> res = new ArrayList<>();
+        if(isFast){
+            for(Long id: ids){
+                Ingredient i = getIngredient(id);
+                if(i!=null) {
+                    res.add(i);
+                }
+            }
+        }else{
+            for(Ingredient recipe: this.ingredients){
+                if(recipe.isAvailable()) {
+                    if (ids.contains(recipe.getID())) {
+                        res.add(recipe);
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    /**
+     * ingredient names
+     * get topic names
+     * @author Johanna Reidt
+     * @return
+     */
+    public List<String> getIngredientNames(List<Long> ids){
+        List<String> names = new ArrayList<>();
+        for(Ingredient i:getIngredients(ids)){
+            names.add(i.getName());
+        }
+        return names;
+    }
+    /**
+     * get ingredient names and current volume
+     * @author Johanna Reidt
+     * @return
+     */
+    public List<String> getIngredientNameAndVol(List<Long> ids){
+        List<String> names = new ArrayList<>();
+        for(Ingredient i:this.getIngredients(ids)){
+            names.add(i.getName()+": "+i.getVolume()+" ml");
+        }
+        return names;
     }
 
 
@@ -531,16 +653,6 @@ public class Buffer {
             names.add(i.getName());
         }
         return names;
-    }
-
-    /**
-     * get topics for recipe
-     * @author Johanna Reidt
-     * @param recipe
-     * @return
-     */
-    public List<Topic> getTopics(Recipe recipe){
-        return getTopics(recipe.getTopicIDs());
     }
 
     /**
@@ -796,6 +908,85 @@ public class Buffer {
     }
 
 
+    public List<Long> getIngredientIds(Recipe recipe){
+        if(isFast){
+            return this.fastRecipeIngredient.get(recipe.getID());
+        }else{
+            List<Long> res = new ArrayList<>();
+            for(SQLRecipeIngredient rt: this.recipeIngredients){
+                if(rt.getRecipeID()==recipe.getID()){
+                    res.add(rt.getIngredientID());
+                }
+            }
+            return res;
+        }
+    }
+
+    public List<Ingredient> getIngredients(Recipe recipe){
+        return getIngredients(getIngredientIds(recipe));
+    }
+
+    public List<Long> getTopicIDs(Recipe recipe){
+        if(isFast){
+            return this.fastRecipeTopics.get(recipe.getID());
+        }else{
+            List<Long> res = new ArrayList<>();
+            for(SQLRecipeTopic rt: this.recipeTopics){
+                if(rt.getRecipeID()==recipe.getID()){
+                    res.add(rt.getTopicID());
+                }
+            }
+            return res;
+        }
+    }
+
+    public List<Topic> getTopics(Recipe recipe){
+        return getTopics(getTopicIDs(recipe));
+    }
+
+    public SQLRecipeTopic get(Recipe recipe, Topic topic){
+        for(SQLRecipeTopic rt: recipeTopics){
+            if(rt.getTopicID() == topic.getID()){
+                if(rt.getRecipeID() == recipe.getID()){
+                    return rt;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void removeFromBuffer(Recipe recipe, Topic topic){
+        removeFromBuffer(get(recipe, topic));
+    }
+
+    public void removeFromBuffer(SQLRecipeTopic recipeTopic){
+        this.recipeTopics.remove(recipeTopic);
+        if(isFast){
+            this.fastRecipeTopics.get(recipeTopic.getRecipeID()).remove(recipeTopic.getTopicID());
+        }
+    }
+
+    public SQLRecipeIngredient get(Recipe recipe, Ingredient ingredient){
+        for(SQLRecipeIngredient rt: recipeIngredients){
+            if(rt.getIngredientID() == ingredient.getID()){
+                if(rt.getRecipeID() == recipe.getID()){
+                    return rt;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void removeFromBuffer(Recipe recipe, Ingredient ingredient){
+        removeFromBuffer(get(recipe, ingredient));
+    }
+
+    public void removeFromBuffer(SQLRecipeIngredient recipeIngredient){
+        this.recipeIngredients.remove(recipeIngredient);
+        if(isFast){
+            this.fastRecipeIngredient.get(recipeIngredient.getRecipeID()).remove(recipeIngredient.getIngredientID());
+        }
+    }
 
 
 
@@ -906,6 +1097,16 @@ public class Buffer {
 
 
 
+
+
+
+
+
+
+
+
+
+
     public void addToBuffer(SQLIngredientPump e){
         this.ingredientPumps.add(e);
     }
@@ -921,11 +1122,48 @@ public class Buffer {
 
 
 
+
+
+
+
+
+
+
+    public void addToBuffer(SQLRecipeTopic e){
+        this.recipeTopics.add(e);
+        if(isFast){
+            if(this.fastRecipeTopics.containsKey(e.getRecipeID())) {
+                Objects.requireNonNull(this.fastRecipeTopics.get(e.getRecipeID())).add(e.getTopicID());
+            }else {
+                ArrayList<Long> ids = new ArrayList<>();
+                ids.add(e.getTopicID());
+                this.fastRecipeTopics.put(e.getRecipeID(),ids);
+            }if(this.fastTopicRecipes.containsKey(e.getTopicID())){
+                Objects.requireNonNull(this.fastTopicRecipes.get(e.getTopicID())).add(e.getRecipeID());
+            }else{
+                ArrayList<Long> ids = new ArrayList<>();
+                ids.add(e.getRecipeID());
+                this.fastTopicRecipes.put(e.getTopicID(), ids);
+            }
+        }
+    }
+    public List<SQLRecipeTopic> getRecipeTopics(){
+        if(this.recipeTopics == null){
+            this.recipeTopics = new ArrayList<>();
+        }
+        return this.recipeTopics;
+    }
+
+
+
+
+
+
+
+
+
     public void addToBuffer(SQLRecipeIngredient e){
         this.recipeIngredients.add(e);
-    }
-    public void removeFromBuffer(SQLRecipeIngredient e){
-        this.recipeIngredients.remove(e);
     }
     public List<SQLRecipeIngredient> getRecipeIngredients(){
         if(this.recipeIngredients == null){

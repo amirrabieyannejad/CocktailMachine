@@ -166,28 +166,28 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     void addOrUpdate(String imageUrls);
 
 
-    default void addOrUpdateAndRemoveNotMentioned(HashMap<Ingredient, Integer> ingredientVol){
-        this.removeAllIngredients();
+    default void addOrUpdateAndRemoveNotMentioned(Context context,HashMap<Ingredient, Integer> ingredientVol){
+        this.removeAllIngredients(context);
         for(Ingredient i: ingredientVol.keySet()){
             this.addOrUpdate(i, ingredientVol.get(i));
         }
     }
 
-    default void addOrUpdateAndRemoveNotMentioned(List<Topic> topics){
-        this.removeAllTopics();
+    default void addOrUpdateAndRemoveNotMentioned(Context context,List<Topic> topics){
+        this.removeAllTopics(context);
         for(Topic i: topics){
             this.addOrUpdate(i);
         }
     }
 
 
-    default void removeAllIngredients(){
+    default void removeAllIngredients(Context context){
         for(Ingredient i: this.getIngredients()){
             this.remove(i);
         }
     }
 
-    default void removeAllTopics(){
+    default void removeAllTopics(Context context){
         for(Topic i: this.getTopics()){
             this.remove(i);
         }
@@ -201,20 +201,20 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * Remove Ingredient from Recipe.
      * @param ingredient
      */
-    void remove(Ingredient ingredient);
+    void remove(Context context,Ingredient ingredient);
     /**
      * Remove Ingredient from Recipe.
      * @param ingredientId
      */
-    void removeIngredient(long ingredientId);
+    void removeIngredient(Context context,long ingredientId);
 
-    void remove(Topic topic);
+    void remove(Context context,Topic topic);
 
-    void removeTopic(long topicId);
+    void removeTopic(Context context,long topicId);
 
-    void remove(SQLRecipeImageUrlElement url);
+    void remove(Context context,SQLRecipeImageUrlElement url);
 
-    void removeUrl(long urlId);
+    void removeUrl(Context context, long urlId);
 
 
     //this Instance
