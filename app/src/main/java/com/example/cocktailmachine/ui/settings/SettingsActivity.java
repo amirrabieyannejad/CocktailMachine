@@ -22,6 +22,7 @@ import com.example.cocktailmachine.ui.model.FragmentType;
 
 
 import com.example.cocktailmachine.ui.model.ModelType;
+import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
 
 /**
  * Settings
@@ -206,6 +207,11 @@ public class SettingsActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MachineSettingsActivity.class);
         startActivity(intent);
     }
+
+    public void newCalibration(View view){
+        CocktailMachineCalibration.start(this);
+    }
+
 
 
 
