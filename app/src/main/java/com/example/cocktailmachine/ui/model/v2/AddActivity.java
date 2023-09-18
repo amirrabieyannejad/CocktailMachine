@@ -19,7 +19,6 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Postexecute;
@@ -55,9 +54,7 @@ public class AddActivity extends BasicActivity {
         //setContentView(R.layout.activity_add);
         binding = ActivityAddBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        if(!DatabaseConnection.isInitialized()) {
-            DatabaseConnection.initializeSingleton(this);
-        }
+
     }
 
     @Override
@@ -168,7 +165,7 @@ public class AddActivity extends BasicActivity {
             binding.buttonSave.setOnClickListener(v -> {
                 Log.i(TAG, "setUpPump: buttonSave: clicked");
                 topic = Topic.makeNew(binding.editTextAddTitle.getText().toString(), binding.editTextDescription.getText().toString());
-                if(!topic.save()){
+                if(!topic.save(activity)){
                     Log.i(TAG, "setUpPump: buttonSave: saving failed");
                     error("Datenbankfehler: Der Serviervorschlag konnte nicht gespeichert werden.");
                     return;
@@ -185,7 +182,7 @@ public class AddActivity extends BasicActivity {
                 Log.i(TAG, "setUpPump: buttonSave: clicked");
                 topic.setName(binding.editTextAddTitle.getText().toString());
                 topic.setDescription(binding.editTextDescription.getText().toString());
-                if(!topic.save()){
+                if(!topic.save(activity)){
                     Log.i(TAG, "setUpPump: buttonSave: saving failed");
                     error("Datenbankfehler: Die Änderung konnte nicht gespeichert werden.");
                     return;
@@ -266,7 +263,7 @@ public class AddActivity extends BasicActivity {
                         binding.switchAlcohol.isChecked(),
                         set_color[0]
                 );
-                if(!ingredient.save()){
+                if(!ingredient.save(activity)){
                     Log.i(TAG, "setUpIngredient:buttonSave: saving failed");
                     error("Datenbankfehler: Die Zutat konnte nicht gespeichert werden.");
                     return;
@@ -286,7 +283,7 @@ public class AddActivity extends BasicActivity {
                 ingredient.setName(binding.editTextAddTitle.getText().toString());
                 ingredient.setAlcoholic(binding.switchAlcohol.isChecked());
                 ingredient.setColor(set_color[0]);
-                if(!ingredient.save()){
+                if(!ingredient.save(activity)){
                     Log.i(TAG, "setUpIngredient:buttonSave: saving failed");
                     error("Datenbankfehler: Die Änderung konnte nicht gespeichert werden.");
                     return;
@@ -461,7 +458,7 @@ public class AddActivity extends BasicActivity {
     }
     private void getIngredient(){
         Log.i(TAG, "getIngredient");
-        this.ingredient = Ingredient.searchOrNew(
+        this.ingredient = Ingredient.searchOrNew(activity,
                 binding.includePump.editTextSearchIngredientIng.getText().toString());
     }
     private void searchDone(){

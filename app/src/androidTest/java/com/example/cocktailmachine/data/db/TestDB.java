@@ -161,12 +161,9 @@ public class TestDB {
         Ingredient ingredient = Ingredient.makeNew("Kokosmilch", false, 67);
         System.out.println(ingredient);
         Ingredient db_ingredient = null;
-        try {
-            ingredient.save();
-            db_ingredient = DatabaseConnection.getDataBase().getIngredient(ingredient.getID());
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
+        ingredient.save(null);
+        db_ingredient = Ingredient.getIngredient(ingredient.getID());
+
         if(db_ingredient == null){
             System.out.println("db_ingredient failed");
         }else {
@@ -182,12 +179,9 @@ public class TestDB {
 
         System.out.println(ingredient);
         Ingredient db_ingredient = null;
-        try {
-            ingredient.save();
-            db_ingredient = DatabaseConnection.getDataBase().getIngredient(ingredient.getID());
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
+        ingredient.save(null);
+        db_ingredient = Ingredient.getIngredient(ingredient.getID());
+
         if(db_ingredient == null){
             System.out.println("db_ingredient failed");
         }else {

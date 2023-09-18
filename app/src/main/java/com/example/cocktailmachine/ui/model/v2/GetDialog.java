@@ -19,7 +19,7 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.AdminRights;
@@ -263,9 +263,6 @@ public class GetDialog {
 
     public static void firstAutomaticDialog(Activity activity){
         //DatabaseConnection.initializeSingleton(activity);
-        if(!DatabaseConnection.isInitialized()) {
-            DatabaseConnection.initializeSingleton(activity);
-        }
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Automatische Kalibrierung");
         builder.setMessage("Bitte folge den Anweisungen schrittweise. " +
@@ -780,15 +777,15 @@ public class GetDialog {
                 case INGREDIENT:
                     Ingredient ingredient = Ingredient.getIngredient(ID);
                     ingredient.setName(getName());
-                    return ingredient.save();
+                    return ingredient.save(activity);
                 case RECIPE:
                     Recipe recipe = Recipe.getRecipe(ID);
                     recipe.setName(getName());
-                    return recipe.save();
+                    return recipe.save(activity);
                 case TOPIC:
                     Topic topic = Topic.getTopic(ID);
                     topic.setName(getName());
-                    return topic.save();
+                    return topic.save(activity);
             }
             return false;
         }
@@ -978,7 +975,7 @@ public class GetDialog {
         }
         public void save(){
             Log.i(TAG, "GetIngView: save " );
-            saver.save(Ingredient.searchOrNew(getName()), getName());
+            saver.save(Ingredient.searchOrNew(activity, getName()), getName());
         }
 
     }
@@ -1206,7 +1203,7 @@ public class GetDialog {
             } catch (MissingIngredientPumpException ex) {
                 ex.printStackTrace();
             }
-            return pump.save();
+            return pump.save(activity);
         }
 
         public void send(){
@@ -1670,15 +1667,12 @@ public class GetDialog {
             super(activity, v, "Anzahl");
         }
         public void save() throws IllegalStateException{
-            if(!DatabaseConnection.isInitialized()) {
-                DatabaseConnection.initializeSingleton(super.activity);
-            }
             int res = (int) super.getFloat();
             if(res == -1){
                 Toast.makeText(super.activity, "Gib bitte eine valide Zahle ein.", Toast.LENGTH_SHORT).show();
                 throw new IllegalStateException("Missing number!");
             } else {
-                Pump.setOverrideEmptyPumps(res);
+                Pump.setOverrideEmptyPumps(activity,res);
             }
         }
 
@@ -1859,12 +1853,12 @@ public class GetDialog {
 
         builder.setPositiveButton("Ja", (dialog, which) -> {
             ingredient.setAlcoholic(true);
-            ingredient.save();
+            ingredient.save(activity);
 
         });
         builder.setNegativeButton("Nein", (dialog, which) -> {
             ingredient.setAlcoholic(false);
-            ingredient.save();
+            ingredient.save(activity);
 
         });
         builder.setNeutralButton("Abbrechen", (dialog, which) -> {
@@ -1909,7 +1903,7 @@ public class GetDialog {
         builder.setView(v);
 
         builder.setPositiveButton("Speichern", (dialog, which) -> {
-            longEditChangeView.save();
+            longEditChangeView.save(activity);
         });
         builder.setNeutralButton("Abbrechen", (dialog, which) -> {
 
@@ -1943,9 +1937,9 @@ public class GetDialog {
         private String getDescription(){
             return e.getText().toString();
         }
-        public boolean save(){
+        public boolean save(Activity ac){
             this.topic.setDescription(getDescription());
-            return topic.save();
+            return topic.save(ac);
         }
     }
 
@@ -1998,10 +1992,11 @@ public class GetDialog {
 
 
         builder.setPositiveButton("Speichern", (dialog, which) -> {
-            pump.save();
+            pump.save(activity);
             pump.sendSave(activity);
             Toast.makeText(activity,"Cocktailmaschine wird informiert.",Toast.LENGTH_SHORT).show();
-            DatabaseConnection.localRefresh();
+            //DatabaseConnection.localRefresh();
+            Buffer.localRefresh(activity);
             Toast.makeText(activity,"DB-Synchronisation läuft!",Toast.LENGTH_SHORT).show();
 
         });
@@ -2117,7 +2112,7 @@ public class GetDialog {
         builder.setTitle(getDeleteTitle(modelType, title));
         builder.setPositiveButton("Bitte löschen!", (dialog, which) -> {
             try {
-                deleteElement(modelType, ID);
+                deleteElement(activity,modelType, ID);
             } catch (NotInitializedDBException e) {
                 e.printStackTrace();
             }
@@ -2164,17 +2159,18 @@ public class GetDialog {
      * @param ID
      * @throws NotInitializedDBException
      */
-    private static void deleteElement(ModelType modelType,
+    private static void deleteElement(Activity activity,
+                                      ModelType modelType,
                                       Long ID) throws NotInitializedDBException {
         switch (modelType){
             case RECIPE:
-                Recipe.getRecipe(ID).delete();
+                Recipe.getRecipe(ID).delete(activity);
             case PUMP:
-                Pump.getPump(ID).delete();
+                Pump.getPump(ID).delete(activity);
             case TOPIC:
-                Topic.getTopic(ID).delete();
+                Topic.getTopic(ID).delete(activity);
             case INGREDIENT:
-                Ingredient.getIngredient(ID).delete();
+                Ingredient.getIngredient(ID).delete(activity);
         }
     }
 

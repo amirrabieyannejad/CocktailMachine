@@ -144,16 +144,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
     }
 
 
-    //Refresher
-    //Local
-    static synchronized void localRefresh() {
-        Log.i(TAG, "localRefresh");
-        try {
-            getDataBase().loadBufferWithAvailable();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
-    }
+
 
 
 
@@ -257,45 +248,6 @@ class DatabaseConnection extends SQLiteOpenHelper {
         return (List<Ingredient>) res;
     }
 
-    void loadBufferWithAvailable() {
-        Log.i(TAG, "loadBufferWithAvailable");
-        resetAll();
-        this.ingredients = this.loadAllIngredients();
-        Log.i(TAG, "loadBufferWithAvailable: all Ingredients: "+this.ingredients.toString());
-        this.pumps = this.loadPumps();
-        Log.i(TAG, "loadBufferWithAvailable: all Pumps: "+this.pumps.toString());
-        this.topics = this.loadTopics();
-        Log.i(TAG, "loadBufferWithAvailable: Topics: "+this.topics.toString());
-        this.ingredientPumps = this.loadIngredientPumps();
-        Log.i(TAG, "loadBufferWithAvailable: all IngredientPumps: "+this.ingredientPumps.toString());
-        this.recipeIngredients = this.loadIngredientVolumes();
-        Log.i(TAG, "loadBufferWithAvailable: all recipeIngredients: "+this.recipeIngredients.toString());
-        this.recipes = this.loadAllRecipes();
-        Log.i(TAG, "loadBufferWithAvailable: all Recipes: "+this.recipes.toString());
-        //this.loadAvailabilityForIngredients();
-        //Log.i(TAG, "loadBufferWithAvailable: no admin Ingredients: "+this.ingredients.toString());
-        //this.loadAvailabilityForRecipes();
-        //Log.i(TAG, "loadBufferWithAvailable: no admin AvailableRecipes: "+this.recipes.toString());
-
-        try {
-            this.checkAllAvailability();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            Log.i(TAG, "loadBufferWithAvailable: checkAllAvailability: saving of one instance failed");
-        }
-        Log.i(TAG, "loadBufferWithAvailable: finished now print");
-        print();
-    }
-
-    private void print(){
-        Log.i(TAG, "print");
-        Log.i(TAG, "print ingredients: "+this.ingredients);
-        Log.i(TAG, "print pumps: "+this.pumps);
-        Log.i(TAG, "print ingredientPumps: "+this.ingredientPumps);
-        Log.i(TAG, "print topics: "+this.topics);
-        Log.i(TAG, "print recipeIngredients: "+this.recipeIngredients);
-        Log.i(TAG, "print recipes: "+this.recipes);
-    }
 
     /*
     List<Recipe> loadAvailabilityForRecipes() {
@@ -428,6 +380,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
     /**
      * load all availabilities
      */
+    /*
     private void checkAllAvailability() throws NotInitializedDBException {
         //TO DO: checkAllAvailability
         Log.i(TAG, "checkAllAvailability");
@@ -451,6 +404,8 @@ class DatabaseConnection extends SQLiteOpenHelper {
         Log.i(TAG, "checkAllAvailability: recipes: "+this.recipes);
     }
 
+     */
+
 
 
 
@@ -461,6 +416,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
 
     //GETTER //Not allowed to fetch from database !!!only!!! from buffer unless they are admins
 
+    /*
     private List<Long> getAvailableIngredientIDs(){
         Log.i(TAG, "getAvailableIngredientIDs");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -471,16 +427,24 @@ class DatabaseConnection extends SQLiteOpenHelper {
         return Helper.getIngredientIds(this.ingredientPumps);
     }
 
+     */
+    /*
     List<SQLIngredientPump> getIngredientPumps() {
         Log.i(TAG, "getIngredientPumps");
         return this.ingredientPumps;
     }
 
+
+     */
+    /*
     List<Pump> getPumps() {
         Log.i(TAG, "getPumps");
         return this.pumps;
     }
 
+
+     */
+    /*
     Pump getPump(Long id){
         Log.i(TAG, "getPump");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -489,6 +453,9 @@ class DatabaseConnection extends SQLiteOpenHelper {
         return Helper.getPumpHelper().getWithId(this.pumps, id);
     }
 
+
+     */
+    /*
     @Nullable
     Pump getPumpWithSlot(int slot) {
         for(Pump p: this.pumps){
@@ -499,6 +466,9 @@ class DatabaseConnection extends SQLiteOpenHelper {
         return null;
     }
 
+
+     */
+    /*
     Ingredient getIngredient(Long id) {
         Log.i(TAG, "getIngredient");
         Ingredient ingredient;
@@ -519,6 +489,9 @@ class DatabaseConnection extends SQLiteOpenHelper {
         return ingredient;
     }
 
+     */
+
+    /*
     List<Ingredient> getIngredients(List<Long> ingredients) {
         Log.i(TAG, "getIngredients");
         if(AdminRights.isAdmin()) {
@@ -540,6 +513,9 @@ class DatabaseConnection extends SQLiteOpenHelper {
         }
     }
 
+
+     */
+    /*
     Recipe getRecipe(Long id) {
         Log.i(TAG, "getRecipe");
         if(AdminRights.isAdmin()){
@@ -574,8 +550,11 @@ class DatabaseConnection extends SQLiteOpenHelper {
         }
 
          */
+    /*
         return null;
     }
+    */
+    /*
 
     List<Recipe> getRecipes(List<Long> recipeIds) {
         Log.i(TAG, "getRecipes");
@@ -620,10 +599,11 @@ class DatabaseConnection extends SQLiteOpenHelper {
         return recipes.get(0);
 
     }
+    */
 
 
 
-
+    /*
     List<Ingredient> getIngredientWith(String needle) {
         Log.i(TAG, "getIngredientWith");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -678,9 +658,11 @@ class DatabaseConnection extends SQLiteOpenHelper {
         return Helper.getIngredientHelper().getAvailable(this.ingredients);
     }
 
+     */
 
 
 
+    /*
     List<? extends Recipe> getRecipes() {
         Log.i(TAG, "getRecipes");
         if (AdminRights.isAdmin()) {
@@ -702,6 +684,8 @@ class DatabaseConnection extends SQLiteOpenHelper {
         }
         return Helper.getRecipeHelper().getAvailable(this.recipes);
     }
+
+     */
 
 
 
@@ -760,7 +744,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
         }else{
             Log.i(TAG, "first time saving");
             ingredient.setID(Tables.TABLE_INGREDIENT.addElement(this.getWritableDatabase(), ingredient));
-            this.ingredients.add(ingredient);
+            //this.ingredients.add(ingredient);
         }
 
     }

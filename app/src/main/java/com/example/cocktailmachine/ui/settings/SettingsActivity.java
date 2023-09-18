@@ -12,7 +12,7 @@ import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.enums.AdminRights;
 
 import com.example.cocktailmachine.databinding.ActivitySettingsBinding;
@@ -42,9 +42,7 @@ public class SettingsActivity extends AppCompatActivity {
         Log.i(TAG, "onCreate: binding set");
         setContentView(binding.getRoot());
         Log.i(TAG, "onCreate: setContentView");
-        if(!DatabaseConnection.isInitialized()) {
-            DatabaseConnection.initializeSingleton(this);
-        }
+
         //setContentView(R.layout.activity_settings);
         /*
         if (savedInstanceState == null) {
@@ -240,7 +238,7 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
          */
-        DatabaseConnection.localRefresh();
+        Buffer.localRefresh(this);
         Toast.makeText(this,"Lade aus der Datenbank neu!",Toast.LENGTH_SHORT).show();
     }
 

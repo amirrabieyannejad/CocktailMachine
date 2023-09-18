@@ -9,7 +9,6 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.databinding.ActivityListBinding;
 
 import java.util.ArrayList;
@@ -27,9 +26,7 @@ public class ListActivity extends BasicActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityListBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        if(!DatabaseConnection.isInitialized()) {
-            DatabaseConnection.initializeSingleton(this);
-        }
+
         //setContentView(R.layout.activity_list);
     }
     @Override

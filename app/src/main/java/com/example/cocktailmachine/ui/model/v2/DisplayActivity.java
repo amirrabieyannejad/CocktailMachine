@@ -10,7 +10,6 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityDisplayBinding;
 import com.example.cocktailmachine.ui.model.ModelType;
@@ -23,9 +22,6 @@ public class DisplayActivity extends BasicActivity {
         super.onCreate(savedInstanceState);//calls read Intent
         binding = ActivityDisplayBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        if(!DatabaseConnection.isInitialized()) {
-            DatabaseConnection.initializeSingleton(this);
-        }
     }
 
     @Override
