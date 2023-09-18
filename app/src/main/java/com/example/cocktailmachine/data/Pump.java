@@ -66,7 +66,25 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @param volume
      * @throws MissingIngredientPumpException
      */
-    void setMinimumPumpVolume(int volume);
+    void setMinimumPumpVolume( int volume);
+
+    void empty(Context context);
+
+    /**
+     * set volume
+     *
+     * @param volume
+     * @throws MissingIngredientPumpException
+     */
+    void fill(Context context,int volume) throws MissingIngredientPumpException;
+
+    /**
+     * set volume
+     *
+     * @param volume
+     * @throws MissingIngredientPumpException
+     */
+    void setMinimumPumpVolume(Context context, int volume);
 
 
     //Slot
@@ -101,6 +119,22 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     void setCurrentIngredient(long id);
 
+    /**
+     * Update ingredient in pump.
+     *
+     * @param ingredient next ingredient.
+     */
+    default void setCurrentIngredient(Context context, Ingredient ingredient) {
+        setCurrentIngredient(context,ingredient.getID());
+    }
+
+    /**
+     * Update ingredient in pump.
+     *
+     * @param id id of next ingredient
+     */
+    void setCurrentIngredient(Context context,long id);
+
 
 
 
@@ -113,6 +147,13 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @param ingredientPump
      */
     void setIngredientPump(SQLIngredientPump ingredientPump);
+
+    /**
+     * only use after db loading to connect pump and ingredient
+     *
+     * @param ingredientPump
+     */
+    void setIngredientPump(Context context,SQLIngredientPump ingredientPump);
 
 
     /**

@@ -186,6 +186,30 @@ public class Buffer {
 
 
 
+    public void addToBuffer(Ingredient e){
+        this.ingredients.add(e);
+        if(isFast){
+            this.fastNameIngredient.put(e.getName(), e);
+            this.fastIDIngredient.put(e.getID(),e );
+            if(e.isAvailable()){
+
+                this.fastNameAvailableIngredient.put(e.getName(), e);
+                this.fastIDAvailableIngredient.put(e.getID(),e );
+            }
+        }
+    }
+    public void removeFromBuffer(Ingredient e){
+        this.topics.remove(e);
+        if(isFast){
+            this.fastNameIngredient.remove(e.getName());
+            this.fastIDIngredient.remove(e.getID());
+            if(e.isAvailable()){
+
+                this.fastNameAvailableIngredient.remove(e.getName());
+                this.fastIDAvailableIngredient.remove(e.getID());
+            }
+        }
+    }
 
     /**
      * get ingredient list form buffer
@@ -389,7 +413,20 @@ public class Buffer {
 
 
 
-
+    public void addToBuffer(Topic e){
+        this.topics.add(e);
+        if(isFast){
+            this.fastNameTopic.put(e.getName(), e);
+            this.fastIDTopic.put(e.getID(),e );
+        }
+    }
+    public void removeFromBuffer(Topic e){
+        this.topics.remove(e);
+        if(isFast){
+            this.fastNameTopic.remove(e.getName());
+            this.fastIDTopic.remove(e.getID());
+        }
+    }
 
     /**
      * get topic list from buffer
@@ -543,7 +580,30 @@ public class Buffer {
 
 
 
+    public void addToBuffer(Recipe e){
+        this.recipes.add(e);
+        if(isFast){
+            this.fastNameRecipe.put(e.getName(), e);
+            this.fastIDRecipe.put(e.getID(),e );
+            if(e.isAvailable()){
 
+                this.fastNameAvailableRecipe.put(e.getName(), e);
+                this.fastIDAvailableRecipe.put(e.getID(),e );
+            }
+        }
+    }
+    public void removeFromBuffer(Recipe e){
+        this.recipes.remove(e);
+        if(isFast){
+            this.fastNameRecipe.remove(e.getName());
+            this.fastIDRecipe.remove(e.getID());
+            if(e.isAvailable()){
+
+                this.fastNameAvailableRecipe.remove(e.getName());
+                this.fastIDAvailableRecipe.remove(e.getID());
+            }
+        }
+    }
     /**
      * get all recipes in buffer
      * @author Johanna Reidt
@@ -750,8 +810,18 @@ public class Buffer {
 
 
 
-
-
+    public void addToBuffer(Pump e){
+        this.pumps.add(e);
+        if(isFast){
+            this.fastIDPump.put(e.getID(),e );
+        }
+    }
+    public void removeFromBuffer(Pump e){
+        this.pumps.remove(e);
+        if(isFast){
+            this.fastIDPump.remove(e.getID());
+        }
+    }
     /**
      * get pumps from buffer
      * @author Johanna Reidt
@@ -834,4 +904,78 @@ public class Buffer {
 
 
 
+
+
+    public void addToBuffer(SQLIngredientPump e){
+        this.ingredientPumps.add(e);
+    }
+    public void removeFromBuffer(SQLIngredientPump e){
+        this.ingredientPumps.remove(e);
+    }
+    public List<SQLIngredientPump> getIngredientPumps(){
+        if(this.ingredientPumps == null){
+            this.ingredientPumps = new ArrayList<>();
+        }
+        return this.ingredientPumps;
+    }
+
+
+
+    public void addToBuffer(SQLRecipeIngredient e){
+        this.recipeIngredients.add(e);
+    }
+    public void removeFromBuffer(SQLRecipeIngredient e){
+        this.recipeIngredients.remove(e);
+    }
+    public List<SQLRecipeIngredient> getRecipeIngredients(){
+        if(this.recipeIngredients == null){
+            this.recipeIngredients = new ArrayList<>();
+        }
+        return this.recipeIngredients;
+    }
+
+    public void loadAvailableIngredient() {
+        if(isFast){
+            this.fastAvailableIngredient = new ArrayList<>();
+            this.fastIDAvailableIngredient = new HashMap<>();
+            this.fastNameAvailableIngredient = new HashMap<>();
+        }
+        for(Ingredient i: this.ingredients){
+            i.loadAvailable();
+            if(i.isAvailable()){
+                addAvailableToFast(i);
+            }
+        }
+    }
+
+    private void addAvailableToFast(Ingredient ingredient){
+        if(isFast){
+            this.fastAvailableIngredient.add(ingredient);
+            this.fastIDAvailableIngredient.put(ingredient.getID(), ingredient);
+            this.fastNameAvailableIngredient.put(ingredient.getName(), ingredient);
+        }
+    }
+
+    public void loadAvailableRecipe() {
+        if(isFast){
+            this.fastAvailableIngredient = new ArrayList<>();
+            this.fastIDAvailableIngredient = new HashMap<>();
+            this.fastNameAvailableIngredient = new HashMap<>();
+        }
+        for(Recipe i: this.recipes){
+            i.loadAvailable();
+            if(i.isAvailable()){
+                addAvailableToFast(i);
+            }
+        }
+    }
+
+
+    private void addAvailableToFast(Recipe e){
+        if(isFast){
+            this.fastAvailableRecipe.add(e);
+            this.fastIDAvailableRecipe.put(e.getID(), e);
+            this.fastNameAvailableRecipe.put(e.getName(), e);
+        }
+    }
 }

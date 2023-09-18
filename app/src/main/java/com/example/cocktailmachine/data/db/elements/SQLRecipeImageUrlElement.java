@@ -1,8 +1,10 @@
 package com.example.cocktailmachine.data.db.elements;
 
+import android.content.Context;
 import android.util.Log;
 
-import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
+import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 public class SQLRecipeImageUrlElement extends SQLImageUrlElement {
@@ -19,26 +21,14 @@ public class SQLRecipeImageUrlElement extends SQLImageUrlElement {
 
 
     @Override
-    public boolean save() {
-        try {
-            DatabaseConnection.getDataBase().addOrUpdate(this);
-            this.wasSaved();
-            return true;
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
-        return false;
+    public void save(Context context) {
+        Log.i(TAG, "save");
+        AddOrUpdateToDB.addOrUpdate(context,this);
     }
 
     @Override
-    public void delete() {
+    public void delete(Context context) {
         Log.i(TAG, "delete");
-        try {
-            DatabaseConnection.getDataBase().remove(this);
-            Log.i(TAG, "delete: successful deleted");
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            Log.i(TAG, "delete: failed");
-        }
+        DeleteFromDB.remove(context, this);
     }
 }

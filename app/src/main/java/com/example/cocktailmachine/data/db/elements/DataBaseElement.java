@@ -21,7 +21,7 @@ public interface DataBaseElement {
 
     void wasChanged();
 
-    boolean save(Context context);
+    void save(Context context);
 
     void delete(Context context);
 

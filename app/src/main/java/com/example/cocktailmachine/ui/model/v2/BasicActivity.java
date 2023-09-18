@@ -7,6 +7,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
 
@@ -98,12 +99,14 @@ public abstract class BasicActivity extends AppCompatActivity {
     @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
-        //TODO: mostly close db cache
+        Buffer.getSingleton().lowMemory();
+        //TO DO: mostly close db cache
     }
 
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        //TODO: half close db cache
+        Buffer.getSingleton().lowMemory();
+        //TO DO: half close db cache
     }
 }

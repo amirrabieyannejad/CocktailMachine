@@ -3,6 +3,7 @@ package com.example.cocktailmachine.data.db.elements;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
@@ -17,8 +18,9 @@ import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
+import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
+import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.db.Helper;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.exceptions.AlreadySetIngredientException;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
@@ -122,7 +124,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
      * @throws NotInitializedDBException
      */
     private void load() throws NotInitializedDBException {
-        this.imageUrls = DatabaseConnection.getDataBase().getUrlElements(this);
+        //this.imageUrls = DatabaseConnection.getDataBase().getUrlElements(this);
         this.topics = DatabaseConnection.getDataBase().getTopicIDs(this);
         this.ingredientVolumes = DatabaseConnection.getDataBase().getIngredientVolumes(this);
         this.loadAvailable();
@@ -467,38 +469,15 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
     //general
     @Override
-    public void delete() {
+    public void delete(Context context) {
         Log.i(TAG, "delete");
-        try {
-            DatabaseConnection.getDataBase().remove(this);
-            Log.i(TAG, "delete: successfull");
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            Log.i(TAG, "delete: failed");
-        }
+        DeleteFromDB.remove(context, this);
     }
 
     @Override
-    public boolean save() {
+    public void save(Context context) {
         Log.i(TAG, "save");
-        try {
-            DatabaseConnection.getDataBase().addOrUpdate(this);
-            for(SQLRecipeImageUrlElement url: this.imageUrls) {
-                DatabaseConnection.getDataBase().addOrUpdate(url);
-            }
-            for(SQLRecipeIngredient ri: this.ingredientVolumes){
-                if(ri.getRecipeID()!=this.getID()){
-                    ri.setRecipeID(this.getID());
-                    ri.save();
-                }
-                DatabaseConnection.getDataBase().addOrUpdate(ri);
-            }
-            this.wasSaved();
-            return true;
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
-        return false;
+        AddOrUpdateToDB.addOrUpdate(context, this);
     }
 
     public JSONObject asJSON(){
