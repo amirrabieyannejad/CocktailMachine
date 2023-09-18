@@ -99,6 +99,13 @@ public class SQLIngredientPump extends SQLDataBaseElement {
         return this.volume>0;
     }
 
+    @Override
+    public boolean loadAvailable(Context context) {
+        boolean res =  loadAvailable();
+        this.save(context);
+        return res;
+    }
+
     /**
      * true, if pump and ingredient exists and volume > zero
      * @return

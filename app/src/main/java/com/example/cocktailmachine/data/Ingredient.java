@@ -127,12 +127,12 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      */
     void setIngredientPump(SQLIngredientPump ingredientPump);
 
-    void setPump(Long pump, int volume);
+    void setPump(Context context,Long pump, int volume);
 
     /**
      * emptys pump if exist
      */
-    void empty();
+    void empty(Context context);
 
 
     /**

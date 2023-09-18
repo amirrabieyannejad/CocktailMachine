@@ -68,6 +68,13 @@ public class SQLRecipeIngredient extends SQLDataBaseElement {
         return true;
     }
 
+    @Override
+    public boolean loadAvailable(Context context) {
+        this.loadAvailable();
+        this.save(context);
+        return this.available;
+    }
+
     /**
      * true if pump exists, ingredient exists
      * @return

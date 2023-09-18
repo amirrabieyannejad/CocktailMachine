@@ -47,6 +47,11 @@ public class SQLTopic extends SQLDataBaseElement implements Topic {
         return true;
     }
 
+    @Override
+    public boolean loadAvailable(Context context) {
+        return true;
+    }
+
     /**
      * always true
      * @return

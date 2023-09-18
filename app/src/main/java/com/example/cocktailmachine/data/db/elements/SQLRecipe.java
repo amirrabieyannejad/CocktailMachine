@@ -237,6 +237,13 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         return this.available;
     }
 
+    @Override
+    public boolean loadAvailable(Context context) {
+        this.loadAvailable();
+        this.save(context);
+        return this.available;
+    }
+
     /**
      * check for ingredient pump connection
      * true, if ingredient pump connection exists

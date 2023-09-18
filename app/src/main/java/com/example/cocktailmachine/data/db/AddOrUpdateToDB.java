@@ -23,6 +23,8 @@ import com.example.cocktailmachine.data.db.tables.Tables;
 public class AddOrUpdateToDB {
     private static String TAG = "AddOrUpdateToDB";
 
+
+
     private static SQLiteDatabase getReadableDatabase(Context context){
         return DatabaseConnection.init(context).getReadableDatabase();
     }

@@ -170,6 +170,13 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         return this.available;
     }
 
+    @Override
+    public boolean loadAvailable(Context context) {
+        loadAvailable();
+        this.save(context);
+        return isAvailable();
+    }
+
     /**
      * true, if ingredient pump connection exists and pump filled with conntent
      * @return
@@ -278,27 +285,28 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
      * @param volume
      */
     @Override
-    public void setPump(Long pump, int volume) {
+    public void setPump(Context context, Long pump, int volume) {
         this.available = true;
         //this.pump = pump;
         //this.volume = volume;
 
         Pump pp = Pump.getPump(pump);
         if(pp != null) {
-            pp.setCurrentIngredient(this);
+            pp.setCurrentIngredient(context,this);
             this.ingredientPump = new SQLIngredientPump(volume, pump, this.getID());
         }
         this.wasChanged();
+        this.save(context);
     }
 
     /**
      * delete ingredient pump connection if exists, and set to null
      */
     @Override
-    public void empty() {
+    public void empty(Context context) {
         this.checkIngredientPumps();
         if(ingredientPump != null){
-            this.ingredientPump.delete();
+            this.ingredientPump.delete(context);
         }
         this.ingredientPump = null;
         this.loadAvailable();
