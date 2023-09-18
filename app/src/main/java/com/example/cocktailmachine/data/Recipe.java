@@ -3,10 +3,11 @@ package com.example.cocktailmachine.data;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
@@ -295,7 +296,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
             jsonObject.put("recipe", this.getName());
 
              */
-        save();
+        save(activity);
         if(Dummy.isDummy){
             return true;
         }
@@ -385,7 +386,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
          */
         Pump.readPumpStatus(activity);
         CocktailMachine.updateRecipeListIfChanged(activity);
-        DatabaseConnection.localRefresh();
+        Buffer.localRefresh(activity);
     }
 
 
@@ -398,7 +399,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @param json
      * @throws NotInitializedDBException
      */
-    static void setRecipes(JSONArray json) throws JSONException{
+    static void setRecipes(Context context,JSONArray json) throws JSONException{
         //TO DO: USE THIS AMIR **DONE**
         //[{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}, {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
         for(int i=0; i<json.length(); i++){
@@ -411,12 +412,12 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
                     if(liq!=null){
                         String name = a.getString(0);
                         int volume = a.getInt(1);
-                        Ingredient ig = Ingredient.searchOrNew(name);
+                        Ingredient ig = Ingredient.searchOrNew(context,name);
                         temp.addOrUpdate(ig, volume);
                     }
                 }
             }
-            temp.save();
+            temp.save(context);
         }
     }
 
@@ -431,12 +432,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @return Recipe
      */
     static Recipe getRecipe(long id) {
-        try {
-            return DatabaseConnection.getDataBase().getRecipe(id);
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return Buffer.getSingleton().getRecipe(id);
     }
 
     /**
@@ -445,12 +441,8 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @return
      */
     static Recipe getRecipe(String name){
-        try {
-            return DatabaseConnection.getDataBase().getRecipeWithExact(name);
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return Buffer.getSingleton().getRecipe(name);
+
     }
 
     /**
@@ -459,13 +451,9 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @return list of recipes
      */
      static List<Recipe> getRecipes() {
-        try {
-            return (List<Recipe>) DatabaseConnection.getDataBase().getAvailableRecipes();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
-    }
+        return Buffer.getSingleton().getAvailableRecipes();
+
+     }
 
     /**
      * Static access to recipes.
@@ -473,12 +461,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @return list of recipes
      */
     static List<Recipe> getAllRecipes() {
-        try {
-            return (List<Recipe>) DatabaseConnection.getDataBase().getRecipes();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
+        return Buffer.getSingleton().getRecipes();
     }
 
     /**
@@ -488,12 +471,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @return list of recipes
      */
     static List<Recipe> getRecipes(List<Long> ids) {
-        try {
-            return DatabaseConnection.getDataBase().getRecipes(ids);
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
+        return Buffer.getSingleton().getRecipes(ids);
     }
 
     /**
