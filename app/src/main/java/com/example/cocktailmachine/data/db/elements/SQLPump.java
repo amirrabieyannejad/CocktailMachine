@@ -31,17 +31,28 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         super(ID);
         this.wasSaved();
         this.minimumPumpVolume = minimumPumpVolume;
-        this.setIngredientPumps();
+        //this.setIngredientPumps();
     }
 
+    /**
+     * get minimum oumo volume
+     * @author Johanna Reidt
+     * @return
+     */
     @Override
     public int getMinimumPumpVolume() {
         return this.minimumPumpVolume;
     }
 
+    /**
+     * get ingredient name
+     * or "Keine Zutat"
+     * @author Johanna Reidt
+     * @return
+     */
     @Override
     public String getIngredientName() {
-        this.setIngredientPumps();
+        //this.setIngredientPumps();
 
         if(this.ingredientPump!=null) {
             return this.ingredientPump.getIngredient().getName();
@@ -49,9 +60,15 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         return "Keine Zutat";
     }
 
+    /**
+     * get current volume
+     * or -1
+     * @author Johanna Reidt
+     * @return
+     */
     @Override
     public int getVolume() {
-        this.setIngredientPumps();
+        //this.setIngredientPumps();
         if(this.ingredientPump!=null) {
             return this.ingredientPump.getVolume();
         }
@@ -59,9 +76,15 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         return -1;
     }
 
+    /**
+     * get current ingredient
+     * or null
+     * @author Johanna Reidt
+     * @return
+     */
     @Override
     public Ingredient getCurrentIngredient() {
-        this.setIngredientPumps();
+        //this.setIngredientPumps();
         if(this.ingredientPump!=null) {
             return this.ingredientPump.getIngredient();
         }
@@ -69,7 +92,11 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     }
 
 
-
+    /**
+     * translaste id to slot which is equal
+     * @author Johanna Reidt
+     * @return
+     */
     @Override
     public int getSlot() {
         try {
@@ -82,9 +109,19 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         }
     }
 
+    /**
+     * sets current ingredient
+     * if current ingredient already equals given id => do nothing
+     * else delete if exists current ingredient
+     * add ingredient with vol -1
+     * save pump and ingredientpump
+     * @author Johanna Reidt
+     * @param context
+     * @param id id of next ingredient
+     */
     @Override
     public void setCurrentIngredient(Context context, long id) {
-        this.setIngredientPumps();
+        this.setIngredientPumps(context);
         if(ingredientPump != null) {
             if (this.ingredientPump.getIngredientID() == id) {
                 return;
@@ -99,13 +136,13 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
 
 
     /**
-     * set new ingridient pump connection and if existing delete old
+     * set new ingredient pump connection and if existing delete old
      * @param ingredientPump
      */
     @Override
     public void setIngredientPump(Context context, SQLIngredientPump ingredientPump) {
         Log.i(TAG, "setIngredientPump");
-        this.setIngredientPumps();
+        this.setIngredientPumps(context);
         if(ingredientPump != null){
             Log.i(TAG, "setIngredientPump: delete old: "+this.ingredientPump);
             ingredientPump.delete(context);
@@ -115,7 +152,12 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         this.save(context);
     }
 
-    private void setIngredientPumps() {
+    /**
+     * checks for ingredientPump if missing in loaded buffer
+     * @author Johanna Reidt
+     * @param context
+     */
+    private void setIngredientPumps(Context context) {
         Log.i(TAG, "checkIngredientPumps");
         if(this.ingredientPump == null){
             Log.i(TAG, "checkIngredientPumps: check ingredient pump");
@@ -123,7 +165,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
             List<SQLIngredientPump> ips = Buffer.getSingleton().getIngredientPumps();
             for(SQLIngredientPump ip: ips){
                 if(ip.getIngredientID()==this.getID()){
-                    this.setIngredientPump(ip);
+                    this.setIngredientPump(context, ip);
                     Log.i(TAG, "checkIngredientPumps: setted IngredientPump: "+ip);
                     return;
                 }
@@ -146,7 +188,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     @Override
     public void empty(Context context) {
         Log.i(TAG, "empty");
-        this.setIngredientPumps();
+        this.setIngredientPumps(context);
         if(this.ingredientPump != null){
             Log.i(TAG, "empty: delete old: "+this.ingredientPump);
             this.ingredientPump.delete(context);
@@ -155,9 +197,19 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         this.wasChanged();
     }
 
+    /**
+     * checks for ingredientPump
+     * sets volume
+     * saves
+     * throws missing ingredient if none set
+     * @author Johanna Reidt
+     * @param context
+     * @param volume
+     * @throws MissingIngredientPumpException
+     */
     @Override
     public void fill(Context context,int volume) throws MissingIngredientPumpException {
-        this.setIngredientPumps();
+        this.setIngredientPumps(context);
         if(this.ingredientPump!=null) {
             this.ingredientPump.setVolume(volume);
             this.ingredientPump.save(context);
@@ -175,29 +227,16 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     }
 
     /**
-     * no pump, check for one
-     * delete if connection exists
-     * set to null
+     * without checking for ingredientPump set Volume, throw missing ingredient if none set
+     * @author Johanna Reidt
+     * @param volume
+     * @throws MissingIngredientPumpException
      */
     @Override
-    public void empty() {
-        Log.i(TAG, "empty");
-        this.setIngredientPumps();
-        if(this.ingredientPump != null){
-            Log.i(TAG, "empty: delete old: "+this.ingredientPump);
-            this.ingredientPump.delete(context);
-        }
-        this.ingredientPump = null;
-        this.wasChanged();
-    }
-
-    @Override
     public void fill(int volume) throws MissingIngredientPumpException {
-        this.setIngredientPumps();
+        //this.setIngredientPumps();
         if(this.ingredientPump!=null) {
             this.ingredientPump.setVolume(volume);
-            this.ingredientPump.save(context);
-
         }else{
             throw new MissingIngredientPumpException("There is no IngredientPump in Pump: "+this);
         }
@@ -229,9 +268,9 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
      * @return
      */
     @Override
-    public boolean loadAvailable() {
+    public boolean loadAvailable(Context context) {
         Log.i(TAG, "loadAvailable");
-        this.setIngredientPumps();
+        this.setIngredientPumps(context);
         boolean res = (this.ingredientPump!=null);
         if(res != this.available){
             Log.i(TAG, "loadAvailable: has changed: "+res);
@@ -245,12 +284,12 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     public void save(Context context) {
         Log.i(TAG, "save");
 
-        AddOrUpdateToDB.addOrUpdate(context,this);
-        this.setIngredientPumps();
+        this.setIngredientPumps(context);
         if(this.ingredientPump != null) {
             this.ingredientPump.setPumpID(this.getID());
             this.ingredientPump.save(context);
         }
+        AddOrUpdateToDB.addOrUpdate(context,this);
 
     }
 

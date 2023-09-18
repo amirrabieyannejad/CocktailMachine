@@ -48,9 +48,12 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     int getMinimumPumpVolume();
 
+    /**
+     * get volume in pump
+     * @author Johanna Reidt
+     * @return
+     */
     int getVolume();
-
-    void empty();
 
     /**
      * set volume
@@ -61,17 +64,25 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     void fill(int volume) throws MissingIngredientPumpException;
 
     /**
-     * set volume
+     * set minimum volume
      *
      * @param volume
      * @throws MissingIngredientPumpException
      */
     void setMinimumPumpVolume( int volume);
 
+    /**
+     * empty pump
+     * no volume
+     * no ingredient
+     * @author Johanna Reidt
+     * @param context
+     */
     void empty(Context context);
 
     /**
      * set volume
+     * and save
      *
      * @param volume
      * @throws MissingIngredientPumpException
@@ -79,7 +90,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     void fill(Context context,int volume) throws MissingIngredientPumpException;
 
     /**
-     * set volume
+     * set and save min volume
      *
      * @param volume
      * @throws MissingIngredientPumpException
@@ -88,12 +99,24 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
 
     //Slot
+
+    /**
+     * get slot number
+     * @author Johanna Reidt
+     * @return
+     */
     int getSlot();
 
 
 
 
     //Ingredient
+
+    /**
+     * get ingredient name or "Keine Zutat"
+     * @author Johanna Reidt
+     * @return
+     */
     String getIngredientName();
 
     /**
@@ -103,24 +126,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     Ingredient getCurrentIngredient();
 
-    /**
-     * Update ingredient in pump.
-     *
-     * @param ingredient next ingredient.
-     */
-    default void setCurrentIngredient(Ingredient ingredient) {
-        setCurrentIngredient(ingredient.getID());
-    }
 
     /**
-     * Update ingredient in pump.
-     *
-     * @param id id of next ingredient
-     */
-    void setCurrentIngredient(long id);
-
-    /**
-     * Update ingredient in pump.
+     * Update ingredient in pump. and save
      *
      * @param ingredient next ingredient.
      */
@@ -129,7 +137,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     }
 
     /**
-     * Update ingredient in pump.
+     * Update ingredient in pump. and save
      *
      * @param id id of next ingredient
      */
@@ -138,15 +146,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
 
 
-
     //DATA BASE Stuff
 
-    /**
-     * only use after db loading to connect pump and ingredient
-     *
-     * @param ingredientPump
-     */
-    void setIngredientPump(SQLIngredientPump ingredientPump);
 
     /**
      * only use after db loading to connect pump and ingredient
@@ -155,14 +156,6 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     void setIngredientPump(Context context,SQLIngredientPump ingredientPump);
 
-
-    /**
-     * Set up pumps with ingredients.
-     * Load buffer with status quo from data base.
-     */
-    static void loadFromDB(Activity activity) throws NotInitializedDBException {
-        Buffer.getSingleton().load(activity);
-    }
 
 
     /**
@@ -201,7 +194,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         }
         if (ingredient.getPump() == null) {
             Pump pump = makeNew();
-            pump.setCurrentIngredient(ingredient);
+            pump.setCurrentIngredient(context, ingredient);
             pump.fill(volume);
         } else {
             ingredient.getPump().fill(volume);
