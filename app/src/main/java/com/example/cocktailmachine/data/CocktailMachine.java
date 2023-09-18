@@ -529,9 +529,6 @@ public class CocktailMachine {
         }
         return current;
     }
-    public static LinkedHashMap<Ingredient, Integer> geterCurrentCocktailStatus() {
-        return current;
-    }
 
     /**
      * checks if the current status is "mixing"

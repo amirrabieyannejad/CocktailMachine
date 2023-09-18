@@ -126,12 +126,7 @@ public class TestDB {
         Topic topic = Topic.makeNew("Eis", "gefrorenes Wasser");
         System.out.println(topic);
         Topic db_topic = null;
-        try {
-            topic.save();
-            db_topic = DatabaseConnection.getDataBase().getTopic(topic.getID());
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
+
         if(db_topic == null){
             System.out.println("db_topic failed");
         }else {

@@ -2,12 +2,13 @@ package com.example.cocktailmachine.data;
 
 
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
-import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
@@ -155,12 +156,8 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @return List of ingredients.
      */
     static List<Ingredient> getAllIngredients() {
-        try {
-            return (List<Ingredient>) DatabaseConnection.getDataBase().getAllIngredients();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
+        return Buffer.getSingleton().getIngredients();
+
     }
 
     /**
@@ -169,12 +166,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @return List of ingredients.
      */
     static List<String> getAllIngredientNames() {
-        List<Ingredient> ings = getAllIngredients();
-        ArrayList<String> names = new ArrayList<>();
-        for(Ingredient i: ings){
-            names.add(i.getName());
-        }
-        return names;
+        return Buffer.getSingleton().getIngredientNames();
     }
 
 
@@ -184,12 +176,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @return List of ingredients.
      */
     static List<Ingredient> getAvailableIngredients() {
-        try {
-            return (List<Ingredient>) DatabaseConnection.getDataBase().getAvailableIngredients();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
+        return Buffer.getSingleton().getAvailableIngredients();
     }
 
     /**
@@ -198,12 +185,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @return List of ingredients.
      */
     static List<String> getAvailableIngredientNames() {
-        List<Ingredient> ings = getAvailableIngredients();
-        ArrayList<String> names = new ArrayList<>();
-        for(Ingredient i: ings){
-            names.add(i.getName());
-        }
-        return names;
+        return Buffer.getSingleton().getAvailableIngredientNames();
     }
 
     /**
@@ -213,12 +195,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @return List of ingredients.
      */
     static List<Ingredient> getAvailableIngredients(List<Long> ingredientsIds) {
-        try {
-            return DatabaseConnection.getDataBase().getIngredients(ingredientsIds);
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
+        return Buffer.getSingleton().getAvailableIngredients(ingredientsIds);
     }
 
     /**
@@ -229,13 +206,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      */
     @Nullable
     static Ingredient getIngredient(Long id) {
-        try {
-            return DatabaseConnection.getDataBase().getIngredient(id);
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            Log.i(TAG, "getIngredient failed for "+id);
-            return null;
-        }
+        return Buffer.getSingleton().getIngredient(id);
     }
 
     /**
@@ -246,13 +217,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      */
     static Ingredient getIngredient(String name) {
         Log.i(TAG, "getIngredient "+name);
-        try {
-            return DatabaseConnection.getDataBase().getIngredientWithExact(name);
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            Log.i(TAG,"getIngredient failed for "+name);
-            return null;
-        }
+        return Buffer.getSingleton().getIngredient(name);
     }
 
 
@@ -304,11 +269,11 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
         return new SQLIngredient(name);
     }
 
-    static Ingredient searchOrNew(String name){
+    static Ingredient searchOrNew(Context context, String name){
         Ingredient ingredient = Ingredient.getIngredient(name);
         if(ingredient == null){
             ingredient =  Ingredient.makeNew(name);
-            ingredient.save();
+            ingredient.save(context);
         }
         return ingredient;
     }

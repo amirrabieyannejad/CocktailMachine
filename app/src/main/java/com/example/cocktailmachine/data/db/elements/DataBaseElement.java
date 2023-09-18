@@ -1,5 +1,7 @@
 package com.example.cocktailmachine.data.db.elements;
 
+import android.content.Context;
+
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 public interface DataBaseElement {
@@ -19,8 +21,8 @@ public interface DataBaseElement {
 
     void wasChanged();
 
-    boolean save();
+    boolean save(Context context);
 
-    void delete();
+    void delete(Context context);
 
 }

@@ -2,11 +2,12 @@ package com.example.cocktailmachine.data;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
@@ -118,8 +119,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * Set up pumps with ingredients.
      * Load buffer with status quo from data base.
      */
-    static void loadFromDB() throws NotInitializedDBException {
-        DatabaseConnection.getDataBase().loadBufferWithAvailable();
+    static void loadFromDB(Activity activity) throws NotInitializedDBException {
+        Buffer.getSingleton().load(activity);
     }
 
 
@@ -128,18 +129,12 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      *
      * @param numberOfPumps k
      */
-    static List<Pump> setOverrideEmptyPumps(int numberOfPumps) {
-        try {
-            DatabaseConnection.getDataBase().loadForSetUp();
-            for (int i = 0; i < numberOfPumps; i++) {
-                Pump pump = makeNew();
-                pump.save();
-            }
-            return DatabaseConnection.getDataBase().getPumps();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
+    static void setOverrideEmptyPumps(Context context, int numberOfPumps) {
+        Buffer.loadForSetUp(context);
+        for (int i = 0; i < numberOfPumps; i++) {
+            Pump pump = makeNew();
+            pump.save(context);
         }
-        return new ArrayList<>();
     }
 
 
@@ -156,12 +151,12 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @throws MissingIngredientPumpException
      * @throws NotInitializedDBException
      */
-    static Pump makeNewOrUpdate(String liquidName, int volume)
+    static Pump makeNewOrUpdate(Context context, String liquidName, int volume)
             throws MissingIngredientPumpException, NotInitializedDBException {
         Ingredient ingredient = Ingredient.getIngredient(liquidName);
         if (ingredient == null) {
             ingredient = Ingredient.makeNew(liquidName);
-            ingredient.save();
+            ingredient.save(context);
         }
         if (ingredient.getPump() == null) {
             Pump pump = makeNew();
@@ -170,8 +165,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         } else {
             ingredient.getPump().fill(volume);
         }
-        ingredient.save();
-        ingredient.getPump().save();
+        ingredient.save(context);
+        ingredient.getPump().save(context);
 
         return ingredient.getPump();
     }
@@ -246,7 +241,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @throws JSONException
      * @throws NotInitializedDBException
      */
-    static void updatePumpStatus(JSONObject json) {
+    static void updatePumpStatus(Context context, JSONObject json) {
         Log.i(TAG, "updatePumpStatus");
         //TO DO: USE THIS AMIR
         try {
@@ -257,15 +252,15 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             List<Pump> toDeletePumps = Pump.getPumps();
             for (int i = 0; i < t_ids.length(); i++) {
                 toDeletePumps.remove(
-                        makeNewOrUpdate(
+                        makeNewOrUpdate(context,
                                 Objects.requireNonNull(
                                         json.optJSONObject(
                                                 t_ids.getString(i)))));
             }
             for (Pump toDelete : toDeletePumps) {
-                toDelete.delete();
+                toDelete.delete(context);
             }
-            DatabaseConnection.getDataBase().loadBufferWithAvailable();
+            Buffer.localRefresh(context);
         } catch (NotInitializedDBException | JSONException | MissingIngredientPumpException e) {
             e.printStackTrace();
         }
@@ -281,7 +276,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @throws JSONException
      * @throws NotInitializedDBException
      */
-    static void updateLiquidStatus(JSONObject json) throws JSONException, NotInitializedDBException, MissingIngredientPumpException {
+    static void updateLiquidStatus(Context context, JSONObject json) throws JSONException, NotInitializedDBException, MissingIngredientPumpException {
         Log.i(TAG, "updateLiquidStatus");
         //TO DO: USE THIS AMIR
         //List<Pump> pumps = DatabaseConnection.getDataBase().getPumps();
@@ -325,14 +320,14 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         List<Pump> toDeletePumps = Pump.getPumps();
         for (int i = 0; i < t_names.length(); i++) {
             toDeletePumps.remove(
-                    makeNewOrUpdate(
+                    makeNewOrUpdate(context,
                             t_names.optString(i),
                             json.optInt(t_names.optString(i))));
         }
         for (Pump toDelete : toDeletePumps) {
-            toDelete.delete();
+            toDelete.delete(context);
         }
-        DatabaseConnection.getDataBase().loadBufferWithAvailable();
+        Buffer.localRefresh(context);
     }
 
     /**
@@ -368,8 +363,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @param jsonObject
      * @return
      */
-    static Pump makeNewOrUpdate(JSONObject jsonObject) throws NotInitializedDBException, MissingIngredientPumpException {
-        return makeNewOrUpdate(jsonObject.optString("liquid"), jsonObject.optInt("volume"));
+    static Pump makeNewOrUpdate(Context context,JSONObject jsonObject) throws NotInitializedDBException, MissingIngredientPumpException {
+        return makeNewOrUpdate(context,jsonObject.optString("liquid"), jsonObject.optInt("volume"));
     }
 
 
@@ -391,7 +386,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
      */
     default void sendSave(Activity activity) {
-        save();
+        save(activity);
         if(Dummy.isDummy){
             return;
         }
@@ -630,7 +625,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     static void sync(Activity activity) {
         //TO DO sync
         readPumpStatus(activity);
-        DatabaseConnection.localRefresh();
+        Buffer.localRefresh(activity);
     }
 
     /**
@@ -685,12 +680,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @return pumps
      */
     static List<Pump> getPumps() {
-        try {
-            return DatabaseConnection.getDataBase().getPumps();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
+        return Buffer.getSingleton().getPumps();
     }
 
     /**
@@ -701,22 +691,11 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @return
      */
     static Pump getPump(long id) {
-        try {
-            return DatabaseConnection.getDataBase().getPump(id);
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return Buffer.getSingleton().getPump(id);
     }
 
     static Pump getPumpWithSlot(int slot) {
-
-        try {
-            return DatabaseConnection.getDataBase().getPumpWithSlot(slot);
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return Buffer.getSingleton().getPump((long) slot);
     }
 
 
