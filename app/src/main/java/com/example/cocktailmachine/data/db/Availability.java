@@ -1,5 +1,9 @@
 package com.example.cocktailmachine.data.db;
 
+import android.content.Context;
+
+import com.example.cocktailmachine.data.Pump;
+
 /**
  * @author Johanna Reidt
  * @created Mo. 18.Sep 2023 - 16:43
@@ -32,7 +36,16 @@ private void checkAllAvailability() throws NotInitializedDBException {
 
  */
     public static void check(){
+        for(Pump p:Pump.getPumps()){
+            p.loadAvailable();
+        }
 
+    }
+
+    public static void check(Context context){
+        for(Pump p:Pump.getPumps()){
+            p.loadAvailable(context);
+        }
 
     }
 

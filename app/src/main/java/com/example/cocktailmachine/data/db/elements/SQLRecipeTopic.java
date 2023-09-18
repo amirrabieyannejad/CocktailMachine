@@ -51,6 +51,13 @@ public class SQLRecipeTopic extends SQLDataBaseElement {
         return this.available;
     }
 
+    @Override
+    public boolean loadAvailable(Context context) {
+        loadAvailable();
+        this.save(context);
+        return this.available;
+    }
+
     /**
      * true, if topic and recipe exists
      * @return

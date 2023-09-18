@@ -2,6 +2,9 @@ package com.example.cocktailmachine.data.db.elements;
 
 import android.content.Context;
 
+import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
+import com.example.cocktailmachine.data.db.Buffer;
+import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 public interface DataBaseElement {
@@ -12,6 +15,7 @@ public interface DataBaseElement {
     boolean isAvailable();
 
     boolean loadAvailable(Context context);
+    boolean loadAvailable();
 
     boolean isSaved();
 

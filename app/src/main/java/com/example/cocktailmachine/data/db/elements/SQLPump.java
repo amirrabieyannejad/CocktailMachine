@@ -143,14 +143,15 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     public void setIngredientPump(Context context, SQLIngredientPump ingredientPump) {
         Log.i(TAG, "setIngredientPump");
         this.setIngredientPumps(context);
-        if(ingredientPump != null){
+        if(this.ingredientPump != null){
             Log.i(TAG, "setIngredientPump: delete old: "+this.ingredientPump);
-            ingredientPump.delete(context);
+            this.ingredientPump.delete(context);
         }
         this.ingredientPump = ingredientPump;
         Log.i(TAG, "setIngredientPump: "+ingredientPump.toString());
         this.save(context);
     }
+
 
     /**
      * checks for ingredientPump if missing in loaded buffer
@@ -179,6 +180,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
 
          */
     }
+
 
     /**
      * no pump, check for one
@@ -278,6 +280,11 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
             this.wasChanged();
         }
         return this.available;
+    }
+
+    @Override
+    public boolean loadAvailable() {
+        return false;
     }
 
     @Override
