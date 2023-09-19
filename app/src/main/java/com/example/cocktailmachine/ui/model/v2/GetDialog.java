@@ -2,6 +2,7 @@ package com.example.cocktailmachine.ui.model.v2;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.text.InputType;
 import android.util.Log;
@@ -563,7 +564,7 @@ public class GetDialog {
 
             builder.setAdapter(adapter,
                     (dialog, which) -> {
-                        pump.setCurrentIngredient(ingredients.get(which));
+                        pump.setCurrentIngredient(activity, ingredients.get(which));
                         Toast.makeText(activity, names.get(which)+" gewählt.",Toast.LENGTH_SHORT).show();
                     });
 
@@ -772,22 +773,37 @@ public class GetDialog {
         private String getName(){
             return e.getText().toString();
         }
-        public boolean save(){
+        public void save(){
             switch(modelType){
                 case INGREDIENT:
                     Ingredient ingredient = Ingredient.getIngredient(ID);
-                    ingredient.setName(getName());
-                    return ingredient.save(activity);
+                    if(ingredient==null){
+                        ingredient = Ingredient.makeNew(getName());
+                    }else {
+                        ingredient.setName(getName());
+                    }
+                    ingredient.save(activity);
+                    return;
                 case RECIPE:
                     Recipe recipe = Recipe.getRecipe(ID);
-                    recipe.setName(getName());
-                    return recipe.save(activity);
+                    if(recipe==null){
+                        recipe = Recipe.makeNew(getName());
+                    }else {
+                        recipe.setName(activity,getName());
+                    }
+                    recipe.save(activity);
+                    return;
                 case TOPIC:
                     Topic topic = Topic.getTopic(ID);
-                    topic.setName(getName());
-                    return topic.save(activity);
+                    if(topic==null){
+                        topic = Topic.makeNew(getName(), "");
+                    }else {
+                        topic.setName(getName());
+                    }
+                    topic.save(activity);
+                    return;
             }
-            return false;
+            return;
         }
 
         public void send(){
@@ -1191,19 +1207,19 @@ public class GetDialog {
         }
         private int getVolume(){
             try {
-                return Integer.getInteger(e.getText().toString());
-            }catch (NullPointerException e){
+                return Integer.parseInt(e.getText().toString());
+            }catch (NumberFormatException e){
                 e.printStackTrace();
                 return 100;
             }
         }
-        public boolean save(){
+        public void save(){
             try {
                 pump.fill(getVolume());
             } catch (MissingIngredientPumpException ex) {
                 ex.printStackTrace();
             }
-            return pump.save(activity);
+            pump.save(activity);
         }
 
         public void send(){
@@ -1232,7 +1248,7 @@ public class GetDialog {
 
             builder.setAdapter(adapter,
                     (dialog, which) -> {
-                        pump.setCurrentIngredient(ingredients.get(which));
+                        pump.setCurrentIngredient(activity,ingredients.get(which));
                         Toast.makeText(activity, names.get(which)+" gewählt.",Toast.LENGTH_SHORT).show();
                     });
 
@@ -1937,9 +1953,9 @@ public class GetDialog {
         private String getDescription(){
             return e.getText().toString();
         }
-        public boolean save(Activity ac){
+        public void save(Activity ac){
             this.topic.setDescription(getDescription());
-            return topic.save(ac);
+            topic.save(ac);
         }
     }
 
@@ -1985,7 +2001,7 @@ public class GetDialog {
                 adapter,
                 0,
                 (dialog, which) -> {
-            pump.setCurrentIngredient(ingredients.get(which));
+            pump.setCurrentIngredient(activity,ingredients.get(which));
             Toast.makeText(activity,"Gewählte Zutat: "+displayValues.get(which),Toast.LENGTH_SHORT).show();
         });
 
@@ -2048,7 +2064,8 @@ public class GetDialog {
         b.append(" aus dem Rezept "+recipe.getName()+" entfernen?");
         builder.setTitle(b.toString());
         builder.setPositiveButton("Bitte löschen!", (dialog, which) -> {
-            deleteElementFromRecipe(recipe,
+            deleteElementFromRecipe(activity,
+                    recipe,
                     modelType,
                     ID);
         });
@@ -2181,14 +2198,15 @@ public class GetDialog {
      * @param modelType
      * @param ID
      */
-    private static void deleteElementFromRecipe(Recipe recipe,
+    private static void deleteElementFromRecipe(Context context,
+                                                Recipe recipe,
                                                 ModelType modelType,
                                                 Long ID){
         switch (modelType){
             case TOPIC:
-                recipe.removeTopic(ID);
+                recipe.remove(context, Topic.getTopic(ID));
             case INGREDIENT:
-                recipe.removeIngredient(ID);
+                recipe.remove(context, Ingredient.getIngredient(ID));
         }
     }
 
