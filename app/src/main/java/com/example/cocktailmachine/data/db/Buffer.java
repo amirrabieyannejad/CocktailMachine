@@ -987,17 +987,21 @@ public class Buffer {
 
 
     public List<Long> getIngredientIds(Recipe recipe){
+        List<Long> res = new ArrayList<>();
         if(isFast){
-            return this.fastRecipeIngredient.get(recipe.getID());
-        }else{
-            List<Long> res = new ArrayList<>();
-            for(SQLRecipeIngredient rt: this.recipeIngredients){
-                if(rt.getRecipeID()==recipe.getID()){
-                    res.add(rt.getIngredientID());
-                }
+            res= this.fastRecipeIngredient.get(recipe.getID());
+            if(res != null){
+                return res;
+            }else{
+                res = new ArrayList<>();
             }
-            return res;
         }
+        for(SQLRecipeIngredient rt: this.recipeIngredients){
+            if(rt.getRecipeID()==recipe.getID()){
+                res.add(rt.getIngredientID());
+            }
+        }
+        return res;
     }
 
     public List<Ingredient> getIngredients(Recipe recipe){
@@ -1053,17 +1057,22 @@ public class Buffer {
         return res;
     }
     public List<Long> getTopicIDs(Recipe recipe){
+        List<Long> res = new ArrayList<>();
         if(isFast){
-            return this.fastRecipeTopics.get(recipe.getID());
-        }else{
-            List<Long> res = new ArrayList<>();
-            for(SQLRecipeTopic rt: this.recipeTopics){
-                if(rt.getRecipeID()==recipe.getID()){
-                    res.add(rt.getTopicID());
-                }
+            res= this.fastRecipeTopics.get(recipe.getID());
+            if(res != null){
+                return res;
+            }else{
+                res = new ArrayList<>();
             }
-            return res;
         }
+        for(SQLRecipeTopic rt: this.recipeTopics){
+            if(rt.getRecipeID()==recipe.getID()){
+                res.add(rt.getTopicID());
+            }
+        }
+        return res;
+
     }
 
     public List<Topic> getTopics(Recipe recipe){
