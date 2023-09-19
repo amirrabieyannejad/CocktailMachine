@@ -98,7 +98,7 @@ public class ModelActivity extends AppCompatActivity {
     protected void onDestroy() {
         Log.i(TAG, "onDestroy: close data base");
         super.onDestroy();
-        
+
     }
 
     private void goTo(Bundle bundle){

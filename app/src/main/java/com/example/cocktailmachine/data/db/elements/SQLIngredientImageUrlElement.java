@@ -21,6 +21,11 @@ public class SQLIngredientImageUrlElement extends SQLImageUrlElement {
     }
 
     @Override
+    public boolean loadAvailable(Context context) {
+        return false;
+    }
+
+    @Override
     public void save(Context context) {
         Log.i(TAG, "save");
         AddOrUpdateToDB.addOrUpdate(context, this);

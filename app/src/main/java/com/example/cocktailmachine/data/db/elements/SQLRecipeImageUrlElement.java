@@ -19,6 +19,10 @@ public class SQLRecipeImageUrlElement extends SQLImageUrlElement {
     }
 
 
+    @Override
+    public boolean loadAvailable(Context context) {
+        return false;
+    }
 
     @Override
     public void save(Context context) {
