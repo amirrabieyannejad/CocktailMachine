@@ -2034,7 +2034,7 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                Pump.updatePumpStatus(this.getJsonResult());
+                Pump.updatePumpStatus(activity,this.getJsonResult());
                 Log.w(TAG, "To Save: " + this.getJsonResult());
             }
         };
@@ -2064,7 +2064,7 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                Pump.updatePumpStatus(this.getJsonResult());
+                Pump.updatePumpStatus(activity,this.getJsonResult());
                 Log.w(TAG, "To Save: " + this.getJsonResult());
             }
         };
@@ -2123,7 +2123,7 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                Pump.updateLiquidStatus(this.getJsonResult());
+                Pump.updateLiquidStatus(activity,this.getJsonResult());
                 Log.w(TAG, "To Save: " + this.getJsonResult());
             }
         };
@@ -2190,7 +2190,7 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                Recipe.setRecipes(this.getJSONArrayResult());
+                Recipe.setRecipes(activity,this.getJSONArrayResult());
                 Log.w(TAG, "To Save: " + this.getJSONArrayResult());
             }
         };
