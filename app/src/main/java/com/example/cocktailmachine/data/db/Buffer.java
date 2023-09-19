@@ -1285,14 +1285,14 @@ public class Buffer {
         return this.recipeIngredients;
     }
 
-    public void loadAvailableIngredient() {
+    public void loadAvailableIngredient(Context context) {
         if(isFast){
             this.fastAvailableIngredient = new ArrayList<>();
             this.fastIDAvailableIngredient = new HashMap<>();
             this.fastNameAvailableIngredient = new HashMap<>();
         }
         for(Ingredient i: this.ingredients){
-            i.loadAvailable();
+            i.loadAvailable(context);
             if(i.isAvailable()){
                 addAvailableToFast(i);
             }
@@ -1307,14 +1307,14 @@ public class Buffer {
         }
     }
 
-    public void loadAvailableRecipe() {
+    public void loadAvailableRecipe(Context context) {
         if(isFast){
             this.fastAvailableIngredient = new ArrayList<>();
             this.fastIDAvailableIngredient = new HashMap<>();
             this.fastNameAvailableIngredient = new HashMap<>();
         }
         for(Recipe i: this.recipes){
-            i.loadAvailable();
+            i.loadAvailable(context);
             if(i.isAvailable()){
                 addAvailableToFast(i);
             }
