@@ -113,7 +113,7 @@ public class AddActivity extends BasicActivity {
                 Toast.makeText(AddActivity.this, "Nenne die Zutat!", Toast.LENGTH_SHORT).show();
                 return;
             }
-            AddActivity.this.pump.setCurrentIngredient(AddActivity.this.ingredient);
+            AddActivity.this.pump.setCurrentIngredient(this.activity, AddActivity.this.ingredient);
             String vol = binding.includePump.editTextNumberSearchIngredientVol.getText().toString();
             if(vol.length()==0){
                 Log.i(TAG, "setUpPump: buttonSave has no vol -> toast & stop");
@@ -165,11 +165,7 @@ public class AddActivity extends BasicActivity {
             binding.buttonSave.setOnClickListener(v -> {
                 Log.i(TAG, "setUpPump: buttonSave: clicked");
                 topic = Topic.makeNew(binding.editTextAddTitle.getText().toString(), binding.editTextDescription.getText().toString());
-                if(!topic.save(activity)){
-                    Log.i(TAG, "setUpPump: buttonSave: saving failed");
-                    error("Datenbankfehler: Der Serviervorschlag konnte nicht gespeichert werden.");
-                    return;
-                }
+                topic.save(activity);
                 GetActivity.goToDisplay(activity, FragmentType.Model, ModelType.TOPIC, topic.getID());
                 Log.i(TAG, "setUpPump: done");
             });
@@ -182,11 +178,7 @@ public class AddActivity extends BasicActivity {
                 Log.i(TAG, "setUpPump: buttonSave: clicked");
                 topic.setName(binding.editTextAddTitle.getText().toString());
                 topic.setDescription(binding.editTextDescription.getText().toString());
-                if(!topic.save(activity)){
-                    Log.i(TAG, "setUpPump: buttonSave: saving failed");
-                    error("Datenbankfehler: Die Änderung konnte nicht gespeichert werden.");
-                    return;
-                }
+                topic.save(activity);
                 GetActivity.goToDisplay(activity, FragmentType.Model, ModelType.TOPIC, topic.getID());
                 Log.i(TAG, "setUpPump: done");
             });
@@ -263,11 +255,7 @@ public class AddActivity extends BasicActivity {
                         binding.switchAlcohol.isChecked(),
                         set_color[0]
                 );
-                if(!ingredient.save(activity)){
-                    Log.i(TAG, "setUpIngredient:buttonSave: saving failed");
-                    error("Datenbankfehler: Die Zutat konnte nicht gespeichert werden.");
-                    return;
-                }
+                ingredient.save(activity);
                 GetActivity.goToDisplay(activity, FragmentType.Model, ModelType.INGREDIENT, ingredient.getID());
             });
 
@@ -283,11 +271,7 @@ public class AddActivity extends BasicActivity {
                 ingredient.setName(binding.editTextAddTitle.getText().toString());
                 ingredient.setAlcoholic(binding.switchAlcohol.isChecked());
                 ingredient.setColor(set_color[0]);
-                if(!ingredient.save(activity)){
-                    Log.i(TAG, "setUpIngredient:buttonSave: saving failed");
-                    error("Datenbankfehler: Die Änderung konnte nicht gespeichert werden.");
-                    return;
-                }
+                ingredient.save(activity);
                 GetActivity.goToDisplay(activity, FragmentType.Model, ModelType.INGREDIENT, ingredient.getID());
             });
         }
@@ -311,7 +295,7 @@ public class AddActivity extends BasicActivity {
 
         if(this.recipe != null){
             binding.editTextAddTitle.setText(this.recipe.getName());
-            this.ingredientVolumeHashMap = this.recipe.getIngredientVolumes();
+            this.ingredientVolumeHashMap = this.recipe.getIngredientToVolume();
             this.topics = this.recipe.getTopics();
         }else{
             this.ingredientVolumeHashMap = new HashMap<>();
@@ -381,11 +365,11 @@ public class AddActivity extends BasicActivity {
                         Recipe.makeNew(binding.editTextAddTitle.getText().toString());
             }else{
                 Log.i(TAG, "buttonSave: old recipe");
-                AddActivity.this.recipe.setName(binding.editTextAddTitle.getText().toString());
+                AddActivity.this.recipe.setName(activity, binding.editTextAddTitle.getText().toString());
             }
-            AddActivity.this.recipe.addOrUpdateAndRemoveNotMentioned(
+            AddActivity.this.recipe.replaceIngredients(activity,
                     AddActivity.this.ingredientVolumeHashMap);
-            AddActivity.this.recipe.addOrUpdateAndRemoveNotMentioned(
+            AddActivity.this.recipe.replaceTopics(activity,
                     AddActivity.this.topics);
             if(AddActivity.this.recipe.sendSave(
                     activity)){

@@ -58,7 +58,7 @@ public class DisplayActivity extends BasicActivity {
             binding.textViewDisplayDescription.setVisibility(View.VISIBLE);
             return;
         }
-        recipe.loadAvailable();
+        recipe.loadAvailable(this);
         binding.textViewDisplayTitle.setText(recipe.getName());
         binding.textViewDisplayTitle.setVisibility(View.VISIBLE);
         //TO DO: AlertDialog to change title if admin
@@ -78,7 +78,7 @@ public class DisplayActivity extends BasicActivity {
 
         TitleListAdapter titleadapter = new TitleListAdapter(
                 this,
-                recipe.getIngredientIds(),
+                recipe.getIngredientIDs(),
                 recipe.getIngredientNames(),
                 ModelType.INGREDIENT);
         LinearLayoutManager llm = new LinearLayoutManager(this);

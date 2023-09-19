@@ -1,7 +1,5 @@
 package com.example.cocktailmachine.data.db;
 
-import static com.example.cocktailmachine.ui.model.v1.RowViews.RowType.recipeTopic;
-
 import android.content.Context;
 import android.util.Log;
 
@@ -995,7 +993,7 @@ public class Buffer {
         }
         return res;
     }
-    public HashMap<String, Integer> getIngredientNametoVol(Recipe recipe){
+    public HashMap<String, Integer> getIngredientNameToVol(Recipe recipe){
         HashMap<String, Integer> res = new HashMap<>();
         if(isFast){
             for(SQLRecipeIngredient ri: Objects.requireNonNull(this.fastRecipeRecipeIngredient.get(recipe.getID()))){
@@ -1010,7 +1008,21 @@ public class Buffer {
         }
         return res;
     }
-
+    public HashMap<Ingredient, Integer> getIngredientToVol(Recipe recipe) {
+        HashMap<Ingredient, Integer> res = new HashMap<>();
+        if(isFast){
+            for(SQLRecipeIngredient ri: Objects.requireNonNull(this.fastRecipeRecipeIngredient.get(recipe.getID()))){
+                res.put(ri.getIngredient(), ri.getVolume());
+            }
+            return res;
+        }
+        for(SQLRecipeIngredient ri: this.recipeIngredients){
+            if(ri.getRecipeID()==recipe.getID()){
+                res.put(ri.getIngredient(), ri.getVolume());
+            }
+        }
+        return res;
+    }
     public List<Long> getTopicIDs(Recipe recipe){
         if(isFast){
             return this.fastRecipeTopics.get(recipe.getID());
@@ -1329,4 +1341,6 @@ public class Buffer {
             this.fastNameAvailableRecipe.put(e.getName(), e);
         }
     }
+
+
 }

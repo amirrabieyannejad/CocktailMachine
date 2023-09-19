@@ -47,6 +47,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
     //Getter
     String getName();
+    boolean isAlcoholic();
 
     /**
      * get topics
@@ -96,6 +97,14 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @return
      */
     List<String> getIngredientNameNVolumes();
+
+    /**
+     * get hashmap ingredient id -> volume
+     * @author Johanna Reidt
+     * @return
+     */
+    HashMap<Ingredient, Integer> getIngredientToVolume();
+
 
     /**
      * get hashmap ingredient id -> volume
@@ -211,6 +220,43 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         this.save(context);
     }
 
+    /**
+     * replace ingredients with volumes  or replace
+     * @author Johanna Reidt
+     * @param context
+     * @param ingVol
+     */
+    default void replaceIngredients(Context context, HashMap<Ingredient, Integer> ingVol){
+        for(Ingredient i: this.getIngredients()){
+            this.remove(context, i);
+        }
+        this.loadAvailable(context);
+        this.loadAlcoholic(context);
+        this.save(context);
+        for(Ingredient e: ingVol.keySet() ){
+            this.add(context, e, ingVol.get(e));
+        }
+        this.save(context);
+    }
+
+    /**
+     * replace ingredients with volumes  or replace
+     * @author Johanna Reidt
+     * @param context
+     * @param topics
+     */
+    default void replaceTopics(Context context, List<Topic> topics){
+        for(Topic t: this.getTopics()){
+            this.remove(context, t);
+        }
+        this.loadAvailable(context);
+        this.loadAlcoholic(context);
+        this.save(context);
+        for(Topic e: topics){
+            this.add(context,e);
+        }
+        this.save(context);
+    }
 
 
 
@@ -225,6 +271,8 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     default void remove(Context context, Ingredient ingredient){
         Buffer.getSingleton().removeFromBuffer(this, ingredient);
         DeleteFromDB.remove(context, this, ingredient);
+        this.loadAvailable(context);
+        this.loadAlcoholic(context);
         this.save(context);
     }
 
@@ -237,6 +285,9 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     default void remove(Context context, Topic topic){
         Buffer.getSingleton().removeFromBuffer(this, topic);
         DeleteFromDB.remove(context, this, topic);
+        this.loadAvailable(context);
+        this.loadAlcoholic(context);
+        this.save(context);
     }
 
     /**
@@ -249,6 +300,8 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         for(Topic e: topics){
             this.remove(context, e);
         }
+        this.loadAvailable(context);
+        this.loadAlcoholic(context);
         this.save(context);
     }
 
@@ -262,14 +315,17 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         for(Ingredient e: ingredients){
             this.remove(context, e);
         }
+        this.loadAvailable(context);
+        this.loadAlcoholic(context);
         this.save(context);
+
     }
 
 
 
 
 
-
+    boolean loadAlcoholic(Context context);
 
 
 

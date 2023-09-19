@@ -4,10 +4,6 @@ package com.example.cocktailmachine.data.db.elements;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.media.AudioManager;
-import android.media.ToneGenerator;
-import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -21,32 +17,23 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
-import com.example.cocktailmachine.data.db.Helper;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
-import com.example.cocktailmachine.data.db.exceptions.AlreadySetIngredientException;
-import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
-import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
-import com.example.cocktailmachine.ui.model.v2.GetActivity;
 import com.example.cocktailmachine.ui.model.v2.GetDialog;
 import com.example.cocktailmachine.ui.model.v2.WaitingQueueCountDown;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     private static final String TAG = "SQLRecipe";
     private String name = "";
     //private List<Long> ingredientIds;
     //private HashMap<Long, Integer> ingredientVolume;
-    private boolean alcoholic;
-    private boolean available = false;
+    private boolean alcoholic = false;
+    private boolean available = true;
     private List<SQLRecipeImageUrlElement> imageUrls = new ArrayList<>();
     //private List<Long> topics = new ArrayList<>();
     //private List<SQLRecipeIngredient> ingredientVolumes = new ArrayList<>();
@@ -123,6 +110,11 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     }
 
     @Override
+    public boolean isAlcoholic() {
+        return this.alcoholic;
+    }
+
+    @Override
     public List<Topic> getTopics() {
         return Buffer.getSingleton().getTopics(this);
     }
@@ -158,13 +150,18 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     }
 
     @Override
+    public HashMap<Ingredient, Integer> getIngredientToVolume() {
+        return Buffer.getSingleton().getIngredientToVol(this);
+    }
+
+    @Override
     public HashMap<Long, Integer> getIngredientIDToVolume() {
         return Buffer.getSingleton().getIngredientIDtoVol(this);
     }
 
     @Override
     public HashMap<String, Integer> getIngredientNameToVolume() {
-        return Buffer.getSingleton().getIngredientNametoVol(this);
+        return Buffer.getSingleton().getIngredientNameToVol(this);
     }
 
     @Override
@@ -205,6 +202,9 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         SQLRecipeIngredient st = new SQLRecipeIngredient(this.getID(), ingredient.getID(), volume);
         st.save(context);
         AddOrUpdateToDB.addOrUpdate(context, st );
+        this.alcoholic = this.alcoholic || ingredient.isAlcoholic();
+        this.available = this.available && ingredient.isAvailable();
+        this.save(context);
     }
 
 
@@ -230,12 +230,25 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
     @Override
     public boolean isAvailable() {
-        return false;
+        return this.available;
     }
 
     @Override
     public boolean loadAvailable(Context context) {
-        return false;
+        this.available = true;
+        for(Ingredient i: this.getIngredients()){
+            this.available = this.available && i.isAvailable();
+        }
+        return this.available;
+    }
+
+    @Override
+    public boolean loadAlcoholic(Context context) {
+        this.alcoholic = false;
+        for(Ingredient i: this.getIngredients()){
+            this.alcoholic = this.alcoholic || i.isAlcoholic();
+        }
+        return this.alcoholic;
     }
 
     @Override

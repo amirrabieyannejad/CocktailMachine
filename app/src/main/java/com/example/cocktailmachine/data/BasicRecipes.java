@@ -4,7 +4,6 @@ import android.graphics.Color;
 import android.util.Log;
 
 
-import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 
@@ -17,9 +16,6 @@ public class BasicRecipes {
      * wenn kein Context vorahanden,
      * sonst immer DB mit Context initialisieren!!!!
      */
-    public static void loadTest(){
-        DatabaseConnection.initializeSingleton(null);
-    }
 
     public static void loadTopics() throws NotInitializedDBException{
 
