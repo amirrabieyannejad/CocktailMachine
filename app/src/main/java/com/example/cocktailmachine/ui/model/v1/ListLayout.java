@@ -134,7 +134,7 @@ public class ListLayout {
             Log.i(TAG, "delete: imageButtonListDelete clicked");
             if (adapter.isCurrentlyDeleting()) {
                 Log.i(TAG, "delete: isCurrentlyAdding, finishDelete");
-                adapter.finishDelete();
+                adapter.finishDelete(getContext);
                 adapter.notifyDataSetChanged();
                 adapter.reload();
                 swapRecyclerView(recylerViewNames,getContext,adapter);
@@ -183,8 +183,8 @@ public class ListLayout {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             for (Ingredient i : chosenIngredients) {
-                                adapter.recipe.addOrUpdate(i, -1);
-                                adapter.recipe.save();
+                                adapter.recipe.add(getContext,i, -1);
+                                adapter.recipe.save(getContext);
                                 adapter.reload();
                             }
                         }
@@ -224,8 +224,8 @@ public class ListLayout {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             for (Topic t : chosenTopics) {
-                                adapter.recipe.addOrUpdate(t);
-                                adapter.recipe.save();
+                                adapter.recipe.add(getContext,t);
+                                adapter.recipe.save(getContext);
                                 adapter.reload();
                             }
                         }
@@ -282,8 +282,8 @@ public class ListLayout {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             for (Ingredient i : chosenIngredients) {
-                                adapter.recipe.addOrUpdate(i, -1);
-                                adapter.recipe.save();
+                                adapter.recipe.add(getContext,i, -1);
+                                adapter.recipe.save(getContext);
                                 adapter.reload();
                             }
                         }
@@ -330,8 +330,8 @@ public class ListLayout {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             for (Topic t : chosenTopics) {
-                                adapter.recipe.addOrUpdate(t);
-                                adapter.recipe.save();
+                                adapter.recipe.add(getContext,t);
+                                adapter.recipe.save(getContext);
                                 adapter.reload();
                             }
                         }
