@@ -130,6 +130,11 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     }
 
     @Override
+    public List<SQLRecipeTopic> getRecipeTopic() {
+        return Buffer.getSingleton().getRecipeTopics(this);
+    }
+
+    @Override
     public List<Ingredient> getIngredients() {
         return Buffer.getSingleton().getIngredients(this);
     }
@@ -173,6 +178,13 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     public int getVolume(long ingredientID) {
         return this.getVolume(Ingredient.getIngredient(ingredientID));
     }
+
+
+    @Override
+    public List<SQLRecipeIngredient> getRecipeIngredient() {
+        return Buffer.getSingleton().getRecipeIngredients(this);
+    }
+
 
 
     @Override
@@ -239,6 +251,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         for(Ingredient i: this.getIngredients()){
             this.available = this.available && i.isAvailable();
         }
+        Buffer.getSingleton().available(this, this.available);
         return this.available;
     }
 

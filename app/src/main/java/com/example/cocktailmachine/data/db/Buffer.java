@@ -1,6 +1,7 @@
 package com.example.cocktailmachine.data.db;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -10,10 +11,12 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
+import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.exceptions.AccessDeniedException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.tables.Tables;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -1279,6 +1282,21 @@ public class Buffer {
         return this.recipeTopics;
     }
 
+    public List<SQLRecipeTopic> getRecipeTopics(Recipe recipe){
+        if(isFast){
+            if(this.fastRecipeRecipeTopic.containsKey(recipe.getID())){
+                return this.fastRecipeRecipeTopic.get(recipe.getID());
+            }
+        }
+        List<SQLRecipeTopic> rts = new ArrayList<>();
+        for(SQLRecipeTopic rt: this.getRecipeTopics()){
+            if(rt.getRecipeID()==recipe.getID()){
+                rts.add(rt);
+            }
+        }
+        return rts;
+    }
+
 
 
 
@@ -1295,6 +1313,20 @@ public class Buffer {
             this.recipeIngredients = new ArrayList<>();
         }
         return this.recipeIngredients;
+    }
+    public List<SQLRecipeIngredient> getRecipeIngredients(Recipe recipe){
+        if(isFast){
+            if(this.fastRecipeRecipeIngredient.containsKey(recipe.getID())){
+                return this.fastRecipeRecipeIngredient.get(recipe.getID());
+            }
+        }
+        List<SQLRecipeIngredient> ris = new ArrayList<>();
+        for(SQLRecipeIngredient ri: this.getRecipeIngredients()){
+            if(ri.getRecipeID()==recipe.getID()) {
+                ris.add(ri);
+            }
+        }
+        return ris;
     }
 
     public void loadAvailableIngredient(Context context) {
@@ -1343,4 +1375,95 @@ public class Buffer {
     }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //Setup
+
+    void setUpEmptyPumps(Context context) {
+        Log.i(TAG, "setUpEmptyPumps");
+        this.emptyUpPumps(context);
+        this.pumps = new ArrayList<>();
+        DatabaseConnection.init(context).setUpEmptyPumps();
+    }
+
+    void checkAllAvailability(Context context) {
+        for(Pump p: this.pumps){
+            p.loadAvailable(context);
+        }
+    }
+
+    private void emptyUpPumps(Context context) {
+        Log.i(TAG, "emptyUpPumps");
+        DatabaseConnection.init(context).emptyUpPumps();
+        for(Pump p: this.pumps){
+            p.empty(context);
+            p.delete(context);
+        }
+        if(isFast){
+            for(Ingredient i: this.fastAvailableIngredient){
+                i.empty(context);
+            }
+            for(Recipe r: this.fastAvailableRecipe){
+                r.loadAvailable(context);
+            }
+            this.fastAvailableIngredient = new ArrayList<>();
+            this.fastAvailableRecipe = new ArrayList<>();
+        }else{
+            for(Ingredient i: this.ingredients){
+                i.empty(context);
+            }
+            for(Recipe r: this.recipes){
+                r.loadAvailable(context);
+            }
+        }
+        for(SQLIngredientPump ip: this.ingredientPumps){
+            ip.delete(context);
+        }
+        this.ingredientPumps = new ArrayList<>();
+    }
+
+    public void available(Recipe recipe, boolean available) {
+        if (isFast) {
+            if(available) {
+                if (!this.fastIDAvailableRecipe.containsKey(recipe.getID())) {
+                    this.fastAvailableRecipe.add(recipe);
+                    this.fastIDAvailableRecipe.put(recipe.getID(), recipe);
+                }
+                return;
+            }
+            if(this.fastIDAvailableRecipe.containsKey(recipe.getID())){
+                this.fastIDAvailableRecipe.remove(recipe.getID());
+                this.fastAvailableRecipe.remove(recipe);
+            }
+        }
+    }
+
+    public void available(Ingredient ingredient, boolean available) {
+        if (isFast) {
+            if(available) {
+                if (!this.fastIDAvailableIngredient.containsKey(ingredient.getID())) {
+                    this.fastAvailableIngredient.add(ingredient);
+                    this.fastIDAvailableIngredient.put(ingredient.getID(), ingredient);
+                }
+                return;
+            }
+            if(this.fastIDAvailableIngredient.containsKey(ingredient.getID())){
+                this.fastIDAvailableIngredient.remove(ingredient.getID());
+                this.fastAvailableIngredient.remove(ingredient);
+            }
+        }
+    }
 }

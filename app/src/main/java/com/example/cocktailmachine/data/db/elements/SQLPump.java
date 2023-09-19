@@ -278,6 +278,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
             Log.i(TAG, "loadAvailable: has changed: "+res);
             this.available = res;
             this.wasChanged();
+            this.save(context);
         }
         return this.available;
     }

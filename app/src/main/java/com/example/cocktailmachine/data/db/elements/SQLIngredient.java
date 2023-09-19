@@ -192,6 +192,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         if(res != this.available){
             Log.i(TAG, "loadAvailable: available changed");
             this.available = res;
+            Buffer.getSingleton().available(this, this.available);
             this.wasChanged();
         }
         return isAvailable();

@@ -32,7 +32,7 @@ public class müll {
 
 
 
-
+/*
     //GETTER
     @Override
     public String getName() {
@@ -133,12 +133,15 @@ public class müll {
         return this.available;
     }
 
+ */
+
     /**
      * check for ingredient pump connection
      * true, if ingredient pump connection exists
      *
      * @return
      */
+    /*
     @Override
     public boolean loadAvailable() {
         Log.i(TAG, "loadAvailable");
@@ -151,9 +154,12 @@ public class müll {
         return this.available;
     }
 
+
+     */
     /**
      * @return if all ingredients available, with sufficient amounts of volume
      */
+    /*
     boolean privateLoadAvailable(){
         Log.i(TAG, "privateLoadAvailable");
 
@@ -186,8 +192,10 @@ public class müll {
 
 
 
+     */
 
 
+/*
 
     @Override
     public List<String> getImageUrls() {
@@ -215,6 +223,8 @@ public class müll {
 
 
 
+ */
+
 
 
 
@@ -232,7 +242,7 @@ public class müll {
 
     //Setter
 
-
+/*
     @Override
     public void setName(String name) {
         this.name = name;
@@ -264,6 +274,9 @@ public class müll {
         this.addOrUpdate(ingredient.getID(), volume);
     }
 
+
+ */
+    /*
     @Override
     public void addOrUpdate(long ingredientId, int volume) {
 
@@ -280,6 +293,8 @@ public class müll {
             this.ingredientVolumes.add(ri);
         }
         this.wasChanged();
+
+     */
         /*
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -294,7 +309,9 @@ public class müll {
         this.wasChanged();
 
          */
+    /*
     }
+
 
     public void addOrUpdateIDs(HashMap<Long, Integer> ingredientVolumes){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -314,12 +331,15 @@ public class müll {
 
     @Override
     public void addOrUpdate(Topic topic) {
+
+     */
         /*
         if(topic.getID()==-1L){
             topic.save();
         }
 
          */
+    /*
         if(topic.getID()==-1){
             Buffer.getSingleton().addToBuffer();
         }
@@ -375,6 +395,7 @@ public class müll {
 
 
 
+     */
 
 
 
@@ -387,6 +408,7 @@ public class müll {
 
 
 
+/*
 
     //REMOVER
     @Override
@@ -429,5 +451,7 @@ public class müll {
             this.imageUrls = (List<SQLRecipeImageUrlElement>) Helper.getImageUrlElementhelper().removeIfAndDeleteExtended(this.imageUrls, urlId);
         }
     }
+
+ */
 
 }

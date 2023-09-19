@@ -87,18 +87,8 @@ class DatabaseConnection extends SQLiteOpenHelper {
         DatabaseConnection.singleton = new DatabaseConnection(context);
         try {
             Log.i(TAG, "initialize_singleton: start loading");
-            if(Dummy.isDummy) {
-                //DatabaseConnection.singleton.emptyAll();
-                BasicRecipes.loadTopics();
-                BasicRecipes.loadIngredients();
-                if(!Dummy.withSetCalibration) {
-                    BasicRecipes.loadPumps();
-                }
-                BasicRecipes.loadMargarita();
-                BasicRecipes.loadLongIslandIceTea();
-            }
-            DatabaseConnection.singleton.checkAllAvailability();
-            DatabaseConnection.singleton.print();
+            DatabaseConnection.singleton.loadDummy(context);
+            Buffer.getSingleton().checkAllAvailability(context);
             Log.i(TAG, "initialize_singleton: finished loading");
         } catch (NotInitializedDBException|MissingIngredientPumpException e) {
             Log.i(TAG, "initialize_singleton: Exception");
@@ -112,18 +102,8 @@ class DatabaseConnection extends SQLiteOpenHelper {
         DatabaseConnection.singleton = new DatabaseConnection(context, privilege);
         try {
             Log.i(TAG, "initialize_singleton: start loading");
-            if(Dummy.isDummy) {
-                //DatabaseConnection.singleton.emptyAll();
-                BasicRecipes.loadTopics();
-                BasicRecipes.loadIngredients();
-                if(!Dummy.withSetCalibration) {
-                    BasicRecipes.loadPumps();
-                }
-                BasicRecipes.loadMargarita();
-                BasicRecipes.loadLongIslandIceTea();
-            }
-            DatabaseConnection.singleton.checkAllAvailability();
-            DatabaseConnection.singleton.print();
+            DatabaseConnection.singleton.loadDummy(context);
+            Buffer.getSingleton().checkAllAvailability(context);
             Log.i(TAG, "initialize_singleton: finished loading");
         }  catch (NotInitializedDBException|MissingIngredientPumpException e) {
             Log.i(TAG, "initialize_singleton: Exception");
@@ -131,6 +111,20 @@ class DatabaseConnection extends SQLiteOpenHelper {
             e.printStackTrace();
         }
     }
+
+    private void loadDummy(Context context) throws NotInitializedDBException, MissingIngredientPumpException {
+        if(Dummy.isDummy) {
+            //DatabaseConnection.singleton.emptyAll();
+            BasicRecipes.loadTopics(context);
+            BasicRecipes.loadIngredients(context);
+            if(!Dummy.withSetCalibration) {
+                BasicRecipes.loadPumps(context);
+            }
+            BasicRecipes.loadMargarita(context);
+            BasicRecipes.loadLongIslandIceTea(context);
+        }
+    }
+
 
     static synchronized boolean isInitialized(){
         Log.i(TAG, "is_initialized");
@@ -185,19 +179,6 @@ class DatabaseConnection extends SQLiteOpenHelper {
         Log.i(TAG, "emptyUpPumps");
         Tables.TABLE_INGREDIENT_PUMP.deleteTable(this.getWritableDatabase());
         Tables.TABLE_INGREDIENT_PUMP.createTable(this.getWritableDatabase());
-        this.ingredientPumps = new ArrayList<>();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            this.pumps.forEach(Pump::empty);
-            this.ingredients.forEach(Ingredient::empty);
-        }else {
-            Helper.emptyPump(this.pumps);
-            Helper.emptyIngredient(this.ingredients);
-        }
-        try {
-            this.checkAllAvailability();
-        } catch (NotInitializedDBException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     void setUpEmptyPumps() {
@@ -205,12 +186,6 @@ class DatabaseConnection extends SQLiteOpenHelper {
         this.emptyUpPumps();
         Tables.TABLE_PUMP.deleteTable(this.getWritableDatabase());
         Tables.TABLE_PUMP.createTable(this.getWritableDatabase());
-        this.pumps = new ArrayList<>();
-        try {
-            this.checkAllAvailability();
-        } catch (NotInitializedDBException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
