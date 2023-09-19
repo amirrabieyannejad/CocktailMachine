@@ -181,7 +181,6 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
      * true, if ingredient pump connection exists and pump filled with conntent
      * @return
      */
-    @Override
     public boolean loadAvailable() {
         Log.i(TAG, "loadAvailable");
         this.checkIngredientPumps();

@@ -62,7 +62,6 @@ public class SQLRecipeTopic extends SQLDataBaseElement {
      * true, if topic and recipe exists
      * @return
      */
-    @Override
     public boolean loadAvailable() {
         Log.i(TAG, "loadAvailable");
         boolean res = (this.getTopic()!=null)&&(this.getRecipe()!=null);
@@ -73,6 +72,8 @@ public class SQLRecipeTopic extends SQLDataBaseElement {
         }
         return this.available;
     }
+
+
 
     @Override
     public void save(Context context) {

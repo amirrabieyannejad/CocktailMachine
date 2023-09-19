@@ -56,7 +56,6 @@ public class SQLTopic extends SQLDataBaseElement implements Topic {
      * always true
      * @return
      */
-    @Override
     public boolean loadAvailable() {
         return true;
     }

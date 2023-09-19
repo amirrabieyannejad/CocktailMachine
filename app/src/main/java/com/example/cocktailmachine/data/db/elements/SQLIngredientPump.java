@@ -110,7 +110,6 @@ public class SQLIngredientPump extends SQLDataBaseElement {
      * true, if pump and ingredient exists and volume > zero
      * @return
      */
-    @Override
     public boolean loadAvailable() {
         boolean res = (getIngredient() != null)&&(getPump() != null);
 

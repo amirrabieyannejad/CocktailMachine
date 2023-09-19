@@ -79,7 +79,6 @@ public class SQLRecipeIngredient extends SQLDataBaseElement {
      * true if pump exists, ingredient exists
      * @return
      */
-    @Override
     public boolean loadAvailable() {
         Log.i(TAG, "loadAvailable");
         boolean res = (this.getIngredient()!=null)&&(this.getRecipe()!=null);
