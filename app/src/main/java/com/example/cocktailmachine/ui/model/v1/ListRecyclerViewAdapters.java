@@ -1,6 +1,7 @@
 package com.example.cocktailmachine.ui.model.v1;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -98,10 +99,10 @@ public class ListRecyclerViewAdapters  {
             }
         }
 
-        public void finishDelete(){
+        public void finishDelete(Context context){
             List<RowViews.RowView> trash = new ArrayList<>();
             for (RowViews.RowView view: views) {
-                if(view.finishDelete()){
+                if(view.finishDelete(context)){
                     trash.add(view);
                 }
             }
@@ -111,9 +112,9 @@ public class ListRecyclerViewAdapters  {
             add = false;
         }
 
-        public void finishAdd(){
+        public void finishAdd(Context context){
             for (RowViews.RowView view: views) {
-                view.finishAdd();
+                view.finishAdd(context);
                 //view.addLongListener(v -> loadDelete());
             }
             lock = false;
@@ -156,7 +157,7 @@ public class ListRecyclerViewAdapters  {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 try {
-                                    view.delete();
+                                    view.delete(builder.getContext());
                                     views.remove(view);
                                 } catch (NotInitializedDBException e) {
                                     e.printStackTrace();
@@ -445,14 +446,8 @@ public class ListRecyclerViewAdapters  {
 
         @Override
         public void onBindViewHolder(@NonNull RowViews.RecipeIngredientRowView holder, int position) {
-            try {
-                holder.setRecipe(recipe);
-                holder.setIngredientVolume(data.get(position), recipe.getSpecificIngredientVolume(data.get(position)));
-            } catch (TooManyTimesSettedIngredientEcxception e) {
-                e.printStackTrace();
-            } catch (NoSuchIngredientSettedException e) {
-                e.printStackTrace();
-            }
+            holder.setRecipe(recipe);
+            holder.setIngredientVolume(data.get(position), recipe.getVolume(data.get(position)));
         }
 
         @Override

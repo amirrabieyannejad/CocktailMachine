@@ -1199,7 +1199,12 @@ public class Buffer {
             return res;
         }
         try {
-            return GetFromDB.loadPump(context, id);
+            res= GetFromDB.loadPump(context, id);
+            if(res == null){
+                return null;
+            }
+            res.save(context);
+            return res;
         } catch (AccessDeniedException e) {
             Log.e(TAG, "getTopic: no admin");
             e.printStackTrace();

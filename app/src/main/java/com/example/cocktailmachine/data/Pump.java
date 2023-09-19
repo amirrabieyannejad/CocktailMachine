@@ -143,6 +143,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     void setCurrentIngredient(Context context,long id);
 
+    void preSetIngredient(long id);
+
 
 
 

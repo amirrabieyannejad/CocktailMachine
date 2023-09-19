@@ -43,7 +43,7 @@ public class GetFromDB {
             throw  new AccessDeniedException();
         }
         Recipe res =  Tables.TABLE_RECIPE.getElement(getReadableDatabase(context), id);
-        res.loadAvailable();
+        res.loadAvailable(context);
         return res;
     }
 

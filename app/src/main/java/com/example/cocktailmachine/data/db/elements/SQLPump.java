@@ -134,6 +134,12 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         this.save(context);
     }
 
+    @Override
+    public void preSetIngredient(long id) {
+        this.ingredientPump = new SQLIngredientPump(-1, this.getID(),id);
+        this.wasChanged();
+    }
+
 
     /**
      * set new ingredient pump connection and if existing delete old
