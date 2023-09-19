@@ -920,19 +920,20 @@ public class Buffer {
     }
 
     public List<Recipe> getAvailableRecipes(){
+        List<Recipe> res = new ArrayList<>();
         if(isFast){
-            return this.fastAvailableRecipe;
-        }else{
-            List<Recipe> res = new ArrayList<>();
-            for(Recipe recipe: this.recipes){
-                if(recipe.isAvailable()){
+            res = this.fastAvailableRecipe;
+            if(res != null){
+                return res;
+            }
+            res = new ArrayList<>();
+        }
+        for(Recipe recipe: this.recipes){
+            if(recipe.isAvailable()){
                     res.add(recipe);
                 }
-
-            }
-            return res;
-
         }
+        return res;
     }
 
     public List<String> getAvailableRecipesNames(){

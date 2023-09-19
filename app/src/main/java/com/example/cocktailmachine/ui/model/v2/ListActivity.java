@@ -75,7 +75,7 @@ public class ListActivity extends BasicActivity {
     @Override
     void setUpRecipe() {
         binding.textViewListAcTitle.setText("Rezepte");
-        List<Recipe> elms = Recipe.getRecipes();
+        List<Recipe> elms = Recipe.getAllRecipes();
         for(Recipe e: elms){
             IDs.add(e.getID());
             names.add(e.getName());
