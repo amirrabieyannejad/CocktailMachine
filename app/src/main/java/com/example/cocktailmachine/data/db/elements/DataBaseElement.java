@@ -15,7 +15,6 @@ public interface DataBaseElement {
     boolean isAvailable();
 
     boolean loadAvailable(Context context);
-    boolean loadAvailable();
 
     boolean isSaved();
 

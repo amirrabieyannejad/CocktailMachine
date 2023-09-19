@@ -8,6 +8,8 @@ import android.content.Context;
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.db.Buffer;
+import com.example.cocktailmachine.data.db.DeleteFromDB;
+import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
@@ -40,181 +42,281 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      */
 
 
-    long getID();
 
-    /**
-     * Get name.
-     * @return name
-     */
+
+
+    //Getter
     String getName();
 
     /**
-     * Get ingredient ids used in this recipe.
-     * @return list of ingredient ids.
+     * get topics
+     * @author Johanna Reidt
+     * @return
      */
-    List<Long> getIngredientIds();
+    List<Topic> getTopics();
 
     /**
-     * Get ingredient ids used in this recipe.
-     * @return list of ingredient ids.
+     * get Topic ids
+     * @author Johanna Reidt
+     * @return
      */
-    List<String> getIngredientNames();
+    List<Long> getTopicIDs();
 
     /**
-     * Get ingredients used in this recipe.
-     * @return list of ingredient.
+     * get topic names
+     * @author Johanna Reidt
+     * @return
+     */
+    List<String> getTopicNames();
+
+    /**
+     * get ingredients
+     * @author Johanna Reidt
+     * @return
      */
     List<Ingredient> getIngredients();
 
     /**
-     * Is alcoholic?
-     * @return alcoholic?
+     * get ingredient ids
+     * @author Johanna Reidt
+     * @return
      */
-    boolean isAlcoholic();
+    List<Long> getIngredientIDs();
 
     /**
-     * Is available?
-     * @return available?
+     * get ingreients names
+     * @author Johanna Reidt
+     * @return
+     */
+    List<String> getIngredientNames();
+
+    /**
+     * get list with "<ingredient_name>: <volume> ml"
+     * @author Johanna Reidt
+     * @return
+     */
+    List<String> getIngredientNameNVolumes();
+
+    /**
+     * get hashmap ingredient id -> volume
+     * @author Johanna Reidt
+     * @return
+     */
+    HashMap<Long, Integer> getIngredientIDToVolume();
+
+    /**
+     * get hasmap ingredient name -> volume
+     * @author Johanna Reidt
+     * @return
+     */
+    HashMap<String, Integer> getIngredientNameToVolume();
+
+    /**
+     * get volume with ingredient
+     * @author Johanna Reidt
+     * @param ingredient
+     * @return
+     */
+    int getVolume(Ingredient ingredient);
+    /**
+     * get volume with ingredient
+     * @author Johanna Reidt
+     * @param ingredientID
+     * @return
+     */
+    int getVolume(long ingredientID);
+
+    /**
+     * gives availability
+     * @author Johanna Reidt
+     * @return
      */
     boolean isAvailable();
 
+
+
+
+
+
+
+
+    //Setter
+
     /**
-     * Is available? with ingredients
-     * @return available?
+     * set name  or replace
+     * @author Johanna Reidt
+     * @param name
      */
-    boolean loadAvailable();
+    void setName(Context context, String name);
 
     /**
-     * Get associated image addresses.
-     * @return list of image addresses
+     * add topic or replace
+     * @author Johanna Reidt
+     * @param context
+     * @param topic
      */
-    List<String> getImageUrls();
+    void add(Context context, Topic topic);
 
     /**
-     * Get recommended topics.
-     * @return recommended topics
+     * add ingredient
+     * @author Johanna Reidt
+     * @param context
+     * @param ingredient
      */
-    List<Long> getTopicIDs();
-
-
-    /**
-     * Get recommended topics.
-     * @return recommended topics
-     */
-    List<Topic> getTopics();
-
-
-    //Zutaten Getter
+    void add(Context context, Ingredient ingredient);
 
     /**
-     * Get ingredients ids and their associated pumptimes in milliseconds
-     * @return hashmap ids, pump time
-     */
-    HashMap<Long, Integer> getIngredientNameVolumes();
-
-
-    /**
-     * Get ingredients ids and their associated pumptimes in milliseconds
-     * @return hashmap ids, pump time
-     */
-    HashMap<Ingredient, Integer> getIngredientVolumes();
-
-    /**
-     * Get ingredients names and their associated pumptimes in milliseconds
-     * @return hashmap name, pump time
-     */
-    List<Map.Entry<String, Integer>> getIngredientNameNVolumes();
-
-    /**
-     * Get specific pump time for ingredient with id k
-     * @param ingredientId ingredient id k
-     * @return pump time in milliseconds
-     * @throws TooManyTimesSettedIngredientEcxception There are multiple times setted. only one time is allowed.
-     * @throws NoSuchIngredientSettedException There is no such ingredient. The id is not known.
-     */
-    int getSpecificIngredientVolume(long ingredientId) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException;
-
-    /**
-     * Get specific pump time for ingredient k
-     * @param ingredient ingredient k
-     * @return pump time in milliseconds
-     * @throws TooManyTimesSettedIngredientEcxception There are multiple times setted. only one time is allowed.
-     * @throws NoSuchIngredientSettedException There is no such ingredient. The id is not known.
-     */
-    int getSpecificIngredientVolume(Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException;
-
-
-    //bASIC CHANGER
-    void setName(String name);
-
-    //Ingredient Changer
-    /**
-     * Adds ingredient with quantity measured in needed pump time.
+     * add ingredient with volume or replace
+     * @author Johanna Reidt
+     * @param context
      * @param ingredient
      * @param volume
      */
-    void addOrUpdate(Ingredient ingredient, int volume);
+    void add(Context context, Ingredient ingredient, int volume);
+
     /**
-     * Adds ingredient with quantity measured in needed pump time.
-     * @param ingredientId
-     * @param volume
+     * add topics  or replace
+     * @author Johanna Reidt
+     * @param context
+     * @param topics
      */
-    void addOrUpdate(long ingredientId, int volume);
-
-    void addOrUpdate(Topic topic);
-
-    void addOrUpdate(String imageUrls);
-
-
-    default void addOrUpdateAndRemoveNotMentioned(Context context,HashMap<Ingredient, Integer> ingredientVol){
-        this.removeAllIngredients(context);
-        for(Ingredient i: ingredientVol.keySet()){
-            this.addOrUpdate(i, ingredientVol.get(i));
+    default void addTopics(Context context, List<Topic> topics){
+        for(Topic e: topics ){
+            this.add(context, e);
         }
+        this.save(context);
     }
-
-    default void addOrUpdateAndRemoveNotMentioned(Context context,List<Topic> topics){
-        this.removeAllTopics(context);
-        for(Topic i: topics){
-            this.addOrUpdate(i);
+    /**
+     * add ingredients  or replace
+     * @author Johanna Reidt
+     * @param context
+     * @param ingredients
+     */
+    default void addIngredients(Context context, List<Ingredient> ingredients){
+        for(Ingredient e: ingredients ){
+            this.add(context, e);
         }
+        this.save(context);
     }
-
-
-    default void removeAllIngredients(Context context){
-        for(Ingredient i: this.getIngredients()){
-            this.remove(i);
+    /**
+     * add ingredients with volumes  or replace
+     * @author Johanna Reidt
+     * @param context
+     * @param ingVol
+     */
+    default void addIngredients(Context context, HashMap<Ingredient, Integer> ingVol){
+        for(Ingredient e: ingVol.keySet() ){
+            this.add(context, e, ingVol.get(e));
         }
-    }
-
-    default void removeAllTopics(Context context){
-        for(Topic i: this.getTopics()){
-            this.remove(i);
-        }
+        this.save(context);
     }
 
 
 
 
+    //Remove
 
     /**
-     * Remove Ingredient from Recipe.
+     * remove ingredient
+     * @author Johanna Reidt
+     * @param context
      * @param ingredient
      */
-    void remove(Context context,Ingredient ingredient);
+    default void remove(Context context, Ingredient ingredient){
+        Buffer.getSingleton().removeFromBuffer(this, ingredient);
+        DeleteFromDB.remove(context, this, ingredient);
+        this.save(context);
+    }
+
     /**
-     * Remove Ingredient from Recipe.
-     * @param ingredientId
+     * remove topic
+     * @author Johanna Reidt
+     * @param context
+     * @param topic
      */
-    void removeIngredient(Context context,long ingredientId);
+    default void remove(Context context, Topic topic){
+        Buffer.getSingleton().removeFromBuffer(this, topic);
+        DeleteFromDB.remove(context, this, topic);
+    }
 
-    void remove(Context context,Topic topic);
+    /**
+     * remove ingredients
+     * @author Johanna Reidt
+     * @param context
+     * @param topics
+     */
+    default void removeTopics(Context context, List<Topic> topics){
+        for(Topic e: topics){
+            this.remove(context, e);
+        }
+        this.save(context);
+    }
 
-    void removeTopic(Context context,long topicId);
+    /**
+     * remove topics
+     * @author Johanna Reidt
+     * @param context
+     * @param ingredients
+     */
+    default void removeIngredients(Context context, List<Ingredient> ingredients){
+        for(Ingredient e: ingredients){
+            this.remove(context, e);
+        }
+        this.save(context);
+    }
 
-    void remove(Context context,SQLRecipeImageUrlElement url);
 
-    void removeUrl(Context context, long urlId);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     //this Instance
@@ -223,10 +325,11 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
     default JSONArray getLiquidsJSON(){
         JSONArray json = new JSONArray();
-        for(Map.Entry<String, Integer> e:this.getIngredientNameNVolumes()){
+        HashMap<String, Integer> nameVol = this.getIngredientNameToVolume();
+        for(String e: nameVol.keySet()){
             JSONArray j = new JSONArray();
-            j.put(e.getKey());
-            j.put(e.getValue());
+            j.put(e);
+            j.put(nameVol.get(e));
             json.put(j);
         }
         return json;
@@ -306,7 +409,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
             for(Ingredient i: is){
                 JSONArray temp = new JSONArray();
                 temp.put(i.getName());
-                temp.put(this.getSpecificIngredientVolume(i));
+                temp.put(this.getVolume(i));
                 array.put(temp);
             }
             //jsonObject.put("liquids", array);
@@ -388,6 +491,24 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         CocktailMachine.updateRecipeListIfChanged(activity);
         Buffer.localRefresh(activity);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
