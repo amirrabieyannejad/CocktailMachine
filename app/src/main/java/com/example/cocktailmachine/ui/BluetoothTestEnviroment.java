@@ -13,7 +13,6 @@ import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Pump;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Postexecute;
@@ -34,7 +33,6 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_test_enviroment);
         //initializieurng von Datenbank
-        DatabaseConnection.initializeSingleton(this);
 
         editText = findViewById(R.id.editTextTextPersonName);
         textView = findViewById(R.id.ESPData);
