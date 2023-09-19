@@ -1,5 +1,6 @@
 package com.example.cocktailmachine.data;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
 
@@ -17,29 +18,29 @@ public class BasicRecipes {
      * sonst immer DB mit Context initialisieren!!!!
      */
 
-    public static void loadTopics() throws NotInitializedDBException{
+    public static void loadTopics(Context context) throws NotInitializedDBException{
 
         Topic ice_crushed = Topic.makeNew("Crushed Eis", "klein gehaktes Eis");
-        ice_crushed.save();
+        ice_crushed.save(context);
 
         Topic ice_cubes = Topic.makeNew("Eis", "gefrorenes Wasser");
-        ice_cubes.save();
+        ice_cubes.save(context);
 
         Topic zuckersirup = Topic.makeNew("Zuckersirup", "steht neben der Maschine, versüßt, einmal pumpen");
-        zuckersirup.save();
+        zuckersirup.save(context);
 
         Topic melone = Topic.makeNew("Melone", "eine Scheibe an den Rand stecken");
-        melone.save();
+        melone.save(context);
 
     }
 
-    public static void loadIngredients() throws NotInitializedDBException {
+    public static void loadIngredients(Context context) throws NotInitializedDBException {
         Ingredient tequila = Ingredient.makeNew("Tequila", true, Color.WHITE);
-        tequila.save();
+        tequila.save(context);
         Ingredient orangenlikör = Ingredient.makeNew("Orangenlikör", true, Color.YELLOW);
-        orangenlikör.save();
+        orangenlikör.save(context);
         Ingredient limettensaft = Ingredient.makeNew("Limettensaft", false, Color.CYAN);
-        limettensaft.save();
+        limettensaft.save(context);
 
         /*
         Ingredient tequila = Ingredient.makeNew("Tequila", true, Color.RED);
@@ -48,41 +49,41 @@ public class BasicRecipes {
 
          */
         Ingredient wodka = Ingredient.makeNew("Wodka", true, Color.BLUE);
-        wodka.save();
+        wodka.save(context);
         Ingredient rum = Ingredient.makeNew("Rum", true, Color.GRAY);
-        rum.save();
+        rum.save(context);
         Ingredient cola = Ingredient.makeNew("Cola", false, Color.BLACK);
-        cola.save();
+        cola.save(context);
 
         //DatabaseConnection.localRefresh();
     }
 
-    public static void loadPumps() throws NotInitializedDBException, MissingIngredientPumpException {
+    public static void loadPumps(Context context) throws NotInitializedDBException, MissingIngredientPumpException {
 
         Pump t_p = Pump.makeNew();
-        t_p.setCurrentIngredient(Ingredient.getIngredient("Tequila"));
+        t_p.setCurrentIngredient(context, Ingredient.getIngredient("Tequila"));
         t_p.fill(100);
-        t_p.save();
+        t_p.save(context);
         Pump o_p = Pump.makeNew();
-        o_p.setCurrentIngredient(Ingredient.getIngredient("Orangenlikör"));//orangenlikör);
+        o_p.setCurrentIngredient(context, Ingredient.getIngredient("Orangenlikör"));//orangenlikör);
         o_p.fill(100);
-        o_p.save();
+        o_p.save(context);
         Pump l_p = Pump.makeNew();
-        l_p.setCurrentIngredient(Ingredient.getIngredient("Limettensaft"));//limettensaft);
+        l_p.setCurrentIngredient(context, Ingredient.getIngredient("Limettensaft"));//limettensaft);
         l_p.fill(100);
-        l_p.save();
+        l_p.save(context);
         Pump w_p = Pump.makeNew();
-        w_p.setCurrentIngredient(Ingredient.getIngredient("Wodka"));//wodka);
+        w_p.setCurrentIngredient(context, Ingredient.getIngredient("Wodka"));//wodka);
         w_p.fill(100);
-        w_p.save();
+        w_p.save(context);
         Pump r_p = Pump.makeNew();
-        r_p.setCurrentIngredient(Ingredient.getIngredient("Rum"));//rum);
+        r_p.setCurrentIngredient(context, Ingredient.getIngredient("Rum"));//rum);
         r_p.fill(100);
-        r_p.save();
+        r_p.save(context);
         Pump c_p = Pump.makeNew();
-        c_p.setCurrentIngredient(Ingredient.getIngredient("Cola"));//cola);
+        c_p.setCurrentIngredient(context, Ingredient.getIngredient("Cola"));//cola);
         c_p.fill(100);
-        c_p.save();
+        c_p.save(context);
 
         //DatabaseConnection.localRefresh();
     }
@@ -92,7 +93,7 @@ public class BasicRecipes {
      * Load margarita cocktail
      * @throws NotInitializedDBException
      */
-    public static void loadMargarita() throws NotInitializedDBException {
+    public static void loadMargarita(Context context) throws NotInitializedDBException {
         Log.i(TAG,"loadMargarita");
         /**
         8 cl   weißer Tequila
@@ -102,11 +103,11 @@ public class BasicRecipes {
 
         
         Recipe magarita = Recipe.makeNew("Margarita");
-        magarita.addOrUpdate(Ingredient.getIngredient("Tequila"), 8);
-        magarita.addOrUpdate(Ingredient.getIngredient("Orangenlikör"), 4);
-        magarita.addOrUpdate(Ingredient.getIngredient("Limettensaft"), 4);
-        magarita.addOrUpdate(Topic.getTopic("Eis"));
-        magarita.save();
+        magarita.add(context, Ingredient.getIngredient("Tequila"), 8);
+        magarita.add(context, Ingredient.getIngredient("Orangenlikör"), 4);
+        magarita.add(context, Ingredient.getIngredient("Limettensaft"), 4);
+        magarita.add(context, Topic.getTopic("Eis"));
+        magarita.save(context);
 
 
 
@@ -115,19 +116,19 @@ public class BasicRecipes {
         Log.i(TAG,"loadMargarita finished");
     }
 
-    public static void loadTequila() throws NotInitializedDBException {
+    public static void loadTequila(Context context) throws NotInitializedDBException {
         Log.i(TAG,"loadTequila");
         Recipe magarita = Recipe.makeNew("Margarita 2.0");
-        magarita.addOrUpdate(Ingredient.getIngredient("Tequila"), 8);
-        magarita.addOrUpdate(Ingredient.getIngredient("Orangenlikör"), 4);
-        magarita.addOrUpdate(Ingredient.getIngredient("Limettensaft"), 4);
-        magarita.save();
+        magarita.add(context, Ingredient.getIngredient("Tequila"), 8);
+        magarita.add(context, Ingredient.getIngredient("Orangenlikör"), 4);
+        magarita.add(context, Ingredient.getIngredient("Limettensaft"), 4);
+        magarita.save(context);
 
         //DatabaseConnection.localRefresh();
         Log.i(TAG,"loadTequila finished");
     }
 
-    public static void loadLongIslandIceTea() throws NotInitializedDBException{
+    public static void loadLongIslandIceTea(Context context) throws NotInitializedDBException{
         Log.i(TAG,"loadLongIslandIceTea");
         /**
          *
@@ -142,15 +143,16 @@ public class BasicRecipes {
 
 
         Recipe magarita = Recipe.makeNew("Long Island Ice Tea");
-        magarita.addOrUpdate(Ingredient.getIngredient("Tequila"), 2);
-        magarita.addOrUpdate(Ingredient.getIngredient("Orangenlikör"), 2);
-        magarita.addOrUpdate(Ingredient.getIngredient("Limettensaft"), 2);
-        magarita.addOrUpdate(Ingredient.getIngredient("Wodka"), 2);
-        magarita.addOrUpdate(Ingredient.getIngredient("Rum"), 2);
-        magarita.addOrUpdate(Ingredient.getIngredient("Cola"), 25);
-        magarita.addOrUpdate(Topic.getTopic("Zuckersirup"));
-        magarita.addOrUpdate(Topic.getTopic("Eis"));
-        magarita.save();
+        magarita.add(context, Ingredient.getIngredient("Tequila"), 2);
+        magarita.add(context, Ingredient.getIngredient("Orangenlikör"), 2);
+        magarita.add(context, Ingredient.getIngredient("Limettensaft"), 2);
+        magarita.add(context, Ingredient.getIngredient("Wodka"), 2);
+        magarita.add(context, Ingredient.getIngredient("Rum"), 2);
+        magarita.add(context, Ingredient.getIngredient("Cola"), 25);
+        magarita.add(context, Topic.getTopic("Zuckersirup"));
+        magarita.add(context, Topic.getTopic("Eis"));
+        magarita.save(context);
+
 
         //DatabaseConnection.localRefresh();
 
