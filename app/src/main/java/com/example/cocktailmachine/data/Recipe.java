@@ -420,8 +420,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
                     activity);
 
             return true;
-        } catch (JSONException | TooManyTimesSettedIngredientEcxception |
-                 NoSuchIngredientSettedException | InterruptedException|NullPointerException e) {
+        } catch (JSONException| InterruptedException|NullPointerException e) {
             e.printStackTrace();
         }
         return false;
@@ -534,7 +533,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
                         String name = a.getString(0);
                         int volume = a.getInt(1);
                         Ingredient ig = Ingredient.searchOrNew(context,name);
-                        temp.addOrUpdate(ig, volume);
+                        temp.add(context, ig, volume);
                     }
                 }
             }
