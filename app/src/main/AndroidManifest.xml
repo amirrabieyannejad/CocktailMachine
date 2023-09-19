@@ -94,8 +94,7 @@
         <activity
             android:name="com.example.cocktailmachine.ui.model.v1.ModelActivity"
             android:exported="true"
-            android:label="@string/title_activity_main"
-            android:theme="@style/Theme.CocktailMachine.NoActionBar">
+            android:label="ModelActivity">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
