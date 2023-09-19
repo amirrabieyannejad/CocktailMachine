@@ -7,14 +7,17 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.widget.Toast;
 
 import androidx.core.content.res.ResourcesCompat;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
+import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.ui.model.v2.GetActivity;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -124,6 +127,11 @@ public class BildgeneratorGlas {
 
     private Canvas generateLiquidGlass(Context context, Canvas canvas, Recipe recipe, Float filling) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
 
+        if(recipe == null){
+            Toast.makeText(context, "No recipe", Toast.LENGTH_SHORT).show();
+            GetActivity.goToMenu(context);
+            return null;
+        }
         if (filling > 1){
             filling = (float)1;
         }

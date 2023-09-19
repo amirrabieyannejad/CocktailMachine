@@ -31,6 +31,7 @@ import java.util.Objects;
 public class Buffer {
     private static final String TAG = "Buffer";
     private static Buffer singleton;
+    public static boolean isLoaded = false;
 
     private List<Ingredient> ingredients;
     private List<Topic> topics;
@@ -83,12 +84,15 @@ public class Buffer {
 
 
 
-    private Buffer(){}
+    private Buffer(){
+
+    }
 
     public static Buffer getSingleton(){
         if(singleton == null){
             singleton = new Buffer();
         }
+
         return singleton;
     }
 
@@ -102,6 +106,7 @@ public class Buffer {
         this.recipeIngredients = DatabaseConnection.getSingleton().loadIngredientVolumes();
         this.recipeTopics = DatabaseConnection.getSingleton().loadRecipeTopic();
         loadFast();
+        isLoaded = true;
     }
 
     public void loadFast(){
@@ -183,6 +188,8 @@ public class Buffer {
 
         fastIngredientRecipes = new HashMap<>();
         fastRecipeIngredient = new HashMap<>();
+        fastRecipeRecipeIngredient = new HashMap<>();
+        fastIngredientRecipeIngredient = new HashMap<>();
         for(SQLRecipeIngredient rt: this.recipeIngredients){
             if(fastIngredientRecipes.containsKey(rt.getIngredientID())){
                 Objects.requireNonNull(fastIngredientRecipes.get(rt.getIngredientID())).add(rt.getRecipeID());
@@ -251,6 +258,7 @@ public class Buffer {
         this.topics =  null;
         this.recipeIngredients = null;
         singleton = null;
+        isLoaded = false;
     }
 
     /**
@@ -266,11 +274,23 @@ public class Buffer {
             Log.e(TAG, "localRefresh: NotInitializedDBException");
             Log.e(TAG, e.getMessage());
             e.printStackTrace();
+            isLoaded = false;
         }
     }
 
     public static void loadForSetUp(Context context){
         //TODO:
+        if(!isLoaded){
+            try {
+                Buffer.getSingleton().load(context);
+            } catch (NotInitializedDBException e) {
+                Log.e(TAG, "loadForSetUp: NotInitializedDBException");
+                Log.e(TAG, e.getMessage());
+                e.printStackTrace();
+                isLoaded = false;
+            }
+        }
+        Buffer.getSingleton().setUpEmptyPumps(context);
     }
 
 
@@ -515,6 +535,9 @@ public class Buffer {
      */
     public List<Ingredient> getIngredients(List<Long> ids){
         List<Ingredient> res = new ArrayList<>();
+        if(ids == null){
+            return res;
+        }
         if(isFast){
             for(Long id: ids){
                 Ingredient i = getIngredient(id);
@@ -699,6 +722,9 @@ public class Buffer {
      */
     public List<Topic> getTopics(List<Long> ids){
         ArrayList<Topic> res = new ArrayList<>();
+        if(ids ==null){
+            return res;
+        }
         if(isFast) {//gets with hashmap
             for (Long id : ids) {
                 res.add(getTopic(id));

@@ -10,6 +10,8 @@ import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
+import com.example.cocktailmachine.data.db.Buffer;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
 import com.example.cocktailmachine.ui.ListOfIngredience.ListIngredience;
@@ -58,6 +60,15 @@ public class Menue extends AppCompatActivity {
         }
 
          */
+        if(!Buffer.isLoaded) {
+            try {
+                Buffer.getSingleton().load(this);
+            } catch (NotInitializedDBException e) {
+                Log.e(TAG, "onCreate: NotInitializedDBException");
+                Log.e(TAG, e.getMessage());
+                e.printStackTrace();
+            }
+        }
         if(AdminRights.isAdmin()){
             binding.activityMenueLogout.setVisibility(View.VISIBLE);
             binding.activityMenueLogin.setVisibility(View.GONE);

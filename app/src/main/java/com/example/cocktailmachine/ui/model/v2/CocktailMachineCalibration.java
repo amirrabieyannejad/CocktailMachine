@@ -5,6 +5,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.cocktailmachine.data.CocktailMachine;
+import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Postexecute;
 
@@ -22,6 +23,7 @@ public class CocktailMachineCalibration {
     private static boolean isDone = true;
 
     public static void start(Activity activity) {
+        Buffer.loadForSetUp(activity);
         AdminRights.login(activity, activity.getLayoutInflater(), dialog -> {
             dialog.dismiss();
             try {
