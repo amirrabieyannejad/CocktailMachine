@@ -154,6 +154,8 @@ public class Buffer {
 
         fastTopicRecipes = new HashMap<>();
         fastRecipeTopics = new HashMap<>();
+        fastTopicRecipeTopic = new HashMap<>();
+        fastRecipeRecipeTopic = new HashMap<>();
         for(SQLRecipeTopic rt: this.recipeTopics){
             if(fastTopicRecipes.containsKey(rt.getTopicID())){
                 Objects.requireNonNull(fastTopicRecipes.get(rt.getTopicID())).add(rt.getRecipeID());
