@@ -2,6 +2,8 @@ package com.example.cocktailmachine.ui.model.v2;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListActivity extends BasicActivity {
+    private static final String TAG = "ListActivity" ;
     private ActivityListBinding binding;
     private TitleListAdapter adapter;
     private final ArrayList<Long> IDs = new ArrayList<>();

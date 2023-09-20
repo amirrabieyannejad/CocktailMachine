@@ -802,6 +802,9 @@ public class Buffer {
      * @return
      */
     public List<Recipe> getRecipes(){
+        if(this.recipes == null){
+            this.recipes = new ArrayList<>();
+        }
         return this.recipes;
     }
 
