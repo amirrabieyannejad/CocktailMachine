@@ -1,5 +1,6 @@
 package com.example.cocktailmachine.data;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.example.cocktailmachine.data.db.Buffer;
@@ -80,6 +81,11 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
     static List<Topic> getTopics(){
         Log.i(TAG, "getTopics");
         return Buffer.getSingleton().getTopics();
+    }
+
+    static List<Topic> getTopics(Context context){
+        Log.i(TAG, "getTopics");
+        return Buffer.getSingleton().getTopics(context);
     }
 
     static List<String> getTopicTitles(){

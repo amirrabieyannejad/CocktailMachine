@@ -720,6 +720,16 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     }
 
     /**
+     * get pumps if necessary from db
+     * @author Johanna Reidt
+     * @param context
+     * @return
+     */
+    static List<Pump> getPumps(Context context){
+        return Buffer.getSingleton().getPumps(context);
+    }
+
+    /**
      * Static access to pumps.
      * Get available pump with id k
      *

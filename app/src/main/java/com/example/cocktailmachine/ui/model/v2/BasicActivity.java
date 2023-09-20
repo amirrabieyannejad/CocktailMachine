@@ -109,4 +109,14 @@ public abstract class BasicActivity extends AppCompatActivity {
         Buffer.getSingleton().lowMemory();
         //TO DO: half close db cache
     }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        reload();
+    }
+
+
+
 }

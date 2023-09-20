@@ -12,6 +12,7 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityDisplayBinding;
+import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
 
 public class DisplayActivity extends BasicActivity {
@@ -46,6 +47,12 @@ public class DisplayActivity extends BasicActivity {
 
     @Override
     void postSetUp() {
+
+        binding.textViewDisplayTitle.setOnClickListener(
+                v -> GetActivity.goToDisplay(
+                DisplayActivity.this,
+                        FragmentType.List,
+                        DisplayActivity.this.getModelType()));
     }
 
     @Override
@@ -111,8 +118,6 @@ public class DisplayActivity extends BasicActivity {
  */
 
     }
-
-
 
     @Override
     void setUpIngredient(){
@@ -192,7 +197,12 @@ public class DisplayActivity extends BasicActivity {
         binding.textViewDisplayDescription.setText(topic.getDescription());
         binding.textViewDisplayDescription.setVisibility(View.VISIBLE);
         //TO DO: AlertDialog to change description if admin
-        GetDialog.setDescribtion(this, topic);
+        if(AdminRights.isAdmin()) {
+            binding.textViewDisplayDescription.setOnLongClickListener(v -> {
+                GetDialog.setDescribtion(DisplayActivity.this, topic);
+                return true;
+            });
+        }
     }
 
     /**

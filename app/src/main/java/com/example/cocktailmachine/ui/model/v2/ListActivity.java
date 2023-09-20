@@ -39,7 +39,7 @@ public class ListActivity extends BasicActivity {
     @Override
     void setUpPump() {
         binding.textViewListAcTitle.setText("Pumpen");
-        List<Pump> pumps = Pump.getPumps();
+        List<Pump> pumps = Pump.getPumps(this);
         for(Pump pump: pumps){
             IDs.add(pump.getID());
             names.add("Pumpe: "+pump.getIngredientName());
@@ -58,7 +58,7 @@ public class ListActivity extends BasicActivity {
     @Override
     void setUpTopic() {
         binding.textViewListAcTitle.setText("Topics");
-        List<Topic> elms = Topic.getTopics();
+        List<Topic> elms = Topic.getTopics(this);
         for(Topic e: elms){
             IDs.add(e.getID());
             names.add(e.getName());
@@ -68,7 +68,7 @@ public class ListActivity extends BasicActivity {
     @Override
     void setUpIngredient() {
         binding.textViewListAcTitle.setText("Zutaten");
-        List<Ingredient> elms = Ingredient.getAllIngredients();
+        List<Ingredient> elms = Ingredient.getAllIngredients(this);
         for(Ingredient e: elms){
             IDs.add(e.getID());
             names.add(e.getName());
@@ -78,7 +78,7 @@ public class ListActivity extends BasicActivity {
     @Override
     void setUpRecipe() {
         binding.textViewListAcTitle.setText("Rezepte");
-        List<Recipe> elms = Recipe.getAllRecipes();
+        List<Recipe> elms = Recipe.getAllRecipes(this);
         for(Recipe e: elms){
             IDs.add(e.getID());
             names.add(e.getName());
@@ -99,6 +99,8 @@ public class ListActivity extends BasicActivity {
         binding.recyclerViewListAc.setAdapter(adapter);
         Activity activity = this;
         binding.floatingActionButtonList.setOnClickListener(v -> GetActivity.goToAdd(activity, getModelType()));
+
+        binding.textViewListAcTitle.setOnClickListener(v -> ListActivity.this.reload());
     }
 
 

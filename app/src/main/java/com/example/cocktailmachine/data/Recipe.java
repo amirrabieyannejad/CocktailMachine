@@ -646,6 +646,16 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     }
 
     /**
+     * Static access to recipes. if neccesary from db
+     * Get all saved recipes.
+     * @return list of recipes
+     */
+    static List<Recipe> getAllRecipes(Context context) {
+        return Buffer.getSingleton().getRecipes(context);
+    }
+
+
+    /**
      * Static access to recipes.
      * Get available recipes with id in list of ids k
      * @param ids list of ids k

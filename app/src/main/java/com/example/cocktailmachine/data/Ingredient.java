@@ -157,7 +157,15 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      */
     static List<Ingredient> getAllIngredients() {
         return Buffer.getSingleton().getIngredients();
+    }
 
+    /**
+     * Static Access to ingredients if necessary from db
+     * Get all ingredients.
+     * @return List of ingredients.
+     */
+    static List<Ingredient> getAllIngredients(Context context) {
+        return Buffer.getSingleton().getIngredients(context);
     }
 
     /**

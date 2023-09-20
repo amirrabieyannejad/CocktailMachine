@@ -1188,6 +1188,9 @@ public class Buffer {
      * @return
      */
     public List<Pump> getPumps(){
+        if(this.pumps==null){
+            this.pumps = new ArrayList<>();
+        }
         return this.pumps;
     }
 

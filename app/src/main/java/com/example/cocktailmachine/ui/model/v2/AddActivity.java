@@ -393,8 +393,10 @@ public class AddActivity extends BasicActivity {
     void postSetUp() {
         Log.i(TAG, "postSetUp");
 
+
         //for all
         binding.buttonStop.setOnClickListener(v -> GetActivity.goBack(activity));
+        binding.textViewAddTitle.setOnClickListener(v -> AddActivity.this.reload());
 
     }
 
