@@ -368,6 +368,7 @@ public class AddActivity extends BasicActivity {
                 Log.i(TAG, "buttonSave: old recipe");
                 AddActivity.this.recipe.setName(activity, binding.editTextAddTitle.getText().toString());
             }
+            AddActivity.this.recipe.save(activity);
             AddActivity.this.recipe.replaceIngredients(activity,
                     AddActivity.this.ingredientVolumeHashMap);
             AddActivity.this.recipe.replaceTopics(activity,

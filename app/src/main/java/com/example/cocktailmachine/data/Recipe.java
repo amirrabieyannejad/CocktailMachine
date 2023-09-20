@@ -235,7 +235,11 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         this.loadAlcoholic(context);
         this.save(context);
         for(Ingredient e: ingVol.keySet() ){
-            this.add(context, e, ingVol.get(e));
+            Integer temp = ingVol.get(e);
+            if(temp == null){
+                temp = -1;
+            }
+            this.add(context, e, temp);
         }
         this.save(context);
     }
