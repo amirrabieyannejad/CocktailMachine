@@ -43,6 +43,7 @@
             android:drawableLeft="@android:drawable/ic_menu_search"
             android:ems="10"
             android:foregroundTint="#6750A3"
+            android:text=" "
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewHeaderListIngredience" />
