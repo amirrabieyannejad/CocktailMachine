@@ -94,7 +94,7 @@ public class AddActivity extends BasicActivity {
 
         //nedded
         binding.textViewAddTitle.setVisibility(View.VISIBLE);
-        binding.textViewAddTitle.setText("Pumpe: ");
+        binding.textViewAddTitle.setText("Pumpe");
 
         //maybe needed
         pump = Pump.getPump(this.getID());
@@ -150,7 +150,7 @@ public class AddActivity extends BasicActivity {
     @Override
     void setUpTopic() {
         Log.i(TAG, "setUpTopic");
-        String title_tag = "Serviervorschlag: ";
+        String title_tag = "Serviervorschlag";
 
         //nedded
         binding.editTextAddTitle.setVisibility(View.VISIBLE);
@@ -198,6 +198,7 @@ public class AddActivity extends BasicActivity {
         //nedded
         binding.editTextAddTitle.setVisibility(View.VISIBLE);
         binding.textViewAddTitle.setVisibility(View.VISIBLE);
+        binding.subLayoutAlcohol.setVisibility(View.VISIBLE);
         binding.switchAlcohol.setVisibility(View.VISIBLE);
         binding.subLayoutColor.setVisibility(View.VISIBLE);
 
@@ -208,7 +209,7 @@ public class AddActivity extends BasicActivity {
         //saving instances
         final int[] set_color = {new Random().nextInt()};
 
-
+        binding.textViewAddTitle.setText("Zutat");
         binding.switchAlcohol.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked){
                 binding.includeAlcoholic.getRoot().setVisibility(View.VISIBLE);
@@ -288,7 +289,7 @@ public class AddActivity extends BasicActivity {
 
         //nedded
         binding.textViewAddTitle.setVisibility(View.VISIBLE);
-        binding.textViewAddTitle.setText("Rezepte: ");
+        binding.textViewAddTitle.setText("Rezept");
 
         binding.editTextAddTitle.setVisibility(View.VISIBLE);
         binding.editTextAddTitle.setHint("Name des Cocktails");

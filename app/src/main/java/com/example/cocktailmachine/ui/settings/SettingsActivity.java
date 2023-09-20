@@ -23,6 +23,7 @@ import com.example.cocktailmachine.ui.model.FragmentType;
 
 import com.example.cocktailmachine.ui.model.ModelType;
 import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
+import com.example.cocktailmachine.ui.model.v2.GetActivity;
 
 /**
  * Settings
@@ -102,6 +103,7 @@ public class SettingsActivity extends AppCompatActivity {
      * @author Johanna Reidt
      */
     public void recipes(View view) {
+        /*
         Intent intent = new Intent(this, ModelActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("ModelType", ModelType.RECIPE.name());
@@ -109,6 +111,9 @@ public class SettingsActivity extends AppCompatActivity {
         bundle.putString("FragmentType", FragmentType.List.name());
 
         startActivity(intent, bundle);
+
+         */
+        GetActivity.goToDisplay(this, FragmentType.List, ModelType.RECIPE);
     }
 
     /**
@@ -117,6 +122,7 @@ public class SettingsActivity extends AppCompatActivity {
      * @author Johanna Reidt
      */
     public void pumps(View view) {
+        /*
         Intent intent = new Intent(this, ModelActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("ModelType", ModelType.PUMP.name());
@@ -124,6 +130,10 @@ public class SettingsActivity extends AppCompatActivity {
         bundle.putString("FragmentType", FragmentType.List.name());
 
         startActivity(intent, bundle);
+
+         */
+
+        GetActivity.goToDisplay(this, FragmentType.List, ModelType.PUMP);
     }
 
     /**
@@ -132,6 +142,7 @@ public class SettingsActivity extends AppCompatActivity {
      * @param view
      */
     public void ingredients(View view) {
+        /*
         Intent intent = new Intent(this, ModelActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("ModelType", ModelType.INGREDIENT.name());
@@ -139,6 +150,9 @@ public class SettingsActivity extends AppCompatActivity {
         bundle.putString("FragmentType", FragmentType.List.name());
 
         startActivity(intent, bundle);
+
+         */
+        GetActivity.goToDisplay(this, FragmentType.List, ModelType.INGREDIENT);
     }
 
     /** got to topics list*
@@ -147,6 +161,7 @@ public class SettingsActivity extends AppCompatActivity {
      * @param view
      */
     public void topics(View view) {
+        /*
         //TO DO topics
         Intent intent = new Intent(this, ModelActivity.class);
         Bundle bundle = new Bundle();
@@ -155,6 +170,9 @@ public class SettingsActivity extends AppCompatActivity {
         bundle.putString("FragmentType", FragmentType.List.name());
         startActivity(intent, bundle);
         //Toast.makeText(this,"topics",Toast.LENGTH_SHORT).show();
+
+         */
+        GetActivity.goToDisplay(this, FragmentType.List, ModelType.TOPIC);
     }
 
 
