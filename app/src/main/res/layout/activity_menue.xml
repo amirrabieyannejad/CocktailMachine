@@ -81,6 +81,7 @@
                 app:srcCompat="@drawable/ic_options" />
 
             <ImageView
+                android:id="@+id/imageView_test_grafik"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"

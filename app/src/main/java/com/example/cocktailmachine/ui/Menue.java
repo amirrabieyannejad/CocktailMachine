@@ -77,6 +77,7 @@ public class Menue extends AppCompatActivity {
             binding.imageViewTestBlue.setVisibility(View.GONE);
             binding.imageViewTestIngList.setVisibility(View.GONE);
             binding.imageViewTestFillAn.setVisibility(View.GONE);
+            binding.imageViewTestGrafik.setVisibility(View.GONE);
             binding.imageViewTestSingleCockt.setVisibility(View.GONE);
         }
 
