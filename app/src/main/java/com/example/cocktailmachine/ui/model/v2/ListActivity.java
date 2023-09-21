@@ -36,6 +36,8 @@ public class ListActivity extends BasicActivity {
     }
     @Override
     void preSetUp() {
+        this.IDs.clear();
+        this.names.clear();
     }
 
     @Override
@@ -95,15 +97,10 @@ public class ListActivity extends BasicActivity {
             names,
             getModelType()
         );
-        if(binding.recyclerViewListAc.getAdapter()!=null){
-            binding.recyclerViewListAc.swapAdapter(adapter, true);
-        }else {
-            LinearLayoutManager llm = new LinearLayoutManager(this);
-            llm.setOrientation(LinearLayoutManager.VERTICAL);
-            binding.recyclerViewListAc.setLayoutManager(llm);
-            binding.recyclerViewListAc.setLayoutManager(llm);
-            binding.recyclerViewListAc.setAdapter(adapter);
-        }
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        binding.recyclerViewListAc.setLayoutManager(llm);
+        binding.recyclerViewListAc.setAdapter(adapter);
 
 
         Activity activity = this;
