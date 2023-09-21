@@ -71,6 +71,13 @@
 
         </activity>
         <activity
+            android:name="com.example.cocktailmachine.ui.BluetoothTestEnviroment"
+            android:exported="true">
+
+
+
+        </activity>
+        <activity
             android:name="com.example.cocktailmachine.ui.model.v2.ListActivity"
             android:exported="false" />
         <activity
