@@ -45,12 +45,7 @@ public class ConfigurePumps  {
 
         this.context = activity;
 
-        //View alterCustomDialog = LayoutInflater.from(context).inflate(R.layout.activity_list_ingredience, null);
-        //AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
-
-        //alertDialog.setView(alterCustomDialog);
-
-        /**if(!DatabaseConnection.isInitialized()) {
+        if(!DatabaseConnection.isInitialized()) {
             Log.i(TAG, "onCreate: DataBase is not yet initialized");
             DatabaseConnection.initializeSingleton(context, AdminRights.getUserPrivilegeLevel());// UserPrivilegeLevel.Admin);
             try {
@@ -71,7 +66,7 @@ public class ConfigurePumps  {
 
 
 
-
+        /**
 
         //Einrichtung des RecyclerView
         recyclerView = alterCustomDialog.findViewById(R.id.recyclerViewListIngredience);
