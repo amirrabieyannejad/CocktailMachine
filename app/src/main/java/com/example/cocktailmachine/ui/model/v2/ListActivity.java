@@ -103,5 +103,10 @@ public class ListActivity extends BasicActivity {
         binding.textViewListAcTitle.setOnClickListener(v -> ListActivity.this.reload());
     }
 
+    @Override
+    public void reload() {
+
+    }
+
 
 }

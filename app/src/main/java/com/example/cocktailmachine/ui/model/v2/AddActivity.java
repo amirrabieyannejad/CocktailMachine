@@ -400,6 +400,10 @@ public class AddActivity extends BasicActivity {
 
     }
 
+    @Override
+    public void reload() {
+    }
+
     /**
      * Fehler
      * @param msg
