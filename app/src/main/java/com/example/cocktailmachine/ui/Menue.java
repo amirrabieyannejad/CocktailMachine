@@ -73,7 +73,7 @@ public class Menue extends AppCompatActivity {
         }else if (!CocktailMachineCalibration.isIsDone()){
             CocktailMachineCalibration.start(this);
         }
-        if(Dummy.withTestEnvs){
+        if(!Dummy.withTestEnvs){
             binding.imageViewTestBlue.setVisibility(View.GONE);
             binding.imageViewTestIngList.setVisibility(View.GONE);
             binding.imageViewTestFillAn.setVisibility(View.GONE);
