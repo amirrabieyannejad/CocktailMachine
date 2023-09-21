@@ -355,6 +355,10 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
     //DELETE
     public void deleteElement(SQLiteDatabase db,
                               T element){
+        if(element == null){
+            Log.i(TAG, "deleteElement: elm null");
+            return;
+        }
         deleteElement(db, element.getID());
     }
 

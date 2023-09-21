@@ -60,15 +60,7 @@ public class Menue extends AppCompatActivity {
         }
 
          */
-        if(!Buffer.isLoaded) {
-            try {
-                Buffer.getSingleton().load(this);
-            } catch (NotInitializedDBException e) {
-                Log.e(TAG, "onCreate: NotInitializedDBException");
-                Log.e(TAG, e.getMessage());
-                e.printStackTrace();
-            }
-        }
+        Buffer.load(this);
         if(AdminRights.isAdmin()){
             binding.activityMenueLogout.setVisibility(View.VISIBLE);
             binding.activityMenueLogin.setVisibility(View.GONE);

@@ -96,7 +96,7 @@ public class Buffer {
         return singleton;
     }
 
-    public void load(Context context) throws NotInitializedDBException {
+    private void setLoad(Context context) throws NotInitializedDBException {
         DatabaseConnection.init(context);
         this.ingredients = DatabaseConnection.getSingleton().loadAllIngredients();
         this.recipes = DatabaseConnection.getSingleton().loadAllRecipes();
@@ -270,21 +270,18 @@ public class Buffer {
      */
     public static void localRefresh(Context context){
         getSingleton().noMemory();
-        try {
-            getSingleton().load(context);
-        } catch (NotInitializedDBException e) {
-            Log.e(TAG, "localRefresh: NotInitializedDBException");
-            Log.e(TAG, e.getMessage());
-            e.printStackTrace();
-            isLoaded = false;
-        }
+        load(context);
     }
 
     public static void loadForSetUp(Context context){
         //TODO:
-        if(!isLoaded){
+        load(context);
+        Buffer.getSingleton().setUpEmptyPumps(context);
+    }
+    public static void load(Context context) {
+        if(!Buffer.isLoaded) {
             try {
-                Buffer.getSingleton().load(context);
+                Buffer.getSingleton().setLoad(context);
             } catch (NotInitializedDBException e) {
                 Log.e(TAG, "loadForSetUp: NotInitializedDBException");
                 Log.e(TAG, e.getMessage());
@@ -292,9 +289,8 @@ public class Buffer {
                 isLoaded = false;
             }
         }
-        Buffer.getSingleton().setUpEmptyPumps(context);
-    }
 
+    }
 
 
 
@@ -1002,6 +998,9 @@ public class Buffer {
                 res = new ArrayList<>();
             }
         }
+        if(this.recipeIngredients == null){
+            this.recipeIngredients = new ArrayList<>();
+        }
         for(SQLRecipeIngredient rt: this.recipeIngredients){
             if(rt.getRecipeID()==recipe.getID()){
                 res.add(rt.getIngredientID());
@@ -1457,10 +1456,16 @@ public class Buffer {
     private void emptyUpPumps(Context context) {
         Log.i(TAG, "emptyUpPumps");
         DatabaseConnection.init(context).emptyUpPumps();
-        for(Pump p: this.pumps){
-            p.empty(context);
-            p.delete(context);
+        if(this.pumps == null) {
+            this.pumps = new ArrayList<>();
+
+        }else{
+            for (Pump p : this.pumps) {
+                p.empty(context);
+                p.delete(context);
+            }
         }
+
         if(isFast){
             for(Ingredient i: this.fastAvailableIngredient){
                 i.empty(context);
