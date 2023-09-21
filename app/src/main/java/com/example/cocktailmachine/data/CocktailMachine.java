@@ -101,6 +101,9 @@ public class CocktailMachine {
                 current.put(ingredient, vol);
             }
             Log.i(TAG, "setCurrentCocktail: current "+current);
+
+            currentWeight = jsonObject.getDouble("weight");
+            Log.i(TAG, "setCurrentCocktail: current weight "+currentWeight);
         } catch (JSONException e) {
             e.printStackTrace();
             Log.i(TAG, "setCurrentCocktail failed");
