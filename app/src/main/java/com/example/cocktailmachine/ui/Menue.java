@@ -17,6 +17,7 @@ import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
 import com.example.cocktailmachine.ui.model.v1.ModelActivity;
 import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
+import com.example.cocktailmachine.ui.model.v2.ConfigurePumps;
 import com.example.cocktailmachine.ui.settings.SettingsActivity;
 import com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice;
 
@@ -55,6 +56,7 @@ public class Menue extends AppCompatActivity {
         }
 
          */
+        new ConfigurePumps(this);
         if(AdminRights.isAdmin()){
             binding.activityMenueLogout.setVisibility(View.VISIBLE);
             binding.activityMenueLogin.setVisibility(View.GONE);
