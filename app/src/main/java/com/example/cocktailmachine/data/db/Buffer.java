@@ -1148,6 +1148,15 @@ public class Buffer {
     }
 
     public void removeFromBuffer(SQLRecipeIngredient recipeIngredient){
+        /**
+         * TODO:
+         *
+         Process: com.example.cocktailmachine, PID: 18283
+         java.lang.NullPointerException: Attempt to invoke virtual method 'long com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient.getRecipeID()' on a null object reference
+         at com.example.cocktailmachine.data.db.Buffer.removeFromBuffer(Buffer.java:1153)
+         at com.example.cocktailmachine.data.db.DeleteFromDB.remove(DeleteFromDB.java:88)
+         at com.example.cocktailmachine.data.db.DeleteFromDB.remove(DeleteFromDB.java:92)
+         */
         this.recipeIngredients.remove(recipeIngredient);
         if(isFast){
             Objects.requireNonNull(this.fastRecipeIngredient.get(recipeIngredient.getRecipeID())).remove(recipeIngredient.getIngredientID());

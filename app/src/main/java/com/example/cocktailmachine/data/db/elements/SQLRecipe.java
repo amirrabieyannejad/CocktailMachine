@@ -200,6 +200,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         SQLRecipeTopic st = new SQLRecipeTopic(this.getID(), topic.getID());
         st.save(context);
         AddOrUpdateToDB.addOrUpdate(context, st );
+        Buffer.getSingleton().addToBuffer(st);
     }
 
     @Override
@@ -214,6 +215,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         SQLRecipeIngredient st = new SQLRecipeIngredient(this.getID(), ingredient.getID(), volume);
         st.save(context);
         AddOrUpdateToDB.addOrUpdate(context, st );
+        Buffer.getSingleton().addToBuffer(st);
         this.alcoholic = this.alcoholic || ingredient.isAlcoholic();
         this.available = this.available && ingredient.isAvailable();
         this.save(context);
@@ -268,6 +270,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     public void save(Context context) {
         Log.i(TAG, "save");
         AddOrUpdateToDB.addOrUpdate(context, this);
+        Buffer.getSingleton().addToBuffer(this);
     }
 
     public JSONObject asJSON(){

@@ -233,7 +233,9 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
         Log.i(TAG, "replaceIngredients");
         for(Ingredient i: this.getIngredients()){
-            this.remove(context, i);
+            if(!ingVol.containsKey(i)) {
+                this.remove(context, i);
+            }
         }
         this.loadAvailable(context);
         this.loadAlcoholic(context);
