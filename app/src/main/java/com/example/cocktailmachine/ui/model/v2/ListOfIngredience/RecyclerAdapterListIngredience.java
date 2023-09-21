@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.ListOfIngredience;
+package com.example.cocktailmachine.ui.model.v2.ListOfIngredience;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -14,9 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Ingredient;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class RecyclerAdapterListIngredience extends RecyclerView.Adapter<RecyclerAdapterListIngredience.IngtedienceViewHolder> {
 
