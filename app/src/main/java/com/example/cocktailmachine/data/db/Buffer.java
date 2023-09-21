@@ -1157,11 +1157,17 @@ public class Buffer {
          at com.example.cocktailmachine.data.db.DeleteFromDB.remove(DeleteFromDB.java:88)
          at com.example.cocktailmachine.data.db.DeleteFromDB.remove(DeleteFromDB.java:92)
          */
+        if(recipeIngredient == null){
+            return;
+        }
+        Long ri_id = recipeIngredient.getID();
+        Long r_id = recipeIngredient.getRecipeID();
+        Long i_id = recipeIngredient.getIngredientID();
         this.recipeIngredients.remove(recipeIngredient);
         if(isFast){
-            Objects.requireNonNull(this.fastRecipeIngredient.get(recipeIngredient.getRecipeID())).remove(recipeIngredient.getIngredientID());
-            Objects.requireNonNull(this.fastRecipeRecipeIngredient.get(recipeIngredient.getRecipeID())).remove(recipeIngredient);
-            Objects.requireNonNull(this.fastIngredientRecipeIngredient.get(recipeIngredient.getIngredientID())).remove(recipeIngredient);
+            Objects.requireNonNull(this.fastRecipeIngredient.get(ri_id)).remove(i_id);
+            Objects.requireNonNull(this.fastRecipeRecipeIngredient.get(r_id)).remove(recipeIngredient);
+            Objects.requireNonNull(this.fastIngredientRecipeIngredient.get(i_id)).remove(recipeIngredient);
         }
     }
 
