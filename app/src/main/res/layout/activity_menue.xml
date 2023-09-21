@@ -117,6 +117,8 @@
                 app:srcCompat="@drawable/ic_login" />
 
             <ImageView
+
+                android:id = "@+id/imageView_test_cal"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"

@@ -79,6 +79,7 @@ public class Menue extends AppCompatActivity {
             binding.imageViewTestFillAn.setVisibility(View.GONE);
             binding.imageViewTestGrafik.setVisibility(View.GONE);
             binding.imageViewTestSingleCockt.setVisibility(View.GONE);
+            binding.imageViewTestCal.setVisibility(View.GONE);
         }
 
 
@@ -251,7 +252,6 @@ public class Menue extends AppCompatActivity {
     public void calibration(View view){
         Intent success = new Intent(this, calibrationScale.class);
         startActivity(success);
-
     }
 
     public void listIngedients(View view){
