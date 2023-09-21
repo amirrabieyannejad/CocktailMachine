@@ -284,7 +284,16 @@ public class AddActivity extends BasicActivity {
     @Override
     void setUpRecipe() {
         Log.i(TAG, "setUpRecipe");
-        this.recipe = Recipe.getRecipe(this.getID());
+        if(this.getID()==-1){
+            this.recipe = Recipe.makeNew("temp");
+            this.ingredientVolumeHashMap = new HashMap<>();
+            this.topics = new ArrayList<>();
+        } else {
+            this.recipe = Recipe.getRecipe(this.getID());
+            binding.editTextAddTitle.setText(this.recipe.getName());
+            this.ingredientVolumeHashMap = this.recipe.getIngredientToVolume();
+            this.topics = this.recipe.getTopics();
+        }
 
 
         //nedded
@@ -293,16 +302,6 @@ public class AddActivity extends BasicActivity {
 
         binding.editTextAddTitle.setVisibility(View.VISIBLE);
         binding.editTextAddTitle.setHint("Name des Cocktails");
-
-        if(this.recipe != null){
-            binding.editTextAddTitle.setText(this.recipe.getName());
-            this.ingredientVolumeHashMap = this.recipe.getIngredientToVolume();
-            this.topics = this.recipe.getTopics();
-        }else{
-            this.ingredientVolumeHashMap = new HashMap<>();
-            this.topics = new ArrayList<>();
-        }
-
 
         binding.subLayoutAddIngredient.setVisibility(View.VISIBLE);
         binding.subLayoutAddIngredient.setOnClickListener(v ->{
@@ -360,14 +359,7 @@ public class AddActivity extends BasicActivity {
         //save
         binding.buttonSave.setOnClickListener(v -> {
             Log.i(TAG, "buttonSave: clicked");
-            if(AddActivity.this.recipe == null){
-                Log.i(TAG, "buttonSave: new recipe");
-                AddActivity.this.recipe =
-                        Recipe.makeNew(binding.editTextAddTitle.getText().toString());
-            }else{
-                Log.i(TAG, "buttonSave: old recipe");
-                AddActivity.this.recipe.setName(activity, binding.editTextAddTitle.getText().toString());
-            }
+            AddActivity.this.recipe.setName(activity, binding.editTextAddTitle.getText().toString());
             AddActivity.this.recipe.save(activity);
             AddActivity.this.recipe.replaceIngredients(activity,
                     AddActivity.this.ingredientVolumeHashMap);
