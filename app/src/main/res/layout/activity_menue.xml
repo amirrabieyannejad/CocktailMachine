@@ -37,7 +37,7 @@
                 app:srcCompat="@drawable/ic_list_add" />
 
             <ImageView
-                android:id="@+id/imageView2"
+                android:id="@+id/imageView_test_ing_list"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
@@ -46,6 +46,7 @@
                 app:srcCompat="@drawable/ic_list_add" />
 
             <ImageView
+                android:id="@+id/imageView_test_fill_an"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
@@ -55,6 +56,7 @@
 
 
             <ImageView
+                android:id="@+id/imageView_test_single_cockt"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
@@ -87,6 +89,7 @@
                 app:srcCompat="@drawable/ic_glass" />
 
             <ImageView
+                android:id="@+id/imageView_test_blue"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
