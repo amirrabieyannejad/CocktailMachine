@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.model.v2.ListOfIngredience;
+package com.example.cocktailmachine.ui.model.v2.ListConfigurePumps;
 
 import static com.example.cocktailmachine.data.Topic.TAG;
 

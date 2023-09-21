@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.model.v2.ListOfIngredience;
+package com.example.cocktailmachine.ui.model.v2.ListConfigurePumps;
 
 import android.content.Context;
 import android.graphics.Color;
