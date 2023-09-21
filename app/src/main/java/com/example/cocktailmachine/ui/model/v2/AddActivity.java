@@ -284,12 +284,12 @@ public class AddActivity extends BasicActivity {
     @Override
     void setUpRecipe() {
         Log.i(TAG, "setUpRecipe");
-        if(this.getID()==-1){
+        this.recipe = Recipe.getRecipe(this.getID());
+        if(this.getID()==-1 || this.recipe == null){
             this.recipe = Recipe.makeNew("temp");
             this.ingredientVolumeHashMap = new HashMap<>();
             this.topics = new ArrayList<>();
         } else {
-            this.recipe = Recipe.getRecipe(this.getID());
             binding.editTextAddTitle.setText(this.recipe.getName());
             this.ingredientVolumeHashMap = this.recipe.getIngredientToVolume();
             this.topics = this.recipe.getTopics();
@@ -359,6 +359,8 @@ public class AddActivity extends BasicActivity {
         //save
         binding.buttonSave.setOnClickListener(v -> {
             Log.i(TAG, "buttonSave: clicked");
+            Log.i(TAG, "ingvol "+AddActivity.this.ingredientVolumeHashMap.toString());
+            Log.i(TAG, "topics "+AddActivity.this.topics.toString());
             AddActivity.this.recipe.setName(activity, binding.editTextAddTitle.getText().toString());
             AddActivity.this.recipe.save(activity);
             AddActivity.this.recipe.replaceIngredients(activity,

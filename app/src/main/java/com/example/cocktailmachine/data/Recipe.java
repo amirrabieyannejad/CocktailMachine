@@ -4,6 +4,7 @@ package com.example.cocktailmachine.data;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.util.Log;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface Recipe extends Comparable<Recipe>, DataBaseElement {
+    final String TAG="Recipe";
 
     WaitingQueueCountDown getWaitingQueueCountDown();
     void setWaitingQueueCountDown(Activity activity);
@@ -228,6 +230,8 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @param ingVol
      */
     default void replaceIngredients(Context context, HashMap<Ingredient, Integer> ingVol){
+
+        Log.i(TAG, "replaceIngredients");
         for(Ingredient i: this.getIngredients()){
             this.remove(context, i);
         }
