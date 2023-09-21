@@ -62,9 +62,7 @@ public abstract class BasicActivity extends AppCompatActivity {
         setUp();
     }
 
-    public void reload(){
-        setUp();
-    }
+    public abstract void reload();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

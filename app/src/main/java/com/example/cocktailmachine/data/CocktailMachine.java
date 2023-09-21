@@ -83,15 +83,24 @@ public class CocktailMachine {
     public static void setCurrentCocktail(JSONObject jsonObject) {
         /**
          * {"weight": 500.0, "content": [["beer", 250], ["lemonade", 250]]}
+         *  {"weight": 500.0, "content": [["beer", 250], ["lemonade", 250]]}
          */
         //current
+        Log.i(TAG, "setCurrentCocktail: "+jsonObject.toString());
         try {
             JSONArray array = jsonObject.getJSONArray("content");
+            Log.i(TAG, "setCurrentCocktail: content"+array.toString());
             current = new LinkedHashMap<Ingredient, Integer>();
             for(int i=0;i< array.length(); i++) {
                 JSONArray temp = array.getJSONArray(i);
-                current.put(Ingredient.getIngredient(temp.getString(0)), temp.getInt(1));
+                Log.i(TAG, "setCurrentCocktail: elm "+temp.toString());
+                Ingredient ingredient = Ingredient.getIngredient(temp.getString(0));
+                Log.i(TAG, "setCurrentCocktail: ing "+ingredient.toString());
+                int vol = temp.getInt(1);
+                Log.i(TAG, "setCurrentCocktail: vol "+vol);
+                current.put(ingredient, vol);
             }
+            Log.i(TAG, "setCurrentCocktail: current "+current);
         } catch (JSONException e) {
             e.printStackTrace();
             Log.i(TAG, "setCurrentCocktail failed");

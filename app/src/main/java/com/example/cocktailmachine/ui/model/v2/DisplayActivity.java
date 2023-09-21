@@ -56,6 +56,11 @@ public class DisplayActivity extends BasicActivity {
     }
 
     @Override
+    public void reload() {
+
+    }
+
+    @Override
     void setUpRecipe(){
         Recipe recipe = Recipe.getRecipe(getID());
         if(recipe == null){

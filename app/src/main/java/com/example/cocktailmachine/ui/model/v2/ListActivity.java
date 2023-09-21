@@ -11,6 +11,8 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
+import com.example.cocktailmachine.data.db.Buffer;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.databinding.ActivityListBinding;
 
 import java.util.ArrayList;
@@ -29,11 +31,13 @@ public class ListActivity extends BasicActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityListBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        Buffer.load(this);
         //setContentView(R.layout.activity_list);
     }
     @Override
     void preSetUp() {
+        this.IDs.clear();
+        this.names.clear();
     }
 
     @Override
@@ -97,10 +101,17 @@ public class ListActivity extends BasicActivity {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         binding.recyclerViewListAc.setLayoutManager(llm);
         binding.recyclerViewListAc.setAdapter(adapter);
+
+
         Activity activity = this;
         binding.floatingActionButtonList.setOnClickListener(v -> GetActivity.goToAdd(activity, getModelType()));
 
         binding.textViewListAcTitle.setOnClickListener(v -> ListActivity.this.reload());
+    }
+
+    @Override
+    public void reload() {
+        setUp();
     }
 
 
