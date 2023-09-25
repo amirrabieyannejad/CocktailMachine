@@ -30,6 +30,9 @@
             android:layout_weight="0"
             android:backgroundTint="@color/cardview_shadow_end_color"
             android:contentDescription="done"
+            android:focusable="true"
+            android:clickable="true"
+            android:longClickable="false"
             android:minWidth="48dp"
             android:minHeight="48dp"
             android:padding="8dp"
@@ -47,6 +50,9 @@
         android:minWidth="48dp"
         android:padding="8dp"
         android:minHeight="48dp"
+        android:focusable="true"
+        android:clickable="true"
+        android:longClickable="false"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
     <LinearLayout

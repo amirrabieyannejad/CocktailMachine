@@ -304,44 +304,46 @@ public class AddActivity extends BasicActivity {
         binding.editTextAddTitle.setHint("Name des Cocktails");
 
         binding.subLayoutAddIngredient.setVisibility(View.VISIBLE);
-        binding.subLayoutAddIngredient.setOnClickListener(v ->{
-                Log.i(TAG, "subLayoutAddIngredient: clicked");
-                GetDialog.getIngVol(activity,
-                        !AdminRights.isAdmin(),
-                        new GetDialog.IngredientVolumeSaver() {
-                            private Ingredient ing;
-                            private int vol;
-                            private String tippedName;
-                            @Override
-                            public void save(Ingredient ingredient, String tippedName) {
-                                this.ing = ingredient;
-                                this.tippedName = tippedName;
-                                Log.i(TAG,"IngredientVolumeSaver: save: "+this.ing.toString() +this.tippedName);
-                            }
+        View.OnClickListener ingAdd = v ->{
+            Log.i(TAG, "subLayoutAddIngredient: clicked");
+            GetDialog.getIngVol(activity,
+                    !AdminRights.isAdmin(),
+                    new GetDialog.IngredientVolumeSaver() {
+                        private Ingredient ing;
+                        private int vol;
+                        private String tippedName;
+                        @Override
+                        public void save(Ingredient ingredient, String tippedName) {
+                            this.ing = ingredient;
+                            this.tippedName = tippedName;
+                            Log.i(TAG,"IngredientVolumeSaver: save: "+this.ing.toString() +this.tippedName);
+                        }
 
-                            @Override
-                            public void save(Integer volume) {
-                                this.vol = volume;
-                                Log.i(TAG,"IngredientVolumeSaver: save: "+this.vol);
-                            }
+                        @Override
+                        public void save(Integer volume) {
+                            this.vol = volume;
+                            Log.i(TAG,"IngredientVolumeSaver: save: "+this.vol);
+                        }
 
-                            @Override
-                            public void post() {
-                                Log.i(TAG,"IngredientVolumeSaver: post: ");
-                                AddActivity.this.ingredientVolumeHashMap.put(ing, vol);
-                                Log.i(TAG, "subLayoutAddIngredient: ing vol added");
-                                Log.i(TAG, AddActivity.this.ingredientVolumeHashMap.toString());
-                                AddActivity.this.updateIngredients();
-                                Log.i(TAG, "subLayoutAddIngredient: updateIngredients");
-                            }
-                        });
+                        @Override
+                        public void post() {
+                            Log.i(TAG,"IngredientVolumeSaver: post: ");
+                            AddActivity.this.ingredientVolumeHashMap.put(ing, vol);
+                            Log.i(TAG, "subLayoutAddIngredient: ing vol added");
+                            Log.i(TAG, AddActivity.this.ingredientVolumeHashMap.toString());
+                            AddActivity.this.updateIngredients();
+                            Log.i(TAG, "subLayoutAddIngredient: updateIngredients");
+                        }
+                    });
 
-        });
+        };
+        binding.subLayoutAddIngredientAdd.setOnClickListener(ingAdd);
+        binding.ButtonAddIngredient.setOnClickListener(ingAdd);
         updateIngredients();
 
 
         binding.subLayoutAddTopic.setVisibility(View.VISIBLE);
-        binding.subLayoutAddTopic.setOnClickListener(v ->{
+        View.OnClickListener topAdd =v ->{
             Log.i(TAG, "subLayoutAddTopic: clicked");
             GetDialog.addTopic(activity,
                     (t, d) -> {
@@ -351,8 +353,10 @@ public class AddActivity extends BasicActivity {
                         Log.i(TAG, "subLayoutAddTopic: dialog dimiss");
                         AddActivity.this.updateTopics();
                         Log.i(TAG, "subLayoutAddTopic: updateTopics");
-            });
-        });
+                    });
+        };
+        binding.subLayoutAddTopicAdd.setOnClickListener(topAdd);
+        binding.ButtonAddTopic.setOnClickListener(topAdd);
         updateTopics();
 
 
@@ -414,6 +418,26 @@ public class AddActivity extends BasicActivity {
         }
         binding.buttonSave.setVisibility(View.GONE);
     }
+
+
+
+
+
+
+    //no Name Twice Policie
+    private boolean checkName(){
+        //TODO: ????
+        return true;
+    }
+
+
+
+
+
+
+
+
+
 
 
 
