@@ -77,9 +77,17 @@ public abstract class BasicActivity extends AppCompatActivity {
             Log.e(TAG, "readIntent: bundle null");
             return;
         }
-        id = bundle.getLong(GetActivity.ID);
-        modelType = ModelType.valueOf(bundle.getString(GetActivity.MODELTYPE, ModelType.RECIPE.toString()));
-        fragmentType = FragmentType.valueOf(bundle.getString(GetActivity.FRAGMENTTYPE, FragmentType.List.toString()));
+        id = bundle.getLong(
+                GetActivity.ID,
+                -1L);
+        modelType = ModelType.valueOf(
+                bundle.getString(
+                        GetActivity.MODELTYPE,
+                        ModelType.RECIPE.toString()));
+        fragmentType = FragmentType.valueOf(
+                bundle.getString(
+                        GetActivity.FRAGMENTTYPE,
+                        FragmentType.List.toString()));
         Log.i(TAG, "readIntent: id "+id );
         Log.i(TAG, "readIntent: modelType "+modelType );
         Log.i(TAG, "readIntent: fragmentType "+fragmentType );

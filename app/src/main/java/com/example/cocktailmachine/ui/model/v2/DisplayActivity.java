@@ -277,5 +277,13 @@ public class DisplayActivity extends BasicActivity {
     }
 
 
+    /*
+    private void goToList(){
+        GetActivity.goToList(this, getModelType());
+    }
+
+     */
+
+
 
 }

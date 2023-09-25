@@ -83,6 +83,15 @@ public class GetActivity {
         activity.startActivity(intent);
     }
 
+    public static void goToList(Activity activity, ModelType modelType){
+        Intent intent;
+        intent = new Intent(activity, ListActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString(MODELTYPE, modelType.toString());
+        intent.putExtras(bundle);
+        activity.startActivity(intent);
+    }
+
     public static void goToEdit(Activity activity, ModelType modelType, Long id){
         Log.i(TAG, "goToEdit: "+modelType.toString());
         Intent intent = new Intent(activity, AddActivity.class);
