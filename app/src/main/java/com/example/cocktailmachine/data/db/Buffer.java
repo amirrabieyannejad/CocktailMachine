@@ -1062,11 +1062,17 @@ public class Buffer {
     }
     public HashMap<Ingredient, Integer> getIngredientToVol(Recipe recipe) {
         HashMap<Ingredient, Integer> res = new HashMap<>();
-        if(isFast){
-            for(SQLRecipeIngredient ri: Objects.requireNonNull(this.fastRecipeRecipeIngredient.get(recipe.getID()))){
-                res.put(ri.getIngredient(), ri.getVolume());
+        try{
+            if(isFast){
+                for(SQLRecipeIngredient ri: Objects.requireNonNull(this.fastRecipeRecipeIngredient.get(recipe.getID()))){
+                    res.put(ri.getIngredient(), ri.getVolume());
+                }
+                return res;
             }
-            return res;
+        }catch (NullPointerException e){
+            Log.e(TAG, "getIngredientToVol NullPointerException");
+            //Log.e(TAG, e.getMessage());
+            e.printStackTrace();
         }
         for(SQLRecipeIngredient ri: this.recipeIngredients){
             if(ri.getRecipeID()==recipe.getID()){

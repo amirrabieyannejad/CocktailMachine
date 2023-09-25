@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.navigation.ActionOnlyNavDirections;
+
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
@@ -109,4 +111,8 @@ public class DeleteFromDB {
     }
 
 
+    public static void removeAll(Context context) {
+        DatabaseConnection.init(context).emptyAll();
+        Buffer.getSingleton(context).noMemory();
+    }
 }

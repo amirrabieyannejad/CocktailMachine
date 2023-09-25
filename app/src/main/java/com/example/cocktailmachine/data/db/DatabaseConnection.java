@@ -153,7 +153,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
      * deletes all Tables and creates all newly empty
      * @author Johanna Reidt
      */
-    private void emptyAll(){
+    void emptyAll(){
         Log.i(TAG, "emptyAll");
         //resetAll();
         Tables.deleteAll(this.getWritableDatabase());
@@ -732,7 +732,6 @@ class DatabaseConnection extends SQLiteOpenHelper {
         singleton = null;
         super.close();
     }
-
 
 
 }

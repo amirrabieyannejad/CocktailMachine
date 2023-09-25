@@ -604,6 +604,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
                     }
                 }
             }
+            //TODO: what happens if ingredient removed
             temp.save(context);
         }
     }

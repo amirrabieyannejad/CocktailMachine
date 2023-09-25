@@ -6,6 +6,8 @@ import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
+import com.example.cocktailmachine.data.db.Buffer;
+import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.CalibrateStatus;
 import com.example.cocktailmachine.data.enums.CocktailStatus;
@@ -936,6 +938,7 @@ public class CocktailMachine {
         //TO DO: factoryReset
         try {
             BluetoothSingleton.getInstance().adminFactoryReset(activity);
+            DeleteFromDB.removeAll(activity);
             Log.i(TAG, "factoryReset: done");
         } catch (JSONException | InterruptedException|NullPointerException e) {
             Log.i(TAG, "factoryReset: failed");

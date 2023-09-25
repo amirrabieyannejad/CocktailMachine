@@ -217,7 +217,7 @@ public class SettingsActivity extends AppCompatActivity {
      * @param view
      */
     public void sync(View view) {
-        Pump.sync(this);
+        //Pump.sync(this);
         Recipe.syncRecipeDBWithCocktailmachine(this);
         Toast.makeText(this,"Synchronisierung läuft!",Toast.LENGTH_SHORT).show();
     }

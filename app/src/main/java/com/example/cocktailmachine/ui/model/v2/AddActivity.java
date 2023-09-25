@@ -3,24 +3,15 @@ package com.example.cocktailmachine.ui.model.v2;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Postexecute;
@@ -43,8 +34,10 @@ public class AddActivity extends BasicActivity {
     private Recipe recipe;
     private Ingredient ingredient;
 
-    private HashMap<Ingredient, Integer> ingredientVolumeHashMap;
+    //private HashMap<Ingredient, Integer> ingredientVolumeHashMap;
     private List<Topic> topics;
+
+    private GetAdapter.IngredientVolAdapter ingVolAdapter;
 
     final private Activity activity = this;
 
@@ -289,11 +282,11 @@ public class AddActivity extends BasicActivity {
         this.recipe = Recipe.getRecipe(this.getID());
         if(this.getID()==-1 || this.recipe == null){
             this.recipe = Recipe.makeNew("temp");
-            this.ingredientVolumeHashMap = new HashMap<>();
+            //this.ingredientVolumeHashMap = new HashMap<>();
             this.topics = new ArrayList<>();
         } else {
             binding.editTextAddTitle.setText(this.recipe.getName());
-            this.ingredientVolumeHashMap = this.recipe.getIngredientToVolume();
+            //this.ingredientVolumeHashMap = this.recipe.getIngredientToVolume();
             this.topics = this.recipe.getTopics();
         }
 
@@ -365,12 +358,13 @@ public class AddActivity extends BasicActivity {
         //save
         binding.buttonSave.setOnClickListener(v -> {
             Log.i(TAG, "buttonSave: clicked");
-            Log.i(TAG, "ingvol "+AddActivity.this.ingredientVolumeHashMap.toString());
+            //Log.i(TAG, "ingvol "+AddActivity.this.ingredientVolumeHashMap.toString());
             Log.i(TAG, "topics "+AddActivity.this.topics.toString());
             AddActivity.this.recipe.setName(activity, binding.editTextAddTitle.getText().toString());
             AddActivity.this.recipe.save(activity);
-            AddActivity.this.recipe.replaceIngredients(activity,
-                    AddActivity.this.ingredientVolumeHashMap);
+            //AddActivity.this.recipe.replaceIngredients(activity,
+             //       AddActivity.this.ingredientVolumeHashMap);
+            AddActivity.this.ingVolAdapter.save();
             AddActivity.this.recipe.replaceTopics(activity,
                     AddActivity.this.topics);
             if(AddActivity.this.recipe.sendSave(
@@ -508,21 +502,16 @@ public class AddActivity extends BasicActivity {
 
     private boolean isAlcoholic(){
         Log.i(TAG, "isAlcoholic");
-        boolean isAlcoholic = false;
-        for(Ingredient i:this.ingredientVolumeHashMap.keySet()){
-            if(i == null){
-                Log.i(TAG, "missing ingredients in ingredientVolumeHashMap");
-            }
-            else {
-                isAlcoholic = isAlcoholic || i.isAlcoholic();
-            }
+        //boolean isAlcoholic = false;
+        if(this.ingVolAdapter == null){
+            return false;
         }
-        return isAlcoholic;
+        return this.ingVolAdapter.isAlcoholic();
     }
 
     private void setAlcoholic(){
         Log.i(TAG, "setAlcoholic");
-        if (this.ingredientVolumeHashMap.size() == 0) {
+        if (this.ingVolAdapter==null || (this.ingVolAdapter.isEmpty())) {
             binding.includeAlcoholic.getRoot().setVisibility(View.GONE);
             binding.includeNotAlcoholic.getRoot().setVisibility(View.GONE);
         }
@@ -535,29 +524,28 @@ public class AddActivity extends BasicActivity {
         }
     }
 
-    /**
-     * get a new vertical LinearLayoutManager
-     * @return LinearLayoutManager
-     */
-    private LinearLayoutManager getNewLinearLayoutManager(){
-        Log.i(TAG, "getNewLinearLayoutManager");
 
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        return llm;
-    }
 
     /**
      * is supposed to reload the current ingredient list
      */
     private void updateIngredients(){
         Log.i(TAG, "updateIngredients");
-        if(ingredientVolumeHashMap.size()>0) {
+        if((this.ingVolAdapter == null && this.recipe.getIngredientToVolume().size()>0)||(this.ingVolAdapter.getItemCount()>0)) {
             Log.i(TAG, "updateIngredients size> 0");
-            Log.i(TAG, AddActivity.this.ingredientVolumeHashMap.toString());
+            //Log.i(TAG, AddActivity.this.ingredientVolumeHashMap.toString());
+
             binding.recyclerViewIngredients.setVisibility(View.VISIBLE);
-            binding.recyclerViewIngredients.setLayoutManager(getNewLinearLayoutManager());
-            binding.recyclerViewIngredients.setAdapter(new IngredientVolAdapter());
+            if(this.ingVolAdapter == null) {
+                binding.recyclerViewIngredients.setLayoutManager(GetAdapter.getNewLinearLayoutManager(this));
+                this.ingVolAdapter = new GetAdapter.IngredientVolAdapter(AddActivity.this, this.recipe, new Postexecute() {
+                    @Override
+                    public void post() {
+                        AddActivity.this.updateIngredients();
+                    }
+                });
+                binding.recyclerViewIngredients.setAdapter(this.ingVolAdapter);
+            }
         }else{
             Log.i(TAG, "updateIngredients size<= 0");
             binding.recyclerViewIngredients.setVisibility(View.GONE);
@@ -573,128 +561,28 @@ public class AddActivity extends BasicActivity {
         Log.i(TAG, "updateTopics");
         if(topics.size()>0) {
             binding.recyclerViewTopics.setVisibility(View.VISIBLE);
-            binding.recyclerViewTopics.setLayoutManager(getNewLinearLayoutManager());
-            binding.recyclerViewTopics.setAdapter(new TopicAdapter());
+            binding.recyclerViewTopics.setLayoutManager(GetAdapter.getNewLinearLayoutManager(this));
+            binding.recyclerViewTopics.setAdapter(new GetAdapter.TopicAdapter(AddActivity.this, this.recipe, new Postexecute() {
+                @Override
+                public void post() {
+                    AddActivity.this.updateTopics();
+                }
+            }));
         }else{
             binding.recyclerViewTopics.setVisibility(View.GONE);
         }
     }
 
-    /**
-     * basic string view, ergo row element of topic and ingredient diplay
-     */
-    private class StringView extends RecyclerView.ViewHolder {
-        //for layout item_little_title
-        private final TextView txt;
-
-        public StringView(@NonNull View itemView) {
-            super(itemView);
-            Log.i(TAG, "StringView");
-            txt = itemView.findViewById(R.id.textView_item_little_title);
-        }
-
-        private void setTxt(@NonNull Ingredient ingredient, int volume){
-            Log.i(TAG, "StringView: setTxt ingredient");
-            this.txt.setText(String.format("%s: %s", ingredient.getName(), volume));
-            this.txt.setOnLongClickListener(v -> {
-                Log.i(TAG, "StringView: setTxt ingredient clicked");
-                GetDialog.deleteAddElement(AddActivity.this.activity, "die Zutat "+ingredient.getName() ,new Postexecute() {
-                    @Override
-                    public void post() {
-                        Log.i(TAG,"StringView: setTxt choose to delete");
-                        AddActivity.this.ingredientVolumeHashMap.remove(ingredient);
-                        Log.i(TAG,"StringView: setTxt remove from hashmap");
-                        AddActivity.this.updateIngredients();
-                        Log.i(TAG,"StringView: setTxt updateIngredients");
-                    }
-                });
-                return true;
-            });
-        }
-
-        private void setTxt(@NonNull Topic topic){
-            Log.i(TAG, "StringView: setTxt topic");
-            this.txt.setText(topic.getName());
-            this.txt.setOnLongClickListener(v -> {
-                Log.i(TAG, "StringView: setTxt topic clicked");
-                GetDialog.deleteAddElement(AddActivity.this.activity, "den Serviervorschlag "+topic.getName() ,new Postexecute() {
-                    @Override
-                    public void post() {
-                        Log.i(TAG,"StringView: setTxt choose to delete");
-                        AddActivity.this.topics.remove(topic);
-                        Log.i(TAG,"StringView: setTxt remove from list");
-                        AddActivity.this.updateTopics();
-                        Log.i(TAG,"StringView: setTxt updateTopics");
-                    }
-                });
-                return true;
-            });
-        }
-
+    public HashMap<Ingredient, Integer> getIngredientVolumeHashMap() {
+        return ingredientVolumeHashMap;
     }
 
-    /**
-     * topic row
-     */
-    private class TopicAdapter extends RecyclerView.Adapter<StringView>{
-
-
-        @NonNull
-        @Override
-        public StringView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            Log.i(TAG, "TopicAdapter: onCreateViewHolder");
-            return new StringView(LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_little_title, parent, false));
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull StringView holder, int position) {
-            Log.i(TAG, "TopicAdapter: onBindViewHolder");
-            holder.setTxt(topics.get(position));
-        }
-
-        @Override
-        public int getItemCount() {
-            Log.i(TAG, "TopicAdapter: getItemCount");
-            return topics.size();
-        }
+    public List<Topic> getTopics() {
+        return topics;
     }
 
-    /**
-     * ingredient row
-     */
-    private class IngredientVolAdapter extends RecyclerView.Adapter<StringView>{
-
-
-        @NonNull
-        @Override
-        public StringView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            Log.i(TAG, "IngredientVolAdapter: onCreateViewHolder");
-            return new StringView(LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_little_title, parent, false));
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull StringView holder, int position) {
-            Log.i(TAG, "IngredientVolAdapter: onBindViewHolder");
-            Ingredient i = ingredientVolumeHashMap.keySet().toArray(new Ingredient[]{})[position];
-            if(i== null){
-                Log.e(TAG, "IngredientVolAdapter:onBindViewHolder getting ingredient failed");
-                return;
-            }
-            Integer vol = ingredientVolumeHashMap.get(i);
-            if(vol == null){
-                Log.e(TAG, "IngredientVolAdapter:onBindViewHolder getting vol failed");
-                vol = -1;
-            }
-            holder.setTxt(i, vol);
-        }
-
-        @Override
-        public int getItemCount() {
-            Log.i(TAG, "IngredientVolAdapter: getItemCount"+ingredientVolumeHashMap.size());
-            return ingredientVolumeHashMap.size();
-        }
+    public Activity getActivity() {
+        return activity;
     }
 
 

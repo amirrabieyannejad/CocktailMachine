@@ -2,9 +2,11 @@ package com.example.cocktailmachine.ui.model.v2;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
@@ -12,11 +14,15 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.enums.AdminRights;
+import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.databinding.ActivityDisplayBinding;
 import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
 
+import java.util.HashMap;
+
 public class DisplayActivity extends BasicActivity {
+    private static final String TAG = "DisplayActivity";
     ActivityDisplayBinding binding;
 
     @Override
@@ -276,6 +282,62 @@ public class DisplayActivity extends BasicActivity {
             }
         });
     }
+
+
+
+
+
+
+
+
+
+
+    //recipe helper
+    /**
+     * is supposed to reload the current ingredient list
+     */
+    private void updateIngredients(Recipe recipe){
+        Log.i(TAG, "updateIngredients");
+        HashMap<Ingredient, Integer> ingredientVolumeHashMap = recipe.getIngredientToVolume();
+        if(ingredientVolumeHashMap.size()>0) {
+            Log.i(TAG, "updateIngredients size> 0");
+            Log.i(TAG, ingredientVolumeHashMap.toString());
+            binding.includeRecipeIngredientsList.recyclerViewList.setVisibility(View.VISIBLE);
+            binding.includeRecipeIngredientsList.recyclerViewList.setLayoutManager(getNewLinearLayoutManager());
+            binding.includeRecipeIngredientsList.recyclerViewList.setAdapter(new GetAdapter.IngredientVolAdapter(this, recipe, new Postexecute() {
+                @Override
+                public void post() {
+                    DisplayActivity.this.updateIngredients(recipe);
+                }
+            }));
+        }else{
+            Log.i(TAG, "updateIngredients size<= 0");
+            binding.includeRecipeIngredientsList.recyclerViewList.setVisibility(View.GONE);
+        }
+        //setAlcoholic();
+
+    }
+
+    private RecyclerView.LayoutManager getNewLinearLayoutManager() {
+        Log.i(TAG, "getNewLinearLayoutManager");
+
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        return llm;
+    }
+
+
+
+
+
+
+
+
+
+
+
+    //simple buttons
+
 
     public void list(View view) {
         GetActivity.goToList(this, getModelType());
