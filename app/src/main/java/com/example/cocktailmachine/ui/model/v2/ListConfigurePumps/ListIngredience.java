@@ -17,9 +17,6 @@ import android.widget.Toast;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Ingredient;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
-import com.example.cocktailmachine.data.enums.AdminRights;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -42,21 +39,6 @@ public class ListIngredience extends AppCompatActivity implements RecyclerViewLi
         //setContentView(R.layout.activity_list_ingredience);
 
         this.context = this;
-
-        if(!DatabaseConnection.isInitialized()) {
-            Log.i(TAG, "onCreate: DataBase is not yet initialized");
-            DatabaseConnection.initializeSingleton(this, AdminRights.getUserPrivilegeLevel());// UserPrivilegeLevel.Admin);
-            try {
-                DatabaseConnection.getDataBase();
-                Log.i(TAG, "onCreate: DataBase is initialized");
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-                Log.e(TAG, "onCreate: DataBase is not initialized");
-            }
-        }else{
-            Log.i(TAG, "onCreate: DataBase is already initialized");
-        }
-
 
         listIngredients = Ingredient.getAllIngredients();
         filteredListIngredients = new ArrayList<>(listIngredients);

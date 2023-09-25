@@ -22,6 +22,7 @@ import com.example.cocktailmachine.ui.model.ModelType;
 import com.example.cocktailmachine.ui.model.v1.ModelActivity;
 import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.v2.ConfigurePumps;
+import com.example.cocktailmachine.ui.model.v2.GetActivity;
 import com.example.cocktailmachine.ui.settings.SettingsActivity;
 import com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice;
 
