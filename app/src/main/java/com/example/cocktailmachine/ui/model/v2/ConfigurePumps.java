@@ -149,6 +149,7 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
 
         alertDialog.setView(v);
         AlertDialog dialog = alertDialog.create();
+        dialog.setCancelable(false);
         dialog.show();
 
     }
