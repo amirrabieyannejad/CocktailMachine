@@ -15,10 +15,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
+import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Postexecute;
@@ -404,9 +406,8 @@ public class AddActivity extends BasicActivity {
 
     /**
      * Fehler
-     * @param msg
+     * @param msg Error Message
      */
-    @Nullable
     void error(String msg){
         Log.i(TAG, "error");
         preSetUp();
@@ -425,8 +426,15 @@ public class AddActivity extends BasicActivity {
 
 
     //no Name Twice Policie
+
+    /*
+     *
+     * @author Johanna Reidt
+     * @return
+     */
     private boolean checkName(){
         //TODO: ????
+
         return true;
     }
 
@@ -502,7 +510,12 @@ public class AddActivity extends BasicActivity {
         Log.i(TAG, "isAlcoholic");
         boolean isAlcoholic = false;
         for(Ingredient i:this.ingredientVolumeHashMap.keySet()){
-            isAlcoholic = isAlcoholic || i.isAlcoholic();
+            if(i == null){
+                Log.i(TAG, "missing ingredients in ingredientVolumeHashMap");
+            }
+            else {
+                isAlcoholic = isAlcoholic || i.isAlcoholic();
+            }
         }
         return isAlcoholic;
     }
@@ -573,9 +586,6 @@ public class AddActivity extends BasicActivity {
     private class StringView extends RecyclerView.ViewHolder {
         //for layout item_little_title
         private final TextView txt;
-        private Ingredient ingredient;
-        private int volume;
-        private Topic topic;
 
         public StringView(@NonNull View itemView) {
             super(itemView);
@@ -585,8 +595,6 @@ public class AddActivity extends BasicActivity {
 
         private void setTxt(@NonNull Ingredient ingredient, int volume){
             Log.i(TAG, "StringView: setTxt ingredient");
-            this.ingredient = ingredient;
-            this.volume = volume;
             this.txt.setText(String.format("%s: %s", ingredient.getName(), volume));
             this.txt.setOnLongClickListener(v -> {
                 Log.i(TAG, "StringView: setTxt ingredient clicked");
@@ -606,7 +614,6 @@ public class AddActivity extends BasicActivity {
 
         private void setTxt(@NonNull Topic topic){
             Log.i(TAG, "StringView: setTxt topic");
-            this.topic = topic;
             this.txt.setText(topic.getName());
             this.txt.setOnLongClickListener(v -> {
                 Log.i(TAG, "StringView: setTxt topic clicked");
@@ -675,13 +682,9 @@ public class AddActivity extends BasicActivity {
                 Log.e(TAG, "IngredientVolAdapter:onBindViewHolder getting ingredient failed");
                 return;
             }
-            int vol;
-            try {
-                vol = ingredientVolumeHashMap.get(i);
-            }catch (NullPointerException e){
+            Integer vol = ingredientVolumeHashMap.get(i);
+            if(vol == null){
                 Log.e(TAG, "IngredientVolAdapter:onBindViewHolder getting vol failed");
-                Log.e(TAG, "IngredientVolAdapter:onBindViewHolder"+e.getMessage());
-                e.printStackTrace();
                 vol = -1;
             }
             holder.setTxt(i, vol);

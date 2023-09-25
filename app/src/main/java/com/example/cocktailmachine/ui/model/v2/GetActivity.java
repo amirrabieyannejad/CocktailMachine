@@ -104,7 +104,7 @@ public class GetActivity {
 
     public static void startAgain(Activity activity) {
         Log.i(TAG, "startAgain");
-        //TODO: go back to device scan
+        //TO DO: go back to device scan
         if(Dummy.isDummy) {
             Log.i(TAG, "startAgain: dummy->menu");
             goToMenu(activity);
