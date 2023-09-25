@@ -42,6 +42,8 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
 
     Ingredient chosenIngredient;
 
+    ConfigurePumps configurePumpsContext;
+
 
     public ConfigurePumps(Activity activity) {
 
@@ -115,6 +117,30 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
         RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,listIngredients,this);
         recyclerView.setAdapter(adapterComments);
 
+        //Einrichtung des Suchfeldes
+        EditText searchFild = v.findViewById(R.id.textViewDialogPumpconfigureHeader);
+        searchFild.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String searchterm = searchFild.getText().toString();
+                filteredListIngredients = ingredientListFilter(listIngredients,searchterm);
+                recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,filteredListIngredients,this);
+                recyclerView.setAdapter(adapterComments);
+
+            }
+        });
+
         alertDialog.setView(v);
         AlertDialog dialog = alertDialog.create();
         dialog.show();
@@ -132,8 +158,8 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
         Toast.makeText(context, "Es wurde eine Auswahl getroffen",Toast.LENGTH_LONG).show();
         //Todo Philipp hier musst du noch den Wert zurück geben
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        //RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,filteredListIngredients,context);
-        //recyclerView.setAdapter(adapterComments);
+        RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,filteredListIngredients,this);
+        recyclerView.setAdapter(adapterComments);
     }
 
     private List<Ingredient> ingredientListFilter(List<Ingredient> list,String searchterm){
