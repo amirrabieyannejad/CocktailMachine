@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,30 +29,27 @@ import java.util.List;
 
 public class ConfigurePumps implements RecyclerViewListenerListIngredience {
 
+    //Variablen
     private List<Ingredient> listIngredients;
     private List<Ingredient> filteredListIngredients;
     private RecyclerView recyclerView;
     private Button buttonConfirmChoice;
-
     private Context context;
+    private Ingredient chosenIngredient;
+    private ConfigurePumps configurePumpsContext;
 
-    Ingredient chosenIngredient;
-
-    ConfigurePumps configurePumpsContext;
-
-
+    //Konstruktor
     public ConfigurePumps(Activity activity) {
 
         this.context = activity;
         this.configurePumpsContext = this;
-        this.listIngredients = new LinkedList<Ingredient>();
+        this.listIngredients = new LinkedList<>();
         if(!DatabaseConnection.isInitialized()) {
             Log.i(TAG, "onCreate: DataBase is not yet initialized");
             DatabaseConnection.initializeSingleton(context, AdminRights.getUserPrivilegeLevel());// UserPrivilegeLevel.Admin);
             try {
                 DatabaseConnection.getDataBase();
                 Log.i(TAG, "onCreate: DataBase is initialized");
-                //Log.i(TAG, Recipe.getAllRecipesAsMessage().toString());
             } catch (NotInitializedDBException e) {
                 e.printStackTrace();
                 Log.e(TAG, "onCreate: DataBase is not initialized");
@@ -66,58 +62,19 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
         listIngredients = Ingredient.getAllIngredients();
         filteredListIngredients = new ArrayList<>(listIngredients);
 
-
-
-        /**
-
-
-
-
-        //Einrichtung des Suchfeldes
-        EditText searchFild = alterCustomDialog.findViewById(R.id.editTextTextListIngredienceSearchTerm);
-        searchFild.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                String searchterm = searchFild.getText().toString();
-                filteredListIngredients = ingredientListFilter(listIngredients,searchterm);
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,filteredListIngredients,context);
-                recyclerView.setAdapter(adapterComments);
-
-            }
-        });
-        System.out.println("");
-         */
-
-        //final AlertDialog dialog = alertDialog.create();
-        /**Dialog dialog = new Dialog(activity);
-        dialog.setContentView(R.layout.dialog_layout_pump_configure);
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog.setCancelable(false);
-        */
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
         View v = activity.getLayoutInflater().inflate(R.layout.dialog_layout_pump_configure, null);
 
 
         //Einrichtung des RecyclerView
-        recyclerView = (RecyclerView)v.findViewById(R.id.recyclerViewDialogPumpconfigure);
+        recyclerView = v.findViewById(R.id.recyclerViewDialogPumpconfigure);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.context));
         RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,listIngredients,configurePumpsContext);
         recyclerView.setAdapter(adapterComments);
 
         //Einrichtung des Suchfeldes
-        EditText searchFild = v.findViewById(R.id.editTextDialogPumpconfigureSearchTerm);
-        searchFild.addTextChangedListener(new TextWatcher() {
+        EditText searchField = v.findViewById(R.id.editTextDialogPumpconfigureSearchTerm);
+        searchField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -130,7 +87,7 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                String searchterm = searchFild.getText().toString();
+                String searchterm = searchField.getText().toString();
                 filteredListIngredients = ingredientListFilter(listIngredients,searchterm);
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
                 RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,filteredListIngredients,configurePumpsContext);
@@ -143,6 +100,9 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
         buttonConfirmChoice = v.findViewById(R.id.buttonDialogPumpconfigureConfirmChoice);
         buttonConfirmChoice.setEnabled(false);
 
+
+
+        //Erzeuge Dialog und zeige diese an
         alertDialog.setView(v);
         AlertDialog dialog = alertDialog.create();
         dialog.setCancelable(false);
@@ -150,7 +110,7 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
 
     }
 
-
+    //Funktionen
     public void selectIngredience(Ingredient ingredient) {
         if(ingredient.equals(chosenIngredient)){
             chosenIngredient = null;
@@ -159,21 +119,18 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
             chosenIngredient = ingredient;
             buttonConfirmChoice.setEnabled(true);
         }
-
-        Toast.makeText(context, "Es wurde eine Auswahl getroffen",Toast.LENGTH_LONG).show();
-        //Todo Philipp hier musst du noch den Wert zurück geben
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,filteredListIngredients,configurePumpsContext);
         recyclerView.setAdapter(adapterComments);
     }
 
-    private List<Ingredient> ingredientListFilter(List<Ingredient> list,String searchterm){
-        if(searchterm == ""){
+    private List<Ingredient> ingredientListFilter(List<Ingredient> list,String searchTerm){
+        if(searchTerm.equals("")){
             return list;
         }
         LinkedList<Ingredient> output = new LinkedList<>();
         for (Ingredient item : list){
-            if(item.getName().toLowerCase().contains(searchterm.toLowerCase())){
+            if(item.getName().toLowerCase().contains(searchTerm.toLowerCase())){
                 output.add(item);
             }
         }
