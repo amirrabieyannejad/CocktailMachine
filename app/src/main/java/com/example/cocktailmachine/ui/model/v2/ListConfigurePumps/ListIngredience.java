@@ -49,7 +49,6 @@ public class ListIngredience extends AppCompatActivity implements RecyclerViewLi
             try {
                 DatabaseConnection.getDataBase();
                 Log.i(TAG, "onCreate: DataBase is initialized");
-                //Log.i(TAG, Recipe.getAllRecipesAsMessage().toString());
             } catch (NotInitializedDBException e) {
                 e.printStackTrace();
                 Log.e(TAG, "onCreate: DataBase is not initialized");
@@ -61,13 +60,6 @@ public class ListIngredience extends AppCompatActivity implements RecyclerViewLi
 
         listIngredients = Ingredient.getAllIngredients();
         filteredListIngredients = new ArrayList<>(listIngredients);
-        /**try {
-
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            Log.e(TAG, "ListIngredience : Error "+ e.toString());
-        }*/
-
 
 
 
