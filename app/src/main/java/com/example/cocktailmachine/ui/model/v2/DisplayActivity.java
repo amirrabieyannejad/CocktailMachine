@@ -139,7 +139,7 @@ public class DisplayActivity extends BasicActivity {
             Log.i(TAG, topics.toString());
             binding.includeRecipeTopicsList.recyclerViewList.setVisibility(View.VISIBLE);
             binding.includeRecipeTopicsList.recyclerViewList.setLayoutManager(GetAdapter.getNewLinearLayoutManager(this));
-            binding.includeRecipeTopicsList.recyclerViewList.setAdapter(new GetAdapter.TopicAdapter(this, recipe, false));
+            binding.includeRecipeTopicsList.recyclerViewList.setAdapter(new GetAdapter.TopicAdapter(this, recipe, false, true));
         }else{
             Log.i(TAG, "setTopics size<= 0");
             binding.includeRecipeTopicsList.recyclerViewList.setVisibility(View.GONE);

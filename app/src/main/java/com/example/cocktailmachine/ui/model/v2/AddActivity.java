@@ -502,7 +502,7 @@ public class AddActivity extends BasicActivity {
 
     private GetAdapter.TopicAdapter getTopicAdapter(){
         if(this.topicAdapter==null){
-            this.topicAdapter = new GetAdapter.TopicAdapter(AddActivity.this, this.recipe, true);
+            this.topicAdapter = new GetAdapter.TopicAdapter(AddActivity.this, this.recipe, true, false);
         }
         return this.topicAdapter;
     }

@@ -18,6 +18,8 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.enums.Postexecute;
+import com.example.cocktailmachine.ui.model.FragmentType;
+import com.example.cocktailmachine.ui.model.ModelType;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -63,6 +65,16 @@ public class GetAdapter {
             this.txt.setOnLongClickListener(longClickListener);
         }
 
+        private void setTxt(String txt, View.OnClickListener clickListener){
+            this.txt.setText(txt);
+            this.txt.setOnClickListener(clickListener);
+        }
+
+        private void setTxt(String txt, View.OnClickListener clickListener,  View.OnLongClickListener longClickListener){
+            this.txt.setText(txt);
+            this.txt.setOnClickListener(clickListener);
+            this.txt.setOnLongClickListener(longClickListener);
+        }
 
 
 
@@ -75,11 +87,13 @@ public class GetAdapter {
         private final Activity activity;
         private final Recipe recipe;
         private final boolean withDelete;
+        private final boolean withDisplay;
         private final List<Topic> topics;
-        public TopicAdapter(Activity activity, Recipe recipe, boolean withDelete) {
+        public TopicAdapter(Activity activity, Recipe recipe, boolean withDelete, boolean withDisplay) {
             this.activity = activity;
             this.recipe = recipe;
             this.withDelete = withDelete;
+            this.withDisplay = withDisplay;
             this.topics = this.recipe.getTopics();
         }
 
@@ -96,20 +110,30 @@ public class GetAdapter {
         public void onBindViewHolder(@NonNull GetAdapter.StringView holder, int position) {
             Log.i(TAG, "TopicAdapter: onBindViewHolder");
             Topic topic = this.topics.get(position);
-            if(this.withDelete) {
-                holder.setTxt(topic.getName(), v -> {
-                    Log.i(TAG, "StringView: setTxt topic clicked");
-                    GetDialog.deleteAddElement(this.activity, "den Serviervorschlag " + topic.getName(), new Postexecute() {
-                        @Override
-                        public void post() {
-                            Log.i(TAG, "StringView: setTxt choose to delete");
-                            TopicAdapter.this.remove(topic);
-                            Log.i(TAG, "StringView: setTxt remove from list");
-                            //this.activity.updateTopics();
-                        }
-                    });
-                    return true;
+            View.OnLongClickListener delete =  v -> {
+                Log.i(TAG, "StringView: setTxt topic clicked");
+                GetDialog.deleteAddElement(this.activity, "den Serviervorschlag " + topic.getName(), new Postexecute() {
+                    @Override
+                    public void post() {
+                        Log.i(TAG, "StringView: setTxt choose to delete");
+                        TopicAdapter.this.remove(topic);
+                        Log.i(TAG, "StringView: setTxt remove from list");
+                        //this.activity.updateTopics();
+                    }
                 });
+                return true;
+            };
+            View.OnClickListener goTo = v->{
+                GetActivity.goToDisplay(this.activity, FragmentType.Model, ModelType.TOPIC);
+            };
+            if(this.withDelete && !this.withDisplay) {
+                holder.setTxt(topic.getName(),delete);
+            }if(!this.withDelete && this.withDisplay) {
+                holder.setTxt(topic.getName(),goTo);
+            }if(this.withDelete && this.withDisplay) {
+                holder.setTxt(topic.getName(),goTo, delete);
+            }if(!this.withDelete && !this.withDisplay) {
+                holder.setTxt(topic.getName());
             }else{
                 holder.setTxt(topic.getName());
             }
