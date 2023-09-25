@@ -25,7 +25,6 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.AdminRights;
-import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.model.v2.ListConfigurePumps.RecyclerAdapterListIngredience;
 import com.example.cocktailmachine.ui.model.v2.ListConfigurePumps.RecyclerViewListenerListIngredience;
 
@@ -145,7 +144,7 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
         });
 
         //Einrichtung des Buttons zur bestätigung der eingabe
-        buttonConfirmChoice = v.findViewById(R.id.buttonDialogPumpconfigureNewIngredience);
+        buttonConfirmChoice = v.findViewById(R.id.buttonDialogPumpconfigureConfirmChoice);
         buttonConfirmChoice.setEnabled(false);
 
         alertDialog.setView(v);
