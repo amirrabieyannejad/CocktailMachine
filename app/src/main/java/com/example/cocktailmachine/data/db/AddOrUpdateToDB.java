@@ -55,6 +55,7 @@ public class AddOrUpdateToDB {
             Buffer.getSingleton().addToBuffer(ingredient);
             ingredient.wasSaved();
         }
+        Buffer.getSingleton(context).addToBuffer(ingredient);
 
     }
 
@@ -72,6 +73,7 @@ public class AddOrUpdateToDB {
             Buffer.getSingleton().addToBuffer(recipe);
             recipe.wasSaved();
         }
+        Buffer.getSingleton(context).addToBuffer(recipe);
     }
 
     public static void addOrUpdate(Context context, SQLTopic topic) {
@@ -88,6 +90,7 @@ public class AddOrUpdateToDB {
             Buffer.getSingleton().addToBuffer(topic);
             topic.wasSaved();
         }
+        Buffer.getSingleton(context).addToBuffer(topic);
     }
 
     public static void addOrUpdate(Context context, SQLPump pump) {
@@ -105,6 +108,7 @@ public class AddOrUpdateToDB {
             Buffer.getSingleton().addToBuffer(pump);
             pump.wasSaved();
         }
+        Buffer.getSingleton(context).addToBuffer(pump);
     }
 
     public static void addOrUpdate(Context context, SQLRecipeTopic recipeTopic) {
@@ -120,6 +124,7 @@ public class AddOrUpdateToDB {
             recipeTopic.setID(Tables.TABLE_RECIPE_TOPIC.addElement(getWritableDatabase(context), recipeTopic));
             recipeTopic.wasSaved();
         }
+        Buffer.getSingleton(context).addToBuffer(recipeTopic);
     }
 
     public static void addOrUpdate(Context context, SQLIngredientPump ingredientPump) {
@@ -137,6 +142,7 @@ public class AddOrUpdateToDB {
             Buffer.getSingleton().addToBuffer(ingredientPump);
             ingredientPump.wasSaved();
         }
+        Buffer.getSingleton(context).addToBuffer(ingredientPump);
     }
 
     public static void addOrUpdate(Context context, SQLRecipeIngredient recipeIngredient) {
@@ -154,6 +160,7 @@ public class AddOrUpdateToDB {
             Buffer.getSingleton().addToBuffer(recipeIngredient);
             recipeIngredient.wasSaved();;
         }
+        Buffer.getSingleton(context).addToBuffer(recipeIngredient);
     }
 
     public static void addOrUpdate(Context context, SQLRecipeImageUrlElement recipeImageUrlElement) {
@@ -169,6 +176,7 @@ public class AddOrUpdateToDB {
             recipeImageUrlElement.setID(Tables.TABLE_RECIPE_URL.addElement(getWritableDatabase(context), recipeImageUrlElement));
             recipeImageUrlElement.wasSaved();
         }
+        //TODO: Buffer.getSingleton(context).addToBuffer(recipeImageUrlElement);
     }
 
     public static void addOrUpdate(Context context, SQLIngredientImageUrlElement ingredientImageUrlElement) {
@@ -187,6 +195,7 @@ public class AddOrUpdateToDB {
                             ingredientImageUrlElement));
             ingredientImageUrlElement.wasSaved();
         }
+        //TODO: Buffer.getSingleton(context).addToBuffer(ingredientImageUrlElement);
     }
 
 

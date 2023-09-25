@@ -95,6 +95,20 @@ public class Buffer {
 
         return singleton;
     }
+    public static Buffer getSingleton(Context context){
+        if(singleton == null){
+            singleton = new Buffer();
+        }
+        if(!isLoaded){
+            try {
+                singleton.setLoad(context);
+            } catch (NotInitializedDBException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return singleton;
+    }
 
     private void setLoad(Context context) throws NotInitializedDBException {
         DatabaseConnection.init(context);
