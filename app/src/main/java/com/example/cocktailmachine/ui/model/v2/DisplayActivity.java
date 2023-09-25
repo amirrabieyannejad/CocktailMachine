@@ -304,12 +304,7 @@ public class DisplayActivity extends BasicActivity {
             Log.i(TAG, ingredientVolumeHashMap.toString());
             binding.includeRecipeIngredientsList.recyclerViewList.setVisibility(View.VISIBLE);
             binding.includeRecipeIngredientsList.recyclerViewList.setLayoutManager(getNewLinearLayoutManager());
-            binding.includeRecipeIngredientsList.recyclerViewList.setAdapter(new GetAdapter.IngredientVolAdapter(this, recipe, new Postexecute() {
-                @Override
-                public void post() {
-                    DisplayActivity.this.updateIngredients(recipe);
-                }
-            }));
+            binding.includeRecipeIngredientsList.recyclerViewList.setAdapter(new GetAdapter.IngredientVolAdapter(this, recipe, false));
         }else{
             Log.i(TAG, "updateIngredients size<= 0");
             binding.includeRecipeIngredientsList.recyclerViewList.setVisibility(View.GONE);

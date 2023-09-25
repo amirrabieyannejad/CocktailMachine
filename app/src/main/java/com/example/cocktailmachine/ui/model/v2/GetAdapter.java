@@ -1,5 +1,6 @@
 package com.example.cocktailmachine.ui.model.v2;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
@@ -19,6 +20,7 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.enums.Postexecute;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class GetAdapter {
     private static final String TAG = "GetAdapter";
@@ -71,11 +73,13 @@ public class GetAdapter {
     static class TopicAdapter extends RecyclerView.Adapter<GetAdapter.StringView> {
         private final Activity activity;
         private final Recipe recipe;
-        private final Postexecute afterDeleteUpdate;
-        public TopicAdapter(Activity activity, Recipe recipe, Postexecute afterDeleteUpdate) {
+        private final boolean withDelete;
+        private final List<Topic> topics;
+        public TopicAdapter(Activity activity, Recipe recipe, boolean withDelete) {
             this.activity = activity;
             this.recipe = recipe;
-            this.afterDeleteUpdate = afterDeleteUpdate;
+            this.withDelete = withDelete;
+            this.topics = this.recipe.getTopics();
         }
 
         @NonNull
@@ -90,28 +94,50 @@ public class GetAdapter {
         @Override
         public void onBindViewHolder(@NonNull GetAdapter.StringView holder, int position) {
             Log.i(TAG, "TopicAdapter: onBindViewHolder");
-            Topic topic = this.recipe.getTopics().get(position);
-            holder.setTxt(topic.getName(), v -> {
-                Log.i(TAG, "StringView: setTxt topic clicked");
-                GetDialog.deleteAddElement(this.activity, "den Serviervorschlag " + topic.getName(), new Postexecute() {
-                    @Override
-                    public void post() {
-                        Log.i(TAG, "StringView: setTxt choose to delete");
-                        TopicAdapter.this.recipe.getTopics().remove(topic);
-                        Log.i(TAG, "StringView: setTxt remove from list");
-                        //this.activity.updateTopics();
-                        TopicAdapter.this.afterDeleteUpdate.post();
-                        Log.i(TAG, "StringView: setTxt updateTopics");
-                    }
+            Topic topic = this.topics.get(position);
+            if(this.withDelete) {
+                holder.setTxt(topic.getName(), v -> {
+                    Log.i(TAG, "StringView: setTxt topic clicked");
+                    GetDialog.deleteAddElement(this.activity, "den Serviervorschlag " + topic.getName(), new Postexecute() {
+                        @Override
+                        public void post() {
+                            Log.i(TAG, "StringView: setTxt choose to delete");
+                            TopicAdapter.this.remove(topic);
+                            Log.i(TAG, "StringView: setTxt remove from list");
+                            //this.activity.updateTopics();
+                        }
+                    });
+                    return true;
                 });
-                return true;
-            });
+            }else{
+                holder.setTxt(topic.getName());
+            }
         }
 
         @Override
         public int getItemCount() {
             Log.i(TAG, "TopicAdapter: getItemCount");
             return this.recipe.getTopics().size();
+        }
+
+        @SuppressLint("NotifyDataSetChanged")
+        public void add(Topic topic){
+            this.topics.add(topic);
+            this.notifyDataSetChanged();
+        }
+
+        @SuppressLint("NotifyDataSetChanged")
+        public void remove(Topic topic){
+            this.topics.remove(topic);
+            this.notifyDataSetChanged();
+        }
+
+        public void remove(int index){
+            this.topics.remove(index);
+        }
+
+        public void save(){
+            this.recipe.replaceTopics(this.activity, this.topics);
         }
 
 
@@ -121,16 +147,18 @@ public class GetAdapter {
      * ingredient row
      */
     static class IngredientVolAdapter extends RecyclerView.Adapter<GetAdapter.StringView> {
+        private final static String TAG = "IngredientVolAdapter";
         private final Activity activity;
         private final Recipe recipe;
-        private final Postexecute afterDeleteUpdate;
+        private final boolean withDelete;
+
 
         private final HashMap<Ingredient, Integer> ingredientVol;
-        public IngredientVolAdapter(Activity activity, Recipe recipe, Postexecute afterDeleteUpdate) {
+        public IngredientVolAdapter(Activity activity, Recipe recipe, boolean withDelete) {
             this.activity = activity;
             this.recipe = recipe;
-            this.afterDeleteUpdate = afterDeleteUpdate;
             this.ingredientVol = recipe.getIngredientToVolume();
+            this.withDelete = withDelete;
         }
 
         @NonNull
@@ -144,33 +172,34 @@ public class GetAdapter {
 
         @Override
         public void onBindViewHolder(@NonNull GetAdapter.StringView holder, int position) {
-            Log.i(TAG, "IngredientVolAdapter: onBindViewHolder");
+            Log.i(TAG, "onBindViewHolder");
             Ingredient i = this.ingredientVol.keySet().toArray(new Ingredient[]{})[position];
             if (i == null) {
-                Log.e(TAG, "IngredientVolAdapter:onBindViewHolder getting ingredient failed");
+                Log.e(TAG, "onBindViewHolder getting ingredient failed");
                 return;
             }
             Integer vol = this.ingredientVol.get(i);
             if (vol == null) {
-                Log.e(TAG, "IngredientVolAdapter:onBindViewHolder getting vol failed");
+                Log.e(TAG, "onBindViewHolder getting vol failed");
                 vol = -1;
             }
-            holder.setTxt(String.format("%s: %s", i.getName(), vol)
-                    , v -> {
-                        Log.i(TAG, "StringView: setTxt ingredient clicked");
-                        GetDialog.deleteAddElement(this.activity, "die Zutat " + i.getName(), new Postexecute() {
-                            @Override
-                            public void post() {
-                                Log.i(TAG, "StringView: setTxt choose to delete");
-                                IngredientVolAdapter.this.ingredientVol.remove(i);
-                                Log.i(TAG, "StringView: setTxt remove from hashmap");
-                                IngredientVolAdapter.this.afterDeleteUpdate.post();
-                                //IngredientVolAdapter.this.activity.updateIngredients();
-                                Log.i(TAG, "StringView: setTxt afterDeleteUpdate updateIngredients");
-                            }
+            if(withDelete) {
+                holder.setTxt(String.format("%s: %s", i.getName(), vol)
+                        , v -> {
+                            Log.i(TAG, "setTxt ingredient clicked");
+                            GetDialog.deleteAddElement(this.activity, "die Zutat " + i.getName(), new Postexecute() {
+                                @Override
+                                public void post() {
+                                    Log.i(TAG, "setTxt choose to delete");
+                                    IngredientVolAdapter.this.remove(i);
+
+                                }
+                            });
+                            return true;
                         });
-                        return true;
-            });
+            }else{
+                holder.setTxt(String.format("%s: %s", i.getName(), vol));
+            }
         }
 
         @Override
@@ -197,5 +226,18 @@ public class GetAdapter {
             return alcoholic;
         }
 
+        @SuppressLint("NotifyDataSetChanged")
+        public void add(Ingredient ingredient, Integer volume) {
+            Log.i(TAG, "add");
+            this.ingredientVol.put(ingredient, volume);
+            this.notifyDataSetChanged();
+        }
+
+        @SuppressLint("NotifyDataSetChanged")
+        public void remove(Ingredient ingredient) {
+            Log.i(TAG, "remove");
+            this.ingredientVol.remove(ingredient);
+            this.notifyDataSetChanged();
+        }
     }
 }
