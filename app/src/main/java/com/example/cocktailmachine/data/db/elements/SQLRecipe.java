@@ -3,10 +3,7 @@ package com.example.cocktailmachine.data.db.elements;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.media.AudioManager;
-import android.media.ToneGenerator;
-import android.os.Build;
+import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -17,37 +14,29 @@ import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.Helper;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
-import com.example.cocktailmachine.data.db.exceptions.AlreadySetIngredientException;
-import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
-import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
-import com.example.cocktailmachine.ui.model.v2.GetActivity;
+import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
+import com.example.cocktailmachine.data.db.Buffer;
+import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.ui.model.v2.GetDialog;
 import com.example.cocktailmachine.ui.model.v2.WaitingQueueCountDown;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     private static final String TAG = "SQLRecipe";
     private String name = "";
     //private List<Long> ingredientIds;
     //private HashMap<Long, Integer> ingredientVolume;
-    private boolean alcoholic;
-    private boolean available = false;
+    private boolean alcoholic = false;
+    private boolean available = true;
     private List<SQLRecipeImageUrlElement> imageUrls = new ArrayList<>();
-    private List<Long> topics = new ArrayList<>();
-    private List<SQLRecipeIngredient> ingredientVolumes = new ArrayList<>();
-    private boolean loaded = false;
+    //private List<Long> topics = new ArrayList<>();
+    //private List<SQLRecipeIngredient> ingredientVolumes = new ArrayList<>();
 
 
 
@@ -60,7 +49,6 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     public SQLRecipe(String name) {
         super();
         this.name = name;
-        this.loaded = true;
     }
 
     public SQLRecipe(long ID,
@@ -71,16 +59,12 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         this.name = name;
         this.alcoholic = alcoholic;
         this.available = available;
-        try {
-            this.load();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
     }
 
-    public SQLRecipe(long ID,
+    public SQLRecipe(Context context,
+                     long ID,
                      String name,
-                     HashMap<Long, Integer> ingredientVolumes,
+                     HashMap<Ingredient, Integer> ingredientIDtoVolumes,
                      boolean alcoholic,
                      boolean available,
                      List<SQLRecipeImageUrlElement> imageUrls,
@@ -90,13 +74,14 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         this.alcoholic = alcoholic;
         this.available = available;
         this.imageUrls = imageUrls;
-        this.topics = topics;
-        this.addOrUpdateIDs(ingredientVolumes);
-        this.loaded = true;
-        this.loadAvailable();
+
+        this.addTopics(context,Buffer.getSingleton().getTopics(topics));
+        this.addIngredients(context, ingredientIDtoVolumes);
+        this.loadAvailable(context);
     }
 
-    public SQLRecipe(long ID,
+    public SQLRecipe(Context context,
+                     long ID,
                      String name,
                      boolean alcoholic,
                      boolean available,
@@ -108,112 +93,20 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         this.alcoholic = alcoholic;
         this.available = available;
         this.imageUrls = imageUrls;
-        this.topics = topics;
-        this.addOrUpdateElements(ingredientVolumes);
-        this.loaded = true;
-        this.loadAvailable();
-    }
 
-    //LOADER
-
-
-    /**
-     * laod recipe ingredient, image urls, topics
-     * @throws NotInitializedDBException
-     */
-    private void load() throws NotInitializedDBException {
-        this.imageUrls = DatabaseConnection.getDataBase().getUrlElements(this);
-        this.topics = DatabaseConnection.getDataBase().getTopicIDs(this);
-        this.ingredientVolumes = DatabaseConnection.getDataBase().getIngredientVolumes(this);
-        this.loadAvailable();
-        this.loaded = true;
+        this.addTopics(context,Buffer.getSingleton().getTopics(topics));
+        this.addIngredients(context, ingredientVolumes);
+        this.loadAvailable(context);
     }
 
 
 
 
-    //GETTER
+
+
     @Override
     public String getName() {
         return this.name;
-    }
-
-    @Override
-    public List<Long> getIngredientIds() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return this.ingredientVolumes
-                    .stream()
-                    .map(SQLRecipeIngredient::getIngredientID)
-                    .collect(Collectors.toList());
-        }
-        return Helper.getrecipeingredienthelper().getIds(this.ingredientVolumes);
-
-    }
-
-    @Override
-    public List<String> getIngredientNames() {
-        ArrayList<String> names = new ArrayList<>();
-        for(SQLRecipeIngredient ri: this.ingredientVolumes){
-            names.add(ri.getIngredient().getName());
-        }
-      return names;
-    }
-
-    @Override
-    public List<Ingredient> getIngredients() {
-        return Ingredient.getAvailableIngredients(this.getIngredientIds());
-    }
-
-    @Override
-    public HashMap<Long, Integer> getIngredientVolumes() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return (HashMap<Long, Integer>)
-                    this.ingredientVolumes.stream()
-                            .collect( Collectors
-                                    .toMap(SQLRecipeIngredient::getID,
-                                            SQLRecipeIngredient::getVolume));
-        }
-        return Helper.getrecipeingredienthelper().getIngredientVolumes(this.ingredientVolumes);
-    }
-
-    @Override
-    public List<Map.Entry<String, Integer>> getIngredientNameNVolumes() {
-        List<Map.Entry<String, Integer>> res = new ArrayList<>();
-        for(SQLRecipeIngredient ri:this.ingredientVolumes){
-            res.add(
-                    new AbstractMap.SimpleEntry<String, Integer>(
-                            ri.getIngredient().getName(),
-                            ri.getVolume()));
-        }
-        return res;
-    }
-
-    private List<SQLRecipeIngredient> getRecipeIngredient(long ingredientID)
-            throws NoSuchIngredientSettedException, TooManyTimesSettedIngredientEcxception {
-        List<SQLRecipeIngredient> res = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            res = this.ingredientVolumes.stream().filter(ri-> ri.getIngredientID()==ingredientID).collect(Collectors.toList());
-        }else{
-            res = Helper.getrecipeingredienthelper().getWithIdAsList(this.ingredientVolumes, ingredientID);
-        }
-        if(res.size()==0){
-            throw new NoSuchIngredientSettedException(this, ingredientID);
-        }else if(res.size()>1){
-            throw new TooManyTimesSettedIngredientEcxception(this, ingredientID);
-        }
-        return res;
-    }
-
-    @Override
-    public int getSpecificIngredientVolume(long ingredientId)
-            throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
-        return this.getRecipeIngredient(ingredientId).get(0).getVolume();
-    }
-
-    @Override
-    public int getSpecificIngredientVolume(Ingredient ingredient)
-            throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
-        return this.getSpecificIngredientVolume(ingredient.getID());
     }
 
     @Override
@@ -222,269 +115,162 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     }
 
     @Override
+    public List<Topic> getTopics() {
+        return Buffer.getSingleton().getTopics(this);
+    }
+
+    @Override
+    public List<Long> getTopicIDs() {
+        return Buffer.getSingleton().getTopicIDs(this);
+    }
+
+    @Override
+    public List<String> getTopicNames() {
+        return Buffer.getSingleton().getTopicNames(Buffer.getSingleton().getTopicIDs(this));
+    }
+
+    @Override
+    public List<SQLRecipeTopic> getRecipeTopic() {
+        return Buffer.getSingleton().getRecipeTopics(this);
+    }
+
+    @Override
+    public List<Ingredient> getIngredients() {
+        return Buffer.getSingleton().getIngredients(this);
+    }
+
+    @Override
+    public List<Long> getIngredientIDs() {
+        return Buffer.getSingleton().getIngredientIds(this);
+    }
+
+    @Override
+    public List<String> getIngredientNames() {
+        return Buffer.getSingleton().getIngredientNames(Buffer.getSingleton().getIngredientIds(this));
+    }
+
+    @Override
+    public List<String> getIngredientNameNVolumes() {
+        return Buffer.getSingleton().getIngredientNameAndVol(Buffer.getSingleton().getIngredientIds(this));
+    }
+
+    @Override
+    public HashMap<Ingredient, Integer> getIngredientToVolume() {
+        return Buffer.getSingleton().getIngredientToVol(this);
+    }
+
+    @Override
+    public HashMap<Long, Integer> getIngredientIDToVolume() {
+        return Buffer.getSingleton().getIngredientIDtoVol(this);
+    }
+
+    @Override
+    public HashMap<String, Integer> getIngredientNameToVolume() {
+        return Buffer.getSingleton().getIngredientNameToVol(this);
+    }
+
+    @Override
+    public int getVolume(Ingredient ingredient) {
+        return Buffer.getSingleton().getVolume(this, ingredient);
+    }
+
+    @Override
+    public int getVolume(long ingredientID) {
+        return this.getVolume(Ingredient.getIngredient(ingredientID));
+    }
+
+
+    @Override
+    public List<SQLRecipeIngredient> getRecipeIngredient() {
+        return Buffer.getSingleton().getRecipeIngredients(this);
+    }
+
+
+
+    @Override
+    public void setName(Context context, String name) {
+        this.name = name;
+        this.wasChanged();
+        this.save(context);
+    }
+
+    @Override
+    public void add(Context context, Topic topic) {
+        topic.save(context);
+        SQLRecipeTopic st = new SQLRecipeTopic(this.getID(), topic.getID());
+        st.save(context);
+        AddOrUpdateToDB.addOrUpdate(context, st );
+        //Buffer.getSingleton().addToBuffer(st);
+    }
+
+    @Override
+    public void add(Context context, Ingredient ingredient) {
+        this.add(context, ingredient, -1);
+
+    }
+
+    @Override
+    public void add(Context context, Ingredient ingredient, int volume) {
+        ingredient.save(context);
+        SQLRecipeIngredient st = new SQLRecipeIngredient(this.getID(), ingredient.getID(), volume);
+        st.save(context);
+        AddOrUpdateToDB.addOrUpdate(context, st );
+        //Buffer.getSingleton().addToBuffer(st);
+        this.alcoholic = this.alcoholic || ingredient.isAlcoholic();
+        this.available = this.available && ingredient.isAvailable();
+        this.save(context);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //general
+    @Override
+    public void delete(Context context) {
+        Log.i(TAG, "delete");
+        DeleteFromDB.remove(context, this);
+    }
+
+    @Override
     public boolean isAvailable() {
         return this.available;
     }
 
-    /**
-     * check for ingredient pump connection
-     * true, if ingredient pump connection exists
-     *
-     * @return
-     */
     @Override
-    public boolean loadAvailable() {
-        Log.i(TAG, "loadAvailable");
-        boolean res = this.privateLoadAvailable();
-        if(res != this.available){
-            Log.i(TAG, "loadAvailable: has changed: "+res);
-            this.available = res;
-            this.wasChanged();
+    public boolean loadAvailable(Context context) {
+        this.available = true;
+        for(Ingredient i: this.getIngredients()){
+            this.available = this.available && i.isAvailable();
         }
+        Buffer.getSingleton().available(this, this.available);
         return this.available;
     }
 
-    /**
-     * @return if all ingredients available, with sufficient amounts of volume
-     */
-    boolean privateLoadAvailable(){
-        Log.i(TAG, "privateLoadAvailable");
-
-        for(SQLRecipeIngredient i: this.ingredientVolumes){
-            i.loadAvailable();
-        }
-        for(Ingredient i: getIngredients()){
-            if(i.isAvailable()){
-                try {
-                    if(i.getVolume()>this.getSpecificIngredientVolume(i)){
-                        Log.i(TAG, "privateLoadAvailable: is available "+i);
-                    }else{
-                        Log.i(TAG, "privateLoadAvailable: is NOT available "+i);
-                        return false;
-                    }
-                } catch (TooManyTimesSettedIngredientEcxception |
-                         NoSuchIngredientSettedException e) {
-                    e.printStackTrace();
-
-                    Log.i(TAG, "privateLoadAvailable: is setted multiple times "+i);
-                    return false;
-                }
-            }else{
-                return false;
-            }
-        }
-        return true;
-    }
-
-
-
-
     @Override
-    public List<String> getImageUrls() {
-        Log.i(TAG, "getImageUrls");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return this.imageUrls.stream().map(SQLImageUrlElement::getUrl).collect(Collectors.toList());
+    public boolean loadAlcoholic(Context context) {
+        this.alcoholic = false;
+        for(Ingredient i: this.getIngredients()){
+            this.alcoholic = this.alcoholic || i.isAlcoholic();
         }
-        return Helper.getUrls(this.imageUrls);
+        return this.alcoholic;
     }
 
     @Override
-    public List<Long> getTopics() {
-        return this.topics;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-
-    //ADDER
-    public void add(Ingredient ingredient, int volume)
-            throws AlreadySetIngredientException {
-        if(ingredient.getID()==-1L){
-            ingredient.save();
-        }
-        this.add(ingredient.getID(), volume);
-    }
-
-    public void add(long ingredientId, int volume)
-            throws AlreadySetIngredientException {
-        if(this.getIngredientIds().contains(ingredientId)){
-            throw new AlreadySetIngredientException(this, ingredientId);
-        }
-        this.ingredientVolumes.add(new SQLRecipeIngredient(ingredientId, this.getID(), volume));
-    }
-
-    @Override
-    public void addOrUpdate(Ingredient ingredient, int volume) {
-        if(ingredient.getID()==-1L){
-            ingredient.save();
-        }
-        this.addOrUpdate(ingredient.getID(), volume);
-    }
-
-    @Override
-    public void addOrUpdate(long ingredientId, int volume) {
-
-        boolean newNeeded=true;
-        for(SQLRecipeIngredient ri: ingredientVolumes){
-            if(ri.getIngredientID()==ingredientId){
-                ri.setVolume(volume);
-                newNeeded = false;
-            }
-        }
-        if(newNeeded){
-            SQLRecipeIngredient ri = new SQLRecipeIngredient(ingredientId, this.getID(), volume);
-            ri.save();
-            this.ingredientVolumes.add(ri);
-        }
-        this.wasChanged();
-        /*
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            if(this.ingredientVolumes.stream()
-                    .filter(pt -> pt.getIngredientID() == ingredientId)
-                    .peek(pt -> pt.setVolume(volume))
-                    .count()
-                    == 0){
-                this.ingredientVolumes.add(new SQLRecipeIngredient(ingredientId, this.getID(), volume));
-            }
-        }
-        this.wasChanged();
-
-         */
-    }
-
-    public void addOrUpdateIDs(HashMap<Long, Integer> ingredientVolumes){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            ingredientVolumes.forEach(this::addOrUpdate);
-        }else{
-            this.ingredientVolumes = Helper.updateWithIds(this.getID(), this.ingredientVolumes, ingredientVolumes);
-        }
-    }
-
-    public void addOrUpdateElements(HashMap<Ingredient, Integer> ingredientVolumes){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            ingredientVolumes.forEach(this::addOrUpdate);
-        }else{
-            this.ingredientVolumes = Helper.updateWithIngredients(this.getID(), this.ingredientVolumes, ingredientVolumes);
-        }
-    }
-
-    @Override
-    public void addOrUpdate(Topic topic) {
-        if(topic.getID()==-1L){
-            topic.save();
-        }
-        if(this.topics.contains(topic.getID())){
-            return;
-        }
-        this.topics.add(topic.getID());
-        this.wasChanged();
-    }
-
-    @Override
-    public void addOrUpdate(String imageUrls) {
-        if(this.getImageUrls().contains(imageUrls)){
-            return;
-        }
-        SQLRecipeImageUrlElement urlElement = new SQLRecipeImageUrlElement(imageUrls, this.getID());
-        this.imageUrls.add(urlElement);
-        this.wasChanged();
-    }
-
-    //REMOVER
-    @Override
-    public void remove(Ingredient ingredient) {
-        if(ingredient!=null) {
-            this.removeIngredient(ingredient.getID());
-        }
-    }
-
-    @Override
-    public void removeIngredient(long ingredientId) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-
-            this.ingredientVolumes.removeAll(this.ingredientVolumes.stream()
-                    .filter(ri -> ri.getIngredientID() == ingredientId)
-                    .peek(sqlRecipeIngredient -> {
-                        sqlRecipeIngredient.delete();
-
-                    })
-                    .collect(Collectors.toList()));
-
-        }else {
-            this.ingredientVolumes.removeAll(
-                    Helper.getrecipeingredienthelper()
-                            .getDeleteWithIdAsList(
-                                    this.ingredientVolumes,
-                                    ingredientId));
-        }
-    }
-
-    @Override
-    public void remove(Topic topic) {
-        this.topics.remove(topic.getID());
-    }
-
-    @Override
-    public void removeTopic(long topicId) {
-        this.topics.remove(topicId);
-    }
-
-    @Override
-    public void remove(SQLRecipeImageUrlElement url) {
-        this.imageUrls.remove(url);
-        url.delete();
-    }
-
-    @Override
-    public void removeUrl(long urlId) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            this.imageUrls.stream().filter(url-> url.getID()==urlId).forEach(url-> {
-                        url.delete();
-                        this.imageUrls.remove(url);
-            });
-        }else{
-            this.imageUrls = (List<SQLRecipeImageUrlElement>) Helper.getImageUrlElementhelper().removeIfAndDeleteExtended(this.imageUrls, urlId);
-        }
-    }
-
-    //general
-    @Override
-    public void delete() {
-        Log.i(TAG, "delete");
-        try {
-            DatabaseConnection.getDataBase().remove(this);
-            Log.i(TAG, "delete: successfull");
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            Log.i(TAG, "delete: failed");
-        }
-    }
-
-    @Override
-    public boolean save() {
+    public void save(Context context) {
         Log.i(TAG, "save");
-        try {
-            DatabaseConnection.getDataBase().addOrUpdate(this);
-            for(SQLRecipeImageUrlElement url: this.imageUrls) {
-                DatabaseConnection.getDataBase().addOrUpdate(url);
-            }
-            for(SQLRecipeIngredient ri: this.ingredientVolumes){
-                if(ri.getRecipeID()!=this.getID()){
-                    ri.setRecipeID(this.getID());
-                    ri.save();
-                }
-                DatabaseConnection.getDataBase().addOrUpdate(ri);
-            }
-            this.wasSaved();
-            return true;
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
-        return false;
+        AddOrUpdateToDB.addOrUpdate(context, this);
+        //Buffer.getSingleton().addToBuffer(this);
     }
 
     public JSONObject asJSON(){
@@ -495,7 +281,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
             json.put("alcoholic", this.alcoholic);
             json.put("available", this.available);
             json.put("imageUrls", this.imageUrls.toString());
-            json.put("ingredient", this.getIngredientIds());
+            json.put("ingredient", this.getIngredientIDs());
             return json;
         }catch (JSONException e){
             e.printStackTrace();
@@ -624,6 +410,10 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         };
         this.waitingQueueCountDown.start();
     }
+
+
+
+
 
 
 

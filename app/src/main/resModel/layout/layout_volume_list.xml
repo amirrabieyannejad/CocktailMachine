@@ -11,11 +11,9 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center_vertical"
             android:text="Gib die Mengen der Zutaten \nin Milliliter an."
             android:textAlignment="center"
             android:textColor="@color/design_default_color_on_secondary"
@@ -31,12 +29,12 @@
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView_volume_edit"
+        android:id="@+id/recyclerViewVolumeEdit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:itemCount="5"
-        tools:listitem="@layout/layout_edit_text"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        tools:listitem="@layout/layout_edit_text" />
 </LinearLayout>

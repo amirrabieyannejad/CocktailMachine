@@ -1,5 +1,6 @@
 package com.example.cocktailmachine.data.db.elements;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.File;
@@ -49,7 +50,7 @@ public abstract class SQLImageUrlElement extends SQLDataBaseElement {
      * @return
      */
     @Override
-    public boolean loadAvailable() {
+    public boolean loadAvailable(Context context) {
         Log.i(TAG, "loadAvailable");
         File f = new File(getUrl());
         this.available = f.exists() && !f.isDirectory();

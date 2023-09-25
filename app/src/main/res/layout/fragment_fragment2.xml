@@ -7,7 +7,6 @@
     tools:context=".ui.singleCocktailChoice.fragment1">
 
     <TextView
-        android:id="@+id/textViewCocktailFragment2"
         android:layout_width="577dp"
         android:layout_height="367dp"
         android:text="TextView"

@@ -2,6 +2,7 @@ package com.example.cocktailmachine;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.graphics.Color;
 
 import com.example.cocktailmachine.data.Ingredient;
@@ -9,6 +10,8 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
+import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
+import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
@@ -79,13 +82,14 @@ public class SingeltonTestdata {
                 return null;
             }
 
+
             @Override
-            public List<Long> getIngredientIds() {
+            public List<String> getIngredientNames() {
                 return null;
             }
 
             @Override
-            public List<String> getIngredientNames() {
+            public List<String> getIngredientNameNVolumes() {
                 return null;
             }
 
@@ -129,7 +133,7 @@ public class SingeltonTestdata {
                     }
 
                     @Override
-                    public boolean loadAvailable() {
+                    public boolean loadAvailable(Context context) {
                         return false;
                     }
 
@@ -150,6 +154,16 @@ public class SingeltonTestdata {
 
                     @Override
                     public void wasChanged() {
+
+                    }
+
+                    @Override
+                    public void save(Context context) {
+
+                    }
+
+                    @Override
+                    public void delete(Context context) {
 
                     }
 
@@ -183,15 +197,7 @@ public class SingeltonTestdata {
 
                     }
 
-                    @Override
-                    public void setPump(Long pump, int fluidInMillimeters) {
 
-                    }
-
-                    @Override
-                    public void empty() {
-
-                    }
 
                     @Override
                     public void setColor(int color) {
@@ -214,19 +220,21 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public void setPump(Context context, Long pump, int volume) {
+
+                    }
+
+                    @Override
+                    public void empty(Context context) {
+
+                    }
+
+                    @Override
                     public void pump(int millimeters) {
 
                     }
 
-                    @Override
-                    public boolean save() {
-                        return false;
-                    }
 
-                    @Override
-                    public void delete() {
-
-                    }
                 });
                 list.add(new Ingredient() {
                     @Override
@@ -265,7 +273,7 @@ public class SingeltonTestdata {
                     }
 
                     @Override
-                    public boolean loadAvailable() {
+                    public boolean loadAvailable(Context context) {
                         return false;
                     }
 
@@ -286,6 +294,16 @@ public class SingeltonTestdata {
 
                     @Override
                     public void wasChanged() {
+
+                    }
+
+                    @Override
+                    public void save(Context context) {
+
+                    }
+
+                    @Override
+                    public void delete(Context context) {
 
                     }
 
@@ -319,15 +337,6 @@ public class SingeltonTestdata {
 
                     }
 
-                    @Override
-                    public void setPump(Long pump, int fluidInMillimeters) {
-
-                    }
-
-                    @Override
-                    public void empty() {
-
-                    }
 
                     @Override
                     public void setColor(int color) {
@@ -350,40 +359,57 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public void setPump(Context context, Long pump, int volume) {
+
+                    }
+
+                    @Override
+                    public void empty(Context context) {
+
+                    }
+
+                    @Override
                     public void pump(int millimeters)  {
 
                     }
 
-                    @Override
-                    public boolean save() {
-                        return false;
-                    }
-
-                    @Override
-                    public void delete() {
-
-                    }
                 });
                 return list;
             }
 
             @Override
-            public HashMap<Long, Integer> getIngredientVolumes() {
+            public List<Long> getIngredientIDs() {
+                return null;
+            }
+
+
+
+            @Override
+            public HashMap<Ingredient, Integer> getIngredientToVolume() {
                 return null;
             }
 
             @Override
-            public List<Map.Entry<String, Integer>> getIngredientNameNVolumes() {
+            public HashMap<Long, Integer> getIngredientIDToVolume() {
                 return null;
             }
 
             @Override
-            public int getSpecificIngredientVolume(long ingredientId) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
+            public HashMap<String, Integer> getIngredientNameToVolume() {
+                return null;
+            }
+
+
+
+            @Override
+            public int getVolume(long ingredientID) {
                 return 0;
             }
 
+
+
             @Override
-            public int getSpecificIngredientVolume(Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
+            public int getVolume(Ingredient ingredient)  {
                 if (ingredient.getID() == 1){
                     return 30;
                 }
@@ -404,7 +430,32 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public boolean loadAvailable() {
+            public boolean loadAvailable(Context context) {
+                return false;
+            }
+
+            @Override
+            public void setName(Context context, String name) {
+
+            }
+
+            @Override
+            public void add(Context context, Topic topic) {
+
+            }
+
+            @Override
+            public void add(Context context, Ingredient ingredient) {
+
+            }
+
+            @Override
+            public void add(Context context, Ingredient ingredient, int volume) {
+
+            }
+
+            @Override
+            public boolean loadAlcoholic(Context context) {
                 return false;
             }
 
@@ -429,68 +480,29 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public List<String> getImageUrls() {
+            public void save(Context context) {
+
+            }
+
+            @Override
+            public void delete(Context context) {
+
+            }
+
+
+            @Override
+            public List<Long> getTopicIDs() {
                 return null;
             }
 
             @Override
-            public List<Long> getTopics() {
+            public List<String> getTopicNames() {
                 return null;
             }
 
             @Override
-            public void setName(String name) {
-
-            }
-
-            @Override
-            public void addOrUpdate(Ingredient ingredient, int timeInMilliseconds) {
-
-            }
-
-            @Override
-            public void addOrUpdate(long ingredientId, int timeInMilliseconds) {
-
-            }
-
-            @Override
-            public void addOrUpdate(Topic topic) {
-
-            }
-
-            @Override
-            public void addOrUpdate(String imageUrls) {
-
-            }
-
-            @Override
-            public void remove(Ingredient ingredient) {
-
-            }
-
-            @Override
-            public void removeIngredient(long ingredientId) {
-
-            }
-
-            @Override
-            public void remove(Topic topic) {
-
-            }
-
-            @Override
-            public void removeTopic(long topicId) {
-
-            }
-
-            @Override
-            public void remove(SQLRecipeImageUrlElement url) {
-
-            }
-
-            @Override
-            public void removeUrl(long urlId) {
-
+            public List<Topic> getTopics() {
+                return null;
             }
 
             @Override
@@ -508,20 +520,20 @@ public class SingeltonTestdata {
                 return Recipe.super.sendSave(activity);
             }
 
+            @Override
+            public List<SQLRecipeIngredient> getRecipeIngredient() {
+                return null;
+            }
+
+            @Override
+            public List<SQLRecipeTopic> getRecipeTopic() {
+                return null;
+            }
+
 
             @Override
             public void send(Activity activity) {
 
-            }
-
-            @Override
-            public void delete() {
-
-            }
-
-            @Override
-            public boolean save() {
-                return false;
             }
         };
 
@@ -568,13 +580,29 @@ public class SingeltonTestdata {
                 return null;
             }
 
+
             @Override
-            public List<Long> getIngredientIds() {
+            public List<String> getIngredientNames() {
                 return null;
             }
 
             @Override
-            public List<String> getIngredientNames() {
+            public List<String> getIngredientNameNVolumes() {
+                return null;
+            }
+
+            @Override
+            public HashMap<Ingredient, Integer> getIngredientToVolume() {
+                return null;
+            }
+
+            @Override
+            public HashMap<Long, Integer> getIngredientIDToVolume() {
+                return null;
+            }
+
+            @Override
+            public HashMap<String, Integer> getIngredientNameToVolume() {
                 return null;
             }
 
@@ -618,9 +646,10 @@ public class SingeltonTestdata {
                     }
 
                     @Override
-                    public boolean loadAvailable() {
+                    public boolean loadAvailable(Context context) {
                         return false;
                     }
+
 
                     @Override
                     public boolean isSaved() {
@@ -639,6 +668,16 @@ public class SingeltonTestdata {
 
                     @Override
                     public void wasChanged() {
+
+                    }
+
+                    @Override
+                    public void save(Context context) {
+
+                    }
+
+                    @Override
+                    public void delete(Context context) {
 
                     }
 
@@ -672,15 +711,6 @@ public class SingeltonTestdata {
 
                     }
 
-                    @Override
-                    public void setPump(Long pump, int fluidInMillimeters) {
-
-                    }
-
-                    @Override
-                    public void empty() {
-
-                    }
 
                     @Override
                     public void setColor(int color) {
@@ -703,19 +733,21 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public void setPump(Context context, Long pump, int volume) {
+
+                    }
+
+                    @Override
+                    public void empty(Context context) {
+
+                    }
+
+                    @Override
                     public void pump(int millimeters) {
 
                     }
 
-                    @Override
-                    public boolean save() {
-                        return false;
-                    }
 
-                    @Override
-                    public void delete() {
-
-                    }
                 });
                 list.add(new Ingredient() {
                     @Override
@@ -754,9 +786,10 @@ public class SingeltonTestdata {
                     }
 
                     @Override
-                    public boolean loadAvailable() {
+                    public boolean loadAvailable(Context context) {
                         return false;
                     }
+
 
                     @Override
                     public boolean isSaved() {
@@ -775,6 +808,16 @@ public class SingeltonTestdata {
 
                     @Override
                     public void wasChanged() {
+
+                    }
+
+                    @Override
+                    public void save(Context context) {
+
+                    }
+
+                    @Override
+                    public void delete(Context context) {
 
                     }
 
@@ -808,15 +851,6 @@ public class SingeltonTestdata {
 
                     }
 
-                    @Override
-                    public void setPump(Long pump, int fluidInMillimeters) {
-
-                    }
-
-                    @Override
-                    public void empty() {
-
-                    }
 
                     @Override
                     public void setColor(int color) {
@@ -839,17 +873,17 @@ public class SingeltonTestdata {
                     }
 
                     @Override
+                    public void setPump(Context context, Long pump, int volume) {
+
+                    }
+
+                    @Override
+                    public void empty(Context context) {
+
+                    }
+
+                    @Override
                     public void pump(int millimeters)  {
-
-                    }
-
-                    @Override
-                    public boolean save() {
-                        return false;
-                    }
-
-                    @Override
-                    public void delete() {
 
                     }
                 });
@@ -857,22 +891,13 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public HashMap<Long, Integer> getIngredientVolumes() {
+            public List<Long> getIngredientIDs() {
                 return null;
             }
 
-            @Override
-            public List<Map.Entry<String, Integer>> getIngredientNameNVolumes() {
-                return null;
-            }
 
             @Override
-            public int getSpecificIngredientVolume(long ingredientId) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
-                return 0;
-            }
-
-            @Override
-            public int getSpecificIngredientVolume(Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
+            public int getVolume(Ingredient ingredient) {
                 if (ingredient.getID() == 1){
                     return 30;
                 }
@@ -880,6 +905,11 @@ public class SingeltonTestdata {
                     return 60;
                 }
                 return 80;
+            }
+
+            @Override
+            public int getVolume(long ingredientID) {
+                return 0;
             }
 
             @Override
@@ -893,9 +923,35 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public boolean loadAvailable() {
+            public boolean loadAvailable(Context context) {
                 return false;
             }
+
+            @Override
+            public void setName(Context context, String name) {
+
+            }
+
+            @Override
+            public void add(Context context, Topic topic) {
+
+            }
+
+            @Override
+            public void add(Context context, Ingredient ingredient) {
+
+            }
+
+            @Override
+            public void add(Context context, Ingredient ingredient, int volume) {
+
+            }
+
+            @Override
+            public boolean loadAlcoholic(Context context) {
+                return false;
+            }
+
 
             @Override
             public boolean isSaved() {
@@ -918,69 +974,31 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public List<String> getImageUrls() {
+            public void save(Context context) {
+
+            }
+
+            @Override
+            public void delete(Context context) {
+
+            }
+
+            @Override
+            public List<Long> getTopicIDs() {
                 return null;
             }
 
             @Override
-            public List<Long> getTopics() {
+            public List<String> getTopicNames() {
                 return null;
             }
 
             @Override
-            public void setName(String name) {
-
+            public List<Topic> getTopics() {
+                return null;
             }
 
-            @Override
-            public void addOrUpdate(Ingredient ingredient, int timeInMilliseconds) {
 
-            }
-
-            @Override
-            public void addOrUpdate(long ingredientId, int timeInMilliseconds) {
-
-            }
-
-            @Override
-            public void addOrUpdate(Topic topic) {
-
-            }
-
-            @Override
-            public void addOrUpdate(String imageUrls) {
-
-            }
-
-            @Override
-            public void remove(Ingredient ingredient) {
-
-            }
-
-            @Override
-            public void removeIngredient(long ingredientId) {
-
-            }
-
-            @Override
-            public void remove(Topic topic) {
-
-            }
-
-            @Override
-            public void removeTopic(long topicId) {
-
-            }
-
-            @Override
-            public void remove(SQLRecipeImageUrlElement url) {
-
-            }
-
-            @Override
-            public void removeUrl(long urlId) {
-
-            }
 
             @Override
             public JSONArray getLiquidsJSON() {
@@ -997,6 +1015,15 @@ public class SingeltonTestdata {
                 return Recipe.super.sendSave(activity);
             }
 
+            @Override
+            public List<SQLRecipeIngredient> getRecipeIngredient() {
+                return null;
+            }
+
+            @Override
+            public List<SQLRecipeTopic> getRecipeTopic() {
+                return null;
+            }
 
 
             @Override
@@ -1004,15 +1031,7 @@ public class SingeltonTestdata {
 
             }
 
-            @Override
-            public void delete() {
 
-            }
-
-            @Override
-            public boolean save() {
-                return false;
-            }
         };
 
 

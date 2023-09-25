@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="false"
+    android:focusable="false"
+    android:longClickable="false"
+    tools:context=".ui.model.v2.AddActivity">
+
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:focusable="false"
+        android:longClickable="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:focusable="false"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false"
+                android:longClickable="false"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textViewAddTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:linksClickable="false"
+                    android:longClickable="false"
+                    android:padding="8dp"
+                    android:text="@string/title"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display3"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/editTextAddTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:clickable="true"
+                    android:ems="10"
+                    android:focusable="true"
+                    android:gravity="bottom|start"
+                    android:hint="@string/add_name"
+                    android:inputType="text"
+                    android:linksClickable="false"
+                    android:longClickable="false"
+                    android:minHeight="48dp"
+                    android:padding="8dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+                <TextView
+                    android:id="@+id/textViewError"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:linksClickable="false"
+                    android:longClickable="false"
+                    android:padding="8dp"
+                    android:text="@string/fehlerbeschreibung"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/editTextDescription"
+                style="@style/Widget.AppCompat.EditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:ems="10"
+                android:focusable="true"
+                android:gravity="bottom|start"
+                android:hint="@string/add_desc"
+                android:inputType="textMultiLine"
+                android:linksClickable="false"
+                android:longClickable="false"
+                android:minHeight="48dp"
+                android:minLines="5"
+                android:nestedScrollingEnabled="true"
+                android:padding="8dp"
+                android:scrollbars="vertical"
+                android:textAlignment="gravity"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textIsSelectable="true" />
+
+            <LinearLayout
+                android:id="@+id/subLayoutAlcohol"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false"
+                android:longClickable="false"
+                android:orientation="vertical">
+
+                <Switch
+                    android:id="@+id/switchAlcohol"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:linksClickable="false"
+                    android:longClickable="false"
+                    android:minHeight="48dp"
+                    android:padding="8dp"
+                    android:paddingStart="40dp"
+                    android:switchTextAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:text="@string/ist_alkoholisch"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+                <include
+                    android:id="@+id/includeAlcoholic"
+                    layout="@layout/layout_alcoholic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp" />
+
+                <include
+                    android:id="@+id/includeNotAlcoholic"
+                    layout="@layout/layout_not_alcoholic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/subLayoutColor"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:focusable="true"
+                android:longClickable="false"
+                android:orientation="horizontal"
+                android:padding="8dp">
+
+                <ImageView
+                    android:id="@+id/imageViewColorShow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:longClickable="false"
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:padding="8dp"
+                    android:paddingStart="40dp"
+                    app:tint="#FFEB3B"
+                    tools:srcCompat="@android:drawable/ic_notification_overlay" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:gravity="center_vertical"
+                    android:linksClickable="false"
+                    android:longClickable="false"
+                    android:minHeight="40dp"
+                    android:text="@string/change_color"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/subLayoutAddIngredient"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="false"
+                android:focusable="false"
+                android:longClickable="false"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/subLayoutAddIngredientAdd"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:longClickable="false"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:gravity="center_vertical"
+                        android:linksClickable="false"
+                        android:longClickable="false"
+                        android:minWidth="48dp"
+                        android:minHeight="48dp"
+                        android:padding="8dp"
+                        android:paddingStart="40dp"
+                        android:text="Füge eine Zutat hinzu. "
+                        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+                    <ImageButton
+                        android:id="@+id/ButtonAddIngredient"
+                        style="@style/Widget.AppCompat.ImageButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="4"
+                        android:background="@color/cardview_shadow_end_color"
+                        android:clickable="false"
+                        android:contentDescription="add ingredient"
+                        android:focusable="false"
+                        android:longClickable="false"
+                        android:minWidth="48dp"
+                        android:minHeight="48dp"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_add"
+                        app:tint="@color/design_default_color_primary" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewIngredients"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:longClickable="true"
+                    android:padding="8dp"
+                    android:paddingStart="56dp"
+                    tools:itemCount="4"
+                    tools:listitem="@layout/item_little_title" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/subLayoutAddTopic"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="false"
+                android:focusable="false"
+                android:longClickable="false"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/subLayoutAddTopicAdd"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:longClickable="false"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0"
+                        android:gravity="center_vertical"
+                        android:minWidth="48dp"
+                        android:minHeight="48dp"
+                        android:padding="8dp"
+                        android:paddingStart="40dp"
+                        android:text="@string/add_topic"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+                    <ImageButton
+                        android:id="@+id/ButtonAddTopic"
+                        style="@style/Widget.AppCompat.ImageButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="4"
+                        android:background="@color/cardview_shadow_end_color"
+                        android:contentDescription="@string/add_topic"
+                        android:minWidth="48dp"
+                        android:minHeight="48dp"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_add"
+                        app:tint="@color/design_default_color_primary" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewTopics"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:longClickable="true"
+                    android:padding="8dp"
+                    android:paddingStart="56dp"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/item_little_title" />
+
+            </LinearLayout>
+
+
+            <include
+                android:id="@+id/includePump"
+                layout="@layout/layout_search_ingredient"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:clickable="false"
+                android:focusable="false"
+                android:longClickable="false"
+                android:orientation="horizontal"
+                android:padding="8dp"
+                android:paddingTop="16dp">
+
+                <Button
+                    android:id="@+id/buttonStop"
+                    style="@style/Widget.Material3.Button.TonalButton.Icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:linksClickable="false"
+                    android:longClickable="false"
+                    android:text="@string/abbruch" />
+
+                <Button
+                    android:id="@+id/buttonSave"
+                    style="@style/Widget.Material3.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:linksClickable="false"
+                    android:longClickable="false"
+                    android:text="@string/speichern" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

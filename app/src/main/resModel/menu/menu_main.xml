@@ -5,19 +5,15 @@
         android:onClick="goToPumps"
         android:title="Pumpen" />
     <item
-        android:id="@+id/action_recipes"
         android:onClick="goToRecipes"
         android:title="Rezepte" />
     <item
-        android:id="@+id/action_ingredients"
         android:onClick="goToIngredients"
         android:title="Zutaten" />
     <item
-        android:id="@+id/action_topics"
         android:onClick="goToTopics"
         android:title="Serviervorschläge" />
     <item
-        android:id="@+id/action_menue_activity"
         android:icon="@drawable/ic_home"
         android:menuCategory="system"
         android:onClick="goToMenue"
@@ -39,7 +35,6 @@
         android:onClick="login"
         android:title="Admin einloggen" />
     <item
-        android:id="@+id/action_refresh"
         android:icon="@drawable/ic_reload"
         android:menuCategory="system"
         android:onClick="refresh"

@@ -1,5 +1,10 @@
 package com.example.cocktailmachine.data.db.elements;
 
+import android.content.Context;
+
+import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
+import com.example.cocktailmachine.data.db.Buffer;
+import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 public interface DataBaseElement {
@@ -9,7 +14,7 @@ public interface DataBaseElement {
 
     boolean isAvailable();
 
-    boolean loadAvailable();
+    boolean loadAvailable(Context context);
 
     boolean isSaved();
 
@@ -19,8 +24,8 @@ public interface DataBaseElement {
 
     void wasChanged();
 
-    boolean save();
+    void save(Context context);
 
-    void delete();
+    void delete(Context context);
 
 }

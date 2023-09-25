@@ -1,18 +1,18 @@
 package com.example.cocktailmachine.ui.model.v2;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityDisplayBinding;
+import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
 
 public class DisplayActivity extends BasicActivity {
@@ -23,7 +23,6 @@ public class DisplayActivity extends BasicActivity {
         super.onCreate(savedInstanceState);//calls read Intent
         binding = ActivityDisplayBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        DatabaseConnection.initializeSingleton(this);
     }
 
     @Override
@@ -33,10 +32,10 @@ public class DisplayActivity extends BasicActivity {
         //PUMP
         binding.includeDisplayPump.getRoot().setVisibility(View.GONE);
         //Availabilities //Alcoholic
-        binding.includeDisplayAlcoholic.getRoot().setVisibility(View.GONE);
-        binding.includeDisplayNotAlcoholic.getRoot().setVisibility(View.GONE);
         binding.includeDisplayAvailable.getRoot().setVisibility(View.GONE);
         binding.includeDisplayNotAvailable.getRoot().setVisibility(View.GONE);
+        binding.includeDisplayAlcoholic.getRoot().setVisibility(View.GONE);
+        binding.includeDisplayNotAlcoholic.getRoot().setVisibility(View.GONE);
         //Ingredient
         binding.includeDisplayIngredientAdmin.getRoot().setVisibility(View.GONE);
         //RECIPE
@@ -48,14 +47,32 @@ public class DisplayActivity extends BasicActivity {
 
     @Override
     void postSetUp() {
+
+        binding.textViewDisplayTitle.setOnClickListener(
+                v -> GetActivity.goToDisplay(
+                DisplayActivity.this,
+                        FragmentType.List,
+                        DisplayActivity.this.getModelType()));
+    }
+
+    @Override
+    public void reload() {
+
     }
 
     @Override
     void setUpRecipe(){
         Recipe recipe = Recipe.getRecipe(getID());
-        assert recipe != null;
-        recipe.loadAvailable();
+        if(recipe == null){
+            binding.textViewDisplayTitle.setText("Fehler");
+            binding.textViewDisplayDescription.setText("Das Rezept konnte nicht gefunden werden.");
+            binding.textViewDisplayTitle.setVisibility(View.VISIBLE);
+            binding.textViewDisplayDescription.setVisibility(View.VISIBLE);
+            return;
+        }
+        recipe.loadAvailable(this);
         binding.textViewDisplayTitle.setText(recipe.getName());
+        binding.textViewDisplayTitle.setVisibility(View.VISIBLE);
         //TO DO: AlertDialog to change title if admin
         setChangeTitleDialog();
         if(recipe.isAvailable()){
@@ -73,7 +90,7 @@ public class DisplayActivity extends BasicActivity {
 
         TitleListAdapter titleadapter = new TitleListAdapter(
                 this,
-                recipe.getIngredientIds(),
+                recipe.getIngredientIDs(),
                 recipe.getIngredientNames(),
                 ModelType.INGREDIENT);
         LinearLayoutManager llm = new LinearLayoutManager(this);
@@ -107,12 +124,18 @@ public class DisplayActivity extends BasicActivity {
 
     }
 
-
-
     @Override
     void setUpIngredient(){
         Ingredient ingredient = Ingredient.getIngredient(getID());
+        if(ingredient == null){
+            binding.textViewDisplayTitle.setText("Fehler");
+            binding.textViewDisplayDescription.setText("Die Zutat konnte nicht gefunden werden.");
+            binding.textViewDisplayTitle.setVisibility(View.VISIBLE);
+            binding.textViewDisplayDescription.setVisibility(View.VISIBLE);
+            return;
+        }
         binding.textViewDisplayTitle.setText(ingredient.getName());
+        binding.textViewDisplayTitle.setVisibility(View.VISIBLE);
         //TO DO: AlertDialog to change title if admin
         binding.textViewDisplayTitle.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -164,13 +187,27 @@ public class DisplayActivity extends BasicActivity {
     @Override
     void setUpTopic(){
         Topic topic = Topic.getTopic(getID());
+        if(topic == null){
+            binding.textViewDisplayTitle.setText("Fehler");
+            binding.textViewDisplayDescription.setText("Der Serviervorschlag konnte nicht gefunden werden.");
+            binding.textViewDisplayTitle.setVisibility(View.VISIBLE);
+            binding.textViewDisplayDescription.setVisibility(View.VISIBLE);
+            return;
+        }
         binding.textViewDisplayTitle.setText(topic.getName());
+        binding.textViewDisplayTitle.setVisibility(View.VISIBLE);
+
         //TO DO: AlertDialog to change title if admin
         setChangeTitleDialog();
         binding.textViewDisplayDescription.setText(topic.getDescription());
         binding.textViewDisplayDescription.setVisibility(View.VISIBLE);
         //TO DO: AlertDialog to change description if admin
-        GetDialog.setDescribtion(this, topic);
+        if(AdminRights.isAdmin()) {
+            binding.textViewDisplayDescription.setOnLongClickListener(v -> {
+                GetDialog.setDescribtion(DisplayActivity.this, topic);
+                return true;
+            });
+        }
     }
 
     /**
@@ -193,6 +230,13 @@ public class DisplayActivity extends BasicActivity {
     @Override
     void setUpPump(){
         Pump pump = Pump.getPump(getID());
+        if(pump == null){
+            binding.textViewDisplayTitle.setText("Fehler");
+            binding.textViewDisplayDescription.setText("Der Pumpe konnte nicht gefunden werden.");
+            binding.textViewDisplayTitle.setVisibility(View.VISIBLE);
+            binding.textViewDisplayDescription.setVisibility(View.VISIBLE);
+            return;
+        }
         binding.textViewDisplayTitle.setText(String.valueOf(pump.getID()));
         //TO DO: AlertDialog to change title if admin ----NOT BECAUSE PUMP NO NAME
         binding.includeDisplayPump.getRoot().setVisibility(View.VISIBLE);

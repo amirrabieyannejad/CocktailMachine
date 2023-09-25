@@ -40,7 +40,7 @@ public class MachineSettingsActivity extends AppCompatActivity {
      */
     public void calibratePump(View view) {
         //TO DO Go To Pump Settings
-        Toast.makeText(this,"calibratePump",Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this,"calibratePump",Toast.LENGTH_SHORT).show();
 
         //TO DO: Pump.calibrate
         //Pump.calibratePumpsAndTimes(this);

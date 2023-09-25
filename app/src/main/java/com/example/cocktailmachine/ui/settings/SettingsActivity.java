@@ -1,5 +1,6 @@
 package com.example.cocktailmachine.ui.settings;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,7 +13,7 @@ import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.enums.AdminRights;
 
 import com.example.cocktailmachine.databinding.ActivitySettingsBinding;
@@ -22,6 +23,8 @@ import com.example.cocktailmachine.ui.model.FragmentType;
 
 
 import com.example.cocktailmachine.ui.model.ModelType;
+import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
+import com.example.cocktailmachine.ui.model.v2.GetActivity;
 
 /**
  * Settings
@@ -41,6 +44,7 @@ public class SettingsActivity extends AppCompatActivity {
         Log.i(TAG, "onCreate: binding set");
         setContentView(binding.getRoot());
         Log.i(TAG, "onCreate: setContentView");
+
         //setContentView(R.layout.activity_settings);
         /*
         if (savedInstanceState == null) {
@@ -84,10 +88,17 @@ public class SettingsActivity extends AppCompatActivity {
             binding.textViewSettingsPumps.setVisibility(View.VISIBLE);
             binding.textViewMachine.setVisibility(View.VISIBLE);
 
+            binding.textViewSettingsLogin.setVisibility(View.GONE);
+            binding.textViewSettingsLogout.setVisibility(View.VISIBLE);
+
+
         }else{
             Log.i(TAG, "setVisibility: is no Admin");
             binding.textViewSettingsPumps.setVisibility(View.GONE);
             binding.textViewMachine.setVisibility(View.GONE);
+
+            binding.textViewSettingsLogin.setVisibility(View.VISIBLE);
+            binding.textViewSettingsLogout.setVisibility(View.GONE);
         }
     }
 
@@ -100,6 +111,7 @@ public class SettingsActivity extends AppCompatActivity {
      * @author Johanna Reidt
      */
     public void recipes(View view) {
+        /*
         Intent intent = new Intent(this, ModelActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("ModelType", ModelType.RECIPE.name());
@@ -107,6 +119,9 @@ public class SettingsActivity extends AppCompatActivity {
         bundle.putString("FragmentType", FragmentType.List.name());
 
         startActivity(intent, bundle);
+
+         */
+        GetActivity.goToDisplay(this, FragmentType.List, ModelType.RECIPE);
     }
 
     /**
@@ -115,6 +130,7 @@ public class SettingsActivity extends AppCompatActivity {
      * @author Johanna Reidt
      */
     public void pumps(View view) {
+        /*
         Intent intent = new Intent(this, ModelActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("ModelType", ModelType.PUMP.name());
@@ -122,6 +138,10 @@ public class SettingsActivity extends AppCompatActivity {
         bundle.putString("FragmentType", FragmentType.List.name());
 
         startActivity(intent, bundle);
+
+         */
+
+        GetActivity.goToDisplay(this, FragmentType.List, ModelType.PUMP);
     }
 
     /**
@@ -130,6 +150,7 @@ public class SettingsActivity extends AppCompatActivity {
      * @param view
      */
     public void ingredients(View view) {
+        /*
         Intent intent = new Intent(this, ModelActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("ModelType", ModelType.INGREDIENT.name());
@@ -137,6 +158,9 @@ public class SettingsActivity extends AppCompatActivity {
         bundle.putString("FragmentType", FragmentType.List.name());
 
         startActivity(intent, bundle);
+
+         */
+        GetActivity.goToDisplay(this, FragmentType.List, ModelType.INGREDIENT);
     }
 
     /** got to topics list*
@@ -145,6 +169,7 @@ public class SettingsActivity extends AppCompatActivity {
      * @param view
      */
     public void topics(View view) {
+        /*
         //TO DO topics
         Intent intent = new Intent(this, ModelActivity.class);
         Bundle bundle = new Bundle();
@@ -153,6 +178,9 @@ public class SettingsActivity extends AppCompatActivity {
         bundle.putString("FragmentType", FragmentType.List.name());
         startActivity(intent, bundle);
         //Toast.makeText(this,"topics",Toast.LENGTH_SHORT).show();
+
+         */
+        GetActivity.goToDisplay(this, FragmentType.List, ModelType.TOPIC);
     }
 
 
@@ -207,11 +235,16 @@ public class SettingsActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void newCalibration(View view){
+        CocktailMachineCalibration.start(this);
+    }
+
+
 
 
     //DB
     /**
-     * TODO db title, maybe delete
+     * TO DO db title, maybe delete
      * @author Johanna Reidt
      * @param view
      */
@@ -225,11 +258,28 @@ public class SettingsActivity extends AppCompatActivity {
      * @param view
      */
     public void loadNew(View view) {
-        DatabaseConnection.initializeSingleton(this);
-        DatabaseConnection.localRefresh();
+        /*
+        if(!DatabaseConnection.isInitialized()) {
+            DatabaseConnection.initializeSingleton(this);
+        }
+
+         */
+        Buffer.localRefresh(this);
         Toast.makeText(this,"Lade aus der Datenbank neu!",Toast.LENGTH_SHORT).show();
     }
 
 
+    public void login(View view) {
+        AdminRights.login(this, getLayoutInflater(), new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                SettingsActivity.this.setVisibility();
+            }
+        });
+    }
 
+    public void logout(View view) {
+        AdminRights.logout();
+        setVisibility();
+    }
 }

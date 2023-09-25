@@ -30,7 +30,6 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
@@ -80,7 +79,7 @@ public class EditModelFragment extends Fragment {
         switch (type) {
                 case PUMP:
                     pump = Pump.makeNew();
-                    pump.setCurrentIngredient(ingredient);
+                    pump.setCurrentIngredient(activity, ingredient);
                     try {
                         pump.fill(Integer.parseInt(
                                 binding
@@ -93,7 +92,8 @@ public class EditModelFragment extends Fragment {
                         Log.i(TAG, "saveNew: pump filling failed: pump: "+pump);
                     }
                     setUpEditPump();
-                    saved = pump.save();
+                    pump.save(activity);
+                    saved = true;
                     pump.sendSave(activity);
                     b.putString("Type", ModelType.PUMP.name());
                     b.putLong("ID", pump.getID());
@@ -110,7 +110,7 @@ public class EditModelFragment extends Fragment {
                                     .getText()
                                     .toString());
                     setUpEditTopic();
-                    saved = topic.save();
+                    topic.save(activity);
                     b.putString("Type", ModelType.TOPIC.name());
                     b.putLong("ID", topic.getID());
                     Log.i(TAG,"savenew"+b);
@@ -122,7 +122,8 @@ public class EditModelFragment extends Fragment {
                                     .editTextEditText
                                     .getText().toString());
                     setUpEditRecipe();
-                    saved = recipe.save();
+                    saved =true;
+                    recipe.save(activity);
                     recipe.sendSave(activity);
                     b.putString("Type", ModelType.RECIPE.name());
                     b.putLong("ID", recipe.getID());
@@ -135,7 +136,8 @@ public class EditModelFragment extends Fragment {
                                     .editTextEditText
                                     .getText().toString());
                     setUpEditIngredient();
-                    saved = ingredient.save();
+                    ingredient.save(activity);
+                    saved =true;
                     b.putString("Type", ModelType.INGREDIENT.name());
                     b.putLong("ID", ingredient.getID());
                     Log.i(TAG,"savenew"+b);
@@ -150,20 +152,20 @@ public class EditModelFragment extends Fragment {
         switch (type){
                 case INGREDIENT:
                     ingredient.setAlcoholic(binding.checkBoxAlcoholic.isChecked());
-                    ingredient.save();
+                    ingredient.save(activity);
                     b.putString("Type", ModelType.INGREDIENT.name());
                     b.putLong("ID", ingredient.getID());
                     Log.i(TAG,"saved "+b);
                     return;
                 case RECIPE:
-                    recipe.save();
+                    recipe.save(activity);
                     recipe.sendSave(activity);
                     b.putString("Type", ModelType.RECIPE.name());
                     b.putLong("ID", recipe.getID());
                     Log.i(TAG,"saved "+b);
                     return;
                 case TOPIC:
-                    topic.save();
+                    topic.save(activity);
                     b.putString("Type", ModelType.TOPIC.name());
                     b.putLong("ID", topic.getID());
                     Log.i(TAG,"saved "+b);
@@ -184,7 +186,8 @@ public class EditModelFragment extends Fragment {
                         e.printStackTrace();
                         Log.i(TAG, "save: pump filling failed: pump: "+pump);
                     }
-                    saved = pump.save();
+                    pump.save(activity);
+                    saved =true;
                     pump.sendSave(activity);
                     b.putString("Type", ModelType.PUMP.name());
                     b.putLong("ID", pump.getID());
@@ -284,7 +287,7 @@ public class EditModelFragment extends Fragment {
             binding.includeNewPump.includeNewPumpFillEmpty.editTextPumpFillEmptyVolume.setText(null);
         });
         final List<Ingredient> ingredients;
-       ArrayList<String> ingredientNames = new ArrayList<>();
+        ArrayList<String> ingredientNames = new ArrayList<>();
         ingredients = Ingredient.getAllIngredients();
         for(Ingredient ingredient: ingredients){
             ingredientNames.add(ingredient.getName());
@@ -413,7 +416,7 @@ public class EditModelFragment extends Fragment {
             public void afterTextChanged(Editable s) {
                 saved = false;
                 setSaveFAB();
-                recipe.setName(s.toString());
+                recipe.setName(activity,s.toString());
             }
         });
         binding.includeName.editTextEditText.setText(recipe.getName());
@@ -459,7 +462,7 @@ public class EditModelFragment extends Fragment {
                     });
             builder.setPositiveButton("Weiter", (dialog, which) -> {
                 for(Ingredient i:chosen) {
-                    recipe.addOrUpdate(i, -1);
+                    recipe.add(activity,i, -1);
                 }
             });
             builder.show();
@@ -564,7 +567,7 @@ public class EditModelFragment extends Fragment {
             binding.includeNewPump.includeNewPumpFillEmpty.editTextPumpFillEmptyVolume.setText(null);
             saved = false;
             setSaveFAB();
-            pump.empty();
+            pump.empty(activity);
         });
         final List<Ingredient> ingredients;
         ArrayList<String> ingredientNames = new ArrayList<>();
@@ -584,7 +587,7 @@ public class EditModelFragment extends Fragment {
         binding.includeNewPump.spinnerNewPump.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                pump.setCurrentIngredient(ingredients.get(position));
+                pump.setCurrentIngredient(activity,ingredients.get(position));
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -723,15 +726,7 @@ public class EditModelFragment extends Fragment {
 
         void setIngredient(int position){
             this.ingredient = recipe.getIngredients().get(position);
-            try {
-                this.volume = this.recipe.getSpecificIngredientVolume(ingredient);
-            } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
-                e.printStackTrace();
-                this.recipe.remove(ingredient);
-                this.volume = -1;
-                this.recipe.addOrUpdate(ingredient, this.volume);
-                this.recipe.save();
-            }
+            this.volume = this.recipe.getVolume(ingredient);
             name.setText(ingredient.getName());
             if(volume > 0){
                 this.vol.setText(String.valueOf(this.volume));
@@ -745,7 +740,7 @@ public class EditModelFragment extends Fragment {
                     builder.setMessage("Möchten Sie diese Zutat wirklich aus dem Rezept löschen?");
                     builder.setTitle("Warnung");
                     builder.setPositiveButton("Ja", (dialog, which) -> {
-                        recipe.remove(ingredient);
+                        recipe.remove(activity,ingredient);
                         dialog.dismiss();
                     });
                     builder.setNegativeButton("Nein", (dialog, which) -> dialog.dismiss());

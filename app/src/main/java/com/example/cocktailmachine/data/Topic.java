@@ -1,8 +1,9 @@
 package com.example.cocktailmachine.data;
 
+import android.content.Context;
 import android.util.Log;
 
-import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
@@ -59,47 +60,36 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
 
     static Topic getTopic(long id)  {
         Log.i(TAG, "getTopic");
-        try {
-            return DatabaseConnection.getDataBase().getTopic(id);
-        } catch (NotInitializedDBException e) {
-            Log.i(TAG, "getTopic: NotInitializedDBException");
-            e.printStackTrace();
-            return null;
-        }
+        return Buffer.getSingleton().getTopic(id);
     }
 
     static Topic getTopic(String name)  {
         Log.i(TAG, "getTopic");
-        try {
-            return DatabaseConnection.getDataBase().getTopicWith(name);
-        } catch (NotInitializedDBException e) {
-            Log.i(TAG, "getTopic: NotInitializedDBException");
-            e.printStackTrace();
-            //return Topic.makeNew(name, "Füll bitte bei Gelegenheit aus!");
-        }
-        return null;
+        return Buffer.getSingleton().getTopic(name);
     }
 
     static List<Topic> getTopics(Recipe recipe)  {
         Log.i(TAG, "getTopics");
-        try {
-            return DatabaseConnection.getDataBase().getTopics(recipe);
-        } catch (NotInitializedDBException e) {
-            Log.i(TAG, "getTopics: NotInitializedDBException");
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
+        return Buffer.getSingleton().getTopics(recipe);
+    }
+
+    static List<Long> getTopicIDs(Recipe recipe)  {
+        Log.i(TAG, "getTopics");
+        return Buffer.getSingleton().getTopicIDs(recipe);
     }
 
     static List<Topic> getTopics(){
         Log.i(TAG, "getTopics");
-        try {
-            return DatabaseConnection.getDataBase().getTopics();
-        } catch (NotInitializedDBException e) {
-            Log.i(TAG, "getTopics: NotInitializedDBException");
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
+        return Buffer.getSingleton().getTopics();
+    }
+
+    static List<Topic> getTopics(Context context){
+        Log.i(TAG, "getTopics");
+        return Buffer.getSingleton().getTopics(context);
+    }
+
+    static List<String> getTopicTitles(){
+       return Buffer.getSingleton().getTopicNames();
     }
 
 }

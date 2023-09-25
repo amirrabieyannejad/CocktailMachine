@@ -17,6 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
+            android:onClick="listIngedients"
             android:orientation="vertical">
 
             <ImageView
@@ -24,7 +25,7 @@
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="openRecipeList"
-                app:contentDescription="Show available Cocktails"
+                android:contentDescription="Show available Cocktails"
                 app:srcCompat="@drawable/ic_list" />
 
             <ImageView
@@ -32,15 +33,25 @@
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="openRecipeCreator"
-                app:contentDescription="add recipe"
+                android:contentDescription="add recipe"
                 app:srcCompat="@drawable/ic_list_add" />
 
             <ImageView
+                android:id="@+id/imageView_test_ing_list"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
+                android:onClick="listIngedients"
+                app:contentDescription="FillAnimation"
+                app:srcCompat="@drawable/ic_list_add" />
+
+            <ImageView
+                android:id="@+id/imageView_test_fill_an"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="openGlassFillAnimationView"
-                app:contentDescription="FillAnimation"
+                android:contentDescription="FillAnimation"
                 app:srcCompat="@drawable/ic_list_add" />
 
 
@@ -53,11 +64,12 @@
                 app:srcCompat="@drawable/ic_home" />
 
             <ImageView
+                android:id="@+id/imageView_test_single_cockt"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="openSingelCocktailView"
-                app:contentDescription="swipe thing"
+                android:contentDescription="swipe thing"
                 app:srcCompat="@drawable/ic_single_cocktail_choice_2" />
 
             <ImageView
@@ -65,7 +77,7 @@
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="openDeviceScan"
-                app:contentDescription="FindBluetooth"
+                android:contentDescription="FindBluetooth"
                 app:srcCompat="@drawable/ic_find_bluetooth" />
 
             <ImageView
@@ -73,50 +85,53 @@
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="openSettings"
-                app:contentDescription="Settings"
+                android:contentDescription="Settings"
                 app:srcCompat="@drawable/ic_options" />
 
             <ImageView
+                android:id="@+id/imageView_test_grafik"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="openGrafik"
-                app:contentDescription="Grafik"
+                android:contentDescription="Grafik"
                 app:srcCompat="@drawable/ic_glass" />
 
             <ImageView
+                android:id="@+id/imageView_test_blue"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="testEnviroment"
-                app:contentDescription="TestSiteForBluetooth"
+                android:contentDescription="TestSiteForBluetooth"
                 app:srcCompat="@drawable/ic_bluetooth_test" />
 
             <ImageView
-                android:id="@+id/activity_menue_logout"
+                android:id = "@+id/activityMenueLogout"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="logout"
-                app:contentDescription="Logout"
+                android:contentDescription="logout"
                 app:srcCompat="@drawable/ic_logout" />
 
             <ImageView
-                android:id="@+id/activity_menue_login"
+                android:id = "@+id/activityMenueLogin"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="login"
-                app:contentDescription="Login"
+                android:contentDescription="login"
                 app:srcCompat="@drawable/ic_login" />
 
             <ImageView
-                android:id="@+id/calibration"
+
+                android:id = "@+id/imageView_test_cal"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="calibration"
-                app:contentDescription="calibration"
+                android:contentDescription="calibration"
                 app:srcCompat="@drawable/ic_reload" />
 
         </LinearLayout>

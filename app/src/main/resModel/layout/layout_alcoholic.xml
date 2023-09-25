@@ -20,13 +20,12 @@
         app:tint="@color/design_default_color_error" />
 
     <TextView
-        android:id="@+id/textView_alcoholic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="@string/alkholisch"
-        android:textSize="20sp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView_alcoholic" />
+        app:layout_constraintStart_toEndOf="@+id/imageView_alcoholic"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

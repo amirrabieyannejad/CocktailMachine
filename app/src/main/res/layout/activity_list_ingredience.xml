@@ -42,39 +42,55 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewHeaderListIngredience" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewListIngredience"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="0dp"
+        android:layout_height="250dp"
         android:layout_marginTop="24dp"
-        android:layout_marginBottom="24dp"
         app:layout_constraintBottom_toTopOf="@+id/buttonListIngredienceNewIngredience"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextListIngredienceSearchTerm"
-        tools:itemCount="5"
-        tools:listitem="@layout/item_list_ingredients" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextTextListIngredienceSearchTerm">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewListIngredience"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="1dp"
+                android:layout_marginEnd="1dp"
+                android:layout_marginBottom="1dp" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"></LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
     <Button
         android:id="@+id/buttonListIngredienceNewIngredience"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_marginBottom="24dp"
+        android:layout_height="wrap_content"
         android:text="Flüssigkeit hinzufügen"
-        app:layout_constraintBottom_toTopOf="@+id/buttonListIngredienceConfirmChoice"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
 
     <Button
         android:id="@+id/buttonListIngredienceConfirmChoice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
         android:enabled="false"
         android:text="ausgewählte Flüssigkeit bestätigen"
         android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonListIngredienceNewIngredience" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,11 +2,14 @@ package com.example.cocktailmachine.ui.model.v2;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,7 +20,7 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.AdminRights;
@@ -260,7 +263,7 @@ public class GetDialog {
     }
 
     public static void firstAutomaticDialog(Activity activity){
-        DatabaseConnection.initializeSingleton(activity);
+        //DatabaseConnection.initializeSingleton(activity);
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Automatische Kalibrierung");
         builder.setMessage("Bitte folge den Anweisungen schrittweise. " +
@@ -561,7 +564,7 @@ public class GetDialog {
 
             builder.setAdapter(adapter,
                     (dialog, which) -> {
-                        pump.setCurrentIngredient(ingredients.get(which));
+                        pump.setCurrentIngredient(activity, ingredients.get(which));
                         Toast.makeText(activity, names.get(which)+" gewählt.",Toast.LENGTH_SHORT).show();
                     });
 
@@ -665,6 +668,25 @@ public class GetDialog {
 
 
 
+    static void deleteAddElement(Activity activity, String name, Postexecute pickedDeleted){
+        Log.i(TAG, "deleteAddElement");
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Löschen");
+        builder.setMessage("Möchtest du wirklich "+name+" aus dem Rezept löschen?");
+        builder.setNegativeButton("Nein", (dialog, which) -> {
+            Log.i(TAG, "deleteAddElement: Nein");
+            dialog.dismiss();
+        });
+        builder.setCancelable(false);
+        builder.setPositiveButton("Ja", (dialog, which) -> {
+            Log.i(TAG, "deleteAddElement: Ja");
+            Log.i(TAG, "deleteAddElement: pickedDeleted post");
+            pickedDeleted.post();
+            Log.i(TAG, "deleteAddElement: pickedDeleted post done");
+            dialog.dismiss();
+        });
+        builder.show();
+    }
 
 
 
@@ -713,6 +735,7 @@ public class GetDialog {
     }
 
 
+
     public static class TitleChangeView{
 
         private final TextView t;
@@ -750,22 +773,37 @@ public class GetDialog {
         private String getName(){
             return e.getText().toString();
         }
-        public boolean save(){
+        public void save(){
             switch(modelType){
                 case INGREDIENT:
                     Ingredient ingredient = Ingredient.getIngredient(ID);
-                    ingredient.setName(getName());
-                    return ingredient.save();
+                    if(ingredient==null){
+                        ingredient = Ingredient.makeNew(getName());
+                    }else {
+                        ingredient.setName(getName());
+                    }
+                    ingredient.save(activity);
+                    return;
                 case RECIPE:
                     Recipe recipe = Recipe.getRecipe(ID);
-                    recipe.setName(getName());
-                    return recipe.save();
+                    if(recipe==null){
+                        recipe = Recipe.makeNew(getName());
+                    }else {
+                        recipe.setName(activity,getName());
+                    }
+                    recipe.save(activity);
+                    return;
                 case TOPIC:
                     Topic topic = Topic.getTopic(ID);
-                    topic.setName(getName());
-                    return topic.save();
+                    if(topic==null){
+                        topic = Topic.makeNew(getName(), "");
+                    }else {
+                        topic.setName(getName());
+                    }
+                    topic.save(activity);
+                    return;
             }
-            return false;
+            return;
         }
 
         public void send(){
@@ -774,6 +812,295 @@ public class GetDialog {
             }
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //Get Ingredient + vol
+
+    /*
+    public static void getIngredientVolume(Activity activity, boolean available, IngredientVolumeSaver saver){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Wähle die Zutat und gib das Volumen an!");
+
+        View v = activity.getLayoutInflater().inflate(R.layout.layout_search_ingredient, null);
+        IngredientVolumeView iv = new IngredientVolumeView(activity, v, available);
+        builder.setView(v);
+        builder.setPositiveButton("Speichern", (dialog, which) -> {
+            saver.save(
+                    iv.getIngredient(),
+                    iv.getIngredientTippedName(),
+                    iv.getVolume());
+        });
+        builder.setNegativeButton("Abbrechen", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
+
+     */
+    interface IngredientVolumeSaver{
+        //void save(Ingredient ingredient,String tippedName, Integer volume);
+        void save(Ingredient ingredient, String tippedName);
+        void save(Integer volume);
+        void post();
+    }
+    /*
+    private static class IngredientVolumeView{
+        private final TextView ingredient;
+        private final EditText search;
+        private final ImageButton done;
+        private final EditText volume;
+        private final Activity activity;
+        private final View view;
+        private final List<String> ingredientNames;
+
+        private IngredientVolumeView(Activity activity,
+                                     View view,
+                                     boolean only_available){
+            this.activity = activity;
+            this.view = view;
+            this.search = activity.findViewById(R.id.editText_search_ingredient_ing);
+            this.done = activity.findViewById(R.id.imageButton_search_ingredient_done);
+            this.ingredient = activity.findViewById(R.id.textView_search_ingredient_ing);
+            this.volume = activity.findViewById(R.id.editTextNumber_search_ingredient_vol);
+
+            if(only_available) {
+                this.ingredientNames = Ingredient.getAvailableIngredientNames();
+            }else{
+                this.ingredientNames = Ingredient.getAllIngredientNames();
+            }
+            setSearchItems();
+            setSearch();
+        }
+
+        Ingredient getIngredient(){
+            return Ingredient.searchOrNew(search.getText().toString());
+        }
+
+        String getIngredientTippedName(){
+            return search.getText().toString();
+        }
+
+        int getVolume(){
+            Log.i(TAG, "IngredientVolumeView: getVolume ");
+            try {
+                return Integer.parseInt(volume.getText().toString());
+            }catch (NumberFormatException e){
+                Log.e(TAG, "IngredientVolumeView: getVolume error");
+                Log.e(TAG, "IngredientVolumeView: getVolume "+e.getMessage());
+                e.printStackTrace();
+            }
+            return -1;
+        }
+
+        private void done(){
+            Log.i(TAG, "IngredientVolumeView: done ");
+            this.search.setVisibility(View.GONE);
+            this.done.setVisibility(View.GONE);
+            this.ingredient.setVisibility(View.VISIBLE);
+            this.ingredient.setText(this.getIngredient().getName());
+            this.ingredient.setOnClickListener(v -> setSearch());
+        }
+
+        private void setSearch(){
+            Log.i(TAG, "IngredientVolumeView: setSearch ");
+            this.search.setVisibility(View.VISIBLE);
+            this.done.setVisibility(View.VISIBLE);
+            this.ingredient.setVisibility(View.GONE);
+            this.done.setOnClickListener(v -> done());
+
+        }
+
+        private void setSearchItems(){
+            Log.i(TAG, "IngredientVolumeView: setSearchItems ");
+            //this.search.setAutofillHints(this.ingredientNames);
+            //TODO: set autotfill hints
+        }
+
+    }
+
+    */
+
+
+
+    public static void getIngVol(Activity activity, boolean available, IngredientVolumeSaver saver){
+        //TODOsetTitle
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Bitte wähle die Zutat!");
+
+        View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
+        GetDialog.GetIngView getIngView =
+                new GetDialog.GetIngView(
+                        activity,
+                        v,
+                        available,
+                        saver);
+
+        builder.setView(v);
+
+        builder.setPositiveButton("Speichern", (dialog, which) -> {
+            Log.i(TAG, "getIngVol : save" );
+            getIngView.save();
+            //getIngView.send();
+            getIngVolVol(activity, saver);
+            dialog.dismiss();
+        });
+        builder.setNeutralButton("Abbrechen", (dialog, which) -> {
+
+            Log.i(TAG, "getIngVol : stop" );
+        });
+        builder.show();
+    }
+
+
+    public static class GetIngView{
+
+        private final TextView t;
+        private final EditText e;
+        private final boolean available;
+        private final View v;
+        private final IngredientVolumeSaver saver;
+        private final Activity activity;
+        private GetIngView(Activity activity, View v, boolean available,
+                           IngredientVolumeSaver saver) {
+            this.activity = activity;
+            this.v = v;
+            this.available = available;
+            this.saver = saver;
+            this.t = v.findViewById(R.id.textView_edit_text);
+            this.e = v.findViewById(R.id.editText_edit_text);
+            this.e.setHint("Wodka");
+            this.t.setText("Zutat: ");
+            this.e.setInputType(InputType.TYPE_CLASS_TEXT);
+
+        }
+
+        private String getName(){
+
+            Log.i(TAG, "GetIngView: getName " );
+            return e.getText().toString();
+        }
+        public void save(){
+            Log.i(TAG, "GetIngView: save " );
+            saver.save(Ingredient.searchOrNew(activity, getName()), getName());
+        }
+
+    }
+
+    //public static void
+    private static void getIngVolVol(Activity activity, IngredientVolumeSaver saver){
+        //TO DO setTitle
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Gib das Volumen an!");
+
+        View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
+        GetDialog.GetIngVolView getIngVolView =
+                new GetDialog.GetIngVolView(
+                        activity,
+                        v,
+                        saver);
+
+        builder.setView(v);
+
+        builder.setPositiveButton("Speichern", (dialog, which) -> {
+            Log.i(TAG, "getIngVolVol : save" );
+            getIngVolView.save();
+            //getIngView.send();
+            saver.post();
+            dialog.dismiss();
+        });
+        builder.setNeutralButton("Abbrechen", (dialog, which) -> {
+            Log.i(TAG, "getIngVolVol : stop" );
+
+        });
+        builder.show();
+    }
+
+
+    public static class GetIngVolView{
+
+        private final TextView t;
+        private final EditText e;
+        private final View v;
+        private final IngredientVolumeSaver saver;
+        private final Activity activity;
+        private GetIngVolView(Activity activity, View v,
+                           IngredientVolumeSaver saver) {
+            this.activity = activity;
+            this.v = v;
+            this.saver = saver;
+            this.t = v.findViewById(R.id.textView_edit_text);
+            this.e = v.findViewById(R.id.editText_edit_text);
+            this.e.setHint("123 ml");
+            this.t.setText("Volumen: ");
+            this.e.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+        }
+
+        private int getVol(){
+            Log.i(TAG, "GetIngView: getVol " );
+            try {
+                return Integer.parseInt(e.getText().toString());
+            }catch (NumberFormatException e){
+                Log.i(TAG, "GetIngView: parse error " );
+                e.printStackTrace();
+            }
+            return -1;
+        }
+        public void save(){
+            Log.i(TAG, "GetIngView: save " );
+            saver.save(getVol());
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+    //Get Topic
+    public static void addTopic(Activity activity, TopicSaver topicSaver){
+        Log.i(TAG, "addTopic");
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Wähle einen Serviervorschlag!");
+        String[] names = Topic.getTopicTitles().toArray(new String[0]);
+        builder.setItems(names, (dialog, which) -> {
+            Log.i(TAG, "addTopic: picked "+names[which]);
+
+            //recipe.addOrUpdate(Topic.getTopic(names[which]));
+            topicSaver.save(Topic.getTopic(names[which]), dialog);
+        });
+        builder.setNegativeButton("Abbrechen", (dialog, which) -> {
+            Log.i(TAG, "addTopic: stop, none picked");
+            dialog.dismiss();});
+        builder.show();
+
+    }
+
+    interface TopicSaver{
+        void save(Topic topic, DialogInterface dialogInterface);
+    }
+
+
+
+
+
+
+
 
 
 
@@ -880,19 +1207,19 @@ public class GetDialog {
         }
         private int getVolume(){
             try {
-                return Integer.getInteger(e.getText().toString());
-            }catch (NullPointerException e){
+                return Integer.parseInt(e.getText().toString());
+            }catch (NumberFormatException e){
                 e.printStackTrace();
                 return 100;
             }
         }
-        public boolean save(){
+        public void save(){
             try {
                 pump.fill(getVolume());
             } catch (MissingIngredientPumpException ex) {
                 ex.printStackTrace();
             }
-            return pump.save();
+            pump.save(activity);
         }
 
         public void send(){
@@ -921,7 +1248,7 @@ public class GetDialog {
 
             builder.setAdapter(adapter,
                     (dialog, which) -> {
-                        pump.setCurrentIngredient(ingredients.get(which));
+                        pump.setCurrentIngredient(activity,ingredients.get(which));
                         Toast.makeText(activity, names.get(which)+" gewählt.",Toast.LENGTH_SHORT).show();
                     });
 
@@ -939,6 +1266,15 @@ public class GetDialog {
             errorMessage(activity);
         }
     }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1140,6 +1476,13 @@ public class GetDialog {
 
 
 
+
+
+
+
+
+
+
     //Pumpen times
     public static void calibratePumpTimes(Activity activity, Pump pump){
         if (pump != null) {
@@ -1293,6 +1636,17 @@ public class GetDialog {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
     //Alle Pumpenkalibrieren
 
     public static void setPumpNumber(Activity activity) {
@@ -1331,15 +1685,12 @@ public class GetDialog {
             super(activity, v, "Anzahl");
         }
         public void save() throws IllegalStateException{
-            if(!DatabaseConnection.isInitialized()) {
-                DatabaseConnection.initializeSingleton(super.activity);
-            }
             int res = (int) super.getFloat();
             if(res == -1){
                 Toast.makeText(super.activity, "Gib bitte eine valide Zahle ein.", Toast.LENGTH_SHORT).show();
                 throw new IllegalStateException("Missing number!");
             } else {
-                Pump.setOverrideEmptyPumps(res);
+                Pump.setOverrideEmptyPumps(activity,res);
             }
         }
 
@@ -1347,6 +1698,19 @@ public class GetDialog {
         public void send() {
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1395,6 +1759,8 @@ public class GetDialog {
             CocktailMachine.sendCalibrateScale(super.activity, super.getFloat() );
         }
     }
+
+
 
 
 
@@ -1477,6 +1843,25 @@ public class GetDialog {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     //Alcoholic
     public static void setAlcoholic(Activity activity, Ingredient ingredient){
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -1486,12 +1871,12 @@ public class GetDialog {
 
         builder.setPositiveButton("Ja", (dialog, which) -> {
             ingredient.setAlcoholic(true);
-            ingredient.save();
+            ingredient.save(activity);
 
         });
         builder.setNegativeButton("Nein", (dialog, which) -> {
             ingredient.setAlcoholic(false);
-            ingredient.save();
+            ingredient.save(activity);
 
         });
         builder.setNeutralButton("Abbrechen", (dialog, which) -> {
@@ -1499,6 +1884,23 @@ public class GetDialog {
         });
         builder.show();
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1519,7 +1921,7 @@ public class GetDialog {
         builder.setView(v);
 
         builder.setPositiveButton("Speichern", (dialog, which) -> {
-            longEditChangeView.save();
+            longEditChangeView.save(activity);
         });
         builder.setNeutralButton("Abbrechen", (dialog, which) -> {
 
@@ -1553,11 +1955,26 @@ public class GetDialog {
         private String getDescription(){
             return e.getText().toString();
         }
-        public boolean save(){
+        public void save(Activity ac){
             this.topic.setDescription(getDescription());
-            return topic.save();
+            topic.save(ac);
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1586,17 +2003,18 @@ public class GetDialog {
                 adapter,
                 0,
                 (dialog, which) -> {
-            pump.setCurrentIngredient(ingredients.get(which));
+            pump.setCurrentIngredient(activity,ingredients.get(which));
             Toast.makeText(activity,"Gewählte Zutat: "+displayValues.get(which),Toast.LENGTH_SHORT).show();
         });
 
 
 
         builder.setPositiveButton("Speichern", (dialog, which) -> {
-            pump.save();
+            pump.save(activity);
             pump.sendSave(activity);
             Toast.makeText(activity,"Cocktailmaschine wird informiert.",Toast.LENGTH_SHORT).show();
-            DatabaseConnection.localRefresh();
+            //DatabaseConnection.localRefresh();
+            Buffer.localRefresh(activity);
             Toast.makeText(activity,"DB-Synchronisation läuft!",Toast.LENGTH_SHORT).show();
 
         });
@@ -1605,6 +2023,17 @@ public class GetDialog {
         });
         builder.show();
     }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1637,7 +2066,8 @@ public class GetDialog {
         b.append(" aus dem Rezept "+recipe.getName()+" entfernen?");
         builder.setTitle(b.toString());
         builder.setPositiveButton("Bitte löschen!", (dialog, which) -> {
-            deleteElementFromRecipe(recipe,
+            deleteElementFromRecipe(activity,
+                    recipe,
                     modelType,
                     ID);
         });
@@ -1646,6 +2076,18 @@ public class GetDialog {
         });
         builder.show();
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1689,7 +2131,7 @@ public class GetDialog {
         builder.setTitle(getDeleteTitle(modelType, title));
         builder.setPositiveButton("Bitte löschen!", (dialog, which) -> {
             try {
-                deleteElement(modelType, ID);
+                deleteElement(activity,modelType, ID);
             } catch (NotInitializedDBException e) {
                 e.printStackTrace();
             }
@@ -1736,17 +2178,18 @@ public class GetDialog {
      * @param ID
      * @throws NotInitializedDBException
      */
-    private static void deleteElement(ModelType modelType,
+    private static void deleteElement(Activity activity,
+                                      ModelType modelType,
                                       Long ID) throws NotInitializedDBException {
         switch (modelType){
             case RECIPE:
-                Recipe.getRecipe(ID).delete();
+                Recipe.getRecipe(ID).delete(activity);
             case PUMP:
-                Pump.getPump(ID).delete();
+                Pump.getPump(ID).delete(activity);
             case TOPIC:
-                Topic.getTopic(ID).delete();
+                Topic.getTopic(ID).delete(activity);
             case INGREDIENT:
-                Ingredient.getIngredient(ID).delete();
+                Ingredient.getIngredient(ID).delete(activity);
         }
     }
 
@@ -1757,14 +2200,15 @@ public class GetDialog {
      * @param modelType
      * @param ID
      */
-    private static void deleteElementFromRecipe(Recipe recipe,
+    private static void deleteElementFromRecipe(Context context,
+                                                Recipe recipe,
                                                 ModelType modelType,
                                                 Long ID){
         switch (modelType){
             case TOPIC:
-                recipe.removeTopic(ID);
+                recipe.remove(context, Topic.getTopic(ID));
             case INGREDIENT:
-                recipe.removeIngredient(ID);
+                recipe.remove(context, Ingredient.getIngredient(ID));
         }
     }
 

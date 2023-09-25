@@ -3,9 +3,15 @@ package com.example.cocktailmachine.data;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
+import android.util.Log;
 
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.Buffer;
+import com.example.cocktailmachine.data.db.DeleteFromDB;
+import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
+import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
@@ -26,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface Recipe extends Comparable<Recipe>, DataBaseElement {
+    final String TAG="Recipe";
 
     WaitingQueueCountDown getWaitingQueueCountDown();
     void setWaitingQueueCountDown(Activity activity);
@@ -38,135 +45,345 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      */
 
 
-    long getID();
 
-    /**
-     * Get name.
-     * @return name
-     */
+
+
+    //Getter
     String getName();
+    boolean isAlcoholic();
 
     /**
-     * Get ingredient ids used in this recipe.
-     * @return list of ingredient ids.
+     * get topics
+     * @author Johanna Reidt
+     * @return
      */
-    List<Long> getIngredientIds();
+    List<Topic> getTopics();
 
     /**
-     * Get ingredient ids used in this recipe.
-     * @return list of ingredient ids.
+     * get Topic ids
+     * @author Johanna Reidt
+     * @return
      */
-    List<String> getIngredientNames();
+    List<Long> getTopicIDs();
 
     /**
-     * Get ingredients used in this recipe.
-     * @return list of ingredient.
+     * get topic names
+     * @author Johanna Reidt
+     * @return
+     */
+    List<String> getTopicNames();
+
+    /**
+     * get ingredients
+     * @author Johanna Reidt
+     * @return
      */
     List<Ingredient> getIngredients();
 
     /**
-     * Is alcoholic?
-     * @return alcoholic?
+     * get ingredient ids
+     * @author Johanna Reidt
+     * @return
      */
-    boolean isAlcoholic();
+    List<Long> getIngredientIDs();
 
     /**
-     * Is available?
-     * @return available?
+     * get ingreients names
+     * @author Johanna Reidt
+     * @return
+     */
+    List<String> getIngredientNames();
+
+    /**
+     * get list with "<ingredient_name>: <volume> ml"
+     * @author Johanna Reidt
+     * @return
+     */
+    List<String> getIngredientNameNVolumes();
+
+    /**
+     * get hashmap ingredient id -> volume
+     * @author Johanna Reidt
+     * @return
+     */
+    HashMap<Ingredient, Integer> getIngredientToVolume();
+
+
+    /**
+     * get hashmap ingredient id -> volume
+     * @author Johanna Reidt
+     * @return
+     */
+    HashMap<Long, Integer> getIngredientIDToVolume();
+
+    /**
+     * get hasmap ingredient name -> volume
+     * @author Johanna Reidt
+     * @return
+     */
+    HashMap<String, Integer> getIngredientNameToVolume();
+
+    /**
+     * get volume with ingredient
+     * @author Johanna Reidt
+     * @param ingredient
+     * @return
+     */
+    int getVolume(Ingredient ingredient);
+    /**
+     * get volume with ingredient
+     * @author Johanna Reidt
+     * @param ingredientID
+     * @return
+     */
+    int getVolume(long ingredientID);
+
+    /**
+     * gives availability
+     * @author Johanna Reidt
+     * @return
      */
     boolean isAvailable();
 
+
+
+
+
+
+
+
+    //Setter
+
     /**
-     * Is available? with ingredients
-     * @return available?
+     * set name  or replace
+     * @author Johanna Reidt
+     * @param name
      */
-    boolean loadAvailable();
+    void setName(Context context, String name);
 
     /**
-     * Get associated image addresses.
-     * @return list of image addresses
+     * add topic or replace
+     * @author Johanna Reidt
+     * @param context
+     * @param topic
      */
-    List<String> getImageUrls();
+    void add(Context context, Topic topic);
 
     /**
-     * Get recommended topics.
-     * @return recommended topics
+     * add ingredient
+     * @author Johanna Reidt
+     * @param context
+     * @param ingredient
      */
-    List<Long> getTopics();
-
-
-    //Zutaten Getter
+    void add(Context context, Ingredient ingredient);
 
     /**
-     * Get ingredients ids and their associated pumptimes in milliseconds
-     * @return hashmap ids, pump time
-     */
-    HashMap<Long, Integer> getIngredientVolumes();
-
-    /**
-     * Get ingredients names and their associated pumptimes in milliseconds
-     * @return hashmap name, pump time
-     */
-    List<Map.Entry<String, Integer>> getIngredientNameNVolumes();
-
-    /**
-     * Get specific pump time for ingredient with id k
-     * @param ingredientId ingredient id k
-     * @return pump time in milliseconds
-     * @throws TooManyTimesSettedIngredientEcxception There are multiple times setted. only one time is allowed.
-     * @throws NoSuchIngredientSettedException There is no such ingredient. The id is not known.
-     */
-    int getSpecificIngredientVolume(long ingredientId) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException;
-
-    /**
-     * Get specific pump time for ingredient k
-     * @param ingredient ingredient k
-     * @return pump time in milliseconds
-     * @throws TooManyTimesSettedIngredientEcxception There are multiple times setted. only one time is allowed.
-     * @throws NoSuchIngredientSettedException There is no such ingredient. The id is not known.
-     */
-    int getSpecificIngredientVolume(Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException;
-
-
-    //bASIC CHANGER
-    void setName(String name);
-
-    //Ingredient Changer
-    /**
-     * Adds ingredient with quantity measured in needed pump time.
+     * add ingredient with volume or replace
+     * @author Johanna Reidt
+     * @param context
      * @param ingredient
      * @param volume
      */
-    void addOrUpdate(Ingredient ingredient, int volume);
+    void add(Context context, Ingredient ingredient, int volume);
+
     /**
-     * Adds ingredient with quantity measured in needed pump time.
-     * @param ingredientId
-     * @param volume
+     * add topics  or replace
+     * @author Johanna Reidt
+     * @param context
+     * @param topics
      */
-    void addOrUpdate(long ingredientId, int volume);
-
-    void addOrUpdate(Topic topic);
-
-    void addOrUpdate(String imageUrls);
+    default void addTopics(Context context, List<Topic> topics){
+        for(Topic e: topics ){
+            this.add(context, e);
+        }
+        this.save(context);
+    }
+    /**
+     * add ingredients  or replace
+     * @author Johanna Reidt
+     * @param context
+     * @param ingredients
+     */
+    default void addIngredients(Context context, List<Ingredient> ingredients){
+        for(Ingredient e: ingredients ){
+            this.add(context, e);
+        }
+        this.save(context);
+    }
+    /**
+     * add ingredients with volumes  or replace
+     * @author Johanna Reidt
+     * @param context
+     * @param ingVol
+     */
+    default void addIngredients(Context context, HashMap<Ingredient, Integer> ingVol){
+        for(Ingredient e: ingVol.keySet() ){
+            this.add(context, e, ingVol.get(e));
+        }
+        this.save(context);
+    }
 
     /**
-     * Remove Ingredient from Recipe.
+     * replace ingredients with volumes  or replace
+     * @author Johanna Reidt
+     * @param context
+     * @param ingVol
+     */
+    default void replaceIngredients(Context context, HashMap<Ingredient, Integer> ingVol){
+
+        Log.i(TAG, "replaceIngredients");
+        for(Ingredient i: this.getIngredients()){
+            if(!ingVol.containsKey(i)) {
+                this.remove(context, i);
+            }
+        }
+        this.loadAvailable(context);
+        this.loadAlcoholic(context);
+        this.save(context);
+        for(Ingredient e: ingVol.keySet() ){
+            Integer temp = ingVol.get(e);
+            if(temp == null){
+                temp = -1;
+            }
+            this.add(context, e, temp);
+        }
+        this.save(context);
+    }
+
+    /**
+     * replace ingredients with volumes  or replace
+     * @author Johanna Reidt
+     * @param context
+     * @param topics
+     */
+    default void replaceTopics(Context context, List<Topic> topics){
+        for(Topic t: this.getTopics()){
+            this.remove(context, t);
+        }
+        this.loadAvailable(context);
+        this.loadAlcoholic(context);
+        this.save(context);
+        for(Topic e: topics){
+            this.add(context,e);
+        }
+        this.save(context);
+    }
+
+
+
+    //Remove
+
+    /**
+     * remove ingredient
+     * @author Johanna Reidt
+     * @param context
      * @param ingredient
      */
-    void remove(Ingredient ingredient);
+    default void remove(Context context, Ingredient ingredient){
+        Buffer.getSingleton().removeFromBuffer(this, ingredient);
+        DeleteFromDB.remove(context, this, ingredient);
+        this.loadAvailable(context);
+        this.loadAlcoholic(context);
+        this.save(context);
+    }
+
     /**
-     * Remove Ingredient from Recipe.
-     * @param ingredientId
+     * remove topic
+     * @author Johanna Reidt
+     * @param context
+     * @param topic
      */
-    void removeIngredient(long ingredientId);
+    default void remove(Context context, Topic topic){
+        Buffer.getSingleton().removeFromBuffer(this, topic);
+        DeleteFromDB.remove(context, this, topic);
+        this.loadAvailable(context);
+        this.loadAlcoholic(context);
+        this.save(context);
+    }
 
-    void remove(Topic topic);
+    /**
+     * remove ingredients
+     * @author Johanna Reidt
+     * @param context
+     * @param topics
+     */
+    default void removeTopics(Context context, List<Topic> topics){
+        for(Topic e: topics){
+            this.remove(context, e);
+        }
+        this.loadAvailable(context);
+        this.loadAlcoholic(context);
+        this.save(context);
+    }
 
-    void removeTopic(long topicId);
+    /**
+     * remove topics
+     * @author Johanna Reidt
+     * @param context
+     * @param ingredients
+     */
+    default void removeIngredients(Context context, List<Ingredient> ingredients){
+        for(Ingredient e: ingredients){
+            this.remove(context, e);
+        }
+        this.loadAvailable(context);
+        this.loadAlcoholic(context);
+        this.save(context);
 
-    void remove(SQLRecipeImageUrlElement url);
+    }
 
-    void removeUrl(long urlId);
+
+
+
+
+    boolean loadAlcoholic(Context context);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     //this Instance
@@ -175,10 +392,11 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
     default JSONArray getLiquidsJSON(){
         JSONArray json = new JSONArray();
-        for(Map.Entry<String, Integer> e:this.getIngredientNameNVolumes()){
+        HashMap<String, Integer> nameVol = this.getIngredientNameToVolume();
+        for(String e: nameVol.keySet()){
             JSONArray j = new JSONArray();
-            j.put(e.getKey());
-            j.put(e.getValue());
+            j.put(e);
+            j.put(nameVol.get(e));
             json.put(j);
         }
         return json;
@@ -248,23 +466,28 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
             jsonObject.put("recipe", this.getName());
 
              */
+        save(activity);
+        if(Dummy.isDummy){
+            return true;
+        }
         try {
             JSONArray array = new JSONArray();
             List<Ingredient> is = this.getIngredients();
             for(Ingredient i: is){
                 JSONArray temp = new JSONArray();
                 temp.put(i.getName());
-                temp.put(this.getSpecificIngredientVolume(i));
+                temp.put(this.getVolume(i));
                 array.put(temp);
             }
             //jsonObject.put("liquids", array);
-
-            BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
-            bluetoothSingleton.userDefineRecipe(this.getID(),this.getName(),array,activity);
+            BluetoothSingleton.getInstance().userDefineRecipe(
+                    this.getID(),
+                    this.getName(),
+                    array,
+                    activity);
 
             return true;
-        } catch (JSONException | TooManyTimesSettedIngredientEcxception |
-                 NoSuchIngredientSettedException | InterruptedException|NullPointerException e) {
+        } catch (JSONException| InterruptedException|NullPointerException e) {
             e.printStackTrace();
         }
         return false;
@@ -332,8 +555,26 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
          */
         Pump.readPumpStatus(activity);
         CocktailMachine.updateRecipeListIfChanged(activity);
-        DatabaseConnection.localRefresh();
+        Buffer.localRefresh(activity);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -345,7 +586,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @param json
      * @throws NotInitializedDBException
      */
-    static void setRecipes(JSONArray json) throws JSONException{
+    static void setRecipes(Context context,JSONArray json) throws JSONException{
         //TO DO: USE THIS AMIR **DONE**
         //[{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}, {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
         for(int i=0; i<json.length(); i++){
@@ -358,12 +599,12 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
                     if(liq!=null){
                         String name = a.getString(0);
                         int volume = a.getInt(1);
-                        Ingredient ig = Ingredient.searchOrNew(name);
-                        temp.addOrUpdate(ig, volume);
+                        Ingredient ig = Ingredient.searchOrNew(context,name);
+                        temp.add(context, ig, volume);
                     }
                 }
             }
-            temp.save();
+            temp.save(context);
         }
     }
 
@@ -378,12 +619,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @return Recipe
      */
     static Recipe getRecipe(long id) {
-        try {
-            return DatabaseConnection.getDataBase().getRecipe(id);
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return Buffer.getSingleton().getRecipe(id);
     }
 
     /**
@@ -392,12 +628,8 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @return
      */
     static Recipe getRecipe(String name){
-        try {
-            return DatabaseConnection.getDataBase().getRecipeWithExact(name);
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return Buffer.getSingleton().getRecipe(name);
+
     }
 
     /**
@@ -406,13 +638,9 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @return list of recipes
      */
      static List<Recipe> getRecipes() {
-        try {
-            return (List<Recipe>) DatabaseConnection.getDataBase().getAvailableRecipes();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
-    }
+        return Buffer.getSingleton().getAvailableRecipes();
+
+     }
 
     /**
      * Static access to recipes.
@@ -420,13 +648,18 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @return list of recipes
      */
     static List<Recipe> getAllRecipes() {
-        try {
-            return (List<Recipe>) DatabaseConnection.getDataBase().getRecipes();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
+        return Buffer.getSingleton().getRecipes();
     }
+
+    /**
+     * Static access to recipes. if neccesary from db
+     * Get all saved recipes.
+     * @return list of recipes
+     */
+    static List<Recipe> getAllRecipes(Context context) {
+        return Buffer.getSingleton().getRecipes(context);
+    }
+
 
     /**
      * Static access to recipes.
@@ -435,12 +668,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @return list of recipes
      */
     static List<Recipe> getRecipes(List<Long> ids) {
-        try {
-            return DatabaseConnection.getDataBase().getRecipes(ids);
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
+        return Buffer.getSingleton().getRecipes(ids);
     }
 
     /**
@@ -466,4 +694,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         return recipe;
     }
 
+    List<SQLRecipeIngredient> getRecipeIngredient();
+
+    List<SQLRecipeTopic> getRecipeTopic();
 }

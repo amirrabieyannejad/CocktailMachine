@@ -1,10 +1,15 @@
 package com.example.cocktailmachine.data.db.elements;
 
+import android.content.Context;
 import android.util.Log;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
+import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
+import com.example.cocktailmachine.data.db.Buffer;
+import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 public class SQLRecipeTopic extends SQLDataBaseElement {
@@ -46,11 +51,17 @@ public class SQLRecipeTopic extends SQLDataBaseElement {
         return this.available;
     }
 
+    @Override
+    public boolean loadAvailable(Context context) {
+        loadAvailable();
+        this.save(context);
+        return this.available;
+    }
+
     /**
      * true, if topic and recipe exists
      * @return
      */
-    @Override
     public boolean loadAvailable() {
         Log.i(TAG, "loadAvailable");
         boolean res = (this.getTopic()!=null)&&(this.getRecipe()!=null);
@@ -62,28 +73,18 @@ public class SQLRecipeTopic extends SQLDataBaseElement {
         return this.available;
     }
 
+
+
     @Override
-    public boolean save() {
-        try {
-            DatabaseConnection.getDataBase().addOrUpdate(this);
-            this.wasSaved();
-            return true;
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
-        return false;
+    public void save(Context context) {
+        AddOrUpdateToDB.addOrUpdate(context, this);
     }
 
     @Override
-    public void delete() {
+    public void delete(Context context) {
         Log.i(TAG, "delete");
-        try {
-            DatabaseConnection.getDataBase().remove(this);
-            Log.i(TAG, "delete: successful deleted");
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            Log.i(TAG, "delete: failed");
-        }
+        DeleteFromDB.remove(context,this);
+
     }
 
     @Override

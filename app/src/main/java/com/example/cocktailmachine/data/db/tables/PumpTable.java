@@ -61,7 +61,7 @@ public class PumpTable extends BasicColumn<SQLPump> {
             int mlpims = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NAME_MINIMUM_PUMP_VOLUME));
             long id = cursor.getLong(cursor.getColumnIndexOrThrow(_ID));
             SQLPump pump = new SQLPump(id, mlpims);
-            pump.setCurrentIngredient(i_id);
+            pump.preSetIngredient(i_id);
             return pump;
         }
 

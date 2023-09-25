@@ -17,7 +17,38 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textViewSettingsLists"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false"
+                android:linksClickable="false"
+                android:longClickable="false"
+                android:padding="8dp"
+                android:text="Einstellungen"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"  />
+
+            <TextView
+                android:id="@+id/textViewSettingsLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="login"
+                android:padding="8dp"
+                android:paddingStart="16dp"
+                android:text="Anmelden"
+                android:textSize="20sp" />
+            <TextView
+                android:id="@+id/textViewSettingsLogout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="logout"
+                android:padding="8dp"
+                android:paddingStart="16dp"
+                android:text="Abmelden"
+                android:textSize="20sp" />
+
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="48dp"
@@ -39,7 +70,6 @@
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/textViewSettingsIngredients"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="48dp"
@@ -50,7 +80,6 @@
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/textViewSettingsRecipes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="48dp"
@@ -61,7 +90,6 @@
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/textViewSettingsTopics"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="48dp"
@@ -72,7 +100,6 @@
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/textViewSettingsBluetooth"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="48dp"
@@ -83,7 +110,6 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/textViewSettingsSynchronisation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="48dp"
@@ -94,7 +120,6 @@
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/textViewSettingsBluetoothScan"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="48dp"
@@ -117,9 +142,18 @@
                 />
 
 
+            <TextView
+                android:id="@+id/textViewNeuKalibrieren"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="newCalibration"
+                android:padding="8dp"
+                android:paddingStart="16dp"
+                android:text="Neu Kalibrieren"
+                android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/textViewDB"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="48dp"
@@ -131,7 +165,6 @@
                 />
 
             <TextView
-                android:id="@+id/textViewSettingsLoadNew"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="48dp"

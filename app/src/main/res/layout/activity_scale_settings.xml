@@ -13,7 +13,17 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textViewSettingsCalibration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:clickable="false"
+            android:focusable="false"
+            android:linksClickable="false"
+            android:longClickable="false"
+            android:text="Waagenkalibrierung"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="48dp"
@@ -25,7 +35,6 @@
 
 
         <TextView
-            android:id="@+id/textViewSettingsScaleFactor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="48dp"
@@ -36,7 +45,6 @@
             android:textSize="20sp" />
 
         <TextView
-            android:id="@+id/textViewSettingsTareScale"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="48dp"

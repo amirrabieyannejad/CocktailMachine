@@ -26,7 +26,6 @@ import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
 
 
 import java.util.List;
@@ -74,7 +73,8 @@ public class Grafik extends AppCompatActivity {
 
         DatabaseConnection.initialize_singleton(this.getBaseContext());
 */
-        DatabaseConnection.initializeSingleton(this);
+        //DatabaseConnection.initializeSingleton(this);
+
         Integer idRecipe = 0;
 
         Ingredient tequila = new SQLIngredient(1,"Tequila", true, Color.RED);
@@ -83,9 +83,9 @@ public class Grafik extends AppCompatActivity {
 
 
         Recipe magarita = Recipe.makeNew("Margarita");
-        magarita.addOrUpdate(tequila, 8);
-        magarita.addOrUpdate(orangenlikör, 4);
-        magarita.addOrUpdate(limettensaft, 4);
+        magarita.add(this,tequila, 8);
+        magarita.add(this, orangenlikör, 4);
+        magarita.add(this, limettensaft, 4);
 
 
         List<Recipe> recipes = Recipe.getRecipes();

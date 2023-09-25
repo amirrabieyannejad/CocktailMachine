@@ -1,5 +1,6 @@
 package com.example.cocktailmachine.ui.model.v1;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -123,17 +124,17 @@ public class RowViews {
         }
 
 
-        void finishAdd(){
+        void finishAdd(Context context){
             if(checkBox.isChecked()){
                 try {
-                    add();
+                    add(context);
                 } catch (NotInitializedDBException e) {
                     e.printStackTrace();
                     error();
                 }
             }else{
                 try {
-                    delete();
+                    delete(context);
                 } catch (NotInitializedDBException e) {
                     e.printStackTrace();
                     error();
@@ -144,10 +145,10 @@ public class RowViews {
             loadLongListener();
         }
 
-        public boolean finishDelete(){
+        public boolean finishDelete(Context context){
             if(checkBox.isChecked()){
                 try {
-                    delete();
+                    delete(context);
                     checkBox.setVisibility(View.GONE);
                     checkBox.setChecked(false);
                     loadListener();
@@ -239,9 +240,9 @@ public class RowViews {
             Toast.makeText(itemView.getContext(), "Datenbankverbindungsfehler", Toast.LENGTH_SHORT).show();
         }
 
-        abstract void delete() throws NotInitializedDBException;
+        abstract void delete(Context context) throws NotInitializedDBException;
 
-        abstract void add() throws NotInitializedDBException;
+        abstract void add(Context context) throws NotInitializedDBException;
     }
 
     public static class RecipeRowView extends RowView {
@@ -262,13 +263,13 @@ public class RowViews {
             return b;
         }
 
-        void delete() throws NotInitializedDBException{
-            this.recipe.delete();
-            this.recipe.save();
+        void delete(Context context) throws NotInitializedDBException{
+            this.recipe.delete(context);
+            this.recipe.save(context);
         }
 
         @Override
-        void add() throws NotInitializedDBException {
+        void add(Context context) throws NotInitializedDBException {
             error();
         }
 
@@ -300,14 +301,14 @@ public class RowViews {
 
 
         @Override
-        void delete() throws NotInitializedDBException {
-            this.topic.delete();
+        void delete(Context context) throws NotInitializedDBException {
+            this.topic.delete(context);
         }
 
         @Override
-        void add() throws NotInitializedDBException {
+        void add(Context context) throws NotInitializedDBException {
             if(super.recipe!= null) {
-                super.recipe.addOrUpdate(topic);
+                super.recipe.add(context, topic);
             }
         }
     }
@@ -335,15 +336,15 @@ public class RowViews {
 
 
         @Override
-        void delete() throws NotInitializedDBException {
-            this.recipe.remove(topic);
+        void delete(Context context) throws NotInitializedDBException {
+            this.recipe.remove(context, topic);
         }
 
         @Override
-        void add() throws NotInitializedDBException {
+        void add(Context context) throws NotInitializedDBException {
             Log.i(TAG, "should not reach");
             if(super.recipe!= null) {
-                super.recipe.addOrUpdate(topic);
+                super.recipe.add(context, topic);
             }
         }
     }
@@ -370,14 +371,14 @@ public class RowViews {
 
 
         @Override
-        void delete() throws NotInitializedDBException {
-            this.ingredient.delete();
+        void delete(Context context) throws NotInitializedDBException {
+            this.ingredient.delete(context);
         }
 
         @Override
-        void add() throws NotInitializedDBException {
+        void add(Context context) throws NotInitializedDBException {
             if(super.recipe!= null) {
-                super.recipe.addOrUpdate(ingredient, -1);
+                super.recipe.add(context, ingredient, -1);
             }
         }
     }
@@ -411,14 +412,14 @@ public class RowViews {
         }
 
         @Override
-        void delete() throws NotInitializedDBException {
-            this.recipe.remove(ingredient);
+        void delete(Context context) throws NotInitializedDBException {
+            this.recipe.remove(context, ingredient);
         }
 
         @Override
-        void add() throws NotInitializedDBException {
+        void add(Context context) throws NotInitializedDBException {
             if(super.recipe!= null) {
-                super.recipe.addOrUpdate(ingredient, volume);
+                super.recipe.add(context, ingredient, volume);
             }
         }
     }
@@ -445,13 +446,13 @@ public class RowViews {
 
 
         @Override
-        void delete() throws NotInitializedDBException {
-            this.pump.delete();
-            this.pump.save();
+        void delete(Context context) throws NotInitializedDBException {
+            this.pump.delete(context);
+            this.pump.save(context);
         }
 
         @Override
-        void add() throws NotInitializedDBException {
+        void add(Context context) throws NotInitializedDBException {
             Log.i(TAG, "should not reach");
         }
     }

@@ -35,19 +35,19 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class DatabaseConnection extends SQLiteOpenHelper {
+class DatabaseConnection extends SQLiteOpenHelper {
     private static DatabaseConnection singleton = null;
     private static final String DBname = "DB";
     private static final String TAG = "DatabaseConnection";
     private static int version = 1;
     private static final SQLiteDatabase.CursorFactory factory = null;
     //private UserPrivilegeLevel privilege = UserPrivilegeLevel.User;
-    private List<Pump> pumps = new ArrayList<>();
-    private List<Ingredient> ingredients = new ArrayList<>();
-    private List<Recipe> recipes = new ArrayList<>();
-    private List<Topic> topics = new ArrayList<>();
-    private List<SQLIngredientPump> ingredientPumps = new ArrayList<>();
-    private List<SQLRecipeIngredient> recipeIngredients = new ArrayList<>();
+    //private List<Pump> pumps = new ArrayList<>();
+    //private List<Ingredient> ingredients = new ArrayList<>();
+    //private List<Recipe> recipes = new ArrayList<>();
+    //private List<Topic> topics = new ArrayList<>();
+    //private List<SQLIngredientPump> ingredientPumps = new ArrayList<>();
+    //private List<SQLRecipeIngredient> recipeIngredients = new ArrayList<>();
 
 
     private DatabaseConnection(@Nullable Context context) {
@@ -77,71 +77,68 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return DatabaseConnection.singleton;
     }
 
-    public static synchronized DatabaseConnection getDataBase() throws NotInitializedDBException {
+    static synchronized DatabaseConnection getDataBase() throws NotInitializedDBException {
         Log.i(TAG, "getDataBase");
         return DatabaseConnection.getSingleton();
     }
 
-    public static synchronized void initializeSingleton(Context context){
+    static synchronized void initializeSingleton(Context context){
         Log.i(TAG, "initialize_singleton");
         DatabaseConnection.singleton = new DatabaseConnection(context);
         try {
             Log.i(TAG, "initialize_singleton: start loading");
-            DatabaseConnection.singleton.emptyAll();
-            if(Dummy.isDummy) {
-                BasicRecipes.loadTopics();
-                BasicRecipes.loadIngredients();
-                //BasicRecipes.loadPumps();
-                BasicRecipes.loadMargarita();
-                BasicRecipes.loadLongIslandIceTea();
-            }
-            DatabaseConnection.singleton.checkAllAvailability();
-            DatabaseConnection.singleton.print();
+            DatabaseConnection.singleton.loadDummy(context);
+            Buffer.getSingleton().checkAllAvailability(context);
             Log.i(TAG, "initialize_singleton: finished loading");
-        } catch (NotInitializedDBException e) {
+        } catch (NotInitializedDBException|MissingIngredientPumpException e) {
             Log.i(TAG, "initialize_singleton: Exception");
+            Log.e(TAG, e.toString());
             e.printStackTrace();
         }
     }
 
-    public static synchronized void initializeSingleton(Context context, UserPrivilegeLevel privilege){
+    static synchronized void initializeSingleton(Context context, UserPrivilegeLevel privilege){
         Log.i(TAG, "initialize_singleton");
         DatabaseConnection.singleton = new DatabaseConnection(context, privilege);
         try {
             Log.i(TAG, "initialize_singleton: start loading");
-            DatabaseConnection.singleton.emptyAll();
-            if(Dummy.isDummy) {
-                BasicRecipes.loadTopics();
-                BasicRecipes.loadIngredients();
-                //BasicRecipes.loadPumps();
-                BasicRecipes.loadMargarita();
-                BasicRecipes.loadLongIslandIceTea();
-            }
-            DatabaseConnection.singleton.checkAllAvailability();
-            DatabaseConnection.singleton.print();
+            DatabaseConnection.singleton.loadDummy(context);
+            Buffer.getSingleton().checkAllAvailability(context);
             Log.i(TAG, "initialize_singleton: finished loading");
-        }  catch (NotInitializedDBException e) {
+        }  catch (NotInitializedDBException|MissingIngredientPumpException e) {
             Log.i(TAG, "initialize_singleton: Exception");
+            Log.e(TAG, e.toString());
             e.printStackTrace();
         }
     }
 
-    public static synchronized boolean isInitialized(){
+    private void loadDummy(Context context) throws NotInitializedDBException, MissingIngredientPumpException {
+        if(Dummy.isDummy) {
+            //DatabaseConnection.singleton.emptyAll();
+            BasicRecipes.loadTopics(context);
+            BasicRecipes.loadIngredients(context);
+            if(!Dummy.withSetCalibration) {
+                BasicRecipes.loadPumps(context);
+            }
+            BasicRecipes.loadMargarita(context);
+            BasicRecipes.loadLongIslandIceTea(context);
+        }
+    }
+
+
+    static synchronized boolean isInitialized(){
         Log.i(TAG, "is_initialized");
         return DatabaseConnection.singleton == null;
     }
 
-
-    //Refresher
-    //Local
-    public static synchronized void localRefresh() {
-        Log.i(TAG, "localRefresh");
-        try {
-            getDataBase().loadBufferWithAvailable();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
+    static synchronized DatabaseConnection init(Context context){
+        Log.i(TAG, "init");
+        DatabaseConnection.singleton = new DatabaseConnection(context);
+        return  DatabaseConnection.singleton;
     }
+
+
+
 
 
 
@@ -152,12 +149,17 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     //NewDatabaseConnection Overrides
 
+    /**
+     * deletes all Tables and creates all newly empty
+     * @author Johanna Reidt
+     */
     private void emptyAll(){
         Log.i(TAG, "emptyAll");
-        resetAll();
+        //resetAll();
         Tables.deleteAll(this.getWritableDatabase());
         Tables.createAll(this.getWritableDatabase());
     }
+    /*
     private void resetAll(){
         Log.i(TAG, "resetAll");
         this.ingredients = new ArrayList<>();
@@ -168,39 +170,22 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         this.recipes = new ArrayList<>();
     }
 
+
+     */
     /**
      * complety deletes table with ingredient pump connection
      */
-    public void emptyUpPumps() {
+    void emptyUpPumps() {
         Log.i(TAG, "emptyUpPumps");
         Tables.TABLE_INGREDIENT_PUMP.deleteTable(this.getWritableDatabase());
         Tables.TABLE_INGREDIENT_PUMP.createTable(this.getWritableDatabase());
-        this.ingredientPumps = new ArrayList<>();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            this.pumps.forEach(Pump::empty);
-            this.ingredients.forEach(Ingredient::empty);
-        }else {
-            Helper.emptyPump(this.pumps);
-            Helper.emptyIngredient(this.ingredients);
-        }
-        try {
-            this.checkAllAvailability();
-        } catch (NotInitializedDBException e) {
-            throw new RuntimeException(e);
-        }
     }
 
-    public void setUpEmptyPumps() {
+    void setUpEmptyPumps() {
         Log.i(TAG, "setUpEmptyPumps");
         this.emptyUpPumps();
         Tables.TABLE_PUMP.deleteTable(this.getWritableDatabase());
         Tables.TABLE_PUMP.createTable(this.getWritableDatabase());
-        this.pumps = new ArrayList<>();
-        try {
-            this.checkAllAvailability();
-        } catch (NotInitializedDBException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -220,61 +205,27 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
 
 
-    public void loadForSetUp() {
+    void loadForSetUp() {
         Log.i(TAG, "loadForSetUp");
         this.setUpEmptyPumps();
         //this.ingredients = this.loadAllIngredients();
     }
 
-    private List<Ingredient> loadAllIngredients() {
+    /**
+     * Loads all ingredients from db
+     * @author Johanna Reidt
+     * @return
+     */
+    List<Ingredient> loadAllIngredients() {
         Log.i(TAG, "loadAllIngredients");
 
         List<? extends Ingredient> res = Tables.TABLE_INGREDIENT.getAllElements(this.getReadableDatabase());
         return (List<Ingredient>) res;
     }
 
-    public void loadBufferWithAvailable() {
-        Log.i(TAG, "loadBufferWithAvailable");
-        resetAll();
-        this.ingredients = this.loadAllIngredients();
-        Log.i(TAG, "loadBufferWithAvailable: all Ingredients: "+this.ingredients.toString());
-        this.pumps = this.loadPumps();
-        Log.i(TAG, "loadBufferWithAvailable: all Pumps: "+this.pumps.toString());
-        this.topics = this.loadTopics();
-        Log.i(TAG, "loadBufferWithAvailable: Topics: "+this.topics.toString());
-        this.ingredientPumps = this.loadIngredientPumps();
-        Log.i(TAG, "loadBufferWithAvailable: all IngredientPumps: "+this.ingredientPumps.toString());
-        this.recipeIngredients = this.loadIngredientVolumes();
-        Log.i(TAG, "loadBufferWithAvailable: all recipeIngredients: "+this.recipeIngredients.toString());
-        this.recipes = this.loadAllRecipes();
-        Log.i(TAG, "loadBufferWithAvailable: all Recipes: "+this.recipes.toString());
-        //this.loadAvailabilityForIngredients();
-        //Log.i(TAG, "loadBufferWithAvailable: no admin Ingredients: "+this.ingredients.toString());
-        //this.loadAvailabilityForRecipes();
-        //Log.i(TAG, "loadBufferWithAvailable: no admin AvailableRecipes: "+this.recipes.toString());
-
-        try {
-            this.checkAllAvailability();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            Log.i(TAG, "loadBufferWithAvailable: checkAllAvailability: saving of one instance failed");
-        }
-        Log.i(TAG, "loadBufferWithAvailable: finished now print");
-        print();
-    }
-
-    private void print(){
-        Log.i(TAG, "print");
-        Log.i(TAG, "print ingredients: "+this.ingredients);
-        Log.i(TAG, "print pumps: "+this.pumps);
-        Log.i(TAG, "print ingredientPumps: "+this.ingredientPumps);
-        Log.i(TAG, "print topics: "+this.topics);
-        Log.i(TAG, "print recipeIngredients: "+this.recipeIngredients);
-        Log.i(TAG, "print recipes: "+this.recipes);
-    }
 
     /*
-    public List<Recipe> loadAvailabilityForRecipes() {
+    List<Recipe> loadAvailabilityForRecipes() {
         Log.i(TAG, "loadAvailableRecipes");
         //return (List<Recipe>) Tables.TABLE_RECIPE.getAvailable(this.getReadableDatabase() );
         List<Recipe> res = new ArrayList<>();
@@ -288,7 +239,12 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
      */
 
-    public List<Recipe> loadAllRecipes() {
+    /**
+     * loads all recipes from db
+     * @author Johanna Reidt
+     * @return
+     */
+    List<Recipe> loadAllRecipes() {
         Log.i(TAG, "loadAllRecipes");
         List<? extends Recipe> res =  Tables.TABLE_RECIPE.getAllElements(this.getReadableDatabase());
         return (List<Recipe>) res;
@@ -299,7 +255,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
      * @return available ingredients
      */
     /*
-    public List<Ingredient> loadAvailabilityForIngredients() {
+    List<Ingredient> loadAvailabilityForIngredients() {
         Log.i(TAG, "loadAvailableIngredients");
        // return IngredientTable.
         /*
@@ -321,66 +277,62 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     */
 
 
-    private List<SQLIngredientPump> loadIngredientPumps() {
+    /**
+     *
+     * loads ingredient pump from db
+     * @author Johanna Reidt
+     * @return
+     */
+    List<SQLIngredientPump> loadIngredientPumps() {
         Log.i(TAG, "loadIngredientPumps");
         // return IngredientTable.
         return Tables.TABLE_INGREDIENT_PUMP.getAllElements(this.getReadableDatabase());
     }
 
-    private List<Pump> loadPumps() {
+    /**
+     * loads pumps from db
+     * @author Johanna Reidt
+     * @return
+     */
+    List<Pump> loadPumps() {
         Log.i(TAG, "loadPumps");
         // return IngredientTable.
         List<? extends Pump> res = Tables.TABLE_PUMP.getAllElements(this.getReadableDatabase());
         return (List<Pump>) res;
     }
 
-    private List<Topic> loadTopics() {
+    /**
+     * loads topics from db
+     * @author Johanna Reidt
+     * @return
+     */
+    List<Topic> loadTopics() {
         Log.i(TAG, "loadTopics");
         //return
         List<? extends Topic> res = Tables.TABLE_TOPIC.getAllElements(this.getReadableDatabase());
         return (List<Topic>) res;
     }
 
-    private List<SQLRecipeIngredient> loadIngredientVolumes(){
+    /**
+     * load ingr vol/ ingr recipe connection from db
+     * @author Johanna Reidt
+     * @return
+     */
+    List<SQLRecipeIngredient> loadIngredientVolumes(){
         Log.i(TAG, "loadIngredientVolumes");
         //return Tables.TABLE_RECIPE_INGREDIENT.getAvailable(this.getReadableDatabase(), this.recipes);
         return Tables.TABLE_RECIPE_INGREDIENT.getAllElements(this.getReadableDatabase());
 
     }
 
-    public Ingredient loadIngredient(long id) throws AccessDeniedException {
-        Log.i(TAG, "loadIngredient");
-        if(!AdminRights.isAdmin()){
-            throw  new AccessDeniedException();
-        }
-        return Tables.TABLE_INGREDIENT.getElement(this.getReadableDatabase(), id);
-    }
-
-    public Ingredient loadIngredientForPump(long id) {
-        Log.i(TAG, "loadIngredientForPump");
-        return Tables.TABLE_INGREDIENT.getElement(this.getReadableDatabase(), id);
-    }
-
-    public Recipe loadRecipe(long id) throws AccessDeniedException {
-        Log.i(TAG, "loadRecipe");
-        if(!AdminRights.isAdmin()){
-            throw  new AccessDeniedException();
-        }
-        Recipe res =  Tables.TABLE_RECIPE.getElement(this.getReadableDatabase(), id);
-        res.loadAvailable();
-        return res;
-    }
-
-    public Topic loadTopic(long id) throws AccessDeniedException {
-        Log.i(TAG, "loadTopic");
-        if(!AdminRights.isAdmin()){
-            throw  new AccessDeniedException();
-        }
-        return Tables.TABLE_TOPIC.getElement(this.getReadableDatabase(), id);
+    List<SQLRecipeTopic> loadRecipeTopic(){
+        Log.i(TAG, "loadIngredientVolumes");
+        //return Tables.TABLE_RECIPE_INGREDIENT.getAvailable(this.getReadableDatabase(), this.recipes);
+        return Tables.TABLE_RECIPE_TOPIC.getAllElements(this.getReadableDatabase());
     }
 
     /*
-    public void checkForAvailablityInRecipes(){
+    void checkForAvailablityInRecipes(){
         for(Recipe r: this.recipes){
             r.isAvailable();
         }
@@ -392,7 +344,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     //CHECKER
 /*
-    public boolean checkAvailabilityOfAllIngredients(HashMap<Long, Integer> ingredientVolume) {
+    boolean checkAvailabilityOfAllIngredients(HashMap<Long, Integer> ingredientVolume) {
         Log.i(TAG, "checkAvailabilityOfAllIngredients");
         final List<Boolean> availables = new ArrayList<>();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -409,28 +361,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     /**
      * load all availabilities
      */
-    private void checkAllAvailability() throws NotInitializedDBException {
-        //TO DO: checkAllAvailability
-        Log.i(TAG, "checkAllAvailability");
-        Log.i(TAG, "checkAllAvailability: pumps");
-        for(Pump p: this.pumps){
-            p.loadAvailable();//loads ingredient pump connection if exists
-            p.save();
-        }
-        Log.i(TAG, "checkAllAvailability: pumps: "+this.pumps);
-        Log.i(TAG, "checkAllAvailability: ingredients");
-        for(Ingredient i: this.ingredients){
-            i.loadAvailable();//loads ingredient pump connection if exists
-            i.save();
-        }
-        Log.i(TAG, "checkAllAvailability: ingredients: "+this.ingredients);
-        Log.i(TAG, "checkAllAvailability: recipes");
-        for(Recipe r: this.recipes){
-            r.loadAvailable();
-            r.save();
-        }
-        Log.i(TAG, "checkAllAvailability: recipes: "+this.recipes);
-    }
+
 
 
 
@@ -442,6 +373,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
     //GETTER //Not allowed to fetch from database !!!only!!! from buffer unless they are admins
 
+    /*
     private List<Long> getAvailableIngredientIDs(){
         Log.i(TAG, "getAvailableIngredientIDs");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -452,17 +384,25 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return Helper.getIngredientIds(this.ingredientPumps);
     }
 
-    public List<SQLIngredientPump> getIngredientPumps() {
+     */
+    /*
+    List<SQLIngredientPump> getIngredientPumps() {
         Log.i(TAG, "getIngredientPumps");
         return this.ingredientPumps;
     }
 
-    public List<Pump> getPumps() {
+
+     */
+    /*
+    List<Pump> getPumps() {
         Log.i(TAG, "getPumps");
         return this.pumps;
     }
 
-    public Pump getPump(Long id){
+
+     */
+    /*
+    Pump getPump(Long id){
         Log.i(TAG, "getPump");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.pumps.stream().filter(p->p.getID()==id).findFirst().orElse(null);
@@ -470,8 +410,11 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return Helper.getPumpHelper().getWithId(this.pumps, id);
     }
 
+
+     */
+    /*
     @Nullable
-    public Pump getPumpWithSlot(int slot) {
+    Pump getPumpWithSlot(int slot) {
         for(Pump p: this.pumps){
             if(p.getSlot()==slot){
                 return p;
@@ -480,7 +423,10 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return null;
     }
 
-    public Ingredient getIngredient(Long id) {
+
+     */
+    /*
+    Ingredient getIngredient(Long id) {
         Log.i(TAG, "getIngredient");
         Ingredient ingredient;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
@@ -500,7 +446,10 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return ingredient;
     }
 
-    public List<Ingredient> getIngredients(List<Long> ingredients) {
+     */
+
+    /*
+    List<Ingredient> getIngredients(List<Long> ingredients) {
         Log.i(TAG, "getIngredients");
         if(AdminRights.isAdmin()) {
             List<Ingredient> res = new ArrayList<>();
@@ -521,7 +470,10 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         }
     }
 
-    public Recipe getRecipe(Long id) {
+
+     */
+    /*
+    Recipe getRecipe(Long id) {
         Log.i(TAG, "getRecipe");
         if(AdminRights.isAdmin()){
             for(Recipe r: this.recipes){
@@ -555,10 +507,13 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         }
 
          */
+    /*
         return null;
     }
+    */
+    /*
 
-    public List<Recipe> getRecipes(List<Long> recipeIds) {
+    List<Recipe> getRecipes(List<Long> recipeIds) {
         Log.i(TAG, "getRecipes");
         if(AdminRights.isAdmin()) {
             List<Recipe> res = new ArrayList<>();
@@ -579,7 +534,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         }
     }
 
-    public List<Recipe> getRecipeWith(String needle) {
+    List<Recipe> getRecipeWith(String needle) {
         Log.i(TAG, "getRecipeWith");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.recipes.stream().filter(i->i.getName().contains(needle)).collect(Collectors.toList());
@@ -587,7 +542,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return Helper.recipesWithNeedleInName(this.recipes, needle);
     }
 
-    public Recipe getRecipeWithExact(String name) {
+    Recipe getRecipeWithExact(String name) {
         Log.i(TAG, "getRecipeWithExact");
         List<Recipe> recipes;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -601,11 +556,12 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return recipes.get(0);
 
     }
+    */
 
 
 
-
-    public List<Ingredient> getIngredientWith(String needle) {
+    /*
+    List<Ingredient> getIngredientWith(String needle) {
         Log.i(TAG, "getIngredientWith");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.ingredients.stream().filter(i->i.getName().contains(needle)).collect(Collectors.toList());
@@ -613,7 +569,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return Helper.ingredientWithNeedleInName(this.ingredients, needle);
     }
 
-    public List<Ingredient> getIngredientsWithExact(String name) {
+    List<Ingredient> getIngredientsWithExact(String name) {
         Log.i(TAG, "getIngredientsWithExact");
         List<Ingredient> res;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -634,7 +590,7 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return res;
     }
 
-    public Ingredient getIngredientWithExact(String name) {
+    Ingredient getIngredientWithExact(String name) {
         Log.i(TAG, "getIngredientWithExact");
         List<Ingredient> res = getIngredientsWithExact(name);
         if(res.isEmpty()){
@@ -645,13 +601,13 @@ public class DatabaseConnection extends SQLiteOpenHelper {
     }
 
 
-    public List<? extends Ingredient> getAllIngredients() {
+    List<? extends Ingredient> getAllIngredients() {
         Log.i(TAG, "getAllIngredients");
         return ingredients;
     }
 
 
-    public List<? extends Ingredient> getAvailableIngredients() {
+    List<? extends Ingredient> getAvailableIngredients() {
         Log.i(TAG, "getAvailableIngredients");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.ingredients.stream().filter(Ingredient::isAvailable).collect(Collectors.toList());
@@ -659,10 +615,12 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return Helper.getIngredientHelper().getAvailable(this.ingredients);
     }
 
+     */
 
 
 
-    public List<? extends Recipe> getRecipes() {
+    /*
+    List<? extends Recipe> getRecipes() {
         Log.i(TAG, "getRecipes");
         if (AdminRights.isAdmin()) {
             return this.recipes;
@@ -670,8 +628,13 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return this.getAvailableRecipes();
     }
 
+    List<? extends Recipe> getAllRecipes() {
+        Log.i(TAG, "getRecipes");
+        return this.recipes;
+    }
 
-    public List<? extends Recipe> getAvailableRecipes() {
+
+    List<? extends Recipe> getAvailableRecipes() {
         Log.i(TAG, "getAvailableRecipes");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return this.recipes.stream().filter(Recipe::isAvailable).collect(Collectors.toList());
@@ -679,25 +642,27 @@ public class DatabaseConnection extends SQLiteOpenHelper {
         return Helper.getRecipeHelper().getAvailable(this.recipes);
     }
 
+     */
 
 
 
-    public List<String> getUrls(SQLIngredient newSQLIngredient) {
+
+    List<String> getUrls(SQLIngredient newSQLIngredient) {
         Log.i(TAG, "getUrls");
         return Tables.TABLE_INGREDIENT_URL.getUrls(this.getReadableDatabase(), newSQLIngredient.getID());
     }
 
-    public List<SQLIngredientImageUrlElement> getUrlElements(SQLIngredient newSQLIngredient) {
+    List<SQLIngredientImageUrlElement> getUrlElements(SQLIngredient newSQLIngredient) {
         Log.i(TAG, "getUrlElements");
         return Tables.TABLE_INGREDIENT_URL.getElements(this.getReadableDatabase(), newSQLIngredient.getID());
     }
 
-    public List<String> getUrls(SQLRecipe newSQLRecipe) {
+    List<String> getUrls(SQLRecipe newSQLRecipe) {
         Log.i(TAG, "getUrls");
         return Tables.TABLE_RECIPE_URL.getUrls(this.getReadableDatabase(), newSQLRecipe.getID());
     }
 
-    public List<SQLRecipeImageUrlElement> getUrlElements(SQLRecipe newSQLRecipe) {
+    List<SQLRecipeImageUrlElement> getUrlElements(SQLRecipe newSQLRecipe) {
         Log.i(TAG, "getUrlElements");
         return Tables.TABLE_RECIPE_URL.getElements(this.getReadableDatabase(), newSQLRecipe.getID());
     }
@@ -705,152 +670,6 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
 
 
-    private List<Topic> getTopics(List<Long> t_ids) {
-        Log.i(TAG, "getTopics");
-        //return Tables.TABLE_TOPIC.getElements(this.getReadableDatabase(), t_ids);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return this.topics.stream().filter(t -> t_ids.contains(t.getID())).collect(Collectors.toList());
-        }
-        List<Topic> topics = new ArrayList<>();
-        for(int i=0; i<this.topics.size(); i++){
-            if(t_ids.contains(this.topics.get(i).getID()) ){
-                topics.add(this.topics.get(i));
-            }
-
-        }
-        return topics;
-    }
-
-    public List<Topic> getTopics(SQLRecipe newSQLRecipe) {
-        Log.i(TAG, "getTopics");
-        return this.getTopics(newSQLRecipe.getTopics());
-    }
-
-    public Topic getTopic(long id) {
-        Log.i(TAG, "getTopic");
-        Topic topic = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            topic = this.topics.stream().filter(t-> t.getID()==id).findFirst().orElse(null);
-        }else{
-            topic = Helper.gettopichelper().getWithId(this.topics, id);
-        }
-        if(AdminRights.isAdmin() && topic==null){
-            try {
-                return this.loadTopic(id);
-            } catch (AccessDeniedException e) {
-                e.printStackTrace();
-            }
-        }
-        return topic;
-    }
-
-    public List<Topic> getTopicsWith(String needle) {
-        Log.i(TAG, "getTopicsWith");
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            Log.i(TAG, "getTopicsWith high version");
-            return this.topics.stream().filter(t -> t.getName().contains(needle)).collect(Collectors.toList());
-        } else {
-            Log.i(TAG, "getTopicsWith low version");
-            return Helper.topicWithNeedleInName(this.topics, needle);
-        }
-    }
-
-    public List<Topic> getTopicsWithExact(String name) {
-        Log.i(TAG, "getTopicsWithExact");
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            return this.topics.stream().filter(t -> t.getName().equals(name)).collect(Collectors.toList());
-        } else {
-            return Helper.topicWithName(this.topics, name);
-        }
-    }
-
-    /**
-     * get topic wit needle
-     * @param needle
-     * @return
-     */
-    public Topic getTopicWith(String needle) {
-        Log.i(TAG, "getTopicWith");
-        return getTopicWith(needle, false);
-    }
-
-    /**
-     * get topic wit needle or make new, if true
-     * @param needle
-     * @return
-     */
-    public Topic getTopicWith(String needle, boolean makeNew) {
-        Log.i(TAG, "getTopicWith");
-        List<Topic> ts = getTopicsWith(needle);
-        if(!ts.isEmpty()){
-            Log.i(TAG, "getTopicWith not isEmpty");
-            return ts.get(0);
-        }
-        if(makeNew) {
-            Log.i(TAG, "getTopicWith makeNew");
-            return Topic.makeNew(needle, "Füll bitte bei Gelegenheit aus!");
-        }else{
-            Log.i(TAG, "getTopicWith return null");
-            return null;
-        }
-    }
-
-    /**
-     * get topic with exact this name or null
-     * @param name
-     * @return
-     */
-    public Topic getTopicWithExact(String name) {
-        Log.i(TAG, "getTopicWithExact");
-        return getTopicWithExact(name, false);
-    }
-
-    /**
-     * get topic with exact this name or make one, if makeNew
-     * @param name
-     * @param makeNew
-     * @return
-     */
-    public Topic getTopicWithExact(String name, boolean makeNew) {
-        Log.i(TAG, "getTopicWithExact");
-        List<Topic> ts = getTopicsWithExact(name);
-        if(!ts.isEmpty()){
-            return ts.get(0);
-        }
-        if(makeNew) {
-            return Topic.makeNew(name, "Füll bitte bei Gelegenheit aus!");
-        }
-        return null;
-    }
-
-    public List<Topic> getTopics(Recipe recipe) {
-        Log.i(TAG, "getTopics");
-        return this.getTopics(recipe.getTopics());
-    }
-
-    public List<Topic> getTopics() {
-        Log.i(TAG, "getTopics");
-        return this.topics;
-    }
-
-    public List<Long> getTopicIDs(SQLRecipe newSQLRecipe) {
-        Log.i(TAG, "getTopicIDs");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return this.getTopics(newSQLRecipe).stream().map(Topic::getID).collect(Collectors.toList());
-        }
-        return Helper.gettopichelper().getIds(this.getTopics(newSQLRecipe));
-    }
-
-    public List<SQLRecipeIngredient> getIngredientVolumes(SQLRecipe newSQLRecipe) {
-        Log.i(TAG, "getIngredientVolumes");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return this.recipeIngredients
-                    .stream()
-                    .filter(r->r.getRecipeID()==newSQLRecipe.getID())
-                    .collect(Collectors.toList());
-        }
-        return Helper.getWithRecipeID(this.recipeIngredients, newSQLRecipe.getID());
-    }
 
 
 
@@ -860,272 +679,9 @@ public class DatabaseConnection extends SQLiteOpenHelper {
 
 
 
-    //ADD OR UPDATE
-    public void addIngredientImageUrl(long ingredientId, String url) {
-        Log.i(TAG, "addIngredientImageUrl");
-        // this.getWritableDatabase().
-        Tables.TABLE_INGREDIENT_URL.addElement(this.getWritableDatabase(),ingredientId, url);
-    }
-
-    public void addOrUpdate(SQLIngredient ingredient) {
-        Log.i(TAG, "addOrUpdate: "+ingredient.toString());
-        if(ingredient.isSaved() && ingredient.needsUpdate()){
-            Log.i(TAG, "was saved and needs update");
-            Tables.TABLE_INGREDIENT.updateElement(this.getWritableDatabase(), ingredient);
-        }else if(ingredient.isSaved() && !ingredient.needsUpdate()){
-            Log.i(TAG, "was saved and needs no update");
-        }else{
-            Log.i(TAG, "first time saving");
-            ingredient.setID(Tables.TABLE_INGREDIENT.addElement(this.getWritableDatabase(), ingredient));
-            this.ingredients.add(ingredient);
-        }
-
-    }
-
-    public void addOrUpdate(SQLRecipe recipe) {
-        Log.i(TAG, "addOrUpdate: "+recipe.toString());
-        if(recipe.isSaved() && recipe.needsUpdate()){
-            Log.i(TAG, "was saved and needs update");
-            Tables.TABLE_RECIPE.updateElement(this.getWritableDatabase(), recipe);
-        }else if(recipe.isSaved() && !recipe.needsUpdate()){
-            Log.i(TAG, "was saved and needs no update");
-        }else{
-            Log.i(TAG, "first time saving");
-            recipe.setID(Tables.TABLE_RECIPE.addElement(this.getWritableDatabase(), recipe));
-            this.recipes.add(recipe);
-        }
-    }
-
-    public void addOrUpdate(SQLTopic topic) {
-        Log.i(TAG, "addOrUpdate: "+topic.toString());
-        if(topic.isSaved() && topic.needsUpdate()){
-            Log.i(TAG, "was saved and needs update");
-            Tables.TABLE_TOPIC.updateElement(this.getWritableDatabase(), topic);
-        }else if(topic.isSaved() && !topic.needsUpdate()){
-            Log.i(TAG, "was saved and needs no update");
-        }else{
-            Log.i(TAG, "first time saving");
-            topic.setID(Tables.TABLE_TOPIC.addElement(this.getWritableDatabase(), topic));
-            this.topics.add(topic);
-        }
-    }
-
-    public void addOrUpdate(SQLPump pump) {
-        Log.i(TAG, "addOrUpdate: "+pump.toString());
-        if(pump.isSaved() && pump.needsUpdate()){
-            Log.i(TAG, "was saved and needs update");
-            Tables.TABLE_PUMP.updateElement(this.getWritableDatabase(), pump);
-        }else if(pump.isSaved() && !pump.needsUpdate()){
-            Log.i(TAG, "was saved and needs no update");
-        }else{
-            Log.i(TAG, "first time saving");
-            pump.setID(Tables.TABLE_PUMP.addElement(this.getWritableDatabase(), pump));
-            this.pumps.add(pump);
-        }
-    }
-
-    public void addOrUpdate(SQLRecipeTopic recipeTopic) {
-        Log.i(TAG, "addOrUpdate: "+recipeTopic.toString());
-        if(recipeTopic.isSaved() && recipeTopic.needsUpdate()){
-            Log.i(TAG, "was saved and needs update");
-            Tables.TABLE_RECIPE_TOPIC.updateElement(this.getWritableDatabase(), recipeTopic);
-        }else if(recipeTopic.isSaved() && !recipeTopic.needsUpdate()){
-            Log.i(TAG, "was saved and needs no update");
-        }else{
-            Log.i(TAG, "first time saving");
-            recipeTopic.setID(Tables.TABLE_RECIPE_TOPIC.addElement(this.getWritableDatabase(), recipeTopic));
-        }
-    }
-
-    public void addOrUpdate(SQLIngredientPump ingredientPump) {
-        Log.i(TAG, "addOrUpdate: "+ingredientPump);
-        if(ingredientPump.isSaved() && ingredientPump.needsUpdate()){
-            Log.i(TAG, "was saved and needs update");
-            Tables.TABLE_INGREDIENT_PUMP.updateElement(this.getWritableDatabase(), ingredientPump);
-            //this.ingredientPumps.remove(ingredientPump);
-        }else if(ingredientPump.isSaved() && !ingredientPump.needsUpdate()){
-            Log.i(TAG, "was saved and needs no update");
-        }else{
-            Log.i(TAG, "first time saving");
-            ingredientPump.setID(Tables.TABLE_INGREDIENT_PUMP.addElement(this.getWritableDatabase(), ingredientPump));
-            this.ingredientPumps.add(ingredientPump);
-        }
-    }
-
-    public void addOrUpdate(SQLRecipeIngredient recipeIngredient) {
-        Log.i(TAG, "addOrUpdate: "+recipeIngredient.toString());
-        if(recipeIngredient.isSaved() && recipeIngredient.needsUpdate()){
-            Log.i(TAG, "was saved and needs update");
-            Tables.TABLE_RECIPE_INGREDIENT.updateElement(this.getWritableDatabase(), recipeIngredient);
-            //this.recipeIngredients.remove(recipeIngredient);
-        }else if(recipeIngredient.isSaved() && !recipeIngredient.needsUpdate()){
-            Log.i(TAG, "was saved and needs no update");
-        }else{
-            Log.i(TAG, "first time saving");
-            recipeIngredient.setID(Tables.TABLE_RECIPE_INGREDIENT.addElement(this.getWritableDatabase(), recipeIngredient));
-            this.recipeIngredients.add(recipeIngredient);
-        }
-    }
-
-    public void addOrUpdate(SQLRecipeImageUrlElement recipeImageUrlElement) {
-        Log.i(TAG, "addOrUpdate: "+recipeImageUrlElement.toString());
-        if(recipeImageUrlElement.isSaved() && recipeImageUrlElement.needsUpdate()){
-            Log.i(TAG, "was saved and needs update");
-            Tables.TABLE_RECIPE_URL.updateElement(this.getWritableDatabase(), recipeImageUrlElement);
-        }else if(recipeImageUrlElement.isSaved() && !recipeImageUrlElement.needsUpdate()){
-            Log.i(TAG, "was saved and needs no update");
-        }else{
-            Log.i(TAG, "first time saving");
-            recipeImageUrlElement.setID(Tables.TABLE_RECIPE_URL.addElement(this.getWritableDatabase(), recipeImageUrlElement));
-        }
-    }
-
-    public void addOrUpdate(SQLIngredientImageUrlElement ingredientImageUrlElement) {
-        Log.i(TAG, "addOrUpdate: "+ingredientImageUrlElement);
-        if(ingredientImageUrlElement.isSaved() && ingredientImageUrlElement.needsUpdate()){
-            Log.i(TAG, "was saved and needs update");
-            Tables.TABLE_INGREDIENT_URL.updateElement(this.getWritableDatabase(), ingredientImageUrlElement);
-        }else if(ingredientImageUrlElement.isSaved() && !ingredientImageUrlElement.needsUpdate()){
-            Log.i(TAG, "was saved and needs no update");
-        }else{
-            Log.i(TAG, "first time saving");
-            ingredientImageUrlElement.setID(
-                    Tables.TABLE_INGREDIENT_URL.addElement(
-                            this.getWritableDatabase(),
-                            ingredientImageUrlElement));
-        }
-    }
 
 
 
-    //REMOVE in DB and buffer
-    public void removeRecipe(long id) {
-        Log.i(TAG, "removeRecipe");
-        Tables.TABLE_RECIPE.deleteElement(this.getWritableDatabase(), id);
-        Tables.TABLE_RECIPE_URL.deleteWithOwnerId(this.getWritableDatabase(), id);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            this.recipes.removeIf(i->i.getID()==id);
-        }else {
-            this.recipes = Helper.getRecipeHelper().removeIf(this.recipes, id);
-        }
-    }
-
-    public void removeIngredient(long id) {
-        Log.i(TAG, "removeIngredient");
-        Tables.TABLE_INGREDIENT.deleteElement(this.getWritableDatabase(), id);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            this.ingredients.removeIf(i->i.getID()==id);
-            this.ingredientPumps.removeIf(ip->ip.getIngredientID()== id);
-        }else {
-            this.ingredients = Helper.getIngredientHelper().removeIfAndDelete(this.ingredients, id);
-            //this.ingredientPumps =
-            Helper.removeIfIngredientID(this.ingredientPumps, id);
-
-        }
-        Tables.TABLE_INGREDIENT_URL.deleteWithOwnerId(this.getWritableDatabase(), id);
-    }
-
-    public void removePump(long id) {
-        Log.i(TAG, "removePump");
-        Tables.TABLE_PUMP.deleteElement(this.getWritableDatabase(), id);
-        Tables.TABLE_INGREDIENT_PUMP.deletePump(this.getWritableDatabase(), id);
-        // .deletePump(this.getWritableDatabase(), pump.getID());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            this.pumps.removeIf(i->i.getID()== id);
-            this.ingredientPumps.removeIf(ip->ip.getPumpID()== id);
-        }else{
-            this.pumps = Helper.getPumpHelper().removeIf(this.pumps, id);
-            //this.ingredientPumps =
-            Helper.removeIfPumpID(this.ingredientPumps, id);
-            /*
-            List<SQLIngredientPump> toBeDeleted = new ArrayList<>();
-            for(SQLIngredientPump ip: this.ingredientPumps){
-                if(ip.getPumpID() == id) {
-                    toBeDeleted.add(ip);
-                }
-            }
-            for(SQLIngredientPump ip: toBeDeleted){
-                try {
-                    ip.delete();
-                } catch (NotInitializedDBException e) {
-                    e.printStackTrace();
-                }
-            }
-            this.ingredientPumps.removeAll(toBeDeleted);
-            //return elements;
-
-             */
-        }
-    }
-
-
-    public void remove(Ingredient ingredient) {
-        Log.i(TAG, "remove");
-        Tables.TABLE_INGREDIENT.deleteElement(this.getWritableDatabase(), ingredient.getID());
-        this.ingredients.remove(ingredient);
-    }
-
-    public void remove(Recipe recipe) {
-        Log.i(TAG, "remove");
-        Tables.TABLE_RECIPE.deleteElement(this.getWritableDatabase(), recipe.getID());
-        Tables.TABLE_RECIPE_URL.deleteWithOwnerId(this.getWritableDatabase(), recipe.getID());
-        this.recipes.remove(recipe);
-    }
-
-    public void remove(Pump pump) {
-        Log.i(TAG, "remove");
-
-        Tables.TABLE_PUMP.deleteElement(this.getWritableDatabase(), pump.getID());
-        Tables.TABLE_INGREDIENT_PUMP.deletePump(this.getWritableDatabase(), pump.getID());
-        this.pumps.remove(pump);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            this.ingredientPumps.removeIf(ip->ip.getPumpID()==pump.getID());
-        }else {
-            this.ingredientPumps = Helper.removeIfPumpID(this.ingredientPumps, pump.getID());
-        }
-
-    }
-
-
-    public void remove(SQLRecipeTopic newSQLRecipeTopic) {
-        Log.i(TAG, "remove");
-        Tables.TABLE_RECIPE_TOPIC.deleteElement(this.getWritableDatabase(), newSQLRecipeTopic);
-    }
-
-    public void remove(SQLTopic topic) {
-        Log.i(TAG, "remove");
-        Tables.TABLE_TOPIC.deleteElement(this.getWritableDatabase(), topic);
-        this.topics.remove(topic);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            this.recipes.forEach(r -> r.removeTopic(topic.getID()));
-        }else {
-            for (Recipe r : this.recipes) {
-                r.remove(topic);
-            }
-        }
-    }
-
-    public void remove(SQLRecipeIngredient recipeIngredient) {
-        Log.i(TAG, "remove");
-        Tables.TABLE_RECIPE_INGREDIENT.deleteElement(this.getWritableDatabase(),recipeIngredient);
-        this.recipeIngredients.remove(recipeIngredient);
-    }
-
-    public void remove(SQLIngredientPump ingredientPump) {
-        Log.i(TAG, "remove");
-        Tables.TABLE_INGREDIENT_PUMP.deleteElement(this.getWritableDatabase(), ingredientPump);
-        this.ingredientPumps.remove(ingredientPump);
-    }
-
-    public void remove(SQLRecipeImageUrlElement recipeImageUrlElement) {
-        Log.i(TAG, "remove");
-        Tables.TABLE_RECIPE_URL.deleteElement(this.getWritableDatabase(),recipeImageUrlElement);
-    }
-
-    public void remove(SQLIngredientImageUrlElement ingredientImageUrlElement) {
-        Log.i(TAG, "remove");
-        Tables.TABLE_INGREDIENT_URL.deleteElement(this.getWritableDatabase(),ingredientImageUrlElement);
-    }
 
 
 

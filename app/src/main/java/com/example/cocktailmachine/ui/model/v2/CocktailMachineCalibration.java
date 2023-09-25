@@ -1,14 +1,13 @@
 package com.example.cocktailmachine.ui.model.v2;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.example.cocktailmachine.data.CocktailMachine;
-import com.example.cocktailmachine.data.Pump;
-import com.example.cocktailmachine.data.Topic;
+import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.enums.AdminRights;
+import com.example.cocktailmachine.data.enums.Postexecute;
 
 import org.json.JSONException;
 
@@ -21,9 +20,10 @@ import java.util.Random;
  */
 public class CocktailMachineCalibration {
     private static final String TAG = "CocktailMachineCalibr" ;
-    private static boolean isDone = false;
+    private static boolean isDone = true;
 
     public static void start(Activity activity) {
+        Buffer.loadForSetUp(activity);
         AdminRights.login(activity, activity.getLayoutInflater(), dialog -> {
             dialog.dismiss();
             try {

@@ -14,12 +14,12 @@ import android.view.View;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.SingeltonTestdata;
+import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Orientation;
 import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.logic.FlingAnalysis;
 
@@ -50,6 +50,7 @@ public class SingleCocktailChoice extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_cocktail_choice);
 
+        /*
         if(!DatabaseConnection.isInitialized()) {
             Log.i(TAG, "onCreate: DataBase is not yet initialized");
             DatabaseConnection.initializeSingleton(this, AdminRights.getUserPrivilegeLevel());// UserPrivilegeLevel.Admin);
@@ -64,6 +65,8 @@ public class SingleCocktailChoice extends AppCompatActivity {
         }else{
             Log.i(TAG, "onCreate: DataBase is already initialized");
         }
+
+         */
 
 
 
@@ -241,14 +244,17 @@ public class SingleCocktailChoice extends AppCompatActivity {
     }
 
     private List<Recipe> loadRecipes(Context context) throws NotInitializedDBException {
-        List<Recipe> recipes;
+        List<Recipe> recipes = Buffer.getSingleton().getRecipes(context);
+        /*
         try {
             recipes = DatabaseConnection.getDataBase().loadAllRecipes();
         } catch (NotInitializedDBException e) {
             DatabaseConnection.initializeSingleton(context);
             recipes = DatabaseConnection.getDataBase().loadAllRecipes();
         }
-        return(recipes);
+
+         */
+        return recipes;
     }
 
 

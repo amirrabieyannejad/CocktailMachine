@@ -8,9 +8,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
+import com.example.cocktailmachine.data.db.Buffer;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
+import com.example.cocktailmachine.ui.ListOfIngredience.ListIngredience;
 import com.example.cocktailmachine.ui.calibration.scale.calibrationScale;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
 import com.example.cocktailmachine.ui.model.FragmentType;
@@ -56,7 +60,7 @@ public class Menue extends AppCompatActivity {
         }
 
          */
-
+        Buffer.load(this);
         if(AdminRights.isAdmin()){
             binding.activityMenueLogout.setVisibility(View.VISIBLE);
             binding.activityMenueLogin.setVisibility(View.GONE);
@@ -64,10 +68,20 @@ public class Menue extends AppCompatActivity {
             binding.activityMenueLogout.setVisibility(View.GONE);
             binding.activityMenueLogin.setVisibility(View.VISIBLE);
         }
-        if(!CocktailMachineCalibration.isIsDone()) {
-
+        if(Dummy.isDummy && !Dummy.withSetCalibration ){
+            CocktailMachineCalibration.setIsDone(true);
+        }else if (!CocktailMachineCalibration.isIsDone()){
             CocktailMachineCalibration.start(this);
         }
+        if(!Dummy.withTestEnvs){
+            binding.imageViewTestBlue.setVisibility(View.GONE);
+            binding.imageViewTestIngList.setVisibility(View.GONE);
+            binding.imageViewTestFillAn.setVisibility(View.GONE);
+            binding.imageViewTestGrafik.setVisibility(View.GONE);
+            binding.imageViewTestSingleCockt.setVisibility(View.GONE);
+            binding.imageViewTestCal.setVisibility(View.GONE);
+        }
+
 
     }
 
@@ -77,12 +91,17 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void openRecipeList(View view) {
+        /*
         Intent success = new Intent(this, ModelActivity.class);
         Bundle b = new Bundle();
         b.putString("FragmentType", FragmentType.List.toString());
         b.putString("ModelType", ModelType.RECIPE.toString());
         success.putExtras(b);
         startActivity(success);
+
+         */
+
+        GetActivity.goToDisplay(this,FragmentType.List, ModelType.RECIPE );
     }
 
     /**
@@ -91,6 +110,7 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void openRecipeCreator(View view){
+        /*
 
         Intent success = new Intent(this,
                 ModelActivity.class);
@@ -101,6 +121,9 @@ public class Menue extends AppCompatActivity {
         b.putString("ModelType",
                 ModelType.RECIPE.toString());
         startActivity(success, b);
+
+         */
+        GetActivity.goToAdd(this, ModelType.RECIPE);
     }
 
     /**
@@ -228,6 +251,11 @@ public class Menue extends AppCompatActivity {
 
     public void calibration(View view){
         Intent success = new Intent(this, calibrationScale.class);
+        startActivity(success);
+    }
+
+    public void listIngedients(View view){
+        Intent success = new Intent(this, ListIngredience.class);
         startActivity(success);
 
     }

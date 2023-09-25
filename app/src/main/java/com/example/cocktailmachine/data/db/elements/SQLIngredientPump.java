@@ -1,12 +1,17 @@
 package com.example.cocktailmachine.data.db.elements;
 
+import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
+import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
+import com.example.cocktailmachine.data.db.Buffer;
+import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.db.Helper;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
@@ -51,13 +56,10 @@ public class SQLIngredientPump extends SQLDataBaseElement {
 
     public long getPumpID() {return this.pump;}
 
+    @Nullable
     public Ingredient getIngredient(){
-        try {
-            return DatabaseConnection.getDataBase().loadIngredientForPump(this.ingredient);
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return Ingredient.getIngredient(this.ingredient);
+
     }
 
     public long getIngredientID() {return this.ingredient;}
@@ -97,11 +99,17 @@ public class SQLIngredientPump extends SQLDataBaseElement {
         return this.volume>0;
     }
 
+    @Override
+    public boolean loadAvailable(Context context) {
+        boolean res =  loadAvailable();
+        this.save(context);
+        return res;
+    }
+
     /**
      * true, if pump and ingredient exists and volume > zero
      * @return
      */
-    @Override
     public boolean loadAvailable() {
         boolean res = (getIngredient() != null)&&(getPump() != null);
 
@@ -114,27 +122,18 @@ public class SQLIngredientPump extends SQLDataBaseElement {
     }
 
     @Override
-    public boolean save() {
-        try {
-            DatabaseConnection.getDataBase().addOrUpdate(this);
-            this.wasSaved();
-            return true;
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
-        return false;
+    public void save(Context context) {
+        AddOrUpdateToDB.addOrUpdate(context,this);
+
     }
 
     @Override
-    public void delete() {
+    public void delete(Context context) {
         Log.i(TAG, "delete");
-        try {
-            DatabaseConnection.getDataBase().remove(this);
-            Log.i(TAG, "delete: success");
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            Log.i(TAG, "delete: failed");
-        }
+        DeleteFromDB.remove(context, this);
+        //DatabaseConnection.getDataBase().remove(this);
+        Log.i(TAG, "delete: success");
+
     }
 
     @Override
@@ -149,12 +148,7 @@ public class SQLIngredientPump extends SQLDataBaseElement {
 
     private static List<SQLIngredientPump> getAvailableInstances(){
         //TO DO
-        try {
-            return DatabaseConnection.getDataBase().getIngredientPumps();
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
+        return Buffer.getSingleton().getIngredientPumps();
     }
 
     public static SQLIngredientPump getInstanceWithPump(long pump){

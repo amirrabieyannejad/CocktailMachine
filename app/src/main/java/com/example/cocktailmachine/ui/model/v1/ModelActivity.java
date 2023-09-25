@@ -6,7 +6,6 @@ import android.os.Bundle;
 
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.enums.AdminRights;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMainBinding;
@@ -50,22 +49,7 @@ public class ModelActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
-        if(DatabaseConnection.isInitialized()) {
-            DatabaseConnection.initializeSingleton(this, UserPrivilegeLevel.Admin);
-            try {
-                DatabaseConnection.getDataBase();
-                Log.i(TAG, "onCreate: DataBase is initialized");
-                //Log.i(TAG, Recipe.getAllRecipesAsMessage().toString());
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-                Log.e(TAG, "onCreate: DataBase is not initialized");
-            }
-            /* catch (JSONException e) {
-                e.printStackTrace();
-                Log.e(TAG, "onCreate:  Json didnt work");
-            }
-            */
-        }
+
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -107,25 +91,14 @@ public class ModelActivity extends AppCompatActivity {
     protected void onResume() {
         Log.i(TAG, "onResume: check data base open, open if not");
         super.onResume();
-        if(!DatabaseConnection.isInitialized()) {
-            DatabaseConnection.initializeSingleton(this, AdminRights.getUserPrivilegeLevel());
-            Log.i(TAG, "onResume: data base was opened");
-        } else  {
-            Log.i(TAG, "onResume: data base is open");
-        }
+
     }
 
     @Override
     protected void onDestroy() {
         Log.i(TAG, "onDestroy: close data base");
         super.onDestroy();
-        try {
-            DatabaseConnection.getDataBase().close();
-            Log.i(TAG, "onDestroy: data base closed");
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-            Log.i(TAG, "onDestroy: data base wasn't open");
-        }
+
     }
 
     private void goTo(Bundle bundle){

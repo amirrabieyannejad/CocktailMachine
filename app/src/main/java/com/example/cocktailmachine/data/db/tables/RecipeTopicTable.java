@@ -64,14 +64,14 @@ public class RecipeTopicTable extends BasicColumn<SQLRecipeTopic> {
     @Override
     public ContentValues makeContentValues(SQLRecipeTopic element) {
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_TYPE_RECIPE_ID, element.getRecipeID());
-        cv.put(COLUMN_TYPE_TOPIC_ID, element.getTopicID());
+        cv.put(COLUMN_NAME_RECIPE_ID, element.getRecipeID());
+        cv.put(COLUMN_NAME_TOPIC_ID, element.getTopicID());
         return cv;
     }
 
     public List<SQLRecipeTopic> getTopics(SQLiteDatabase db, SQLRecipe recipe) {
         try {
-            return this.getElementsWith(db, COLUMN_TYPE_RECIPE_ID, Long.toString(recipe.getID()));
+            return this.getElementsWith(db, COLUMN_NAME_RECIPE_ID, Long.toString(recipe.getID()));
         } catch (NoSuchColumnException e) {
             e.printStackTrace();
             return null;

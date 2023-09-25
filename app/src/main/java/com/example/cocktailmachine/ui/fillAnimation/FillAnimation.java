@@ -7,7 +7,6 @@ import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
@@ -44,20 +43,6 @@ public class FillAnimation extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fill_animation);
 
-        if(!DatabaseConnection.isInitialized()) {
-            Log.i(TAG, "onCreate: DataBase is not yet initialized");
-            DatabaseConnection.initializeSingleton(this, AdminRights.getUserPrivilegeLevel());// UserPrivilegeLevel.Admin);
-            try {
-                DatabaseConnection.getDataBase();
-                Log.i(TAG, "onCreate: DataBase is initialized");
-                //Log.i(TAG, Recipe.getAllRecipesAsMessage().toString());
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-                Log.e(TAG, "onCreate: DataBase is not initialized");
-            }
-        }else{
-            Log.i(TAG, "onCreate: DataBase is already initialized");
-        }
 
         //initialise Fragment Manager
         fragmentManager = getSupportFragmentManager();
@@ -83,6 +68,9 @@ public class FillAnimation extends AppCompatActivity {
             public void onAnimationUpdate(ValueAnimator updatedAnimation) {
                 float animatedValue = (float)updatedAnimation.getAnimatedValue();
                 Bitmap image = null;
+                if(recipe!=null) {
+                    recipe.save(context);
+                }
                 if(true){
                     try {
                         image = BildgeneratorGlas.bildgenerationGlas(context,recipe, animatedValue);
