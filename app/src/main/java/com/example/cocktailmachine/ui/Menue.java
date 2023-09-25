@@ -56,7 +56,7 @@ public class Menue extends AppCompatActivity {
         }
 
          */
-        new ConfigurePumps(this);
+
         if(AdminRights.isAdmin()){
             binding.activityMenueLogout.setVisibility(View.VISIBLE);
             binding.activityMenueLogin.setVisibility(View.GONE);
@@ -65,6 +65,7 @@ public class Menue extends AppCompatActivity {
             binding.activityMenueLogin.setVisibility(View.VISIBLE);
         }
         if(!CocktailMachineCalibration.isIsDone()) {
+
             CocktailMachineCalibration.start(this);
         }
 
@@ -229,6 +230,10 @@ public class Menue extends AppCompatActivity {
         Intent success = new Intent(this, calibrationScale.class);
         startActivity(success);
 
+    }
+
+    public void pumpCalibration(View view){
+        new ConfigurePumps(this);
     }
 
 

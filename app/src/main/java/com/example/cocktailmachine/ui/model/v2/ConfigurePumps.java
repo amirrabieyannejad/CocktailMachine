@@ -25,12 +25,14 @@ import com.example.cocktailmachine.data.db.DatabaseConnection;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.ui.Menue;
+import com.example.cocktailmachine.ui.model.v2.ListConfigurePumps.RecyclerAdapterListIngredience;
+import com.example.cocktailmachine.ui.model.v2.ListConfigurePumps.RecyclerViewListenerListIngredience;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ConfigurePumps  {
+public class ConfigurePumps implements RecyclerViewListenerListIngredience {
 
     private List<Ingredient> listIngredients;
     private List<Ingredient> filteredListIngredients;
@@ -44,7 +46,7 @@ public class ConfigurePumps  {
     public ConfigurePumps(Activity activity) {
 
         this.context = activity;
-
+        this.listIngredients = new LinkedList<Ingredient>();
         if(!DatabaseConnection.isInitialized()) {
             Log.i(TAG, "onCreate: DataBase is not yet initialized");
             DatabaseConnection.initializeSingleton(context, AdminRights.getUserPrivilegeLevel());// UserPrivilegeLevel.Admin);
@@ -68,11 +70,7 @@ public class ConfigurePumps  {
 
         /**
 
-        //Einrichtung des RecyclerView
-        recyclerView = alterCustomDialog.findViewById(R.id.recyclerViewListIngredience);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,listIngredients,context);
-        recyclerView.setAdapter(adapterComments);
+
 
 
         //Einrichtung des Suchfeldes
@@ -102,11 +100,25 @@ public class ConfigurePumps  {
          */
 
         //final AlertDialog dialog = alertDialog.create();
-        Dialog dialog = new Dialog(activity);
+        /**Dialog dialog = new Dialog(activity);
         dialog.setContentView(R.layout.dialog_layout_pump_configure);
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog.setCancelable(false);
+        */
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
+        View v = activity.getLayoutInflater().inflate(R.layout.dialog_layout_pump_configure, null);
+
+
+        //Einrichtung des RecyclerView
+        recyclerView = (RecyclerView)v.findViewById(R.id.recyclerViewDialogPumpconfigure);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this.context));
+        RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,listIngredients,this);
+        recyclerView.setAdapter(adapterComments);
+
+        alertDialog.setView(v);
+        AlertDialog dialog = alertDialog.create();
         dialog.show();
+
     }
 
 

@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Ingredient;
+import com.example.cocktailmachine.ui.model.v2.ConfigurePumps;
 
 import java.util.List;
 
@@ -35,7 +36,18 @@ public class RecyclerAdapterListIngredience extends RecyclerView.Adapter<Recycle
     public RecyclerAdapterListIngredience(Ingredient chosenIngredient, List<Ingredient> ingredients, Context context) {
         this.ingredients = ingredients;
         this.context = context;
-        this.selectionListener=(ListIngredience)context;
+
+        //Todo Philipp des Listener muss wieder eingerichtet werden
+        //this.selectionListener=(ListIngredience)context;
+        this.chosenIngredient = chosenIngredient;
+
+    }
+
+    public RecyclerAdapterListIngredience(Ingredient chosenIngredient, List<Ingredient> ingredients, ConfigurePumps configurePumps) {
+        this.ingredients = ingredients;
+
+        //Todo Philipp des Listener muss wieder eingerichtet werden
+        this.selectionListener=configurePumps;
         this.chosenIngredient = chosenIngredient;
 
     }

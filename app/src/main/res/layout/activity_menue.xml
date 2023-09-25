@@ -45,6 +45,14 @@
 
 
             <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
+                android:onClick="pumpCalibration"
+                app:contentDescription="FillAnimation"
+                app:srcCompat="@drawable/ic_home" />
+
+            <ImageView
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
