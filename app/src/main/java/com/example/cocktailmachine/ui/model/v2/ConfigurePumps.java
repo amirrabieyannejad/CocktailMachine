@@ -48,6 +48,7 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
     public ConfigurePumps(Activity activity) {
 
         this.context = activity;
+        this.configurePumpsContext = this;
         this.listIngredients = new LinkedList<Ingredient>();
         if(!DatabaseConnection.isInitialized()) {
             Log.i(TAG, "onCreate: DataBase is not yet initialized");
@@ -114,7 +115,7 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
         //Einrichtung des RecyclerView
         recyclerView = (RecyclerView)v.findViewById(R.id.recyclerViewDialogPumpconfigure);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.context));
-        RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,listIngredients,this);
+        RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,listIngredients,configurePumpsContext);
         recyclerView.setAdapter(adapterComments);
 
         //Einrichtung des Suchfeldes
@@ -135,7 +136,7 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
                 String searchterm = searchFild.getText().toString();
                 filteredListIngredients = ingredientListFilter(listIngredients,searchterm);
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,filteredListIngredients,this);
+                RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,filteredListIngredients,configurePumpsContext);
                 recyclerView.setAdapter(adapterComments);
 
             }
@@ -158,7 +159,7 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
         Toast.makeText(context, "Es wurde eine Auswahl getroffen",Toast.LENGTH_LONG).show();
         //Todo Philipp hier musst du noch den Wert zurück geben
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,filteredListIngredients,this);
+        RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,filteredListIngredients,configurePumpsContext);
         recyclerView.setAdapter(adapterComments);
     }
 
