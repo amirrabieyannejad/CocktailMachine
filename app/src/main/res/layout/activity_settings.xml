@@ -19,6 +19,38 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false"
+                android:linksClickable="false"
+                android:longClickable="false"
+                android:padding="8dp"
+                android:text="Einstellungen"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"  />
+
+            <TextView
+                android:id="@+id/textViewSettingsLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="login"
+                android:padding="8dp"
+                android:paddingStart="16dp"
+                android:text="Anmelden"
+                android:textSize="20sp" />
+            <TextView
+                android:id="@+id/textViewSettingsLogout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="logout"
+                android:padding="8dp"
+                android:paddingStart="16dp"
+                android:text="Abmelden"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:minHeight="48dp"
                 android:onClick="recipes"
                 android:padding="8dp"

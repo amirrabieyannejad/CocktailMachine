@@ -10,6 +10,17 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clickable="false"
+        android:focusable="false"
+        android:linksClickable="false"
+        android:longClickable="false"
+        android:padding="8dp"
+        android:text="Pumpenkalibrierung"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:minHeight="48dp"
         android:onClick="calibratePump"
         android:padding="8dp"

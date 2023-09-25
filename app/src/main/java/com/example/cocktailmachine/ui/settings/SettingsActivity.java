@@ -1,5 +1,6 @@
 package com.example.cocktailmachine.ui.settings;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -87,10 +88,17 @@ public class SettingsActivity extends AppCompatActivity {
             binding.textViewSettingsPumps.setVisibility(View.VISIBLE);
             binding.textViewMachine.setVisibility(View.VISIBLE);
 
+            binding.textViewSettingsLogin.setVisibility(View.GONE);
+            binding.textViewSettingsLogout.setVisibility(View.VISIBLE);
+
+
         }else{
             Log.i(TAG, "setVisibility: is no Admin");
             binding.textViewSettingsPumps.setVisibility(View.GONE);
             binding.textViewMachine.setVisibility(View.GONE);
+
+            binding.textViewSettingsLogin.setVisibility(View.VISIBLE);
+            binding.textViewSettingsLogout.setVisibility(View.GONE);
         }
     }
 
@@ -261,5 +269,17 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
 
+    public void login(View view) {
+        AdminRights.login(this, getLayoutInflater(), new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                SettingsActivity.this.setVisibility();
+            }
+        });
+    }
 
+    public void logout(View view) {
+        AdminRights.logout();
+        setVisibility();
+    }
 }
