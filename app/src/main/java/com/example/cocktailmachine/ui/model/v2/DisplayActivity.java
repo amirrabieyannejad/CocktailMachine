@@ -276,6 +276,20 @@ public class DisplayActivity extends BasicActivity {
         });
     }
 
+    public void list(View view) {
+        GetActivity.goToList(this, getModelType());
+    }
+
+    public void reload(View view) {
+        DisplayActivity.this.reload();
+        setUp();
+    }
+
+    public void edit(View view) {
+        GetActivity.goToEdit(this, getModelType(), this.getID());
+    }
+
+
 
     /*
     private void goToList(){
