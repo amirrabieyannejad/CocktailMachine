@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -37,6 +38,7 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
     private List<Ingredient> listIngredients;
     private List<Ingredient> filteredListIngredients;
     private RecyclerView recyclerView;
+    private Button buttonConfirmChoice;
 
     private Context context;
 
@@ -119,7 +121,7 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
         recyclerView.setAdapter(adapterComments);
 
         //Einrichtung des Suchfeldes
-        EditText searchFild = v.findViewById(R.id.textViewDialogPumpconfigureHeader);
+        EditText searchFild = v.findViewById(R.id.editTextDialogPumpconfigureSearchTerm);
         searchFild.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -142,6 +144,10 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
             }
         });
 
+        //Einrichtung des Buttons zur bestätigung der eingabe
+        buttonConfirmChoice = v.findViewById(R.id.buttonDialogPumpconfigureNewIngredience);
+        buttonConfirmChoice.setEnabled(false);
+
         alertDialog.setView(v);
         AlertDialog dialog = alertDialog.create();
         dialog.show();
@@ -152,8 +158,10 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
     public void selectIngredience(Ingredient ingredient) {
         if(ingredient.equals(chosenIngredient)){
             chosenIngredient = null;
+            buttonConfirmChoice.setEnabled(false);
         }else{
             chosenIngredient = ingredient;
+            buttonConfirmChoice.setEnabled(true);
         }
 
         Toast.makeText(context, "Es wurde eine Auswahl getroffen",Toast.LENGTH_LONG).show();
