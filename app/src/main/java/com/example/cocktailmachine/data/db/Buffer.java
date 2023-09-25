@@ -842,6 +842,9 @@ public class Buffer {
      */
     @Nullable
     public Recipe getRecipe(long id){
+        if(this.recipes==null){
+            return null;
+        }
         if(isFast){
             return this.fastIDRecipe.get(id);
         }
@@ -883,6 +886,15 @@ public class Buffer {
      */
     @Nullable
     public Recipe getRecipe(Context context, long id){
+        if(this.recipes == null){
+            try {
+                this.setLoad(context);
+            } catch (NotInitializedDBException e) {
+                //throw new RuntimeException(e);
+                Log.e(TAG, "NotInitializedDBException");
+                e.printStackTrace();
+            }
+        }
         Recipe res =getRecipe(id);
         if(res != null){
             return res;

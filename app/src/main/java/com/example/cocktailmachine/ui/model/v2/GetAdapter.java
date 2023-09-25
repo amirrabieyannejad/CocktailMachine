@@ -20,6 +20,7 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.enums.Postexecute;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 public class GetAdapter {
@@ -137,6 +138,12 @@ public class GetAdapter {
         }
 
         public void save(){
+            Iterator<Topic> iterator = this.topics.iterator();
+            while (iterator.hasNext()) {
+                if (iterator.next() == null) {
+                    iterator.remove();
+                }
+            }
             this.recipe.replaceTopics(this.activity, this.topics);
         }
 
@@ -209,6 +216,13 @@ public class GetAdapter {
         }
 
         public void save(){
+            Iterator<Ingredient> iterator = this.ingredientVol.keySet().iterator();
+            while (iterator.hasNext()) {
+                if (iterator.next() == null) {
+                    this.ingredientVol.remove(null);
+                    iterator.remove();
+                }
+            }
             this.recipe.replaceIngredients(this.activity, this.ingredientVol);
         }
 

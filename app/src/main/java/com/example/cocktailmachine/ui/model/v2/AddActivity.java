@@ -536,7 +536,7 @@ public class AddActivity extends BasicActivity {
      */
     private void setIngredients(){
         Log.i(TAG, "setIngredients");
-        if((this.ingVolAdapter== null && this.recipe.getIngredientToVolume().size()>0)||(this.ingVolAdapter.getItemCount()>0)) {
+        if((this.ingVolAdapter== null && this.recipe.getIngredientToVolume().size()>0)||(this.ingVolAdapter!= null && this.ingVolAdapter.getItemCount()>0)) {
             Log.i(TAG, "setIngredients size> 0");
             //Log.i(TAG, AddActivity.this.ingredientVolumeHashMap.toString());
 
@@ -563,7 +563,7 @@ public class AddActivity extends BasicActivity {
     private void setTopics() {
 
         Log.i(TAG, "setTopics");
-        if((this.topicAdapter== null && this.recipe.getTopics().size()>0)||(this.topicAdapter.getItemCount()>0)) {
+        if((this.topicAdapter== null && this.recipe.getTopics().size()>0)||(this.topicAdapter!= null &&this.topicAdapter.getItemCount()>0)) {
             Log.i(TAG, "setTopics size> 0");
             //Log.i(TAG, AddActivity.this.ingredientVolumeHashMap.toString());
 

@@ -20,6 +20,7 @@ import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class DisplayActivity extends BasicActivity {
     private static final String TAG = "DisplayActivity";
@@ -69,7 +70,7 @@ public class DisplayActivity extends BasicActivity {
 
     @Override
     void setUpRecipe(){
-        Recipe recipe = Recipe.getRecipe(getID());
+        Recipe recipe = Recipe.getRecipe(this, getID());
         if(recipe == null){
             binding.textViewDisplayTitle.setText("Fehler");
             binding.textViewDisplayDescription.setText("Das Rezept konnte nicht gefunden werden.");
@@ -95,6 +96,7 @@ public class DisplayActivity extends BasicActivity {
         binding.includeRecipeIngredientsList.textViewListTitle.setText("Zutaten");
         binding.includeRecipeTopicsList.textViewListTitle.setText("Serviervorschläge");
 
+        /*
         TitleListAdapter titleadapter = new TitleListAdapter(
                 this,
                 recipe.getIngredientIDs(),
@@ -105,7 +107,22 @@ public class DisplayActivity extends BasicActivity {
         binding.includeRecipeIngredientsList.recyclerViewList.setLayoutManager(llm);
         binding.includeRecipeIngredientsList.recyclerViewList.setAdapter(titleadapter);
 
+         */
+        Log.i(TAG, "setIngredients");
+        HashMap<Ingredient, Integer> ingredientVolumeHashMap = recipe.getIngredientToVolume();
+        if(ingredientVolumeHashMap.size()>0) {
+            Log.i(TAG, "setIngredients size> 0");
+            Log.i(TAG, ingredientVolumeHashMap.toString());
+            binding.includeRecipeIngredientsList.recyclerViewList.setVisibility(View.VISIBLE);
+            binding.includeRecipeIngredientsList.recyclerViewList.setLayoutManager(GetAdapter.getNewLinearLayoutManager(this));
+            binding.includeRecipeIngredientsList.recyclerViewList.setAdapter(new GetAdapter.IngredientVolAdapter(this, recipe, false));
+        }else{
+            Log.i(TAG, "setIngredients size<= 0");
+            binding.includeRecipeIngredientsList.recyclerViewList.setVisibility(View.GONE);
+        }
 
+
+        /*
         TitleVolumeListAdapter titlevoladapter = new TitleVolumeListAdapter(
                 this,
                 recipe);
@@ -113,6 +130,20 @@ public class DisplayActivity extends BasicActivity {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         binding.includeRecipeIngredientsList.recyclerViewList.setLayoutManager(llmvol);
         binding.includeRecipeIngredientsList.recyclerViewList.setAdapter(titlevoladapter);
+
+         */
+        Log.i(TAG, "setTopics");
+        List<Topic> topics = recipe.getTopics();
+        if(topics.size()>0) {
+            Log.i(TAG, "setTopics size> 0");
+            Log.i(TAG, topics.toString());
+            binding.includeRecipeTopicsList.recyclerViewList.setVisibility(View.VISIBLE);
+            binding.includeRecipeTopicsList.recyclerViewList.setLayoutManager(GetAdapter.getNewLinearLayoutManager(this));
+            binding.includeRecipeTopicsList.recyclerViewList.setAdapter(new GetAdapter.TopicAdapter(this, recipe, false));
+        }else{
+            Log.i(TAG, "setTopics size<= 0");
+            binding.includeRecipeTopicsList.recyclerViewList.setVisibility(View.GONE);
+        }
 
 
 /*
@@ -293,33 +324,9 @@ public class DisplayActivity extends BasicActivity {
 
 
     //recipe helper
-    /**
-     * is supposed to reload the current ingredient list
-     */
-    private void updateIngredients(Recipe recipe){
-        Log.i(TAG, "updateIngredients");
-        HashMap<Ingredient, Integer> ingredientVolumeHashMap = recipe.getIngredientToVolume();
-        if(ingredientVolumeHashMap.size()>0) {
-            Log.i(TAG, "updateIngredients size> 0");
-            Log.i(TAG, ingredientVolumeHashMap.toString());
-            binding.includeRecipeIngredientsList.recyclerViewList.setVisibility(View.VISIBLE);
-            binding.includeRecipeIngredientsList.recyclerViewList.setLayoutManager(getNewLinearLayoutManager());
-            binding.includeRecipeIngredientsList.recyclerViewList.setAdapter(new GetAdapter.IngredientVolAdapter(this, recipe, false));
-        }else{
-            Log.i(TAG, "updateIngredients size<= 0");
-            binding.includeRecipeIngredientsList.recyclerViewList.setVisibility(View.GONE);
-        }
-        //setAlcoholic();
 
-    }
 
-    private RecyclerView.LayoutManager getNewLinearLayoutManager() {
-        Log.i(TAG, "getNewLinearLayoutManager");
 
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        return llm;
-    }
 
 
 
