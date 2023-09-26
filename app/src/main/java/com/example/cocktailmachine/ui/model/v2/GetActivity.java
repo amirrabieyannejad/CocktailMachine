@@ -26,9 +26,12 @@ public class GetActivity {
     public static final String FRAGMENTTYPE = "FRAGMENTTYPE";
     private static final String TAG = "GetActivity";
 
+    /*
     public static void goToDisplay(Activity activity, FragmentType fragmentType, ModelType modelType){
         Log.i(TAG, "goToDisplay: "+fragmentType.toString()+"  "+modelType.toString());
         //TO DO
+
+     */
         /*
         Intent intent = new Intent(this, ModelActivity.class);
         Bundle bundle = new Bundle();
@@ -36,6 +39,7 @@ public class GetActivity {
         bundle.putString("FragmentType", FragmentType.List.name());
         startActivity(intent, bundle);
          */
+    /*
         Intent intent;
         if(fragmentType.equals(FragmentType.List)){
             intent = new Intent(activity, ListActivity.class);
@@ -50,6 +54,8 @@ public class GetActivity {
         activity.startActivity(intent);
         //activity.finish();
     }
+
+     */
 
 
     //public static void goToDisplay(Activity activity, FragmentType fragmentType, ModelType modelType, Long id){
