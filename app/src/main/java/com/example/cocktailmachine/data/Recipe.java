@@ -237,16 +237,20 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
                 this.remove(context, i);
             }
         }
-        this.loadAvailable(context);
-        this.loadAlcoholic(context);
         this.save(context);
         for(Ingredient e: ingVol.keySet() ){
-            Integer temp = ingVol.get(e);
-            if(temp == null){
-                temp = -1;
+            if(e == null){
+                Log.i(TAG, "replaceIngredients: tryed to add null as ingredient");
+            }else {
+                Integer temp = ingVol.get(e);
+                if (temp == null) {
+                    temp = -1;
+                }
+                this.add(context, e, temp);
             }
-            this.add(context, e, temp);
         }
+        this.loadAvailable(context);
+        this.loadAlcoholic(context);
         this.save(context);
     }
 
@@ -280,8 +284,8 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @param ingredient
      */
     default void remove(Context context, Ingredient ingredient){
-        Buffer.getSingleton().removeFromBuffer(this, ingredient);
         DeleteFromDB.remove(context, this, ingredient);
+        Buffer.getSingleton().removeFromBuffer(this, ingredient);
         this.loadAvailable(context);
         this.loadAlcoholic(context);
         this.save(context);
@@ -294,8 +298,8 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @param topic
      */
     default void remove(Context context, Topic topic){
-        Buffer.getSingleton().removeFromBuffer(this, topic);
         DeleteFromDB.remove(context, this, topic);
+        Buffer.getSingleton().removeFromBuffer(this, topic);
         this.loadAvailable(context);
         this.loadAlcoholic(context);
         this.save(context);

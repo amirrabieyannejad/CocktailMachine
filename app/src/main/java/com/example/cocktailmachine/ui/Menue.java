@@ -101,7 +101,7 @@ public class Menue extends AppCompatActivity {
 
          */
 
-        GetActivity.goToDisplay(this,FragmentType.List, ModelType.RECIPE );
+        GetActivity.goToList(this, ModelType.RECIPE );
     }
 
     /**

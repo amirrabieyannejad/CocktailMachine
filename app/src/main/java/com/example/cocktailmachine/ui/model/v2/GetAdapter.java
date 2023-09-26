@@ -111,20 +111,20 @@ public class GetAdapter {
             Log.i(TAG, "TopicAdapter: onBindViewHolder");
             Topic topic = this.topics.get(position);
             View.OnLongClickListener delete =  v -> {
-                Log.i(TAG, "StringView: setTxt topic clicked");
+                Log.i(TAG, "TopicAdapter: setTxt topic clicked");
                 GetDialog.deleteAddElement(this.activity, "den Serviervorschlag " + topic.getName(), new Postexecute() {
                     @Override
                     public void post() {
-                        Log.i(TAG, "StringView: setTxt choose to delete");
+                        Log.i(TAG, "TopicAdapter: setTxt choose to delete");
                         TopicAdapter.this.remove(topic);
-                        Log.i(TAG, "StringView: setTxt remove from list");
+                        Log.i(TAG, "TopicAdapter: setTxt remove from list");
                         //this.activity.updateTopics();
                     }
                 });
                 return true;
             };
             View.OnClickListener goTo = v->{
-                GetActivity.goToDisplay(this.activity, FragmentType.Model, ModelType.TOPIC);
+                GetActivity.goToLook(this.activity, ModelType.TOPIC, topic.getID());
             };
             if(this.withDelete && !this.withDisplay) {
                 holder.setTxt(topic.getName(),delete);
@@ -145,13 +145,13 @@ public class GetAdapter {
             return this.recipe.getTopics().size();
         }
 
-        @SuppressLint("NotifyDataSetChanged")
+
         public void add(Topic topic){
             this.topics.add(topic);
             this.notifyDataSetChanged();
         }
 
-        @SuppressLint("NotifyDataSetChanged")
+
         public void remove(Topic topic){
             this.topics.remove(topic);
             this.notifyDataSetChanged();
@@ -182,14 +182,16 @@ public class GetAdapter {
         private final Activity activity;
         private final Recipe recipe;
         private final boolean withDelete;
+        private final boolean withDisplay;
 
 
         private final HashMap<Ingredient, Integer> ingredientVol;
-        public IngredientVolAdapter(Activity activity, Recipe recipe, boolean withDelete) {
+        public IngredientVolAdapter(Activity activity, Recipe recipe, boolean withDelete, boolean withDisplay) {
             this.activity = activity;
             this.recipe = recipe;
             this.ingredientVol = recipe.getIngredientToVolume();
             this.withDelete = withDelete;
+            this.withDisplay = withDisplay;
         }
 
         @NonNull
@@ -214,9 +216,7 @@ public class GetAdapter {
                 Log.e(TAG, "onBindViewHolder getting vol failed");
                 vol = -1;
             }
-            if(withDelete) {
-                holder.setTxt(String.format("%s: %s", i.getName(), vol)
-                        , v -> {
+            View.OnLongClickListener delete =  v -> {
                             Log.i(TAG, "setTxt ingredient clicked");
                             GetDialog.deleteAddElement(this.activity, "die Zutat " + i.getName(), new Postexecute() {
                                 @Override
@@ -227,9 +227,25 @@ public class GetAdapter {
                                 }
                             });
                             return true;
-                        });
+                        };
+            View.OnClickListener goTo =  v -> {
+                Log.i(TAG, "setTxt ingredient clicked");
+                GetActivity.goToLook(this.activity, ModelType.INGREDIENT, i.getID());
+            };
+
+            String txt = String.format("%s: %s", i.getName(), vol);
+
+
+            if(this.withDelete && !this.withDisplay) {
+                holder.setTxt(txt,delete);
+            }if(!this.withDelete && this.withDisplay) {
+                holder.setTxt(txt,goTo);
+            }if(this.withDelete && this.withDisplay) {
+                holder.setTxt(txt,goTo, delete);
+            }if(!this.withDelete && !this.withDisplay) {
+                holder.setTxt(txt);
             }else{
-                holder.setTxt(String.format("%s: %s", i.getName(), vol));
+                holder.setTxt(txt);
             }
         }
 
@@ -264,14 +280,15 @@ public class GetAdapter {
             return alcoholic;
         }
 
-        @SuppressLint("NotifyDataSetChanged")
         public void add(Ingredient ingredient, Integer volume) {
             Log.i(TAG, "add");
-            this.ingredientVol.put(ingredient, volume);
-            this.notifyDataSetChanged();
+            if(ingredient != null) {
+                this.ingredientVol.put(ingredient, volume);
+                this.notifyDataSetChanged();
+            }
         }
 
-        @SuppressLint("NotifyDataSetChanged")
+
         public void remove(Ingredient ingredient) {
             Log.i(TAG, "remove");
             this.ingredientVol.remove(ingredient);

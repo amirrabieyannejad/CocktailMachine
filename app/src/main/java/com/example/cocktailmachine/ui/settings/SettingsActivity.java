@@ -121,7 +121,7 @@ public class SettingsActivity extends AppCompatActivity {
         startActivity(intent, bundle);
 
          */
-        GetActivity.goToDisplay(this, FragmentType.List, ModelType.RECIPE);
+        GetActivity.goToList(this,  ModelType.RECIPE);
     }
 
     /**
@@ -141,7 +141,7 @@ public class SettingsActivity extends AppCompatActivity {
 
          */
 
-        GetActivity.goToDisplay(this, FragmentType.List, ModelType.PUMP);
+        GetActivity.goToList(this, ModelType.PUMP);
     }
 
     /**
@@ -160,7 +160,7 @@ public class SettingsActivity extends AppCompatActivity {
         startActivity(intent, bundle);
 
          */
-        GetActivity.goToDisplay(this, FragmentType.List, ModelType.INGREDIENT);
+        GetActivity.goToList(this, ModelType.INGREDIENT);
     }
 
     /** got to topics list*
@@ -180,7 +180,7 @@ public class SettingsActivity extends AppCompatActivity {
         //Toast.makeText(this,"topics",Toast.LENGTH_SHORT).show();
 
          */
-        GetActivity.goToDisplay(this, FragmentType.List, ModelType.TOPIC);
+        GetActivity.goToList(this,  ModelType.TOPIC);
     }
 
 

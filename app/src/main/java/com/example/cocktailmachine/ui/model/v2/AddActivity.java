@@ -129,7 +129,7 @@ public class AddActivity extends BasicActivity {
                 return;
             }
             AddActivity.this.pump.sendSave(AddActivity.this);
-            GetActivity.goToDisplay(AddActivity.this, FragmentType.Model, ModelType.PUMP, AddActivity.this.pump.getID());
+            GetActivity.goToLook(AddActivity.this, ModelType.PUMP, AddActivity.this.pump.getID());
             Log.i(TAG, "setUpPump:done");
         });
     }
@@ -156,7 +156,7 @@ public class AddActivity extends BasicActivity {
                 Log.i(TAG, "setUpPump: buttonSave: clicked");
                 topic = Topic.makeNew(binding.editTextAddTitle.getText().toString(), binding.editTextDescription.getText().toString());
                 topic.save(activity);
-                GetActivity.goToDisplay(activity, FragmentType.Model, ModelType.TOPIC, topic.getID());
+                GetActivity.goToLook(activity, ModelType.TOPIC, topic.getID());
                 Log.i(TAG, "setUpPump: done");
             });
 
@@ -169,7 +169,7 @@ public class AddActivity extends BasicActivity {
                 topic.setName(binding.editTextAddTitle.getText().toString());
                 topic.setDescription(binding.editTextDescription.getText().toString());
                 topic.save(activity);
-                GetActivity.goToDisplay(activity, FragmentType.Model, ModelType.TOPIC, topic.getID());
+                GetActivity.goToLook(activity, ModelType.TOPIC, topic.getID());
                 Log.i(TAG, "setUpPump: done");
             });
         }
@@ -247,7 +247,7 @@ public class AddActivity extends BasicActivity {
                         set_color[0]
                 );
                 ingredient.save(activity);
-                GetActivity.goToDisplay(activity, FragmentType.Model, ModelType.INGREDIENT, ingredient.getID());
+                GetActivity.goToLook(activity,  ModelType.INGREDIENT, ingredient.getID());
             });
 
         }else{
@@ -263,7 +263,7 @@ public class AddActivity extends BasicActivity {
                 ingredient.setAlcoholic(binding.switchAlcohol.isChecked());
                 ingredient.setColor(set_color[0]);
                 ingredient.save(activity);
-                GetActivity.goToDisplay(activity, FragmentType.Model, ModelType.INGREDIENT, ingredient.getID());
+                GetActivity.goToLook(activity,  ModelType.INGREDIENT, ingredient.getID());
             });
         }
     }
@@ -363,9 +363,8 @@ public class AddActivity extends BasicActivity {
             if(AddActivity.this.recipe.sendSave(
                     activity)){
                 Log.i(TAG, "buttonSave: show recipe");
-                GetActivity.goToDisplay(
+                GetActivity.goToLook(
                         activity,
-                        FragmentType.Model,
                         ModelType.RECIPE,
                         AddActivity.this.recipe.getID());
             }else {
@@ -495,7 +494,7 @@ public class AddActivity extends BasicActivity {
 
     private GetAdapter.IngredientVolAdapter getIngVolAdapter(){
         if(this.ingVolAdapter==null){
-            this.ingVolAdapter = new GetAdapter.IngredientVolAdapter(AddActivity.this, this.recipe, true);
+            this.ingVolAdapter = new GetAdapter.IngredientVolAdapter(AddActivity.this, this.recipe, true, false);
         }
         return this.ingVolAdapter;
     }

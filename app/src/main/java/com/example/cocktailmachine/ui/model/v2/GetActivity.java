@@ -51,8 +51,9 @@ public class GetActivity {
         //activity.finish();
     }
 
-    public static void goToDisplay(Activity activity, FragmentType fragmentType, ModelType modelType, Long id){
-        Log.i(TAG, "goToDisplay: "+fragmentType.toString()+"  "+modelType.toString()+ "   "+id.toString());
+
+    //public static void goToDisplay(Activity activity, FragmentType fragmentType, ModelType modelType, Long id){
+     //  Log.i(TAG, "goToDisplay: "+fragmentType.toString()+"  "+modelType.toString()+ "   "+id.toString());
         //TO DO
         /*
         Intent intent = new Intent(this, ModelActivity.class);
@@ -61,6 +62,7 @@ public class GetActivity {
         bundle.putString("FragmentType", FragmentType.List.name());
         startActivity(intent, bundle);
          */
+    /*
         if(fragmentType.equals(FragmentType.List)){
             throw new IllegalArgumentException("has to be an edit or model.");
         }
@@ -72,6 +74,19 @@ public class GetActivity {
         intent.putExtras(bundle);
         activity.startActivity(intent);
         //activity.finish();
+    }
+
+     */
+
+
+    public static void goToLook(Activity activity, ModelType modelType, Long id){
+        Log.i(TAG, "goToLook: "+modelType.toString());
+        Intent intent = new Intent(activity, DisplayActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putLong(ID, id);
+        bundle.putString(MODELTYPE, modelType.toString());
+        intent.putExtras(bundle);
+        activity.startActivity(intent);
     }
 
     public static void goToAdd(Activity activity, ModelType modelType){

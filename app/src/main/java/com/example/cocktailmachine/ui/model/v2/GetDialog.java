@@ -221,8 +221,7 @@ public class GetDialog {
         alertDialog.setAdapter(adapter,
                 (dialog, which) -> {
             dialog.dismiss();
-            GetActivity.goToDisplay(activity,
-                        FragmentType.Model,
+            GetActivity.goToLook(activity,
                         ModelType.TOPIC,
                         topics.get(which).getID());
         });
