@@ -1093,6 +1093,7 @@ public class Buffer {
         }
         return res;
     }
+
     public List<Long> getTopicIDs(Recipe recipe){
         List<Long> res = new ArrayList<>();
         if(isFast){

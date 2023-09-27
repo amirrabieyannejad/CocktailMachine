@@ -102,7 +102,6 @@ public class DisplayActivity extends BasicActivity {
         binding.includeRecipeIngredientsList.recyclerViewList.setAdapter(
                 new GetAdapter.IngredientVolAdapter(
                         this,
-                        binding.includeRecipeIngredientsList.recyclerViewList,
                         recipe,
                         false, true));
 
@@ -114,7 +113,6 @@ public class DisplayActivity extends BasicActivity {
         binding.includeRecipeTopicsList.recyclerViewList.setAdapter(
                 new GetAdapter.TopicAdapter(
                         this,
-                        binding.includeRecipeTopicsList.recyclerViewList,
                         recipe,
                         false,
                         true));

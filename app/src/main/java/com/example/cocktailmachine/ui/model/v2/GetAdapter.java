@@ -91,14 +91,12 @@ public class GetAdapter {
      */
     static class TopicAdapter extends RecyclerView.Adapter<GetAdapter.StringView> {
         private final Activity activity;
-        private final RecyclerView rv;
         private final Recipe recipe;
         private final boolean withDelete;
         private final boolean withDisplay;
         private final List<Topic> topics;
-        public TopicAdapter(Activity activity,RecyclerView rv, Recipe recipe, boolean withDelete, boolean withDisplay) {
+        public TopicAdapter(Activity activity,Recipe recipe, boolean withDelete, boolean withDisplay) {
             this.activity = activity;
-            this.rv = rv;
             this.recipe = recipe;
             this.withDelete = withDelete;
             this.withDisplay = withDisplay;
@@ -150,16 +148,9 @@ public class GetAdapter {
         @Override
         public int getItemCount() {
             Log.i(TAG, "TopicAdapter: getItemCount");
-            return this.recipe.getTopics().size();
+            return this.topics.size();
         }
 
-        public void show(){
-            if(this.isEmpty()){
-                this.rv.setVisibility(View.GONE);
-            }else{
-                this.rv.setVisibility(View.VISIBLE);
-            }
-        }
 
         public boolean isEmpty(){
             return this.topics.isEmpty();
@@ -167,10 +158,11 @@ public class GetAdapter {
         public void add(Topic topic){
             Log.i(TAG, "add");
             if(topic != null) {
-                this.topics.add(topic);
-                this.notifyItemInserted(this.getItemCount()-1);
+                if(!this.topics.contains(topic)) {
+                    this.topics.add(topic);
+                    this.notifyItemInserted(this.getItemCount());
+                }
             }
-            show();
         }
 
 
@@ -184,7 +176,6 @@ public class GetAdapter {
             if(position != -1) {
                 this.topics.remove(position);
                 this.notifyItemRemoved(position);
-                show();
             }
         }
 
@@ -208,21 +199,18 @@ public class GetAdapter {
     static class IngredientVolAdapter extends RecyclerView.Adapter<GetAdapter.StringView> {
         private final static String TAG = "IngredientVolAdapter";
         private final Activity activity;
-        private final RecyclerView rv;
         private final Recipe recipe;
         private final boolean withDelete;
         private final boolean withDisplay;
 
 
         private final HashMap<Ingredient, Integer> ingredientVol;
-        public IngredientVolAdapter(Activity activity, RecyclerView rv, Recipe recipe, boolean withDelete, boolean withDisplay) {
+        public IngredientVolAdapter(Activity activity,  Recipe recipe, boolean withDelete, boolean withDisplay) {
             this.activity = activity;
-            this.rv = rv;
             this.recipe = recipe;
             this.ingredientVol = recipe.getIngredientToVolume();
             this.withDelete = withDelete;
             this.withDisplay = withDisplay;
-            this.show();
         }
 
         @NonNull
@@ -280,13 +268,6 @@ public class GetAdapter {
             }
         }
 
-        public void show(){
-            if(this.isEmpty()){
-                this.rv.setVisibility(View.GONE);
-            }else{
-                this.rv.setVisibility(View.VISIBLE);
-            }
-        }
 
         @Override
         public int getItemCount() {
@@ -323,9 +304,8 @@ public class GetAdapter {
             Log.i(TAG, "add");
             if(ingredient != null) {
                 this.ingredientVol.put(ingredient, volume);
-                this.notifyItemInserted(this.getItemCount()-1);
+                this.notifyItemInserted(this.getItemCount());
             }
-            show();
         }
 
 
@@ -334,11 +314,10 @@ public class GetAdapter {
             int position = new ArrayList<>(this.ingredientVol.keySet()).indexOf(ingredient);
             this.ingredientVol.remove(ingredient);
             this.notifyItemRemoved(position);
-            show();
         }
     }
 
-
+    /*
     public static class IngredientVolumeAdapter extends  ElementListAdapter<Ingredient>{
         private final static String TAG = "IngredientVolumeAdapter";
         HashMap<Ingredient,Integer> ingVols;
@@ -380,6 +359,7 @@ public class GetAdapter {
             if(vol == null){
                 vol = -1;
             }
+            this.ingVols.remove(element);//if existing vol remove it
             this.add(element);
             this.ingVols.put(element, vol);
         }
@@ -415,7 +395,13 @@ public class GetAdapter {
     }
 
 
+
+    */
+    /*
     private static abstract class ElementListAdapter<T extends DataBaseElement> extends ListAdapter<T, GetAdapter.StringView> {
+
+     */
+
         /*
         {
         private final static String TAG = "IngredientVolAdapter";
@@ -428,7 +414,7 @@ public class GetAdapter {
         private final HashMap<Ingredient, Integer> ingredientVol;
         public IngredientVolAdapter(Activity activity, Recipe recipe, boolean withDelete, boolean withDisplay)
          */
-
+    /*
         private final static String TAG = "ElementListAdapter";
         private final Activity activity;
         //private final Recipe recipe;
@@ -535,4 +521,6 @@ public class GetAdapter {
             }
         }
     }
+
+ */
 }

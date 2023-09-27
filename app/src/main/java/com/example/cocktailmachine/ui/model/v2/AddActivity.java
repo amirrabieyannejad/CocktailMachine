@@ -295,11 +295,11 @@ public class AddActivity extends BasicActivity {
 
 
 
+        binding.recyclerViewIngredients.setVisibility(View.VISIBLE);
         binding.recyclerViewIngredients.setLayoutManager(
                 GetAdapter.getNewLinearLayoutManager(this));
         this.ingVolAdapter = new GetAdapter.IngredientVolAdapter(
                 AddActivity.this,
-                binding.recyclerViewIngredients,
                 this.recipe,
                 true,
                 false);
@@ -367,10 +367,10 @@ public class AddActivity extends BasicActivity {
 
 
         Log.i(TAG, "setTopics");
+        binding.recyclerViewTopics.setVisibility(View.VISIBLE);
         binding.recyclerViewTopics.setLayoutManager(GetAdapter.getNewLinearLayoutManager(this));
         this.topicAdapter = new GetAdapter.TopicAdapter(
                 AddActivity.this,
-                binding.recyclerViewTopics,
                 this.recipe,
                 true,
                 false);
@@ -381,9 +381,9 @@ public class AddActivity extends BasicActivity {
                         AddActivity.this.topicAdapter.add(t);
                         Log.i(TAG, "subLayoutAddTopic: topic added");
                         d.dismiss();
-                        Log.i(TAG, "subLayoutAddTopic: dialog dismiss");
+                        //Log.i(TAG, "subLayoutAddTopic: dialog dismiss");
                         //AddActivity.this.setTopics();
-                        Log.i(TAG, "subLayoutAddTopic: updateTopics");
+                        //Log.i(TAG, "subLayoutAddTopic: updateTopics");
                     });
         };
         binding.subLayoutAddTopic.setVisibility(View.VISIBLE);
