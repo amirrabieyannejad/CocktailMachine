@@ -160,23 +160,26 @@ public class GetAdapter {
             if(topic != null) {
                 if(!this.topics.contains(topic)) {
                     this.topics.add(topic);
-                    this.notifyItemInserted(this.getItemCount());
+                    this.notifyItemInserted(this.topics.indexOf(topic));
                 }
             }
+            Log.i(TAG, "add: "+this.topics);
         }
 
 
         public void remove(Topic topic){
-            Log.i(TAG, "remove");
+            Log.i(TAG, "remove t");
             this.remove(this.topics.indexOf(topic));
+            Log.i(TAG, "remove t: "+this.topics);
         }
 
         public void remove(int position){
-            Log.i(TAG, "remove");
+            Log.i(TAG, "remove position");
             if(position != -1) {
                 this.topics.remove(position);
                 this.notifyItemRemoved(position);
             }
+            Log.i(TAG, "remove position: "+this.topics);
         }
 
         public void save(){
@@ -205,10 +208,12 @@ public class GetAdapter {
 
 
         private final HashMap<Ingredient, Integer> ingredientVol;
+        private final List<Ingredient> ingredients;
         public IngredientVolAdapter(Activity activity,  Recipe recipe, boolean withDelete, boolean withDisplay) {
             this.activity = activity;
             this.recipe = recipe;
             this.ingredientVol = recipe.getIngredientToVolume();
+            this.ingredients = new ArrayList<>(this.ingredientVol.keySet());
             this.withDelete = withDelete;
             this.withDisplay = withDisplay;
         }
@@ -225,7 +230,7 @@ public class GetAdapter {
         @Override
         public void onBindViewHolder(@NonNull GetAdapter.StringView holder, int position) {
             Log.i(TAG, "onBindViewHolder");
-            Ingredient i = this.ingredientVol.keySet().toArray(new Ingredient[]{})[position];
+            Ingredient i = this.ingredients.get(position);
             if (i == null) {
                 Log.e(TAG, "onBindViewHolder getting ingredient failed");
                 return;
@@ -285,33 +290,19 @@ public class GetAdapter {
             }
             this.recipe.replaceIngredients(this.activity, this.ingredientVol);
         }
-
-        public boolean isEmpty(){
-            return this.ingredientVol.isEmpty();
-        }
-
-        public boolean isAlcoholic(){
-            boolean alcoholic = false;
-            for(Ingredient i: this.ingredientVol.keySet()){
-                if(i!= null){
-                    alcoholic = alcoholic || i.isAlcoholic();
-                }
-            }
-            return alcoholic;
-        }
-
         public void add(Ingredient ingredient, Integer volume) {
             Log.i(TAG, "add");
             if(ingredient != null) {
+                this.ingredients.add(ingredient);
                 this.ingredientVol.put(ingredient, volume);
                 this.notifyItemInserted(this.getItemCount());
             }
         }
 
-
         public void remove(Ingredient ingredient) {
             Log.i(TAG, "remove");
-            int position = new ArrayList<>(this.ingredientVol.keySet()).indexOf(ingredient);
+            int position = this.ingredients.indexOf(ingredient);
+            this.ingredients.remove(ingredient);
             this.ingredientVol.remove(ingredient);
             this.notifyItemRemoved(position);
         }
