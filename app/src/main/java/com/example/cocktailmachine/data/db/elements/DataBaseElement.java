@@ -8,6 +8,10 @@ import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 public interface DataBaseElement {
+
+    public String getClassName();
+    public boolean areContentsTheSame(Object obj);
+
     long getID();
 
     void setID(long id);

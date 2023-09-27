@@ -1,12 +1,14 @@
 package com.example.cocktailmachine.ui.model.v2;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+//import android.widget.ListAdapter;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,13 +19,15 @@ import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
+import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.enums.Postexecute;
-import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class GetAdapter {
     private static final String TAG = "GetAdapter";
@@ -293,6 +297,41 @@ public class GetAdapter {
             Log.i(TAG, "remove");
             this.ingredientVol.remove(ingredient);
             this.notifyDataSetChanged();
+        }
+    }
+
+
+
+    static class ElementListAdapter<T extends DataBaseElement> extends ListAdapter<T, GetAdapter.StringView {
+        private List<T> elements = new ArrayList<>();
+        protected ElementListAdapter() {
+            super(new ElementItemCallBack<T>());
+        }
+
+        @NonNull
+        @Override
+        public StringView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            return null;
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull StringView holder, int position) {
+
+        }
+
+        static class ElementItemCallBack<T extends DataBaseElement> extends DiffUtil.ItemCallback<T> {
+
+            @Override
+            public boolean areItemsTheSame(@NonNull T oldItem, @NonNull T newItem) {
+                return (Objects.equals(oldItem.getClassName(), newItem.getClassName()))
+                        && oldItem.getID() == newItem.getID();
+            }
+
+            @Override
+            public boolean areContentsTheSame(@NonNull T oldItem, @NonNull T newItem) {
+                return (Objects.equals(oldItem.getClassName(), newItem.getClassName()))
+                        && oldItem.areContentsTheSame(newItem);
+            }
         }
     }
 }

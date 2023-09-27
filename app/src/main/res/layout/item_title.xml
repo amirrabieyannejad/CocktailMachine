@@ -9,8 +9,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="16dp"
+        android:paddingEnd="8dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:text="TextView"
+        android:text="@string/title"
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 </LinearLayout>
