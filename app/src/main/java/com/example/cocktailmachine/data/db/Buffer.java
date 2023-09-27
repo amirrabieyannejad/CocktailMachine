@@ -788,7 +788,6 @@ public class Buffer {
             this.fastNameRecipe.put(e.getName(), e);
             this.fastIDRecipe.put(e.getID(),e );
             if(e.isAvailable()){
-
                 this.fastNameAvailableRecipe.put(e.getName(), e);
                 this.fastIDAvailableRecipe.put(e.getID(),e );
             }
@@ -800,7 +799,6 @@ public class Buffer {
             this.fastNameRecipe.remove(e.getName());
             this.fastIDRecipe.remove(e.getID());
             if(e.isAvailable()){
-
                 this.fastNameAvailableRecipe.remove(e.getName());
                 this.fastIDAvailableRecipe.remove(e.getID());
             }
@@ -825,7 +823,8 @@ public class Buffer {
      * @return
      */
     public List<Recipe> getRecipes(Context context)  {
-        if(this.recipes == null|| this.recipes.isEmpty()){
+        //if(this.recipes == null|| this.recipes.isEmpty()){
+        if(this.getRecipes().isEmpty()){
             DatabaseConnection.init(context);
             try {
                 this.recipes = DatabaseConnection.getSingleton().loadAllRecipes();
@@ -846,7 +845,10 @@ public class Buffer {
             return null;
         }
         if(isFast){
-            return this.fastIDRecipe.get(id);
+            Recipe res = this.fastIDRecipe.get(id);
+            if(res != null){
+                return res;
+            }
         }
         for(Recipe i: this.recipes){
             if(i.getID() ==  id){
@@ -978,14 +980,16 @@ public class Buffer {
 
     public Recipe getAvailableRecipe(Long id){
         if(isFast){
-            return this.fastIDAvailableRecipe.get(id);
-        }else{
-            Recipe res = getRecipe(id);
-            if(res != null && res.isAvailable()){
+            Recipe res = this.fastIDAvailableRecipe.get(id);
+            if(res != null){
                 return res;
             }
-            return null;
         }
+        Recipe res = getRecipe(id);
+        if(res != null && res.isAvailable()){
+            return res;
+        }
+        return null;
     }
 
 
@@ -1045,10 +1049,12 @@ public class Buffer {
     public HashMap<Long, Integer> getIngredientIDtoVol(Recipe recipe){
         HashMap<Long, Integer> res = new HashMap<>();
         if(isFast){
-            for(SQLRecipeIngredient ri: Objects.requireNonNull(this.fastRecipeRecipeIngredient.get(recipe.getID()))){
-                res.put(ri.getIngredientID(), ri.getVolume());
+            if(this.fastRecipeRecipeIngredient.containsKey(recipe.getID())) {
+                for (SQLRecipeIngredient ri : Objects.requireNonNull(this.fastRecipeRecipeIngredient.get(recipe.getID()))) {
+                    res.put(ri.getIngredientID(), ri.getVolume());
+                }
+                return res;
             }
-            return res;
         }
         for(SQLRecipeIngredient ri: this.recipeIngredients){
             if(ri.getRecipeID()==recipe.getID()){
@@ -1060,10 +1066,12 @@ public class Buffer {
     public HashMap<String, Integer> getIngredientNameToVol(Recipe recipe){
         HashMap<String, Integer> res = new HashMap<>();
         if(isFast){
-            for(SQLRecipeIngredient ri: Objects.requireNonNull(this.fastRecipeRecipeIngredient.get(recipe.getID()))){
-                res.put(ri.getIngredient().getName(), ri.getVolume());
+            if(this.fastRecipeRecipeIngredient.containsKey(recipe.getID())) {
+                for (SQLRecipeIngredient ri : Objects.requireNonNull(this.fastRecipeRecipeIngredient.get(recipe.getID()))) {
+                    res.put(ri.getIngredient().getName(), ri.getVolume());
+                }
+                return res;
             }
-            return res;
         }
         for(SQLRecipeIngredient ri: this.recipeIngredients){
             if(ri.getRecipeID()==recipe.getID()){
@@ -1074,12 +1082,17 @@ public class Buffer {
     }
     public HashMap<Ingredient, Integer> getIngredientToVol(Recipe recipe) {
         HashMap<Ingredient, Integer> res = new HashMap<>();
+        if(recipe == null){
+            return res;
+        }
         try{
             if(isFast){
-                for(SQLRecipeIngredient ri: Objects.requireNonNull(this.fastRecipeRecipeIngredient.get(recipe.getID()))){
-                    res.put(ri.getIngredient(), ri.getVolume());
+                if(this.fastRecipeRecipeIngredient.containsKey(recipe.getID())) {
+                    for (SQLRecipeIngredient ri : Objects.requireNonNull(this.fastRecipeRecipeIngredient.get(recipe.getID()))) {
+                        res.put(ri.getIngredient(), ri.getVolume());
+                    }
+                    return res;
                 }
-                return res;
             }
         }catch (NullPointerException e){
             Log.e(TAG, "getIngredientToVol NullPointerException");
@@ -1145,11 +1158,24 @@ public class Buffer {
     }
 
     public void removeFromBuffer(SQLRecipeTopic recipeTopic){
+        if(recipeTopic == null){
+            return;
+        }
         this.recipeTopics.remove(recipeTopic);
         if(isFast){
-            Objects.requireNonNull(this.fastRecipeTopics.get(recipeTopic.getRecipeID())).remove(recipeTopic.getTopicID());
-            Objects.requireNonNull(this.fastRecipeRecipeTopic.get(recipeTopic.getRecipeID())).remove(recipeTopic);
-            Objects.requireNonNull(this.fastTopicRecipeTopic.get(recipeTopic.getTopicID())).remove(recipeTopic);
+            if(this.fastRecipeTopics.containsKey(recipeTopic.getRecipeID())){
+                Objects.requireNonNull(this.fastRecipeTopics.get(recipeTopic.getRecipeID())).remove(recipeTopic.getTopicID());
+            }
+            //Objects.requireNonNullElse(this.fastRecipeTopics.get(recipeTopic.getRecipeID()), new ArrayList<>()).remove(recipeTopic.getTopicID());
+
+            //Objects.requireNonNull(this.fastRecipeRecipeTopic.get(recipeTopic.getRecipeID())).remove(recipeTopic);
+            if(this.fastRecipeRecipeTopic.containsKey(recipeTopic.getRecipeID())){
+                Objects.requireNonNull(this.fastRecipeRecipeTopic.get(recipeTopic.getRecipeID())).remove(recipeTopic);
+            }
+            //Objects.requireNonNull(this.fastTopicRecipeTopic.get(recipeTopic.getTopicID())).remove(recipeTopic);
+            if(this.fastTopicRecipeTopic.containsKey(recipeTopic.getTopicID())){
+                Objects.requireNonNull(this.fastTopicRecipeTopic.get(recipeTopic.getRecipeID())).remove(recipeTopic);
+            }
         }
     }
 
@@ -1198,9 +1224,13 @@ public class Buffer {
         Long i_id = recipeIngredient.getIngredientID();
         this.recipeIngredients.remove(recipeIngredient);
         if(isFast){
-            Objects.requireNonNull(this.fastRecipeIngredient.get(ri_id)).remove(i_id);
-            Objects.requireNonNull(this.fastRecipeRecipeIngredient.get(r_id)).remove(recipeIngredient);
-            Objects.requireNonNull(this.fastIngredientRecipeIngredient.get(i_id)).remove(recipeIngredient);
+            if(this.fastRecipeIngredient.containsKey(ri_id)) {
+                Objects.requireNonNull(this.fastRecipeIngredient.get(ri_id)).remove(i_id);
+            }if(this.fastRecipeRecipeIngredient.containsKey(r_id)) {
+                Objects.requireNonNull(this.fastRecipeRecipeIngredient.get(ri_id)).remove(recipeIngredient);
+            }if(this.fastIngredientRecipeIngredient.containsKey(i_id)) {
+                Objects.requireNonNull(this.fastIngredientRecipeIngredient.get(ri_id)).remove(recipeIngredient);
+            }
         }
     }
 
