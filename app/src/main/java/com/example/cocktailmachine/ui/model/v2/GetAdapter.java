@@ -2,6 +2,7 @@ package com.example.cocktailmachine.ui.model.v2;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Ingredient;
@@ -89,12 +91,14 @@ public class GetAdapter {
      */
     static class TopicAdapter extends RecyclerView.Adapter<GetAdapter.StringView> {
         private final Activity activity;
+        private final RecyclerView rv;
         private final Recipe recipe;
         private final boolean withDelete;
         private final boolean withDisplay;
         private final List<Topic> topics;
-        public TopicAdapter(Activity activity, Recipe recipe, boolean withDelete, boolean withDisplay) {
+        public TopicAdapter(Activity activity,RecyclerView rv, Recipe recipe, boolean withDelete, boolean withDisplay) {
             this.activity = activity;
+            this.rv = rv;
             this.recipe = recipe;
             this.withDelete = withDelete;
             this.withDisplay = withDisplay;
@@ -149,20 +153,39 @@ public class GetAdapter {
             return this.recipe.getTopics().size();
         }
 
+        public void show(){
+            if(this.isEmpty()){
+                this.rv.setVisibility(View.GONE);
+            }else{
+                this.rv.setVisibility(View.VISIBLE);
+            }
+        }
 
+        public boolean isEmpty(){
+            return this.topics.isEmpty();
+        }
         public void add(Topic topic){
-            this.topics.add(topic);
-            this.notifyDataSetChanged();
+            Log.i(TAG, "add");
+            if(topic != null) {
+                this.topics.add(topic);
+                this.notifyItemInserted(this.getItemCount()-1);
+            }
+            show();
         }
 
 
         public void remove(Topic topic){
-            this.topics.remove(topic);
-            this.notifyDataSetChanged();
+            Log.i(TAG, "remove");
+            this.remove(this.topics.indexOf(topic));
         }
 
-        public void remove(int index){
-            this.topics.remove(index);
+        public void remove(int position){
+            Log.i(TAG, "remove");
+            if(position != -1) {
+                this.topics.remove(position);
+                this.notifyItemRemoved(position);
+                show();
+            }
         }
 
         public void save(){
@@ -176,6 +199,7 @@ public class GetAdapter {
         }
 
 
+
     }
 
     /**
@@ -184,18 +208,21 @@ public class GetAdapter {
     static class IngredientVolAdapter extends RecyclerView.Adapter<GetAdapter.StringView> {
         private final static String TAG = "IngredientVolAdapter";
         private final Activity activity;
+        private final RecyclerView rv;
         private final Recipe recipe;
         private final boolean withDelete;
         private final boolean withDisplay;
 
 
         private final HashMap<Ingredient, Integer> ingredientVol;
-        public IngredientVolAdapter(Activity activity, Recipe recipe, boolean withDelete, boolean withDisplay) {
+        public IngredientVolAdapter(Activity activity, RecyclerView rv, Recipe recipe, boolean withDelete, boolean withDisplay) {
             this.activity = activity;
+            this.rv = rv;
             this.recipe = recipe;
             this.ingredientVol = recipe.getIngredientToVolume();
             this.withDelete = withDelete;
             this.withDisplay = withDisplay;
+            this.show();
         }
 
         @NonNull
@@ -253,6 +280,14 @@ public class GetAdapter {
             }
         }
 
+        public void show(){
+            if(this.isEmpty()){
+                this.rv.setVisibility(View.GONE);
+            }else{
+                this.rv.setVisibility(View.VISIBLE);
+            }
+        }
+
         @Override
         public int getItemCount() {
             Log.i(TAG, "IngredientVolAdapter: getItemCount" +this.ingredientVol.size());
@@ -288,15 +323,18 @@ public class GetAdapter {
             Log.i(TAG, "add");
             if(ingredient != null) {
                 this.ingredientVol.put(ingredient, volume);
-                this.notifyDataSetChanged();
+                this.notifyItemInserted(this.getItemCount()-1);
             }
+            show();
         }
 
 
         public void remove(Ingredient ingredient) {
             Log.i(TAG, "remove");
+            int position = new ArrayList<>(this.ingredientVol.keySet()).indexOf(ingredient);
             this.ingredientVol.remove(ingredient);
-            this.notifyDataSetChanged();
+            this.notifyItemRemoved(position);
+            show();
         }
     }
 
@@ -396,8 +434,6 @@ public class GetAdapter {
         //private final Recipe recipe;
         private final boolean withDelete;
         private final boolean withDisplay;
-
-
         private final List<T> elements;// = new ArrayList<>();
         protected ElementListAdapter(@NonNull Activity activity,
                                      //@NonNull Recipe recipe,

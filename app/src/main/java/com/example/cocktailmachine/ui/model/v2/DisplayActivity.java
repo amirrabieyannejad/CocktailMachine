@@ -95,62 +95,43 @@ public class DisplayActivity extends BasicActivity {
         binding.includeRecipeIngredientsList.textViewListTitle.setText("Zutaten");
         binding.includeRecipeTopicsList.textViewListTitle.setText("Serviervorschläge");
 
-        /*
-        TitleListAdapter titleadapter = new TitleListAdapter(
-                this,
-                recipe.getIngredientIDs(),
-                recipe.getIngredientNames(),
-                ModelType.INGREDIENT);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        binding.includeRecipeIngredientsList.recyclerViewList.setLayoutManager(llm);
-        binding.includeRecipeIngredientsList.recyclerViewList.setAdapter(titleadapter);
 
-         */
         Log.i(TAG, "setIngredients");
-        HashMap<Ingredient, Integer> ingredientVolumeHashMap = recipe.getIngredientToVolume();
-        if(ingredientVolumeHashMap.size()>0) {
-            Log.i(TAG, "setIngredients size> 0");
-            Log.i(TAG, ingredientVolumeHashMap.toString());
-            binding.includeRecipeIngredientsList.recyclerViewList.setVisibility(View.VISIBLE);
-            binding.includeRecipeIngredientsList.recyclerViewList.setLayoutManager(GetAdapter.getNewLinearLayoutManager(this));
-            //binding.includeRecipeIngredientsList.recyclerViewList.setAdapter(new GetAdapter.IngredientVolAdapter(this, recipe, false, true));
-            binding.includeRecipeIngredientsList.recyclerViewList.setAdapter(new GetAdapter.IngredientVolumeAdapter(
-                    this,
-                    recipe,
-                    false,
-                    true));
-        }else{
-            Log.i(TAG, "setIngredients size<= 0");
-            binding.includeRecipeIngredientsList.recyclerViewList.setVisibility(View.GONE);
-        }
+        //HashMap<Ingredient, Integer> ingredientVolumeHashMap = recipe.getIngredientToVolume();
+        binding.includeRecipeIngredientsList.recyclerViewList.setLayoutManager(GetAdapter.getNewLinearLayoutManager(this));
+        binding.includeRecipeIngredientsList.recyclerViewList.setAdapter(
+                new GetAdapter.IngredientVolAdapter(
+                        this,
+                        binding.includeRecipeIngredientsList.recyclerViewList,
+                        recipe,
+                        false, true));
 
 
-        /*
-        TitleVolumeListAdapter titlevoladapter = new TitleVolumeListAdapter(
-                this,
-                recipe);
-        LinearLayoutManager llmvol = new LinearLayoutManager(this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        binding.includeRecipeIngredientsList.recyclerViewList.setLayoutManager(llmvol);
-        binding.includeRecipeIngredientsList.recyclerViewList.setAdapter(titlevoladapter);
-
-         */
         Log.i(TAG, "setTopics");
-        List<Topic> topics = recipe.getTopics();
+        //List<Topic> topics = recipe.getTopics();
+        binding.includeRecipeTopicsList.recyclerViewList.setLayoutManager(
+                GetAdapter.getNewLinearLayoutManager(this));
+        binding.includeRecipeTopicsList.recyclerViewList.setAdapter(
+                new GetAdapter.TopicAdapter(
+                        this,
+                        binding.includeRecipeTopicsList.recyclerViewList,
+                        recipe,
+                        false,
+                        true));
+        /*
         if(topics.size()>0) {
             Log.i(TAG, "setTopics size> 0");
             Log.i(TAG, topics.toString());
             binding.includeRecipeTopicsList.recyclerViewList.setVisibility(View.VISIBLE);
-            binding.includeRecipeTopicsList.recyclerViewList.setLayoutManager(GetAdapter.getNewLinearLayoutManager(this));
-            binding.includeRecipeTopicsList.recyclerViewList.setAdapter(new GetAdapter.TopicAdapter(this, recipe, false, true));
         }else{
             Log.i(TAG, "setTopics size<= 0");
             binding.includeRecipeTopicsList.recyclerViewList.setVisibility(View.GONE);
         }
 
+         */
 
-/*
+
+        /*
         TitleListAdapter adapter = new TitleListAdapter(
                 this,
                 recipe.getIngredientIds(),

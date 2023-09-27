@@ -293,7 +293,19 @@ public class AddActivity extends BasicActivity {
         binding.editTextAddTitle.setVisibility(View.VISIBLE);
         binding.editTextAddTitle.setHint("Name des Cocktails");
 
-        binding.subLayoutAddIngredient.setVisibility(View.VISIBLE);
+
+
+        binding.recyclerViewIngredients.setLayoutManager(
+                GetAdapter.getNewLinearLayoutManager(this));
+        this.ingVolAdapter = new GetAdapter.IngredientVolAdapter(
+                AddActivity.this,
+                binding.recyclerViewIngredients,
+                this.recipe,
+                true,
+                false);
+
+        binding.recyclerViewIngredients.setAdapter(this.ingVolAdapter);
+
         View.OnClickListener ingAdd = v ->{
             Log.i(TAG, "subLayoutAddIngredient: clicked");
             GetDialog.getIngVol(activity,
@@ -317,49 +329,80 @@ public class AddActivity extends BasicActivity {
                         @Override
                         public void post() {
                             Log.i(TAG,"IngredientVolumeSaver: post: ");
-                            AddActivity.this.getIngVolAdapter().add(ing, vol);
+                            AddActivity.this.ingVolAdapter.add(ing, vol);
                             Log.i(TAG, "subLayoutAddIngredient: ing vol added");
-                            Log.i(TAG, AddActivity.this.getIngVolAdapter().toString());
+                            Log.i(TAG, AddActivity.this.ingVolAdapter.toString());
                             //AddActivity.this.updateIngredients();
                             //Log.i(TAG, "subLayoutAddIngredient: updateIngredients");
                         }
                     });
 
         };
+        binding.subLayoutAddIngredient.setVisibility(View.VISIBLE);
         binding.subLayoutAddIngredientAdd.setOnClickListener(ingAdd);
         binding.ButtonAddIngredient.setOnClickListener(ingAdd);
-        setIngredients();
+        Log.i(TAG, "setIngredients");
+        /*
+        if((this.ingVolAdapter== null
+                && this.recipe.getIngredientToVolume().size()>0)
+                ||(this.ingVolAdapter!= null
+                && this.ingVolAdapter.getItemCount()>0)) {
+            Log.i(TAG, "setIngredients size> 0");
+            //Log.i(TAG, AddActivity.this.ingredientVolumeHashMap.toString());
+
+            binding.recyclerViewIngredients.setVisibility(View.VISIBLE);
+            if(binding.recyclerViewIngredients.getAdapter() == null) {
+                binding.recyclerViewIngredients.setLayoutManager(GetAdapter.getNewLinearLayoutManager(this));
+                //this.ingVolAdapter = new GetAdapter.IngredientVolAdapter(AddActivity.this, this.recipe);
+                binding.recyclerViewIngredients.setAdapter(this.getIngVolAdapter());
+            }
+        }else{
+            Log.i(TAG, "setIngredients size<= 0");
+            binding.recyclerViewIngredients.setVisibility(View.GONE);
+        }
+
+         */
+        //setAlcoholic();
 
 
-        binding.subLayoutAddTopic.setVisibility(View.VISIBLE);
+
+        Log.i(TAG, "setTopics");
+        binding.recyclerViewTopics.setLayoutManager(GetAdapter.getNewLinearLayoutManager(this));
+        this.topicAdapter = new GetAdapter.TopicAdapter(
+                AddActivity.this,
+                binding.recyclerViewTopics,
+                this.recipe,
+                true,
+                false);
         View.OnClickListener topAdd =v ->{
             Log.i(TAG, "subLayoutAddTopic: clicked");
             GetDialog.addTopic(activity,
                     (t, d) -> {
-                        AddActivity.this.getTopicAdapter().add(t);
+                        AddActivity.this.topicAdapter.add(t);
                         Log.i(TAG, "subLayoutAddTopic: topic added");
                         d.dismiss();
                         Log.i(TAG, "subLayoutAddTopic: dialog dismiss");
-                        AddActivity.this.setTopics();
+                        //AddActivity.this.setTopics();
                         Log.i(TAG, "subLayoutAddTopic: updateTopics");
                     });
         };
+        binding.subLayoutAddTopic.setVisibility(View.VISIBLE);
         binding.subLayoutAddTopicAdd.setOnClickListener(topAdd);
         binding.ButtonAddTopic.setOnClickListener(topAdd);
-        setTopics();
+        //setTopics();
 
 
         //save
         binding.buttonSave.setOnClickListener(v -> {
             Log.i(TAG, "buttonSave: clicked");
             //Log.i(TAG, "ingvol "+AddActivity.this.ingredientVolumeHashMap.toString());
-            Log.i(TAG, "topics "+AddActivity.this.getTopicAdapter().toString());
+            Log.i(TAG, "topics "+AddActivity.this.topicAdapter.toString());
             AddActivity.this.recipe.setName(activity, binding.editTextAddTitle.getText().toString());
             AddActivity.this.recipe.save(activity);
             //AddActivity.this.recipe.replaceIngredients(activity,
              //       AddActivity.this.ingredientVolumeHashMap);
-            AddActivity.this.getIngVolAdapter().save();
-            AddActivity.this.getTopicAdapter().save();
+            AddActivity.this.ingVolAdapter.save();
+            AddActivity.this.topicAdapter.save();
             if(AddActivity.this.recipe.sendSave(
                     activity)){
                 Log.i(TAG, "buttonSave: show recipe");
@@ -490,94 +533,7 @@ public class AddActivity extends BasicActivity {
 
 
 
-    //recipe helper
 
-    private GetAdapter.IngredientVolAdapter getIngVolAdapter(){
-        if(this.ingVolAdapter==null){
-            this.ingVolAdapter = new GetAdapter.IngredientVolAdapter(AddActivity.this, this.recipe, true, false);
-        }
-        return this.ingVolAdapter;
-    }
-
-    private GetAdapter.TopicAdapter getTopicAdapter(){
-        if(this.topicAdapter==null){
-            this.topicAdapter = new GetAdapter.TopicAdapter(AddActivity.this, this.recipe, true, false);
-        }
-        return this.topicAdapter;
-    }
-
-
-    private boolean isAlcoholic(){
-        Log.i(TAG, "isAlcoholic");
-        //boolean isAlcoholic = false;
-        return this.getIngVolAdapter().isAlcoholic();
-    }
-
-    private void setAlcoholic(){
-        Log.i(TAG, "setAlcoholic");
-        if (this.ingVolAdapter==null || (this.ingVolAdapter.isEmpty())) {
-            binding.includeAlcoholic.getRoot().setVisibility(View.GONE);
-            binding.includeNotAlcoholic.getRoot().setVisibility(View.GONE);
-        }
-        if(isAlcoholic()){
-            binding.includeAlcoholic.getRoot().setVisibility(View.VISIBLE);
-            binding.includeNotAlcoholic.getRoot().setVisibility(View.GONE);
-        }else{
-            binding.includeAlcoholic.getRoot().setVisibility(View.GONE);
-            binding.includeNotAlcoholic.getRoot().setVisibility(View.VISIBLE);
-        }
-    }
-
-
-
-    /**
-     * is supposed to reload the current ingredient list
-     */
-    private void setIngredients(){
-        Log.i(TAG, "setIngredients");
-        if((this.ingVolAdapter== null && this.recipe.getIngredientToVolume().size()>0)||(this.ingVolAdapter!= null && this.ingVolAdapter.getItemCount()>0)) {
-            Log.i(TAG, "setIngredients size> 0");
-            //Log.i(TAG, AddActivity.this.ingredientVolumeHashMap.toString());
-
-            binding.recyclerViewIngredients.setVisibility(View.VISIBLE);
-            if(binding.recyclerViewIngredients.getAdapter() == null) {
-                binding.recyclerViewIngredients.setLayoutManager(GetAdapter.getNewLinearLayoutManager(this));
-                //this.ingVolAdapter = new GetAdapter.IngredientVolAdapter(AddActivity.this, this.recipe);
-                binding.recyclerViewIngredients.setAdapter(this.getIngVolAdapter());
-            }
-        }else{
-            Log.i(TAG, "setIngredients size<= 0");
-            binding.recyclerViewIngredients.setVisibility(View.GONE);
-        }
-        setAlcoholic();
-
-    }
-
-
-
-
-    /**
-     * is supposed to reload the current topic list
-     */
-    private void setTopics() {
-
-        Log.i(TAG, "setTopics");
-        if((this.topicAdapter== null && this.recipe.getTopics().size()>0)||(this.topicAdapter!= null &&this.topicAdapter.getItemCount()>0)) {
-            Log.i(TAG, "setTopics size> 0");
-            //Log.i(TAG, AddActivity.this.ingredientVolumeHashMap.toString());
-
-            binding.recyclerViewTopics.setVisibility(View.VISIBLE);
-            if(binding.recyclerViewTopics.getAdapter() == null) {
-                binding.recyclerViewTopics.setLayoutManager(GetAdapter.getNewLinearLayoutManager(this));
-                //this.ingVolAdapter = new GetAdapter.IngredientVolAdapter(AddActivity.this, this.recipe);
-                binding.recyclerViewTopics.setAdapter(this.getTopicAdapter());
-            }
-        }else{
-            Log.i(TAG, "setTopics size<= 0");
-            binding.recyclerViewTopics.setVisibility(View.GONE);
-        }
-
-    }
 
 
 
