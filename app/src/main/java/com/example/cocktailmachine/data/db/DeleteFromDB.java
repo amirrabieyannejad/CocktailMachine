@@ -18,6 +18,7 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.tables.Tables;
 
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ import java.util.List;
  * @project CocktailMachine
  */
 public class DeleteFromDB {
-    private static String TAG = "DeleteFromDB";
+    private static final String TAG = "DeleteFromDB";
 
 
     private static SQLiteDatabase getWritableDatabase(Context context){
