@@ -100,7 +100,7 @@ public class GetAdapter {
             this.recipe = recipe;
             this.withDelete = withDelete;
             this.withDisplay = withDisplay;
-            this.topics = this.recipe.getTopics();
+            this.topics = new ArrayList<>(this.recipe.getTopics());
         }
 
         @NonNull
@@ -115,7 +115,9 @@ public class GetAdapter {
         @Override
         public void onBindViewHolder(@NonNull GetAdapter.StringView holder, int position) {
             Log.i(TAG, "TopicAdapter: onBindViewHolder");
+            Log.i(TAG, "TopicAdapter: onBindViewHolder position: "+position);
             Topic topic = this.topics.get(position);
+            Log.i(TAG, "TopicAdapter: onBindViewHolder topic: "+topic.toString());
             View.OnLongClickListener delete =  v -> {
                 Log.i(TAG, "TopicAdapter: setTxt topic clicked");
                 GetDialog.deleteAddElement(this.activity, "den Serviervorschlag " + topic.getName(), new Postexecute() {
@@ -151,10 +153,6 @@ public class GetAdapter {
             return this.topics.size();
         }
 
-
-        public boolean isEmpty(){
-            return this.topics.isEmpty();
-        }
         public void add(Topic topic){
             Log.i(TAG, "add");
             if(topic != null) {

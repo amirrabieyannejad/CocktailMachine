@@ -368,7 +368,8 @@ public class AddActivity extends BasicActivity {
 
         Log.i(TAG, "setTopics");
         binding.recyclerViewTopics.setVisibility(View.VISIBLE);
-        binding.recyclerViewTopics.setLayoutManager(GetAdapter.getNewLinearLayoutManager(this));
+        binding.recyclerViewTopics.setLayoutManager(
+                GetAdapter.getNewLinearLayoutManager(this));
         this.topicAdapter = new GetAdapter.TopicAdapter(
                 AddActivity.this,
                 this.recipe,
@@ -378,14 +379,17 @@ public class AddActivity extends BasicActivity {
             Log.i(TAG, "subLayoutAddTopic: clicked");
             GetDialog.addTopic(activity,
                     (t, d) -> {
-                        AddActivity.this.topicAdapter.add(t);
                         Log.i(TAG, "subLayoutAddTopic: topic added");
+                        AddActivity.this.topicAdapter.add(t);
+                        Log.i(TAG, "subLayoutAddTopic: topic added to adapter");
                         d.dismiss();
                         //Log.i(TAG, "subLayoutAddTopic: dialog dismiss");
                         //AddActivity.this.setTopics();
                         //Log.i(TAG, "subLayoutAddTopic: updateTopics");
                     });
         };
+        binding.recyclerViewTopics.setAdapter(this.topicAdapter);
+
         binding.subLayoutAddTopic.setVisibility(View.VISIBLE);
         binding.subLayoutAddTopicAdd.setOnClickListener(topAdd);
         binding.ButtonAddTopic.setOnClickListener(topAdd);
