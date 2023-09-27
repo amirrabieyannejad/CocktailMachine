@@ -212,7 +212,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     @Override
     public void add(Context context, Ingredient ingredient, int volume) {
         ingredient.save(context);
-        SQLRecipeIngredient st = new SQLRecipeIngredient(this.getID(), ingredient.getID(), volume);
+        SQLRecipeIngredient st = new SQLRecipeIngredient( ingredient.getID(),this.getID(), volume);
         st.save(context);
         AddOrUpdateToDB.addOrUpdate(context, st );
         //Buffer.getSingleton().addToBuffer(st);
@@ -240,6 +240,11 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     public void delete(Context context) {
         Log.i(TAG, "delete");
         DeleteFromDB.remove(context, this);
+    }
+
+    @Override
+    public String getClassName() {
+        return "SQLRecipe";
     }
 
     @Override

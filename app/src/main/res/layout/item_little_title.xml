@@ -8,6 +8,9 @@
         android:id="@+id/textView_item_little_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+        android:padding="8dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="8dp"
+        android:text="@string/title"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 </LinearLayout>

@@ -2,20 +2,28 @@ package com.example.cocktailmachine.ui.model.v2;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
+import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.enums.AdminRights;
+import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.databinding.ActivityDisplayBinding;
 import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
 
+import java.util.HashMap;
+import java.util.List;
+
 public class DisplayActivity extends BasicActivity {
+    private static final String TAG = "DisplayActivity";
     ActivityDisplayBinding binding;
 
     @Override
@@ -49,9 +57,8 @@ public class DisplayActivity extends BasicActivity {
     void postSetUp() {
 
         binding.textViewDisplayTitle.setOnClickListener(
-                v -> GetActivity.goToDisplay(
+                v -> GetActivity.goToList(
                 DisplayActivity.this,
-                        FragmentType.List,
                         DisplayActivity.this.getModelType()));
     }
 
@@ -62,7 +69,7 @@ public class DisplayActivity extends BasicActivity {
 
     @Override
     void setUpRecipe(){
-        Recipe recipe = Recipe.getRecipe(getID());
+        Recipe recipe = Recipe.getRecipe(this, getID());
         if(recipe == null){
             binding.textViewDisplayTitle.setText("Fehler");
             binding.textViewDisplayDescription.setText("Das Rezept konnte nicht gefunden werden.");
@@ -88,27 +95,41 @@ public class DisplayActivity extends BasicActivity {
         binding.includeRecipeIngredientsList.textViewListTitle.setText("Zutaten");
         binding.includeRecipeTopicsList.textViewListTitle.setText("Serviervorschläge");
 
-        TitleListAdapter titleadapter = new TitleListAdapter(
-                this,
-                recipe.getIngredientIDs(),
-                recipe.getIngredientNames(),
-                ModelType.INGREDIENT);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        binding.includeRecipeIngredientsList.recyclerViewList.setLayoutManager(llm);
-        binding.includeRecipeIngredientsList.recyclerViewList.setAdapter(titleadapter);
+
+        Log.i(TAG, "setIngredients");
+        //HashMap<Ingredient, Integer> ingredientVolumeHashMap = recipe.getIngredientToVolume();
+        binding.includeRecipeIngredientsList.recyclerViewList.setLayoutManager(GetAdapter.getNewLinearLayoutManager(this));
+        binding.includeRecipeIngredientsList.recyclerViewList.setAdapter(
+                new GetAdapter.IngredientVolAdapter(
+                        this,
+                        recipe,
+                        false, true));
 
 
-        TitleVolumeListAdapter titlevoladapter = new TitleVolumeListAdapter(
-                this,
-                recipe);
-        LinearLayoutManager llmvol = new LinearLayoutManager(this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        binding.includeRecipeIngredientsList.recyclerViewList.setLayoutManager(llmvol);
-        binding.includeRecipeIngredientsList.recyclerViewList.setAdapter(titlevoladapter);
+        Log.i(TAG, "setTopics");
+        //List<Topic> topics = recipe.getTopics();
+        binding.includeRecipeTopicsList.recyclerViewList.setLayoutManager(
+                GetAdapter.getNewLinearLayoutManager(this));
+        binding.includeRecipeTopicsList.recyclerViewList.setAdapter(
+                new GetAdapter.TopicAdapter(
+                        this,
+                        recipe,
+                        false,
+                        true));
+        /*
+        if(topics.size()>0) {
+            Log.i(TAG, "setTopics size> 0");
+            Log.i(TAG, topics.toString());
+            binding.includeRecipeTopicsList.recyclerViewList.setVisibility(View.VISIBLE);
+        }else{
+            Log.i(TAG, "setTopics size<= 0");
+            binding.includeRecipeTopicsList.recyclerViewList.setVisibility(View.GONE);
+        }
+
+         */
 
 
-/*
+        /*
         TitleListAdapter adapter = new TitleListAdapter(
                 this,
                 recipe.getIngredientIds(),
@@ -275,6 +296,56 @@ public class DisplayActivity extends BasicActivity {
             }
         });
     }
+
+
+
+
+
+
+
+
+
+
+    //recipe helper
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //simple buttons
+
+
+    public void list(View view) {
+        GetActivity.goToList(this, getModelType());
+    }
+
+    public void reload(View view) {
+        Buffer.localRefresh(this);
+        DisplayActivity.this.reload();
+        setUp();
+    }
+
+    public void edit(View view) {
+        GetActivity.goToEdit(this, getModelType(), this.getID());
+    }
+
+
+
+    /*
+    private void goToList(){
+        GetActivity.goToList(this, getModelType());
+    }
+
+     */
 
 
 

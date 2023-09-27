@@ -21,6 +21,61 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Display3"
             android:textStyle="bold" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:focusable="false">
+
+            <ImageButton
+                android:id="@+id/imageButton_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="@color/cardview_shadow_end_color"
+                android:contentDescription="@string/btn_editRecipe"
+                android:clickable="true"
+                android:focusable="true"
+                android:longClickable="false"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:onClick="edit"
+                app:tint="@color/black"
+                app:srcCompat="@drawable/ic_edit" />
+
+            <ImageButton
+                android:id="@+id/imageButtonReload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="@color/cardview_shadow_end_color"
+                android:contentDescription="@string/reload"
+                android:clickable="true"
+                android:focusable="true"
+                android:longClickable="false"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:onClick="reload"
+                app:tint="@color/black"
+                app:srcCompat="@drawable/baseline_replay_24" />
+
+            <ImageButton
+                android:id="@+id/imageButtonList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="@color/cardview_shadow_end_color"
+                android:contentDescription="@string/gotolist"
+                android:clickable="true"
+                android:focusable="true"
+                android:longClickable="false"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:onClick="list"
+                app:tint="@color/black"
+                app:srcCompat="@drawable/baseline_article_24" />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/textViewDisplayDescription"
             android:layout_width="match_parent"

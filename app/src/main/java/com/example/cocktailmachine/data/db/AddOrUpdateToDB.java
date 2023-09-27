@@ -13,6 +13,7 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.tables.Tables;
 
 /**
@@ -25,11 +26,18 @@ public class AddOrUpdateToDB {
 
 
 
+    /*
     private static SQLiteDatabase getReadableDatabase(Context context){
         return DatabaseConnection.init(context).getReadableDatabase();
     }
+
+     */
     private static SQLiteDatabase getWritableDatabase(Context context){
-        return DatabaseConnection.init(context).getWritableDatabase();
+        try {
+            return DatabaseConnection.getSingleton().getWritableDatabase();
+        } catch (NotInitializedDBException e) {
+            return DatabaseConnection.init(context).getWritableDatabase();
+        }
     }
 
 
@@ -157,7 +165,7 @@ public class AddOrUpdateToDB {
         }else{
             Log.i(TAG, "first time saving");
             recipeIngredient.setID(Tables.TABLE_RECIPE_INGREDIENT.addElement(getWritableDatabase(context), recipeIngredient));
-            Buffer.getSingleton().addToBuffer(recipeIngredient);
+            //Buffer.getSingleton().addToBuffer(recipeIngredient);
             recipeIngredient.wasSaved();;
         }
         Buffer.getSingleton(context).addToBuffer(recipeIngredient);

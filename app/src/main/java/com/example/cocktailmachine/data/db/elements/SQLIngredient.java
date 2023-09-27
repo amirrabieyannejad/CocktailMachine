@@ -160,6 +160,11 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         return this.alcoholic;
     }
 
+    @Override
+    public String getClassName() {
+        return "SQLIngredient";
+    }
+
     /**
      * true, if ingredient pump connection exists and pump filled with conntent
      * @return

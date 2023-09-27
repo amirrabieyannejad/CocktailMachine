@@ -119,5 +119,7 @@
     <string name="fehlerbeschreibung">Fehlerbeschreibung!</string>
     <string name="bla">bla</string>
     <string name="volum">Volumen:</string>
+    <string name="reload">reload</string>
+    <string name="gotolist">gotolist</string>
 
 </resources>

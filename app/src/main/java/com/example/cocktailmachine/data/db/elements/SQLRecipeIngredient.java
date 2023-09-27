@@ -9,6 +9,8 @@ import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
+import java.util.Objects;
+
 public class SQLRecipeIngredient extends SQLDataBaseElement {
     private static final String TAG = "SQLRecipeIngredient";
     private long ingredientID = -1L;
@@ -57,6 +59,11 @@ public class SQLRecipeIngredient extends SQLDataBaseElement {
     public void setRecipeID(long recipeID) {
         this.recipeID= recipeID;
         this.wasChanged();
+    }
+
+    @Override
+    public String getClassName() {
+        return "SQLRecipeIngredient";
     }
 
     /**

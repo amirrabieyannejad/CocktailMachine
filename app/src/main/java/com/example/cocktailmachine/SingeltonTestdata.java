@@ -68,6 +68,11 @@ public class SingeltonTestdata {
             }
 
             @Override
+            public String getClassName() {
+                return null;
+            }
+
+            @Override
             public long getID() {
                 return 0;
             }
@@ -100,6 +105,11 @@ public class SingeltonTestdata {
                     @Override
                     public int compareTo(Ingredient o) {
                         return 0;
+                    }
+
+                    @Override
+                    public String getClassName() {
+                        return null;
                     }
 
                     @Override
@@ -240,6 +250,11 @@ public class SingeltonTestdata {
                     @Override
                     public int compareTo(Ingredient o) {
                         return 0;
+                    }
+
+                    @Override
+                    public String getClassName() {
+                        return null;
                     }
 
                     @Override
@@ -566,6 +581,11 @@ public class SingeltonTestdata {
             }
 
             @Override
+            public String getClassName() {
+                return null;
+            }
+
+            @Override
             public long getID() {
                 return 0;
             }
@@ -613,6 +633,11 @@ public class SingeltonTestdata {
                     @Override
                     public int compareTo(Ingredient o) {
                         return 0;
+                    }
+
+                    @Override
+                    public String getClassName() {
+                        return null;
                     }
 
                     @Override
@@ -753,6 +778,11 @@ public class SingeltonTestdata {
                     @Override
                     public int compareTo(Ingredient o) {
                         return 0;
+                    }
+
+                    @Override
+                    public String getClassName() {
+                        return null;
                     }
 
                     @Override

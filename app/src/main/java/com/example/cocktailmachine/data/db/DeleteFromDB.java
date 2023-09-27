@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.navigation.ActionOnlyNavDirections;
+
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
@@ -16,6 +18,7 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.tables.Tables;
 
 import java.util.ArrayList;
@@ -27,7 +30,7 @@ import java.util.List;
  * @project CocktailMachine
  */
 public class DeleteFromDB {
-    private static String TAG = "DeleteFromDB";
+    private static final String TAG = "DeleteFromDB";
 
 
     private static SQLiteDatabase getWritableDatabase(Context context){
@@ -109,4 +112,8 @@ public class DeleteFromDB {
     }
 
 
+    public static void removeAll(Context context) {
+        DatabaseConnection.init(context).emptyAll();
+        Buffer.getSingleton(context).noMemory();
+    }
 }

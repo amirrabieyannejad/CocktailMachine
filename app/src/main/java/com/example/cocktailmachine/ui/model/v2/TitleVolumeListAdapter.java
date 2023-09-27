@@ -110,15 +110,13 @@ public class TitleVolumeListAdapter extends RecyclerView.Adapter<TitleVolumeList
             Log.w(TAG, "TitleVolumeRow: set: hier tritt der Fehler auf ================ Gibt es eine Variante wo es klappt?");
             this.vol.setText(String.valueOf(this.ingredient.getVolume()));
             this.title.setOnClickListener(v ->
-                    GetActivity.goToDisplay(
+                    GetActivity.goToLook(
                             activity,
-                            FragmentType.Model,
                             ModelType.INGREDIENT,
                             this.ingredient.getID()));
             this.vol.setOnClickListener(v ->
-                    GetActivity.goToDisplay(
+                    GetActivity.goToLook(
                             activity,
-                            FragmentType.Model,
                             ModelType.PUMP,
                             this.ingredient.getID()));
             if (AdminRights.isAdmin()) {

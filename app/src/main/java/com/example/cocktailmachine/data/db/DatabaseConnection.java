@@ -41,75 +41,23 @@ class DatabaseConnection extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseConnection";
     private static int version = 1;
     private static final SQLiteDatabase.CursorFactory factory = null;
-    //private UserPrivilegeLevel privilege = UserPrivilegeLevel.User;
-    //private List<Pump> pumps = new ArrayList<>();
-    //private List<Ingredient> ingredients = new ArrayList<>();
-    //private List<Recipe> recipes = new ArrayList<>();
-    //private List<Topic> topics = new ArrayList<>();
-    //private List<SQLIngredientPump> ingredientPumps = new ArrayList<>();
-    //private List<SQLRecipeIngredient> recipeIngredients = new ArrayList<>();
 
 
     private DatabaseConnection(@Nullable Context context) {
-        super(context, DatabaseConnection.DBname,
+        super(context,
+                DatabaseConnection.DBname,
                 DatabaseConnection.factory,
                 DatabaseConnection.version);
         Log.i(TAG, "DatabaseConnection");
-        //this.privilege = UserPrivilegeLevel.User;
-    }
-
-    private DatabaseConnection(@Nullable Context context, UserPrivilegeLevel privilege) {
-        super(context, DatabaseConnection.DBname,
-                DatabaseConnection.factory,
-                DatabaseConnection.version);
-        //this.privilege = privilege;
-        Log.i(TAG, "DatabaseConnection");
-        AdminRights.setUserPrivilegeLevel(privilege);
-
     }
 
     static synchronized DatabaseConnection getSingleton() throws NotInitializedDBException {
 
         Log.i(TAG, "getSingleton");
-        if(DatabaseConnection.isInitialized()) {
+        if(!DatabaseConnection.isInitialized()) {
             throw new NotInitializedDBException();
         }
         return DatabaseConnection.singleton;
-    }
-
-    static synchronized DatabaseConnection getDataBase() throws NotInitializedDBException {
-        Log.i(TAG, "getDataBase");
-        return DatabaseConnection.getSingleton();
-    }
-
-    static synchronized void initializeSingleton(Context context){
-        Log.i(TAG, "initialize_singleton");
-        DatabaseConnection.singleton = new DatabaseConnection(context);
-        try {
-            Log.i(TAG, "initialize_singleton: start loading");
-            DatabaseConnection.singleton.loadDummy(context);
-            Buffer.getSingleton().checkAllAvailability(context);
-            Log.i(TAG, "initialize_singleton: finished loading");
-        } catch (NotInitializedDBException|MissingIngredientPumpException e) {
-            Log.i(TAG, "initialize_singleton: Exception");
-            Log.e(TAG, e.toString());
-            e.printStackTrace();
-        }
-    }
-
-    static synchronized void initializeSingleton(Context context, UserPrivilegeLevel privilege){
-        Log.i(TAG, "initialize_singleton");
-        DatabaseConnection.singleton = new DatabaseConnection(context, privilege);
-        try {
-            Log.i(TAG, "initialize_singleton: start loading");
-            DatabaseConnection.singleton.loadDummy(context);
-            Buffer.getSingleton().checkAllAvailability(context);
-            Log.i(TAG, "initialize_singleton: finished loading");
-        }  catch (NotInitializedDBException|MissingIngredientPumpException e) {
-            Log.i(TAG, "initialize_singleton: Exception");
-            Log.e(TAG, e.toString());
-            e.printStackTrace();
-        }
     }
 
     private void loadDummy(Context context) throws NotInitializedDBException, MissingIngredientPumpException {
@@ -128,11 +76,14 @@ class DatabaseConnection extends SQLiteOpenHelper {
 
     static synchronized boolean isInitialized(){
         Log.i(TAG, "is_initialized");
-        return DatabaseConnection.singleton == null;
+        return DatabaseConnection.singleton != null;
     }
 
     static synchronized DatabaseConnection init(Context context){
         Log.i(TAG, "init");
+        if(DatabaseConnection.isInitialized()){
+            DatabaseConnection.singleton.close();
+        }
         DatabaseConnection.singleton = new DatabaseConnection(context);
         return  DatabaseConnection.singleton;
     }
@@ -153,7 +104,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
      * deletes all Tables and creates all newly empty
      * @author Johanna Reidt
      */
-    private void emptyAll(){
+    void emptyAll(){
         Log.i(TAG, "emptyAll");
         //resetAll();
         Tables.deleteAll(this.getWritableDatabase());
@@ -224,20 +175,6 @@ class DatabaseConnection extends SQLiteOpenHelper {
     }
 
 
-    /*
-    List<Recipe> loadAvailabilityForRecipes() {
-        Log.i(TAG, "loadAvailableRecipes");
-        //return (List<Recipe>) Tables.TABLE_RECIPE.getAvailable(this.getReadableDatabase() );
-        List<Recipe> res = new ArrayList<>();
-        for(Recipe i: this.recipes){
-            if(i.loadAvailable()){
-                res.add(i);
-            }
-        }
-        return res;
-    }
-
-     */
 
     /**
      * loads all recipes from db
@@ -250,31 +187,6 @@ class DatabaseConnection extends SQLiteOpenHelper {
         return (List<Recipe>) res;
     }
 
-    /**
-     * load Availability For Ingredients
-     * @return available ingredients
-     */
-    /*
-    List<Ingredient> loadAvailabilityForIngredients() {
-        Log.i(TAG, "loadAvailableIngredients");
-       // return IngredientTable.
-        /*
-        List<? extends Ingredient> res =  Tables.TABLE_INGREDIENT.getElements(
-                this.getReadableDatabase(),
-                this.getAvailableIngredientIDs());
-        return (List<Ingredient>) res;
-
-         */
-    /*
-        List<Ingredient> res = new ArrayList<>();
-        for(Ingredient i: this.ingredients){
-            if(i.isAvailable()){
-                res.add(i);
-            }
-        }
-        return res;
-    }
-    */
 
 
     /**
@@ -331,36 +243,9 @@ class DatabaseConnection extends SQLiteOpenHelper {
         return Tables.TABLE_RECIPE_TOPIC.getAllElements(this.getReadableDatabase());
     }
 
-    /*
-    void checkForAvailablityInRecipes(){
-        for(Recipe r: this.recipes){
-            r.isAvailable();
-        }
-    }
-
-     */
 
 
 
-    //CHECKER
-/*
-    boolean checkAvailabilityOfAllIngredients(HashMap<Long, Integer> ingredientVolume) {
-        Log.i(TAG, "checkAvailabilityOfAllIngredients");
-        final List<Boolean> availables = new ArrayList<>();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            ingredientVolume.forEach((id, time)->{
-                availables.add(this.getIngredient(id).getVolume()>time);
-            });
-            return availables.stream().reduce(true, (b1,b2)-> b1 && b2);
-        }
-        return Helper.ingredientAvailable(ingredientVolume);
-    }
-
- */
-
-    /**
-     * load all availabilities
-     */
 
 
 
@@ -373,276 +258,6 @@ class DatabaseConnection extends SQLiteOpenHelper {
 
     //GETTER //Not allowed to fetch from database !!!only!!! from buffer unless they are admins
 
-    /*
-    private List<Long> getAvailableIngredientIDs(){
-        Log.i(TAG, "getAvailableIngredientIDs");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return this.ingredientPumps
-                    .stream().map(SQLIngredientPump::getIngredientID)
-                    .collect(Collectors.toList());
-        }
-        return Helper.getIngredientIds(this.ingredientPumps);
-    }
-
-     */
-    /*
-    List<SQLIngredientPump> getIngredientPumps() {
-        Log.i(TAG, "getIngredientPumps");
-        return this.ingredientPumps;
-    }
-
-
-     */
-    /*
-    List<Pump> getPumps() {
-        Log.i(TAG, "getPumps");
-        return this.pumps;
-    }
-
-
-     */
-    /*
-    Pump getPump(Long id){
-        Log.i(TAG, "getPump");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return this.pumps.stream().filter(p->p.getID()==id).findFirst().orElse(null);
-        }
-        return Helper.getPumpHelper().getWithId(this.pumps, id);
-    }
-
-
-     */
-    /*
-    @Nullable
-    Pump getPumpWithSlot(int slot) {
-        for(Pump p: this.pumps){
-            if(p.getSlot()==slot){
-                return p;
-            }
-        }
-        return null;
-    }
-
-
-     */
-    /*
-    Ingredient getIngredient(Long id) {
-        Log.i(TAG, "getIngredient");
-        Ingredient ingredient;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            ingredient = this.ingredients.stream().filter(i->i.getID()==id)
-                    .findFirst().orElse(null);
-        }else {
-            Helper<Ingredient> h = Helper.getIngredientHelper();
-            ingredient = h.getWithId(this.ingredients, id);
-        }
-        if(ingredient==null&&AdminRights.isAdmin()){
-            try {
-                return this.loadIngredient(id);
-            } catch (AccessDeniedException e) {
-                e.printStackTrace();
-            }
-        }
-        return ingredient;
-    }
-
-     */
-
-    /*
-    List<Ingredient> getIngredients(List<Long> ingredients) {
-        Log.i(TAG, "getIngredients");
-        if(AdminRights.isAdmin()) {
-            List<Ingredient> res = new ArrayList<>();
-            for(Ingredient i: this.ingredients){
-                if(ingredients.contains(i.getID())){
-                    res.add(i);
-                }
-            }
-            return res;
-        }else{
-            List<Ingredient> res = new ArrayList<>();
-            for(Ingredient i: this.ingredients){
-                if(i.isAvailable()&&ingredients.contains(i.getID())){
-                    res.add(i);
-                }
-            }
-            return res;
-        }
-    }
-
-
-     */
-    /*
-    Recipe getRecipe(Long id) {
-        Log.i(TAG, "getRecipe");
-        if(AdminRights.isAdmin()){
-            for(Recipe r: this.recipes){
-                if(id.equals(r.getID())){
-                    return r;
-                }
-            }
-        }else{
-            for(Recipe r: this.recipes){
-                if(id.equals(r.getID())&&r.isAvailable()){
-                    return r;
-                }
-            }
-        }
-        /*
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            recipe = this.recipes.stream().filter(i->i.getID()==id).findFirst().orElse(null);
-        }else {
-            for (int i=0; i<this.recipes.size(); i++) {
-                if(this.recipes.get(i).getID()==id){
-                    return this.recipes.get(i);
-                }
-            }
-        }
-        if(recipe == null && AdminRights.isAdmin()){
-            try {
-                return this.loadRecipe(id);
-            } catch (AccessDeniedException e) {
-                e.printStackTrace();
-            }
-        }
-
-         */
-    /*
-        return null;
-    }
-    */
-    /*
-
-    List<Recipe> getRecipes(List<Long> recipeIds) {
-        Log.i(TAG, "getRecipes");
-        if(AdminRights.isAdmin()) {
-            List<Recipe> res = new ArrayList<>();
-            for(Recipe i: this.recipes){
-                if(recipeIds.contains(i.getID())){
-                    res.add(i);
-                }
-            }
-            return res;
-        }else{
-            List<Recipe> res = new ArrayList<>();
-            for(Recipe i: this.recipes){
-                if(i.isAvailable()&&recipeIds.contains(i.getID())){
-                    res.add(i);
-                }
-            }
-            return res;
-        }
-    }
-
-    List<Recipe> getRecipeWith(String needle) {
-        Log.i(TAG, "getRecipeWith");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return this.recipes.stream().filter(i->i.getName().contains(needle)).collect(Collectors.toList());
-        }
-        return Helper.recipesWithNeedleInName(this.recipes, needle);
-    }
-
-    Recipe getRecipeWithExact(String name) {
-        Log.i(TAG, "getRecipeWithExact");
-        List<Recipe> recipes;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            recipes = this.recipes.stream().filter(i-> Objects.equals(i.getName(), name)).collect(Collectors.toList());
-        } else {
-            recipes = Helper.recipesWithNeedleInName(this.recipes, name);
-        }
-        if(recipes.isEmpty()){
-            return null;
-        }
-        return recipes.get(0);
-
-    }
-    */
-
-
-
-    /*
-    List<Ingredient> getIngredientWith(String needle) {
-        Log.i(TAG, "getIngredientWith");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return this.ingredients.stream().filter(i->i.getName().contains(needle)).collect(Collectors.toList());
-        }
-        return Helper.ingredientWithNeedleInName(this.ingredients, needle);
-    }
-
-    List<Ingredient> getIngredientsWithExact(String name) {
-        Log.i(TAG, "getIngredientsWithExact");
-        List<Ingredient> res;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            res =  this.ingredients.stream().filter(i-> {
-                        Log.i(TAG, i.getName()+ name+Objects.equals(i.getName(), name));
-                        return Objects.equals(i.getName(), name);})
-                    .collect(Collectors.toList());
-        }else {
-            res = Helper.ingredientWitName(this.ingredients, name);
-        }
-        if(res.isEmpty()){
-            Log.i(TAG, "getIngredientsWithExact ingredients is empty");
-        }else{
-            for(Ingredient i: res){
-                Log.i(TAG, "getIngredientsWithExact res "+i.getName());
-            }
-        }
-        return res;
-    }
-
-    Ingredient getIngredientWithExact(String name) {
-        Log.i(TAG, "getIngredientWithExact");
-        List<Ingredient> res = getIngredientsWithExact(name);
-        if(res.isEmpty()){
-            Log.i(TAG, "getIngredientWithExact ingredients is empty");
-            return null;
-        }
-        return res.get(0);
-    }
-
-
-    List<? extends Ingredient> getAllIngredients() {
-        Log.i(TAG, "getAllIngredients");
-        return ingredients;
-    }
-
-
-    List<? extends Ingredient> getAvailableIngredients() {
-        Log.i(TAG, "getAvailableIngredients");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return this.ingredients.stream().filter(Ingredient::isAvailable).collect(Collectors.toList());
-        }
-        return Helper.getIngredientHelper().getAvailable(this.ingredients);
-    }
-
-     */
-
-
-
-    /*
-    List<? extends Recipe> getRecipes() {
-        Log.i(TAG, "getRecipes");
-        if (AdminRights.isAdmin()) {
-            return this.recipes;
-        }
-        return this.getAvailableRecipes();
-    }
-
-    List<? extends Recipe> getAllRecipes() {
-        Log.i(TAG, "getRecipes");
-        return this.recipes;
-    }
-
-
-    List<? extends Recipe> getAvailableRecipes() {
-        Log.i(TAG, "getAvailableRecipes");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return this.recipes.stream().filter(Recipe::isAvailable).collect(Collectors.toList());
-        }
-        return Helper.getRecipeHelper().getAvailable(this.recipes);
-    }
-
-     */
 
 
 
@@ -729,10 +344,9 @@ class DatabaseConnection extends SQLiteOpenHelper {
      */
     @Override
     public void close(){
-        singleton = null;
         super.close();
+        singleton = null;
     }
-
 
 
 }
