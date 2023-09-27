@@ -243,6 +243,11 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     }
 
     @Override
+    public String getClassName() {
+        return "SQLRecipe";
+    }
+
+    @Override
     public boolean isAvailable() {
         return this.available;
     }

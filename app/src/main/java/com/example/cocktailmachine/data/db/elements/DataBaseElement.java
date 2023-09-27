@@ -2,15 +2,28 @@ package com.example.cocktailmachine.data.db.elements;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
+import java.util.Objects;
+
 public interface DataBaseElement {
 
     public String getClassName();
-    public boolean areContentsTheSame(Object obj);
+    public default boolean areContentsTheSame(DataBaseElement element){
+        if(element != null){
+            if(Objects.equals(element.getClassName(), this.getClassName())) {
+                if (this.isSaved() || element.isSaved()) {
+                    return element.getID() == this.getID();
+                }
+            }
+        }
+        return false;
+    }
 
     long getID();
 

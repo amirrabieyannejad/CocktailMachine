@@ -20,6 +20,11 @@ public class SQLRecipeImageUrlElement extends SQLImageUrlElement {
 
 
     @Override
+    public String getClassName() {
+        return "SQLRecipeImageUrlElement";
+    }
+
+    @Override
     public boolean loadAvailable(Context context) {
         return false;
     }

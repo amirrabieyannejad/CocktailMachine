@@ -38,6 +38,11 @@ public class SQLTopic extends SQLDataBaseElement implements Topic {
 
      */
 
+    @Override
+    public String getClassName() {
+        return "SQLTopic";
+    }
+
     /**
      * always true
      * @return

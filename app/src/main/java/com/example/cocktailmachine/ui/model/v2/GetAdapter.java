@@ -301,23 +301,188 @@ public class GetAdapter {
     }
 
 
+    public static class IngredientVolumeAdapter extends  ElementListAdapter<Ingredient>{
+        private final static String TAG = "IngredientVolumeAdapter";
+        HashMap<Ingredient,Integer> ingVols;
+        Recipe recipe;
+        protected IngredientVolumeAdapter(@NonNull Activity activity, @NonNull Recipe recipe, boolean withDelete, boolean withDisplay) {
+            super(activity, recipe.getIngredients(), withDelete, withDisplay);
+            this.recipe = recipe;
+            this.ingVols = this.recipe.getIngredientToVolume();
+        }
 
-    static class ElementListAdapter<T extends DataBaseElement> extends ListAdapter<T, GetAdapter.StringView {
-        private List<T> elements = new ArrayList<>();
-        protected ElementListAdapter() {
+        @Override
+        public String toString(int position) {
+            Log.i(TAG,"toString");
+            Ingredient i = this.get(position);
+            if (i == null) {
+                Log.e(TAG, "toString getting ingredient failed");
+                return "Fehler: Zutat nicht gefunden!";
+            }
+            Integer vol = this.ingVols.get(i);
+            if (vol == null) {
+                Log.e(TAG, "toString getting vol failed");
+                vol = -1;
+            }
+            return String.format("%s: %s", i.getName(), vol);
+        }
+
+        @Override
+        public void save() {
+            Log.i(TAG,"toString");
+            this.recipe.replaceIngredients(
+                    this.getActivity(),
+                    this.ingVols);
+        }
+
+        public void add(Ingredient element, Integer vol){
+            if(element==null){
+                return;
+            }
+            if(vol == null){
+                vol = -1;
+            }
+            this.add(element);
+            this.ingVols.put(element, vol);
+        }
+
+        @Override
+        public void remove(int position) {
+            this.ingVols.remove(this.get(position));
+            super.remove(position);
+        }
+
+        @Override
+        public View.OnLongClickListener delete(int position) {
+            return v -> {
+                Log.i(TAG, "setTxt ingredient clicked");
+                GetDialog.deleteAddElement(this.getActivity(), "die Zutat " + this.get(position).getName(), new Postexecute() {
+                    @Override
+                    public void post() {
+                        Log.i(TAG, "setTxt choose to delete");
+                        IngredientVolumeAdapter.this.remove(position);
+                    }
+                });
+                return true;
+            };
+        }
+
+        @Override
+        public View.OnClickListener goTo(int position) {
+            return  v -> {
+                Log.i(TAG, "setTxt ingredient clicked");
+                GetActivity.goToLook(this.getActivity(), ModelType.INGREDIENT, this.get(position).getID());
+            };
+        }
+    }
+
+
+    private static abstract class ElementListAdapter<T extends DataBaseElement> extends ListAdapter<T, GetAdapter.StringView> {
+        /*
+        {
+        private final static String TAG = "IngredientVolAdapter";
+        private final Activity activity;
+        private final Recipe recipe;
+        private final boolean withDelete;
+        private final boolean withDisplay;
+
+
+        private final HashMap<Ingredient, Integer> ingredientVol;
+        public IngredientVolAdapter(Activity activity, Recipe recipe, boolean withDelete, boolean withDisplay)
+         */
+
+        private final static String TAG = "ElementListAdapter";
+        private final Activity activity;
+        //private final Recipe recipe;
+        private final boolean withDelete;
+        private final boolean withDisplay;
+
+
+        private final List<T> elements;// = new ArrayList<>();
+        protected ElementListAdapter(@NonNull Activity activity,
+                                     //@NonNull Recipe recipe,
+                                     @NonNull List<T> elements,
+                                     boolean withDelete,
+                                     boolean withDisplay) {
             super(new ElementItemCallBack<T>());
+            this.activity = activity;
+            //this.recipe = recipe;
+            this.elements = elements;
+            this.withDelete = withDelete;
+            this.withDisplay = withDisplay;
         }
 
         @NonNull
         @Override
         public StringView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            return null;
+            return new GetAdapter.StringView(LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_little_title, parent, false),
+                    this.activity);
         }
 
         @Override
         public void onBindViewHolder(@NonNull StringView holder, int position) {
-
+            String txt = this.toString(position);
+            View.OnLongClickListener delete = this.delete(position);
+            View.OnClickListener goTo = this.goTo(position);
+            if(this.withDelete && !this.withDisplay) {
+                holder.setTxt(txt,delete);
+            }if(!this.withDelete && this.withDisplay) {
+                holder.setTxt(txt,goTo);
+            }if(this.withDelete && this.withDisplay) {
+                holder.setTxt(txt,goTo, delete);
+            }if(!this.withDelete && !this.withDisplay) {
+                holder.setTxt(txt);
+            }else{
+                holder.setTxt(txt);
+            }
         }
+
+        Activity getActivity(){
+            return this.activity;
+        }
+
+        public List<T> getElements(){
+            return this.elements;
+        }
+        public boolean isEmpty(){
+            return this.elements.isEmpty();
+        }
+        public void add(@NonNull T element){
+            if(!has(element)){
+                this.elements.add(element);
+                this.notifyItemInserted(this.elements.size()-1);
+            }
+        }
+
+        public boolean has(@NonNull T element){
+            for(T e: this.elements){
+                if(element.getID() == e.getID()){
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public T get(int position){
+            return this.elements.get(position);
+        }
+
+        public abstract String toString(int position);
+
+        public void remove(@NonNull T element){
+            this.remove(this.elements.indexOf(element));
+        }
+
+        public void remove(int position){
+            this.elements.remove(position);
+            this.notifyItemRemoved(position);
+        }
+
+        public abstract void save();
+
+        public abstract View.OnLongClickListener delete(int position);
+        public abstract View.OnClickListener goTo(int position);
 
         static class ElementItemCallBack<T extends DataBaseElement> extends DiffUtil.ItemCallback<T> {
 

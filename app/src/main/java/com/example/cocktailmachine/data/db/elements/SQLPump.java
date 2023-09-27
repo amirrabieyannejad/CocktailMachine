@@ -260,6 +260,11 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     //General
 
 
+    @Override
+    public String getClassName() {
+        return "SQLPump";
+    }
+
     /**
      * true, if volume > 0
      * @return

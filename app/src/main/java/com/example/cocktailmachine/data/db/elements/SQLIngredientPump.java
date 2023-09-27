@@ -90,6 +90,11 @@ public class SQLIngredientPump extends SQLDataBaseElement {
         this.wasChanged();
     }
 
+    @Override
+    public String getClassName() {
+        return "SQLIngredientPump";
+    }
+
     /**
      * true, if volume > zero
      * @return
@@ -124,7 +129,6 @@ public class SQLIngredientPump extends SQLDataBaseElement {
     @Override
     public void save(Context context) {
         AddOrUpdateToDB.addOrUpdate(context,this);
-
     }
 
     @Override

@@ -21,6 +21,11 @@ public class SQLIngredientImageUrlElement extends SQLImageUrlElement {
     }
 
     @Override
+    public String getClassName() {
+        return "SQLIngredientImageUrlElement";
+    }
+
+    @Override
     public boolean loadAvailable(Context context) {
         return false;
     }

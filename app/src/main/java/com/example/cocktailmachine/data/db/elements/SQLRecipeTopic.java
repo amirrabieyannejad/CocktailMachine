@@ -47,6 +47,11 @@ public class SQLRecipeTopic extends SQLDataBaseElement {
     }
 
     @Override
+    public String getClassName() {
+        return "SQLRecipeTopic";
+    }
+
+    @Override
     public boolean isAvailable() {
         return this.available;
     }
