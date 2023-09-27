@@ -1224,12 +1224,12 @@ public class Buffer {
         Long i_id = recipeIngredient.getIngredientID();
         this.recipeIngredients.remove(recipeIngredient);
         if(isFast){
-            if(this.fastRecipeIngredient.containsKey(ri_id)) {
-                Objects.requireNonNull(this.fastRecipeIngredient.get(ri_id)).remove(i_id);
+            if(this.fastRecipeIngredient.containsKey(r_id)) {
+                Objects.requireNonNull(this.fastRecipeIngredient.get(r_id)).remove(i_id);
             }if(this.fastRecipeRecipeIngredient.containsKey(r_id)) {
-                Objects.requireNonNull(this.fastRecipeRecipeIngredient.get(ri_id)).remove(recipeIngredient);
+                Objects.requireNonNull(this.fastRecipeRecipeIngredient.get(r_id)).remove(recipeIngredient);
             }if(this.fastIngredientRecipeIngredient.containsKey(i_id)) {
-                Objects.requireNonNull(this.fastIngredientRecipeIngredient.get(ri_id)).remove(recipeIngredient);
+                Objects.requireNonNull(this.fastIngredientRecipeIngredient.get(i_id)).remove(recipeIngredient);
             }
         }
     }
@@ -1432,7 +1432,27 @@ public class Buffer {
 
 
     public void addToBuffer(SQLRecipeIngredient e){
+        if(e == null){
+            return;
+        }
         this.recipeIngredients.add(e);
+        if(isFast){
+           if(!this.fastRecipeIngredient.containsKey(e.getRecipeID())){
+               List<Long> temp = new ArrayList<>();
+               this.fastRecipeIngredient.put(e.getRecipeID(), temp);
+           }
+           Objects.requireNonNull(this.fastRecipeIngredient.get(e.getRecipeID())).add(e.getIngredientID());
+           if(!this.fastRecipeRecipeIngredient.containsKey(e.getRecipeID())){
+               List<SQLRecipeIngredient> temp = new ArrayList<>();
+               this.fastRecipeRecipeIngredient.put(e.getRecipeID(), temp);
+           }
+           Objects.requireNonNull(this.fastRecipeRecipeIngredient.get(e.getRecipeID())).add(e);
+           if(!this.fastIngredientRecipeIngredient.containsKey(e.getIngredientID())){
+               List<SQLRecipeIngredient> temp = new ArrayList<>();
+               this.fastIngredientRecipeIngredient.put(e.getIngredientID(), temp);
+           }
+           Objects.requireNonNull(this.fastIngredientRecipeIngredient.get(e.getIngredientID())).add(e);
+        }
     }
     public List<SQLRecipeIngredient> getRecipeIngredients(){
         if(this.recipeIngredients == null){

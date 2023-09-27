@@ -165,7 +165,7 @@ public class AddOrUpdateToDB {
         }else{
             Log.i(TAG, "first time saving");
             recipeIngredient.setID(Tables.TABLE_RECIPE_INGREDIENT.addElement(getWritableDatabase(context), recipeIngredient));
-            Buffer.getSingleton().addToBuffer(recipeIngredient);
+            //Buffer.getSingleton().addToBuffer(recipeIngredient);
             recipeIngredient.wasSaved();;
         }
         Buffer.getSingleton(context).addToBuffer(recipeIngredient);
