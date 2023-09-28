@@ -33,15 +33,15 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:backgroundTint="@color/cardview_shadow_end_color"
-                android:contentDescription="@string/btn_editRecipe"
                 android:clickable="true"
+                android:contentDescription="@string/btn_editRecipe"
                 android:focusable="true"
                 android:longClickable="false"
                 android:minWidth="48dp"
                 android:minHeight="48dp"
                 android:onClick="edit"
-                app:tint="@color/black"
-                app:srcCompat="@drawable/ic_edit" />
+                app:srcCompat="@drawable/ic_edit"
+                app:tint="@color/black" />
 
             <ImageButton
                 android:id="@+id/imageButtonReload"
