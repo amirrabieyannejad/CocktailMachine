@@ -46,6 +46,7 @@ public class DisplayActivity extends BasicActivity {
         binding.includeDisplayNotAlcoholic.getRoot().setVisibility(View.GONE);
         //Ingredient
         binding.includeDisplayIngredientAdmin.getRoot().setVisibility(View.GONE);
+        binding.imageButtonShowColor.setVisibility(View.GONE);
         //RECIPE
         binding.includeRecipeIngredientsList.getRoot().setVisibility(View.GONE);
         binding.includeRecipeTopicsList.getRoot().setVisibility(View.GONE);
@@ -81,7 +82,7 @@ public class DisplayActivity extends BasicActivity {
         binding.textViewDisplayTitle.setText(recipe.getName());
         binding.textViewDisplayTitle.setVisibility(View.VISIBLE);
         //TO DO: AlertDialog to change title if admin
-        setChangeTitleDialog();
+        //setChangeTitleDialog();
         if(recipe.isAvailable()){
             binding.includeDisplayAvailable.getRoot().setVisibility(View.VISIBLE);
         }else{
@@ -158,13 +159,10 @@ public class DisplayActivity extends BasicActivity {
         binding.textViewDisplayTitle.setText(ingredient.getName());
         binding.textViewDisplayTitle.setVisibility(View.VISIBLE);
         //TO DO: AlertDialog to change title if admin
-        binding.textViewDisplayTitle.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                setChangeTitleDialog();
-                return false;
-            }
-        });
+
+
+        binding.imageButtonShowColor.setVisibility(View.VISIBLE);
+        binding.imageButtonShowColor.setColorFilter(ingredient.getColor());
 
         if(ingredient.isAvailable()){
             binding.includeDisplayAvailable.getRoot().setVisibility(View.VISIBLE);
@@ -187,6 +185,8 @@ public class DisplayActivity extends BasicActivity {
                 return true;
             });
         }
+
+
         if(AdminRights.isAdmin()){
             binding.includeDisplayIngredientAdmin.getRoot().setVisibility(View.VISIBLE);
             String vol = ingredient.getVolume()+" ml";
@@ -219,7 +219,7 @@ public class DisplayActivity extends BasicActivity {
         binding.textViewDisplayTitle.setVisibility(View.VISIBLE);
 
         //TO DO: AlertDialog to change title if admin
-        setChangeTitleDialog();
+        //setChangeTitleDialog();
         binding.textViewDisplayDescription.setText(topic.getDescription());
         binding.textViewDisplayDescription.setVisibility(View.VISIBLE);
         //TO DO: AlertDialog to change description if admin
@@ -235,6 +235,7 @@ public class DisplayActivity extends BasicActivity {
      * adds change title Dialog to text view of title, if admin
      * @author Johanna Reidt
      */
+    /*
     private void setChangeTitleDialog(){
         DisplayActivity activity = this;
         if(AdminRights.isAdmin()) {
@@ -246,6 +247,8 @@ public class DisplayActivity extends BasicActivity {
             );
         }
     }
+
+     */
 
 
     @Override

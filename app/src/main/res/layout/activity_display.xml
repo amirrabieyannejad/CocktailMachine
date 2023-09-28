@@ -76,6 +76,14 @@
                 app:srcCompat="@drawable/baseline_article_24" />
         </LinearLayout>
 
+        <ImageButton
+            android:id="@+id/imageButton_show_color"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/cardview_shadow_end_color"
+            app:tint="@color/design_default_color_error"
+            app:srcCompat="@drawable/baseline_auto_awesome_24" />
+
         <TextView
             android:id="@+id/textViewDisplayDescription"
             android:layout_width="match_parent"
