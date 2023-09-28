@@ -17,6 +17,7 @@ import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
 import com.mrudultora.colorpicker.ColorPickerPopUp;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class AddActivity extends BasicActivity {
@@ -64,7 +65,7 @@ public class AddActivity extends BasicActivity {
         //binding.includeNotAlcoholic
 
 
-        binding.subLayoutColor.setVisibility(View.GONE);
+        binding.buttonChangeColor.setVisibility(View.GONE);
 
 
         binding.subLayoutAddIngredient.setVisibility(View.GONE);
@@ -190,14 +191,12 @@ public class AddActivity extends BasicActivity {
         binding.textViewAddTitle.setVisibility(View.VISIBLE);
         binding.subLayoutAlcohol.setVisibility(View.VISIBLE);
         binding.switchAlcohol.setVisibility(View.VISIBLE);
-        binding.subLayoutColor.setVisibility(View.VISIBLE);
+        binding.buttonChangeColor.setVisibility(View.VISIBLE);
 
         //maybe needed
         binding.includeAlcoholic.getRoot().setVisibility(View.GONE);
         binding.includeNotAlcoholic.getRoot().setVisibility(View.GONE);
 
-        //saving instances
-        final int[] set_color = {new Random().nextInt()};
 
         binding.textViewAddTitle.setText("Zutat");
         binding.switchAlcohol.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -210,20 +209,33 @@ public class AddActivity extends BasicActivity {
             }
         });
 
-        binding.subLayoutColor.setClickable(true);
-        binding.subLayoutColor.setOnClickListener(v -> {
+        //saving instances
+        final int[] set_color = {new Random().nextInt()};
+        if(ingredient != null){
+            set_color[0] = ingredient.getColor();
+            binding.buttonChangeColor.setBackgroundColor(set_color[0]);
+        }
+
+        binding.buttonChangeColor.setClickable(true);
+        binding.buttonChangeColor.setVisibility(View.VISIBLE);
+        //binding.buttonChangeColor.setBackgroundColor(set_color[0]);
+
+        binding.buttonChangeColor.setOnClickListener(v -> {
             Log.i(TAG, "setUpIngredient: color picker clicked");
             ColorPickerPopUp colorPickerPopUp = new ColorPickerPopUp(activity);	// Pass the context.
             colorPickerPopUp.setShowAlpha(true)			// By default show alpha is true.
-                    .setDefaultColor(ingredient.getColor())
+                    //.setDefaultColor(ingredient.getColor())
                     .setDialogTitle("Wähle eine Farbe!")
+                    .setDefaultColor(set_color[0])
+                    .setNegativeButtonText("Abbruch")
+                    .setPositiveButtonText("Speichern")
                     .setOnPickColorListener(new ColorPickerPopUp.OnPickColorListener() {
                         @Override
                         public void onColorPicked(int color) {
                             // handle the use of color
                             set_color[0] = color;
-                            binding.imageViewColorShow.setColorFilter(color);
-                            Log.i(TAG, "setUpIngredient: color picked");
+                            binding.buttonChangeColor.setBackgroundColor(color);
+                            Log.i(TAG, "setUpIngredient: color picked "+ set_color[0]);
                         }
 
                         @Override
@@ -238,7 +250,7 @@ public class AddActivity extends BasicActivity {
 
         if(ingredient == null){
             Log.i(TAG, "setUpIngredient: new ingredient");
-            binding.imageViewColorShow.setColorFilter(set_color[0]);
+            //binding.imageViewColorShow.setColorFilter(set_color[0]);
             binding.buttonSave.setOnClickListener(v -> {
                 Log.i(TAG, "setUpIngredient:buttonSave: clicked");
                 ingredient = Ingredient.makeNew(
@@ -253,7 +265,7 @@ public class AddActivity extends BasicActivity {
         }else{
             Log.i(TAG, "setUpIngredient: old ingredient");
             set_color[0] = ingredient.getColor();
-            binding.imageViewColorShow.setColorFilter(set_color[0]);
+            //binding.imageViewColorShow.setColorFilter(set_color[0]);
             binding.editTextAddTitle.setText(ingredient.getName());
             binding.switchAlcohol.setChecked(ingredient.isAlcoholic());
 
@@ -428,8 +440,8 @@ public class AddActivity extends BasicActivity {
 
 
         //for all
-        binding.buttonStop.setOnClickListener(v -> GetActivity.goBack(activity));
-        binding.textViewAddTitle.setOnClickListener(v -> AddActivity.this.reload());
+        binding.buttonStop.setOnClickListener(v -> GetActivity.goToList(this.activity, this.getModelType()));
+        //binding.textViewAddTitle.setOnClickListener(v -> AddActivity.this.reload());
 
     }
 

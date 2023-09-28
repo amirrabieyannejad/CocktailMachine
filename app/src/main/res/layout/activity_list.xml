@@ -43,17 +43,6 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Display3"
                 android:textStyle="bold" />
 
-            <Switch
-                android:id="@+id/switch_list_available"
-                style="@style/Widget.Material3.CompoundButton.MaterialSwitch"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:paddingStart="16dp"
-                android:paddingEnd="8dp"
-                android:switchTextAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:text="@string/show_available"/>
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewListAc"
                 android:layout_width="match_parent"
