@@ -15,6 +15,7 @@ import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
 import com.example.cocktailmachine.ui.ListOfIngredience.ListIngredience;
+import com.example.cocktailmachine.ui.ListOfPumps.ListOfPumps;
 import com.example.cocktailmachine.ui.calibration.scale.calibrationScale;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
 import com.example.cocktailmachine.ui.model.FragmentType;
@@ -262,7 +263,9 @@ public class Menue extends AppCompatActivity {
     }
 
     public void pumpCalibration(View view){
-        new ConfigurePumps(this);
+        Intent success = new Intent(this, ListOfPumps.class);
+        startActivity(success);
+        //new ConfigurePumps(this);
     }
 
 

@@ -36,18 +36,18 @@ public class RecyclerAdapterListPumps extends RecyclerView.Adapter<RecyclerAdapt
     @NonNull
     @Override
     public IngtedienceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_ingredients, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_pumps, parent, false);
         return new IngtedienceViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull IngtedienceViewHolder holder, int position) {
         holder.ingtedienceName.setText("Pumpe " + this.listPumps.get(position).getSlot());
-        if (chosenIngredient != null && listPumps.get(position).getName().equals(chosenIngredient.getName())){
+        /**if (chosenIngredient != null && listPumps.get(position).getName().equals(chosenIngredient.getName())){
             holder.cardElement.setCardBackgroundColor(Color.parseColor("#6750A3"));
             holder.ingtedienceName.setTextColor(Color.WHITE);
 
-        }
+        }*/
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,8 +71,8 @@ public class RecyclerAdapterListPumps extends RecyclerView.Adapter<RecyclerAdapt
 
         public IngtedienceViewHolder(View itemView) {
             super(itemView);
-            ingtedienceName = itemView.findViewById(R.id.textViewListElementIngredientName);
-            cardElement = itemView.findViewById(R.id.cardViewListElementIngredient);
+            ingtedienceName = itemView.findViewById(R.id.textViewListElementPumpName);
+            cardElement = itemView.findViewById(R.id.cardViewListElementPumps);
         }
     }
 }

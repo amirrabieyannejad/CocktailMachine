@@ -122,4 +122,6 @@
     <string name="reload">reload</string>
     <string name="gotolist">gotolist</string>
 
+    <string name="list_of_pumps_activity_header">Folgende Pumpen sind angegeben</string>
+
 </resources>
