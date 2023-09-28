@@ -121,5 +121,7 @@
     <string name="volum">Volumen:</string>
     <string name="reload">reload</string>
     <string name="gotolist">gotolist</string>
+    <string name="add">ADD</string>
+    <string name="show_available">Zeige nur die Verfügbaren an!</string>
 
 </resources>

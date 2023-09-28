@@ -21,7 +21,7 @@ import java.util.List;
 public class ListActivity extends BasicActivity {
     private static final String TAG = "ListActivity" ;
     private ActivityListBinding binding;
-    private TitleListAdapter adapter;
+    private GetAdapter.TitleListAdapter adapter;
     private final ArrayList<Long> IDs = new ArrayList<>();
     private final ArrayList<String> names = new ArrayList<>();
 
@@ -31,7 +31,7 @@ public class ListActivity extends BasicActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityListBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        Buffer.load(this);
+        //Buffer.load(this);
         //setContentView(R.layout.activity_list);
     }
     @Override
@@ -91,7 +91,7 @@ public class ListActivity extends BasicActivity {
 
     @Override
     void postSetUp() {
-        adapter = new TitleListAdapter(
+        adapter = new GetAdapter.TitleListAdapter(
             this,
             IDs,
             names,
