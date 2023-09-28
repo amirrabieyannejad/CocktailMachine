@@ -1604,17 +1604,22 @@ public class Buffer {
 
     private void emptyUpPumps(Context context) {
         Log.i(TAG, "emptyUpPumps");
-        DatabaseConnection.init(context).emptyUpPumps();
         if(this.pumps == null) {
             this.pumps = new ArrayList<>();
-
         }else{
+            List<Pump> g = new ArrayList<>();
+            int n = pumps.size();
             Iterator<Pump> it = this.pumps.iterator();
             while (it.hasNext()) {
                 Pump temp = it.next();
                 temp.empty(context);
                 temp.delete(context);
                 //it.remove();
+                it.remove();
+            }
+            DatabaseConnection.init(context).emptyUpPumps();
+            for(int i=0;i<n;i++){
+                g.add(Pump.makeNew());
             }
         }
 

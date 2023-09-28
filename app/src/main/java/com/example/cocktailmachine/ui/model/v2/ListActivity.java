@@ -3,6 +3,7 @@ package com.example.cocktailmachine.ui.model.v2;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -48,6 +49,7 @@ public class ListActivity extends BasicActivity {
             IDs.add(pump.getID());
             names.add("Pumpe: "+pump.getIngredientName(this));
         }
+        binding.floatingActionButtonList.setVisibility(View.GONE);
         /*
         adapter = new TitleListAdapter(
                 this,
