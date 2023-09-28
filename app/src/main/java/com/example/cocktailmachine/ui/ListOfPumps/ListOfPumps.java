@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import com.example.cocktailmachine.R;
 
-public class ListOfPumps extends AppCompatActivity {
+public class ListOfPumps extends AppCompatActivity implements RecyclerViewListenerListPumps {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
