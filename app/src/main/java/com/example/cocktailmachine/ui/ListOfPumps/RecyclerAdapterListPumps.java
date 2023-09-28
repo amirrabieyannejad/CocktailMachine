@@ -23,8 +23,6 @@ public class RecyclerAdapterListPumps extends RecyclerView.Adapter<RecyclerAdapt
     Context context;
     List<Pump> listPumps;
 
-    Ingredient chosenIngredient;
-
     RecyclerViewListenerListPumps selectionListener;
 
     public RecyclerAdapterListPumps(List<Pump> listPumps, Context context) {
@@ -44,7 +42,7 @@ public class RecyclerAdapterListPumps extends RecyclerView.Adapter<RecyclerAdapt
 
     @Override
     public void onBindViewHolder(@NonNull IngtedienceViewHolder holder, int position) {
-        holder.ingtedienceName.setText(this.listPumps.get(position).getName());
+        holder.ingtedienceName.setText("Pumpe " + this.listPumps.get(position).getSlot());
         if (chosenIngredient != null && listPumps.get(position).getName().equals(chosenIngredient.getName())){
             holder.cardElement.setCardBackgroundColor(Color.parseColor("#6750A3"));
             holder.ingtedienceName.setTextColor(Color.WHITE);
