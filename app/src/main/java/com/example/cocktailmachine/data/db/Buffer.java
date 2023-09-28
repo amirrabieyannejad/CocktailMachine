@@ -20,6 +20,7 @@ import com.example.cocktailmachine.data.db.tables.Tables;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -1345,22 +1346,6 @@ public class Buffer {
         }
         return names;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public void addToBuffer(SQLIngredientPump e){
         Log.i(TAG, "addToBuffer"+e.toString());
         this.ingredientPumps.add(e);
@@ -1374,16 +1359,70 @@ public class Buffer {
         }
         return this.ingredientPumps;
     }
-    public SQLIngredientPump getIngredientPump(long pump_id) {
+    public SQLIngredientPump getIngredientPump(Long id) {
+        if(id == null){
+            return null;
+        }
         List<SQLIngredientPump> ips = this.getIngredientPumps();
         for(SQLIngredientPump ip: ips){
             if(ip != null) {
-                if (ip.getPumpID() == pump_id) {
+                if (ip.getID() == id) {
                     return ip;
                 }
             }
         }
         return null;
+    }
+    public SQLIngredientPump getIngredientPump(Pump pump) {
+        if(pump == null){
+            return null;
+        }
+        List<SQLIngredientPump> ips = this.getIngredientPumps();
+        for(SQLIngredientPump ip: ips){
+            if(ip != null) {
+                if (ip.getPumpID() == pump.getID()) {
+                    return ip;
+                }
+            }
+        }
+        return null;
+    }
+
+    public SQLIngredientPump getIngredientPump(Ingredient ingredient){
+        if(ingredient == null){
+            return null;
+        }
+        for(SQLIngredientPump ip: this.getIngredientPumps()){
+            if(ip != null){
+                if(ip.getIngredientID() == ingredient.getID()){
+                    return ip;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void deleteDoublePumpSettingsAndNulls(Context context){
+        List<Long> pump_ids = new ArrayList<>();
+        List<Long> toDelete = new ArrayList<>();
+        Iterator<SQLIngredientPump> it = this.getIngredientPumps().iterator();
+        while (it.hasNext()){
+            if(it.next() == null){
+                it.remove();
+            }
+        }
+        for(SQLIngredientPump ip: this.getIngredientPumps()){
+            if(ip != null){
+                if(!pump_ids.contains(ip.getPumpID())){
+                    pump_ids.add(ip.getPumpID());
+                    continue;
+                }
+                toDelete.add(ip.getID());
+            }
+        }
+        for(Long id: toDelete){
+            this.getIngredientPump(id).delete(context);
+        }
     }
 
 
@@ -1570,9 +1609,12 @@ public class Buffer {
             this.pumps = new ArrayList<>();
 
         }else{
-            for (Pump p : this.pumps) {
-                p.empty(context);
-                p.delete(context);
+            Iterator<Pump> it = this.pumps.iterator();
+            while (it.hasNext()) {
+                Pump temp = it.next();
+                temp.empty(context);
+                temp.delete(context);
+                //it.remove();
             }
         }
 
@@ -1586,14 +1628,14 @@ public class Buffer {
             this.fastAvailableIngredient = new ArrayList<>();
             this.fastAvailableRecipe = new ArrayList<>();
         }else{
-            for(Ingredient i: this.ingredients){
+            for(Ingredient i: this.getIngredients()){
                 i.empty(context);
             }
-            for(Recipe r: this.recipes){
+            for(Recipe r: this.getRecipes()){
                 r.loadAvailable(context);
             }
         }
-        for(SQLIngredientPump ip: this.ingredientPumps){
+        for(SQLIngredientPump ip: this.getIngredientPumps()){
             ip.delete(context);
         }
         this.ingredientPumps = new ArrayList<>();

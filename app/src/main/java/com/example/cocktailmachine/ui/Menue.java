@@ -74,7 +74,8 @@ public class Menue extends AppCompatActivity {
         }
         if(Dummy.isDummy && !Dummy.withSetCalibration ){
             CocktailMachineCalibration.setIsDone(true);
-        }else if (!CocktailMachineCalibration.isIsDone()){
+        }
+        if (!CocktailMachineCalibration.isIsDone()){
             CocktailMachineCalibration.start(this);
         }
         if(!Dummy.withTestEnvs){

@@ -732,7 +732,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @return
      */
     static List<Pump> getPumps(Context context){
-        return Buffer.getSingleton().getPumps(context);
+        return Buffer.getSingleton(context).getPumps();
     }
 
     /**

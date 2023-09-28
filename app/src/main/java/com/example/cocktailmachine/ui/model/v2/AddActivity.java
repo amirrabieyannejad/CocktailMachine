@@ -94,13 +94,13 @@ public class AddActivity extends BasicActivity {
             return;
         }
 
-        binding.includePump.textViewSearchIngredientIng.setText(pump.getIngredientName());
-        //binding.includePump.editTextSearchIngredientIng.setText(pump.getIngredientName());
+        binding.includePump.textViewSearchIngredientIng.setText(pump.getIngredientName(this));
+        binding.includePump.editTextSearchIngredientIng.setText(pump.getIngredientName(this));
         binding.includePump.editTextNumberSearchIngredientVol.setText(String.valueOf(pump.getVolume()));
         binding.includePump.editTextNumberSearchIngredientMinVol.setText(String.valueOf(pump.getMinimumPumpVolume()));
         binding.includePump.getRoot().setVisibility(View.VISIBLE);
         //binding.includePump.editTextNumberSearchIngredientVol.setVisibility(View.VISIBLE);
-        searchDone();
+        search();
 
         binding.buttonSave.setOnClickListener(v -> {
             Log.i(TAG, "setUpPump: buttonSave clicked");

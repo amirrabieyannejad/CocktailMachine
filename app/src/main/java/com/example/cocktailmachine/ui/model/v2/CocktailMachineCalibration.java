@@ -20,7 +20,7 @@ import java.util.Random;
  */
 public class CocktailMachineCalibration {
     private static final String TAG = "CocktailMachineCalibr" ;
-    private static boolean isDone = true;
+    private static boolean isDone = false;
 
     public static void start(Activity activity) {
         Buffer.loadForSetUp(activity);

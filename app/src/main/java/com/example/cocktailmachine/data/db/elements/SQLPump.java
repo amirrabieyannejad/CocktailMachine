@@ -169,12 +169,14 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     @Override
     public void setIngredientPump(Context context, SQLIngredientPump ingredientPump) {
         Log.i(TAG, "setIngredientPump");
-        this.setIngredientPumps(context);
+        //this.setIngredientPumps(context);
         if(this.ingredientPump != null){
             Log.i(TAG, "setIngredientPump: delete old: "+this.ingredientPump);
             this.ingredientPump.delete(context);
         }
+        Buffer.getSingleton(context).deleteDoublePumpSettingsAndNulls(context);
         this.ingredientPump = ingredientPump;
+        this.ingredientPump.save(context);
         Log.i(TAG, "setIngredientPump: "+ingredientPump.toString());
         this.save(context);
     }
@@ -189,8 +191,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         Log.i(TAG, "checkIngredientPumps");
         if(this.ingredientPump == null){
             Log.i(TAG, "checkIngredientPumps: check ingredient pump");
-
-            List<SQLIngredientPump> ips = Buffer.getSingleton().getIngredientPumps();
+            List<SQLIngredientPump> ips = Buffer.getSingleton(context).getIngredientPumps();
             for(SQLIngredientPump ip: ips){
                 if(ip.getIngredientID()==this.getID()){
                     this.setIngredientPump(context, ip);
