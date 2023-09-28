@@ -212,6 +212,7 @@ public class GetAdapter {
             this.recipe = recipe;
             this.ingredientVol = recipe.getIngredientToVolume();
             this.ingredients = new ArrayList<>(this.ingredientVol.keySet());
+            
             this.withDelete = withDelete;
             this.withDisplay = withDisplay;
         }
