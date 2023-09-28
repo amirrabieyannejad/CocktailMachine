@@ -1362,6 +1362,7 @@ public class Buffer {
 
 
     public void addToBuffer(SQLIngredientPump e){
+        Log.i(TAG, "addToBuffer"+e.toString());
         this.ingredientPumps.add(e);
     }
     public void removeFromBuffer(SQLIngredientPump e){
