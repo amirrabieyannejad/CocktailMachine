@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.model.v2;
+package com.example.cocktailmachine.ui.model.v2.muell;
 
 
 import android.app.Activity;
@@ -15,8 +15,9 @@ import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.enums.AdminRights;
-import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
+import com.example.cocktailmachine.ui.model.v2.GetActivity;
+import com.example.cocktailmachine.ui.model.v2.GetDialog;
 
 import java.util.ArrayList;
 import java.util.List;
