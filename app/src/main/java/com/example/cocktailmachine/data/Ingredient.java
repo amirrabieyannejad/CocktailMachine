@@ -32,6 +32,7 @@ import java.util.List;
 public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
     String TAG = "Ingredient";
 
+
     //Reminder: Only liquids!!!
 
     /**
@@ -213,8 +214,12 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @return
      */
     @Nullable
-    static Ingredient getIngredient(Long id) {
+    static Ingredient getIngredient(long id) {
         return Buffer.getSingleton().getIngredient(id);
+    }
+
+    static Ingredient getIngredient(Context context, long id) {
+        return Buffer.getSingleton(context).getIngredient(id);
     }
 
     /**

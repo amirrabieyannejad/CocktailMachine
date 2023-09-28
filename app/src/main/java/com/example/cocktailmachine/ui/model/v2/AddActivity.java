@@ -94,6 +94,9 @@ public class AddActivity extends BasicActivity {
             return;
         }
 
+        binding.includePump.textViewSearchIngredientIng.setText(pump.getIngredientName());
+        binding.includePump.editTextNumberSearchIngredientVol.setText(pump.getVolume());
+        binding.includePump.editTextNumberSearchIngredientMinVol.setText(pump.getMinimumPumpVolume());
         binding.includePump.getRoot().setVisibility(View.VISIBLE);
         //binding.includePump.editTextNumberSearchIngredientVol.setVisibility(View.VISIBLE);
         search();

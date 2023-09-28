@@ -118,6 +118,12 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @return
      */
     String getIngredientName();
+    /**
+     * get ingredient name or "Keine Zutat"
+     * @author Johanna Reidt
+     * @return
+     */
+    String getIngredientName(Context context);
 
     /**
      * Return current ingredient set in pump.

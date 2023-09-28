@@ -1374,6 +1374,17 @@ public class Buffer {
         }
         return this.ingredientPumps;
     }
+    public SQLIngredientPump getIngredientPump(long pump_id) {
+        List<SQLIngredientPump> ips = this.getIngredientPumps();
+        for(SQLIngredientPump ip: ips){
+            if(ip != null) {
+                if (ip.getPumpID() == pump_id) {
+                    return ip;
+                }
+            }
+        }
+        return null;
+    }
 
 
 
@@ -1619,4 +1630,6 @@ public class Buffer {
             }
         }
     }
+
+
 }
