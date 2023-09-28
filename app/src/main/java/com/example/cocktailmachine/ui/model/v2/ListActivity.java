@@ -46,7 +46,7 @@ public class ListActivity extends BasicActivity {
         List<Pump> pumps = Pump.getPumps(this);
         for(Pump pump: pumps){
             IDs.add(pump.getID());
-            names.add("Pumpe: "+pump.getIngredientName());
+            names.add("Pumpe: "+pump.getIngredientName(this));
         }
         /*
         adapter = new TitleListAdapter(

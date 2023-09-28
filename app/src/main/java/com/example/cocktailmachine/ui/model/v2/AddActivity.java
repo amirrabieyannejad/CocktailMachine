@@ -95,11 +95,12 @@ public class AddActivity extends BasicActivity {
         }
 
         binding.includePump.textViewSearchIngredientIng.setText(pump.getIngredientName());
-        binding.includePump.editTextNumberSearchIngredientVol.setText(pump.getVolume());
-        binding.includePump.editTextNumberSearchIngredientMinVol.setText(pump.getMinimumPumpVolume());
+        //binding.includePump.editTextSearchIngredientIng.setText(pump.getIngredientName());
+        binding.includePump.editTextNumberSearchIngredientVol.setText(String.valueOf(pump.getVolume()));
+        binding.includePump.editTextNumberSearchIngredientMinVol.setText(String.valueOf(pump.getMinimumPumpVolume()));
         binding.includePump.getRoot().setVisibility(View.VISIBLE);
         //binding.includePump.editTextNumberSearchIngredientVol.setVisibility(View.VISIBLE);
-        search();
+        searchDone();
 
         binding.buttonSave.setOnClickListener(v -> {
             Log.i(TAG, "setUpPump: buttonSave clicked");
