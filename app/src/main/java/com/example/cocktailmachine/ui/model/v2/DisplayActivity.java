@@ -261,16 +261,16 @@ public class DisplayActivity extends BasicActivity {
             binding.textViewDisplayDescription.setVisibility(View.VISIBLE);
             return;
         }
-        binding.textViewDisplayTitle.setText(String.valueOf(pump.getID()));
+        binding.textViewDisplayTitle.setText("Slot: "+ pump.getID());
         //TO DO: AlertDialog to change title if admin ----NOT BECAUSE PUMP NO NAME
         binding.includeDisplayPump.getRoot().setVisibility(View.VISIBLE);
         binding.includeDisplayPump.textViewPumpIngredientName.setText(pump.getIngredientName());
         //TO DO: AlertDialog to change ingredient if admin
-        final Activity activity = this;
+        //final Activity activity = this;
         binding.includeDisplayPump.textViewPumpIngredientName.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                GetDialog.chooseIngredient(activity, pump);
+                GetDialog.chooseIngredient(DisplayActivity.this, pump);
                 return true;
             }
         });
@@ -280,24 +280,11 @@ public class DisplayActivity extends BasicActivity {
 
         //TO DO: AlertDialog to change volume if admin
         //is always admin
-        binding.includeDisplayPump.textViewPumpVolume.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                GetDialog.setPumpVolume(activity, pump, false);
-                return true;
-            }
-        });
         vol = pump.getMinimumPumpVolume() +" ml";
         binding.includeDisplayPump.textViewMinPumpVolume.setText(vol);
         //TO DO: AlertDialog to change min pump vol if admin
         //is always admin
-        binding.includeDisplayPump.textViewPumpVolume.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                GetDialog.setPumpMinVolume(activity, pump);
-                return true;
-            }
-        });
+       
     }
 
 
