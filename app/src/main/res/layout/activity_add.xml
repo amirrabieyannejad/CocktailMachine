@@ -143,45 +143,19 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/subLayoutColor"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clickable="true"
-                android:focusable="true"
-                android:longClickable="false"
-                android:orientation="horizontal"
-                android:padding="8dp">
 
-                <ImageView
-                    android:id="@+id/imageViewColorShow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0"
-                    android:clickable="false"
-                    android:focusable="false"
-                    android:longClickable="false"
-                    android:minWidth="48dp"
-                    android:minHeight="48dp"
-                    android:padding="8dp"
-                    android:paddingStart="40dp"
-                    app:tint="#FFEB3B"
-                    tools:srcCompat="@android:drawable/ic_notification_overlay" />
 
-                <TextView
+            <Button
+                    android:id="@+id/button_change_color"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="0"
-                    android:clickable="false"
-                    android:focusable="false"
-                    android:gravity="center_vertical"
-                    android:linksClickable="false"
-                    android:longClickable="false"
-                    android:minHeight="40dp"
                     android:text="@string/change_color"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
-            </LinearLayout>
+
 
 
             <LinearLayout

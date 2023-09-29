@@ -23,6 +23,7 @@ import java.util.List;
  * @created Di. 27.Jun 2023 - 15:21
  * @project CocktailMachine
  */
+/*
 public class TitleListAdapter extends RecyclerView.Adapter<TitleListAdapter.TitleRow>{
     private static final String TAG = "TitleListAdapter";
 
@@ -112,3 +113,5 @@ public class TitleListAdapter extends RecyclerView.Adapter<TitleListAdapter.Titl
         }
     }
 }
+
+ */
