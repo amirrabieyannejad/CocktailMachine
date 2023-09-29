@@ -1362,6 +1362,7 @@ public class Buffer {
 
 
     public void addToBuffer(SQLIngredientPump e){
+        Log.i(TAG, "addToBuffer"+e.toString());
         this.ingredientPumps.add(e);
     }
     public void removeFromBuffer(SQLIngredientPump e){
@@ -1372,6 +1373,17 @@ public class Buffer {
             this.ingredientPumps = new ArrayList<>();
         }
         return this.ingredientPumps;
+    }
+    public SQLIngredientPump getIngredientPump(long pump_id) {
+        List<SQLIngredientPump> ips = this.getIngredientPumps();
+        for(SQLIngredientPump ip: ips){
+            if(ip != null) {
+                if (ip.getPumpID() == pump_id) {
+                    return ip;
+                }
+            }
+        }
+        return null;
     }
 
 
@@ -1618,4 +1630,6 @@ public class Buffer {
             }
         }
     }
+
+
 }

@@ -118,6 +118,12 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @return
      */
     String getIngredientName();
+    /**
+     * get ingredient name or "Keine Zutat"
+     * @author Johanna Reidt
+     * @return
+     */
+    String getIngredientName(Context context);
 
     /**
      * Return current ingredient set in pump.
@@ -743,6 +749,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     static Pump getPumpWithSlot(int slot) {
         return Buffer.getSingleton().getPump((long) slot);
     }
+
+
 
 
 }

@@ -13,6 +13,7 @@ import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.AdminRights;
+import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
 import com.example.cocktailmachine.ui.ListOfIngredience.ListIngredience;
 import com.example.cocktailmachine.ui.ListOfPumps.ListOfPumps;
@@ -63,6 +64,9 @@ public class Menue extends AppCompatActivity {
 
          */
         Buffer.load(this);
+        if(Dummy.asAdmin){
+            AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.Admin);
+        }
         if(AdminRights.isAdmin()){
             binding.activityMenueLogout.setVisibility(View.VISIBLE);
             binding.activityMenueLogin.setVisibility(View.GONE);

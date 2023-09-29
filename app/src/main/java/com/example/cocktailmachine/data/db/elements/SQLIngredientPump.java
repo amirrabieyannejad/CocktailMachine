@@ -61,6 +61,10 @@ public class SQLIngredientPump extends SQLDataBaseElement {
         return Ingredient.getIngredient(this.ingredient);
 
     }
+    public Ingredient getIngredient(Context context){
+        return Ingredient.getIngredient(context, this.ingredient);
+
+    }
 
     public long getIngredientID() {return this.ingredient;}
 

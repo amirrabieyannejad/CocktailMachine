@@ -1,7 +1,7 @@
 package com.example.cocktailmachine;
 
 public class Dummy {
-    // APP: zur Abgabe: isDummy = false, withSetCalibration=true, withTestEnvs= false,
+    // APP: zur Abgabe: isDummy = false, withSetCalibration=true, withTestEnvs= false, asAdmin = false
     public static boolean isDummy = true;
     //if true-> keine Bluetoothverbindung, für VM-testing,
     // false -> Bluetooth
@@ -12,4 +12,8 @@ public class Dummy {
     public static boolean withTestEnvs = true;
     //false -> keine Test Activities
     //true -> Test Activities zugänglich
+
+    public static boolean asAdmin = true;
+    //true  -> direkt admin
+    //false -> normaler User
 }

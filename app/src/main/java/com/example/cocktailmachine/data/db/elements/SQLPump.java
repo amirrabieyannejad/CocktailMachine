@@ -1,6 +1,7 @@
 package com.example.cocktailmachine.data.db.elements;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabaseCorruptException;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -53,11 +54,31 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     @Override
     public String getIngredientName() {
         //this.setIngredientPumps();
-
         if(this.ingredientPump!=null) {
-            return this.ingredientPump.getIngredient().getName();
+            Ingredient temp = this.ingredientPump.getIngredient();
+            if(temp != null){
+                return temp.getName();
+            }
         }
         return "Keine Zutat";
+    }
+
+    @Override
+    public String getIngredientName(Context context) {
+        if(this.ingredientPump == null){
+            this.ingredientPump = getIngredientPump(context);
+        }
+        if(this.ingredientPump!=null) {
+            Ingredient temp = this.ingredientPump.getIngredient(context);
+            if(temp!=null){
+                return temp.getName();
+            }
+        }
+        return "Keine Zutat";
+    }
+
+    private SQLIngredientPump getIngredientPump(Context context){
+        return Buffer.getSingleton(context).getIngredientPump(this.getID());
     }
 
     /**
@@ -301,7 +322,6 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     @Override
     public void save(Context context) {
         Log.i(TAG, "save");
-
         this.setIngredientPumps(context);
         if(this.ingredientPump != null) {
             this.ingredientPump.setPumpID(this.getID());

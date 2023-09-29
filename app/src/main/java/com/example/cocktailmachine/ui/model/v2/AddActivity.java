@@ -89,10 +89,18 @@ public class AddActivity extends BasicActivity {
 
         //maybe needed
         pump = Pump.getPump(this.getID());
+        if(pump == null){
+            error("???");
+            return;
+        }
 
+        binding.includePump.textViewSearchIngredientIng.setText(pump.getIngredientName());
+        //binding.includePump.editTextSearchIngredientIng.setText(pump.getIngredientName());
+        binding.includePump.editTextNumberSearchIngredientVol.setText(String.valueOf(pump.getVolume()));
+        binding.includePump.editTextNumberSearchIngredientMinVol.setText(String.valueOf(pump.getMinimumPumpVolume()));
         binding.includePump.getRoot().setVisibility(View.VISIBLE);
-        binding.includePump.editTextNumberSearchIngredientVol.setVisibility(View.VISIBLE);
-        search();
+        //binding.includePump.editTextNumberSearchIngredientVol.setVisibility(View.VISIBLE);
+        searchDone();
 
         binding.buttonSave.setOnClickListener(v -> {
             Log.i(TAG, "setUpPump: buttonSave clicked");
@@ -105,6 +113,7 @@ public class AddActivity extends BasicActivity {
                 return;
             }
             AddActivity.this.pump.setCurrentIngredient(this.activity, AddActivity.this.ingredient);
+            //set volume
             String vol = binding.includePump.editTextNumberSearchIngredientVol.getText().toString();
             if(vol.length()==0){
                 Log.i(TAG, "setUpPump: buttonSave has no vol -> toast & stop");
@@ -129,7 +138,29 @@ public class AddActivity extends BasicActivity {
                 Toast.makeText(AddActivity.this, "Nochmal!", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            //set min volume
+            vol = binding.includePump.editTextNumberSearchIngredientMinVol.getText().toString();
+            if(vol.length()==0){
+                Log.i(TAG, "setUpPump: buttonSave has no min vol -> toast & stop");
+                //Toast.makeText(AddActivity.this, "Gib das minimal Volumen an!", Toast.LENGTH_SHORT).show();
+                vol = "1";
+                return;
+            }
+            level = -1;
+            try {
+                level = Integer.parseInt(vol);
+                Log.i(TAG, "setUpPump: buttonSave parsed vol");
+            }catch (NumberFormatException e){
+                Log.i(TAG, "setUpPump: buttonSave error parsing vol -> toast & stop");
+                Toast.makeText(AddActivity.this, "Gib eine ganze Zahl für das minimale Volumen an!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            AddActivity.this.pump.setMinimumPumpVolume(level);
+
+
             AddActivity.this.pump.sendSave(AddActivity.this);
+            Log.i(TAG, "Pump sendsave: "+AddActivity.this.pump.toString());
             GetActivity.goToLook(AddActivity.this, ModelType.PUMP, AddActivity.this.pump.getID());
             Log.i(TAG, "setUpPump:done");
         });
