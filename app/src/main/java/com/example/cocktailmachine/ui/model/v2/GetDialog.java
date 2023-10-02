@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Johanna Reidt
@@ -369,6 +370,7 @@ public class GetDialog {
     }
 
     private static void emptyGlass(Activity activity){
+        Log.i("GetDialog", "emptyGlass");
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Leere das Glass!");
         builder.setMessage("Leere das Glass und stell es wieder unter die Cocktailmaschine!");
@@ -402,6 +404,13 @@ public class GetDialog {
         builder.setMessage("Die automatische Kalibration der Pumpen läuft!");
         AlertDialog dialog = builder.create();
         dialog.show();
+        if(Dummy.isDummy){
+            try {
+                TimeUnit.SECONDS.sleep(4);
+            } catch (InterruptedException e) {
+                Log.e(TAG, "waitingForPumps: sleep failed");
+            }
+        }
 
         WaitingQueueCountDown waitingQueueCountDown = new WaitingQueueCountDown(5000) {
             boolean isDone = false;
@@ -415,10 +424,14 @@ public class GetDialog {
 
             @Override
             public void reduceTick() {
+                CocktailMachine.tickDummy(activity);
                 isDone = CocktailMachine.isAutomaticCalibrationDone(activity)||CocktailMachine.needsEmptyingGlass(activity);
+                /*
                 if(Dummy.isDummy){
                     isDone = CocktailMachine.dummyCounter>=Pump.getPumps().size();
                 }
+
+                 */
                 Log.i("GetDialog", "waitingQueueCountDown:  isDone: " +isDone);
                 if(isDone){
                     setTick(0);
@@ -1684,11 +1697,14 @@ public class GetDialog {
             super(activity, v, "Anzahl");
         }
         public void save() throws IllegalStateException{
+            Log.i(TAG, "PumpNumberChangeView: save");
             int res = super.getInt();
             if(res == -1){
+                Log.e(TAG, "PumpNumberChangeView: save res == -1 keine valide zahle");
                 Toast.makeText(super.activity, "Gib bitte eine valide Zahle ein.", Toast.LENGTH_SHORT).show();
                 throw new IllegalStateException("Missing number!");
             } else {
+                Log.e(TAG, "PumpNumberChangeView: save setOverrideEmptyPumps");
                 Pump.setOverrideEmptyPumps(activity,res);
             }
         }

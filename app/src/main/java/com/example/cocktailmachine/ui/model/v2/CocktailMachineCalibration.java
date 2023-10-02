@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.enums.AdminRights;
@@ -39,7 +40,7 @@ public class CocktailMachineCalibration {
                 Toast.makeText(activity, "Cocktailmaschine ist bereit.", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if(AdminRights.isAdmin()) {
+            if(AdminRights.isAdmin()){
                 GetDialog.startAutomaticCalibration(activity);
             }else{
                 GetActivity.waitNotSet(activity);
