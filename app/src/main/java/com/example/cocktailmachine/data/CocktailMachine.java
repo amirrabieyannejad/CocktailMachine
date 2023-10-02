@@ -695,7 +695,6 @@ public class CocktailMachine {
         //TO DO: call bluetooth
         if(!Dummy.isDummy){
             try {
-
                 BluetoothSingleton.getInstance().adminAutoCalibrateStart(activity);
             } catch (JSONException | InterruptedException|NullPointerException e) {
                 Log.e(TAG,"automaticCalibration");
@@ -704,7 +703,50 @@ public class CocktailMachine {
 
             }
         }else{
+            CalibrateStatus.setStatus(CalibrateStatus.ready);
             Log.i(TAG, "automaticCalibration");
+        }
+    }
+
+    public static void tickDummy(Activity activity){
+        if(Dummy.isDummy) {
+            if(dummyCounter<0){
+                Log.i(TAG, "isAutomaticCalibrationDone: dummycounter = 0");
+                dummyCounter = 0;
+                Log.i(TAG, "isAutomaticCalibrationDone: pumpe.size = "+Pump.getPumps().size());
+            }
+            //return new Random(42).nextBoolean();
+            if( dummyCounter==Pump.getPumps().size()){
+                if(CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_calculation){
+                    CalibrateStatus.setStatus(CalibrateStatus.calibration_done);
+                    Log.i(TAG, "isAutomaticCalibrationDone: Dummy: calibration_calculation->calibration_done => fertig done ");
+                    Log.i(TAG, "isAutomaticCalibrationDone: Dummy: FERITG");
+                    return;
+                }else{
+                    CalibrateStatus.setStatus(CalibrateStatus.calibration_calculation);
+                    Log.i(TAG, "isAutomaticCalibrationDone: Dummy: dummyCounter, alle Pumpen fertig -> calibration_calculation  ");
+                    Log.i(TAG, "isAutomaticCalibrationDone: Dummy: ");
+                    return;
+                }
+            } else if (dummyCounter<Pump.getPumps().size()) {
+                if(CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_pumps){
+                    CalibrateStatus.setStatus(CalibrateStatus.calibration_empty_container);
+                    Log.i(TAG, "isAutomaticCalibrationDone: Dummy: calibration_pumps -> calibration_empty_container");
+                    Log.i(TAG,"isAutomaticCalibrationDone: dummyCounter schon: "+dummyCounter);
+                }else if(CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_empty_container){
+                    CalibrateStatus.setStatus(CalibrateStatus.calibration_pumps);
+                    Log.i(TAG, "isAutomaticCalibrationDone: Dummy: calibration_empty_container -> calibration_pumps");
+                    //dummyCounter = dummyCounter+1;
+                    Log.i(TAG,"isAutomaticCalibrationDone: dummyCounter +1: "+dummyCounter);
+                }else{
+                    CalibrateStatus.setStatus(CalibrateStatus.calibration_pumps);
+                }
+                return;
+            }
+            Log.i(TAG, "isAutomaticCalibrationDone: dummycounter = 0");
+            dummyCounter = 0;
+            Log.i(TAG, "isAutomaticCalibrationDone: pumpe.size = "+Pump.getPumps().size());
+            CalibrateStatus.setStatus(CalibrateStatus.calibration_pumps);
         }
     }
 
@@ -716,44 +758,9 @@ public class CocktailMachine {
     public static boolean isAutomaticCalibrationDone(Activity activity){
         Log.i(TAG, "isAutomaticCalibrationDone");
         //TO DO: bluetooth connection
-        if(Dummy.isDummy) {
-            if(dummyCounter<0){
-                Log.i(TAG, "isAutomaticCalibrationDone: dummycounter = 0");
-                dummyCounter = 0;
-                Log.i(TAG, "isAutomaticCalibrationDone: pumpe.size = "+Pump.getPumps().size());
-            }
-            //return new Random(42).nextBoolean();
-            if( dummyCounter==Pump.getPumps().size()){
-                if(CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_calculation){
-                    CalibrateStatus.setStatus(CalibrateStatus.calibration_done);
-                    Log.i(TAG, "isAutomaticCalibrationDone: Dummy: calibration_calculation->calibration_done=>fertig done ");
-                    Log.i(TAG, "isAutomaticCalibrationDone: Dummy: FERITG");
-                    return true;
-                }else{
-                    CalibrateStatus.setStatus(CalibrateStatus.calibration_calculation);
-                    Log.i(TAG, "isAutomaticCalibrationDone: Dummy: dummyCounter, alle Pumpen fertig ->calibration_calculation  ");
-                    Log.i(TAG, "isAutomaticCalibrationDone: Dummy: ");
-                    return false;
-                }
-            } else if (dummyCounter<Pump.getPumps().size()) {
-                if(CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_pumps){
-                    CalibrateStatus.setStatus(CalibrateStatus.calibration_empty_container);
-                    Log.i(TAG, "isAutomaticCalibrationDone: Dummy: calibration_pumps-> calibration_empty_container");
-                    Log.i(TAG,"isAutomaticCalibrationDone: dummyCounter schon: "+dummyCounter);
-                }else if(CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_empty_container){
-                    CalibrateStatus.setStatus(CalibrateStatus.calibration_pumps);
-                    Log.i(TAG, "isAutomaticCalibrationDone: Dummy: calibration_empty_container-> calibration_pumps");
-                    //dummyCounter = dummyCounter+1;
-                    Log.i(TAG,"isAutomaticCalibrationDone: dummyCounter +1: "+dummyCounter);
-                }
-                return false;
-            }
-        }else{
-            //TO  DO: Bluetooth connection
-            //return new Random(42).nextBoolean();
-            return CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_done;
-        }
-        return false;
+
+        return CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_done;
+
     }
 
     /**
@@ -763,14 +770,7 @@ public class CocktailMachine {
      */
     public static boolean needsEmptyingGlass(Activity activity) {
         Log.i(TAG, "needsEmptyingGlass");
-        if(Dummy.isDummy) {
-            return CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_empty_container;
-            //return new Random(42).nextBoolean();
-        }else{
-            //TO DO: Bluetooth connection
-            //return new Random(42).nextBoolean();
-            return CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_empty_container;
-        }
+        return CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_empty_container;
     }
 
 
@@ -799,15 +799,24 @@ public class CocktailMachine {
      * @author Johanna Reidt
      */
     public static void automaticWeight(Activity activity){
-        try{
-            BluetoothSingleton.getInstance().adminAutoCalibrateAddWeight(100,activity);
-        } catch (JSONException | InterruptedException|NullPointerException e) {
-
-            //throw new RuntimeException(e);
-            Log.e(TAG,"automaticWeight");
-            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
-            e.printStackTrace();
+        //tickDummy(activity);
+        if(Dummy.isDummy){
+            CalibrateStatus.setStatus(CalibrateStatus.calibration_known_weight);
         }
+        if(!Dummy.isDummy) {
+            try {
+                BluetoothSingleton.getInstance().adminAutoCalibrateAddWeight(100, activity);
+                return;
+            } catch (JSONException | InterruptedException | NullPointerException e) {
+
+                //throw new RuntimeException(e);
+                Log.e(TAG, "automaticWeight");
+                Log.e(TAG, Objects.requireNonNull(e.getMessage()));
+                e.printStackTrace();
+                return;
+            }
+        }
+        //CalibrateStatus.setStatus(CalibrateStatus.calibration_known_weight);
     }
 
 
@@ -818,16 +827,20 @@ public class CocktailMachine {
     public static void automaticEmptyPumping(Activity activity){
         if(Dummy.isDummy) {
             dummyCounter = dummyCounter + 1;
+            tickDummy(activity);
+            //CalibrateStatus.setStatus(CalibrateStatus.calibration_empty_container);
             Log.i(TAG,"automaticEmptyPumping "+dummyCounter );
         }
-        try {
-            BluetoothSingleton.getInstance().adminAutoCalibrateAddEmpty(activity);
-        } catch (JSONException | InterruptedException|NullPointerException e) {
+        if(!Dummy.isDummy) {
+            try {
+                BluetoothSingleton.getInstance().adminAutoCalibrateAddEmpty(activity);
+            } catch (JSONException | InterruptedException | NullPointerException e) {
 
-            //throw new RuntimeException(e);
-            Log.e(TAG,"automaticEmptyPumping");
-            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
-            e.printStackTrace();
+                //throw new RuntimeException(e);
+                Log.e(TAG, "automaticEmptyPumping");
+                Log.e(TAG, Objects.requireNonNull(e.getMessage()));
+                e.printStackTrace();
+            }
         }
     }
 
@@ -837,15 +850,20 @@ public class CocktailMachine {
      * @author Johanna Reidt
      */
     public static void automaticEnd(Activity activity){
-        try {
-            BluetoothSingleton.getInstance().adminAutoCalibrateFinish(activity);
-        } catch (JSONException | InterruptedException|NullPointerException e){
+        tickDummy(activity);
+        if(!Dummy.isDummy) {
+            try {
+                BluetoothSingleton.getInstance().adminAutoCalibrateFinish(activity);
+            } catch (JSONException | InterruptedException | NullPointerException e) {
 
-            //throw new RuntimeException(e);
-            Log.e(TAG,"automaticEnd");
-            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
-            e.printStackTrace();
+                //throw new RuntimeException(e);
+                Log.e(TAG, "automaticEnd");
+                Log.e(TAG, Objects.requireNonNull(e.getMessage()));
+                e.printStackTrace();
+            }
+            return;
         }
+        //CalibrateStatus.setStatus(CalibrateStatus.calibration_done);
     }
 
 

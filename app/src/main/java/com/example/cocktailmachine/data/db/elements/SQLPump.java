@@ -20,7 +20,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     private static final String TAG = "SQLPump";
     private int minimumPumpVolume = 1;
 
-    private final int slot = -1;
+    private int slot = -1;
     private SQLIngredientPump ingredientPump = null;
     private boolean available = false;
 
@@ -32,6 +32,13 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         super(ID);
         this.wasSaved();
         this.minimumPumpVolume = minimumPumpVolume;
+        //this.setIngredientPumps();
+    }
+    public SQLPump(long ID, int minimumPumpVolume, int slot_id) {
+        super(ID);
+        this.wasSaved();
+        this.minimumPumpVolume = minimumPumpVolume;
+        this.slot = slot_id;
         //this.setIngredientPumps();
     }
 
@@ -120,14 +127,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
      */
     @Override
     public int getSlot() {
-        try {
-            return Math.toIntExact(getID());
-        }catch (ArithmeticException e){
-            Log.e(TAG, "getSlot");
-            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
-            e.printStackTrace();
-            return -1;
-        }
+        return this.slot;
     }
 
     /**
@@ -169,14 +169,21 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     @Override
     public void setIngredientPump(Context context, SQLIngredientPump ingredientPump) {
         Log.i(TAG, "setIngredientPump");
-        this.setIngredientPumps(context);
+        //this.setIngredientPumps(context);
         if(this.ingredientPump != null){
             Log.i(TAG, "setIngredientPump: delete old: "+this.ingredientPump);
             this.ingredientPump.delete(context);
         }
+        Buffer.getSingleton(context).deleteDoublePumpSettingsAndNulls(context);
         this.ingredientPump = ingredientPump;
+        this.ingredientPump.save(context);
         Log.i(TAG, "setIngredientPump: "+ingredientPump.toString());
         this.save(context);
+    }
+
+    @Override
+    public void setSlot(int slot) {
+        this.slot = slot;
     }
 
 
@@ -189,8 +196,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         Log.i(TAG, "checkIngredientPumps");
         if(this.ingredientPump == null){
             Log.i(TAG, "checkIngredientPumps: check ingredient pump");
-
-            List<SQLIngredientPump> ips = Buffer.getSingleton().getIngredientPumps();
+            List<SQLIngredientPump> ips = Buffer.getSingleton(context).getIngredientPumps();
             for(SQLIngredientPump ip: ips){
                 if(ip.getIngredientID()==this.getID()){
                     this.setIngredientPump(context, ip);

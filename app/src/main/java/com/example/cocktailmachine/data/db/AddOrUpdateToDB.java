@@ -50,17 +50,15 @@ public class AddOrUpdateToDB {
 
     public static void addOrUpdate(Context context, SQLIngredient ingredient) {
         Log.i(TAG, "addOrUpdate: "+ingredient.toString());
-        if(ingredient.isSaved() && ingredient.needsUpdate()){
+        if(ingredient.getID() != -1){
             Log.i(TAG, "was saved and needs update");
             Tables.TABLE_INGREDIENT.updateElement(getWritableDatabase(context), ingredient);
             ingredient.wasSaved();
-        }else if(ingredient.isSaved() && !ingredient.needsUpdate()){
-            Log.i(TAG, "was saved and needs no update");
         }else{
             Log.i(TAG, "first time saving");
             ingredient.setID(Tables.TABLE_INGREDIENT.addElement(getWritableDatabase(context), ingredient));
             //ingredients.add(ingredient);
-            Buffer.getSingleton().addToBuffer(ingredient);
+            Buffer.getSingleton(context).addToBuffer(ingredient);
             ingredient.wasSaved();
         }
         Buffer.getSingleton(context).addToBuffer(ingredient);
@@ -69,16 +67,14 @@ public class AddOrUpdateToDB {
 
     public static void addOrUpdate(Context context, SQLRecipe recipe) {
         Log.i(TAG, "addOrUpdate: "+recipe.toString());
-        if(recipe.isSaved() && recipe.needsUpdate()){
+        if(recipe.getID() != -1){
             Log.i(TAG, "was saved and needs update");
             Tables.TABLE_RECIPE.updateElement(getWritableDatabase(context), recipe);
             recipe.wasSaved();
-        }else if(recipe.isSaved() && !recipe.needsUpdate()){
-            Log.i(TAG, "was saved and needs no update");
         }else{
             Log.i(TAG, "first time saving");
             recipe.setID(Tables.TABLE_RECIPE.addElement(getWritableDatabase(context), recipe));
-            Buffer.getSingleton().addToBuffer(recipe);
+            Buffer.getSingleton(context).addToBuffer(recipe);
             recipe.wasSaved();
         }
         Buffer.getSingleton(context).addToBuffer(recipe);
@@ -86,16 +82,14 @@ public class AddOrUpdateToDB {
 
     public static void addOrUpdate(Context context, SQLTopic topic) {
         Log.i(TAG, "addOrUpdate: "+topic.toString());
-        if(topic.isSaved() && topic.needsUpdate()){
+        if(topic.getID() != -1){
             Log.i(TAG, "was saved and needs update");
             Tables.TABLE_TOPIC.updateElement(getWritableDatabase(context), topic);
             topic.wasSaved();
-        }else if(topic.isSaved() && !topic.needsUpdate()){
-            Log.i(TAG, "was saved and needs no update");
         }else{
             Log.i(TAG, "first time saving");
             topic.setID(Tables.TABLE_TOPIC.addElement(getWritableDatabase(context), topic));
-            Buffer.getSingleton().addToBuffer(topic);
+            Buffer.getSingleton(context).addToBuffer(topic);
             topic.wasSaved();
         }
         Buffer.getSingleton(context).addToBuffer(topic);
@@ -104,16 +98,14 @@ public class AddOrUpdateToDB {
     public static void addOrUpdate(Context context, SQLPump pump) {
         //TODO: check available
         Log.i(TAG, "addOrUpdate: "+pump.toString());
-        if(pump.isSaved() && pump.needsUpdate()){
+        if(pump.getID() != -1){
             Log.i(TAG, "was saved and needs update");
             Tables.TABLE_PUMP.updateElement(getWritableDatabase(context), pump);
             pump.wasSaved();
-        }else if(pump.isSaved() && !pump.needsUpdate()){
-            Log.i(TAG, "was saved and needs no update");
         }else{
             Log.i(TAG, "first time saving");
             pump.setID(Tables.TABLE_PUMP.addElement(getWritableDatabase(context), pump));
-            Buffer.getSingleton().addToBuffer(pump);
+            Buffer.getSingleton(context).addToBuffer(pump);
             pump.wasSaved();
         }
         Buffer.getSingleton(context).addToBuffer(pump);
@@ -121,12 +113,10 @@ public class AddOrUpdateToDB {
 
     public static void addOrUpdate(Context context, SQLRecipeTopic recipeTopic) {
         Log.i(TAG, "addOrUpdate: "+recipeTopic.toString());
-        if(recipeTopic.isSaved() && recipeTopic.needsUpdate()){
+        if(recipeTopic.getID() != -1){
             Log.i(TAG, "was saved and needs update");
             Tables.TABLE_RECIPE_TOPIC.updateElement(getWritableDatabase(context), recipeTopic);
             recipeTopic.wasSaved();
-        }else if(recipeTopic.isSaved() && !recipeTopic.needsUpdate()){
-            Log.i(TAG, "was saved and needs no update");
         }else{
             Log.i(TAG, "first time saving");
             recipeTopic.setID(Tables.TABLE_RECIPE_TOPIC.addElement(getWritableDatabase(context), recipeTopic));
@@ -137,17 +127,15 @@ public class AddOrUpdateToDB {
 
     public static void addOrUpdate(Context context, SQLIngredientPump ingredientPump) {
         Log.i(TAG, "addOrUpdate: "+ingredientPump);
-        if(ingredientPump.isSaved() && ingredientPump.needsUpdate()){
+        if(ingredientPump.getID() != -1){
             Log.i(TAG, "was saved and needs update");
             Tables.TABLE_INGREDIENT_PUMP.updateElement(getWritableDatabase(context), ingredientPump);
             ingredientPump.wasSaved();
             //ingredientPumps.remove(ingredientPump);
-        }else if(ingredientPump.isSaved() && !ingredientPump.needsUpdate()){
-            Log.i(TAG, "was saved and needs no update");
         }else{
             Log.i(TAG, "first time saving");
             ingredientPump.setID(Tables.TABLE_INGREDIENT_PUMP.addElement(getWritableDatabase(context), ingredientPump));
-            Buffer.getSingleton().addToBuffer(ingredientPump);
+            Buffer.getSingleton(context).addToBuffer(ingredientPump);
             ingredientPump.wasSaved();
         }
         Buffer.getSingleton(context).addToBuffer(ingredientPump);
@@ -155,13 +143,11 @@ public class AddOrUpdateToDB {
 
     public static void addOrUpdate(Context context, SQLRecipeIngredient recipeIngredient) {
         Log.i(TAG, "addOrUpdate: "+recipeIngredient.toString());
-        if(recipeIngredient.isSaved() && recipeIngredient.needsUpdate()){
+        if(recipeIngredient.getID() != -1){
             Log.i(TAG, "was saved and needs update");
             Tables.TABLE_RECIPE_INGREDIENT.updateElement(getWritableDatabase(context), recipeIngredient);
             recipeIngredient.wasSaved();;
             //recipeIngredients.remove(recipeIngredient);
-        }else if(recipeIngredient.isSaved() && !recipeIngredient.needsUpdate()){
-            Log.i(TAG, "was saved and needs no update");
         }else{
             Log.i(TAG, "first time saving");
             recipeIngredient.setID(Tables.TABLE_RECIPE_INGREDIENT.addElement(getWritableDatabase(context), recipeIngredient));
@@ -173,12 +159,10 @@ public class AddOrUpdateToDB {
 
     public static void addOrUpdate(Context context, SQLRecipeImageUrlElement recipeImageUrlElement) {
         Log.i(TAG, "addOrUpdate: "+recipeImageUrlElement.toString());
-        if(recipeImageUrlElement.isSaved() && recipeImageUrlElement.needsUpdate()){
+        if(recipeImageUrlElement.getID() != -1){
             Log.i(TAG, "was saved and needs update");
             Tables.TABLE_RECIPE_URL.updateElement(getWritableDatabase(context), recipeImageUrlElement);
             recipeImageUrlElement.wasSaved();
-        }else if(recipeImageUrlElement.isSaved() && !recipeImageUrlElement.needsUpdate()){
-            Log.i(TAG, "was saved and needs no update");
         }else{
             Log.i(TAG, "first time saving");
             recipeImageUrlElement.setID(Tables.TABLE_RECIPE_URL.addElement(getWritableDatabase(context), recipeImageUrlElement));
@@ -189,12 +173,10 @@ public class AddOrUpdateToDB {
 
     public static void addOrUpdate(Context context, SQLIngredientImageUrlElement ingredientImageUrlElement) {
         Log.i(TAG, "addOrUpdate: "+ingredientImageUrlElement);
-        if(ingredientImageUrlElement.isSaved() && ingredientImageUrlElement.needsUpdate()){
+        if(ingredientImageUrlElement.getID() != -1){
             Log.i(TAG, "was saved and needs update");
             Tables.TABLE_INGREDIENT_URL.updateElement(getWritableDatabase(context), ingredientImageUrlElement);
             ingredientImageUrlElement.wasSaved();
-        }else if(ingredientImageUrlElement.isSaved() && !ingredientImageUrlElement.needsUpdate()){
-            Log.i(TAG, "was saved and needs no update");
         }else{
             Log.i(TAG, "first time saving");
             ingredientImageUrlElement.setID(

@@ -244,7 +244,7 @@ public class SingleCocktailChoice extends AppCompatActivity {
     }
 
     private List<Recipe> loadRecipes(Context context) throws NotInitializedDBException {
-        List<Recipe> recipes = Buffer.getSingleton().getRecipes(context);
+        List<Recipe> recipes = Buffer.getSingleton(context).getRecipes(context);
         /*
         try {
             recipes = DatabaseConnection.getDataBase().loadAllRecipes();

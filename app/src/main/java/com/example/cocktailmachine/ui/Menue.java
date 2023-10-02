@@ -10,8 +10,6 @@ import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
-import com.example.cocktailmachine.data.db.Buffer;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
@@ -19,9 +17,7 @@ import com.example.cocktailmachine.ui.ListOfIngredience.ListIngredience;
 import com.example.cocktailmachine.ui.ListOfPumps.ListOfPumps;
 import com.example.cocktailmachine.ui.calibration.scale.calibrationScale;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
-import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
-import com.example.cocktailmachine.ui.model.v1.ModelActivity;
 import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.v2.ConfigurePumps;
 import com.example.cocktailmachine.ui.model.v2.GetActivity;
@@ -63,7 +59,6 @@ public class Menue extends AppCompatActivity {
         }
 
          */
-        Buffer.load(this);
         if(Dummy.asAdmin){
             AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.Admin);
         }
@@ -76,7 +71,8 @@ public class Menue extends AppCompatActivity {
         }
         if(Dummy.isDummy && !Dummy.withSetCalibration ){
             CocktailMachineCalibration.setIsDone(true);
-        }else if (!CocktailMachineCalibration.isIsDone()){
+        }
+        if (!CocktailMachineCalibration.isIsDone()){
             CocktailMachineCalibration.start(this);
         }
         if(!Dummy.withTestEnvs){

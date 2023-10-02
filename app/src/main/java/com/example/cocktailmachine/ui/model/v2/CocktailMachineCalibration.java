@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.enums.AdminRights;
@@ -20,7 +21,7 @@ import java.util.Random;
  */
 public class CocktailMachineCalibration {
     private static final String TAG = "CocktailMachineCalibr" ;
-    private static boolean isDone = true;
+    private static boolean isDone = false;
 
     public static void start(Activity activity) {
         Buffer.loadForSetUp(activity);
@@ -39,7 +40,7 @@ public class CocktailMachineCalibration {
                 Toast.makeText(activity, "Cocktailmaschine ist bereit.", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if(AdminRights.isAdmin()) {
+            if(AdminRights.isAdmin()){
                 GetDialog.startAutomaticCalibration(activity);
             }else{
                 GetActivity.waitNotSet(activity);
@@ -55,6 +56,11 @@ public class CocktailMachineCalibration {
 
     }
 
+    /**
+     * true if pumps in cocktailmachine calibrated and ready to mix
+     * @author Johanna Reidt
+     * @return
+     */
     public static boolean isIsDone() {
         return isDone;
     }

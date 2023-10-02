@@ -20,6 +20,7 @@ import com.example.cocktailmachine.data.db.tables.Tables;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -84,17 +85,16 @@ public class Buffer {
 
 
 
-    private Buffer(){
+    private Buffer(){}
 
-    }
 
     public static Buffer getSingleton(){
         if(singleton == null){
             singleton = new Buffer();
         }
-
         return singleton;
     }
+
     public static Buffer getSingleton(Context context){
         if(singleton == null){
             singleton = new Buffer();
@@ -106,7 +106,6 @@ public class Buffer {
                 e.printStackTrace();
             }
         }
-
         return singleton;
     }
 
@@ -283,28 +282,20 @@ public class Buffer {
      * @param context
      */
     public static void localRefresh(Context context){
-        getSingleton().noMemory();
-        load(context);
+        if(singleton != null) {
+            singleton.noMemory();
+        }
+        getSingleton(context);
     }
 
     public static void loadForSetUp(Context context){
         //TODO:
-        load(context);
-        Buffer.getSingleton().setUpEmptyPumps(context);
-    }
-    public static void load(Context context) {
-        if(!Buffer.isLoaded) {
-            try {
-                Buffer.getSingleton().setLoad(context);
-            } catch (NotInitializedDBException e) {
-                Log.e(TAG, "loadForSetUp: NotInitializedDBException");
-                Log.e(TAG, e.getMessage());
-                e.printStackTrace();
-                isLoaded = false;
-            }
-        }
+        //load(context);
 
+        Buffer.setUpEmptyPumps(context);
     }
+
+
 
 
 
@@ -1345,22 +1336,6 @@ public class Buffer {
         }
         return names;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public void addToBuffer(SQLIngredientPump e){
         Log.i(TAG, "addToBuffer"+e.toString());
         this.ingredientPumps.add(e);
@@ -1374,16 +1349,70 @@ public class Buffer {
         }
         return this.ingredientPumps;
     }
-    public SQLIngredientPump getIngredientPump(long pump_id) {
+    public SQLIngredientPump getIngredientPump(Long id) {
+        if(id == null){
+            return null;
+        }
         List<SQLIngredientPump> ips = this.getIngredientPumps();
         for(SQLIngredientPump ip: ips){
             if(ip != null) {
-                if (ip.getPumpID() == pump_id) {
+                if (ip.getID() == id) {
                     return ip;
                 }
             }
         }
         return null;
+    }
+    public SQLIngredientPump getIngredientPump(Pump pump) {
+        if(pump == null){
+            return null;
+        }
+        List<SQLIngredientPump> ips = this.getIngredientPumps();
+        for(SQLIngredientPump ip: ips){
+            if(ip != null) {
+                if (ip.getPumpID() == pump.getID()) {
+                    return ip;
+                }
+            }
+        }
+        return null;
+    }
+
+    public SQLIngredientPump getIngredientPump(Ingredient ingredient){
+        if(ingredient == null){
+            return null;
+        }
+        for(SQLIngredientPump ip: this.getIngredientPumps()){
+            if(ip != null){
+                if(ip.getIngredientID() == ingredient.getID()){
+                    return ip;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void deleteDoublePumpSettingsAndNulls(Context context){
+        List<Long> pump_ids = new ArrayList<>();
+        List<Long> toDelete = new ArrayList<>();
+        Iterator<SQLIngredientPump> it = this.getIngredientPumps().iterator();
+        while (it.hasNext()){
+            if(it.next() == null){
+                it.remove();
+            }
+        }
+        for(SQLIngredientPump ip: this.getIngredientPumps()){
+            if(ip != null){
+                if(!pump_ids.contains(ip.getPumpID())){
+                    pump_ids.add(ip.getPumpID());
+                    continue;
+                }
+                toDelete.add(ip.getID());
+            }
+        }
+        for(Long id: toDelete){
+            this.getIngredientPump(id).delete(context);
+        }
     }
 
 
@@ -1550,30 +1579,25 @@ public class Buffer {
 
     //Setup
 
-    void setUpEmptyPumps(Context context) {
+    private static void setUpEmptyPumps(Context context) {
         Log.i(TAG, "setUpEmptyPumps");
-        this.emptyUpPumps(context);
-        this.pumps = new ArrayList<>();
-        DatabaseConnection.init(context).setUpEmptyPumps();
-    }
-
-    void checkAllAvailability(Context context) {
-        for(Pump p: this.pumps){
-            p.loadAvailable(context);
-        }
+        DatabaseConnection.init(context).setUpEmptyPumps(); //delete all pump Tables to be sure
+        Buffer.localRefresh(context);
     }
 
     private void emptyUpPumps(Context context) {
         Log.i(TAG, "emptyUpPumps");
-        DatabaseConnection.init(context).emptyUpPumps();
         if(this.pumps == null) {
             this.pumps = new ArrayList<>();
-
         }else{
-            for (Pump p : this.pumps) {
-                p.empty(context);
-                p.delete(context);
+            List<Pump> g = new ArrayList<>();
+            for (Pump temp : this.pumps) {
+                temp.empty(context);
+                //temp.delete(context);
+                //it.remove();
+                //it.remove();
             }
+            //DatabaseConnection.init(context).emptyUpPumps();
         }
 
         if(isFast){
@@ -1586,18 +1610,41 @@ public class Buffer {
             this.fastAvailableIngredient = new ArrayList<>();
             this.fastAvailableRecipe = new ArrayList<>();
         }else{
-            for(Ingredient i: this.ingredients){
+            for(Ingredient i: this.getIngredients()){
                 i.empty(context);
             }
-            for(Recipe r: this.recipes){
+            for(Recipe r: this.getRecipes()){
                 r.loadAvailable(context);
             }
         }
-        for(SQLIngredientPump ip: this.ingredientPumps){
+        for(SQLIngredientPump ip: this.getIngredientPumps()){
             ip.delete(context);
         }
         this.ingredientPumps = new ArrayList<>();
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public void available(Recipe recipe, boolean available) {
         if (isFast) {
@@ -1632,4 +1679,12 @@ public class Buffer {
     }
 
 
+    public Pump getPumpWithSlot(int slot) {
+        for(Pump p: this.getPumps()){
+            if(p.getSlot() == slot){
+                return p;
+            }
+        }
+        return null;
+    }
 }

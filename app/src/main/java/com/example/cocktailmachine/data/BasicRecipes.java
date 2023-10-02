@@ -18,7 +18,7 @@ public class BasicRecipes {
      * sonst immer DB mit Context initialisieren!!!!
      */
 
-    public static void loadTopics(Context context) throws NotInitializedDBException{
+    public static void loadTopics(Context context) {
 
         Topic ice_crushed = Topic.makeNew("Crushed Eis", "klein gehaktes Eis");
         ice_crushed.save(context);
@@ -34,7 +34,7 @@ public class BasicRecipes {
 
     }
 
-    public static void loadIngredients(Context context) throws NotInitializedDBException {
+    public static void loadIngredients(Context context) {
         Ingredient tequila = Ingredient.makeNew("Tequila", true, Color.WHITE);
         tequila.save(context);
         Ingredient orangenlikör = Ingredient.makeNew("Orangenlikör", true, Color.YELLOW);
@@ -58,31 +58,31 @@ public class BasicRecipes {
         //DatabaseConnection.localRefresh();
     }
 
-    public static void loadPumps(Context context) throws NotInitializedDBException, MissingIngredientPumpException {
+    public static void loadPumps(Context context) throws  MissingIngredientPumpException {
 
         Pump t_p = Pump.makeNew();
         t_p.setCurrentIngredient(context, Ingredient.getIngredient("Tequila"));
-        t_p.fill(100);
+        t_p.fill(1000);
         t_p.save(context);
         Pump o_p = Pump.makeNew();
         o_p.setCurrentIngredient(context, Ingredient.getIngredient("Orangenlikör"));//orangenlikör);
-        o_p.fill(100);
+        o_p.fill(1000);
         o_p.save(context);
         Pump l_p = Pump.makeNew();
         l_p.setCurrentIngredient(context, Ingredient.getIngredient("Limettensaft"));//limettensaft);
-        l_p.fill(100);
+        l_p.fill(1000);
         l_p.save(context);
         Pump w_p = Pump.makeNew();
         w_p.setCurrentIngredient(context, Ingredient.getIngredient("Wodka"));//wodka);
-        w_p.fill(100);
+        w_p.fill(1000);
         w_p.save(context);
         Pump r_p = Pump.makeNew();
         r_p.setCurrentIngredient(context, Ingredient.getIngredient("Rum"));//rum);
-        r_p.fill(100);
+        r_p.fill(1000);
         r_p.save(context);
         Pump c_p = Pump.makeNew();
         c_p.setCurrentIngredient(context, Ingredient.getIngredient("Cola"));//cola);
-        c_p.fill(100);
+        c_p.fill(1000);
         c_p.save(context);
 
         //DatabaseConnection.localRefresh();

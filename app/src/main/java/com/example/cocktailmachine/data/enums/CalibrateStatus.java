@@ -92,6 +92,7 @@ public enum CalibrateStatus {
         if(!Dummy.isDummy){
             CocktailStatus.getCurrentStatus(activity);
         }
+
         Log.i(TAG, "getCurrent: "+status);
         return status;
     }

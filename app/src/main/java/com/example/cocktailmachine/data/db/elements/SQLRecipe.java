@@ -75,7 +75,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         this.available = available;
         this.imageUrls = imageUrls;
 
-        this.addTopics(context,Buffer.getSingleton().getTopics(topics));
+        this.addTopics(context,Buffer.getSingleton(context).getTopics(topics));
         this.addIngredients(context, ingredientIDtoVolumes);
         this.loadAvailable(context);
     }
@@ -94,7 +94,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         this.available = available;
         this.imageUrls = imageUrls;
 
-        this.addTopics(context,Buffer.getSingleton().getTopics(topics));
+        this.addTopics(context,Buffer.getSingleton(context).getTopics(topics));
         this.addIngredients(context, ingredientVolumes);
         this.loadAvailable(context);
     }
