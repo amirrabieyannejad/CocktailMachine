@@ -55,6 +55,11 @@ public class CocktailMachineCalibration {
 
     }
 
+    /**
+     * true if pumps in cocktailmachine calibrated and ready to mix
+     * @author Johanna Reidt
+     * @return
+     */
     public static boolean isIsDone() {
         return isDone;
     }

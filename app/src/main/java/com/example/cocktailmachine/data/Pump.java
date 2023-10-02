@@ -8,12 +8,14 @@ import android.util.Log;
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.db.Buffer;
+import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
+import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.v2.GetDialog;
 
 import org.json.JSONArray;
@@ -22,6 +24,7 @@ import org.json.JSONObject;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -186,6 +189,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
 
     static Pump makeNew() {
+        Log.i(TAG, "makeNew");
         return new SQLPump();
     }
 
@@ -280,35 +284,49 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     //reading json objects
 
     /**
-     * {"1": {"liquid": "lemonade", "volume": 200}}
+     * {"1":{"liquid":"water","volume":1000.0,"calibrated":true,
+     *      * "rate":0.0,"time_init":1000,"time_reverse":1000}
      * Set up pumps with ingredients.
      * Load buffer with status quo from data base.
      *
      * @param json
-     * @throws JSONException
-     * @throws NotInitializedDBException
      */
     static void updatePumpStatus(Context context, JSONObject json) {
         Log.i(TAG, "updatePumpStatus");
         //TO DO: USE THIS AMIR
+        List<Long> toSave = new ArrayList<>();
         try {
-            JSONArray t_ids = json.names();
-            if (t_ids == null) {
-                throw new JSONException("Pump IDs not readable.");
+            Iterator<String> t_ids = json.keys();
+            while (t_ids.hasNext()){
+                String key = t_ids.next();
+                JSONObject jsonTemp = json.getJSONObject(key);
+                int slot = Integer.parseInt(key);
+                int vol = (int) jsonTemp.getDouble("volume");
+                Ingredient ingredient = Ingredient.searchOrNew(context, jsonTemp.getString("liquid"));
+                boolean calibrated = jsonTemp.getBoolean("calibrated");
+                if(!calibrated){
+                    CocktailMachineCalibration.setIsDone(false);
+                }
+                Pump pump = Buffer.getSingleton(context).getPumpWithSlot(slot);
+                if(pump == null){
+                    pump = new SQLPump();
+                }
+                pump.setSlot(slot);
+                //pump.setMinimumPumpVolume();
+                pump.setCurrentIngredient(context, ingredient);
+                pump.fill(vol);
+                pump.save(context);
+                toSave.add(pump.getID());
             }
-            List<Pump> toDeletePumps = Pump.getPumps();
-            for (int i = 0; i < t_ids.length(); i++) {
-                toDeletePumps.remove(
-                        makeNewOrUpdate(context,
-                                Objects.requireNonNull(
-                                        json.optJSONObject(
-                                                t_ids.getString(i)))));
-            }
-            for (Pump toDelete : toDeletePumps) {
-                toDelete.delete(context);
+            for (Pump p : getPumps()) {
+                if (!toSave.contains(p.getID())) {
+                    DeleteFromDB.remove(context, p);
+                }
             }
             Buffer.localRefresh(context);
-        } catch (NotInitializedDBException | JSONException | MissingIngredientPumpException e) {
+        } catch (JSONException | MissingIngredientPumpException e) {
+            Log.e(TAG, "updatePumpStatus: error");
+            Log.e(TAG, e.getMessage());
             e.printStackTrace();
         }
 
