@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.text.InputType;
 import android.util.Log;
+import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -1199,9 +1200,8 @@ public class GetDialog {
             this.activity = activity;
             this.t = v.findViewById(R.id.textView_edit_text);
             this.e = v.findViewById(R.id.editText_edit_text);
-
             this.t.setText("Volumen: ");
-            this.e.setInputType(InputType.TYPE_CLASS_TEXT);
+            this.e.setInputType(InputType.TYPE_CLASS_NUMBER);
             this.minimum = minimum;
             this.pump = pump;
             this.v = v;
@@ -1218,11 +1218,15 @@ public class GetDialog {
         }
         private int getVolume(){
             try {
-                return Integer.parseInt(e.getText().toString());
+                int i = Integer.parseInt(e.getText().toString());
+                if(i>0){
+                    return i;
+                }
             }catch (NumberFormatException e){
                 e.printStackTrace();
-                return 100;
             }
+            Toast.makeText(this.activity, "Gib eine positive Zahl an!", Toast.LENGTH_SHORT).show();
+            return -1;
         }
         public void save(){
             try {
@@ -1825,7 +1829,7 @@ public class GetDialog {
             this.e = v.findViewById(R.id.editText_edit_text);
 
             this.t.setText(title+": ");
-            this.e.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+            this.e.setInputType(InputType.TYPE_CLASS_NUMBER);
             this.v = v;
             String name = getPreFloat();
             this.e.setHint(name);

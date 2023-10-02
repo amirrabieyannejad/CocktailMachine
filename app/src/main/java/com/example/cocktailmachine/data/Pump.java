@@ -290,7 +290,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
     /**
      * {"1":{"liquid":"water","volume":1000.0,"calibrated":true,
-     *      * "rate":0.0,"time_init":1000,"time_reverse":1000}
+     *      "rate":0.0,"time_init":1000,"time_reverse":1000},
+     *  "2":{"liquid":"water","volume":1000.0,"calibrated":true,
+     *       "rate":0.0,"time_init":1000,"time_reverse":1000}}
      * Set up pumps with ingredients.
      * Load buffer with status quo from data base.
      *
@@ -707,10 +709,12 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @author Johanna Reidt
      */
     static void readPumpStatus(Activity activity) {
-        try {
-            BluetoothSingleton.getInstance().adminReadPumpsStatus(activity);
-        } catch (JSONException | InterruptedException e) {
-            e.printStackTrace();
+        if(!Dummy.isDummy) {
+            try {
+                BluetoothSingleton.getInstance().adminReadPumpsStatus(activity);
+            } catch (JSONException | InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
