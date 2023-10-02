@@ -132,8 +132,8 @@ public class AddOrUpdateToDB {
         }else{
             Log.i(TAG, "first time saving");
             ingredientPump.setID(Tables.TABLE_INGREDIENT_PUMP.addElement(getWritableDatabase(context), ingredientPump));
-            Buffer.getSingleton(context).addToBuffer(ingredientPump);
             ingredientPump.wasSaved();
+            Buffer.getSingleton(context).addToBuffer(ingredientPump);
         }
     }
 
