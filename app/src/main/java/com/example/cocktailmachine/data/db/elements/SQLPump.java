@@ -198,7 +198,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
             Log.i(TAG, "checkIngredientPumps: check ingredient pump");
             List<SQLIngredientPump> ips = Buffer.getSingleton(context).getIngredientPumps();
             for(SQLIngredientPump ip: ips){
-                if(ip.getIngredientID()==this.getID()){
+                if(ip.getPumpID()==this.getID()){
                     this.setIngredientPump(context, ip);
                     Log.i(TAG, "checkIngredientPumps: setted IngredientPump: "+ip);
                     return;
@@ -328,12 +328,12 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     @Override
     public void save(Context context) {
         Log.i(TAG, "save");
+        AddOrUpdateToDB.addOrUpdate(context,this);
         this.setIngredientPumps(context);
         if(this.ingredientPump != null) {
             this.ingredientPump.setPumpID(this.getID());
             this.ingredientPump.save(context);
         }
-        AddOrUpdateToDB.addOrUpdate(context,this);
 
     }
 

@@ -184,7 +184,10 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             pump.save(context);
             Log.i(TAG, "setOverrideEmptyPumps: made Pump "+i);
             Log.i(TAG, "setOverrideEmptyPumps: made Pump "+pump.toString());
+            Log.i(TAG, "setOverrideEmptyPumps: control list len "+ getPumps().size() );
         }
+        Log.i(TAG, "setOverrideEmptyPumps: control given len "+ numberOfPumps);
+        Log.i(TAG, "setOverrideEmptyPumps: control list len "+ getPumps().size() );
     }
 
     void setSlot(int i);
@@ -556,11 +559,13 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         JSONObject answer = new JSONObject();
 
          */
-        try {
-            BluetoothSingleton.getInstance().adminRefillPump(this.getVolume(),
-                    this.getSlot(),activity);
-        } catch (JSONException | InterruptedException e) {
-            e.printStackTrace();
+        if(!Dummy.isDummy) {
+            try {
+                BluetoothSingleton.getInstance().adminRefillPump(this.getVolume(),
+                        this.getSlot(), activity);
+            } catch (JSONException | InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
