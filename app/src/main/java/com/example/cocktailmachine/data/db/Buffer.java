@@ -293,6 +293,7 @@ public class Buffer {
         load(context);
         Buffer.getSingleton().setUpEmptyPumps(context);
     }
+
     public static void load(Context context) {
         if(!Buffer.isLoaded) {
             try {
@@ -1596,19 +1597,12 @@ public class Buffer {
         DatabaseConnection.init(context).setUpEmptyPumps();
     }
 
-    void checkAllAvailability(Context context) {
-        for(Pump p: this.pumps){
-            p.loadAvailable(context);
-        }
-    }
-
     private void emptyUpPumps(Context context) {
         Log.i(TAG, "emptyUpPumps");
         if(this.pumps == null) {
             this.pumps = new ArrayList<>();
         }else{
             List<Pump> g = new ArrayList<>();
-            int n = pumps.size();
             for (Pump temp : this.pumps) {
                 temp.empty(context);
                 //temp.delete(context);
@@ -1640,6 +1634,29 @@ public class Buffer {
         }
         this.ingredientPumps = new ArrayList<>();
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public void available(Recipe recipe, boolean available) {
         if (isFast) {
