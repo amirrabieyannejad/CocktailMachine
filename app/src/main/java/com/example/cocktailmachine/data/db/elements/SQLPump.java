@@ -20,7 +20,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     private static final String TAG = "SQLPump";
     private int minimumPumpVolume = 1;
 
-    private final int slot = -1;
+    private int slot = -1;
     private SQLIngredientPump ingredientPump = null;
     private boolean available = false;
 
@@ -32,6 +32,13 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         super(ID);
         this.wasSaved();
         this.minimumPumpVolume = minimumPumpVolume;
+        //this.setIngredientPumps();
+    }
+    public SQLPump(long ID, int minimumPumpVolume, int slot_id) {
+        super(ID);
+        this.wasSaved();
+        this.minimumPumpVolume = minimumPumpVolume;
+        this.slot = slot_id;
         //this.setIngredientPumps();
     }
 
@@ -120,14 +127,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
      */
     @Override
     public int getSlot() {
-        try {
-            return Math.toIntExact(getID());
-        }catch (ArithmeticException e){
-            Log.e(TAG, "getSlot");
-            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
-            e.printStackTrace();
-            return -1;
-        }
+        return this.slot;
     }
 
     /**

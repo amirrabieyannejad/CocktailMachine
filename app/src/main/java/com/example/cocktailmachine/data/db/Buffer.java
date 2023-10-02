@@ -85,17 +85,8 @@ public class Buffer {
 
 
 
-    private Buffer(){
+    private Buffer(){}
 
-    }
-
-    public static Buffer getSingleton(){
-        if(singleton == null){
-            singleton = new Buffer();
-        }
-
-        return singleton;
-    }
     public static Buffer getSingleton(Context context){
         if(singleton == null){
             singleton = new Buffer();
@@ -284,29 +275,20 @@ public class Buffer {
      * @param context
      */
     public static void localRefresh(Context context){
-        getSingleton().noMemory();
-        load(context);
+        if(singleton != null) {
+            singleton.noMemory();
+        }
+        getSingleton(context);
     }
 
     public static void loadForSetUp(Context context){
         //TODO:
-        load(context);
-        Buffer.getSingleton().setUpEmptyPumps(context);
+        //load(context);
+
+        Buffer.setUpEmptyPumps(context);
     }
 
-    public static void load(Context context) {
-        if(!Buffer.isLoaded) {
-            try {
-                Buffer.getSingleton().setLoad(context);
-            } catch (NotInitializedDBException e) {
-                Log.e(TAG, "loadForSetUp: NotInitializedDBException");
-                Log.e(TAG, e.getMessage());
-                e.printStackTrace();
-                isLoaded = false;
-            }
-        }
 
-    }
 
 
 
@@ -1590,11 +1572,10 @@ public class Buffer {
 
     //Setup
 
-    void setUpEmptyPumps(Context context) {
+    private static void setUpEmptyPumps(Context context) {
         Log.i(TAG, "setUpEmptyPumps");
-        this.emptyUpPumps(context);
-        //this.pumps = new ArrayList<>();
-        DatabaseConnection.init(context).setUpEmptyPumps();
+        DatabaseConnection.init(context).setUpEmptyPumps(); //delete all pump Tables to be sure
+        Buffer.localRefresh(context);
     }
 
     private void emptyUpPumps(Context context) {
@@ -1609,7 +1590,7 @@ public class Buffer {
                 //it.remove();
                 //it.remove();
             }
-            DatabaseConnection.init(context).emptyUpPumps();
+            //DatabaseConnection.init(context).emptyUpPumps();
         }
 
         if(isFast){

@@ -22,11 +22,13 @@ public class PumpTable extends BasicColumn<SQLPump> {
 
         public static final String TABLE_NAME = "Pump";
         public static final String COLUMN_NAME_MINIMUM_PUMP_VOLUME = "MinimumPumpVolume";
-        public static final String COLUMN_NAME_INGREDIENT_ID = "IngredientID";
+    public static final String COLUMN_NAME_INGREDIENT_ID = "IngredientID";
+    public static final String COLUMN_NAME_SLOT_ID = "SlotID";
 
         public static final String COLUMN_TYPE_ID = TYPE_ID;
         public static final String COLUMN_TYPE_MINIMUM_PUMP_VOLUME = TYPE_INTEGER;
-        public static final String COLUMN_TYPE_INGREDIENT_ID = TYPE_LONG;
+    public static final String COLUMN_TYPE_INGREDIENT_ID = TYPE_LONG;
+    public static final String COLUMN_TYPE_SLOT_ID = TYPE_INTEGER;
 
         PumpTable(){
             super();
@@ -43,6 +45,7 @@ public class PumpTable extends BasicColumn<SQLPump> {
             columns.add(this._ID);
             columns.add(COLUMN_NAME_MINIMUM_PUMP_VOLUME);
             columns.add(COLUMN_NAME_INGREDIENT_ID);
+            columns.add(COLUMN_NAME_SLOT_ID);
             return columns;
         }
 
@@ -52,6 +55,7 @@ public class PumpTable extends BasicColumn<SQLPump> {
             types.add(COLUMN_TYPE_ID);
             types.add(COLUMN_TYPE_MINIMUM_PUMP_VOLUME);
             types.add(COLUMN_TYPE_INGREDIENT_ID);
+            types.add(COLUMN_TYPE_SLOT_ID);
             return types;
         }
 
