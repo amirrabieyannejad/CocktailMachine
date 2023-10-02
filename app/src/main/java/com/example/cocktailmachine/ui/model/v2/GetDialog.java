@@ -625,6 +625,7 @@ public class GetDialog {
                 //setFixedPumpMinVolume(activity, pump, next);
                 if(position+1 == pumps.size()){
                     GetActivity.goToMenu(activity);
+
                 }else {
                     setFixedPumpIngredient(activity,pumps, position+1);
                 }

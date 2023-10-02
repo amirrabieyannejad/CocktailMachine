@@ -85,7 +85,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     }
 
     private SQLIngredientPump getIngredientPump(Context context){
-        return Buffer.getSingleton(context).getIngredientPump(this.getID());
+        return Buffer.getSingleton(context).getIngredientPump(this);
     }
 
     /**
@@ -157,7 +157,8 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
 
     @Override
     public void preSetIngredient(long id) {
-        this.ingredientPump = new SQLIngredientPump(-1, this.getID(),id);
+        //this.ingredientPump = new SQLIngredientPump(-1, this.getID(),id);
+        this.ingredientPump = Buffer.getSingleton().getIngredientPump(this);
         this.wasChanged();
     }
 

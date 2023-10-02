@@ -135,6 +135,7 @@ public class AddOrUpdateToDB {
             ingredientPump.wasSaved();
             Buffer.getSingleton(context).addToBuffer(ingredientPump);
         }
+        Log.i(TAG, "addOrUpdate: issaved???? "+ DatabaseConnection.init(context).loadIngredientPumps());
     }
 
     public static void addOrUpdate(Context context, SQLRecipeIngredient recipeIngredient) {
