@@ -47,7 +47,7 @@ public class ListActivity extends BasicActivity {
         List<Pump> pumps = Pump.getPumps(this);
         for(Pump pump: pumps){
             IDs.add(pump.getID());
-            names.add("Pumpe: "+pump.getIngredientName(this));
+            names.add("Slot "+pump.getSlot()+": "+pump.getIngredientName(this));
         }
         binding.floatingActionButtonList.setVisibility(View.GONE);
         /*
