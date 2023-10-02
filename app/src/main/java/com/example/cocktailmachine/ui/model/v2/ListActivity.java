@@ -107,8 +107,8 @@ public class ListActivity extends BasicActivity {
 
         Activity activity = this;
         binding.floatingActionButtonList.setOnClickListener(v -> GetActivity.goToAdd(activity, getModelType()));
-
-        binding.textViewListAcTitle.setOnClickListener(v -> ListActivity.this.reload());
+        binding.imageButtonListReload.setOnClickListener(v -> ListActivity.this.reload());
+        binding.imageButtonListToHome.setOnClickListener(v -> GetActivity.goToMenu(activity));
     }
 
     @Override

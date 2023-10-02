@@ -123,5 +123,6 @@
     <string name="gotolist">gotolist</string>
     <string name="add">ADD</string>
     <string name="show_available">Zeige nur die Verfügbaren an!</string>
+    <string name="home">home</string>
 
 </resources>
