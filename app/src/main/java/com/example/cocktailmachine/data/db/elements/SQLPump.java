@@ -193,19 +193,18 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
      * @param context
      */
     private void setIngredientPumps(Context context) {
-        Log.i(TAG, "checkIngredientPumps");
+        Log.i(TAG, "setIngredientPumps");
         if(this.ingredientPump == null){
-            Log.i(TAG, "checkIngredientPumps: check ingredient pump");
+            Log.i(TAG, "setIngredientPumps: check ingredient pump");
             List<SQLIngredientPump> ips = Buffer.getSingleton(context).getIngredientPumps();
             for(SQLIngredientPump ip: ips){
                 if(ip.getPumpID()==this.getID()){
                     this.setIngredientPump(context, ip);
-                    Log.i(TAG, "checkIngredientPumps: setted IngredientPump: "+ip);
+                    Log.i(TAG, "setIngredientPumps: setted IngredientPump: "+ip);
                     return;
                 }
             }
-            Log.i(TAG, "checkIngredientPumps: none found");
-
+            Log.i(TAG, "setIngredientPumps: none found");
         }
         /*else {
             Log.i(TAG, "checkIngredientPumps: already set: "+this.ingredientPump);
@@ -243,11 +242,14 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
      * @throws MissingIngredientPumpException
      */
     @Override
-    public void fill(Context context,int volume) throws MissingIngredientPumpException {
+    public void fill(Context context, int volume) throws MissingIngredientPumpException {
+        Log.i(TAG, "fill");
         this.setIngredientPumps(context);
         if(this.ingredientPump!=null) {
             this.ingredientPump.setVolume(volume);
+            Log.i(TAG, "fill: setVolume");
             this.ingredientPump.save(context);
+            Log.i(TAG, "fill: save");
 
         }else{
             throw new MissingIngredientPumpException("There is no IngredientPump in Pump: "+this);
@@ -333,6 +335,8 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         if(this.ingredientPump != null) {
             this.ingredientPump.setPumpID(this.getID());
             this.ingredientPump.save(context);
+        }else{
+            Log.i(TAG, "save: no ingredient pump");
         }
 
     }
@@ -355,7 +359,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     public String toString() {
         return "SQLPump{" +
                 "ID=" + getID() +
-                "slot=" + getSlot() +
+                ", slot=" + getSlot() +
                 ", minimumPumpVolume=" + minimumPumpVolume +
                 ", ingredientPump=" + ingredientPump +
                 '}';

@@ -291,7 +291,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     /**
      * {"1":{"liquid":"water","volume":1000.0,"calibrated":true,
      *      "rate":0.0,"time_init":1000,"time_reverse":1000},
-     *  "2":{"liquid":"water","volume":1000.0,"calibrated":true,
+     *  "2":{"liquid":"wodka","volume":1000.0,"calibrated":true,
      *       "rate":0.0,"time_init":1000,"time_reverse":1000}}
      * Set up pumps with ingredients.
      * Load buffer with status quo from data base.
@@ -310,9 +310,13 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 int slot = Integer.parseInt(key);
                 int vol = (int) jsonTemp.getDouble("volume");
                 Ingredient ingredient = Ingredient.searchOrNew(context, jsonTemp.getString("liquid"));
-                boolean calibrated = jsonTemp.getBoolean("calibrated");
-                if(!calibrated){
-                    CocktailMachineCalibration.setIsDone(false);
+                try {
+                    boolean calibrated = jsonTemp.getBoolean("calibrated");
+                    if(!calibrated){
+                        CocktailMachineCalibration.setIsDone(false);
+                    }
+                }catch(JSONException e){
+                    Log.i(TAG, "updatePumpStatus: no calibrated" );
                 }
                 Pump pump = Buffer.getSingleton(context).getPumpWithSlot(slot);
                 if(pump == null){
@@ -526,6 +530,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         } catch (MissingIngredientPumpException e) {
             e.printStackTrace();
         }
+        save(activity);
         sendRefill(activity);
     }
 

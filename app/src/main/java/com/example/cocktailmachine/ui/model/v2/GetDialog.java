@@ -579,7 +579,6 @@ public class GetDialog {
                     (dialog, which) -> {
                         pump.setCurrentIngredient(activity, ingredients.get(which));
                         Toast.makeText(activity, names.get(which)+" gewählt.",Toast.LENGTH_SHORT).show();
-
                         pump.sendSave(activity);
                         setFixedPumpVolume(activity, pumps, position);
                     });
@@ -1229,8 +1228,9 @@ public class GetDialog {
             return -1;
         }
         public void save(){
+            Log.i(TAG, "save");
             try {
-                pump.fill(getVolume());
+                pump.fill(this.activity, getVolume());
             } catch (MissingIngredientPumpException ex) {
                 ex.printStackTrace();
             }
@@ -1238,6 +1238,7 @@ public class GetDialog {
         }
 
         public void send(){
+            Log.i(TAG, "send");
             pump.sendRefill(activity, getVolume());
         }
     }
