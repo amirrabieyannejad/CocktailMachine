@@ -745,9 +745,22 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     static Pump getPump(long id) {
         return Buffer.getSingleton().getPump(id);
     }
+    /**
+     * Static access to pumps.
+     * Get available pump with id k
+     *
+     * @param id pump id k
+     * @return
+     */
+    static Pump getPump(Context context, long id) {
+        return Buffer.getSingleton(context).getPump(id);
+    }
 
     static Pump getPumpWithSlot(int slot) {
-        return Buffer.getSingleton().getPump((long) slot);
+        return Buffer.getSingleton().getPumpWithSlot(slot);
+    }
+    static Pump getPumpWithSlot(Context context, int slot) {
+        return Buffer.getSingleton(context).getPumpWithSlot(slot);
     }
 
 

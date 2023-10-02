@@ -285,7 +285,6 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      */
     default void remove(Context context, Ingredient ingredient){
         DeleteFromDB.remove(context, this, ingredient);
-        Buffer.getSingleton().removeFromBuffer(this, ingredient);
         this.loadAvailable(context);
         this.loadAlcoholic(context);
         this.save(context);
@@ -299,7 +298,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      */
     default void remove(Context context, Topic topic){
         DeleteFromDB.remove(context, this, topic);
-        Buffer.getSingleton().removeFromBuffer(this, topic);
+        //Buffer.getSingleton().removeFromBuffer(this, topic);
         this.loadAvailable(context);
         this.loadAlcoholic(context);
         this.save(context);
@@ -633,7 +632,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @return Recipe
      */
     static Recipe getRecipe(Context context,long id) {
-        return Buffer.getSingleton().getRecipe(context,id);
+        return Buffer.getSingleton(context).getRecipe(context,id);
     }
 
     /**
@@ -671,7 +670,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @return list of recipes
      */
     static List<Recipe> getAllRecipes(Context context) {
-        return Buffer.getSingleton().getRecipes(context);
+        return Buffer.getSingleton(context).getRecipes(context);
     }
 
 

@@ -58,7 +58,7 @@ public class AddOrUpdateToDB {
             Log.i(TAG, "first time saving");
             ingredient.setID(Tables.TABLE_INGREDIENT.addElement(getWritableDatabase(context), ingredient));
             //ingredients.add(ingredient);
-            Buffer.getSingleton().addToBuffer(ingredient);
+            Buffer.getSingleton(context).addToBuffer(ingredient);
             ingredient.wasSaved();
         }
         Buffer.getSingleton(context).addToBuffer(ingredient);
@@ -74,7 +74,7 @@ public class AddOrUpdateToDB {
         }else{
             Log.i(TAG, "first time saving");
             recipe.setID(Tables.TABLE_RECIPE.addElement(getWritableDatabase(context), recipe));
-            Buffer.getSingleton().addToBuffer(recipe);
+            Buffer.getSingleton(context).addToBuffer(recipe);
             recipe.wasSaved();
         }
         Buffer.getSingleton(context).addToBuffer(recipe);
@@ -89,7 +89,7 @@ public class AddOrUpdateToDB {
         }else{
             Log.i(TAG, "first time saving");
             topic.setID(Tables.TABLE_TOPIC.addElement(getWritableDatabase(context), topic));
-            Buffer.getSingleton().addToBuffer(topic);
+            Buffer.getSingleton(context).addToBuffer(topic);
             topic.wasSaved();
         }
         Buffer.getSingleton(context).addToBuffer(topic);
@@ -105,7 +105,7 @@ public class AddOrUpdateToDB {
         }else{
             Log.i(TAG, "first time saving");
             pump.setID(Tables.TABLE_PUMP.addElement(getWritableDatabase(context), pump));
-            Buffer.getSingleton().addToBuffer(pump);
+            Buffer.getSingleton(context).addToBuffer(pump);
             pump.wasSaved();
         }
         Buffer.getSingleton(context).addToBuffer(pump);
@@ -135,7 +135,7 @@ public class AddOrUpdateToDB {
         }else{
             Log.i(TAG, "first time saving");
             ingredientPump.setID(Tables.TABLE_INGREDIENT_PUMP.addElement(getWritableDatabase(context), ingredientPump));
-            Buffer.getSingleton().addToBuffer(ingredientPump);
+            Buffer.getSingleton(context).addToBuffer(ingredientPump);
             ingredientPump.wasSaved();
         }
         Buffer.getSingleton(context).addToBuffer(ingredientPump);

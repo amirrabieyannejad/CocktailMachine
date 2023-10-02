@@ -73,7 +73,9 @@ public class DeleteFromDB {
 
     public static void remove(Context context, Recipe recipe, Topic topic) {
         Log.i(TAG, "remove");
-        remove(context, Buffer.getSingleton(context).get(recipe, topic));
+        SQLRecipeTopic rt = Buffer.getSingleton(context).get(recipe, topic);
+        remove(context, rt);
+        //Buffer.getSingleton(context).removeFromBuffer(topic);
     }
 
     public static void remove(Context context, SQLTopic topic) {
@@ -91,6 +93,7 @@ public class DeleteFromDB {
     public static void remove(Context context, Recipe recipe, Ingredient ingredient) {
         Log.i(TAG, "remove");
         remove(context, Buffer.getSingleton(context).get(recipe, ingredient));
+        //Buffer.getSingleton(context).removeFromBuffer(recipe, ingredient);
     }
 
     public static void remove(Context context, SQLIngredientPump ingredientPump) {

@@ -87,6 +87,14 @@ public class Buffer {
 
     private Buffer(){}
 
+
+    public static Buffer getSingleton(){
+        if(singleton == null){
+            singleton = new Buffer();
+        }
+        return singleton;
+    }
+
     public static Buffer getSingleton(Context context){
         if(singleton == null){
             singleton = new Buffer();
@@ -98,7 +106,6 @@ public class Buffer {
                 e.printStackTrace();
             }
         }
-
         return singleton;
     }
 
@@ -1672,4 +1679,12 @@ public class Buffer {
     }
 
 
+    public Pump getPumpWithSlot(int slot) {
+        for(Pump p: this.getPumps()){
+            if(p.getSlot() == slot){
+                return p;
+            }
+        }
+        return null;
+    }
 }

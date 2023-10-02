@@ -105,14 +105,14 @@ public abstract class BasicActivity extends AppCompatActivity {
     @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
-        Buffer.getSingleton().lowMemory();
+        Buffer.getSingleton(this).lowMemory();
         //TO DO: mostly close db cache
     }
 
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        Buffer.getSingleton().lowMemory();
+        Buffer.getSingleton(this).lowMemory();
         //TO DO: half close db cache
     }
 
