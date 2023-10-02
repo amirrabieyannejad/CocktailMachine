@@ -404,13 +404,7 @@ public class GetDialog {
         builder.setMessage("Die automatische Kalibration der Pumpen läuft!");
         AlertDialog dialog = builder.create();
         dialog.show();
-        if(Dummy.isDummy){
-            try {
-                TimeUnit.SECONDS.sleep(4);
-            } catch (InterruptedException e) {
-                Log.e(TAG, "waitingForPumps: sleep failed");
-            }
-        }
+
 
         WaitingQueueCountDown waitingQueueCountDown = new WaitingQueueCountDown(5000) {
             boolean isDone = false;
@@ -459,18 +453,16 @@ public class GetDialog {
                 Log.i("GetDialog", "waitingQueueCountDown: onFinish: dialog dimissed");
                 if(CocktailMachine.isAutomaticCalibrationDone(activity)) {
                     Toast.makeText(activity, "Das Setup ist vollständig!", Toast.LENGTH_LONG).show();
-
-
                     Postexecute doAgain = new Postexecute() {
                         @Override
                         public void post() {
                             CocktailMachine.automaticEnd(activity);
+
                         }
                     };
                     Postexecute continueHere = new Postexecute() {
                         @Override
                         public void post() {
-
                             GetDialog.setIngredientsForPumps(activity);
                         }
                     };
@@ -478,6 +470,7 @@ public class GetDialog {
                     //CocktailMachine.automaticEnd(activity);
                     //GetDialog.setIngredientsForPumps(activity);
                 } else if (CocktailMachine.needsEmptyingGlass(activity)) {
+
                     GetDialog.emptyGlass(activity);
                 }
                 this.cancel();
@@ -552,16 +545,17 @@ public class GetDialog {
         List<Pump> pumps = Pump.getPumps();
         Log.i(TAG, "setIngredientsForPumps: pumps len "+pumps.size());
 
-        Pump p = pumps.get(0);
-        pumps.remove(0);
-        setFixedPumpIngredient(activity, p, pumps);
+        int position = 0;
+        setFixedPumpIngredient(activity, pumps, position);
 
     }
 
-    private static void setFixedPumpIngredient(Activity activity, Pump pump, List<Pump> next){
+    private static void setFixedPumpIngredient(Activity activity, List<Pump> pumps, int position){
         Log.i(TAG, "setFixedPumpIngredient");
-        Log.i(TAG, "setFixedPumpIngredient: next len "+next.size());
+        //Log.i(TAG, "setFixedPumpIngredient: next len ");
+        Pump pump = pumps.get(position);
         if (pump != null) {
+            Log.i(TAG, "setFixedPumpIngredient Slot "+pump.getSlot());
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setTitle("Setze die Zutat für Slot "+pump.getSlot()+":");
 
@@ -584,10 +578,10 @@ public class GetDialog {
 
             builder.setPositiveButton("Speichern", (dialog, which) -> {
                 Log.i(TAG, "setFixedPumpIngredient: ingredient "+pump.getIngredientName());
-                dialog.dismiss();
+                //dialog.dismiss();
                 pump.sendSave(activity);
                 //Log.i(TAG, "setFixedPumpIngredient: ingredient "+pump.getIngredientName());
-                setFixedPumpVolume(activity, pump, next);
+                setFixedPumpVolume(activity, pumps, position);
 
             });
             builder.show();
@@ -597,8 +591,9 @@ public class GetDialog {
         }
     }
 
-    private static void setFixedPumpVolume(Activity activity, Pump pump, List<Pump> next){
+    private static void setFixedPumpVolume(Activity activity, List<Pump> pumps, int position){
         Log.i(TAG, "setFixedPumpVolume");
+        Pump pump = pumps.get(position);
         if (pump != null) {
             pump.sendRefill(activity);
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -615,19 +610,15 @@ public class GetDialog {
             builder.setView(v);
 
             builder.setPositiveButton("Speichern", (dialog, which) -> {
-                dialog.dismiss();
                 volumeChangeView.save();
                 volumeChangeView.send();
+                //dialog.dismiss();
                 //setFixedPumpMinVolume(activity, pump, next);
-                if(next.isEmpty()){
+                if(position == pumps.size()){
                     GetActivity.goToMenu(activity);
-
                 }else {
-                    Pump p = next.get(0);
-                    next.remove(0);
-                    setFixedPumpIngredient(activity,p,next);
+                    setFixedPumpIngredient(activity,pumps, position);
                 }
-
             });
             builder.show();
         }else{
@@ -636,8 +627,9 @@ public class GetDialog {
     }
 
 
-    private static void setFixedPumpMinVolume(Activity activity, Pump pump, List<Pump> next){
+    private static void setFixedPumpMinVolume(Activity activity,  List<Pump> pumps, int position){
         Log.i(TAG, "setFixedPumpMinVolume");
+        Pump pump = pumps.get(position);
         if (pump != null) {
             pump.sendRefill(activity);
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -656,15 +648,11 @@ public class GetDialog {
             builder.setPositiveButton("Speichern", (dialog, which) -> {
                 volumeChangeView.save();
                 volumeChangeView.send();
-
-                if(next.isEmpty()){
+                //dialog.dismiss();
+                if(position == pumps.size()){
                     GetActivity.goToMenu(activity);
-                    dialog.dismiss();
                 }else {
-                    Pump p = next.get(0);
-                    next.remove(0);
-                    setFixedPumpIngredient(activity,p,next);
-                    dialog.dismiss();
+                    setFixedPumpIngredient(activity,pumps, position);
                 }
             });
             builder.show();
