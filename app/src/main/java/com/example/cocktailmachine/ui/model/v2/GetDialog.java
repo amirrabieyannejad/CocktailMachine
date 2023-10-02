@@ -308,6 +308,7 @@ public class GetDialog {
 
             //CocktailMachine.automaticEmpty(activity);
             //enterNumberOfPumps(activity);
+            CocktailMachine.tareScale(activity);
             dialog.dismiss();
             enterNumberOfPumps(activity);
         });
@@ -328,10 +329,11 @@ public class GetDialog {
         builder.setView(v);
         builder.setPositiveButton("Speichern", (dialog, which) -> {
             try {
-                pumpNumberChangeView.save();
+                pumpNumberChangeView.save(); //set up n new Pumps
                 dialog.dismiss();
                 getGlass(activity);
             }catch (IllegalStateException e){
+
                 Log.e(TAG, "enterNumberOfPumps pumpNumberChangeView save error");
                 Log.e(TAG, e.toString());
                 e.printStackTrace();
@@ -1682,7 +1684,7 @@ public class GetDialog {
             super(activity, v, "Anzahl");
         }
         public void save() throws IllegalStateException{
-            int res = (int) super.getFloat();
+            int res = super.getInt();
             if(res == -1){
                 Toast.makeText(super.activity, "Gib bitte eine valide Zahle ein.", Toast.LENGTH_SHORT).show();
                 throw new IllegalStateException("Missing number!");
@@ -1825,6 +1827,16 @@ public class GetDialog {
                 return Float.parseFloat(e.getText().toString());
             }catch (NumberFormatException e){
                 Log.e(TAG, "FloatChangeView getFloat error");
+                Log.e(TAG, e.toString());
+                e.printStackTrace();
+            }
+            return -1;
+        }
+        public int getInt(){
+            try {
+                return Integer.parseInt(e.getText().toString());
+            }catch (NumberFormatException e){
+                Log.e(TAG, "FloatChangeView getInt error");
                 Log.e(TAG, e.toString());
                 e.printStackTrace();
             }

@@ -181,6 +181,11 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         this.save(context);
     }
 
+    @Override
+    public void setSlot(int slot) {
+        this.slot = slot;
+    }
+
 
     /**
      * checks for ingredientPump if missing in loaded buffer

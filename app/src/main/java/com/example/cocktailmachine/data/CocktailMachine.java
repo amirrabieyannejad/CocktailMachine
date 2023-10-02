@@ -695,7 +695,6 @@ public class CocktailMachine {
         //TO DO: call bluetooth
         if(!Dummy.isDummy){
             try {
-
                 BluetoothSingleton.getInstance().adminAutoCalibrateStart(activity);
             } catch (JSONException | InterruptedException|NullPointerException e) {
                 Log.e(TAG,"automaticCalibration");

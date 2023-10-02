@@ -63,8 +63,9 @@ public class PumpTable extends BasicColumn<SQLPump> {
         public SQLPump makeElement(Cursor cursor) {
             long i_id = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_NAME_INGREDIENT_ID));
             int mlpims = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NAME_MINIMUM_PUMP_VOLUME));
+            int slot_id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NAME_SLOT_ID));
             long id = cursor.getLong(cursor.getColumnIndexOrThrow(_ID));
-            SQLPump pump = new SQLPump(id, mlpims);
+            SQLPump pump = new SQLPump(id, mlpims, slot_id);
             pump.preSetIngredient(i_id);
             return pump;
         }
@@ -76,6 +77,7 @@ public class PumpTable extends BasicColumn<SQLPump> {
                 cv.put(COLUMN_NAME_INGREDIENT_ID, element.getCurrentIngredient().getID());
             }
             cv.put(COLUMN_NAME_MINIMUM_PUMP_VOLUME, element.getMinimumPumpVolume());
+            cv.put(COLUMN_NAME_SLOT_ID, element.getSlot());
             return cv;
         }
 

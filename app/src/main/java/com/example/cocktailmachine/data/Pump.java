@@ -172,12 +172,17 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @param numberOfPumps k
      */
     static void setOverrideEmptyPumps(Context context, int numberOfPumps) {
+        Log.i(TAG, "setOverrideEmptyPumps");
         Buffer.loadForSetUp(context);
         for (int i = 0; i < numberOfPumps; i++) {
             Pump pump = makeNew();
+            pump.setSlot(i);
             pump.save(context);
+            Log.i(TAG, "setOverrideEmptyPumps: made Pump "+i);
         }
     }
+
+    void setSlot(int i);
 
 
     static Pump makeNew() {
