@@ -59,6 +59,22 @@
                 app:tint="@color/black"
                 app:srcCompat="@drawable/baseline_replay_24" />
 
+            <ImageView
+                android:id="@+id/imageView_display_to_home"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="@color/cardview_shadow_end_color"
+                android:contentDescription="@string/home"
+                android:clickable="true"
+                android:focusable="true"
+                android:longClickable="false"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:onClick="home"
+                app:tint="@color/black"
+                app:srcCompat="@drawable/ic_home" />
+
             <ImageButton
                 android:id="@+id/imageButtonList"
                 android:layout_width="wrap_content"

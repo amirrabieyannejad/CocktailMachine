@@ -123,6 +123,7 @@
     <string name="gotolist">gotolist</string>
     <string name="add">ADD</string>
     <string name="show_available">Zeige nur die Verfügbaren an!</string>
+    <string name="home">home</string>
 
     <string name="list_of_pumps_activity_header">Folgende Pumpen sind angegeben</string>
 

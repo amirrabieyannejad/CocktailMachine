@@ -60,7 +60,7 @@ public class DeleteFromDB {
         Log.i(TAG, "remove");
         SQLiteDatabase db = getWritableDatabase(context);
         Tables.TABLE_PUMP.deleteElement(db, pump.getID());
-        Tables.TABLE_INGREDIENT_PUMP.deletePump(db, pump.getID());
+        Tables.TABLE_INGREDIENT_PUMP.deleteElement(db, Buffer.getSingleton().getIngredientPump(pump));
         Buffer.getSingleton(context).removeFromBuffer(pump);
     }
 

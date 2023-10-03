@@ -718,6 +718,7 @@ public class CocktailMachine {
             //return new Random(42).nextBoolean();
             if( dummyCounter==Pump.getPumps().size()){
                 if(CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_calculation){
+                    CocktailMachineCalibration.setIsDone(true);
                     CalibrateStatus.setStatus(CalibrateStatus.calibration_done);
                     Log.i(TAG, "isAutomaticCalibrationDone: Dummy: calibration_calculation->calibration_done => fertig done ");
                     Log.i(TAG, "isAutomaticCalibrationDone: Dummy: FERITG");

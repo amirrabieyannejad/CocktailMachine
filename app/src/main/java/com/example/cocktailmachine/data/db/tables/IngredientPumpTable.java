@@ -7,7 +7,10 @@ import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_LONG;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
+import com.example.cocktailmachine.data.Pump;
+import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 
 import java.util.ArrayList;
@@ -31,6 +34,7 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
     public static final String COLUMN_TYPE_INGREDIENT_ID = TYPE_LONG;
     public static final String COLUMN_TYPE_PUMP_ID = TYPE_LONG;
     public static final String COLUMN_TYPE_VOLUME = TYPE_INTEGER;
+    private static final String TAG = "IngredientPumpTable";
 
     @Override
     public String getName() {
@@ -73,11 +77,9 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
         cv.put(COLUMN_NAME_INGREDIENT_ID, element.getIngredientID());
         cv.put(COLUMN_NAME_PUMP_ID, element.getPumpID());
         cv.put(COLUMN_NAME_VOLUME, element.getVolume());
+        Log.i(TAG, "makeContentValues"+cv.toString());
         return cv;
     }
 
-    public void deletePump(SQLiteDatabase db, long pump){
-        //SQLIngredientPump ip = NewDatabaseConnection.getDataBase().
-    }
 
 }

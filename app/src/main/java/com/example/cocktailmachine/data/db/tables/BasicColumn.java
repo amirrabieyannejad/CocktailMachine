@@ -113,6 +113,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
      * @return T element list
      */
     private List<T> cursorToList(Cursor cursor){
+        Log.i(TAG, "cursorToList");
         List<T> res = new ArrayList<>();
         if(cursor.moveToFirst()) {
             res.add(makeElement(cursor));
@@ -121,6 +122,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
             }
         }
         cursor.close();
+        Log.i(TAG, "cursorToList : "+res);
         return res;
     }
 

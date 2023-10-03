@@ -328,6 +328,10 @@ public class DisplayActivity extends BasicActivity {
         GetActivity.goToEdit(this, getModelType(), this.getID());
     }
 
+    public void home(View view) {
+        GetActivity.goToMenu(this);
+    }
+
 
 
     /*

@@ -184,7 +184,10 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             pump.save(context);
             Log.i(TAG, "setOverrideEmptyPumps: made Pump "+i);
             Log.i(TAG, "setOverrideEmptyPumps: made Pump "+pump.toString());
+            Log.i(TAG, "setOverrideEmptyPumps: control list len "+ getPumps().size() );
         }
+        Log.i(TAG, "setOverrideEmptyPumps: control given len "+ numberOfPumps);
+        Log.i(TAG, "setOverrideEmptyPumps: control list len "+ getPumps().size() );
     }
 
     void setSlot(int i);
@@ -287,7 +290,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
     /**
      * {"1":{"liquid":"water","volume":1000.0,"calibrated":true,
-     *      * "rate":0.0,"time_init":1000,"time_reverse":1000}
+     *      "rate":0.0,"time_init":1000,"time_reverse":1000},
+     *  "2":{"liquid":"wodka","volume":1000.0,"calibrated":true,
+     *       "rate":0.0,"time_init":1000,"time_reverse":1000}}
      * Set up pumps with ingredients.
      * Load buffer with status quo from data base.
      *
@@ -305,9 +310,13 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 int slot = Integer.parseInt(key);
                 int vol = (int) jsonTemp.getDouble("volume");
                 Ingredient ingredient = Ingredient.searchOrNew(context, jsonTemp.getString("liquid"));
-                boolean calibrated = jsonTemp.getBoolean("calibrated");
-                if(!calibrated){
-                    CocktailMachineCalibration.setIsDone(false);
+                try {
+                    boolean calibrated = jsonTemp.getBoolean("calibrated");
+                    if(!calibrated){
+                        CocktailMachineCalibration.setIsDone(false);
+                    }
+                }catch(JSONException e){
+                    Log.i(TAG, "updatePumpStatus: no calibrated" );
                 }
                 Pump pump = Buffer.getSingleton(context).getPumpWithSlot(slot);
                 if(pump == null){
@@ -521,6 +530,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         } catch (MissingIngredientPumpException e) {
             e.printStackTrace();
         }
+        save(activity);
         sendRefill(activity);
     }
 
@@ -556,11 +566,13 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         JSONObject answer = new JSONObject();
 
          */
-        try {
-            BluetoothSingleton.getInstance().adminRefillPump(this.getVolume(),
-                    this.getSlot(),activity);
-        } catch (JSONException | InterruptedException e) {
-            e.printStackTrace();
+        if(!Dummy.isDummy) {
+            try {
+                BluetoothSingleton.getInstance().adminRefillPump(this.getVolume(),
+                        this.getSlot(), activity);
+            } catch (JSONException | InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -702,10 +714,12 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @author Johanna Reidt
      */
     static void readPumpStatus(Activity activity) {
-        try {
-            BluetoothSingleton.getInstance().adminReadPumpsStatus(activity);
-        } catch (JSONException | InterruptedException e) {
-            e.printStackTrace();
+        if(!Dummy.isDummy) {
+            try {
+                BluetoothSingleton.getInstance().adminReadPumpsStatus(activity);
+            } catch (JSONException | InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.text.InputType;
 import android.util.Log;
+import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -331,7 +332,7 @@ public class GetDialog {
         builder.setPositiveButton("Speichern", (dialog, which) -> {
             try {
                 pumpNumberChangeView.save(); //set up n new Pumps
-                dialog.dismiss();
+                //dialog.dismiss();
                 getGlass(activity);
             }catch (IllegalStateException e){
 
@@ -544,6 +545,7 @@ public class GetDialog {
         Log.i("GetDialog", "setIngredientsForPumps");
         List<Pump> pumps = Pump.getPumps();
         Log.i(TAG, "setIngredientsForPumps: pumps len "+pumps.size());
+        Log.i(TAG, "setIngredientsForPumps"+pumps);
 
         int position = 0;
         setFixedPumpIngredient(activity, pumps, position);
@@ -553,6 +555,9 @@ public class GetDialog {
     private static void setFixedPumpIngredient(Activity activity, List<Pump> pumps, int position){
         Log.i(TAG, "setFixedPumpIngredient");
         //Log.i(TAG, "setFixedPumpIngredient: next len ");
+        if(position >= pumps.size()){
+            GetActivity.goToMenu(activity);
+        }
         Pump pump = pumps.get(position);
         if (pump != null) {
             Log.i(TAG, "setFixedPumpIngredient Slot "+pump.getSlot());
@@ -574,8 +579,10 @@ public class GetDialog {
                     (dialog, which) -> {
                         pump.setCurrentIngredient(activity, ingredients.get(which));
                         Toast.makeText(activity, names.get(which)+" gewählt.",Toast.LENGTH_SHORT).show();
+                        pump.sendSave(activity);
+                        setFixedPumpVolume(activity, pumps, position);
                     });
-
+            /*
             builder.setPositiveButton("Speichern", (dialog, which) -> {
                 Log.i(TAG, "setFixedPumpIngredient: ingredient "+pump.getIngredientName());
                 //dialog.dismiss();
@@ -584,6 +591,8 @@ public class GetDialog {
                 setFixedPumpVolume(activity, pumps, position);
 
             });
+
+            */
             builder.show();
         }else{
             Log.i(TAG, "setFixedPumpIngredient: pump is null");
@@ -614,10 +623,11 @@ public class GetDialog {
                 volumeChangeView.send();
                 //dialog.dismiss();
                 //setFixedPumpMinVolume(activity, pump, next);
-                if(position == pumps.size()){
+                if(position+1 == pumps.size()){
                     GetActivity.goToMenu(activity);
+
                 }else {
-                    setFixedPumpIngredient(activity,pumps, position);
+                    setFixedPumpIngredient(activity,pumps, position+1);
                 }
             });
             builder.show();
@@ -1190,9 +1200,8 @@ public class GetDialog {
             this.activity = activity;
             this.t = v.findViewById(R.id.textView_edit_text);
             this.e = v.findViewById(R.id.editText_edit_text);
-
             this.t.setText("Volumen: ");
-            this.e.setInputType(InputType.TYPE_CLASS_TEXT);
+            this.e.setInputType(InputType.TYPE_CLASS_NUMBER);
             this.minimum = minimum;
             this.pump = pump;
             this.v = v;
@@ -1209,15 +1218,20 @@ public class GetDialog {
         }
         private int getVolume(){
             try {
-                return Integer.parseInt(e.getText().toString());
+                int i = Integer.parseInt(e.getText().toString());
+                if(i>0){
+                    return i;
+                }
             }catch (NumberFormatException e){
                 e.printStackTrace();
-                return 100;
             }
+            Toast.makeText(this.activity, "Gib eine positive Zahl an!", Toast.LENGTH_SHORT).show();
+            return -1;
         }
         public void save(){
+            Log.i(TAG, "save");
             try {
-                pump.fill(getVolume());
+                pump.fill(this.activity, getVolume());
             } catch (MissingIngredientPumpException ex) {
                 ex.printStackTrace();
             }
@@ -1225,6 +1239,7 @@ public class GetDialog {
         }
 
         public void send(){
+            Log.i(TAG, "send");
             pump.sendRefill(activity, getVolume());
         }
     }
@@ -1818,7 +1833,7 @@ public class GetDialog {
             this.e = v.findViewById(R.id.editText_edit_text);
 
             this.t.setText(title+": ");
-            this.e.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+            this.e.setInputType(InputType.TYPE_CLASS_NUMBER);
             this.v = v;
             String name = getPreFloat();
             this.e.setHint(name);
