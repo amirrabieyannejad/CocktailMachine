@@ -1,7 +1,10 @@
 package com.example.cocktailmachine.ui.ListOfPumps;
 
+
+
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocktailmachine.R;
@@ -42,7 +46,21 @@ public class RecyclerAdapterListPumps extends RecyclerView.Adapter<RecyclerAdapt
 
     @Override
     public void onBindViewHolder(@NonNull IngtedienceViewHolder holder, int position) {
-        holder.ingtedienceName.setText("Pumpe " + this.listPumps.get(position).getSlot());
+        Pump pump = this.listPumps.get(position);
+        int icon = 0;
+        int color = 0;
+
+        if(pump.getIngredientName()=="" || pump.getVolume()<=0){
+            color = ResourcesCompat.getColor(context.getResources(), R.color.color_warning, null);
+            icon = R.drawable.ic_attention;
+        }else{
+            color = ResourcesCompat.getColor(context.getResources(), R.color.color_ok, null);
+            icon = R.drawable.ic_ok;
+        }
+        holder.cardElement.setCardBackgroundColor(color);
+        holder.ingtedienceName.setCompoundDrawablesWithIntrinsicBounds(icon, 0, 0, 0);
+        holder.ingtedienceName.setText("Pumpe " + pump.getSlot());
+
         /**if (chosenIngredient != null && listPumps.get(position).getName().equals(chosenIngredient.getName())){
             holder.cardElement.setCardBackgroundColor(Color.parseColor("#6750A3"));
             holder.ingtedienceName.setTextColor(Color.WHITE);
