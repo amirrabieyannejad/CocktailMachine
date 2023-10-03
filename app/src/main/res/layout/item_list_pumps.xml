@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#45AFAFAF"
-            android:drawableLeft="@android:drawable/ic_delete"
+            android:drawableLeft="@drawable/ic_attention"
             android:text="TextView"
             android:textAlignment="center"
             android:textSize="20sp" />

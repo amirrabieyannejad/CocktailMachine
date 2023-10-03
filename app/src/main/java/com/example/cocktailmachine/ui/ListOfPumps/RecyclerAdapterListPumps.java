@@ -4,6 +4,7 @@ package com.example.cocktailmachine.ui.ListOfPumps;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -58,7 +60,7 @@ public class RecyclerAdapterListPumps extends RecyclerView.Adapter<RecyclerAdapt
             icon = R.drawable.ic_ok;
         }
         holder.cardElement.setCardBackgroundColor(color);
-        holder.ingtedienceName.setCompoundDrawablesWithIntrinsicBounds(icon, 0, 0, 0);
+        holder.ingtedienceName.setCompoundDrawables(getResicedDrawable(icon,75), null, null, null);
         holder.ingtedienceName.setText("Pumpe " + pump.getSlot());
 
         /**if (chosenIngredient != null && listPumps.get(position).getName().equals(chosenIngredient.getName())){
@@ -75,6 +77,13 @@ public class RecyclerAdapterListPumps extends RecyclerView.Adapter<RecyclerAdapt
         });
 
     }
+
+    Drawable getResicedDrawable(int idOfDraweble, int size){
+        Drawable drawable = ContextCompat.getDrawable(context,idOfDraweble);
+        drawable.setBounds(0,0,size,size);
+        return drawable;
+    }
+
 
     @Override
     public int getItemCount() {
