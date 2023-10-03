@@ -464,7 +464,8 @@ public class GetDialog {
                     Postexecute continueHere = new Postexecute() {
                         @Override
                         public void post() {
-                            GetDialog.setIngredientsForPumps(activity);
+                            new DialogListOfPumps(activity);
+                            //GetDialog.setIngredientsForPumps(activity);
                         }
                     };
                     ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
@@ -627,13 +628,58 @@ public class GetDialog {
                     GetActivity.goToMenu(activity);
 
                 }else {
-                    setFixedPumpIngredient(activity,pumps, position+1);
+                    new DialogListOfPumps(activity);
+                    //setFixedPumpIngredient(activity,pumps, position+1);
                 }
             });
             builder.show();
         }else{
             errorMessage(activity);
         }
+    }
+
+    public static void setFixedPumpVolume(Activity activity, Pump pump){
+        Log.i(TAG, "setFixedPumpVolume");
+        if (pump != null) {
+            pump.sendRefill(activity);
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle("Setze das jetzt vorhandene Volumen für Pumpe "+pump.getSlot()+":");
+
+            View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
+            GetDialog.VolumeChangeView volumeChangeView =
+                    new GetDialog.VolumeChangeView(
+                            activity,
+                            pump,
+                            v,
+                            false);
+
+            builder.setView(v);
+
+            builder.setPositiveButton("Speichern", (dialog, which) -> {
+                volumeChangeView.save();
+                volumeChangeView.send();
+                if(allPumpsConfigured(activity)){
+                    GetActivity.goToMenu(activity);
+
+                }else {
+                    new DialogListOfPumps(activity);
+                    //setFixedPumpIngredient(activity,pumps, position+1);
+                }
+            });
+            builder.show();
+        }else{
+            errorMessage(activity);
+        }
+    }
+
+    private static boolean allPumpsConfigured(Activity activity){
+        List<Pump> pumps = Pump.getPumps(activity);
+        for (Pump pump : pumps){
+            if(pump.getVolume()<=0 || pump.getIngredientName()==""){
+                return false;
+            }
+        }
+        return true;
     }
 
 

@@ -23,7 +23,7 @@ public class DialogListOfPumps implements RecyclerViewListenerListPumps {
     private RecyclerView recyclerView;
     public DialogListOfPumps(Activity activity){
         this.activity = activity;
-        this.listPumps = Pump.getPumps();
+        this.listPumps = Pump.getPumps(this.activity);
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
         View v = activity.getLayoutInflater().inflate(R.layout.activity_list_of_pumps, null);
@@ -52,6 +52,6 @@ public class DialogListOfPumps implements RecyclerViewListenerListPumps {
 
     @Override
     public void selectedPump(Pump pump) {
-
+        new ConfigurePumps(this.activity, pump);
     }
 }

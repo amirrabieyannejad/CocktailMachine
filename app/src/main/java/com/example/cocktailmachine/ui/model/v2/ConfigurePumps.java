@@ -1,13 +1,9 @@
 package com.example.cocktailmachine.ui.model.v2;
 
-import static com.example.cocktailmachine.data.Topic.TAG;
-
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,8 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Ingredient;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
-import com.example.cocktailmachine.data.enums.AdminRights;
+import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.ui.model.v2.ListConfigurePumps.RecyclerAdapterListIngredience;
 import com.example.cocktailmachine.ui.model.v2.ListConfigurePumps.RecyclerViewListenerListIngredience;
 
@@ -33,14 +28,14 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
     private List<Ingredient> filteredListIngredients;
     private RecyclerView recyclerView;
     private Button buttonConfirmChoice;
-    private Context context;
+    private Activity activity;
     private Ingredient chosenIngredient;
     private ConfigurePumps configurePumpsContext;
 
     //Konstruktor
-    public ConfigurePumps(Activity activity) {
+    public ConfigurePumps(Activity activity, Pump pump) {
 
-        this.context = activity;
+        this.activity = activity;
         this.configurePumpsContext = this;
         this.listIngredients = new LinkedList<>();
 
@@ -54,7 +49,7 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
 
         //Einrichtung des RecyclerView
         recyclerView = v.findViewById(R.id.recyclerViewDialogPumpconfigure);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this.context));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this.activity));
         RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,listIngredients,configurePumpsContext);
         recyclerView.setAdapter(adapterComments);
 
@@ -75,7 +70,7 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
             public void afterTextChanged(Editable editable) {
                 String searchterm = searchField.getText().toString();
                 filteredListIngredients = ingredientListFilter(listIngredients,searchterm);
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                recyclerView.setLayoutManager(new LinearLayoutManager(ConfigurePumps.this.activity));
                 RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,filteredListIngredients,configurePumpsContext);
                 recyclerView.setAdapter(adapterComments);
 
@@ -85,6 +80,13 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
         //Einrichtung des Buttons zur bestätigung der eingabe
         buttonConfirmChoice = v.findViewById(R.id.buttonDialogPumpconfigureConfirmChoice);
         buttonConfirmChoice.setEnabled(false);
+        buttonConfirmChoice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pump.setCurrentIngredient(ConfigurePumps.this.activity,chosenIngredient);
+                GetDialog.setFixedPumpVolume(ConfigurePumps.this.activity,pump);
+            }
+        });
 
 
 
@@ -105,7 +107,7 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
             chosenIngredient = ingredient;
             buttonConfirmChoice.setEnabled(true);
         }
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.setLayoutManager(new LinearLayoutManager(activity));
         RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,filteredListIngredients,configurePumpsContext);
         recyclerView.setAdapter(adapterComments);
     }
