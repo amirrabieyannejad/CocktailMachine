@@ -31,10 +31,10 @@ public class RecyclerAdapterListPumps extends RecyclerView.Adapter<RecyclerAdapt
 
     RecyclerViewListenerListPumps selectionListener;
 
-    public RecyclerAdapterListPumps(List<Pump> listPumps, Context context) {
+    public RecyclerAdapterListPumps(List<Pump> listPumps, Context context,RecyclerViewListenerListPumps recyclerViewListener) {
         this.listPumps = listPumps;
         this.context = context;
-        this.selectionListener=(ListOfPumps)context;
+        this.selectionListener=recyclerViewListener;
 
     }
 

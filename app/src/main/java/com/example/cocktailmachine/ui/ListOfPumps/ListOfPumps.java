@@ -31,7 +31,7 @@ public class ListOfPumps extends AppCompatActivity implements RecyclerViewListen
         //Einrichtung des RecyclerView
         recyclerView = findViewById(R.id.recyclerViewActivityListOfPumps);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        RecyclerAdapterListPumps adapterComments = new RecyclerAdapterListPumps(this.listPumps,this.context);
+        RecyclerAdapterListPumps adapterComments = new RecyclerAdapterListPumps(this.listPumps,this.context,this);
         recyclerView.setAdapter(adapterComments);
     }
 

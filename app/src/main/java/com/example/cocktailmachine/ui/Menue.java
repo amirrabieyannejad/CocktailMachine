@@ -20,6 +20,7 @@ import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
 import com.example.cocktailmachine.ui.model.ModelType;
 import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.v2.ConfigurePumps;
+import com.example.cocktailmachine.ui.model.v2.DialogListOfPumps;
 import com.example.cocktailmachine.ui.model.v2.GetActivity;
 import com.example.cocktailmachine.ui.settings.SettingsActivity;
 import com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice;
@@ -263,9 +264,9 @@ public class Menue extends AppCompatActivity {
     }
 
     public void pumpCalibration(View view){
-        Intent success = new Intent(this, ListOfPumps.class);
-        startActivity(success);
-        //new ConfigurePumps(this);
+        //Intent success = new Intent(this, ListOfPumps.class);
+        //startActivity(success);
+        new DialogListOfPumps(this);
     }
 
 
