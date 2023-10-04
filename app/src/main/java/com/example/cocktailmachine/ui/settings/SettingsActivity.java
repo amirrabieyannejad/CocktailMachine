@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 
 import com.example.cocktailmachine.data.Pump;
@@ -87,6 +88,7 @@ public class SettingsActivity extends AppCompatActivity {
             Log.i(TAG, "setVisibility: isAdmin");
             binding.textViewSettingsPumps.setVisibility(View.VISIBLE);
             binding.textViewMachine.setVisibility(View.VISIBLE);
+            binding.textViewMachineClick.setVisibility(View.VISIBLE);
 
             binding.textViewSettingsLogin.setVisibility(View.GONE);
             binding.textViewSettingsLogout.setVisibility(View.VISIBLE);
@@ -96,6 +98,7 @@ public class SettingsActivity extends AppCompatActivity {
             Log.i(TAG, "setVisibility: is no Admin");
             binding.textViewSettingsPumps.setVisibility(View.GONE);
             binding.textViewMachine.setVisibility(View.GONE);
+            binding.textViewMachineClick.setVisibility(View.GONE);
 
             binding.textViewSettingsLogin.setVisibility(View.VISIBLE);
             binding.textViewSettingsLogout.setVisibility(View.GONE);
@@ -192,12 +195,25 @@ public class SettingsActivity extends AppCompatActivity {
      * @author Johanna Reidt
      * @param view
      */
+    /*
     public void bluetooth(View view) {
         //TO DO bluetooth
         //Toast.makeText(this,"bluetooth",Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(this, DeviceScanActivity.class);
-        startActivity(intent);
+        //Intent intent = new Intent(this, DeviceScanActivity.class);
+        //startActivity(intent);
+        if(Dummy.isDummy){
+            Toast.makeText(this,
+                    "Öffnet eigentlich BluetoothScan, " +
+                            "aber wird sind in der VM freundlichen Version.",
+                    Toast.LENGTH_SHORT).show();
+            GetActivity.goToMenu(this);
+            return;
+        }
+        GetActivity.goToScan(this);
+
     }
+
+     */
 
     /**
      * open bluetooth Scan
@@ -205,8 +221,15 @@ public class SettingsActivity extends AppCompatActivity {
      * @param view
      */
     public void scan(View view) {
-        Intent intent = new Intent(this, DeviceScanActivity.class);
-        startActivity(intent);
+        if(Dummy.isDummy){
+            Toast.makeText(this,
+                    "Öffnet eigentlich BluetoothScan, " +
+                            "aber wird sind in der VM-freundlichen Version.",
+                    Toast.LENGTH_SHORT).show();
+            GetActivity.goToMenu(this);
+            return;
+        }
+        GetActivity.goToScan(this);
 
     }
 
@@ -219,7 +242,9 @@ public class SettingsActivity extends AppCompatActivity {
     public void sync(View view) {
         //Pump.sync(this);
         Recipe.syncRecipeDBWithCocktailmachine(this);
-        Toast.makeText(this,"Synchronisierung läuft!",Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,
+                "Synchronisierung läuft!",
+                Toast.LENGTH_SHORT).show();
     }
 
 
@@ -231,7 +256,9 @@ public class SettingsActivity extends AppCompatActivity {
      * @param view
      */
     public void machine(View view) {
-        Intent intent = new Intent(this, MachineSettingsActivity.class);
+        Intent intent = new Intent(
+                this,
+                MachineSettingsActivity.class);
         startActivity(intent);
     }
 
@@ -248,9 +275,16 @@ public class SettingsActivity extends AppCompatActivity {
      * @author Johanna Reidt
      * @param view
      */
+    /*
     public void db(View view) {
-        Toast.makeText(this,"Datenbank!",Toast.LENGTH_SHORT).show();
+        Buffer.localRefresh(this);
+        Toast.makeText(
+                this,
+                "Lade aus der Datenbank neu!",
+                Toast.LENGTH_SHORT).show();
     }
+
+     */
 
     /**
      * do local refresh of database if initialized

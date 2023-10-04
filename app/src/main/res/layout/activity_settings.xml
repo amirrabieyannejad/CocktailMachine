@@ -52,7 +52,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="48dp"
-                android:onClick="recipes"
                 android:padding="8dp"
                 android:text="Listen"
                 android:textSize="24sp"
@@ -103,7 +102,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="48dp"
-                android:onClick="bluetooth"
                 android:padding="8dp"
                 android:text="Bluetooth"
                 android:textSize="24sp"
@@ -134,11 +132,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="48dp"
-                android:onClick="machine"
                 android:padding="8dp"
-                android:text="CocktailMaschine"
+                android:text="Cocktailmaschine"
                 android:textSize="24sp"
                 android:textStyle="bold"
+                />
+
+            <TextView
+                android:id="@+id/textViewMachineClick"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="machine"
+                android:padding="8dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="8dp"
+                android:text="Cocktailmaschineneinstellungen"
+                android:textSize="20sp"
                 />
 
 
@@ -157,7 +167,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="48dp"
-                android:onClick="db"
                 android:padding="8dp"
                 android:text="Datenbank"
                 android:textSize="24sp"
