@@ -1995,7 +1995,7 @@ public class BluetoothSingleton {
         jsonObject.put("user", 0);
 
         singleton.sendReadWrite(jsonObject, true, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -2003,7 +2003,6 @@ public class BluetoothSingleton {
                 }
 
                 Log.w(TAG, "returned result is now:" + getStringResult());
-                postexecute.post();
             }
         };
         wfb.execute();
@@ -2309,6 +2308,36 @@ public class BluetoothSingleton {
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_SCALE);
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+            @Override
+            public void toSave() throws InterruptedException {
+                if (!check()) {
+                    throw new InterruptedException();
+                }
+                CocktailMachine.setCurrentWeight(this.getJsonResult());
+                Log.w(TAG, "To Save: " + this.getJsonResult());
+            }
+        };
+        wfb.execute();
+        //   Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+    }
+
+
+    /**
+     * adminReadScaleStatus: Read Status of Scale
+     * Sample: {"weight":0.0,"calibrated":true}
+     * like described in ProjektDokumente/esp/Services.md
+     * receives a message along with Read on {@code BluetoothGattCharacteristic}
+     * from the Device.
+     *
+     * @return JSONObject
+     * @throws JSONException
+     */
+    @SuppressLint("MissingPermission")
+    public void adminReadScaleStatus(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
+        singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
+        singleton.sendStatus(CHARACTERISTIC_STATUS_SCALE);
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {

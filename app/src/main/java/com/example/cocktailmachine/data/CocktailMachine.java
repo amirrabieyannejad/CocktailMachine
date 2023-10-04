@@ -182,6 +182,15 @@ public class CocktailMachine {
     //StatusAbfragen
 
     /**
+     * last measured weight on scale
+     * @author Johanna Reidt
+     * @return
+     */
+    public static double getCurrentWeight(){
+        return currentWeight;
+    }
+
+    /**
      * weight on scale
      * @return
      * @author Johanna Reidt
@@ -214,6 +223,47 @@ public class CocktailMachine {
         }
         try {
             BluetoothSingleton.getInstance().adminReadScaleStatus(activity);
+            Log.i(TAG,"getCurrentWeight: success");
+        } catch (JSONException | InterruptedException|NullPointerException  e) {
+            Log.i(TAG,"getCurrentWeight: error");
+            e.printStackTrace();
+            Log.e(TAG, "error: "+e);
+        }
+        Log.i(TAG, "getCurrentWeight: "+currentWeight);
+        return currentWeight;
+    }
+
+
+    public static double getCurrentWeight(Activity activity, Postexecute postexecute){
+
+        Log.i(TAG, "getCurrentWeight");
+        if(Dummy.isDummy){
+            Log.i(TAG, "getCurrentWeight: dummy");
+            if(current == null){
+                current = new LinkedHashMap<>();
+            }
+            if(currentRecipe != null){
+                for(Ingredient i: currentRecipe.getIngredients()){
+                    if(!current.containsKey(i)){
+                        current.put(i, currentRecipe.getVolume(i));
+                        Log.i(TAG, "getCurrentWeight: dummy: add ing: "+i);
+                        break;
+                    }
+                }
+            }
+            Log.i(TAG, "getCurrentWeight: dummy: "+current);
+            int g = 0;
+            for(Integer v : current.values()) {
+                if(v!= null) {
+                    g = g + v;
+                }
+            }
+            currentWeight = g;
+            postexecute.post();
+            return currentWeight;
+        }
+        try {
+            BluetoothSingleton.getInstance().adminReadScaleStatus(activity, postexecute);
             Log.i(TAG,"getCurrentWeight: success");
         } catch (JSONException | InterruptedException|NullPointerException  e) {
             Log.i(TAG,"getCurrentWeight: error");

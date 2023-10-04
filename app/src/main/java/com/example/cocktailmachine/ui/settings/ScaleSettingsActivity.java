@@ -6,11 +6,13 @@ import com.example.cocktailmachine.data.CocktailMachine;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.View;
 
 import androidx.navigation.ui.AppBarConfiguration;
 
 import com.example.cocktailmachine.databinding.ActivityScaleSettingsBinding;
+import com.example.cocktailmachine.ui.model.v2.GetDialog;
 
 /**
  *
@@ -21,6 +23,7 @@ import com.example.cocktailmachine.databinding.ActivityScaleSettingsBinding;
 public class ScaleSettingsActivity extends AppCompatActivity {
 
     //private AppBarConfiguration appBarConfiguration;
+    private static final String TAG = "ScaleSettingsActivity";
     private ActivityScaleSettingsBinding binding;
 
     @Override
@@ -46,6 +49,7 @@ public class ScaleSettingsActivity extends AppCompatActivity {
      * @param view
      */
     public void tareScale(View view){
+        Log.i(TAG, "tareScale");
         CocktailMachine.tareScale(this);
     }
 
@@ -61,6 +65,7 @@ public class ScaleSettingsActivity extends AppCompatActivity {
      * @param view
      */
     public void calibrateScale(View view){
+        Log.i(TAG, "calibrateScale");
 
         CocktailMachine.calibrateScale(this);
         //CocktailMachine.tareScale(this);
@@ -80,7 +85,12 @@ public class ScaleSettingsActivity extends AppCompatActivity {
      * @param view
      */
     public void setScaleFactor(View view){
+        Log.i(TAG, "setScaleFactor");
         CocktailMachine.scaleFactor(this);
     }
 
+    public void getWeight(View view) {
+        Log.i(TAG, "getWeight");
+        GetDialog.showWeight(this);
+    }
 }

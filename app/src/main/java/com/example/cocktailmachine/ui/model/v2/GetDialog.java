@@ -2,6 +2,7 @@ package com.example.cocktailmachine.ui.model.v2;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.InputType;
@@ -2297,6 +2298,34 @@ public class GetDialog {
 
 
 
+
+
+
+
+
+
+
+
+    /**
+     *
+     * @author Johanna Reidt
+     * @param activity
+     */
+    public static void showWeight(Activity activity){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Das Gewicht");
+        builder.setMessage("Es lädt...");
+        CocktailMachine.getCurrentWeight(activity, new Postexecute() {
+            @Override
+            public void post() {
+                builder.setMessage(
+                        "Das derzeitige Gewicht auf der Waage beträgt: " +
+                                CocktailMachine.getCurrentWeight());
+            }
+        });
+        builder.setNeutralButton("Schließen", (dialog, which) -> {});
+        builder.show();
+    }
 
 
 
