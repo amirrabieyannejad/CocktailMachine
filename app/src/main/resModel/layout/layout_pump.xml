@@ -10,47 +10,47 @@
         android:id="@+id/textView_name_desc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="32dp"
         android:gravity="center_vertical"
         android:text="@string/zutat"
         android:textAlignment="gravity"
         android:textColor="@android:color/primary_text_light"
         android:textSize="20sp"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="188dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textViewPumpIngredientName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
         android:gravity="center_vertical"
         android:text="@string/ingredient_name"
         android:textAlignment="gravity"
         android:textColor="@android:color/primary_text_light"
         android:textSize="20sp"
         android:visibility="visible"
-        app:layout_constraintStart_toEndOf="@+id/textView_name_desc"
+        app:layout_constraintStart_toStartOf="@+id/textViewPumpVolume"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView_pump_volume_desc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="8dp"
         android:gravity="center_vertical"
         android:text="@string/volumen"
         android:textAlignment="gravity"
         android:textColor="@android:color/primary_text_light"
         android:textSize="20sp"
-        app:layout_constraintTop_toBottomOf="@+id/textView_name_desc"
-        tools:layout_editor_absoluteX="156dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView_name_desc" />
 
     <TextView
         android:id="@+id/textViewPumpVolume"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:gravity="center_vertical"
         android:text="@string/_30_ml"
@@ -58,8 +58,8 @@
         android:textColor="@android:color/primary_text_light"
         android:textSize="20sp"
         android:visibility="visible"
-        app:layout_constraintTop_toBottomOf="@+id/textView_name_desc"
-        tools:layout_editor_absoluteX="248dp" />
+        app:layout_constraintStart_toEndOf="@+id/textView_pump_volume_desc"
+        app:layout_constraintTop_toBottomOf="@+id/textView_name_desc" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
