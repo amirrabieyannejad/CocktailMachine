@@ -18,6 +18,17 @@
         android:text="Pumpenkalibrierung"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:onClick="automatic"
+        android:padding="8dp"
+        android:paddingStart="16dp"
+        android:text="Automatische Kalibrierung"
+        android:textSize="20sp" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,7 +36,7 @@
         android:onClick="calibratePump"
         android:padding="8dp"
         android:paddingStart="16dp"
-        android:text="Kalibriere Pumpe"
+        android:text="Kalibriere alle Pumpen neu"
         android:textSize="20sp" />
 
 
@@ -39,14 +50,6 @@
         android:text="Setze Pumpzeiten"
         android:textSize="20sp" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="48dp"
-        android:onClick="automatic"
-        android:padding="8dp"
-        android:paddingStart="16dp"
-        android:text="Automatische Kalibrierung"
-        android:textSize="20sp" />
+
 
 </LinearLayout>

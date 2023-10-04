@@ -30,7 +30,7 @@
             android:onClick="calibrateScale"
             android:padding="8dp"
             android:paddingStart="16dp"
-            android:text="Kalibrierung der Waage"
+            android:text="Kalibriere die Waage"
             android:textSize="20sp" />
 
 

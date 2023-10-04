@@ -20,7 +20,7 @@ import com.example.cocktailmachine.databinding.ActivityScaleSettingsBinding;
  */
 public class ScaleSettingsActivity extends AppCompatActivity {
 
-    private AppBarConfiguration appBarConfiguration;
+    //private AppBarConfiguration appBarConfiguration;
     private ActivityScaleSettingsBinding binding;
 
     @Override
