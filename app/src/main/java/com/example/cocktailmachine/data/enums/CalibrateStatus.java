@@ -14,13 +14,13 @@ import org.json.JSONException;
 public enum CalibrateStatus {
     /**
      * Kalibrierung
-     *
-     *     ready: Maschine ist bereit für eine Kalibrierung
-     *     calibration empty container: Kalibrierung wartet auf ein leeres Gefäß. Es sollte calibration_add_empty ausgeführt werden.
-     *     calibration known weight: Kalibrierung wartet auf ein Gewicht. Es sollte calibration_add_weight ausgeführt werden.
-     *     calibration pumps: Kalibrierung pumpt Flüssigkeiten
-     *     calibration calculation: Kalibrierung berechnet die Werte
-     *     calibration done: Kalibrierung fertig. Es sollte calibration_finish ausgeführt werden.
+     * <p>
+     * ready: Maschine ist bereit für eine Kalibrierung
+     * calibration empty container: Kalibrierung wartet auf ein leeres Gefäß. Es sollte calibration_add_empty ausgeführt werden.
+     * calibration known weight: Kalibrierung wartet auf ein Gewicht. Es sollte calibration_add_weight ausgeführt werden.
+     * calibration pumps: Kalibrierung pumpt Flüssigkeiten
+     * calibration calculation: Kalibrierung berechnet die Werte
+     * calibration done: Kalibrierung fertig. Es sollte calibration_finish ausgeführt werden.
      */
     not,
     ready,
@@ -28,8 +28,7 @@ public enum CalibrateStatus {
     calibration_known_weight,
     calibration_pumps,
     calibration_calculation,
-    calibration_done
-    ;
+    calibration_done;
 
     private static final String TAG = "CalibrateStatus";
     private static CalibrateStatus status;
@@ -38,6 +37,7 @@ public enum CalibrateStatus {
     public static void setStatus(String result) {
         status = valueStringOf(result);
     }
+
     public static void setStatus(CalibrateStatus result) {
         status = result;
     }
@@ -85,7 +85,10 @@ public enum CalibrateStatus {
 
     }
 
-
+    public static CalibrateStatus getCurrent(){
+        Log.i(TAG, "getCurrent: "+status);
+        return status;
+    }
 
 
     public static CalibrateStatus getCurrent(Activity activity){

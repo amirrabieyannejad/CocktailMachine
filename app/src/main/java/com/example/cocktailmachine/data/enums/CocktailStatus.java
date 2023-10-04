@@ -60,6 +60,19 @@ public enum CocktailStatus {
     }
 
     /**
+     * return current Status, from last fetch
+     *
+     * @return
+     */
+    public static CocktailStatus getCurrentStatus() {
+        //BluetoothSingleton blSingelton = BluetoothSingleton.getInstance();
+        //blSingelton.connectGatt(activity);
+        //TO DO: Bluetoothlegatt
+        //BluetoothSingleton.getInstance().mBluetoothLeService;
+        //TO DO: AMIR
+        return currentState;
+    }
+    /**
      * return current Status
      *
      * @return
@@ -70,14 +83,14 @@ public enum CocktailStatus {
         //TO DO: Bluetoothlegatt
         //BluetoothSingleton.getInstance().mBluetoothLeService;
         //TO DO: AMIR
-        if(!Dummy.isDummy){
-            getCurrentStatus(new Postexecute() {
-                @Override
-                public void post() {
-
-                }
-            }, activity);
+        if(Dummy.isDummy){
+            return getCurrentStatus();
         }
+        getCurrentStatus(new Postexecute() {
+            @Override
+            public void post() {}
+        }, activity);
+
         return currentState;
     }
 
@@ -86,11 +99,11 @@ public enum CocktailStatus {
      *
      * @return
      */
-    public static String getCurrentStatusMessage(Postexecute postexecute,Activity activity) {
-        CocktailStatus status = getCurrentStatus(postexecute,activity);
+    public static String getCurrentStatusMessage() {
+        //CocktailStatus status = getCurrentStatus(postexecute,activity);
         StringBuilder builder = new StringBuilder();
         builder.append("Die Cocktailmaschine ");
-        switch (status) {
+        switch (CocktailStatus.getCurrentStatus()) {
             case init:
                 builder.append("wird gerade initialisiert.");
                 return builder.toString();
@@ -106,6 +119,7 @@ public enum CocktailStatus {
             case cocktail_done:
                 builder.append("hat einen fertigen Cocktail, der zur Abholung bereit steht.");
                 return builder.toString();
+                //return CalibrateStatus.
         }
         return "Error";
     }

@@ -71,15 +71,16 @@ public class MachineSettingsActivity extends AppCompatActivity {
      * @author Johanna Reidt
      */
     public void status(View view) {
-        final Activity acc = this;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Cocktailmaschinenstatus");
-        builder.setMessage(CocktailStatus.getCurrentStatusMessage(new Postexecute() {
+        builder.setTitle("Es lädt ...");
+        CocktailStatus.getCurrentStatus(new Postexecute() {
             @Override
             public void post() {
-                builder.setMessage(CocktailStatus.getCurrentStatus(acc).toString());
+                builder.setMessage(
+                        CocktailStatus.getCurrentStatusMessage());
             }
-        },acc));
+        }, MachineSettingsActivity.this);
         builder.setNeutralButton("Fertig!", (dialog, which) -> {});
         builder.show();
     }
