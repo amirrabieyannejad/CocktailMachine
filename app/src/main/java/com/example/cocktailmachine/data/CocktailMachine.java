@@ -233,7 +233,13 @@ public class CocktailMachine {
         return currentWeight;
     }
 
-
+    /**
+     * weight on scale and do afterwards
+     * @author Johanna Reidt
+     * @param activity
+     * @param postexecute
+     * @return
+     */
     public static double getCurrentWeight(Activity activity, Postexecute postexecute){
 
         Log.i(TAG, "getCurrentWeight");
@@ -300,7 +306,7 @@ public class CocktailMachine {
             notSet.post();
             return false;
         }
-        //TODO: add bluetooth /esp implementation
+        //TO DO: add bluetooth /esp implementation
         try{
             BluetoothSingleton.getInstance().adminReadPumpsStatus(activity, new Postexecute(){
                 @Override
@@ -656,6 +662,11 @@ public class CocktailMachine {
         return (currentUser==AdminRights.getUserId());
     }
 
+    /**
+     * starmixing
+     * @author Johanna Reidt
+     * @param activity
+     */
     public static void startMixing(Activity activity){
         Log.i(TAG,  "startMixing");
         if(Dummy.isDummy){
@@ -832,6 +843,11 @@ public class CocktailMachine {
     }
 
 
+    /**
+     * send to esp that cocktail is taken
+     * @author Johanna Reidt
+     * @param activity
+     */
     public static void takeCocktail(Activity activity){
         Log.i(TAG,  "takeCocktail");
         if(Dummy.isDummy){
