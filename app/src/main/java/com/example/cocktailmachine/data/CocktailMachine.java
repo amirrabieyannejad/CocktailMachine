@@ -62,7 +62,7 @@ public class CocktailMachine {
     public static void setCurrentRecipe(Recipe currentRecipe) {
         Log.i(TAG, "setCurrentRecipe");
         CocktailMachine.currentRecipe = currentRecipe;
-        Log.i(TAG, "setCurrentRecipe: "+currentRecip"error"+ e);
+        Log.i(TAG, "setCurrentRecipe: "+currentRecipe);
     }
 
 
@@ -75,7 +75,11 @@ public class CocktailMachine {
         Log.i(TAG, "setCurrentWeight");
         try {
             currentWeight = weight.getDouble("weight");
+            Log.i(TAG, "setCurrentWeight : done");
         } catch (JSONException e) {
+            Log.i(TAG, "setCurrentWeight: failed");
+            Log.e(TAG, "error"+e);
+            e.printStackTrace();
             currentWeight = -1.0;
         }
         Log.i(TAG, "setCurrentWeight: "+currentWeight);
@@ -113,8 +117,9 @@ public class CocktailMachine {
             currentWeight = jsonObject.getDouble("weight");
             Log.i(TAG, "setCurrentCocktail: current weight "+currentWeight);
         } catch (JSONException e) {
-            e.printStackTrace();
             Log.i(TAG, "setCurrentCocktail failed");
+            Log.e(TAG, "error"+e);
+            e.printStackTrace();
         }
 
     }
