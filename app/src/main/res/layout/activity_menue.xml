@@ -56,11 +56,12 @@
 
 
             <ImageView
+                android:id="@+id/imageView_test_pump_calib"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="pumpCalibration"
-                app:contentDescription="FillAnimation"
+                app:contentDescription="pumpCalibration"
                 app:srcCompat="@drawable/ic_home" />
 
             <ImageView
