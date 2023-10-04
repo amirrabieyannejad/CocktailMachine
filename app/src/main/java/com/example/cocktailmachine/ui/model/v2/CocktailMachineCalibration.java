@@ -68,7 +68,7 @@ public class CocktailMachineCalibration {
     public static void setIsDone(boolean isDone) {
         CocktailMachineCalibration.isDone = isDone;
         if(isDone){
-            Dummy.withSetCalibration = false;
+            Dummy.withSetCalibration = true;
         }
     }
 

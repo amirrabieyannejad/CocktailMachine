@@ -14,18 +14,14 @@ import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
 import com.example.cocktailmachine.ui.ListOfIngredience.ListIngredience;
-import com.example.cocktailmachine.ui.ListOfPumps.ListOfPumps;
 import com.example.cocktailmachine.ui.calibration.scale.calibrationScale;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
 import com.example.cocktailmachine.ui.model.ModelType;
 import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
-import com.example.cocktailmachine.ui.model.v2.ConfigurePumps;
 import com.example.cocktailmachine.ui.model.v2.DialogListOfPumps;
 import com.example.cocktailmachine.ui.model.v2.GetActivity;
 import com.example.cocktailmachine.ui.settings.SettingsActivity;
 import com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice;
-
-import org.json.JSONException;
 
 /**
  * Menu class
@@ -42,6 +38,7 @@ public class Menue extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate");
         //setContentView(R.layout.activity_menue);
         binding = ActivityMenueBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -61,22 +58,28 @@ public class Menue extends AppCompatActivity {
 
          */
         if(Dummy.asAdmin){
+            Log.i(TAG, "onCreate: dummy asadmin");
             AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.Admin);
         }
         if(AdminRights.isAdmin()){
+            Log.i(TAG, "onCreate: Admin Modus");
             binding.activityMenueLogout.setVisibility(View.VISIBLE);
             binding.activityMenueLogin.setVisibility(View.GONE);
         }else{
+            Log.i(TAG, "onCreate: User Modus");
             binding.activityMenueLogout.setVisibility(View.GONE);
             binding.activityMenueLogin.setVisibility(View.VISIBLE);
         }
         if(Dummy.isDummy && !Dummy.withSetCalibration ){
             CocktailMachineCalibration.setIsDone(true);
+            Log.i(TAG, "onCreate: dummy: isDummy und not withSetCalibration ");
         }
         if (!CocktailMachineCalibration.isIsDone()){
+            Log.i(TAG, "onCreate: start calibration ");
             CocktailMachineCalibration.start(this);
         }
         if(!Dummy.withTestEnvs){
+            Log.i(TAG, "onCreate: without test envs  ");
             binding.imageViewTestBlue.setVisibility(View.GONE);
             binding.imageViewTestIngList.setVisibility(View.GONE);
             binding.imageViewTestFillAn.setVisibility(View.GONE);
@@ -84,7 +87,10 @@ public class Menue extends AppCompatActivity {
             binding.imageViewTestSingleCockt.setVisibility(View.GONE);
             binding.imageViewTestCal.setVisibility(View.GONE);
             binding.imageViewTestPumpCalib.setVisibility(View.GONE);
+        }else{
+            Log.i(TAG, "onCreate: with test envs  ");
         }
+
 
 
     }
@@ -95,6 +101,7 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void openRecipeList(View view) {
+        Log.i(TAG, "openRecipeList");
         /*
         Intent success = new Intent(this, ModelActivity.class);
         Bundle b = new Bundle();
@@ -114,6 +121,7 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void openRecipeCreator(View view){
+        Log.i(TAG, "openRecipeCreator");
         /*
 
         Intent success = new Intent(this,
@@ -136,6 +144,7 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void openSettings(View view){
+        Log.i(TAG, "openSettings");
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
@@ -147,7 +156,8 @@ public class Menue extends AppCompatActivity {
      * @author Wieber
      * @param view
      */
-    public void openSingelCocktailView(View view){
+    public void openSingleCocktailView(View view){
+        Log.i(TAG, "openSingleCocktailView");
         Intent success = new Intent(this, SingleCocktailChoice.class);
         startActivity(success);
 
@@ -160,6 +170,7 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void openGlassFillAnimationView(View view){
+        Log.i(TAG, "openGlassFillAnimationView");
         Intent success = new Intent(this, FillAnimation.class);
         startActivity(success);
 
@@ -172,6 +183,7 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void openGrafik(View view){
+        Log.i(TAG, "openGrafik");
         Intent success = new Intent(this, Grafik.class);
         startActivity(success);
 
@@ -184,6 +196,7 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void openDeviceScan(View view){
+        Log.i(TAG, "openDeviceScan");
         Intent success = new Intent(this, DeviceScanActivity.class);
         startActivity(success);
     }
@@ -236,6 +249,7 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void exit(View view){
+        Log.i(TAG, "exit");
         Intent success = new Intent(this, Grafik.class);
         startActivity(success);
 
@@ -248,23 +262,27 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void testEnviroment(View view){
+        Log.i(TAG, "testEnviroment");
         Intent success = new Intent(this, BluetoothTestEnviroment.class);
         startActivity(success);
 
     }
 
     public void calibration(View view){
+        Log.i(TAG, "calibration");
         Intent success = new Intent(this, calibrationScale.class);
         startActivity(success);
     }
 
     public void listIngedients(View view){
+        Log.i(TAG, "listIngedients");
         Intent success = new Intent(this, ListIngredience.class);
         startActivity(success);
 
     }
 
     public void pumpCalibration(View view){
+        Log.i(TAG, "pumpCalibration");
         //Intent success = new Intent(this, ListOfPumps.class);
         //startActivity(success);
         new DialogListOfPumps(this);
