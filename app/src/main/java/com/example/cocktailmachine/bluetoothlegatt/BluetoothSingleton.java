@@ -1974,6 +1974,42 @@ public class BluetoothSingleton {
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
+
+    /**
+     * Factroy Reset (ADMIN): resets all settings
+     * JSON-Sample: {"cmd": "factory_reset", "user": 0}
+     * like described in ProjektDokumente/esp/Befehle.md
+     * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     *
+     * @return
+     * @throws JSONException
+     */
+    @SuppressLint("MissingPermission")
+    public void adminFactoryReset( Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
+        singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
+        //generate JSON Format
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cmd", "factory_reset");
+        jsonObject.put("user", 0);
+
+        singleton.sendReadWrite(jsonObject, true, true);
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+            @Override
+            public void toSave() throws InterruptedException {
+                if (!check()) {
+                    throw new InterruptedException();
+                }
+
+                Log.w(TAG, "returned result is now:" + getStringResult());
+                postexecute.post();
+            }
+        };
+        wfb.execute();
+        //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+    }
+
     /**
      * clean (ADMIN): clean the machine
      * JSON-Sample: {"cmd": "clean", "user": 0}

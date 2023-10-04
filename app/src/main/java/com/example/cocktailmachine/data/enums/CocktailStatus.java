@@ -101,6 +101,9 @@ public enum CocktailStatus {
      */
     public static String getCurrentStatusMessage() {
         //CocktailStatus status = getCurrentStatus(postexecute,activity);
+        if(Dummy.isDummy){
+            return "im VM-Machine-Modus";
+        }
         StringBuilder builder = new StringBuilder();
         builder.append("Die Cocktailmaschine ");
         switch (CocktailStatus.getCurrentStatus()) {
@@ -140,6 +143,10 @@ public enum CocktailStatus {
             currentState = CocktailStatus.not;
         }
 
+    }
+
+    public static void setStatus(CocktailStatus status){
+        currentState = status;
     }
 
 

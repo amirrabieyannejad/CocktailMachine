@@ -157,6 +157,16 @@ public class GetActivity {
         activity.startActivity(intent);
         //activity.finish();
     }
+
+    public static void goToMenu(Activity activity, boolean clearCompleteStack) {
+        Log.i(TAG, "goToMenu");
+        Intent intent = new Intent(activity, Menue.class);
+        if(clearCompleteStack){
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        }
+        activity.startActivity(intent);
+        activity.finish();
+    }
     public static void goToMenu(Context context) {
         Log.i(TAG, "goToMenu");
         Intent intent = new Intent(context, Menue.class);

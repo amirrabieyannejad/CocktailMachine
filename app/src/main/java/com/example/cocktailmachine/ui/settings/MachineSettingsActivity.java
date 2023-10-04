@@ -72,11 +72,11 @@ public class MachineSettingsActivity extends AppCompatActivity {
      */
     public void status(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Cocktailmaschinenstatus");
         builder.setTitle("Es lädt ...");
         CocktailStatus.getCurrentStatus(new Postexecute() {
             @Override
             public void post() {
+                builder.setTitle("Cocktailmaschinenstatus");
                 builder.setMessage(
                         CocktailStatus.getCurrentStatusMessage());
             }
