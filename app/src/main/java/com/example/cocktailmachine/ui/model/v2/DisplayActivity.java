@@ -8,6 +8,7 @@ import android.view.View;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
@@ -276,6 +277,13 @@ public class DisplayActivity extends BasicActivity {
         });
         String vol = pump.getVolume() +" ml";
         binding.includeDisplayPump.textViewPumpVolume.setText(vol);
+        binding.includeDisplayPump.buttonRunPump.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "run pump clicked");
+                GetDialog.runPump(DisplayActivity.this, pump);
+            }
+        });
         //final Activity activity = this;
 
         //TO DO: AlertDialog to change volume if admin
