@@ -34,6 +34,7 @@ public class AdminRights {
     }
 
     public static AdminRights getSingleton(){
+        Log.i(TAG, "getSingleton");
         if(singleton == null){
             singleton = new AdminRights();
         }
@@ -42,19 +43,31 @@ public class AdminRights {
 
     //USer ID handling
     public static int getUserId(){
-        //TODO: USE THIS AMIR *OK*
+        Log.i(TAG, "getUserId");
+        //TO DO: USE THIS AMIR *OK*
         return getSingleton().userId;
     }
     public static void setUserId(int userId){
+        Log.i(TAG, "setUserId");
         getSingleton().userId = userId;
+        Log.i(TAG, "setUserId: userId");
     }
 
+    /**
+     * set user wit {"user": 4}
+     * @author Johanna Reidt
+     * @param jsonObject
+     */
     public static void setUser(JSONObject jsonObject){
-        //TODO: USE THIS AMIR **DONE**
+        Log.i(TAG, "setUser");
+        //TO DO: USE THIS AMIR **DONE**
 
         try {
             setUserId(jsonObject.getInt("user"));
+            Log.i(TAG, "setUser: done");
         } catch (JSONException e) {
+            Log.i(TAG, "setUser: failed");
+            Log.i(TAG, "error: "+e);
             e.printStackTrace();
         }
     }
@@ -64,12 +77,16 @@ public class AdminRights {
      * @return
      */
     private static JSONObject getUserIdAsMessage(){
+        Log.i(TAG, "getUserIdAsMessage");
 
         JSONObject json = new JSONObject();
         try {
             json.put("name", String.valueOf(System.currentTimeMillis()));
             json.put("cmd", "init_user");
+            Log.i(TAG, "getUserIdAsMessage: done");
         } catch (JSONException e) {
+            Log.i(TAG, "getUserIdAsMessage: failed");
+            Log.i(TAG, "error: "+e);
             e.printStackTrace();
         }
         return json;
@@ -81,12 +98,15 @@ public class AdminRights {
      */
     public static void initUser(Activity activity, String name){
         //TO DO: DUMMY
+        Log.i(TAG, "initUser");
         if(Dummy.isDummy) {
+            Log.i(TAG, "initUser dummy");
             getSingleton().userId = 3;
             return;
         }
         try{
             BluetoothSingleton.getInstance().userInitUser(name,activity);
+            Log.i(TAG, "initUser done");
         } catch (JSONException | InterruptedException e) {
             //throw new RuntimeException(e);
             Log.e(TAG, "init User failed");
@@ -100,48 +120,38 @@ public class AdminRights {
      * @return
      */
     private static JSONObject getUserAbortMessage(){
+        Log.i(TAG, "getUserAbortMessage");
         JSONObject json = new JSONObject();
         try {
             json.put("cmd", "abort");
             json.put("user", getUserId());
+            Log.i(TAG, "getUserAbortMessage done");
         } catch (JSONException e) {
+            Log.e(TAG, "getUserAbortMessage User failed");
+            Log.e(TAG, "error"+ e);
             e.printStackTrace();
         }
         return json;
     }
 
-    /**
-     * init user with bluetooth
-     * @return
-     */
-    public static void abortUser(Activity acitvity, String name){
-        //TODO: abort user
-
-
-        if(Dummy.isDummy) {
-            setUserId(-1);
-        }else{
-            //BluetoothSingleton.getInstance().(name,activity);
-        }
-    }
-
-    public static boolean isUserIntialized(){
-        return getUserId()>-1;
-    }
 
 
 
 
     //Admin/ User status
     public static UserPrivilegeLevel getUserPrivilegeLevel(){
+        Log.i(TAG, "getUserPrivilegeLevel");
         return getSingleton().privilege;
     }
 
     public static void setUserPrivilegeLevel(UserPrivilegeLevel privilege){
+        Log.i(TAG, "setUserPrivilegeLevel");
         getSingleton().privilege = privilege;
+        Log.i(TAG, "setUserPrivilegeLevel: "+privilege);
     }
 
     public static boolean isAdmin(){
+        Log.i(TAG, "isAdmin");
         return getUserPrivilegeLevel().equals(UserPrivilegeLevel.Admin);
     }
 
@@ -159,7 +169,9 @@ public class AdminRights {
         builder.setPositiveButton("Weiter", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                Log.i(TAG, "login: Weiter");
                 if(loginView.check()){
+                    Log.i(TAG, "login: admin");
                     AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.Admin);
                     Toast.makeText(getContext,"Eingeloggt!",Toast.LENGTH_SHORT).show();
                 }
@@ -168,7 +180,7 @@ public class AdminRights {
         builder.setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
+                Log.i(TAG, "login: abbruch");
             }
         });
         builder.setOnDismissListener(dismissListener);
@@ -176,6 +188,7 @@ public class AdminRights {
     }
 
     public static void logout(){
+        Log.i(TAG, "logout");
         AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.User);
         //Toast.makeText(getContext,"Ausgeloggt!",Toast.LENGTH_SHORT).show();
     }
@@ -186,6 +199,7 @@ public class AdminRights {
         private final EditText e;
         private final View v;
         public LoginView(Context context, View v) {
+            Log.i(TAG, "LoginView");
             this.v = v;
             t = v.findViewById(R.id.textView_edit_text);
             e = v.findViewById(R.id.editText_edit_text);
@@ -195,6 +209,7 @@ public class AdminRights {
 
         }
         public boolean check(){
+            Log.i(TAG, "LoginView: check");
             return e.getText().toString().equals("admin");
         }
 
