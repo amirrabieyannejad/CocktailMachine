@@ -97,8 +97,6 @@ public class ModelFragment extends Fragment {
                                 b);
             };
 
-            binding.includePump.textViewMinPumpVolume
-                    .setText(String.valueOf(pump.getMinimumPumpVolume()));
             binding.includePump.textViewPumpIngredientName.setOnClickListener(listener);
             binding.textViewTitle.setOnClickListener(listener);
             binding.includePump.textViewPumpVolume

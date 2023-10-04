@@ -43,13 +43,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
     //Volume
 
-    /**
-     * Returns milliliters pumped in milliseconds.
-     * aka minimum available pump size
-     *
-     * @return minimum milliliters to be pumped
-     */
-    int getMinimumPumpVolume();
+
 
     /**
      * get volume in pump
@@ -66,13 +60,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     void fill(int volume) throws MissingIngredientPumpException;
 
-    /**
-     * set minimum volume
-     *
-     * @param volume
-     * @throws MissingIngredientPumpException
-     */
-    void setMinimumPumpVolume( int volume);
+
 
     /**
      * empty pump
@@ -92,13 +80,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     void fill(Context context,int volume) throws MissingIngredientPumpException;
 
-    /**
-     * set and save min volume
-     *
-     * @param volume
-     * @throws MissingIngredientPumpException
-     */
-    void setMinimumPumpVolume(Context context, int volume);
+
 
 
     //Slot

@@ -684,6 +684,7 @@ public class GetDialog {
     }
 
 
+    /*
     private static void setFixedPumpMinVolume(Activity activity,  List<Pump> pumps, int position){
         Log.i(TAG, "setFixedPumpMinVolume");
         Pump pump = pumps.get(position);
@@ -717,6 +718,8 @@ public class GetDialog {
             errorMessage(activity);
         }
     }
+
+     */
 
 
 
@@ -1189,9 +1192,6 @@ public class GetDialog {
             builder.setPositiveButton("Speichern", (dialog, which) -> {
                 volumeChangeView.save();
                 volumeChangeView.send();
-                if(setPumpMinVol){
-                    GetDialog.setPumpMinVolume(activity, pump);
-                }
 
             });
             builder.setNeutralButton("Abbrechen", (dialog, which) -> {
@@ -1203,7 +1203,7 @@ public class GetDialog {
         }
     }
 
-
+/*
     public static void setPumpMinVolume(Activity activity, Pump pump){
         if (pump != null) {
             pump.sendRefill(activity);
@@ -1234,13 +1234,14 @@ public class GetDialog {
         }
     }
 
+ */
+
 
     public static class VolumeChangeView{
 
         private final TextView t;
         private final EditText e;
         private final Pump pump;
-        private final boolean minimum;
         private final View v;
         private final Activity activity;
         private VolumeChangeView(Activity activity, Pump pump, View v, boolean minimum) {
@@ -1249,7 +1250,6 @@ public class GetDialog {
             this.e = v.findViewById(R.id.editText_edit_text);
             this.t.setText("Volumen: ");
             this.e.setInputType(InputType.TYPE_CLASS_NUMBER);
-            this.minimum = minimum;
             this.pump = pump;
             this.v = v;
             String name = getVolumeFromDB();
@@ -1258,9 +1258,6 @@ public class GetDialog {
         }
 
         private String getVolumeFromDB(){
-            if(this.minimum){
-                return this.pump.getMinimumPumpVolume()+" ml";
-            }
             return String.valueOf(this.pump.getVolume());
         }
         private int getVolume(){
@@ -1294,7 +1291,7 @@ public class GetDialog {
 
 
     //pump ingredients
-    public static void setPumpIngredient(Activity activity, Pump pump, boolean setPumpVol, boolean setPumpMinVol){
+    public static void setPumpIngredient(Activity activity, Pump pump, boolean setPumpVol){//, boolean setPumpMinVol){
         if (pump != null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setTitle("Setze die Zutat für Slot"+pump.getSlot()+":");
@@ -1318,9 +1315,12 @@ public class GetDialog {
 
             builder.setPositiveButton("Speichern", (dialog, which) -> {
                 pump.sendSave(activity);
+                /*
                 if(setPumpVol) {
-                    GetDialog.setPumpVolume(activity, pump, setPumpMinVol);
+                    GetDialog.setPumpVolume(activity, pump)//, setPumpMinVol);
                 }
+
+                 */
             });
             builder.setNeutralButton("Abbrechen", (dialog, which) -> {
 

@@ -97,7 +97,6 @@ public class AddActivity extends BasicActivity {
         binding.includePump.textViewSearchIngredientIng.setText(pump.getIngredientName(this));
         binding.includePump.editTextSearchIngredientIng.setText(pump.getIngredientName(this));
         binding.includePump.editTextNumberSearchIngredientVol.setText(String.valueOf(pump.getVolume()));
-        binding.includePump.editTextNumberSearchIngredientMinVol.setText(String.valueOf(pump.getMinimumPumpVolume()));
         binding.includePump.getRoot().setVisibility(View.VISIBLE);
         //binding.includePump.editTextNumberSearchIngredientVol.setVisibility(View.VISIBLE);
         search();
@@ -139,6 +138,7 @@ public class AddActivity extends BasicActivity {
                 return;
             }
 
+            /*
             //set min volume
             vol = binding.includePump.editTextNumberSearchIngredientMinVol.getText().toString();
             if(vol.length()==0){
@@ -157,6 +157,7 @@ public class AddActivity extends BasicActivity {
                 return;
             }
             AddActivity.this.pump.setMinimumPumpVolume(level);
+            */
 
 
             AddActivity.this.pump.sendSave(AddActivity.this);

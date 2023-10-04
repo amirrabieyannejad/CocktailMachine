@@ -18,7 +18,6 @@ import java.util.Objects;
 
 public class SQLPump extends SQLDataBaseElement implements Pump {
     private static final String TAG = "SQLPump";
-    private int minimumPumpVolume = 1;
 
     private int slot = -1;
     private SQLIngredientPump ingredientPump = null;
@@ -28,29 +27,14 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         super();
     }
 
-    public SQLPump(long ID, int minimumPumpVolume) {
+    public SQLPump(long ID, int slot_id) {
         super(ID);
         this.wasSaved();
-        this.minimumPumpVolume = minimumPumpVolume;
-        //this.setIngredientPumps();
-    }
-    public SQLPump(long ID, int minimumPumpVolume, int slot_id) {
-        super(ID);
-        this.wasSaved();
-        this.minimumPumpVolume = minimumPumpVolume;
         this.slot = slot_id;
         //this.setIngredientPumps();
     }
 
-    /**
-     * get minimum oumo volume
-     * @author Johanna Reidt
-     * @return
-     */
-    @Override
-    public int getMinimumPumpVolume() {
-        return this.minimumPumpVolume;
-    }
+
 
     /**
      * get ingredient name
@@ -258,11 +242,6 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         this.wasChanged();
     }
 
-    @Override
-    public void setMinimumPumpVolume(Context context, int volume)  {
-        this.setMinimumPumpVolume(volume);
-        this.save(context);
-    }
 
     /**
      * without checking for ingredientPump set Volume, throw missing ingredient if none set
@@ -281,11 +260,6 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         this.wasChanged();
     }
 
-    @Override
-    public void setMinimumPumpVolume( int volume)  {
-        this.minimumPumpVolume = volume;
-        this.wasChanged();
-    }
 
     //General
 
@@ -361,7 +335,6 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         return "SQLPump{" +
                 "ID=" + getID() +
                 ", slot=" + getSlot() +
-                ", minimumPumpVolume=" + minimumPumpVolume +
                 ", ingredientPump=" + ingredientPump +
                 '}';
     }

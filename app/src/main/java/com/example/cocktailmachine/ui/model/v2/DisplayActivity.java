@@ -280,8 +280,11 @@ public class DisplayActivity extends BasicActivity {
 
         //TO DO: AlertDialog to change volume if admin
         //is always admin
+        /*
         vol = pump.getMinimumPumpVolume() +" ml";
         binding.includeDisplayPump.textViewMinPumpVolume.setText(vol);
+        
+         */
         //TO DO: AlertDialog to change min pump vol if admin
         //is always admin
 
