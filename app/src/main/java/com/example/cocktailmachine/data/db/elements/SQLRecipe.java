@@ -326,7 +326,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
             @Override
             public void reduceTick() {
                 Log.i("WaitingQueueCountDown","reduceTick");
-                setTick(CocktailMachine.getNumberOfUsersUntilThisUsersTurn(getTick()));
+                setTick(CocktailMachine.getNumberOfUsersUntilThisUsersTurn(activity,getTick()));
             }
 
             @Override
@@ -378,7 +378,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
             @Override
             public void reduceTick() {
                 Log.i("WaitingQueueCountDown","Dialog  reduceTick");
-                setTick(CocktailMachine.getNumberOfUsersUntilThisUsersTurn(getTick()));
+                setTick(CocktailMachine.getNumberOfUsersUntilThisUsersTurn(activity,getTick()));
             }
 
             @Override

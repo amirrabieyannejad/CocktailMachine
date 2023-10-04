@@ -576,19 +576,20 @@ public class CocktailMachine {
      */
     public static void queueRecipe(Recipe recipe , Activity activity){
         Log.i(TAG,  "queueRecipe");
+        currentRecipe = recipe;
         if(Dummy.isDummy){
             Log.i(TAG,  "queueRecipe: Dummy queue");
             return;
         }
         try {
-                BluetoothSingleton.getInstance().userQueueRecipe(AdminRights.getUserId()
-                        , recipe.getName(),activity);
-                Log.i(TAG,  "queueRecipe: queued");
-            } catch (JSONException | InterruptedException|NullPointerException e) {
-                Log.i(TAG,  "queueRecipe: error");
-                Log.e(TAG, "error"+ e);
-                e.printStackTrace();
-            }
+            BluetoothSingleton.getInstance().userQueueRecipe(AdminRights.getUserId()
+                    , recipe.getName(),activity);
+            Log.i(TAG,  "queueRecipe: queued");
+        } catch (JSONException | InterruptedException|NullPointerException e) {
+            Log.i(TAG,  "queueRecipe: error");
+            Log.e(TAG, "error"+ e);
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -630,25 +631,28 @@ public class CocktailMachine {
          */
         readUserQueue(activity);
         Log.i(TAG, "getNumberOfUsersUntilThisUsersTurn: readUserQueue done");
-        return queue.indexOf(AdminRights.getUserId());
-    }
-    public static int getNumberOfUsersUntilThisUsersTurn(int tick){ //TODO: -> bluetooth
-        Log.i(TAG, "getNumberOfUsersUntilThisUsersTurn");
-        /*TODO:
-        BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
-        try {
-            bluetoothSingleton.makeRecipe(this.getName());
-        } catch (JSONException | InterruptedException e) {
-            e.printStackTrace();
+        if(queue != null) {
+            return queue.indexOf(AdminRights.getUserId());
         }
+        Log.i(TAG, "getNumberOfUsersUntilThisUsersTurn: queue is still none");
+        return 1000;
+    }
 
-         */
-        if(Dummy.isDummy) {
+    /**
+     * number of users before this one in the queue
+     * @author Johanna Reidt
+     * @return
+     */
+    public static int getNumberOfUsersUntilThisUsersTurn(Activity activity, int tick) {
+        Log.i(TAG, "getNumberOfUsersUntilThisUsersTurn");
+        if(Dummy.isDummy){
             Log.i(TAG, "getNumberOfUsersUntilThisUsersTurn: dummy");
             return tick - 1;
         }
-        return getNumberOfUsersUntilThisUsersTurn(tick);
+        Log.i(TAG, "getNumberOfUsersUntilThisUsersTurn: bluetooth");
+        return getNumberOfUsersUntilThisUsersTurn(activity);
     }
+
 
     /**
      * check if user is the current one
