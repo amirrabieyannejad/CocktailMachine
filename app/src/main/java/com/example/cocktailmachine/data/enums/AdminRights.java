@@ -16,6 +16,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
+import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -78,13 +79,19 @@ public class AdminRights {
      * init user with bluetooth
      * @return
      */
-    public static void initUser(Activity activity, String name)
-            throws JSONException, InterruptedException {
-        //TODO: DUMMY
+    public static void initUser(Activity activity, String name){
+        //TO DO: DUMMY
         if(Dummy.isDummy) {
             getSingleton().userId = 3;
-        }else{
+            return;
+        }
+        try{
             BluetoothSingleton.getInstance().userInitUser(name,activity);
+        } catch (JSONException | InterruptedException e) {
+            //throw new RuntimeException(e);
+            Log.e(TAG, "init User failed");
+            Log.e(TAG, "error"+ e);
+            e.printStackTrace();
         }
     }
 
