@@ -70,7 +70,7 @@ public class Menue extends AppCompatActivity {
             binding.activityMenueLogout.setVisibility(View.GONE);
             binding.activityMenueLogin.setVisibility(View.VISIBLE);
         }
-        if(Dummy.isDummy && !Dummy.withSetCalibration ){
+        if(!Dummy.withSetCalibration){
             CocktailMachineCalibration.setIsDone(true);
             Log.i(TAG, "onCreate: dummy: isDummy und not withSetCalibration ");
         }

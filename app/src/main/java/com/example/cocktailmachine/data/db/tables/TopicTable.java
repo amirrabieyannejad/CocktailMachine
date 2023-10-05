@@ -6,8 +6,11 @@ import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_ID;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +29,21 @@ public class TopicTable extends BasicColumn<SQLTopic>{
     public static final String COLUMN_TYPE_ID = TYPE_ID;
     public static final String COLUMN_TYPE_NAME = TYPE_TEXT;
     public static final String COLUMN_TYPE_DESCRIPTION = TYPE_TEXT;
+    private static final String TAG = "TopicTable";
+
     @Override
     public String getName() {
         return TABLE_NAME;
+    }
+
+    public List<SQLTopic> getElement(SQLiteDatabase db, String needle){
+        try {
+            return this.getElementsLike(db, COLUMN_NAME_NAME, needle);
+        } catch (NoSuchColumnException e) {
+            Log.e(TAG, "getElement needle ", e);
+            Log.getStackTraceString(e);
+        }
+        return new ArrayList<>();
     }
 
     @Override

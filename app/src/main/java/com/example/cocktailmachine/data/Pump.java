@@ -251,9 +251,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      *
      * @return {"beer": 200, "lemonade": 2000, "orange juice": 2000}
      * @throws JSONException
-     * @throws NotInitializedDBException
      */
-    static JSONObject getPumpStatus() throws JSONException, NotInitializedDBException {
+    static JSONObject getPumpStatus() throws JSONException {
         JSONObject json = new JSONObject();
         List<Pump> pumps = Pump.getPumps();
         for (int i = 1; i <= pumps.size(); i++) {
@@ -319,8 +318,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             Buffer.localRefresh(context);
         } catch (JSONException | MissingIngredientPumpException e) {
             Log.e(TAG, "updatePumpStatus: error");
-            Log.e(TAG, e.getMessage());
-            e.printStackTrace();
+            Log.e(TAG, "error ",e);
+            Log.getStackTraceString(e);
         }
 
     }
@@ -406,8 +405,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             try {
                 Ingredient.getIngredient(name).pump(volume);
             } catch (MissingIngredientPumpException e) {
-                e.printStackTrace();
                 Log.i(TAG, "updatePumpStatus: should not happen");
+                Log.e(TAG, "error ",e);
+                Log.getStackTraceString(e);
             }
             i++;
             temp = json.optJSONArray(i);
@@ -471,7 +471,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                     this.getVolume(),
                     this.getSlot(),activity);
         } catch (JSONException | InterruptedException e) {
-            e.printStackTrace();
+            Log.i(TAG, "sendSave failed");
+            Log.e(TAG, "error ",e);
+            Log.getStackTraceString(e);
         }
     }
 
@@ -507,10 +509,16 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         JSONObject answer = new JSONObject();
 
          */
+        if(Dummy.isDummy){
+            save(activity);
+            return;
+        }
         try {
             fill(volume);
         } catch (MissingIngredientPumpException e) {
-            e.printStackTrace();
+            Log.i(TAG, "sendRefill failed");
+            Log.e(TAG, "error ",e);
+            Log.getStackTraceString(e);
         }
         save(activity);
         sendRefill(activity);
@@ -553,47 +561,41 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 BluetoothSingleton.getInstance().adminRefillPump(this.getVolume(),
                         this.getSlot(), activity);
             } catch (JSONException | InterruptedException e) {
-                e.printStackTrace();
+                Log.i(TAG, "sendRefill failed");
+                Log.e(TAG, "error ",e);
+                Log.getStackTraceString(e);
             }
         }
     }
 
+
     /**
-     * ### run_pump: lässt die Pumpe für eine bestimmte Zeit laufen
-     * - user: User
-     * - slot: int
-     * - time: int
-     * <p>
-     * Die Zeit wird in Millisekunden angegeben.
-     * <p>
-     * JSON-Beispiel:
-     * <p>
-     * {"cmd": "run_pump", "user": 0, "slot": 1, "time": 1000}
+     * Let pump run for given time
+     * @author Johanna Reidt
+     * @param activity
+     * @param time
      */
     default void run(Activity activity, int time) {
-        /*
-        //TODO: runPump, when needed???
-        JSONObject request = new JSONObject();
-        try {
-            request.put("cmd", "run_pump");
-            request.put("user", AdminRights.getUserId());
-            request.put( "slot", 1);
-            request.put("volume", time);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
+        if(Dummy.isDummy){
+            try {
+                this.fill(activity, this.getVolume()-time);
+            } catch (MissingIngredientPumpException e) {
+                Log.i(TAG, "run failed: MissingIngredientPumpException");
+                Log.e(TAG, "error ",e);
+                Log.getStackTraceString(e);
+            }
+            return;
         }
-        //TO DO: send runPump
-        JSONObject answer = new JSONObject();
-        //TO DO: AMIR
-
-         */
         try {
             BluetoothSingleton.getInstance().adminManuelCalibrateRunPump(
                     this.getSlot(),
                     time,activity);
         } catch (JSONException | InterruptedException e) {
-            e.printStackTrace();
+            Log.i(TAG, "run failed");
+            Log.e(TAG, "error ",e);
+            Log.getStackTraceString(e);
         }
+        sync(activity);
     }
 
 
@@ -627,6 +629,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     default void sendCalibrate(Activity activity, int time1, int time2, float volume1, float volume2) {
         //TO DO calibrate
         //TO DO: AMIR
+        if(Dummy.isDummy){
+            return;
+        }
         try {
             BluetoothSingleton.getInstance().adminManuelCalibratePump(
                     this.getSlot(),
@@ -635,7 +640,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                     volume1,
                     volume2,activity);
         } catch (JSONException | InterruptedException e) {
-            e.printStackTrace();
+            Log.i(TAG, "sendCalibrate failed ");
+            Log.e(TAG, "error ",e);
+            Log.getStackTraceString(e);
         }
 
     }
@@ -666,12 +673,16 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     default void sendPumpTimes(Activity activity, int timeInit, int timeReverse, float rate) {
         //TO  DO: setPumpTimes
         //TO DO: AMIR
-
+        if(Dummy.isDummy){
+            return;
+        }
         try {
             BluetoothSingleton.getInstance().adminManuelCalibrateSetPumpTimes(this.getSlot(),
                     timeInit, timeReverse, rate,activity);
         } catch (JSONException | InterruptedException e) {
-            e.printStackTrace();
+            Log.i(TAG, "sendPumpTimes failed ");
+            Log.e(TAG, "error ",e);
+            Log.getStackTraceString(e);
         }
     }
 
@@ -700,7 +711,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             try {
                 BluetoothSingleton.getInstance().adminReadPumpsStatus(activity);
             } catch (JSONException | InterruptedException e) {
-                e.printStackTrace();
+                Log.i(TAG, "readPumpStatus failed ");
+                Log.e(TAG, "error ",e);
+                Log.getStackTraceString(e);
             }
         }
     }
@@ -712,11 +725,15 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @author Johanna Reidt
      */
     static void readLiquidStatus(Activity activity) {
-
+        if(Dummy.isDummy){
+            return;
+        }
         try {
             BluetoothSingleton.getInstance().adminReadLiquidsStatus(activity);
         } catch (JSONException | InterruptedException e) {
-            e.printStackTrace();
+            Log.i(TAG, "readLiquidStatus failed ");
+            Log.e(TAG, "error ",e);
+            Log.getStackTraceString(e);
         }
     }
 

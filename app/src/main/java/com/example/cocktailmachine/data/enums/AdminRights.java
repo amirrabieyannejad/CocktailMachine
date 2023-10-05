@@ -135,6 +135,16 @@ public class AdminRights {
     }
 
 
+    static void saveMCAdresse(Context context){
+
+        BluetoothSingleton.getInstance().getEspDeviceAddress();
+    }
+
+    static String loadMCAdresseFromDB(Context context){
+        return "";
+    }
+
+
 
 
 

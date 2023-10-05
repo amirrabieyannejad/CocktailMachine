@@ -9,6 +9,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.elements.SQLDataBaseElement;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
@@ -16,6 +17,7 @@ import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -210,6 +212,70 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
             return res;
         }
         return null;
+    }
+
+
+    public List<Long> getIDs(SQLiteDatabase db){
+        Cursor cursor = db.query(this.getName(),
+                new String[]{_ID},
+                null,
+                null,
+                null,
+                null,
+                null);
+        List<Long> ids = new ArrayList<>();
+        try {
+            if (cursor.moveToFirst()) {
+                ids.add(cursor.getLong(cursor.getColumnIndexOrThrow(_ID)));
+                while (cursor.moveToNext()) {
+                    ids.add(cursor.getLong(cursor.getColumnIndexOrThrow(_ID)));
+                }
+            }
+        }catch (IllegalArgumentException e){
+            Log.e(TAG, "getIDs", e);
+            Log.getStackTraceString(e);
+        }
+        cursor.close();
+        return ids;
+    }
+
+    public Iterator<T> getIterator(SQLiteDatabase db){
+
+        return new Iterator<T>() {
+            private final Iterator<Long> ids = BasicColumn.this.getIDs(db).listIterator();
+            @Override
+            public boolean hasNext() {
+                return ids.hasNext();
+            }
+
+            @Override
+            public T next() {
+                return BasicColumn.this.getElement(db, ids.next());
+            }
+        };
+    }
+
+    public Iterator<List<T>> getChunkIterator(SQLiteDatabase db, int n){
+
+        return new Iterator<List<T>>() {
+            private final List<Long> ids = BasicColumn.this.getIDs(db);
+            private int position = 0;
+            @Override
+            public boolean hasNext() {
+                return position<ids.size();
+            }
+
+            @Override
+            public List<T> next() {
+                int oldPosition = position;
+                position = position + n;
+                if(position>ids.size()){
+                    position = ids.size();
+                }
+                List<Long> temp = ids.subList(oldPosition, position);
+                return BasicColumn.this.getElements(db, temp);
+            }
+        };
     }
 
     /**

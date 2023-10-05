@@ -1706,6 +1706,56 @@ public class GetDialog {
 
 
 
+    public static void runPump(Activity activity, Pump pump) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Für wie lange soll die Pumpe laufen?");
+
+        View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
+        GetDialog.TimePumpingView pumpNumberChangeView =
+                new GetDialog.TimePumpingView(
+                        activity,
+                        v, pump);
+
+        builder.setView(v);
+
+        builder.setPositiveButton("Speichern", (dialog, which) -> {
+            try {
+
+                pumpNumberChangeView.send();
+                dialog.dismiss();
+            }catch (IllegalStateException e){
+                Log.e(TAG, "setPumpNumber pumpNumberChangeView save error");
+                Log.e(TAG, "error"+e);
+                e.printStackTrace();
+            }
+
+        });
+        builder.setNeutralButton("Abbrechen", (dialog, which) -> {
+
+        });
+        builder.show();
+    }
+
+    private static class TimePumpingView extends FloatChangeView{
+        private final Pump pump;
+        private TimePumpingView(Activity activity, View v, Pump pump) {
+            super(activity, v, "Zeit");
+            this.pump = pump;
+        }
+
+        @Override
+        public void send() {
+            int t = getInt();
+            if(t>0) {
+                pump.run(activity, getInt());
+                return;
+            }
+            Toast.makeText(activity, "Die Pumpe läuft nicht wegen fehlerhafter Eingabe.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
 
 
 
@@ -1870,18 +1920,15 @@ public class GetDialog {
 
     public abstract static class FloatChangeView{
 
-        private final TextView t;
         private final EditText e;
-        private final View v;
         final Activity activity;
         private FloatChangeView(Activity activity, View v, String title ) {
             this.activity = activity;
-            this.t = v.findViewById(R.id.textView_edit_text);
+            TextView t = v.findViewById(R.id.textView_edit_text);
             this.e = v.findViewById(R.id.editText_edit_text);
 
-            this.t.setText(title+": ");
+            t.setText(title+": ");
             this.e.setInputType(InputType.TYPE_CLASS_NUMBER);
-            this.v = v;
             String name = getPreFloat();
             this.e.setHint(name);
             //this.e.setText(name);
@@ -1908,6 +1955,7 @@ public class GetDialog {
                 Log.e(TAG, e.toString());
                 e.printStackTrace();
             }
+            Toast.makeText(activity, "Es wurde keine valide Zahl eingefügt.", Toast.LENGTH_SHORT).show();
             return -1;
         }
 

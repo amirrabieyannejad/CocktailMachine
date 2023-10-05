@@ -1,11 +1,15 @@
 package com.example.cocktailmachine.data.db;
 
 import android.content.Context;
+import android.media.MediaParser;
 import android.os.Build;
+import android.os.Environment;
+import android.util.JsonReader;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
@@ -17,12 +21,34 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.exceptions.AccessDeniedException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.tables.Tables;
+import com.example.cocktailmachine.ui.settings.SettingsActivity;
+import com.opencsv.CSVReader;
 
+import org.apache.commons.collections4.Get;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 /**
  * @author Johanna Reidt
@@ -31,9 +57,9 @@ import java.util.Objects;
  */
 public class Buffer {
     private static final String TAG = "Buffer";
+    private final int CHUNK_SIZE = 150;
     private static Buffer singleton;
     public static boolean isLoaded = false;
-
     private List<Ingredient> ingredients;
     private List<Topic> topics;
     private List<Recipe> recipes;
@@ -109,15 +135,34 @@ public class Buffer {
         return singleton;
     }
 
+
+
+
+
+
+
     private void setLoad(Context context) throws NotInitializedDBException {
         DatabaseConnection.init(context);
+        this.pumps = DatabaseConnection.getSingleton().loadPumps();
+        this.ingredientPumps = DatabaseConnection.getSingleton().loadIngredientPumps();
+        this.loadAvailableIngredient(context);
+        this.loadAvailableRecipe(context);
+        //this.ingredients = new ArrayList<>();
+        //this.recipes = DatabaseConnection.getSingleton().loadAllRecipes();
+        //this.pumps =  DatabaseConnection.getSingleton().loadPumps();
+        this.topics =  DatabaseConnection.getSingleton().loadTopics();
+        this.recipeIngredients = DatabaseConnection.getSingleton().loadIngredientVolumes();
+        this.recipeTopics = DatabaseConnection.getSingleton().loadRecipeTopic();
+
+        /*
         this.ingredients = DatabaseConnection.getSingleton().loadAllIngredients();
         this.recipes = DatabaseConnection.getSingleton().loadAllRecipes();
-        this.ingredientPumps = DatabaseConnection.getSingleton().loadIngredientPumps();
         this.pumps =  DatabaseConnection.getSingleton().loadPumps();
         this.topics =  DatabaseConnection.getSingleton().loadTopics();
         this.recipeIngredients = DatabaseConnection.getSingleton().loadIngredientVolumes();
         this.recipeTopics = DatabaseConnection.getSingleton().loadRecipeTopic();
+
+         */
         loadFast();
         isLoaded = true;
     }
@@ -296,6 +341,214 @@ public class Buffer {
     }
 
 
+    public static void loadPreped(Context context) {
+        Log.i(TAG, "loadPreped" );
+        loadLiquid(context);
+        loadPrepedRecipes(context);
+    }
+
+    private static void loadLiquid(Context context){
+        Log.i(TAG, "loadLiquid" );
+        //https://stackoverflow.com/questions/43055661/reading-csv-file-in-android-app
+        try {
+            /*
+            //URL path = Buffer.class.getResource("liquid.csv");
+            //URL path = ClassLoader.getSystemResource("liquid.csv");
+            //Log.i(TAG, "loadLiquid: url path: "+path );
+            //if(path == null){
+            //    Log.i(TAG, "loadLiquid: path is null" );
+            //    return;
+            //}
+            //File f = new File(path.getFile());
+            //File csvfile = new File("liquid.csv");
+
+            Log.i(TAG, "loadLiquid: "+ClassLoader.getSystemClassLoader().toString());
+            Log.i(TAG, "loadLiquid: "+Buffer.class);
+            Log.i(TAG, "loadLiquid: "+Buffer.class.getPackage());
+            Log.i(TAG, "loadLiquid: "+Buffer.class.getPackage());
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                Path currentRelativePath = Paths.get("");
+                String s = currentRelativePath.toAbsolutePath().toString();
+                Log.i(TAG, "loadLiquid: "+"Current absolute path is: " + s);
+            }
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                Path path = FileSystems.getDefault().getPath(".");
+                Log.i(TAG, "loadLiquid: "+"Current dir " + path);
+                path = FileSystems.getDefault().getPath(".").toAbsolutePath();
+                Log.i(TAG, "loadLiquid: "+"Current absolute path is: " + path);
+            }
+            //String cwd = Path.of("").toAbsolutePath().toString();
+            File currentDir = new File("");
+            Log.i(TAG, "loadLiquid: "+"Current dir: " + currentDir);
+            currentDir = new File("").getAbsoluteFile();
+            Log.i(TAG, "loadLiquid: "+"Current dir, absolute path: " + currentDir);
+            File[] files = currentDir.listFiles();
+            if(files != null) {
+                Log.i(TAG, "loadLiquid: Size: " + files.length);
+                for (File file : files) {
+                    Log.i(TAG, "loadLiquid: FileName:" + file.getName());
+                }
+            }else{
+                Log.i(TAG, "loadLiquid: no files in dir");
+            }
+
+             */
+            /*
+            Log.i(TAG, "loadLiquid: data "+Environment.getDataDirectory());
+            Log.i(TAG, "loadLiquid: ex storage "+Environment.getExternalStorageState());
+            Log.i(TAG, "loadLiquid: root "+Environment.getRootDirectory());
+            Log.i(TAG, "loadLiquid: download "+Environment.getDownloadCacheDirectory());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                Log.i(TAG, "loadLiquid: storage "+Environment.getStorageDirectory());
+            }
+
+             */
+            /*
+            File currentDir = context.getFilesDir();
+            Log.i(TAG, "loadLiquid: currentDir "+currentDir);
+
+
+             */
+            /*
+            File currentDir = new File("./");
+            Log.i(TAG, "loadLiquid: "+"Current dir: " + currentDir);
+            //currentDir = new File("./").getAbsoluteFile();
+            Log.i(TAG, "loadLiquid: "+"Current dir, absolute path: " + currentDir);
+
+             */
+            /*
+            File[] files = currentDir.listFiles();
+            if(files != null) {
+                Log.i(TAG, "loadLiquid: Size: " + files.length);
+                for (File file : files) {
+                    Log.i(TAG, "loadLiquid: FileName:" + file.getName());
+                }
+            }else{
+                Log.i(TAG, "loadLiquid: no files in dir");
+            }
+
+            String[] file_names = context.fileList();
+            Log.i(TAG, "loadLiquid: fileList: "+ Arrays.toString(file_names));
+            Log.i(TAG, "loadLiquid: getPackageCodePath: "+ context.getPackageCodePath());
+            Log.i(TAG, "loadLiquid: getPackageResourcePath: "+ context.getPackageResourcePath());
+
+             */
+            InputStream is = context.getResources().openRawResource(R.raw.liquid);
+            Log.i(TAG, "loadLiquid: get raw: "+ is.toString());
+
+            //File csvfile = new File("./liquid.csv");
+            //Log.i(TAG, "loadLiquid: file: "+csvfile );
+            //new File(Environment.getExternalStorageDirectory() + "/csvfile.csv");
+            //CSVReader reader = new CSVReader(new FileReader(csvfile));
+            CSVReader reader = new CSVReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+            //CSVReader reader = new CSVReader(new FileReader(f.getAbsolutePath()));
+            Log.i(TAG, "loadLiquid: opening file successful");
+            String[] nextLine;
+            reader.readNext();//skip first line
+            while ((nextLine = reader.readNext()) != null) {
+                // nextLine[] is an array of values from the line
+                //System.out.println(nextLine[0] + nextLine[1] + "etc...");
+                Log.i(TAG, "loadLiquid: next line: "+ Arrays.toString(nextLine));
+                String name = nextLine[0];
+                boolean alcoholic = false;
+                int colour = new Random().nextInt();
+                try {
+                    alcoholic = Integer.parseInt(nextLine[1]) == 1;
+                }catch (NumberFormatException e){
+                    Log.i(TAG, "loadLiquid: failed to read alcoholic, alcoholic set to false");
+                    Log.e(TAG, "error: "+e);
+                    e.printStackTrace();
+                }
+                try {
+                    colour = Integer.parseInt(nextLine[2]);
+                }catch (NumberFormatException e){
+                    Log.i(TAG, "loadLiquid: failed to read colour, use random");
+                    Log.e(TAG, "error: "+e);
+                    e.printStackTrace();
+                }
+                Ingredient.makeNew(name, alcoholic, colour).save(context);
+            }
+            reader.close();
+            is.close();
+        } catch (FileNotFoundException e) {
+            Log.i(TAG,"loadLiquid: file not found" );
+            Log.e(TAG, "error: "+e);
+            e.printStackTrace();
+        } catch (IOException e) {
+            Log.i(TAG,"loadLiquid: io error" );
+            Log.e(TAG, "error: "+e);
+            e.printStackTrace();
+        }
+
+    }
+    private static void loadPrepedRecipes(Context context){
+        Log.i(TAG, "loadPrepedRecipes" );
+        //https://stackoverflow.com/questions/43055661/reading-csv-file-in-android-app
+        try {
+
+            InputStream is = context.getResources().openRawResource(R.raw.recipe);
+            Log.i(TAG, "loadPrepedRecipes: get raw: "+ is.toString());
+            //File jsonfile = new File("recipe.json");
+            //InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
+            BufferedReader streamReader = new BufferedReader(
+                    new InputStreamReader(is,
+                            StandardCharsets.UTF_8));
+            StringBuilder responseStrBuilder = new StringBuilder();
+
+            String inputStr;
+            while ((inputStr = streamReader.readLine()) != null) {
+                responseStrBuilder.append(inputStr);
+            }
+            streamReader.close();
+            is.close();
+
+            //JSONObject jsonObject = new JSONObject(responseStrBuilder.toString());
+
+            JSONObject json = new JSONObject(responseStrBuilder.toString());
+            Log.i(TAG, "loadPrepedRecipes: opening file successful");
+
+            Iterator<String> names =  json.keys();
+            while(names.hasNext()){
+                String name = names.next();
+                Log.i(TAG, "loadPrepedRecipes: next recipe: "+name);
+                Recipe r = Recipe.searchOrNew(context,name);
+                r.removeIngredients(context, r.getIngredients());
+                JSONObject ingVol = json.getJSONObject(name);
+                Iterator<String> ings = ingVol.keys();
+                while(ings.hasNext()){
+                    String ingName = ings.next();
+                    Log.i(TAG, "loadPrepedRecipes: next recipe: add ing "+ingName);
+                    r.add(context,
+                            Ingredient.searchOrNew(context, ingName), //gets ing or new
+                            ingVol.optInt(ingName));//given vol or 0
+                    r.save(context);
+                }
+                Log.i(TAG, "loadPrepedRecipes: next recipe: "+name+" done saving");
+                r.save(context);
+
+            }
+
+
+        } catch (JSONException e) {
+            Log.i(TAG,"loadLiquid: JSONException" );
+            Log.e(TAG, "error: "+e);
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            Log.i(TAG,"loadLiquid: no file" );
+            Log.e(TAG, "error: "+e);
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            Log.i(TAG,"loadLiquid: UnsupportedEncodingException" );
+            Log.e(TAG, "error: "+e);
+            e.printStackTrace();
+        } catch (IOException e) {
+            Log.i(TAG,"loadLiquid: IOException" );
+            Log.e(TAG, "error: "+e);
+            e.printStackTrace();
+        }
+    }
+
+
 
 
 
@@ -414,13 +667,7 @@ public class Buffer {
         if(res != null){
             return res;
         }
-        try {
-            return GetFromDB.loadIngredient(context, id);
-        } catch (AccessDeniedException e) {
-            Log.e(TAG, "getIngredient: no admin");
-            e.printStackTrace();
-            return null;
-        }
+        return GetFromDB.loadIngredient(context, id);
     }
 
     /**
@@ -692,13 +939,7 @@ public class Buffer {
         if(res != null){
             return res;
         }
-        try {
-            return GetFromDB.loadTopic(context, id);
-        } catch (AccessDeniedException e) {
-            Log.e(TAG, "getTopic: no admin");
-            e.printStackTrace();
-            return null;
-        }
+        return GetFromDB.loadTopic(context, id);
     }
 
     /**
@@ -892,13 +1133,7 @@ public class Buffer {
         if(res != null){
             return res;
         }
-        try {
-            return GetFromDB.loadRecipe(context, id);
-        } catch (AccessDeniedException e) {
-            Log.e(TAG, "getTopic: no admin");
-            e.printStackTrace();
-            return null;
-        }
+        return GetFromDB.loadRecipe(context, id);
     }
 
     /**
@@ -1310,18 +1545,12 @@ public class Buffer {
         if(res != null){
             return res;
         }
-        try {
-            res= GetFromDB.loadPump(context, id);
-            if(res == null){
+        res= GetFromDB.loadPump(context, id);
+        if(res == null){
                 return null;
             }
-            res.save(context);
-            return res;
-        } catch (AccessDeniedException e) {
-            Log.e(TAG, "getTopic: no admin");
-            e.printStackTrace();
-            return null;
-        }
+        res.save(context);
+        return res;
     }
 
     /**
@@ -1523,11 +1752,25 @@ public class Buffer {
             this.fastIDAvailableIngredient = new HashMap<>();
             this.fastNameAvailableIngredient = new HashMap<>();
         }
+        /*
+        if(isFast){
+            this.fastAvailableIngredient = new ArrayList<>();
+            this.fastIDAvailableIngredient = new HashMap<>();
+            this.fastNameAvailableIngredient = new HashMap<>();
+        }
         for(Ingredient i: this.ingredients){
             i.loadAvailable(context);
             if(i.isAvailable()){
                 addAvailableToFast(i);
             }
+        }
+
+         */
+        this.ingredients = new ArrayList<>();
+        for(SQLIngredientPump ip: this.ingredientPumps){
+            Ingredient i = GetFromDB.loadIngredient(context,ip.getIngredientID());
+            this.ingredients.add(i);
+            addAvailableToFast(i);
         }
     }
 
@@ -1545,12 +1788,13 @@ public class Buffer {
             this.fastIDAvailableIngredient = new HashMap<>();
             this.fastNameAvailableIngredient = new HashMap<>();
         }
-        for(Recipe i: this.recipes){
-            i.loadAvailable(context);
-            if(i.isAvailable()){
-                addAvailableToFast(i);
-            }
+        this.recipes = new ArrayList<>();
+        for(SQLRecipeIngredient ri: this.recipeIngredients){
+            Recipe i = GetFromDB.loadRecipe(context,ri.getRecipeID());
+            this.recipes.add(i);
+            addAvailableToFast(i);
         }
+
     }
 
 

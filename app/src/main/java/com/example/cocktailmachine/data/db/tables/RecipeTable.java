@@ -7,6 +7,7 @@ import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_ID;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
@@ -42,6 +43,16 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
     @Override
     public String getName() {
         return TABLE_NAME;
+    }
+
+    public List<SQLRecipe> getElement(SQLiteDatabase db, String name){
+        try {
+            return this.getElementsLike(db, COLUMN_NAME_NAME, name);
+        } catch (NoSuchColumnException e) {
+            Log.e("RecipeTable", "getElement", e);
+            Log.getStackTraceString(e);
+        }
+        return new ArrayList<>();
     }
 
     @Override

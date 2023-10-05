@@ -298,12 +298,19 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
          */
+        Log.i(TAG, "loadNew");
         Buffer.localRefresh(this);
         Toast.makeText(this,"Lade aus der Datenbank neu!",Toast.LENGTH_SHORT).show();
     }
 
 
+    public void loadPreped(View view) {
+        Log.i(TAG, "loadPreped");
+        Buffer.loadPreped(this);
+    }
+
     public void login(View view) {
+        Log.i(TAG, "login");
         AdminRights.login(this, getLayoutInflater(), new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
@@ -313,7 +320,9 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public void logout(View view) {
+        Log.i(TAG, "logout");
         AdminRights.logout();
         setVisibility();
     }
+
 }
