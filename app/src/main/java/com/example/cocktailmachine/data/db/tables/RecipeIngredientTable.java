@@ -119,10 +119,21 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
     }
 
 
-    public List<SQLRecipeIngredient> getWithRecipe(SQLiteDatabase db,
+    public List<SQLRecipeIngredient> getWithRecipes(SQLiteDatabase db,
                                                    List<Long> recipeIDs){
         try {
             this.getElementsIn(db, COLUMN_NAME_RECIPE_ID, Collections.singletonList(recipeIDs));
+        } catch (NoSuchColumnException e) {
+            Log.e(TAG, "getWithRecipe" );
+        }
+        return new ArrayList<>();
+    }
+
+
+    public List<SQLRecipeIngredient> getWithIngredients(SQLiteDatabase db,
+                                                   List<Long> recipeIDs){
+        try {
+            this.getElementsIn(db, COLUMN_NAME_INGREDIENT_ID, Collections.singletonList(recipeIDs));
         } catch (NoSuchColumnException e) {
             Log.e(TAG, "getWithRecipe" );
         }

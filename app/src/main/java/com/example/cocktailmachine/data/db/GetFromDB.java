@@ -13,9 +13,7 @@ import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
-import com.example.cocktailmachine.data.db.exceptions.AccessDeniedException;
 import com.example.cocktailmachine.data.db.tables.Tables;
-import com.example.cocktailmachine.data.enums.AdminRights;
 
 import java.util.Iterator;
 import java.util.List;
@@ -143,6 +141,11 @@ public class GetFromDB {
 
         Log.i(TAG, "loadRecipeIngredient");
         return Tables.TABLE_RECIPE_INGREDIENT.getElement(getReadableDatabase(context), id);
+    }
+
+    static List<SQLRecipeIngredient> loadRecipeIngredientFromIngredient(Context context, List<Long> ids){
+        Log.i(TAG, "loadRecipeIngredient");
+        return Tables.TABLE_RECIPE_INGREDIENT.getWithIngredients(getReadableDatabase(context), ids);
     }
 
 }

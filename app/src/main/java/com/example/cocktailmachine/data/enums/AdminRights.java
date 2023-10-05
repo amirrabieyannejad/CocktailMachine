@@ -135,11 +135,12 @@ public class AdminRights {
     }
 
 
-    static void setMacAdresse(String adresse){
+    static void saveMCAdresse(Context context){
 
+        BluetoothSingleton.getInstance().getEspDeviceAddress();
     }
 
-    static String loadMAcAdresseFromDB(Context context){
+    static String loadMCAdresseFromDB(Context context){
         return "";
     }
 
