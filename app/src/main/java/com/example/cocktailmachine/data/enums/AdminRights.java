@@ -135,6 +135,15 @@ public class AdminRights {
     }
 
 
+    static void setMacAdresse(String adresse){
+
+    }
+
+    static String loadMAcAdresseFromDB(Context context){
+        return "";
+    }
+
+
 
 
 

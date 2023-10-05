@@ -11,6 +11,7 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
+import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
 import com.example.cocktailmachine.data.db.exceptions.AccessDeniedException;
 import com.example.cocktailmachine.data.db.tables.Tables;
@@ -137,5 +138,11 @@ public class GetFromDB {
         return Tables.TABLE_PUMP.getChunkIterator(getReadableDatabase(context), n);
     }
 
+
+    static SQLRecipeIngredient loadRecipeIngredient(Context context, long id){
+
+        Log.i(TAG, "loadRecipeIngredient");
+        return Tables.TABLE_RECIPE_INGREDIENT.getElement(getReadableDatabase(context), id);
+    }
 
 }

@@ -7,6 +7,7 @@ import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_LONG;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.Helper;
@@ -15,6 +16,7 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +38,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
     public static final String COLUMN_TYPE_RECIPE_ID = TYPE_LONG;
     public static final String COLUMN_TYPE_INGREDIENT_ID = TYPE_LONG;
     public static final String COLUMN_TYPE_PUMP_TIME = TYPE_INTEGER;
+    private static final String TAG = "RecipeIngredientTable";
 
     @Override
     public String getName() {
@@ -113,6 +116,17 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
             e.printStackTrace();
             return new ArrayList<>();
         }
+    }
+
+
+    public List<SQLRecipeIngredient> getWithRecipe(SQLiteDatabase db,
+                                                   List<Long> recipeIDs){
+        try {
+            this.getElementsIn(db, COLUMN_NAME_RECIPE_ID, Collections.singletonList(recipeIDs));
+        } catch (NoSuchColumnException e) {
+            Log.e(TAG, "getWithRecipe" );
+        }
+        return new ArrayList<>();
     }
 
 

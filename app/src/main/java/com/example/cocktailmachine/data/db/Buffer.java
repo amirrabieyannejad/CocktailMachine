@@ -24,6 +24,7 @@ import com.example.cocktailmachine.data.db.tables.Tables;
 import com.example.cocktailmachine.ui.settings.SettingsActivity;
 import com.opencsv.CSVReader;
 
+import org.apache.commons.collections4.Get;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -56,9 +57,9 @@ import java.util.Random;
  */
 public class Buffer {
     private static final String TAG = "Buffer";
+    private final int CHUNK_SIZE = 150;
     private static Buffer singleton;
     public static boolean isLoaded = false;
-
     private List<Ingredient> ingredients;
     private List<Topic> topics;
     private List<Recipe> recipes;
@@ -142,13 +143,26 @@ public class Buffer {
 
     private void setLoad(Context context) throws NotInitializedDBException {
         DatabaseConnection.init(context);
+        this.pumps = DatabaseConnection.getSingleton().loadPumps();
+        this.ingredientPumps = DatabaseConnection.getSingleton().loadIngredientPumps();
+        this.loadAvailableIngredient(context);
+        this.loadAvailableRecipe(context);
+        //this.ingredients = new ArrayList<>();
+        //this.recipes = DatabaseConnection.getSingleton().loadAllRecipes();
+        //this.pumps =  DatabaseConnection.getSingleton().loadPumps();
+        this.topics =  DatabaseConnection.getSingleton().loadTopics();
+        this.recipeIngredients = DatabaseConnection.getSingleton().loadIngredientVolumes();
+        this.recipeTopics = DatabaseConnection.getSingleton().loadRecipeTopic();
+
+        /*
         this.ingredients = DatabaseConnection.getSingleton().loadAllIngredients();
         this.recipes = DatabaseConnection.getSingleton().loadAllRecipes();
-        this.ingredientPumps = DatabaseConnection.getSingleton().loadIngredientPumps();
         this.pumps =  DatabaseConnection.getSingleton().loadPumps();
         this.topics =  DatabaseConnection.getSingleton().loadTopics();
         this.recipeIngredients = DatabaseConnection.getSingleton().loadIngredientVolumes();
         this.recipeTopics = DatabaseConnection.getSingleton().loadRecipeTopic();
+
+         */
         loadFast();
         isLoaded = true;
     }
@@ -1738,11 +1752,25 @@ public class Buffer {
             this.fastIDAvailableIngredient = new HashMap<>();
             this.fastNameAvailableIngredient = new HashMap<>();
         }
+        /*
+        if(isFast){
+            this.fastAvailableIngredient = new ArrayList<>();
+            this.fastIDAvailableIngredient = new HashMap<>();
+            this.fastNameAvailableIngredient = new HashMap<>();
+        }
         for(Ingredient i: this.ingredients){
             i.loadAvailable(context);
             if(i.isAvailable()){
                 addAvailableToFast(i);
             }
+        }
+
+         */
+        this.ingredients = new ArrayList<>();
+        for(SQLIngredientPump ip: this.ingredientPumps){
+            Ingredient i = GetFromDB.loadIngredient(context,ip.getIngredientID());
+            this.ingredients.add(i);
+            addAvailableToFast(i);
         }
     }
 
@@ -1760,12 +1788,13 @@ public class Buffer {
             this.fastIDAvailableIngredient = new HashMap<>();
             this.fastNameAvailableIngredient = new HashMap<>();
         }
-        for(Recipe i: this.recipes){
-            i.loadAvailable(context);
-            if(i.isAvailable()){
-                addAvailableToFast(i);
-            }
+        this.recipes = new ArrayList<>();
+        for(SQLRecipeIngredient ri: this.recipeIngredients){
+            Recipe i = GetFromDB.loadRecipe(context,ri.getRecipeID());
+            this.recipes.add(i);
+            addAvailableToFast(i);
         }
+
     }
 
 

@@ -45,8 +45,10 @@ import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.ui.BluetoothTestEnviroment;
+import com.example.cocktailmachine.ui.model.v2.GetActivity;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -97,6 +99,10 @@ public class DeviceScanActivity extends ListActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(Dummy.isDummy){
+            GetActivity.goToMenu(this);
+        }
+
         //getActionBar().setTitle(R.string.title_devices);
         mLeDeviceListAdapter = new LeDeviceListAdapter();
 
