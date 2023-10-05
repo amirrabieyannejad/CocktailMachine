@@ -131,15 +131,80 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
 
 
     public List<SQLRecipeIngredient> getWithIngredients(SQLiteDatabase db,
-                                                   List<Long> recipeIDs){
+                                                        List<Long> recipeIDs){
+        List<SQLRecipeIngredient> res = new ArrayList<>();
         try {
-            this.getElementsIn(db, COLUMN_NAME_INGREDIENT_ID, Collections.singletonList(recipeIDs));
+            res = this.getElementsIn(db, COLUMN_NAME_INGREDIENT_ID, Collections.singletonList(recipeIDs));
+
         } catch (NoSuchColumnException e) {
-            Log.e(TAG, "getWithRecipe" );
+            Log.e(TAG, "getWithIngredients" );
         }
-        return new ArrayList<>();
+
+        return res;
+    }
+
+    private List<Long> getRecipeIDs(SQLiteDatabase db){
+        Cursor cursor = db.query(this.getName(),
+                new String[]{COLUMN_NAME_RECIPE_ID},
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        List<Long> ids = new ArrayList<>();
+        int id_index = cursor.getColumnIndexOrThrow(COLUMN_NAME_RECIPE_ID);
+        if(cursor.moveToFirst()) {
+            ids.add(cursor.getLong(id_index));
+            while (cursor.moveToNext()) {
+                ids.add(cursor.getLong(id_index));
+            }
+        }
+        cursor.close();
+        Log.i(TAG, "cursorToList : "+ids);
+        cursor.close();
+        return ids;
+    }
+
+    private List<Long> getIngredientIDs(SQLiteDatabase db){
+        Cursor cursor = db.query(this.getName(),
+                new String[]{COLUMN_NAME_INGREDIENT_ID},
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        List<Long> ids = new ArrayList<>();
+        int id_index = cursor.getColumnIndexOrThrow(COLUMN_NAME_INGREDIENT_ID);
+        if(cursor.moveToFirst()) {
+            ids.add(cursor.getLong(id_index));
+            while (cursor.moveToNext()) {
+                ids.add(cursor.getLong(id_index));
+            }
+        }
+        cursor.close();
+        Log.i(TAG, "cursorToList : "+ids);
+        cursor.close();
+        return ids;
     }
 
 
 
+    public List<SQLRecipeIngredient> getWithIngredientsOnlyFullRecipe(SQLiteDatabase db,
+                                                        List<Long> ingIDs){
+        List<Long> res = new ArrayList<>();
+        List<SQLRecipeIngredient> notres = new ArrayList<>();
+        List<Long> recipe = this.getRecipeIDs(db);
+        try {
+            res = this.getIDsIn(db, COLUMN_NAME_INGREDIENT_ID, Collections.singletonList(ingIDs));
+            notres = this.getElementsNotIn(db, COLUMN_NAME_INGREDIENT_ID, Collections.singletonList(ingIDs));
+
+
+        } catch (NoSuchColumnException e) {
+            Log.e(TAG, "getWithRecipe" );
+        }
+
+        return this.getElements(db,res);
+    }
 }

@@ -146,12 +146,13 @@ public class Buffer {
         this.pumps = DatabaseConnection.getSingleton().loadPumps();
         this.ingredientPumps = DatabaseConnection.getSingleton().loadIngredientPumps();
         this.loadAvailableIngredient(context);
+        this.loadAvailableRecipeIngredient(context);
         this.loadAvailableRecipe(context);
         //this.ingredients = new ArrayList<>();
         //this.recipes = DatabaseConnection.getSingleton().loadAllRecipes();
         //this.pumps =  DatabaseConnection.getSingleton().loadPumps();
         this.topics =  DatabaseConnection.getSingleton().loadTopics();
-        this.recipeIngredients = DatabaseConnection.getSingleton().loadIngredientVolumes();
+        //this.recipeIngredients = DatabaseConnection.getSingleton().loadIngredientVolumes();
         this.recipeTopics = DatabaseConnection.getSingleton().loadRecipeTopic();
 
         /*
@@ -166,6 +167,7 @@ public class Buffer {
         loadFast();
         isLoaded = true;
     }
+
 
     public void loadFast(){
         fastIDIngredient = new HashMap<>();
@@ -831,6 +833,17 @@ public class Buffer {
             names.add(i.getName()+": "+i.getVolume()+" ml");
         }
         return names;
+    }
+
+    public List<Long> getIngredientIDs(){
+        List<Long> res = new ArrayList<>();
+        if(this.ingredients == null){
+            this.ingredients = new ArrayList<>();
+        }
+        for(Ingredient i: this.ingredients){
+            res.add(i.getID());
+        }
+        return res;
     }
 
 
@@ -1746,6 +1759,9 @@ public class Buffer {
         return ris;
     }
 
+
+
+
     public void loadAvailableIngredient(Context context) {
         if(isFast){
             this.fastAvailableIngredient = new ArrayList<>();
@@ -1774,6 +1790,10 @@ public class Buffer {
         }
     }
 
+    private void loadAvailableRecipeIngredient(Context context) {
+        GetFromDB.loadRecipeIngredientFromIngredient(context, this.getIngredientIDs());
+    }
+
     private void addAvailableToFast(Ingredient ingredient){
         if(isFast){
             this.fastAvailableIngredient.add(ingredient);
@@ -1783,18 +1803,15 @@ public class Buffer {
     }
 
     public void loadAvailableRecipe(Context context) {
-        if(isFast){
-            this.fastAvailableIngredient = new ArrayList<>();
-            this.fastIDAvailableIngredient = new HashMap<>();
-            this.fastNameAvailableIngredient = new HashMap<>();
-        }
         this.recipes = new ArrayList<>();
+        if(this.recipeIngredients == null){
+            this.recipeIngredients = new ArrayList<>();
+        }
         for(SQLRecipeIngredient ri: this.recipeIngredients){
             Recipe i = GetFromDB.loadRecipe(context,ri.getRecipeID());
             this.recipes.add(i);
             addAvailableToFast(i);
         }
-
     }
 
 

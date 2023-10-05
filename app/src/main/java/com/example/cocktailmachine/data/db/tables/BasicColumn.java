@@ -128,6 +128,27 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         return res;
     }
 
+    /**
+     * reads with given crusor each given rows to a T element
+     * @author Johanna Reidt
+     * @param cursor
+     * @return T element list
+     */
+    private List<Long> cursorToIDList(Cursor cursor){
+        Log.i(TAG, "cursorToList");
+        List<Long> res = new ArrayList<>();
+        int id_index = cursor.getColumnIndexOrThrow(_ID);
+        if(cursor.moveToFirst()) {
+            res.add(cursor.getLong(id_index));
+            while (cursor.moveToNext()) {
+                res.add(cursor.getLong(id_index));
+            }
+        }
+        cursor.close();
+        Log.i(TAG, "cursorToList : "+res);
+        return res;
+    }
+
     private String[] makeSelectionList(String column_name,
                                        List<? extends Object> ll)
             throws NoSuchColumnException {
@@ -223,6 +244,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 null,
                 null,
                 null);
+        /*
         List<Long> ids = new ArrayList<>();
         try {
             if (cursor.moveToFirst()) {
@@ -235,6 +257,9 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
             Log.e(TAG, "getIDs", e);
             Log.getStackTraceString(e);
         }
+
+         */
+        List<Long> ids = cursorToIDList(cursor);
         cursor.close();
         return ids;
     }
@@ -370,6 +395,36 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         return this.cursorToList(cursor);
     }
 
+    private List<Long> getIDsSelectionOperator(SQLiteDatabase db,
+                                                 String column_name,
+                                                 List<Object> ll,
+                                                 String selectionOperator)
+            throws NoSuchColumnException {
+        Log.i(TAG, "getElementsSelectionOperator");
+
+        if(ll.isEmpty()){
+            Log.i(TAG, "getElementsSelectionOperator ll is empty");
+            return new ArrayList<>();
+        }
+
+
+        String selection = column_name+" "+selectionOperator+" ?";
+        Log.i(TAG, "getElementsSelectionOperator selection: "+selection);
+        String[] selectionList = makeSelectionList(column_name, ll);
+        Log.i(TAG, "getElementsSelectionOperator selectionList: "+ Arrays.toString(selectionList));
+
+
+        Cursor cursor = db.query(
+                this.getName(),
+                getColumns().toArray(new String[0]),
+                selection,
+                selectionList,
+                null,
+                null,
+                null);
+        return this.cursorToIDList(cursor);
+    }
+
     public List<T> getElementsIn(SQLiteDatabase db,
                                  String column_name,
                                  List<Object> ll)
@@ -380,11 +435,31 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 "IN");
     }
 
+    public List<Long> getIDsIn(SQLiteDatabase db,
+                                 String column_name,
+                                 List<Object> ll)
+            throws NoSuchColumnException {
+        return getIDsSelectionOperator(db,
+                column_name,
+                ll,
+                "IN");
+    }
+
     public List<T> getElementsNotIn(SQLiteDatabase db,
                                     String column_name,
                                     List<Object> ll)
             throws NoSuchColumnException {
         return getElementsSelectionOperator(db,
+                column_name,
+                ll,
+                "NOT IN");
+    }
+
+    public List<Long> getIDsNotIn(SQLiteDatabase db,
+                                    String column_name,
+                                    List<Object> ll)
+            throws NoSuchColumnException {
+        return getIDsSelectionOperator(db,
                 column_name,
                 ll,
                 "NOT IN");
