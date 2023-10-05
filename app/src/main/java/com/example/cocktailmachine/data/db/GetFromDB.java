@@ -9,6 +9,7 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
+import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
 import com.example.cocktailmachine.data.db.exceptions.AccessDeniedException;
@@ -96,14 +97,14 @@ public class GetFromDB {
         return Tables.TABLE_TOPIC.getElement(getReadableDatabase(context), id);
     }
 
-    static List<Topic> loadTopics(Context context, String needle) {
+    static List<SQLTopic> loadTopics(Context context, String needle) {
         Log.i(TAG, "loadIngredients");
         return Tables.TABLE_TOPIC.getElement(getReadableDatabase(context), needle);
     }
 
     static Topic loadTopic(Context context, String name){
         Log.i(TAG, "loadIngredient");
-        List<SQLRecipe> ings = loadRecipes(context, name);
+        List<SQLTopic> ings = loadTopics(context, name);
         if(ings.isEmpty()){
             return null;
         }
@@ -125,4 +126,16 @@ public class GetFromDB {
         Log.i(TAG, "loadTopic");
         return Tables.TABLE_PUMP.getElement(getReadableDatabase(context), id);
     }
+
+    static Iterator<SQLPump> loadPumpIterator(Context context){
+        Log.i(TAG, "loadIngredientIterator");
+        return Tables.TABLE_PUMP.getIterator(getReadableDatabase(context));
+    }
+
+    static Iterator<List<SQLPump>> loadPumpChunkIterator(Context context, int n){
+        Log.i(TAG, "loadIngredientChunkIterator");
+        return Tables.TABLE_PUMP.getChunkIterator(getReadableDatabase(context), n);
+    }
+
+
 }

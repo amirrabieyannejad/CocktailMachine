@@ -36,7 +36,7 @@ public class TopicTable extends BasicColumn<SQLTopic>{
         return TABLE_NAME;
     }
 
-    private List<SQLTopic> getElement(SQLiteDatabase db, String needle){
+    public List<SQLTopic> getElement(SQLiteDatabase db, String needle){
         try {
             return this.getElementsLike(db, COLUMN_NAME_NAME, needle);
         } catch (NoSuchColumnException e) {
