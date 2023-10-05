@@ -130,6 +130,41 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
     }
 
 
+    public List<Long> getRecipeIDsWithIngs(SQLiteDatabase db, List<Long> ingIDs){
+        List<SQLRecipeIngredient> temp = new ArrayList<>();
+        try {
+            temp = this.getElementsIn(db, COLUMN_NAME_INGREDIENT_ID, Collections.singletonList(ingIDs));
+
+        } catch (NoSuchColumnException e) {
+            Log.e(TAG, "getWithIngredients" );
+        }
+        List<Long> res = new ArrayList<>();
+        for(SQLRecipeIngredient ri: temp){
+            res.add(ri.getRecipeID());
+        }
+
+        return res;
+    }
+
+    public List<Long> getRecipeIDsWithoutIngs(SQLiteDatabase db, List<Long> ingIDs){
+        List<SQLRecipeIngredient> temp = new ArrayList<>();
+        try {
+            temp = this.getElementsNotIn(db, COLUMN_NAME_INGREDIENT_ID, Collections.singletonList(ingIDs));
+
+        } catch (NoSuchColumnException e) {
+            Log.e(TAG, "getWithIngredients" );
+        }
+        List<Long> res = new ArrayList<>();
+        for(SQLRecipeIngredient ri: temp){
+            res.add(ri.getRecipeID());
+        }
+
+        return res;
+    }
+
+
+
+
     public List<SQLRecipeIngredient> getWithIngredients(SQLiteDatabase db,
                                                         List<Long> recipeIDs){
         List<SQLRecipeIngredient> res = new ArrayList<>();
@@ -193,18 +228,15 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
 
     public List<SQLRecipeIngredient> getWithIngredientsOnlyFullRecipe(SQLiteDatabase db,
                                                         List<Long> ingIDs){
-        List<Long> res = new ArrayList<>();
-        List<SQLRecipeIngredient> notres = new ArrayList<>();
-        List<Long> recipe = this.getRecipeIDs(db);
+        List<SQLRecipeIngredient> res = new ArrayList<>();
+        List<Long> recipeIDs = this.getRecipeIDsWithoutIngs(db, ingIDs);
         try {
-            res = this.getIDsIn(db, COLUMN_NAME_INGREDIENT_ID, Collections.singletonList(ingIDs));
-            notres = this.getElementsNotIn(db, COLUMN_NAME_INGREDIENT_ID, Collections.singletonList(ingIDs));
-
+            res = this.getElementsNotIn(db, COLUMN_NAME_RECIPE_ID, Collections.singletonList(recipeIDs));
 
         } catch (NoSuchColumnException e) {
             Log.e(TAG, "getWithRecipe" );
         }
 
-        return this.getElements(db,res);
+        return res;
     }
 }

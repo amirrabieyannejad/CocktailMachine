@@ -143,9 +143,9 @@ public class GetFromDB {
         return Tables.TABLE_RECIPE_INGREDIENT.getElement(getReadableDatabase(context), id);
     }
 
-    static List<SQLRecipeIngredient> loadRecipeIngredientFromIngredient(Context context, List<Long> ids){
+    static void loadRecipeIngredientFromIngredient(Context context, List<Long> ids){
         Log.i(TAG, "loadRecipeIngredient");
-        return Tables.TABLE_RECIPE_INGREDIENT.getWithIngredients(getReadableDatabase(context), ids);
+        Tables.TABLE_RECIPE_INGREDIENT.getWithIngredientsOnlyFullRecipe(getReadableDatabase(context), ids);
     }
 
 }
