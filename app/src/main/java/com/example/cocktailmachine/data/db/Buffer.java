@@ -653,13 +653,7 @@ public class Buffer {
         if(res != null){
             return res;
         }
-        try {
-            return GetFromDB.loadIngredient(context, id);
-        } catch (AccessDeniedException e) {
-            Log.e(TAG, "getIngredient: no admin");
-            e.printStackTrace();
-            return null;
-        }
+        return GetFromDB.loadIngredient(context, id);
     }
 
     /**
@@ -931,13 +925,7 @@ public class Buffer {
         if(res != null){
             return res;
         }
-        try {
-            return GetFromDB.loadTopic(context, id);
-        } catch (AccessDeniedException e) {
-            Log.e(TAG, "getTopic: no admin");
-            e.printStackTrace();
-            return null;
-        }
+        return GetFromDB.loadTopic(context, id);
     }
 
     /**
@@ -1131,13 +1119,7 @@ public class Buffer {
         if(res != null){
             return res;
         }
-        try {
-            return GetFromDB.loadRecipe(context, id);
-        } catch (AccessDeniedException e) {
-            Log.e(TAG, "getTopic: no admin");
-            e.printStackTrace();
-            return null;
-        }
+        return GetFromDB.loadRecipe(context, id);
     }
 
     /**
@@ -1549,18 +1531,12 @@ public class Buffer {
         if(res != null){
             return res;
         }
-        try {
-            res= GetFromDB.loadPump(context, id);
-            if(res == null){
+        res= GetFromDB.loadPump(context, id);
+        if(res == null){
                 return null;
             }
-            res.save(context);
-            return res;
-        } catch (AccessDeniedException e) {
-            Log.e(TAG, "getTopic: no admin");
-            e.printStackTrace();
-            return null;
-        }
+        res.save(context);
+        return res;
     }
 
     /**
