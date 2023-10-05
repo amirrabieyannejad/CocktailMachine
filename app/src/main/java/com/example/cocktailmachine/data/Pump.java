@@ -318,8 +318,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             Buffer.localRefresh(context);
         } catch (JSONException | MissingIngredientPumpException e) {
             Log.e(TAG, "updatePumpStatus: error");
-            Log.e(TAG, e.getMessage());
-            e.printStackTrace();
+            Log.e(TAG, "error ",e);
+            Log.getStackTraceString(e);
         }
 
     }
@@ -406,8 +406,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 Ingredient.getIngredient(name).pump(volume);
             } catch (MissingIngredientPumpException e) {
                 Log.i(TAG, "updatePumpStatus: should not happen");
-                Log.e(TAG, "error "+e);
-                e.printStackTrace();
+                Log.e(TAG, "error ",e);
+                Log.getStackTraceString(e);
             }
             i++;
             temp = json.optJSONArray(i);
@@ -472,8 +472,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                     this.getSlot(),activity);
         } catch (JSONException | InterruptedException e) {
             Log.i(TAG, "sendSave failed");
-            Log.e(TAG, "error "+e);
-            e.printStackTrace();
+            Log.e(TAG, "error ",e);
+            Log.getStackTraceString(e);
         }
     }
 
@@ -517,8 +517,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             fill(volume);
         } catch (MissingIngredientPumpException e) {
             Log.i(TAG, "sendRefill failed");
-            Log.e(TAG, "error "+e);
-            e.printStackTrace();
+            Log.e(TAG, "error ",e);
+            Log.getStackTraceString(e);
         }
         save(activity);
         sendRefill(activity);
@@ -562,8 +562,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                         this.getSlot(), activity);
             } catch (JSONException | InterruptedException e) {
                 Log.i(TAG, "sendRefill failed");
-                Log.e(TAG, "error "+e);
-                e.printStackTrace();
+                Log.e(TAG, "error ",e);
+                Log.getStackTraceString(e);
             }
         }
     }
@@ -577,6 +577,13 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     default void run(Activity activity, int time) {
         if(Dummy.isDummy){
+            try {
+                this.fill(activity, this.getVolume()-time);
+            } catch (MissingIngredientPumpException e) {
+                Log.i(TAG, "run failed: MissingIngredientPumpException");
+                Log.e(TAG, "error ",e);
+                Log.getStackTraceString(e);
+            }
             return;
         }
         try {
@@ -585,9 +592,10 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                     time,activity);
         } catch (JSONException | InterruptedException e) {
             Log.i(TAG, "run failed");
-            Log.e(TAG, "error "+e);
-            e.printStackTrace();
+            Log.e(TAG, "error ",e);
+            Log.getStackTraceString(e);
         }
+        sync(activity);
     }
 
 
@@ -632,7 +640,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                     volume1,
                     volume2,activity);
         } catch (JSONException | InterruptedException e) {
-            e.printStackTrace();
+            Log.i(TAG, "sendCalibrate failed ");
+            Log.e(TAG, "error ",e);
+            Log.getStackTraceString(e);
         }
 
     }
@@ -670,7 +680,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             BluetoothSingleton.getInstance().adminManuelCalibrateSetPumpTimes(this.getSlot(),
                     timeInit, timeReverse, rate,activity);
         } catch (JSONException | InterruptedException e) {
-            e.printStackTrace();
+            Log.i(TAG, "sendPumpTimes failed ");
+            Log.e(TAG, "error ",e);
+            Log.getStackTraceString(e);
         }
     }
 
@@ -699,7 +711,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             try {
                 BluetoothSingleton.getInstance().adminReadPumpsStatus(activity);
             } catch (JSONException | InterruptedException e) {
-                e.printStackTrace();
+                Log.i(TAG, "readPumpStatus failed ");
+                Log.e(TAG, "error ",e);
+                Log.getStackTraceString(e);
             }
         }
     }
@@ -717,7 +731,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         try {
             BluetoothSingleton.getInstance().adminReadLiquidsStatus(activity);
         } catch (JSONException | InterruptedException e) {
-            e.printStackTrace();
+            Log.i(TAG, "readLiquidStatus failed ");
+            Log.e(TAG, "error ",e);
+            Log.getStackTraceString(e);
         }
     }
 
