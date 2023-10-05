@@ -42,6 +42,16 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         //this.loadUrls();
     }
 
+    public SQLIngredient(String name, boolean alcoholic) {
+        this.name = name;
+        this.available = false;
+        //this.fluidInMillimeters = -1;
+        //this.pump = -1L;
+        this.ingredientPump = null;
+        this.alcoholic = alcoholic;
+        //this.loadUrls();
+    }
+
     public SQLIngredient(String name, boolean alcoholic, int color) {
         this.name = name;
         this.alcoholic = alcoholic;

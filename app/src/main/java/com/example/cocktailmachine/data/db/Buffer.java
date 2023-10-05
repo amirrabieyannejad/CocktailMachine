@@ -2,6 +2,8 @@ package com.example.cocktailmachine.data.db;
 
 import android.content.Context;
 import android.os.Build;
+import android.os.Environment;
+import android.util.JsonReader;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -17,12 +19,23 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.exceptions.AccessDeniedException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.tables.Tables;
+import com.example.cocktailmachine.ui.settings.SettingsActivity;
+import com.opencsv.CSVReader;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 /**
  * @author Johanna Reidt
@@ -108,6 +121,12 @@ public class Buffer {
         }
         return singleton;
     }
+
+
+
+
+
+
 
     private void setLoad(Context context) throws NotInitializedDBException {
         DatabaseConnection.init(context);
@@ -293,6 +312,93 @@ public class Buffer {
         //load(context);
 
         Buffer.setUpEmptyPumps(context);
+    }
+
+
+    public static void loadPreped(Context context) {
+        Log.i(TAG, "loadPreped" );
+        loadLiquid(context);
+        loadPrepedRecipes(context);
+    }
+
+    private static void loadLiquid(Context context){
+        Log.i(TAG, "loadLiquid" );
+        //https://stackoverflow.com/questions/43055661/reading-csv-file-in-android-app
+        try {
+            File csvfile = new File("liquid.csv");
+            //new File(Environment.getExternalStorageDirectory() + "/csvfile.csv");
+            CSVReader reader = new CSVReader(new FileReader(csvfile.getAbsolutePath()));
+            Log.i(TAG, "loadLiquid: opening file successful");
+            String[] nextLine;
+            reader.readNext();//skip first line
+            while ((nextLine = reader.readNext()) != null) {
+                // nextLine[] is an array of values from the line
+                //System.out.println(nextLine[0] + nextLine[1] + "etc...");
+                Log.i(TAG, "loadLiquid: next line: "+ Arrays.toString(nextLine));
+                String name = nextLine[0];
+                boolean alcoholic = false;
+                int colour = new Random().nextInt();
+                try {
+                    alcoholic = Integer.parseInt(nextLine[1]) == 1;
+                }catch (NumberFormatException e){
+                    Log.i(TAG, "loadLiquid: failed to read alcoholic, alcoholic set to false");
+                    Log.e(TAG, "error: "+e);
+                    e.printStackTrace();
+                }
+                try {
+                    colour = Integer.parseInt(nextLine[2]);
+                }catch (NumberFormatException e){
+                    Log.i(TAG, "loadLiquid: failed to read colour, use random");
+                    Log.e(TAG, "error: "+e);
+                    e.printStackTrace();
+                }
+                Ingredient.makeNew(name, alcoholic, colour).save(context);
+            }
+        } catch (FileNotFoundException e) {
+            Log.i(TAG,"loadLiquid: file not found" );
+            Log.e(TAG, "error: "+e);
+            e.printStackTrace();
+        } catch (IOException e) {
+            Log.i(TAG,"loadLiquid: io error" );
+            Log.e(TAG, "error: "+e);
+            e.printStackTrace();
+        }
+
+    }
+    private static void loadPrepedRecipes(Context context){
+        Log.i(TAG, "loadPrepedRecipes" );
+        //https://stackoverflow.com/questions/43055661/reading-csv-file-in-android-app
+        try {
+            File jsonfile = new File("recipe.json");
+            JSONObject json = new JSONObject(jsonfile.toString());
+            Log.i(TAG, "loadPrepedRecipes: opening file successful");
+
+            Iterator<String> names =  json.keys();
+            while(names.hasNext()){
+                String name = names.next();
+                Log.i(TAG, "loadPrepedRecipes: next recipe: "+name);
+                Recipe r = Recipe.searchOrNew(context,name);
+                r.removeIngredients(context, r.getIngredients());
+                JSONObject ingVol = json.getJSONObject(name);
+                Iterator<String> ings = ingVol.keys();
+                while(ings.hasNext()){
+                    String ingName = ings.next();
+                    Log.i(TAG, "loadPrepedRecipes: next recipe: add ing "+ingName);
+                    r.add(context,
+                            Ingredient.searchOrNew(context, ingName), //gets ing or new
+                            ingVol.optInt(ingName));//given vol or 0
+                    r.save(context);
+                }
+                Log.i(TAG, "loadPrepedRecipes: next recipe: "+name+" done saving");
+                r.save(context);
+            }
+
+
+        } catch (JSONException e) {
+            Log.i(TAG,"loadLiquid: JSONException" );
+            Log.e(TAG, "error: "+e);
+            e.printStackTrace();
+        }
     }
 
 

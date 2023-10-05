@@ -645,6 +645,19 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
     }
 
+
+    /**
+     * get recipe with name
+     * @author Johanna Reidt
+     * @param context
+     * @param name
+     * @return
+     */
+    static Recipe getRecipe(Context context, String name){
+        return Buffer.getSingleton(context).getRecipe(name);
+
+    }
+
     /**
      * Static access to recipes.
      * Get available recipes.
@@ -703,6 +716,24 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         Recipe recipe = Recipe.getRecipe(name);
         if(recipe == null){
             return Recipe.makeNew(name);
+        }
+        return recipe;
+    }
+
+
+    /**
+     * get recipe with name
+     * or create a new one with name
+     * @author Johanna Reidt
+     * @param context
+     * @param name
+     * @return
+     */
+    static Recipe searchOrNew(Context context, String name){
+        Recipe recipe = Recipe.getRecipe(context,name);
+        if(recipe == null){
+            recipe= Recipe.makeNew(name);
+            recipe.save(context);
         }
         return recipe;
     }

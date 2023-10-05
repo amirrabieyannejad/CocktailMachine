@@ -282,6 +282,19 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
         return new SQLIngredient(name);
     }
 
+    /**
+     * Static access to ingredients.
+     * Make new instance.
+     * Set up without link to a pump.
+     * @param name name
+     * @return  new Ingredient instance
+     */
+    static Ingredient makeNew(String name,
+                              boolean alcoholic){
+        return new SQLIngredient(name, alcoholic);
+    }
+
+
     static Ingredient searchOrNew(Context context, String name){
         Ingredient ingredient = Ingredient.getIngredient(name);
         if(ingredient == null){
