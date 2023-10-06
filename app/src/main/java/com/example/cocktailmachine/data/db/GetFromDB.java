@@ -13,6 +13,7 @@ import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
+import com.example.cocktailmachine.data.db.tables.BasicColumn;
 import com.example.cocktailmachine.data.db.tables.Tables;
 
 import java.util.HashMap;
@@ -38,7 +39,7 @@ public class GetFromDB {
 
     static List<SQLIngredient> loadIngredients(Context context, String needle){
         Log.i(TAG, "loadIngredients");
-        return Tables.TABLE_INGREDIENT.getElement(getReadableDatabase(context), needle);
+        return Tables.TABLE_INGREDIENT.getElements(getReadableDatabase(context), needle);
     }
 
     static Ingredient loadIngredient(Context context, String name){
@@ -55,9 +56,9 @@ public class GetFromDB {
         return Tables.TABLE_INGREDIENT.getIterator(getReadableDatabase(context));
     }
 
-    static Iterator<List<SQLIngredient>> loadIngredientChunkIterator(Context context, int n){
+    static BasicColumn<SQLIngredient>.DatabaseIterator loadIngredientChunkIterator(Context context, int n){
         Log.i(TAG, "loadIngredientChunkIterator");
-        return Tables.TABLE_INGREDIENT.getChunkIterator(getReadableDatabase(context), n);
+        return Tables.TABLE_INGREDIENT.getChunkIterator(getReadableDatabase(context) ,n);
     }
 
 
@@ -87,9 +88,9 @@ public class GetFromDB {
         return Tables.TABLE_RECIPE.getIterator(getReadableDatabase(context));
     }
 
-    static Iterator<List<SQLRecipe>> loadRecipeChunkIterator(Context context, int n){
+    static BasicColumn<SQLRecipe>.DatabaseIterator loadRecipeChunkIterator(Context context, int n){
         Log.i(TAG, "loadRecipeChunkIterator");
-        return Tables.TABLE_RECIPE.getChunkIterator(getReadableDatabase(context), n);
+        return Tables.TABLE_RECIPE.getChunkIterator(getReadableDatabase(context) ,n);
     }
 
     static Topic loadTopic(Context context,long id){
@@ -116,7 +117,7 @@ public class GetFromDB {
         return Tables.TABLE_TOPIC.getIterator(getReadableDatabase(context));
     }
 
-    static Iterator<List<SQLTopic>> loadTopicChunkIterator(Context context, int n){
+    static BasicColumn<SQLTopic>.DatabaseIterator loadTopicChunkIterator(Context context, int n){
         Log.i(TAG, "loadTopicChunkIterator");
         return Tables.TABLE_TOPIC.getChunkIterator(getReadableDatabase(context), n);
     }
@@ -150,9 +151,8 @@ public class GetFromDB {
         return Tables.TABLE_RECIPE_INGREDIENT.getWithIngredientsOnlyFullRecipe(getReadableDatabase(context), ids);
     }
 
-    static HashMap<String, Long> loadHashIngredientNameToID(Context context){
-        Log.i(TAG, "loadRecipeIngredient");
-        
-    }
+
+
+
 
 }
