@@ -15,6 +15,7 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
 import com.example.cocktailmachine.data.db.tables.Tables;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -68,12 +69,12 @@ public class GetFromDB {
 
 
     static List<SQLRecipe> loadRecipes(Context context, String needle) {
-        Log.i(TAG, "loadIngredients");
+        Log.i(TAG, "loadRecipes");
         return Tables.TABLE_RECIPE.getElement(getReadableDatabase(context), needle);
     }
 
     static Recipe loadRecipe(Context context, String name){
-        Log.i(TAG, "loadIngredient");
+        Log.i(TAG, "loadRecipe");
         List<SQLRecipe> ings = loadRecipes(context, name);
         if(ings.isEmpty()){
             return null;
@@ -82,12 +83,12 @@ public class GetFromDB {
     }
 
     static Iterator<SQLRecipe> loadRecipeIterator(Context context){
-        Log.i(TAG, "loadIngredientIterator");
+        Log.i(TAG, "loadRecipeIterator");
         return Tables.TABLE_RECIPE.getIterator(getReadableDatabase(context));
     }
 
     static Iterator<List<SQLRecipe>> loadRecipeChunkIterator(Context context, int n){
-        Log.i(TAG, "loadIngredientChunkIterator");
+        Log.i(TAG, "loadRecipeChunkIterator");
         return Tables.TABLE_RECIPE.getChunkIterator(getReadableDatabase(context), n);
     }
 
@@ -97,12 +98,12 @@ public class GetFromDB {
     }
 
     static List<SQLTopic> loadTopics(Context context, String needle) {
-        Log.i(TAG, "loadIngredients");
+        Log.i(TAG, "loadTopics");
         return Tables.TABLE_TOPIC.getElement(getReadableDatabase(context), needle);
     }
 
     static Topic loadTopic(Context context, String name){
-        Log.i(TAG, "loadIngredient");
+        Log.i(TAG, "loadTopic");
         List<SQLTopic> ings = loadTopics(context, name);
         if(ings.isEmpty()){
             return null;
@@ -111,28 +112,28 @@ public class GetFromDB {
     }
 
     static Iterator<SQLTopic> loadTopicIterator(Context context){
-        Log.i(TAG, "loadIngredientIterator");
+        Log.i(TAG, "loadTopicIterator");
         return Tables.TABLE_TOPIC.getIterator(getReadableDatabase(context));
     }
 
     static Iterator<List<SQLTopic>> loadTopicChunkIterator(Context context, int n){
-        Log.i(TAG, "loadIngredientChunkIterator");
+        Log.i(TAG, "loadTopicChunkIterator");
         return Tables.TABLE_TOPIC.getChunkIterator(getReadableDatabase(context), n);
     }
 
 
     static Pump loadPump(Context context, long id){
-        Log.i(TAG, "loadTopic");
+        Log.i(TAG, "loadPump");
         return Tables.TABLE_PUMP.getElement(getReadableDatabase(context), id);
     }
 
     static Iterator<SQLPump> loadPumpIterator(Context context){
-        Log.i(TAG, "loadIngredientIterator");
+        Log.i(TAG, "loadPumpIterator");
         return Tables.TABLE_PUMP.getIterator(getReadableDatabase(context));
     }
 
     static Iterator<List<SQLPump>> loadPumpChunkIterator(Context context, int n){
-        Log.i(TAG, "loadIngredientChunkIterator");
+        Log.i(TAG, "loadPumpChunkIterator");
         return Tables.TABLE_PUMP.getChunkIterator(getReadableDatabase(context), n);
     }
 
@@ -143,9 +144,15 @@ public class GetFromDB {
         return Tables.TABLE_RECIPE_INGREDIENT.getElement(getReadableDatabase(context), id);
     }
 
-    static void loadRecipeIngredientFromIngredient(Context context, List<Long> ids){
+    static List<SQLRecipeIngredient> loadRecipeIngredientFromIngredient(
+            Context context, List<Long> ids){
+        Log.i(TAG, "loadRecipeIngredientFromIngredient");
+        return Tables.TABLE_RECIPE_INGREDIENT.getWithIngredientsOnlyFullRecipe(getReadableDatabase(context), ids);
+    }
+
+    static HashMap<String, Long> loadHashIngredientNameToID(Context context){
         Log.i(TAG, "loadRecipeIngredient");
-        Tables.TABLE_RECIPE_INGREDIENT.getWithIngredientsOnlyFullRecipe(getReadableDatabase(context), ids);
+        
     }
 
 }

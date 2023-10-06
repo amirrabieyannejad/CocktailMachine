@@ -1784,14 +1784,18 @@ public class Buffer {
          */
         this.ingredients = new ArrayList<>();
         for(SQLIngredientPump ip: this.ingredientPumps){
-            Ingredient i = GetFromDB.loadIngredient(context,ip.getIngredientID());
+            Ingredient i = GetFromDB.loadIngredient(
+                    context,ip.getIngredientID());
             this.ingredients.add(i);
             addAvailableToFast(i);
         }
     }
 
     private void loadAvailableRecipeIngredient(Context context) {
-        GetFromDB.loadRecipeIngredientFromIngredient(context, this.getIngredientIDs());
+        this.recipeIngredients =
+                GetFromDB.loadRecipeIngredientFromIngredient(
+                        context,
+                        this.getIngredientIDs());
     }
 
     private void addAvailableToFast(Ingredient ingredient){
@@ -1808,7 +1812,8 @@ public class Buffer {
             this.recipeIngredients = new ArrayList<>();
         }
         for(SQLRecipeIngredient ri: this.recipeIngredients){
-            Recipe i = GetFromDB.loadRecipe(context,ri.getRecipeID());
+            Recipe i = GetFromDB.loadRecipe(context,
+                    ri.getRecipeID());
             this.recipes.add(i);
             addAvailableToFast(i);
         }
@@ -1822,6 +1827,7 @@ public class Buffer {
             this.fastNameAvailableRecipe.put(e.getName(), e);
         }
     }
+
 
 
 
