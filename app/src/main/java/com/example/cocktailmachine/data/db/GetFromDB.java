@@ -165,7 +165,8 @@ public class GetFromDB {
     }
 
 
-
-
-
+    public static HashMap<String, Long> loadIngredientPumpSet(Context context) {
+        Log.i(TAG, "loadIngredientPumpSet");
+        return Tables.TABLE_INGREDIENT.getHashIngredientNameToID(getReadableDatabase(context));
+    }
 }

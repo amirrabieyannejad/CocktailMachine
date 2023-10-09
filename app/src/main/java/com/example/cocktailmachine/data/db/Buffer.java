@@ -135,10 +135,9 @@ public class Buffer {
         return singleton;
     }
 
-
-
-
-
+    public static HashMap<String, Long> getIngredientPumpSet(Context context) {
+        return GetFromDB.loadIngredientPumpSet(context);
+    }
 
 
     private void setLoad(Context context) throws NotInitializedDBException {

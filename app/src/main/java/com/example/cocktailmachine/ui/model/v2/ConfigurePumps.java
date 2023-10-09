@@ -41,6 +41,9 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
 
 
         listIngredients = Ingredient.getAllIngredients();
+
+
+
         filteredListIngredients = new ArrayList<>(listIngredients);
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
