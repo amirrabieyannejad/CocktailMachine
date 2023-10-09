@@ -16,6 +16,7 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
 import com.example.cocktailmachine.data.db.tables.BasicColumn;
 import com.example.cocktailmachine.data.db.tables.Tables;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -110,7 +111,8 @@ public class GetFromDB {
         //return Tables.TABLE_TOPIC.getElement(getReadableDatabase(context), needle);
         List<SQLRecipeTopic> res = new ArrayList<>();
         for(Recipe r: recipes) {
-            res.addAll( r.getRecipeTopic());
+
+            res.addAll(Tables.TABLE_RECIPE_TOPIC.getTopics(getReadableDatabase(context), (SQLRecipe) r));
         }
         return res;
     }

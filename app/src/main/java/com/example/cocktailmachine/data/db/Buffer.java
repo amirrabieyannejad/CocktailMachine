@@ -148,13 +148,13 @@ public class Buffer {
         this.loadAvailableIngredient(context);
         this.loadAvailableRecipeIngredient(context);
         this.loadAvailableRecipe(context);
+        this.loadRecipeTopics(context);
         //this.ingredients = new ArrayList<>();
         //this.recipes = DatabaseConnection.getSingleton().loadAllRecipes();
         //this.pumps =  DatabaseConnection.getSingleton().loadPumps();
         this.topics =  DatabaseConnection.getSingleton().loadTopics();
         //this.recipeIngredients = DatabaseConnection.getSingleton().loadIngredientVolumes();
         //this.recipeTopics = DatabaseConnection.getSingleton().loadRecipeTopic();
-        this.loadRecipeTopics(context);
 
         /*
         this.ingredients = DatabaseConnection.getSingleton().loadAllIngredients();
@@ -165,7 +165,7 @@ public class Buffer {
         this.recipeTopics = DatabaseConnection.getSingleton().loadRecipeTopic();
 
          */
-        loadFast();
+        //loadFast();
         isLoaded = true;
     }
 
@@ -1801,6 +1801,15 @@ public class Buffer {
 
     private void addAvailableToFast(Ingredient ingredient){
         if(isFast){
+            if(this.fastAvailableIngredient == null) {
+                this.fastAvailableIngredient = new ArrayList<>();
+            }
+            if(this.fastIDAvailableIngredient == null) {
+                this.fastIDAvailableIngredient = new HashMap<>();
+            }
+            if(this.fastNameAvailableIngredient == null) {
+                this.fastNameAvailableIngredient = new HashMap<>();
+            }
             this.fastAvailableIngredient.add(ingredient);
             this.fastIDAvailableIngredient.put(ingredient.getID(), ingredient);
             this.fastNameAvailableIngredient.put(ingredient.getName(), ingredient);
@@ -1823,6 +1832,15 @@ public class Buffer {
 
     private void addAvailableToFast(Recipe e){
         if(isFast){
+            if(this.fastAvailableRecipe == null) {
+                this.fastAvailableRecipe = new ArrayList<>();
+            }
+            if(this.fastIDAvailableRecipe == null) {
+                this.fastIDAvailableRecipe = new HashMap<>();
+            }
+            if(this.fastNameAvailableRecipe == null) {
+                this.fastNameAvailableRecipe = new HashMap<>();
+            }
             this.fastAvailableRecipe.add(e);
             this.fastIDAvailableRecipe.put(e.getID(), e);
             this.fastNameAvailableRecipe.put(e.getName(), e);
@@ -1831,6 +1849,42 @@ public class Buffer {
 
     public void loadRecipeTopics(Context context){
         this.recipeTopics = GetFromDB.loadRecipeTopics(context, this.recipes);
+        if(isFast){
+            for(SQLRecipeTopic rt: this.recipeTopics){
+                addToFast(rt);
+            }
+        }
+    }
+
+    private void addToFast(SQLRecipeTopic rt){
+        if(isFast){
+            if(this.fastRecipeRecipeTopic == null){
+                this.fastRecipeRecipeTopic = new HashMap<>();
+            }
+            if(!this.fastRecipeRecipeTopic.containsKey(rt.getRecipeID())){
+                this.fastRecipeRecipeTopic.put(rt.getRecipeID(), new ArrayList<>());
+            }
+            Objects.requireNonNull(this.fastRecipeRecipeTopic.get(rt.getRecipeID())).add(rt);
+
+
+            if(this.fastRecipeTopics == null){
+                this.fastRecipeTopics = new HashMap<>();
+            }
+            if(!this.fastRecipeTopics.containsKey(rt.getRecipeID())){
+                this.fastRecipeTopics.put(rt.getRecipeID(), new ArrayList<>());
+            }
+            Objects.requireNonNull(this.fastRecipeTopics.get(rt.getRecipeID())).add(rt.getTopicID());
+
+
+            if(this.fastTopicRecipeTopic == null){
+                this.fastTopicRecipeTopic = new HashMap<>();
+            }
+            if(!this.fastTopicRecipeTopic.containsKey(rt.getTopicID())){
+                this.fastTopicRecipeTopic.put(rt.getRecipeID(), new ArrayList<>());
+            }
+            Objects.requireNonNull(this.fastRecipeTopics.get(rt.getRecipeID())).add(rt.getRecipeID());
+
+        }
     }
 
 

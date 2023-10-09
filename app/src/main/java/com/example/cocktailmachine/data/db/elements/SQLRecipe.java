@@ -17,9 +17,11 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
+import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.ui.model.v2.GetDialog;
 import com.example.cocktailmachine.ui.model.v2.WaitingQueueCountDown;
 
+import org.apache.commons.collections4.Get;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -133,6 +135,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     public List<SQLRecipeTopic> getRecipeTopic() {
         return Buffer.getSingleton().getRecipeTopics(this);
     }
+
 
     @Override
     public List<Ingredient> getIngredients() {

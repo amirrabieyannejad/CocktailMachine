@@ -740,5 +740,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
     List<SQLRecipeIngredient> getRecipeIngredient();
 
+
     List<SQLRecipeTopic> getRecipeTopic();
+
 }
