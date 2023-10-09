@@ -121,8 +121,12 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
 
     public List<SQLRecipeIngredient> getWithRecipes(SQLiteDatabase db,
                                                    List<Long> recipeIDs){
+        List<Object> resIDs = new ArrayList<>();
+        for(Long i: recipeIDs){
+            resIDs.add((Object) i);
+        }
         try {
-            this.getElementsIn(db, COLUMN_NAME_RECIPE_ID, Collections.singletonList(recipeIDs));
+            this.getElementsIn(db, COLUMN_NAME_RECIPE_ID, resIDs);
         } catch (NoSuchColumnException e) {
             Log.e(TAG, "getWithRecipe" );
         }
@@ -131,9 +135,13 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
 
 
     public List<Long> getRecipeIDsWithIngs(SQLiteDatabase db, List<Long> ingIDs){
+        List<Object> resIDs = new ArrayList<>();
+        for(Long i: ingIDs){
+            resIDs.add((Object) i);
+        }
         List<SQLRecipeIngredient> temp = new ArrayList<>();
         try {
-            temp = this.getElementsIn(db, COLUMN_NAME_INGREDIENT_ID, Collections.singletonList(ingIDs));
+            temp = this.getElementsIn(db, COLUMN_NAME_INGREDIENT_ID, resIDs);
 
         } catch (NoSuchColumnException e) {
             Log.e(TAG, "getWithIngredients" );
@@ -147,9 +155,13 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
     }
 
     public List<Long> getRecipeIDsWithoutIngs(SQLiteDatabase db, List<Long> ingIDs){
+        List<Object> resIDs = new ArrayList<>();
+        for(Long i: ingIDs){
+            resIDs.add((Object) i);
+        }
         List<SQLRecipeIngredient> temp = new ArrayList<>();
         try {
-            temp = this.getElementsNotIn(db, COLUMN_NAME_INGREDIENT_ID, Collections.singletonList(ingIDs));
+            temp = this.getElementsNotIn(db, COLUMN_NAME_INGREDIENT_ID, resIDs);
 
         } catch (NoSuchColumnException e) {
             Log.e(TAG, "getWithIngredients" );
@@ -167,9 +179,13 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
 
     public List<SQLRecipeIngredient> getWithIngredients(SQLiteDatabase db,
                                                         List<Long> recipeIDs){
+        List<Object> resIDs = new ArrayList<>();
+        for(Long i: recipeIDs){
+            resIDs.add((Object) i);
+        }
         List<SQLRecipeIngredient> res = new ArrayList<>();
         try {
-            res = this.getElementsIn(db, COLUMN_NAME_INGREDIENT_ID, Collections.singletonList(recipeIDs));
+            res = this.getElementsIn(db, COLUMN_NAME_INGREDIENT_ID, resIDs);
 
         } catch (NoSuchColumnException e) {
             Log.e(TAG, "getWithIngredients" );
@@ -228,10 +244,14 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
 
     public List<SQLRecipeIngredient> getWithIngredientsOnlyFullRecipe(SQLiteDatabase db,
                                                         List<Long> ingIDs){
+        List<Object> resIDs = new ArrayList<>();
+        for(Long i: ingIDs){
+            resIDs.add((Object) i);
+        }
         List<SQLRecipeIngredient> res = new ArrayList<>();
         List<Long> recipeIDs = this.getRecipeIDsWithoutIngs(db, ingIDs);
         try {
-            res = this.getElementsNotIn(db, COLUMN_NAME_RECIPE_ID, Collections.singletonList(recipeIDs));
+            res = this.getElementsNotIn(db, COLUMN_NAME_RECIPE_ID, resIDs);
 
         } catch (NoSuchColumnException e) {
             Log.e(TAG, "getWithRecipe" );

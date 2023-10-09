@@ -149,7 +149,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         return res;
     }
 
-    private String[] makeSelectionList(String column_name,
+    private String makeSelectionList(String column_name,
                                        List<? extends Object> ll)
             throws NoSuchColumnException {
 
@@ -167,7 +167,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
             builder.append(ll.get(i));
         }
         builder.append(")");
-        return new String[]{builder.toString()};
+        return builder.toString();
         /*
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return ll.stream().map(Object::toString).toArray(String[] ::new);
@@ -528,17 +528,20 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         }
 
 
-        String selection = column_name+" "+selectionOperator+" ?";
+        Log.i(TAG, "getElementsSelectionOperator ll is not empty");
+        Log.i(TAG, "getElementsSelectionOperator ll: "+ ll);
+
+        String selection = column_name+" "+selectionOperator+"  ";
         Log.i(TAG, "getElementsSelectionOperator selection: "+selection);
-        String[] selectionList = makeSelectionList(column_name, ll);
-        Log.i(TAG, "getElementsSelectionOperator selectionList: "+ Arrays.toString(selectionList));
+        selection += makeSelectionList(column_name, ll);
+        Log.i(TAG, "getElementsSelectionOperator selection with List: "+ selection);
 
 
         Cursor cursor = db.query(
                 this.getName(),
                 getColumns().toArray(new String[0]),
                 selection,
-                selectionList,
+                null,
                 null,
                 null,
                 null);
@@ -560,15 +563,15 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
 
         String selection = column_name+" "+selectionOperator+" ?";
         Log.i(TAG, "getElementsSelectionOperator selection: "+selection);
-        String[] selectionList = makeSelectionList(column_name, ll);
-        Log.i(TAG, "getElementsSelectionOperator selectionList: "+ Arrays.toString(selectionList));
+        selection += makeSelectionList(column_name, ll);
+        Log.i(TAG, "getElementsSelectionOperator selection with List: "+ selection);
 
 
         Cursor cursor = db.query(
                 this.getName(),
                 getColumns().toArray(new String[0]),
                 selection,
-                selectionList,
+                null,
                 null,
                 null,
                 null);
@@ -684,7 +687,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
             throws NoSuchColumnException {
         db.delete(this.getName(),
                 column_name+" "+selectionOperator+" ?",
-                makeSelectionList(column_name, ll));
+                new String[]{makeSelectionList(column_name, ll)});
     }
 
     public void deleteElements(SQLiteDatabase db, List<Long> ids) throws NoSuchColumnException {
@@ -759,7 +762,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         db.update(getName(),
                 cv,
                 where_column+" "+selectionOperator+" ?",
-                makeSelectionList(where_column, ll));
+                new String[]{makeSelectionList(where_column, ll)});
     }
 
     public void updateColumnsValues(SQLiteDatabase db,

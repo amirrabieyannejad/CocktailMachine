@@ -111,7 +111,6 @@ public class GetFromDB {
         //return Tables.TABLE_TOPIC.getElement(getReadableDatabase(context), needle);
         List<SQLRecipeTopic> res = new ArrayList<>();
         for(Recipe r: recipes) {
-
             res.addAll(Tables.TABLE_RECIPE_TOPIC.getTopics(getReadableDatabase(context), (SQLRecipe) r));
         }
         return res;
