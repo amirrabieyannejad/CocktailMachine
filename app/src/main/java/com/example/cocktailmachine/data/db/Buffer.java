@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.util.JsonReader;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -481,6 +482,7 @@ public class Buffer {
             Log.e(TAG, "error: "+e);
             e.printStackTrace();
         }
+        Toast.makeText(context, "Zutaten geladen!", Toast.LENGTH_SHORT).show();
 
     }
     private static void loadPrepedRecipes(Context context){
@@ -548,6 +550,7 @@ public class Buffer {
             Log.e(TAG, "error: "+e);
             e.printStackTrace();
         }
+        Toast.makeText(context, "Rezepte geladen!", Toast.LENGTH_SHORT).show();
     }
 
 
