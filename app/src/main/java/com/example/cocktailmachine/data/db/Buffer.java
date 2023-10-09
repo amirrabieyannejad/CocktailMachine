@@ -153,7 +153,8 @@ public class Buffer {
         //this.pumps =  DatabaseConnection.getSingleton().loadPumps();
         this.topics =  DatabaseConnection.getSingleton().loadTopics();
         //this.recipeIngredients = DatabaseConnection.getSingleton().loadIngredientVolumes();
-        this.recipeTopics = DatabaseConnection.getSingleton().loadRecipeTopic();
+        //this.recipeTopics = DatabaseConnection.getSingleton().loadRecipeTopic();
+        this.loadRecipeTopics(context);
 
         /*
         this.ingredients = DatabaseConnection.getSingleton().loadAllIngredients();
@@ -1826,6 +1827,10 @@ public class Buffer {
             this.fastIDAvailableRecipe.put(e.getID(), e);
             this.fastNameAvailableRecipe.put(e.getName(), e);
         }
+    }
+
+    public void loadRecipeTopics(Context context){
+        this.recipeTopics = GetFromDB.loadRecipeTopics(context, this.recipes);
     }
 
 

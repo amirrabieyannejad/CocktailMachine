@@ -12,10 +12,12 @@ import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
+import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
 import com.example.cocktailmachine.data.db.tables.BasicColumn;
 import com.example.cocktailmachine.data.db.tables.Tables;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -101,6 +103,16 @@ public class GetFromDB {
     static List<SQLTopic> loadTopics(Context context, String needle) {
         Log.i(TAG, "loadTopics");
         return Tables.TABLE_TOPIC.getElement(getReadableDatabase(context), needle);
+    }
+
+    static List<SQLRecipeTopic> loadRecipeTopics(Context context, List<Recipe> recipes) {
+        Log.i(TAG, "loadTopics");
+        //return Tables.TABLE_TOPIC.getElement(getReadableDatabase(context), needle);
+        List<SQLRecipeTopic> res = new ArrayList<>();
+        for(Recipe r: recipes) {
+            res.addAll( r.getRecipeTopic());
+        }
+        return res;
     }
 
     static Topic loadTopic(Context context, String name){
