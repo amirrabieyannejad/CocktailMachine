@@ -28,9 +28,9 @@ public class TestDB {
 
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         assertNotNull("cant be", appContext);
-        DatabaseConnection.initializeSingleton(appContext);
+        DatabaseConnection.init(appContext);
         try {
-            if(DatabaseConnection.getDataBase().getWritableDatabase()==null){
+            if(DatabaseConnection.getSingleton().getWritableDatabase()==null){
                 System.out.println("no writable");
             }
         } catch (NotInitializedDBException e) {
@@ -38,7 +38,7 @@ public class TestDB {
             System.out.println("no writable");
         }
         try {
-            if(DatabaseConnection.getDataBase().getReadableDatabase()==null){
+            if(DatabaseConnection.getSingleton().getReadableDatabase()==null){
                 System.out.println("no readable");
             }
         } catch (NotInitializedDBException e) {
@@ -52,7 +52,7 @@ public class TestDB {
     @After
     public void finish() {
         try {
-            DatabaseConnection.getDataBase().close();
+            DatabaseConnection.getSingleton().close();
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
         }
@@ -61,7 +61,7 @@ public class TestDB {
     @Test
     public void testPreConditions() {
         try {
-            assertNotNull(DatabaseConnection.getDataBase());
+            assertNotNull(DatabaseConnection.getSingleton());
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
         }
@@ -75,23 +75,23 @@ public class TestDB {
     @Test
     public void connection(){
         try {
-            System.out.println(DatabaseConnection.getDataBase().toString());
+            System.out.println(DatabaseConnection.getSingleton().toString());
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
         }
         try {
-            assertNotNull("DB", DatabaseConnection.getDataBase());
+            assertNotNull("DB", DatabaseConnection.getSingleton());
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
         }
 
         try {
-            System.out.println(DatabaseConnection.getDataBase().toString());
+            System.out.println(DatabaseConnection.getSingleton().toString());
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
         }
         try {
-            assertNotNull("DB", DatabaseConnection.getDataBase());
+            assertNotNull("DB", DatabaseConnection.getSingleton());
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
         }
@@ -103,13 +103,13 @@ public class TestDB {
         System.out.println(recipe);
         try {
             recipe.save();
-            System.out.println(DatabaseConnection.getDataBase().toString());
+            System.out.println(DatabaseConnection.getSingleton().toString());
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
         }
         Recipe db_recipe = null;
         try {
-            db_recipe = DatabaseConnection.getDataBase().getRecipe(recipe.getID());
+            db_recipe = DatabaseConnection.getSingleton().getRecipe(recipe.getID());
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
         }
@@ -143,7 +143,7 @@ public class TestDB {
         Recipe db_recipe = null;
         try {
             recipe.save();
-            db_recipe = DatabaseConnection.getDataBase().getRecipe(recipe.getID());
+            db_recipe = DatabaseConnection.getSingleton().getRecipe(recipe.getID());
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
         }
@@ -189,7 +189,7 @@ public class TestDB {
         }
         assert ingredient.equals(db_ingredient);
         try {
-            DatabaseConnection.getDataBase().close();
+            DatabaseConnection.getSingleton().close();
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
         }
@@ -206,7 +206,7 @@ public class TestDB {
         Recipe db_recipe = null;
         try {
             recipe.save();
-            db_recipe = DatabaseConnection.getDataBase().getRecipe(recipe.getID());
+            db_recipe = DatabaseConnection.getSingleton().getRecipe(recipe.getID());
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
         }
@@ -229,7 +229,7 @@ public class TestDB {
         Recipe db_recipe = null;
         try {
             recipe.save();
-            db_recipe = DatabaseConnection.getDataBase().getRecipe(recipe.getID());
+            db_recipe = DatabaseConnection.getSingleton().getRecipe(recipe.getID());
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
         }
@@ -250,7 +250,7 @@ public class TestDB {
         Recipe db_recipe = null;
         try {
             recipe.save();
-            db_recipe = DatabaseConnection.getDataBase().getRecipe(recipe.getID());
+            db_recipe = DatabaseConnection.getSingleton().getRecipe(recipe.getID());
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
         }
