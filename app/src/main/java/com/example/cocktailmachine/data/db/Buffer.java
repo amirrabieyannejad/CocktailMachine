@@ -1,5 +1,6 @@
 package com.example.cocktailmachine.data.db;
 
+import android.app.Activity;
 import android.content.Context;
 import android.media.MediaParser;
 import android.os.Build;
@@ -20,6 +21,7 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.exceptions.AccessDeniedException;
+import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.tables.Tables;
 import com.example.cocktailmachine.ui.settings.SettingsActivity;
@@ -571,6 +573,17 @@ public class Buffer {
             e.printStackTrace();
         }
         Toast.makeText(context, "Rezepte geladen!", Toast.LENGTH_SHORT).show();
+    }
+
+    public static void loadDummy(Activity activity){
+        Log.i(TAG, "loadDummy");
+        try {
+            DatabaseConnection.init(activity).loadDummy(activity);
+        } catch (NotInitializedDBException | MissingIngredientPumpException e) {
+            Log.i(TAG, "loadDummy");
+            Log.e(TAG, "error", e);
+            Log.getStackTraceString(e);
+        }
     }
 
 

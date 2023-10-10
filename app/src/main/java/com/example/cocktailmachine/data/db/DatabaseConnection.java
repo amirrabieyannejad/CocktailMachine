@@ -60,7 +60,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
         return DatabaseConnection.singleton;
     }
 
-    private void loadDummy(Context context) throws NotInitializedDBException, MissingIngredientPumpException {
+    public void loadDummy(Context context) throws NotInitializedDBException, MissingIngredientPumpException {
         if(Dummy.isDummy) {
             //DatabaseConnection.singleton.emptyAll();
             BasicRecipes.loadTopics(context);
