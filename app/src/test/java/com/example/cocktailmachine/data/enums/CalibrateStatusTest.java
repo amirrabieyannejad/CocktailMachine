@@ -2,6 +2,13 @@ package com.example.cocktailmachine.data.enums;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import android.app.Activity;
+import android.content.Context;
+
+import androidx.test.platform.app.InstrumentationRegistry;
+
+import com.example.cocktailmachine.ui.Menue;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -90,21 +97,60 @@ class CalibrateStatusTest {
 
     @Test
     void getCurrent() {
+        CalibrateStatus.setStatus(CalibrateStatus.not);
+        assertEquals(CalibrateStatus.not, CalibrateStatus.getCurrent());
+        assertNotEquals(CalibrateStatus.calibration_done, CalibrateStatus.getCurrent());
     }
 
     @Test
     void testGetCurrent() {
+        CalibrateStatus.setStatus(CalibrateStatus.not);
+        assertEquals(CalibrateStatus.not, CalibrateStatus.getCurrent(null));
+        assertNotEquals(CalibrateStatus.calibration_done, CalibrateStatus.getCurrent(null));
+
+        //Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Activity a = new Activity();
+
+        assertEquals(CalibrateStatus.not, CalibrateStatus.getCurrent(a));
+        assertNotEquals(CalibrateStatus.calibration_done, CalibrateStatus.getCurrent(a));
     }
 
     @Test
     void testGetCurrent1() {
+        CalibrateStatus.setStatus(CalibrateStatus.not);
+        assertEquals(CalibrateStatus.not, CalibrateStatus.getCurrent(null, null));
+        assertNotEquals(CalibrateStatus.calibration_done, CalibrateStatus.getCurrent(null,null));
+
+        //Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Activity a = new Activity();
+
+        assertEquals(CalibrateStatus.not, CalibrateStatus.getCurrent(new Postexecute() {
+            @Override
+            public void post() {
+                System.out.println("post");
+            }
+        },a));
+        assertNotEquals(CalibrateStatus.calibration_done, CalibrateStatus.getCurrent(new Postexecute() {
+            @Override
+            public void post() {
+                System.out.println("post");
+            }
+        },a));
     }
 
-    @Test
-    void values() {
-    }
 
     @Test
     void valueOf() {
+        assertThrows(IllegalArgumentException.class, ()->CalibrateStatus.valueOf("no t"));
+        assertThrows(IllegalArgumentException.class, ()->CalibrateStatus.valueOf("ready t"));
+
+        assertEquals(CalibrateStatus.not, CalibrateStatus.valueOf("not"));
+        assertEquals(CalibrateStatus.ready, CalibrateStatus.valueOf("ready"));
+        assertEquals(CalibrateStatus.calibration_empty_container, CalibrateStatus.valueOf("calibration_empty_container"));
+        assertEquals(CalibrateStatus.calibration_known_weight, CalibrateStatus.valueOf("calibration_known_weight"));
+        assertEquals(CalibrateStatus.calibration_pumps, CalibrateStatus.valueOf("calibration_pumps"));
+        assertEquals(CalibrateStatus.calibration_calculation,CalibrateStatus.valueOf("calibration_calculation"));
+        assertEquals(CalibrateStatus.calibration_done,  CalibrateStatus.valueOf("calibration_done"));
+
     }
 }
