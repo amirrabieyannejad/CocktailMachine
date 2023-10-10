@@ -14,10 +14,7 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
-import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
-import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
-import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.ui.model.v2.GetDialog;
 import com.example.cocktailmachine.ui.model.v2.WaitingQueueCountDown;
 
@@ -26,10 +23,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     final String TAG="Recipe";

@@ -9,11 +9,10 @@ import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
+import com.example.cocktailmachine.ui.model.ModelType;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
-import com.example.cocktailmachine.ui.model.FragmentType;
-import com.example.cocktailmachine.ui.model.ModelType;
 
 /**
  * @author Johanna Reidt

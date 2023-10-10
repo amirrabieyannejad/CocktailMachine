@@ -5,23 +5,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.enums.AdminRights;
-import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.databinding.ActivityDisplayBinding;
-import com.example.cocktailmachine.ui.model.FragmentType;
-import com.example.cocktailmachine.ui.model.ModelType;
-
-import java.util.HashMap;
-import java.util.List;
 
 public class DisplayActivity extends BasicActivity {
     private static final String TAG = "DisplayActivity";

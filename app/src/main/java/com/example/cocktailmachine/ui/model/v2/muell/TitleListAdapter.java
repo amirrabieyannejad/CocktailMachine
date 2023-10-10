@@ -1,23 +1,5 @@
 package com.example.cocktailmachine.ui.model.v2.muell;
 
-import android.app.Activity;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.data.enums.AdminRights;
-import com.example.cocktailmachine.ui.model.FragmentType;
-import com.example.cocktailmachine.ui.model.ModelType;
-
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author Johanna Reidt
  * @created Di. 27.Jun 2023 - 15:21

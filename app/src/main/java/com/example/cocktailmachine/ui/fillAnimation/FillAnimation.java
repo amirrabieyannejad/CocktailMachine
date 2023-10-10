@@ -2,16 +2,9 @@ package com.example.cocktailmachine.ui.fillAnimation;
 
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.SingeltonTestdata;
-import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
-import com.example.cocktailmachine.data.CocktailMachine;
-import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
-import com.example.cocktailmachine.data.enums.AdminRights;
-import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
 import com.example.cocktailmachine.ui.model.v2.GetActivity;
 import com.example.cocktailmachine.ui.model.v2.GetDialog;
@@ -25,9 +18,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
-
-import java.util.LinkedHashMap;
 
 
 public class FillAnimation extends AppCompatActivity {

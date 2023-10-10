@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 import java.util.ArrayList;
 import java.util.List;
