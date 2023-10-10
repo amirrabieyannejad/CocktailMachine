@@ -275,11 +275,11 @@ public class GetDialog {
         builder.setPositiveButton("Speichern", (dialog, which) -> {
             try {
                 pumpNumberChangeView.save(); //set up n new Pumps
+                //pumpNumberChangeView.send();
                 //dialog.dismiss();
                 //getGlass(activity);
                 firstAutomaticDialog(activity);
             }catch (IllegalStateException e){
-
                 Log.e(TAG, "enterNumberOfPumps pumpNumberChangeView save error");
                 Log.e(TAG, e.toString());
                 e.printStackTrace();
@@ -1814,6 +1814,9 @@ public class GetDialog {
 
         @Override
         public void send() {
+            for(Pump p: Pump.getPumps()){
+                p.sendSave(activity);
+            }
         }
     }
 

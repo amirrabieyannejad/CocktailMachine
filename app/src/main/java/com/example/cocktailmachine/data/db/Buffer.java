@@ -336,6 +336,11 @@ public class Buffer {
         getSingleton(context);
     }
 
+    /**
+     * load for setup with empty pumps, empty all pumps
+     * @author Johanna Reidt
+     * @param context
+     */
     public static void loadForSetUp(Context context){
         //TODO:
         //load(context);
@@ -343,13 +348,22 @@ public class Buffer {
         Buffer.setUpEmptyPumps(context);
     }
 
-
+    /**
+     * load csv and json files prepared by phillip
+     * @author Johanna Reidt
+     * @param context
+     */
     public static void loadPreped(Context context) {
         Log.i(TAG, "loadPreped" );
         loadLiquid(context);
         loadPrepedRecipes(context);
     }
 
+    /**
+     * load liquid csv
+     * @author Johanna Reidt
+     * @param context
+     */
     private static void loadLiquid(Context context){
         Log.i(TAG, "loadLiquid" );
         //https://stackoverflow.com/questions/43055661/reading-csv-file-in-android-app
@@ -485,6 +499,12 @@ public class Buffer {
         Toast.makeText(context, "Zutaten geladen!", Toast.LENGTH_SHORT).show();
 
     }
+
+    /**
+     * load recipe json
+     * @author Johanna Reidt
+     * @param context
+     */
     private static void loadPrepedRecipes(Context context){
         Log.i(TAG, "loadPrepedRecipes" );
         //https://stackoverflow.com/questions/43055661/reading-csv-file-in-android-app
@@ -1910,8 +1930,9 @@ public class Buffer {
 
     private static void setUpEmptyPumps(Context context) {
         Log.i(TAG, "setUpEmptyPumps");
+        Buffer.getSingleton().noMemory();
         DatabaseConnection.init(context).setUpEmptyPumps(); //delete all pump Tables to be sure
-        Buffer.localRefresh(context);
+        //no local refresh Buffer.localRefresh(context);
     }
 
     private void emptyUpPumps(Context context) {
