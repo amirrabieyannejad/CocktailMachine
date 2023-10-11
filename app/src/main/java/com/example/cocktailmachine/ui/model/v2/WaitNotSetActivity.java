@@ -43,7 +43,7 @@ public class WaitNotSetActivity extends AppCompatActivity {
 
     public void reload(View view) {
         if(CocktailMachine.isCocktailMachineSet(this)){
-            Log.i(TAG, "is set");
+            Log.v(TAG, "is set");
             Toast.makeText(this, "Cocktailmaschine ist bereit.", Toast.LENGTH_SHORT).show();
             GetActivity.goToMenu(this);
         }else {

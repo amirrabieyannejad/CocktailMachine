@@ -38,7 +38,7 @@ public class AddActivity extends BasicActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "onCreate");
+        Log.v(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_add);
         binding = ActivityAddBinding.inflate(getLayoutInflater());
@@ -48,7 +48,7 @@ public class AddActivity extends BasicActivity {
 
     @Override
     void preSetUp() {
-        Log.i(TAG, "preSetUp");
+        Log.v(TAG, "preSetUp");
         binding.textViewAddTitle.setVisibility(View.GONE);
         binding.editTextAddTitle.setVisibility(View.GONE);
         binding.textViewError.setVisibility(View.GONE);
@@ -79,7 +79,7 @@ public class AddActivity extends BasicActivity {
 
     @Override
     void setUpPump() {
-        Log.i(TAG, "setUpPump");
+        Log.v(TAG, "setUpPump");
 
         //nedded
         binding.textViewAddTitle.setVisibility(View.VISIBLE);
@@ -100,12 +100,12 @@ public class AddActivity extends BasicActivity {
         search();
 
         binding.buttonSave.setOnClickListener(v -> {
-            Log.i(TAG, "setUpPump: buttonSave clicked");
+            Log.v(TAG, "setUpPump: buttonSave clicked");
             if(binding.includePump.editTextSearchIngredientIng.getText().toString().length()>0) {
-                Log.i(TAG, "setUpPump: buttonSave has title");
+                Log.v(TAG, "setUpPump: buttonSave has title");
                 getIngredient();
             }else{
-                Log.i(TAG, "setUpPump: buttonSave has no title -> toast & stop");
+                Log.v(TAG, "setUpPump: buttonSave has no title -> toast & stop");
                 Toast.makeText(AddActivity.this, "Nenne die Zutat!", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -113,16 +113,16 @@ public class AddActivity extends BasicActivity {
             //set volume
             String vol = binding.includePump.editTextNumberSearchIngredientVol.getText().toString();
             if(vol.length()==0){
-                Log.i(TAG, "setUpPump: buttonSave has no vol -> toast & stop");
+                Log.v(TAG, "setUpPump: buttonSave has no vol -> toast & stop");
                 Toast.makeText(AddActivity.this, "Gib das Volumen an!", Toast.LENGTH_SHORT).show();
                 return;
             }
             int level = -1;
             try {
                 level = Integer.parseInt(vol);
-                Log.i(TAG, "setUpPump: buttonSave parsed vol");
+                Log.v(TAG, "setUpPump: buttonSave parsed vol");
             }catch (NumberFormatException e){
-                Log.i(TAG, "setUpPump: buttonSave error parsing vol -> toast & stop");
+                Log.v(TAG, "setUpPump: buttonSave error parsing vol -> toast & stop");
                 Toast.makeText(AddActivity.this, "Gib eine ganze Zahl für das Volumen an!", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -140,7 +140,7 @@ public class AddActivity extends BasicActivity {
             //set min volume
             vol = binding.includePump.editTextNumberSearchIngredientMinVol.getText().toString();
             if(vol.length()==0){
-                Log.i(TAG, "setUpPump: buttonSave has no min vol -> toast & stop");
+                Log.v(TAG, "setUpPump: buttonSave has no min vol -> toast & stop");
                 //Toast.makeText(AddActivity.this, "Gib das minimal Volumen an!", Toast.LENGTH_SHORT).show();
                 vol = "1";
                 return;
@@ -148,9 +148,9 @@ public class AddActivity extends BasicActivity {
             level = -1;
             try {
                 level = Integer.parseInt(vol);
-                Log.i(TAG, "setUpPump: buttonSave parsed vol");
+                Log.v(TAG, "setUpPump: buttonSave parsed vol");
             }catch (NumberFormatException e){
-                Log.i(TAG, "setUpPump: buttonSave error parsing vol -> toast & stop");
+                Log.v(TAG, "setUpPump: buttonSave error parsing vol -> toast & stop");
                 Toast.makeText(AddActivity.this, "Gib eine ganze Zahl für das minimale Volumen an!", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -159,9 +159,9 @@ public class AddActivity extends BasicActivity {
 
 
             AddActivity.this.pump.sendSave(AddActivity.this);
-            Log.i(TAG, "Pump sendsave: "+AddActivity.this.pump.toString());
+            Log.v(TAG, "Pump sendsave: "+AddActivity.this.pump.toString());
             GetActivity.goToLook(AddActivity.this, ModelType.PUMP, AddActivity.this.pump.getID());
-            Log.i(TAG, "setUpPump:done");
+            Log.v(TAG, "setUpPump:done");
         });
     }
 
@@ -170,7 +170,7 @@ public class AddActivity extends BasicActivity {
      */
     @Override
     void setUpTopic() {
-        Log.i(TAG, "setUpTopic");
+        Log.v(TAG, "setUpTopic");
         String title_tag = "Serviervorschlag";
 
         //nedded
@@ -182,26 +182,26 @@ public class AddActivity extends BasicActivity {
 
         topic = Topic.getTopic(this.getID());
         if(topic == null){
-            Log.i(TAG, "setUpPump: new topic");
+            Log.v(TAG, "setUpPump: new topic");
             binding.buttonSave.setOnClickListener(v -> {
-                Log.i(TAG, "setUpPump: buttonSave: clicked");
+                Log.v(TAG, "setUpPump: buttonSave: clicked");
                 topic = Topic.makeNew(binding.editTextAddTitle.getText().toString(), binding.editTextDescription.getText().toString());
                 topic.save(activity);
                 GetActivity.goToLook(activity, ModelType.TOPIC, topic.getID());
-                Log.i(TAG, "setUpPump: done");
+                Log.v(TAG, "setUpPump: done");
             });
 
         }else{
-            Log.i(TAG, "setUpPump: buttonSave: old topic");
+            Log.v(TAG, "setUpPump: buttonSave: old topic");
             binding.editTextAddTitle.setText(topic.getName());
             binding.editTextDescription.setText(topic.getDescription());
             binding.buttonSave.setOnClickListener(v -> {
-                Log.i(TAG, "setUpPump: buttonSave: clicked");
+                Log.v(TAG, "setUpPump: buttonSave: clicked");
                 topic.setName(binding.editTextAddTitle.getText().toString());
                 topic.setDescription(binding.editTextDescription.getText().toString());
                 topic.save(activity);
                 GetActivity.goToLook(activity, ModelType.TOPIC, topic.getID());
-                Log.i(TAG, "setUpPump: done");
+                Log.v(TAG, "setUpPump: done");
             });
         }
 
@@ -214,7 +214,7 @@ public class AddActivity extends BasicActivity {
      */
     @Override
     void setUpIngredient() {
-        Log.i(TAG, "setUpIngredient");
+        Log.v(TAG, "setUpIngredient");
         ingredient = Ingredient.getIngredient(this.getID());
         //nedded
         binding.editTextAddTitle.setVisibility(View.VISIBLE);
@@ -251,7 +251,7 @@ public class AddActivity extends BasicActivity {
         //binding.buttonChangeColor.setBackgroundColor(set_color[0]);
 
         binding.buttonChangeColor.setOnClickListener(v -> {
-            Log.i(TAG, "setUpIngredient: color picker clicked");
+            Log.v(TAG, "setUpIngredient: color picker clicked");
             ColorPickerPopUp colorPickerPopUp = new ColorPickerPopUp(activity);	// Pass the context.
             colorPickerPopUp.setShowAlpha(true)			// By default show alpha is true.
                     //.setDefaultColor(ingredient.getColor())
@@ -265,12 +265,12 @@ public class AddActivity extends BasicActivity {
                             // handle the use of color
                             set_color[0] = color;
                             binding.buttonChangeColor.setBackgroundColor(color);
-                            Log.i(TAG, "setUpIngredient: color picked "+ set_color[0]);
+                            Log.v(TAG, "setUpIngredient: color picked "+ set_color[0]);
                         }
 
                         @Override
                         public void onCancel() {
-                            Log.i(TAG, "setUpIngredient: color picker canceled");
+                            Log.v(TAG, "setUpIngredient: color picker canceled");
                             colorPickerPopUp.dismissDialog();	// Dismiss the dialog.
                         }
                     })
@@ -279,10 +279,10 @@ public class AddActivity extends BasicActivity {
 
 
         if(ingredient == null){
-            Log.i(TAG, "setUpIngredient: new ingredient");
+            Log.v(TAG, "setUpIngredient: new ingredient");
             //binding.imageViewColorShow.setColorFilter(set_color[0]);
             binding.buttonSave.setOnClickListener(v -> {
-                Log.i(TAG, "setUpIngredient:buttonSave: clicked");
+                Log.v(TAG, "setUpIngredient:buttonSave: clicked");
                 ingredient = Ingredient.makeNew(
                         binding.editTextAddTitle.getText().toString(),
                         binding.switchAlcohol.isChecked(),
@@ -293,14 +293,14 @@ public class AddActivity extends BasicActivity {
             });
 
         }else{
-            Log.i(TAG, "setUpIngredient: old ingredient");
+            Log.v(TAG, "setUpIngredient: old ingredient");
             set_color[0] = ingredient.getColor();
             //binding.imageViewColorShow.setColorFilter(set_color[0]);
             binding.editTextAddTitle.setText(ingredient.getName());
             binding.switchAlcohol.setChecked(ingredient.isAlcoholic());
 
             binding.buttonSave.setOnClickListener(v -> {
-                Log.i(TAG, "setUpIngredient:buttonSave: clicked");
+                Log.v(TAG, "setUpIngredient:buttonSave: clicked");
                 ingredient.setName(binding.editTextAddTitle.getText().toString());
                 ingredient.setAlcoholic(binding.switchAlcohol.isChecked());
                 ingredient.setColor(set_color[0]);
@@ -315,7 +315,7 @@ public class AddActivity extends BasicActivity {
      */
     @Override
     void setUpRecipe() {
-        Log.i(TAG, "setUpRecipe");
+        Log.v(TAG, "setUpRecipe");
         this.recipe = Recipe.getRecipe(this.getID());
         if(this.getID()==-1 || this.recipe == null){
             this.recipe = Recipe.makeNew("temp");
@@ -349,7 +349,7 @@ public class AddActivity extends BasicActivity {
         binding.recyclerViewIngredients.setAdapter(this.ingVolAdapter);
 
         View.OnClickListener ingAdd = v ->{
-            Log.i(TAG, "subLayoutAddIngredient: clicked");
+            Log.v(TAG, "subLayoutAddIngredient: clicked");
             GetDialog.getIngVol(activity,
                     !AdminRights.isAdmin(),
                     new GetDialog.IngredientVolumeSaver() {
@@ -359,21 +359,21 @@ public class AddActivity extends BasicActivity {
                         @Override
                         public void save(Ingredient ingredient, String tippedName) {
                             this.ing = ingredient;
-                            Log.i(TAG,"IngredientVolumeSaver: save: "+this.ing.toString() + tippedName);
+                            Log.v(TAG,"IngredientVolumeSaver: save: "+this.ing.toString() + tippedName);
                         }
 
                         @Override
                         public void save(Integer volume) {
                             this.vol = volume;
-                            Log.i(TAG,"IngredientVolumeSaver: save: "+this.vol);
+                            Log.v(TAG,"IngredientVolumeSaver: save: "+this.vol);
                         }
 
                         @Override
                         public void post() {
-                            Log.i(TAG,"IngredientVolumeSaver: post: ");
+                            Log.v(TAG,"IngredientVolumeSaver: post: ");
                             AddActivity.this.ingVolAdapter.add(ing, vol);
-                            Log.i(TAG, "subLayoutAddIngredient: ing vol added");
-                            Log.i(TAG, AddActivity.this.ingVolAdapter.toString());
+                            Log.v(TAG, "subLayoutAddIngredient: ing vol added");
+                            Log.v(TAG, AddActivity.this.ingVolAdapter.toString());
                             //AddActivity.this.updateIngredients();
                             //Log.i(TAG, "subLayoutAddIngredient: updateIngredients");
                         }
@@ -383,13 +383,13 @@ public class AddActivity extends BasicActivity {
         binding.subLayoutAddIngredient.setVisibility(View.VISIBLE);
         binding.subLayoutAddIngredientAdd.setOnClickListener(ingAdd);
         binding.ButtonAddIngredient.setOnClickListener(ingAdd);
-        Log.i(TAG, "setIngredients");
+        Log.v(TAG, "setIngredients");
         /*
         if((this.ingVolAdapter== null
                 && this.recipe.getIngredientToVolume().size()>0)
                 ||(this.ingVolAdapter!= null
                 && this.ingVolAdapter.getItemCount()>0)) {
-            Log.i(TAG, "setIngredients size> 0");
+            Log.v(TAG, "setIngredients size> 0");
             //Log.i(TAG, AddActivity.this.ingredientVolumeHashMap.toString());
 
             binding.recyclerViewIngredients.setVisibility(View.VISIBLE);
@@ -399,7 +399,7 @@ public class AddActivity extends BasicActivity {
                 binding.recyclerViewIngredients.setAdapter(this.getIngVolAdapter());
             }
         }else{
-            Log.i(TAG, "setIngredients size<= 0");
+            Log.v(TAG, "setIngredients size<= 0");
             binding.recyclerViewIngredients.setVisibility(View.GONE);
         }
 
@@ -408,7 +408,7 @@ public class AddActivity extends BasicActivity {
 
 
 
-        Log.i(TAG, "setTopics");
+        Log.v(TAG, "setTopics");
         binding.recyclerViewTopics.setVisibility(View.VISIBLE);
         binding.recyclerViewTopics.setLayoutManager(
                 GetAdapter.getNewLinearLayoutManager(this));
@@ -418,12 +418,12 @@ public class AddActivity extends BasicActivity {
                 true,
                 false);
         View.OnClickListener topAdd =v ->{
-            Log.i(TAG, "subLayoutAddTopic: clicked");
+            Log.v(TAG, "subLayoutAddTopic: clicked");
             GetDialog.addTopic(activity,
                     (t, d) -> {
-                        Log.i(TAG, "subLayoutAddTopic: topic added");
+                        Log.v(TAG, "subLayoutAddTopic: topic added");
                         AddActivity.this.topicAdapter.add(t);
-                        Log.i(TAG, "subLayoutAddTopic: topic added to adapter");
+                        Log.v(TAG, "subLayoutAddTopic: topic added to adapter");
                         d.dismiss();
                         //Log.i(TAG, "subLayoutAddTopic: dialog dismiss");
                         //AddActivity.this.setTopics();
@@ -440,9 +440,9 @@ public class AddActivity extends BasicActivity {
 
         //save
         binding.buttonSave.setOnClickListener(v -> {
-            Log.i(TAG, "buttonSave: clicked");
+            Log.v(TAG, "buttonSave: clicked");
             //Log.i(TAG, "ingvol "+AddActivity.this.ingredientVolumeHashMap.toString());
-            Log.i(TAG, "topics "+AddActivity.this.topicAdapter.toString());
+            Log.v(TAG, "topics "+AddActivity.this.topicAdapter.toString());
             AddActivity.this.recipe.setName(activity, binding.editTextAddTitle.getText().toString());
             AddActivity.this.recipe.save(activity);
             //AddActivity.this.recipe.replaceIngredients(activity,
@@ -451,22 +451,22 @@ public class AddActivity extends BasicActivity {
             AddActivity.this.topicAdapter.save();
             if(AddActivity.this.recipe.sendSave(
                     activity)){
-                Log.i(TAG, "buttonSave: show recipe");
+                Log.v(TAG, "buttonSave: show recipe");
                 GetActivity.goToLook(
                         activity,
                         ModelType.RECIPE,
                         AddActivity.this.recipe.getID());
             }else {
-                Log.i(TAG, "buttonSave: saving or sending failed -> toast \"nochmal\"");
+                Log.v(TAG, "buttonSave: saving or sending failed -> toast \"nochmal\"");
                 Toast.makeText(activity, "Speicher nochmal!", Toast.LENGTH_SHORT).show();
             }
-            Log.i(TAG, "buttonSave: done");
+            Log.v(TAG, "buttonSave: done");
         });
     }
 
     @Override
     void postSetUp() {
-        Log.i(TAG, "postSetUp");
+        Log.v(TAG, "postSetUp");
 
 
         //for all
@@ -484,7 +484,7 @@ public class AddActivity extends BasicActivity {
      * @param msg Error Message
      */
     void error(String msg){
-        Log.i(TAG, "error");
+        Log.v(TAG, "error");
         preSetUp();
         binding.textViewAddTitle.setVisibility(View.VISIBLE);
         binding.textViewAddTitle.setText("Fehler!");
@@ -529,7 +529,7 @@ public class AddActivity extends BasicActivity {
     //pump helper
 
     private void search(){
-        Log.i(TAG, "search");
+        Log.v(TAG, "search");
         binding.includePump.editTextSearchIngredientIng.setVisibility(View.VISIBLE);
         binding.includePump.imageButtonSearchIngredientDone.setVisibility(View.VISIBLE);
         binding.includePump.textViewSearchIngredientIng.setVisibility(View.GONE);
@@ -550,12 +550,12 @@ public class AddActivity extends BasicActivity {
 
     }
     private void getIngredient(){
-        Log.i(TAG, "getIngredient");
+        Log.v(TAG, "getIngredient");
         this.ingredient = Ingredient.searchOrNew(activity,
                 binding.includePump.editTextSearchIngredientIng.getText().toString());
     }
     private void searchDone(){
-        Log.i(TAG, "searchDone");
+        Log.v(TAG, "searchDone");
         getIngredient();
         binding.includePump.editTextSearchIngredientIng.setVisibility(View.GONE);
         binding.includePump.imageButtonSearchIngredientDone.setVisibility(View.GONE);

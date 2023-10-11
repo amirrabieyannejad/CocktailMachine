@@ -40,14 +40,14 @@ public abstract class WaitingQueueCountDown {
      public WaitingQueueCountDown(long countDownInterval) {
           //mMillisInFuture = millisInFuture;
           mCountdownInterval = countDownInterval;
-          Log.i(TAG, "WaitingQueueCountDown");
+          Log.v(TAG, "WaitingQueueCountDown");
      }
 
      /**
        * Cancel the countdown.
        */
      public synchronized final void cancel() {
-         Log.i(TAG, "cancel");
+         Log.v(TAG, "cancel");
           mCancelled = true;
           mHandler.removeMessages(MSG);
      }
@@ -56,22 +56,22 @@ public abstract class WaitingQueueCountDown {
        * Start the countdown.
        */
      public synchronized final WaitingQueueCountDown start() {
-         Log.i(TAG, "start");
+         Log.v(TAG, "start");
           mCancelled = false;
           reduceTick();
-         Log.i(TAG, "start: reduceTick");
+         Log.v(TAG, "start: reduceTick");
 
           if (tick <= 0) {
               onFinish();
-              Log.i(TAG, "start: onFinish");
+              Log.v(TAG, "start: onFinish");
               return this;
           }
          if (tick <= 1) {
              onNext();
-             Log.i(TAG, "start: onNext");
+             Log.v(TAG, "start: onNext");
          }
           mHandler.sendMessage(mHandler.obtainMessage(MSG));
-         Log.i(TAG, "start: sendMessage");
+         Log.v(TAG, "start: sendMessage");
           return this;
      }
 
@@ -84,7 +84,7 @@ public abstract class WaitingQueueCountDown {
      public abstract void reduceTick();
 
      public void setTick(int tick){
-         Log.i(TAG, "setTick: "+tick);
+         Log.v(TAG, "setTick: "+tick);
          this.tick = tick;
      }
 
@@ -103,17 +103,17 @@ public abstract class WaitingQueueCountDown {
      public abstract void onFinish();
 
      public boolean isWaiting(){
-         Log.i(TAG, "isWaiting?");
+         Log.v(TAG, "isWaiting?");
          return tick >0;
      }
 
     public boolean isNext(){
-        Log.i(TAG, "isNext?");
+        Log.v(TAG, "isNext?");
         return tick ==1;
     }
 
     public boolean isUsersTurn(){
-         Log.i(TAG, "isUsersTurn?");
+         Log.v(TAG, "isUsersTurn?");
 
         return tick ==0;
     }
@@ -129,26 +129,26 @@ public abstract class WaitingQueueCountDown {
             public void handleMessage(Message msg) {
                 synchronized (WaitingQueueCountDown.this) {
                     if (mCancelled) {
-                        Log.i("Handler: WaitingQueueC", "cancelled");
+                        Log.v("Handler: WaitingQueueC", "cancelled");
                         return;
                     }
 
                     reduceTick();
-                    Log.i("Handler: WaitingQueueC", "reduced");
+                    Log.v("Handler: WaitingQueueC", "reduced");
 
                     if(tick ==1){
                         onNext();
-                        Log.i("Handler: WaitingQueueC", "onNext");
+                        Log.v("Handler: WaitingQueueC", "onNext");
                     }
 
                     if (tick <= 0) {
                         onFinish();
-                        Log.i("Handler: WaitingQueueC", "onFinish");
+                        Log.v("Handler: WaitingQueueC", "onFinish");
                     } else {
                         onTick();
-                        Log.i("Handler: WaitingQueueC", "onTick");
+                        Log.v("Handler: WaitingQueueC", "onTick");
                         sendMessageDelayed(obtainMessage(MSG), mCountdownInterval);
-                        Log.i("Handler: WaitingQueueC", "sendMessageDelayed");
+                        Log.v("Handler: WaitingQueueC", "sendMessageDelayed");
                     }
                 }
             }

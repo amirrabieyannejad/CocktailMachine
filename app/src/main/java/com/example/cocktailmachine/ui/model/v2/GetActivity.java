@@ -27,7 +27,7 @@ public class GetActivity {
 
     /*
     public static void goToDisplay(Activity activity, FragmentType fragmentType, ModelType modelType){
-        Log.i(TAG, "goToDisplay: "+fragmentType.toString()+"  "+modelType.toString());
+        Log.v(TAG, "goToDisplay: "+fragmentType.toString()+"  "+modelType.toString());
         //TO DO
 
      */
@@ -58,7 +58,7 @@ public class GetActivity {
 
 
     //public static void goToDisplay(Activity activity, FragmentType fragmentType, ModelType modelType, Long id){
-     //  Log.i(TAG, "goToDisplay: "+fragmentType.toString()+"  "+modelType.toString()+ "   "+id.toString());
+     //  Log.v(TAG, "goToDisplay: "+fragmentType.toString()+"  "+modelType.toString()+ "   "+id.toString());
         //TO DO
         /*
         Intent intent = new Intent(this, ModelActivity.class);
@@ -85,7 +85,7 @@ public class GetActivity {
 
 
     public static void goToLook(Activity activity, ModelType modelType, Long id){
-        Log.i(TAG, "goToLook: "+modelType.toString());
+        Log.v(TAG, "goToLook: "+modelType.toString());
         Intent intent = new Intent(activity, DisplayActivity.class);
         Bundle bundle = new Bundle();
         bundle.putLong(ID, id);
@@ -95,7 +95,7 @@ public class GetActivity {
     }
 
     public static void goToAdd(Activity activity, ModelType modelType){
-        Log.i(TAG, "goToAdd: "+modelType.toString());
+        Log.v(TAG, "goToAdd: "+modelType.toString());
         Intent intent = new Intent(activity, AddActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString(MODELTYPE, modelType.toString());
@@ -113,7 +113,7 @@ public class GetActivity {
     }
 
     public static void goToEdit(Activity activity, ModelType modelType, Long id){
-        Log.i(TAG, "goToEdit: "+modelType.toString());
+        Log.v(TAG, "goToEdit: "+modelType.toString());
         Intent intent = new Intent(activity, AddActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString(MODELTYPE, modelType.toString());
@@ -123,25 +123,25 @@ public class GetActivity {
     }
 
     public static void startAgain(Activity activity) {
-        Log.i(TAG, "startAgain");
+        Log.v(TAG, "startAgain");
         //TO DO: go back to device scan
         if(Dummy.isDummy) {
-            Log.i(TAG, "startAgain: dummy->menu");
+            Log.v(TAG, "startAgain: dummy->menu");
             goToMenu(activity);
         }else{
-            Log.i(TAG, "startAgain: real->scan");
+            Log.v(TAG, "startAgain: real->scan");
             goToScan(activity);
         }
     }
 
     public static void goToScan(Activity activity){
-        Log.i(TAG, "goToScan");
+        Log.v(TAG, "goToScan");
         Intent intent = new Intent(activity, DeviceScanActivity.class);
         activity.startActivity(intent);
     }
 
     public static void goToFill(Activity activity, Recipe recipe){
-        Log.i(TAG, "goToFill");
+        Log.v(TAG, "goToFill");
         Intent intent = new Intent(activity, FillAnimation.class);
         Bundle bundle = new Bundle();
         bundle.putLong(ID, recipe.getID());
@@ -151,14 +151,14 @@ public class GetActivity {
     }
 
     public static void goToMenu(Activity activity) {
-        Log.i(TAG, "goToMenu");
+        Log.v(TAG, "goToMenu");
         Intent intent = new Intent(activity, Menue.class);
         activity.startActivity(intent);
         //activity.finish();
     }
 
     public static void goToMenu(Activity activity, boolean clearCompleteStack) {
-        Log.i(TAG, "goToMenu");
+        Log.v(TAG, "goToMenu");
         Intent intent = new Intent(activity, Menue.class);
         if(clearCompleteStack){
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -167,27 +167,27 @@ public class GetActivity {
         activity.finish();
     }
     public static void goToMenu(Context context) {
-        Log.i(TAG, "goToMenu");
+        Log.v(TAG, "goToMenu");
         Intent intent = new Intent(context, Menue.class);
         context.startActivity(intent);
         //activity.finish();
     }
 
     public static void waitNotSet(Activity activity) {
-        Log.i(TAG, "waitNotSet");
+        Log.v(TAG, "waitNotSet");
         Intent intent = new Intent(activity, WaitNotSetActivity.class);
         activity.startActivity(intent);
     }
 
     public static void goBack(Activity activity) {
-        Log.i(TAG, "goBack");
+        Log.v(TAG, "goBack");
         if(!activity.moveTaskToBack(true)){
             error(activity);
         }
     }
 
     public static void error(Activity activity){
-        Log.i(TAG, "error");
+        Log.v(TAG, "error");
         Toast.makeText(activity, "Fehler!", Toast.LENGTH_SHORT).show();
         GetActivity.goToMenu(activity);
     }

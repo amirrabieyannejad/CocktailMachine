@@ -88,7 +88,7 @@ public class DisplayActivity extends BasicActivity {
         binding.includeRecipeTopicsList.textViewListTitle.setText("Serviervorschläge");
 
 
-        Log.i(TAG, "setIngredients");
+        Log.v(TAG, "setIngredients");
         //HashMap<Ingredient, Integer> ingredientVolumeHashMap = recipe.getIngredientToVolume();
         binding.includeRecipeIngredientsList.recyclerViewList.setLayoutManager(GetAdapter.getNewLinearLayoutManager(this));
         binding.includeRecipeIngredientsList.recyclerViewList.setAdapter(
@@ -98,7 +98,7 @@ public class DisplayActivity extends BasicActivity {
                         false, true));
 
 
-        Log.i(TAG, "setTopics");
+        Log.v(TAG, "setTopics");
         //List<Topic> topics = recipe.getTopics();
         binding.includeRecipeTopicsList.recyclerViewList.setLayoutManager(
                 GetAdapter.getNewLinearLayoutManager(this));
@@ -110,11 +110,11 @@ public class DisplayActivity extends BasicActivity {
                         true));
         /*
         if(topics.size()>0) {
-            Log.i(TAG, "setTopics size> 0");
-            Log.i(TAG, topics.toString());
+            Log.v(TAG, "setTopics size> 0");
+            Log.v(TAG, topics.toString());
             binding.includeRecipeTopicsList.recyclerViewList.setVisibility(View.VISIBLE);
         }else{
-            Log.i(TAG, "setTopics size<= 0");
+            Log.v(TAG, "setTopics size<= 0");
             binding.includeRecipeTopicsList.recyclerViewList.setVisibility(View.GONE);
         }
 
@@ -270,7 +270,7 @@ public class DisplayActivity extends BasicActivity {
         binding.includeDisplayPump.buttonRunPump.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(TAG, "run pump clicked");
+                Log.v(TAG, "run pump clicked");
                 GetDialog.runPump(DisplayActivity.this, pump);
             }
         });

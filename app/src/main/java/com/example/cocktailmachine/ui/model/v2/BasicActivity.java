@@ -88,9 +88,9 @@ public abstract class BasicActivity extends AppCompatActivity {
                 bundle.getString(
                         GetActivity.FRAGMENTTYPE,
                         FragmentType.List.toString()));
-        Log.i(TAG, "readIntent: id "+id );
-        Log.i(TAG, "readIntent: modelType "+modelType );
-        Log.i(TAG, "readIntent: fragmentType "+fragmentType );
+        Log.v(TAG, "readIntent: id "+id );
+        Log.v(TAG, "readIntent: modelType "+modelType );
+        Log.v(TAG, "readIntent: fragmentType "+fragmentType );
     }
 
 
