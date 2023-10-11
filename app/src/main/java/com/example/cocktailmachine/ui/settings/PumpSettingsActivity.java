@@ -3,6 +3,7 @@ package com.example.cocktailmachine.ui.settings;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.example.cocktailmachine.R;
@@ -17,6 +18,8 @@ import com.example.cocktailmachine.ui.model.v2.GetDialog;
  * @author Johanna Reidt
  */
 public class PumpSettingsActivity extends AppCompatActivity {
+
+    private static final String TAG = "PumpSettingsActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,7 @@ public class PumpSettingsActivity extends AppCompatActivity {
      * @param view
      */
     public void calibratePump(View view){
+        Log.v(TAG, "calibratePump");
 
         //TO DO: CocktailMachine.calibratePump(this);
         Pump.calibratePumpsAndTimes(this);
@@ -66,6 +70,7 @@ public class PumpSettingsActivity extends AppCompatActivity {
      * @param view
      */
     public void setPumpTimes(View view){
+        Log.v(TAG, "setPumpTimes");
 
         //open alert dialog pick pump
         //Pump pump = Pump.getPump(0);
@@ -76,6 +81,7 @@ public class PumpSettingsActivity extends AppCompatActivity {
 
 
     public void automatic(View view){
+        Log.v(TAG, "automatic");
 
         //open alert dialog pick pump
         //Pump pump = Pump.getPump(0);

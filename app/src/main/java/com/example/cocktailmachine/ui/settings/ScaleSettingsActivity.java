@@ -47,7 +47,7 @@ public class ScaleSettingsActivity extends AppCompatActivity {
      * @param view
      */
     public void tareScale(View view){
-        Log.i(TAG, "tareScale");
+        Log.v(TAG, "tareScale");
         CocktailMachine.tareScale(this);
     }
 
@@ -63,7 +63,7 @@ public class ScaleSettingsActivity extends AppCompatActivity {
      * @param view
      */
     public void calibrateScale(View view){
-        Log.i(TAG, "calibrateScale");
+        Log.v(TAG, "calibrateScale");
 
         CocktailMachine.calibrateScale(this);
         //CocktailMachine.tareScale(this);
@@ -83,12 +83,12 @@ public class ScaleSettingsActivity extends AppCompatActivity {
      * @param view
      */
     public void setScaleFactor(View view){
-        Log.i(TAG, "setScaleFactor");
+        Log.v(TAG, "setScaleFactor");
         CocktailMachine.scaleFactor(this);
     }
 
     public void getWeight(View view) {
-        Log.i(TAG, "getWeight");
+        Log.v(TAG, "getWeight");
         GetDialog.showWeight(this);
     }
 }
