@@ -212,7 +212,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
             }
         }
         cursor.close();
-        Log.i(TAG, "cursorToList : "+ids);
+        Log.v(TAG, "cursorToList : "+ids);
         cursor.close();
         return ids;
     }
@@ -235,7 +235,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
             }
         }
         cursor.close();
-        Log.i(TAG, "cursorToList : "+ids);
+        Log.v(TAG, "cursorToList : "+ids);
         cursor.close();
         return ids;
     }

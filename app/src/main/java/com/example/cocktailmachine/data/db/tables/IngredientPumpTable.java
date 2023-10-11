@@ -77,7 +77,7 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
         cv.put(COLUMN_NAME_INGREDIENT_ID, element.getIngredientID());
         cv.put(COLUMN_NAME_PUMP_ID, element.getPumpID());
         cv.put(COLUMN_NAME_VOLUME, element.getVolume());
-        Log.i(TAG, "makeContentValues"+cv.toString());
+        Log.v(TAG, "makeContentValues"+cv.toString());
         return cv;
     }
 

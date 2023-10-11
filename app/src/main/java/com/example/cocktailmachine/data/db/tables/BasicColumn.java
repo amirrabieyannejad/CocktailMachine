@@ -115,7 +115,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
      * @return T element list
      */
     private List<T> cursorToList(Cursor cursor){
-        Log.i(TAG, "cursorToList");
+        Log.v(TAG, "cursorToList");
         List<T> res = new ArrayList<>();
         if(cursor.moveToFirst()) {
             res.add(makeElement(cursor));
@@ -124,7 +124,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
             }
         }
         cursor.close();
-        Log.i(TAG, "cursorToList : "+res);
+        Log.v(TAG, "cursorToList : "+res);
         return res;
     }
 
@@ -135,7 +135,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
      * @return T element list
      */
     private List<Long> cursorToIDList(Cursor cursor){
-        Log.i(TAG, "cursorToList");
+        Log.v(TAG, "cursorToList");
         List<Long> res = new ArrayList<>();
         int id_index = cursor.getColumnIndexOrThrow(_ID);
         if(cursor.moveToFirst()) {
@@ -145,7 +145,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
             }
         }
         cursor.close();
-        Log.i(TAG, "cursorToList : "+res);
+        Log.v(TAG, "cursorToList : "+res);
         return res;
     }
 
@@ -520,21 +520,21 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                                                  List<Object> ll,
                                                  String selectionOperator)
             throws NoSuchColumnException {
-        Log.i(TAG, "getElementsSelectionOperator");
+        Log.v(TAG, "getElementsSelectionOperator");
 
         if(ll.isEmpty()){
-            Log.i(TAG, "getElementsSelectionOperator ll is empty");
+            Log.v(TAG, "getElementsSelectionOperator ll is empty");
             return new ArrayList<>();
         }
 
 
-        Log.i(TAG, "getElementsSelectionOperator ll is not empty");
-        Log.i(TAG, "getElementsSelectionOperator ll: "+ ll);
+        Log.v(TAG, "getElementsSelectionOperator ll is not empty");
+        Log.v(TAG, "getElementsSelectionOperator ll: "+ ll);
 
         String selection = column_name+" "+selectionOperator+"  ";
-        Log.i(TAG, "getElementsSelectionOperator selection: "+selection);
+        Log.v(TAG, "getElementsSelectionOperator selection: "+selection);
         selection += makeSelectionList(column_name, ll);
-        Log.i(TAG, "getElementsSelectionOperator selection with List: "+ selection);
+        Log.v(TAG, "getElementsSelectionOperator selection with List: "+ selection);
 
 
         Cursor cursor = db.query(
@@ -553,18 +553,18 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                                                  List<Object> ll,
                                                  String selectionOperator)
             throws NoSuchColumnException {
-        Log.i(TAG, "getElementsSelectionOperator");
+        Log.v(TAG, "getElementsSelectionOperator");
 
         if(ll.isEmpty()){
-            Log.i(TAG, "getElementsSelectionOperator ll is empty");
+            Log.v(TAG, "getElementsSelectionOperator ll is empty");
             return new ArrayList<>();
         }
 
 
         String selection = column_name+" "+selectionOperator+" ?";
-        Log.i(TAG, "getElementsSelectionOperator selection: "+selection);
+        Log.v(TAG, "getElementsSelectionOperator selection: "+selection);
         selection += makeSelectionList(column_name, ll);
-        Log.i(TAG, "getElementsSelectionOperator selection with List: "+ selection);
+        Log.v(TAG, "getElementsSelectionOperator selection with List: "+ selection);
 
 
         Cursor cursor = db.query(
@@ -669,7 +669,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
     public void deleteElement(SQLiteDatabase db,
                               T element){
         if(element == null){
-            Log.i(TAG, "deleteElement: elm null");
+            Log.v(TAG, "deleteElement: elm null");
             return;
         }
         deleteElement(db, element.getID());
