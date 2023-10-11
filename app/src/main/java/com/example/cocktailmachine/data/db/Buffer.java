@@ -586,6 +586,10 @@ public class Buffer {
         }
     }
 
+    public static void loadPrepedDB(Context context){
+        //InputStream inputStream = context.getResources().openRawResource(R.raw);
+    }
+
 
 
 
