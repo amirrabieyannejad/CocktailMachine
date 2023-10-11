@@ -356,17 +356,17 @@ public class Buffer {
      * @param context
      */
     public static void loadPreped(Context context) {
-        Log.i(TAG, "loadPreped" );
+        Log.v(TAG, "loadPreped" );
         DatabaseConnection.loadLiquid(context);
         DatabaseConnection.loadPrepedRecipes(context);
     }
 
     public static void loadDummy(Activity activity){
-        Log.i(TAG, "loadDummy");
+        Log.v(TAG, "loadDummy");
         try {
             DatabaseConnection.init(activity).loadDummy(activity);
         } catch (NotInitializedDBException | MissingIngredientPumpException e) {
-            Log.i(TAG, "loadDummy");
+            Log.v(TAG, "loadDummy");
             Log.e(TAG, "error", e);
             Log.getStackTraceString(e);
         }
@@ -1406,7 +1406,7 @@ public class Buffer {
         return names;
     }
     public void addToBuffer(SQLIngredientPump e){
-        Log.i(TAG, "addToBuffer"+e.toString());
+        Log.v(TAG, "addToBuffer"+e.toString());
         this.ingredientPumps.add(e);
     }
     public void removeFromBuffer(SQLIngredientPump e){
@@ -1733,14 +1733,14 @@ public class Buffer {
     //Setup
 
     private static void setUpEmptyPumps(Context context) {
-        Log.i(TAG, "setUpEmptyPumps");
+        Log.v(TAG, "setUpEmptyPumps");
         Buffer.getSingleton().noMemory();
         DatabaseConnection.init(context).setUpEmptyPumps(); //delete all pump Tables to be sure
         //no local refresh Buffer.localRefresh(context);
     }
 
     private void emptyUpPumps(Context context) {
-        Log.i(TAG, "emptyUpPumps");
+        Log.v(TAG, "emptyUpPumps");
         if(this.pumps == null) {
             this.pumps = new ArrayList<>();
         }else{
