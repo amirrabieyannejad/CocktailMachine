@@ -6,6 +6,7 @@ import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_LONG;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
@@ -29,6 +30,7 @@ public class RecipeTopicTable extends BasicColumn<SQLRecipeTopic> {
     public static final String COLUMN_TYPE_ID = TYPE_ID;
     public static final String COLUMN_TYPE_RECIPE_ID = TYPE_LONG;
     public static final String COLUMN_TYPE_TOPIC_ID = TYPE_LONG;
+    private static final String TAG = "RecipeTopicTable";
 
     @Override
     public String getName() {
@@ -70,10 +72,15 @@ public class RecipeTopicTable extends BasicColumn<SQLRecipeTopic> {
     }
 
     public List<SQLRecipeTopic> getTopics(SQLiteDatabase db, SQLRecipe recipe) {
+        if(recipe == null){
+            return new ArrayList<>();
+        }
         try {
             return this.getElementsWith(db, COLUMN_NAME_RECIPE_ID, Long.toString(recipe.getID()));
         } catch (NoSuchColumnException e) {
-            e.printStackTrace();
+            Log.v(TAG, "getTopics error");
+            Log.e(TAG, "getTopics", e);
+            Log.getStackTraceString(e);
             return new ArrayList<>();
         }
     }
