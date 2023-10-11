@@ -32,14 +32,14 @@ public class SQLIngredientImageUrlElement extends SQLImageUrlElement {
 
     @Override
     public void save(Context context) {
-        Log.i(TAG, "save");
+        Log.v(TAG, "save");
         AddOrUpdateToDB.addOrUpdate(context, this);
 
     }
 
     @Override
     public void delete(Context context) {
-        Log.i(TAG, "delete");
+        Log.v(TAG, "delete");
         DeleteFromDB.remove(context, this);
     }
 

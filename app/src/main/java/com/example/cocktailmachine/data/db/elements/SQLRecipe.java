@@ -239,7 +239,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     //general
     @Override
     public void delete(Context context) {
-        Log.i(TAG, "delete");
+        Log.v(TAG, "delete");
         DeleteFromDB.remove(context, this);
     }
 
@@ -274,7 +274,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
     @Override
     public void save(Context context) {
-        Log.i(TAG, "save");
+        Log.v(TAG, "save");
         AddOrUpdateToDB.addOrUpdate(context, this);
         //Buffer.getSingleton().addToBuffer(this);
     }
@@ -321,18 +321,18 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         this.waitingQueueCountDown = new WaitingQueueCountDown(5000) {
             @Override
             public void onTick() {
-                Log.i("WaitingQueueCountDown","onTick"+getTick() );
+                Log.v("WaitingQueueCountDown","onTick"+getTick() );
             }
 
             @Override
             public void reduceTick() {
-                Log.i("WaitingQueueCountDown","reduceTick");
+                Log.v("WaitingQueueCountDown","reduceTick");
                 setTick(CocktailMachine.getNumberOfUsersUntilThisUsersTurn(activity,getTick()));
             }
 
             @Override
             public void onNext() {
-                Log.i("WaitingQueueCountDown","onNext");
+                Log.v("WaitingQueueCountDown","onNext");
                 //TODO: Notification
                 //TODO: ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
                 //toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,150);
@@ -342,7 +342,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
             @Override
             public void onFinish() {
-                Log.i("WaitingQueueCountDown","onFinish");
+                Log.v("WaitingQueueCountDown","onFinish");
 
                 //TODO: ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
                 //toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,150);
@@ -371,20 +371,20 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         this.waitingQueueCountDown = new WaitingQueueCountDown(5000) {
             @Override
             public void onTick() {
-                Log.i("WaitingQueueCountDown","Dialog  onTick"+getTick());
+                Log.v("WaitingQueueCountDown","Dialog  onTick"+getTick());
                 alertDialog.setMessage("noch: "+getTick());
-                Log.i("WaitingQueueCountDown","Dialog  onTick"+getTick());
+                Log.v("WaitingQueueCountDown","Dialog  onTick"+getTick());
             }
 
             @Override
             public void reduceTick() {
-                Log.i("WaitingQueueCountDown","Dialog  reduceTick");
+                Log.v("WaitingQueueCountDown","Dialog  reduceTick");
                 setTick(CocktailMachine.getNumberOfUsersUntilThisUsersTurn(activity,getTick()));
             }
 
             @Override
             public void onNext() {
-                Log.i("WaitingQueueCountDown","Dialog  onNext");
+                Log.v("WaitingQueueCountDown","Dialog  onNext");
                 //TODO: Notification
                 Toast.makeText(activity, "Der nächste Cocktail ist deiner!", Toast.LENGTH_LONG).show();
                 //TODO: ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
@@ -395,7 +395,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
             @Override
             public void onFinish() {
-                Log.i("WaitingQueueCountDown","Dialog  onFinish");
+                Log.v("WaitingQueueCountDown","Dialog  onFinish");
                 //TODO: ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
                 //toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,150);
                 //toneGen1.startTone(ToneGenerator.TONE_PROP_BEEP,300);

@@ -87,10 +87,10 @@ public class SQLRecipeIngredient extends SQLDataBaseElement {
      * @return
      */
     public boolean loadAvailable() {
-        Log.i(TAG, "loadAvailable");
+        Log.v(TAG, "loadAvailable");
         boolean res = (this.getIngredient()!=null)&&(this.getRecipe()!=null);
         if(res != this.available){
-            Log.i(TAG, "loadAvailable: has changed: "+res);
+            Log.v(TAG, "loadAvailable: has changed: "+res);
             this.available = res;
             this.wasChanged();
         }
@@ -101,13 +101,13 @@ public class SQLRecipeIngredient extends SQLDataBaseElement {
 
     @Override
     public void save(Context context) {
-        Log.i(TAG, "save");
+        Log.v(TAG, "save");
         AddOrUpdateToDB.addOrUpdate(context, this);
     }
 
     @Override
     public void delete(Context context) {
-        Log.i(TAG, "delete");
+        Log.v(TAG, "delete");
         DeleteFromDB.remove(context, this);
     }
 
