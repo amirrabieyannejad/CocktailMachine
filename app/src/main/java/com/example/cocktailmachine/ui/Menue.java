@@ -58,6 +58,7 @@ public class Menue extends AppCompatActivity {
         }
 
          */
+        Buffer.loadPrepedDB(this);
         if(Dummy.asAdmin){
             Log.i(TAG, "onCreate: dummy asadmin");
             AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.Admin);
