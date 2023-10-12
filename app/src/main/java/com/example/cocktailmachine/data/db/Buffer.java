@@ -144,7 +144,7 @@ public class Buffer {
 
 
     private void setLoad(Context context) throws NotInitializedDBException {
-        Log.w(TAG, "setLoad");
+       // Log.w(TAG, "setLoad");
         DatabaseConnection.init(context);
         this.pumps = DatabaseConnection.getSingleton().loadPumps();
         this.ingredientPumps = DatabaseConnection.getSingleton().loadIngredientPumps();
@@ -357,19 +357,19 @@ public class Buffer {
      * @param context
      */
     public static void loadPreped(Context context) {
-        Log.v(TAG, "loadPreped" );
+       // Log.v(TAG, "loadPreped" );
         DatabaseConnection.loadLiquid(context);
         DatabaseConnection.loadPrepedRecipes(context);
     }
 
     public static void loadDummy(Activity activity){
-        Log.v(TAG, "loadDummy");
+       // Log.v(TAG, "loadDummy");
         try {
             DatabaseConnection.init(activity).loadDummy(activity);
         } catch (NotInitializedDBException | MissingIngredientPumpException e) {
-            Log.v(TAG, "loadDummy");
-            Log.e(TAG, "error", e);
-            Log.getStackTraceString(e);
+           // Log.v(TAG, "loadDummy");
+           // Log.e(TAG, "error", e);
+           // Log.getStackTraceString(e);
         }
     }
 
@@ -961,14 +961,14 @@ public class Buffer {
      */
     @Nullable
     public Recipe getRecipe(Context context, long id){
-        Log.w(TAG, "getRecipe");
+       // Log.w(TAG, "getRecipe");
         if(this.recipes == null){
             try {
                 this.setLoad(context);
             } catch (NotInitializedDBException e) {
                 //throw new RuntimeException(e);
-                Log.e(TAG, "NotInitializedDBException", e);
-                Log.getStackTraceString(e);
+               // Log.e(TAG, "NotInitializedDBException", e);
+               // Log.getStackTraceString(e);
             }
         }
         Recipe res =getRecipe(id);
@@ -1163,7 +1163,7 @@ public class Buffer {
                 }
             }
         }catch (NullPointerException e){
-            Log.e(TAG, "getIngredientToVol NullPointerException");
+           // Log.e(TAG, "getIngredientToVol NullPointerException");
             //Log.e(TAG, e.getMessage());
             e.printStackTrace();
         }
@@ -1408,7 +1408,7 @@ public class Buffer {
         return names;
     }
     public void addToBuffer(SQLIngredientPump e){
-        Log.v(TAG, "addToBuffer"+e.toString());
+       // Log.v(TAG, "addToBuffer"+e.toString());
         this.ingredientPumps.add(e);
     }
     public void removeFromBuffer(SQLIngredientPump e){
@@ -1739,14 +1739,14 @@ public class Buffer {
     //Setup
 
     private static void setUpEmptyPumps(Context context) {
-        Log.v(TAG, "setUpEmptyPumps");
+       // Log.v(TAG, "setUpEmptyPumps");
         Buffer.getSingleton().noMemory();
         DatabaseConnection.init(context).setUpEmptyPumps(); //delete all pump Tables to be sure
         //no local refresh Buffer.localRefresh(context);
     }
 
     private void emptyUpPumps(Context context) {
-        Log.v(TAG, "emptyUpPumps");
+       // Log.v(TAG, "emptyUpPumps");
         if(this.pumps == null) {
             this.pumps = new ArrayList<>();
         }else{
