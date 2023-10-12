@@ -105,7 +105,7 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
                         COLUMN_NAME_NAME,
                         name);
             } catch (NoSuchColumnException e) {
-                Log.v(TAG, "getElement name failed");
+               // Log.v(TAG, "getElement name failed");
                 Log.e(TAG, "error", e);
                 Log.getStackTraceString(e);
             }
@@ -157,7 +157,7 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
 
 
     private HashMap<String, Long> cursorToHashIngredientNameToID(Cursor cursor){
-        Log.v(TAG, "cursorToList");
+       // Log.v(TAG, "cursorToList");
         HashMap<String, Long>  res = new HashMap<>();
         int nameIndex = cursor.getColumnIndex(COLUMN_NAME_NAME);
         int idIndex = cursor.getColumnIndex(_ID);
@@ -168,7 +168,7 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
             }
         }
         cursor.close();
-        Log.v(TAG, "cursorToList : "+res);
+       // Log.v(TAG, "cursorToList : "+res);
         return res;
     }
 }
