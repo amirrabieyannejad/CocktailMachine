@@ -1,0 +1,83 @@
+python .\test_bluetooth.py C8:F0:9E:52:75:0A
+INFO 23-10-12 14:40:17: --- run started (#1) ---
+INFO 23-10-12 14:40:23: message: {"cmd": "factory_reset", "user": 0}
+INFO 23-10-12 14:40:24: -> response: "ok"
+INFO 23-10-12 14:40:24: reading status...
+INFO 23-10-12 14:40:25:   - base -> Cocktail Machine ESP32
+INFO 23-10-12 14:40:25:   - state -> "ready"
+INFO 23-10-12 14:40:25:   - liquids -> {}
+INFO 23-10-12 14:40:25:   - pumps -> {}
+INFO 23-10-12 14:40:25:   - recipes -> {}
+INFO 23-10-12 14:40:25:   - cocktail -> {"weight":186593.0,"content":[]}
+INFO 23-10-12 14:40:25:   - timestamp -> 18407
+INFO 23-10-12 14:40:26:   - user -> -1
+ERROR 23-10-12 14:40:26:        scale (ff18f0ac-f039-4cd0-bee3-b546e3de5551) -> Characteristic ff18f0ac-f039-4cd0-bee3-b546e3de5551 was not found!
+ERROR 23-10-12 14:40:26:        error (2e03aa0c-b25f-456a-a327-bd175771111a) -> Characteristic 2e03aa0c-b25f-456a-a327-bd175771111a was not found!
+INFO 23-10-12 14:40:26: message: {"cmd": "test"}
+INFO 23-10-12 14:40:26: -> response: "ok"
+INFO 23-10-12 14:40:26: message: {"cmd": "init_user", "name": "test-user"}
+INFO 23-10-12 14:40:26: -> response: {"user": 1}
+INFO 23-10-12 14:40:27: message: {"cmd": "clean", "user": 0}
+INFO 23-10-12 14:40:27: -> response: "unsupported"
+INFO 23-10-12 14:40:27: message: {"cmd": "tare_scale", "user": 0}
+INFO 23-10-12 14:40:28: -> response: "ok"
+INFO 23-10-12 14:40:29: message: {"cmd": "calibrate_scale", "user": 0, "weight": 100}
+INFO 23-10-12 14:40:30: -> response: "ok"
+INFO 23-10-12 14:40:30: message: {"cmd": "set_scale_factor", "user": 0, "factor": 1.0}
+INFO 23-10-12 14:40:30: -> response: "ok"
+INFO 23-10-12 14:40:30: message: {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
+INFO 23-10-12 14:40:31: -> response: "ok"
+INFO 23-10-12 14:40:31: message: {"cmd": "define_pump", "user": 0, "liquid": "beer", "volume": 2000, "slot": 2}
+INFO 23-10-12 14:40:32: -> response: "ok"
+INFO 23-10-12 14:40:32: message: {"cmd": "define_pump", "user": 0, "liquid": "lemonade", "volume": 3000, "slot": 7}
+INFO 23-10-12 14:40:33: -> response: "ok"
+INFO 23-10-12 14:40:33: message: {"cmd": "run_pump", "user": 0, "slot": 1, "time": 10}
+INFO 23-10-12 14:40:34: -> response: "ok"
+INFO 23-10-12 14:40:34: message: {"cmd": "run_pump", "user": 0, "slot": 2, "time": 10}
+INFO 23-10-12 14:40:35: -> response: "ok"
+INFO 23-10-12 14:40:35: message: {"cmd": "run_pump", "user": 0, "slot": 7, "time": 10}
+INFO 23-10-12 14:40:36: -> response: "ok"
+INFO 23-10-12 14:40:36: reading status...
+INFO 23-10-12 14:40:36:   - base -> Cocktail Machine ESP32
+INFO 23-10-12 14:40:36:   - state -> "cocktail done"
+INFO 23-10-12 14:40:37:   - liquids -> {"lemonade":2990.0,"water":990.0,"beer":1990.0}
+INFO 23-10-12 14:40:37:   - pumps -> {"1":{"liquid":water","volume":990.0},"2":{"liquid":beer","volume":1990.0},"7":{"liquid":lemonade","volume":2990.0}}
+INFO 23-10-12 14:40:37:   - recipes -> {}
+INFO 23-10-12 14:40:37:   - cocktail -> {"weight":186302.0,"content":[["<calibration>",10.0],["<calibration>",10.0],["<calibration>",10.0]]}
+INFO 23-10-12 14:40:38:   - timestamp -> 26378
+INFO 23-10-12 14:40:38:   - user -> 0
+ERROR 23-10-12 14:40:38:        scale (ff18f0ac-f039-4cd0-bee3-b546e3de5551) -> Characteristic ff18f0ac-f039-4cd0-bee3-b546e3de5551 was not found!
+ERROR 23-10-12 14:40:38:        error (2e03aa0c-b25f-456a-a327-bd175771111a) -> Characteristic 2e03aa0c-b25f-456a-a327-bd175771111a was not found!
+INFO 23-10-12 14:40:38: message: {"cmd": "calibrate_pump", "user": 0, "slot": 1, "time1": 11, "volume1": 10.0, "time2": 21, "volume2": 20.0}
+INFO 23-10-12 14:40:39: -> response: "ok"
+INFO 23-10-12 14:40:39: message: {"cmd": "set_pump_times", "user": 0, "slot": 2, "time_init": 1, "time_reverse": 1, "rate": 1.0}
+INFO 23-10-12 14:40:39: -> response: "ok"
+INFO 23-10-12 14:40:40: message: {"cmd": "set_pump_times", "user": 0, "slot": 7, "time_init": 1, "time_reverse": 1, "rate": 1.0}
+INFO 23-10-12 14:40:40: -> response: "ok"
+INFO 23-10-12 14:40:41: message: {"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1}
+INFO 23-10-12 14:40:41: -> response: "ok"
+INFO 23-10-12 14:40:42: message: {"cmd": "refill_pump", "user": 0, "volume": 2000, "slot": 2}
+INFO 23-10-12 14:40:42: -> response: "ok"
+INFO 23-10-12 14:40:43: message: {"cmd": "refill_pump", "user": 0, "volume": 3000, "slot": 7}
+INFO 23-10-12 14:40:43: -> response: "ok"
+INFO 23-10-12 14:40:43: message: {"cmd": "reset", "user": 0}
+INFO 23-10-12 14:40:44: -> response: "wrong comm channel"
+INFO 23-10-12 14:40:44: reading status...
+INFO 23-10-12 14:40:44:   - base -> Cocktail Machine ESP32
+INFO 23-10-12 14:40:44:   - state -> "cocktail done"
+INFO 23-10-12 14:40:44:   - liquids -> {"lemonade":3000.0,"water":1000.0,"beer":2000.0}
+INFO 23-10-12 14:40:44:   - pumps -> {"1":{"liquid":water","volume":1000.0},"2":{"liquid":beer","volume":2000.0},"7":{"liquid":lemonade","volume":3000.0}}
+INFO 23-10-12 14:40:44:   - recipes -> {}
+INFO 23-10-12 14:40:45:   - cocktail -> {"weight":186302.0,"content":[["<calibration>",10.0],["<calibration>",10.0],["<calibration>",10.0]]}
+INFO 23-10-12 14:40:45:   - timestamp -> 26378
+INFO 23-10-12 14:40:45:   - user -> 0
+ERROR 23-10-12 14:40:45:        scale (ff18f0ac-f039-4cd0-bee3-b546e3de5551) -> Characteristic ff18f0ac-f039-4cd0-bee3-b546e3de5551 was not found!
+ERROR 23-10-12 14:40:45:        error (2e03aa0c-b25f-456a-a327-bd175771111a) -> Characteristic 2e03aa0c-b25f-456a-a327-bd175771111a was not found!
+INFO 23-10-12 14:40:45: message: {"cmd": "calibration_start", "user": 0}
+INFO 23-10-12 14:40:46: -> response: "unknown command"
+INFO 23-10-12 14:40:46: message: {"cmd": "calibration_cancel", "user": 0}
+INFO 23-10-12 14:40:46: -> response: "unknown command"
+INFO 23-10-12 14:40:47: message: {"cmd": "calibration_start", "user": 0}
+INFO 23-10-12 14:40:47: -> response: "unknown command"
+INFO 23-10-12 14:40:47: waiting for calibration empty container
+INFO 23-10-12 14:40:47:   is: "cocktail done"
