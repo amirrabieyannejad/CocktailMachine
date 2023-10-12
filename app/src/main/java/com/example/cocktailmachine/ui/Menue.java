@@ -81,7 +81,7 @@ public class Menue extends AppCompatActivity {
             Log.v(TAG, "onCreate: dummy:  not withSetCalibration ");
         }
         if (!CocktailMachineCalibration.isIsDone()){
-            Log.v(TAG, "onCreate: start calibration ");
+            Log.w(TAG, "onCreate: start calibration ");
             CocktailMachineCalibration.start(this);
         }
         if(!Dummy.withTestEnvs){

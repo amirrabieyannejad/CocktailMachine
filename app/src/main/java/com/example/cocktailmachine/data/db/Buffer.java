@@ -144,6 +144,7 @@ public class Buffer {
 
 
     private void setLoad(Context context) throws NotInitializedDBException {
+        Log.w(TAG, "setLoad");
         DatabaseConnection.init(context);
         this.pumps = DatabaseConnection.getSingleton().loadPumps();
         this.ingredientPumps = DatabaseConnection.getSingleton().loadIngredientPumps();
@@ -960,13 +961,14 @@ public class Buffer {
      */
     @Nullable
     public Recipe getRecipe(Context context, long id){
+        Log.w(TAG, "getRecipe");
         if(this.recipes == null){
             try {
                 this.setLoad(context);
             } catch (NotInitializedDBException e) {
                 //throw new RuntimeException(e);
-                Log.e(TAG, "NotInitializedDBException");
-                e.printStackTrace();
+                Log.e(TAG, "NotInitializedDBException", e);
+                Log.getStackTraceString(e);
             }
         }
         Recipe res =getRecipe(id);
@@ -1648,10 +1650,14 @@ public class Buffer {
             this.recipeIngredients = new ArrayList<>();
         }
         for(SQLRecipeIngredient ri: this.recipeIngredients){
-            Recipe i = GetFromDB.loadRecipe(context,
-                    ri.getRecipeID());
-            this.recipes.add(i);
-            addAvailableToFast(i);
+            if(ri != null) {
+                Recipe i = GetFromDB.loadRecipe(context,
+                        ri.getRecipeID());
+                if (i != null) {
+                    this.recipes.add(i);
+                    addAvailableToFast(i);
+                }
+            }
         }
     }
 

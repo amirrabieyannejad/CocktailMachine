@@ -142,7 +142,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
             Log.v(TAG, "copyFromAssets: no context to work with");
             return;
         }
-        Log.v(TAG, "copyFromAssets: copying neccessary");
+        Log.w(TAG, "copyFromAssets: copying neccessary");
         String db_path;
         //db_path = context.getFilesDir().getPath()+DBname;//"/databases/";
         db_path = "/data/data/" + context.getPackageName() + "/databases/";

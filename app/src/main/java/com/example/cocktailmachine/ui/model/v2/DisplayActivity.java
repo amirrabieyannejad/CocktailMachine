@@ -39,6 +39,7 @@ public class DisplayActivity extends BasicActivity {
         binding.includeDisplayIngredientAdmin.getRoot().setVisibility(View.GONE);
         binding.imageButtonShowColor.setVisibility(View.GONE);
         //RECIPE
+        binding.buttonSendRecipe.setVisibility(View.GONE);
         binding.includeRecipeIngredientsList.getRoot().setVisibility(View.GONE);
         binding.includeRecipeTopicsList.getRoot().setVisibility(View.GONE);
 
@@ -48,10 +49,6 @@ public class DisplayActivity extends BasicActivity {
     @Override
     void postSetUp() {
 
-        binding.textViewDisplayTitle.setOnClickListener(
-                v -> GetActivity.goToList(
-                DisplayActivity.this,
-                        DisplayActivity.this.getModelType()));
     }
 
     @Override
@@ -108,6 +105,13 @@ public class DisplayActivity extends BasicActivity {
                         recipe,
                         false,
                         true));
+        binding.buttonSendRecipe.setVisibility(View.VISIBLE);
+        binding.buttonSendRecipe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GetDialog.sendRecipe(DisplayActivity.this, recipe);
+            }
+        });
         /*
         if(topics.size()>0) {
             Log.v(TAG, "setTopics size> 0");

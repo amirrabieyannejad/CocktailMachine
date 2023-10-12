@@ -154,6 +154,12 @@
             android:layout_margin="8dp" />
 
 
+        <Button
+            android:id="@+id/button_send_recipe"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mix den Cocktail!" />
+
         <include
             android:id="@+id/includeRecipeIngredientsList"
             layout="@layout/layout_list_with_title"
