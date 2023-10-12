@@ -68,10 +68,10 @@ public class SQLRecipeTopic extends SQLDataBaseElement {
      * @return
      */
     public boolean loadAvailable() {
-        Log.v(TAG, "loadAvailable");
+       // Log.v(TAG, "loadAvailable");
         boolean res = (this.getTopic()!=null)&&(this.getRecipe()!=null);
         if(res != this.available){
-            Log.v(TAG, "loadAvailable: has changed: "+res);
+           // Log.v(TAG, "loadAvailable: has changed: "+res);
             this.available = res;
             this.wasChanged();
         }
@@ -87,7 +87,7 @@ public class SQLRecipeTopic extends SQLDataBaseElement {
 
     @Override
     public void delete(Context context) {
-        Log.v(TAG, "delete");
+       // Log.v(TAG, "delete");
         DeleteFromDB.remove(context,this);
 
     }

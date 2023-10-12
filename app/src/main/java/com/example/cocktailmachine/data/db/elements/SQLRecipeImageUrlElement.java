@@ -31,13 +31,13 @@ public class SQLRecipeImageUrlElement extends SQLImageUrlElement {
 
     @Override
     public void save(Context context) {
-        Log.v(TAG, "save");
+       // Log.v(TAG, "save");
         AddOrUpdateToDB.addOrUpdate(context,this);
     }
 
     @Override
     public void delete(Context context) {
-        Log.v(TAG, "delete");
+       // Log.v(TAG, "delete");
         DeleteFromDB.remove(context, this);
     }
 }

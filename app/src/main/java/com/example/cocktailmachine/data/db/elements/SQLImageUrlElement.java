@@ -26,12 +26,12 @@ public abstract class SQLImageUrlElement extends SQLDataBaseElement {
     }
 
     public String getUrl(){
-        Log.v(TAG, "getUrl");
+       // Log.v(TAG, "getUrl");
         return this.url;
     }
 
     public long getOwnerID(){
-        Log.v(TAG, "getOwnerID");
+       // Log.v(TAG, "getOwnerID");
         return this.ownerID;
     }
 
@@ -41,7 +41,7 @@ public abstract class SQLImageUrlElement extends SQLDataBaseElement {
      */
     @Override
     public boolean isAvailable() {
-        Log.v(TAG, "isAvailable");
+       // Log.v(TAG, "isAvailable");
         return this.available;
     }
 
@@ -51,7 +51,7 @@ public abstract class SQLImageUrlElement extends SQLDataBaseElement {
      */
     @Override
     public boolean loadAvailable(Context context) {
-        Log.v(TAG, "loadAvailable");
+       // Log.v(TAG, "loadAvailable");
         File f = new File(getUrl());
         this.available = f.exists() && !f.isDirectory();
         return isAvailable();

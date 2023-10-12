@@ -123,7 +123,7 @@ public class SQLIngredientPump extends SQLDataBaseElement {
         boolean res = (getIngredient() != null)&&(getPump() != null);
 
         if(res != this.available){
-            Log.v(TAG, "loadAvailable: available has changed to: "+res);
+           // Log.v(TAG, "loadAvailable: available has changed to: "+res);
             this.available = res;
             this.wasChanged();
         }
@@ -137,10 +137,10 @@ public class SQLIngredientPump extends SQLDataBaseElement {
 
     @Override
     public void delete(Context context) {
-        Log.v(TAG, "delete");
+       // Log.v(TAG, "delete");
         DeleteFromDB.remove(context, this);
         //DatabaseConnection.getDataBase().remove(this);
-        Log.v(TAG, "delete: success");
+       // Log.v(TAG, "delete: success");
 
     }
 
