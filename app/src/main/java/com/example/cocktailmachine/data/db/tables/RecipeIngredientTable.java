@@ -164,7 +164,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
             temp = this.getElementsNotIn(db, COLUMN_NAME_INGREDIENT_ID, resIDs);
 
         } catch (NoSuchColumnException e) {
-            Log.e(TAG, "getWithIngredients" );
+           Log.e(TAG, "getWithIngredients" );
         }
         List<Long> res = new ArrayList<>();
         for(SQLRecipeIngredient ri: temp){
@@ -188,7 +188,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
             res = this.getElementsIn(db, COLUMN_NAME_INGREDIENT_ID, resIDs);
 
         } catch (NoSuchColumnException e) {
-            Log.e(TAG, "getWithIngredients" );
+           Log.e(TAG, "getWithIngredients" );
         }
 
         return res;
@@ -212,7 +212,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
             }
         }
         cursor.close();
-        Log.v(TAG, "cursorToList : "+ids);
+       // Log.v(TAG, "cursorToList : "+ids);
         cursor.close();
         return ids;
     }
@@ -235,7 +235,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
             }
         }
         cursor.close();
-        Log.v(TAG, "cursorToList : "+ids);
+       // Log.v(TAG, "cursorToList : "+ids);
         cursor.close();
         return ids;
     }
