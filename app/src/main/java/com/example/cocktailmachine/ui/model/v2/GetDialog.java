@@ -2,21 +2,19 @@ package com.example.cocktailmachine.ui.model.v2;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.InputType;
 import android.util.Log;
-import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.ui.model.ModelType;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
@@ -29,14 +27,11 @@ import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.CalibrateStatus;
 import com.example.cocktailmachine.data.enums.ErrorStatus;
 import com.example.cocktailmachine.data.enums.Postexecute;
-import com.example.cocktailmachine.ui.model.FragmentType;
-import com.example.cocktailmachine.ui.model.ModelType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Johanna Reidt
@@ -260,8 +255,37 @@ public class GetDialog {
     public static void startAutomaticCalibration(Activity activity){
         Log.i(TAG, "startAutomaticCalibration");
         //CocktailMachine.automaticCalibration();
-        firstAutomaticDialog(activity);
+        enterNumberOfPumps(activity);
         //ErrorStatus.handleAutoCalNotReadyStart(activity, dialog);
+    }
+
+
+    private static void enterNumberOfPumps(Activity activity){
+        Log.i(TAG, "enterNumberOfPumps");
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Setze die Anzahl der Pumpen:");
+
+        View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
+        GetDialog.PumpNumberChangeView pumpNumberChangeView =
+                new GetDialog.PumpNumberChangeView(
+                        activity,
+                        v);
+
+        builder.setView(v);
+        builder.setPositiveButton("Speichern", (dialog, which) -> {
+            try {
+                pumpNumberChangeView.save(); //set up n new Pumps
+                //pumpNumberChangeView.send();
+                //dialog.dismiss();
+                //getGlass(activity);
+                firstAutomaticDialog(activity);
+            }catch (IllegalStateException e){
+                Log.e(TAG, "enterNumberOfPumps pumpNumberChangeView save error");
+                Log.e(TAG, e.toString());
+                e.printStackTrace();
+            }
+        });
+        builder.show();
     }
 
     public static void firstAutomaticDialog(Activity activity){
@@ -313,37 +337,14 @@ public class GetDialog {
             //enterNumberOfPumps(activity);
             CocktailMachine.tareScale(activity);
             dialog.dismiss();
-            enterNumberOfPumps(activity);
+            //enterNumberOfPumps(activity);
+            getGlass(activity);
         });
         builder.show();
     }
 
-    private static void enterNumberOfPumps(Activity activity){
-        Log.i(TAG, "enterNumberOfPumps");
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle("Setze die Anzahl der Pumpen:");
 
-        View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
-        GetDialog.PumpNumberChangeView pumpNumberChangeView =
-                new GetDialog.PumpNumberChangeView(
-                        activity,
-                        v);
 
-        builder.setView(v);
-        builder.setPositiveButton("Speichern", (dialog, which) -> {
-            try {
-                pumpNumberChangeView.save(); //set up n new Pumps
-                //dialog.dismiss();
-                getGlass(activity);
-            }catch (IllegalStateException e){
-
-                Log.e(TAG, "enterNumberOfPumps pumpNumberChangeView save error");
-                Log.e(TAG, e.toString());
-                e.printStackTrace();
-            }
-        });
-        builder.show();
-    }
 
     private static void getGlass(Activity activity){
         Log.i("GetDialog", "getGlass");
@@ -1813,6 +1814,9 @@ public class GetDialog {
 
         @Override
         public void send() {
+            for(Pump p: Pump.getPumps()){
+                p.sendSave(activity);
+            }
         }
     }
 

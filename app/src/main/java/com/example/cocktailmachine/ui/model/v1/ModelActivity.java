@@ -6,8 +6,6 @@ import android.os.Bundle;
 
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.enums.AdminRights;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
-import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMainBinding;
 import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.model.FragmentType;

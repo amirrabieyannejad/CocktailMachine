@@ -74,7 +74,7 @@ public class RecipeTopicTable extends BasicColumn<SQLRecipeTopic> {
             return this.getElementsWith(db, COLUMN_NAME_RECIPE_ID, Long.toString(recipe.getID()));
         } catch (NoSuchColumnException e) {
             e.printStackTrace();
-            return null;
+            return new ArrayList<>();
         }
     }
 }

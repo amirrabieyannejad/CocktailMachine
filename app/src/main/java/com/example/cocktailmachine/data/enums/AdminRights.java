@@ -16,7 +16,6 @@ import androidx.appcompat.app.AlertDialog;
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
-import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
 
 import org.json.JSONException;
 import org.json.JSONObject;

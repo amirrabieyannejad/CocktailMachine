@@ -128,7 +128,28 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         return res;
     }
 
-    private String[] makeSelectionList(String column_name,
+    /**
+     * reads with given crusor each given rows to a T element
+     * @author Johanna Reidt
+     * @param cursor
+     * @return T element list
+     */
+    private List<Long> cursorToIDList(Cursor cursor){
+        Log.i(TAG, "cursorToList");
+        List<Long> res = new ArrayList<>();
+        int id_index = cursor.getColumnIndexOrThrow(_ID);
+        if(cursor.moveToFirst()) {
+            res.add(cursor.getLong(id_index));
+            while (cursor.moveToNext()) {
+                res.add(cursor.getLong(id_index));
+            }
+        }
+        cursor.close();
+        Log.i(TAG, "cursorToList : "+res);
+        return res;
+    }
+
+    private String makeSelectionList(String column_name,
                                        List<? extends Object> ll)
             throws NoSuchColumnException {
 
@@ -146,7 +167,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
             builder.append(ll.get(i));
         }
         builder.append(")");
-        return new String[]{builder.toString()};
+        return builder.toString();
         /*
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return ll.stream().map(Object::toString).toArray(String[] ::new);
@@ -223,6 +244,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 null,
                 null,
                 null);
+        /*
         List<Long> ids = new ArrayList<>();
         try {
             if (cursor.moveToFirst()) {
@@ -235,6 +257,9 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
             Log.e(TAG, "getIDs", e);
             Log.getStackTraceString(e);
         }
+
+         */
+        List<Long> ids = cursorToIDList(cursor);
         cursor.close();
         return ids;
     }
@@ -255,8 +280,121 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         };
     }
 
-    public Iterator<List<T>> getChunkIterator(SQLiteDatabase db, int n){
 
+    /**
+     * @author Johanna Reidt
+     * @created Fr. 06.Okt 2023 - 15:39
+     * @project CocktailMachine
+     */
+    public class DatabaseIterator implements Iterator<List<T>> {
+        private static final String TAG = "DatabaseIterator";
+        //private final BasicColumn<T> table;
+        private final List<Long> ids;
+        private int position = 0;
+        private final int chunkSize;
+        private final SQLiteDatabase readableDB;
+
+
+        public DatabaseIterator(SQLiteDatabase readableDB){
+            this.ids = BasicColumn.this.getIDs(readableDB);
+            this.chunkSize = 30;
+            this.readableDB = readableDB;
+            //this.table = loadTable();
+        }
+
+        public DatabaseIterator(SQLiteDatabase readableDB,
+                                int chunkSize){
+            this.ids = BasicColumn.this.getIDs(readableDB);
+            this.chunkSize = chunkSize;
+            this.readableDB = readableDB;
+            //this.table = loadTable();
+        }
+
+        @Override
+        public boolean hasNext() {
+
+            return this.position < this.ids.size();
+        }
+
+        @Override
+        public List<T> next() {
+            int oldPosition = this.position;
+            this.position = this.position + this.chunkSize;
+            if(this.position > this.ids.size()){
+                this.position = this.ids.size();
+            }
+            List<Long> temp = this.ids.subList(
+                    oldPosition,
+                    this.position);
+            return BasicColumn.this.getElements(this.readableDB, temp);
+        }
+
+        public void exclude(String columnName,
+                            List<Object> exclude){
+            try {
+                List<Long> del = BasicColumn.this.getIDsIn(
+                        readableDB,
+                        columnName,
+                        exclude);
+                Long oldID = this.ids.get(position);
+                this.ids.removeAll(del);
+                this.position = this.ids.indexOf(oldID);
+            } catch (NoSuchColumnException e) {
+                Log.e(TAG, "exclude", e);
+            }
+        }
+
+        public void include(String columnName,
+                            List<Object> include){
+            try {
+                List<Long> del = BasicColumn.this.getIDsNotIn(
+                        readableDB,
+                        columnName,
+                        include);
+                Long oldID = this.ids.get(position);
+                this.ids.removeAll(del);
+                this.position = this.ids.indexOf(oldID);
+            } catch (NoSuchColumnException e) {
+                Log.e(TAG, "include", e);
+            }
+        }
+
+        public void exclude(String columnName,
+                            String needle){
+            try {
+                List<Long> del = BasicColumn.this.getIDsLike(
+                        readableDB,
+                        columnName,
+                        needle);
+                Long oldID = this.ids.get(position);
+                this.ids.removeAll(del);
+                this.position = this.ids.indexOf(oldID);
+            } catch (NoSuchColumnException e) {
+                Log.e(TAG, "include", e);
+            }
+        }
+
+        public void include(String columnName,
+                            String needle){
+            try {
+                List<Long> del = BasicColumn.this.getIDsNotLike(
+                        readableDB,
+                        columnName,
+                        needle);
+                Long oldID = this.ids.get(position);
+                this.ids.removeAll(del);
+                this.position = this.ids.indexOf(oldID);
+            } catch (NoSuchColumnException e) {
+                Log.e(TAG, "include", e);
+            }
+        }
+    }
+
+
+
+
+    public DatabaseIterator getChunkIterator(SQLiteDatabase db, int n){
+        /*
         return new Iterator<List<T>>() {
             private final List<Long> ids = BasicColumn.this.getIDs(db);
             private int position = 0;
@@ -276,6 +414,9 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 return BasicColumn.this.getElements(db, temp);
             }
         };
+
+         */
+        return new DatabaseIterator(db, n);
     }
 
     /**
@@ -333,11 +474,45 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         Cursor cursor = db.query(this.getName(),
                 getColumns().toArray(new String[0]),
                 column_name+" LIKE ?",
-                new String[]{likeThis},
+                new String[]{likeThis+"%"},
                 null,
                 null,
                 null);
         return this.cursorToList(cursor);
+    }
+
+    public List<Long> getIDsLike(SQLiteDatabase db,
+                                   String column_name,
+                                   String likeThis)
+            throws NoSuchColumnException {
+        if(!getColumns().contains(column_name)){
+            throw new NoSuchColumnException(getName(), column_name);
+        }
+        Cursor cursor = db.query(this.getName(),
+                getColumns().toArray(new String[0]),
+                column_name+" LIKE ?",
+                new String[]{likeThis+"%"},
+                null,
+                null,
+                null);
+        return this.cursorToIDList(cursor);
+    }
+
+    public List<Long> getIDsNotLike(SQLiteDatabase db,
+                                 String column_name,
+                                 String likeThis)
+            throws NoSuchColumnException {
+        if(!getColumns().contains(column_name)){
+            throw new NoSuchColumnException(getName(), column_name);
+        }
+        Cursor cursor = db.query(this.getName(),
+                getColumns().toArray(new String[0]),
+                column_name+" NOT LIKE ?",
+                new String[]{likeThis+"%"},
+                null,
+                null,
+                null);
+        return this.cursorToIDList(cursor);
     }
 
     private List<T> getElementsSelectionOperator(SQLiteDatabase db,
@@ -353,21 +528,54 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         }
 
 
-        String selection = column_name+" "+selectionOperator+" ?";
+        Log.i(TAG, "getElementsSelectionOperator ll is not empty");
+        Log.i(TAG, "getElementsSelectionOperator ll: "+ ll);
+
+        String selection = column_name+" "+selectionOperator+"  ";
         Log.i(TAG, "getElementsSelectionOperator selection: "+selection);
-        String[] selectionList = makeSelectionList(column_name, ll);
-        Log.i(TAG, "getElementsSelectionOperator selectionList: "+ Arrays.toString(selectionList));
+        selection += makeSelectionList(column_name, ll);
+        Log.i(TAG, "getElementsSelectionOperator selection with List: "+ selection);
 
 
         Cursor cursor = db.query(
                 this.getName(),
                 getColumns().toArray(new String[0]),
                 selection,
-                selectionList,
+                null,
                 null,
                 null,
                 null);
         return this.cursorToList(cursor);
+    }
+
+    private List<Long> getIDsSelectionOperator(SQLiteDatabase db,
+                                                 String column_name,
+                                                 List<Object> ll,
+                                                 String selectionOperator)
+            throws NoSuchColumnException {
+        Log.i(TAG, "getElementsSelectionOperator");
+
+        if(ll.isEmpty()){
+            Log.i(TAG, "getElementsSelectionOperator ll is empty");
+            return new ArrayList<>();
+        }
+
+
+        String selection = column_name+" "+selectionOperator+" ?";
+        Log.i(TAG, "getElementsSelectionOperator selection: "+selection);
+        selection += makeSelectionList(column_name, ll);
+        Log.i(TAG, "getElementsSelectionOperator selection with List: "+ selection);
+
+
+        Cursor cursor = db.query(
+                this.getName(),
+                getColumns().toArray(new String[0]),
+                selection,
+                null,
+                null,
+                null,
+                null);
+        return this.cursorToIDList(cursor);
     }
 
     public List<T> getElementsIn(SQLiteDatabase db,
@@ -380,11 +588,31 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 "IN");
     }
 
+    public List<Long> getIDsIn(SQLiteDatabase db,
+                                 String column_name,
+                                 List<Object> ll)
+            throws NoSuchColumnException {
+        return getIDsSelectionOperator(db,
+                column_name,
+                ll,
+                "IN");
+    }
+
     public List<T> getElementsNotIn(SQLiteDatabase db,
                                     String column_name,
                                     List<Object> ll)
             throws NoSuchColumnException {
         return getElementsSelectionOperator(db,
+                column_name,
+                ll,
+                "NOT IN");
+    }
+
+    public List<Long> getIDsNotIn(SQLiteDatabase db,
+                                    String column_name,
+                                    List<Object> ll)
+            throws NoSuchColumnException {
+        return getIDsSelectionOperator(db,
                 column_name,
                 ll,
                 "NOT IN");
@@ -419,6 +647,23 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         return this.cursorToList(cursor);
     }
 
+    public List<Long> getIDsWith(SQLiteDatabase db,
+                                   String column_name,
+                                   String equalsThis)
+            throws NoSuchColumnException {
+        if(!getColumns().contains(column_name)){
+            throw new NoSuchColumnException(getName(), column_name);
+        }
+        Cursor cursor = db.query(this.getName(),
+                getColumns().toArray(new String[0]),
+                column_name+" = "+equalsThis,
+                null,
+                null,
+                null,
+                null);
+        return this.cursorToIDList(cursor);
+    }
+
 
     //DELETE
     public void deleteElement(SQLiteDatabase db,
@@ -442,7 +687,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
             throws NoSuchColumnException {
         db.delete(this.getName(),
                 column_name+" "+selectionOperator+" ?",
-                makeSelectionList(column_name, ll));
+                new String[]{makeSelectionList(column_name, ll)});
     }
 
     public void deleteElements(SQLiteDatabase db, List<Long> ids) throws NoSuchColumnException {
@@ -517,7 +762,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         db.update(getName(),
                 cv,
                 where_column+" "+selectionOperator+" ?",
-                makeSelectionList(where_column, ll));
+                new String[]{makeSelectionList(where_column, ll)});
     }
 
     public void updateColumnsValues(SQLiteDatabase db,

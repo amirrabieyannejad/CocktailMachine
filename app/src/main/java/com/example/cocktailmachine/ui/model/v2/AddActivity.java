@@ -13,11 +13,9 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityAddBinding;
-import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
 import com.mrudultora.colorpicker.ColorPickerPopUp;
 
-import java.util.Arrays;
 import java.util.Random;
 
 public class AddActivity extends BasicActivity {

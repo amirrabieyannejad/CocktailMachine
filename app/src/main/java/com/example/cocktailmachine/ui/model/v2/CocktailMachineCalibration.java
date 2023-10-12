@@ -8,9 +8,6 @@ import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.enums.AdminRights;
-import com.example.cocktailmachine.data.enums.Postexecute;
-
-import org.json.JSONException;
 
 import java.util.Random;
 

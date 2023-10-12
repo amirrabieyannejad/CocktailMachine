@@ -23,8 +23,6 @@ import com.example.cocktailmachine.databinding.FragmentModelBinding;
 
 import com.example.cocktailmachine.ui.model.ModelType;
 
-import org.json.JSONException;
-
 import java.util.Objects;
 
 public class ModelFragment extends Fragment {

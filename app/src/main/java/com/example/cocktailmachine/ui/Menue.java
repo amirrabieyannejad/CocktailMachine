@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
+import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
@@ -70,9 +71,13 @@ public class Menue extends AppCompatActivity {
             binding.activityMenueLogout.setVisibility(View.GONE);
             binding.activityMenueLogin.setVisibility(View.VISIBLE);
         }
+        if(Dummy.isDummy){
+            Buffer.loadDummy(this);
+            Log.i(TAG, "onCreate: dummy: load Dummy");
+        }
         if(!Dummy.withSetCalibration){
             CocktailMachineCalibration.setIsDone(true);
-            Log.i(TAG, "onCreate: dummy: isDummy und not withSetCalibration ");
+            Log.i(TAG, "onCreate: dummy:  not withSetCalibration ");
         }
         if (!CocktailMachineCalibration.isIsDone()){
             Log.i(TAG, "onCreate: start calibration ");

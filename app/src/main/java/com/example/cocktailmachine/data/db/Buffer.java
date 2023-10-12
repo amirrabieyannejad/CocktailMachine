@@ -1,11 +1,13 @@
 package com.example.cocktailmachine.data.db;
 
+import android.app.Activity;
 import android.content.Context;
 import android.media.MediaParser;
 import android.os.Build;
 import android.os.Environment;
 import android.util.JsonReader;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -19,6 +21,7 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.exceptions.AccessDeniedException;
+import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.tables.Tables;
 import com.example.cocktailmachine.ui.settings.SettingsActivity;
@@ -135,10 +138,9 @@ public class Buffer {
         return singleton;
     }
 
-
-
-
-
+    public static HashMap<String, Long> getIngredientPumpSet(Context context) {
+        return GetFromDB.loadIngredientPumpSet(context);
+    }
 
 
     private void setLoad(Context context) throws NotInitializedDBException {
@@ -146,13 +148,15 @@ public class Buffer {
         this.pumps = DatabaseConnection.getSingleton().loadPumps();
         this.ingredientPumps = DatabaseConnection.getSingleton().loadIngredientPumps();
         this.loadAvailableIngredient(context);
+        this.loadAvailableRecipeIngredient(context);
         this.loadAvailableRecipe(context);
+        this.loadRecipeTopics(context);
         //this.ingredients = new ArrayList<>();
         //this.recipes = DatabaseConnection.getSingleton().loadAllRecipes();
         //this.pumps =  DatabaseConnection.getSingleton().loadPumps();
         this.topics =  DatabaseConnection.getSingleton().loadTopics();
-        this.recipeIngredients = DatabaseConnection.getSingleton().loadIngredientVolumes();
-        this.recipeTopics = DatabaseConnection.getSingleton().loadRecipeTopic();
+        //this.recipeIngredients = DatabaseConnection.getSingleton().loadIngredientVolumes();
+        //this.recipeTopics = DatabaseConnection.getSingleton().loadRecipeTopic();
 
         /*
         this.ingredients = DatabaseConnection.getSingleton().loadAllIngredients();
@@ -163,9 +167,10 @@ public class Buffer {
         this.recipeTopics = DatabaseConnection.getSingleton().loadRecipeTopic();
 
          */
-        loadFast();
+        //loadFast();
         isLoaded = true;
     }
+
 
     public void loadFast(){
         fastIDIngredient = new HashMap<>();
@@ -333,6 +338,11 @@ public class Buffer {
         getSingleton(context);
     }
 
+    /**
+     * load for setup with empty pumps, empty all pumps
+     * @author Johanna Reidt
+     * @param context
+     */
     public static void loadForSetUp(Context context){
         //TODO:
         //load(context);
@@ -340,13 +350,22 @@ public class Buffer {
         Buffer.setUpEmptyPumps(context);
     }
 
-
+    /**
+     * load csv and json files prepared by phillip
+     * @author Johanna Reidt
+     * @param context
+     */
     public static void loadPreped(Context context) {
         Log.i(TAG, "loadPreped" );
         loadLiquid(context);
         loadPrepedRecipes(context);
     }
 
+    /**
+     * load liquid csv
+     * @author Johanna Reidt
+     * @param context
+     */
     private static void loadLiquid(Context context){
         Log.i(TAG, "loadLiquid" );
         //https://stackoverflow.com/questions/43055661/reading-csv-file-in-android-app
@@ -479,8 +498,15 @@ public class Buffer {
             Log.e(TAG, "error: "+e);
             e.printStackTrace();
         }
+        Toast.makeText(context, "Zutaten geladen!", Toast.LENGTH_SHORT).show();
 
     }
+
+    /**
+     * load recipe json
+     * @author Johanna Reidt
+     * @param context
+     */
     private static void loadPrepedRecipes(Context context){
         Log.i(TAG, "loadPrepedRecipes" );
         //https://stackoverflow.com/questions/43055661/reading-csv-file-in-android-app
@@ -545,6 +571,18 @@ public class Buffer {
             Log.i(TAG,"loadLiquid: IOException" );
             Log.e(TAG, "error: "+e);
             e.printStackTrace();
+        }
+        Toast.makeText(context, "Rezepte geladen!", Toast.LENGTH_SHORT).show();
+    }
+
+    public static void loadDummy(Activity activity){
+        Log.i(TAG, "loadDummy");
+        try {
+            DatabaseConnection.init(activity).loadDummy(activity);
+        } catch (NotInitializedDBException | MissingIngredientPumpException e) {
+            Log.i(TAG, "loadDummy");
+            Log.e(TAG, "error", e);
+            Log.getStackTraceString(e);
         }
     }
 
@@ -831,6 +869,17 @@ public class Buffer {
             names.add(i.getName()+": "+i.getVolume()+" ml");
         }
         return names;
+    }
+
+    public List<Long> getIngredientIDs(){
+        List<Long> res = new ArrayList<>();
+        if(this.ingredients == null){
+            this.ingredients = new ArrayList<>();
+        }
+        for(Ingredient i: this.ingredients){
+            res.add(i.getID());
+        }
+        return res;
     }
 
 
@@ -1746,6 +1795,9 @@ public class Buffer {
         return ris;
     }
 
+
+
+
     public void loadAvailableIngredient(Context context) {
         if(isFast){
             this.fastAvailableIngredient = new ArrayList<>();
@@ -1768,14 +1820,31 @@ public class Buffer {
          */
         this.ingredients = new ArrayList<>();
         for(SQLIngredientPump ip: this.ingredientPumps){
-            Ingredient i = GetFromDB.loadIngredient(context,ip.getIngredientID());
+            Ingredient i = GetFromDB.loadIngredient(
+                    context,ip.getIngredientID());
             this.ingredients.add(i);
             addAvailableToFast(i);
         }
     }
 
+    private void loadAvailableRecipeIngredient(Context context) {
+        this.recipeIngredients =
+                GetFromDB.loadRecipeIngredientFromIngredient(
+                        context,
+                        this.getIngredientIDs());
+    }
+
     private void addAvailableToFast(Ingredient ingredient){
         if(isFast){
+            if(this.fastAvailableIngredient == null) {
+                this.fastAvailableIngredient = new ArrayList<>();
+            }
+            if(this.fastIDAvailableIngredient == null) {
+                this.fastIDAvailableIngredient = new HashMap<>();
+            }
+            if(this.fastNameAvailableIngredient == null) {
+                this.fastNameAvailableIngredient = new HashMap<>();
+            }
             this.fastAvailableIngredient.add(ingredient);
             this.fastIDAvailableIngredient.put(ingredient.getID(), ingredient);
             this.fastNameAvailableIngredient.put(ingredient.getName(), ingredient);
@@ -1783,28 +1852,76 @@ public class Buffer {
     }
 
     public void loadAvailableRecipe(Context context) {
-        if(isFast){
-            this.fastAvailableIngredient = new ArrayList<>();
-            this.fastIDAvailableIngredient = new HashMap<>();
-            this.fastNameAvailableIngredient = new HashMap<>();
-        }
         this.recipes = new ArrayList<>();
+        if(this.recipeIngredients == null){
+            this.recipeIngredients = new ArrayList<>();
+        }
         for(SQLRecipeIngredient ri: this.recipeIngredients){
-            Recipe i = GetFromDB.loadRecipe(context,ri.getRecipeID());
+            Recipe i = GetFromDB.loadRecipe(context,
+                    ri.getRecipeID());
             this.recipes.add(i);
             addAvailableToFast(i);
         }
-
     }
 
 
     private void addAvailableToFast(Recipe e){
         if(isFast){
+            if(this.fastAvailableRecipe == null) {
+                this.fastAvailableRecipe = new ArrayList<>();
+            }
+            if(this.fastIDAvailableRecipe == null) {
+                this.fastIDAvailableRecipe = new HashMap<>();
+            }
+            if(this.fastNameAvailableRecipe == null) {
+                this.fastNameAvailableRecipe = new HashMap<>();
+            }
             this.fastAvailableRecipe.add(e);
             this.fastIDAvailableRecipe.put(e.getID(), e);
             this.fastNameAvailableRecipe.put(e.getName(), e);
         }
     }
+
+    public void loadRecipeTopics(Context context){
+        this.recipeTopics = GetFromDB.loadRecipeTopics(context, this.recipes);
+        if(isFast){
+            for(SQLRecipeTopic rt: this.recipeTopics){
+                addToFast(rt);
+            }
+        }
+    }
+
+    private void addToFast(SQLRecipeTopic rt){
+        if(isFast){
+            if(this.fastRecipeRecipeTopic == null){
+                this.fastRecipeRecipeTopic = new HashMap<>();
+            }
+            if(!this.fastRecipeRecipeTopic.containsKey(rt.getRecipeID())){
+                this.fastRecipeRecipeTopic.put(rt.getRecipeID(), new ArrayList<>());
+            }
+            Objects.requireNonNull(this.fastRecipeRecipeTopic.get(rt.getRecipeID())).add(rt);
+
+
+            if(this.fastRecipeTopics == null){
+                this.fastRecipeTopics = new HashMap<>();
+            }
+            if(!this.fastRecipeTopics.containsKey(rt.getRecipeID())){
+                this.fastRecipeTopics.put(rt.getRecipeID(), new ArrayList<>());
+            }
+            Objects.requireNonNull(this.fastRecipeTopics.get(rt.getRecipeID())).add(rt.getTopicID());
+
+
+            if(this.fastTopicRecipeTopic == null){
+                this.fastTopicRecipeTopic = new HashMap<>();
+            }
+            if(!this.fastTopicRecipeTopic.containsKey(rt.getTopicID())){
+                this.fastTopicRecipeTopic.put(rt.getRecipeID(), new ArrayList<>());
+            }
+            Objects.requireNonNull(this.fastRecipeTopics.get(rt.getRecipeID())).add(rt.getRecipeID());
+
+        }
+    }
+
 
 
 
@@ -1826,8 +1943,9 @@ public class Buffer {
 
     private static void setUpEmptyPumps(Context context) {
         Log.i(TAG, "setUpEmptyPumps");
+        Buffer.getSingleton().noMemory();
         DatabaseConnection.init(context).setUpEmptyPumps(); //delete all pump Tables to be sure
-        Buffer.localRefresh(context);
+        //no local refresh Buffer.localRefresh(context);
     }
 
     private void emptyUpPumps(Context context) {

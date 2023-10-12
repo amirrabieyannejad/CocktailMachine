@@ -100,7 +100,7 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
             return this.getElementsWith(db, COLUMN_NAME_AVAILABLE, String.valueOf(1));
         } catch (NoSuchColumnException e) {
             e.printStackTrace();
-            return null;
+            return new ArrayList<>();
         }
     }
 

@@ -9,8 +9,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import androidx.navigation.ui.AppBarConfiguration;
-
 import com.example.cocktailmachine.databinding.ActivityScaleSettingsBinding;
 import com.example.cocktailmachine.ui.model.v2.GetDialog;
 
