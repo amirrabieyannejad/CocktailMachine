@@ -167,7 +167,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
            // Log.v(TAG, "copyFromAssets: copying done");
         } catch (IOException e) {
            // Log.v(TAG, "copyFromAssets: copying interrrupted Error");
-           // Log.e(TAG, "error", e);
+            Log.e(TAG, "error", e);
            // Log.getStackTraceString(e);
             //throw new RuntimeException(e);
         }
@@ -296,14 +296,14 @@ class DatabaseConnection extends SQLiteOpenHelper {
                     alcoholic = Integer.parseInt(nextLine[1]) == 1;
                 }catch (NumberFormatException e){
                    // Log.v(TAG, "loadLiquid: failed to read alcoholic, alcoholic set to false");
-                   // Log.e(TAG, "error: "+e);
+                    Log.e(TAG, "error: "+e);
                     e.printStackTrace();
                 }
                 try {
                     colour = Integer.parseInt(nextLine[2]);
                 }catch (NumberFormatException e){
                    // Log.v(TAG, "loadLiquid: failed to read colour, use random");
-                   // Log.e(TAG, "error: "+e);
+                    Log.e(TAG, "error: "+e);
                     e.printStackTrace();
                 }
                 Ingredient.makeNew(name, alcoholic, colour).save(context);
@@ -312,11 +312,11 @@ class DatabaseConnection extends SQLiteOpenHelper {
             is.close();
         } catch (FileNotFoundException e) {
            // Log.v(TAG,"loadLiquid: file not found" );
-           // Log.e(TAG, "error: "+e);
+            Log.e(TAG, "error: "+e);
             e.printStackTrace();
         } catch (IOException e) {
            // Log.v(TAG,"loadLiquid: io error" );
-           // Log.e(TAG, "error: "+e);
+            Log.e(TAG, "error: "+e);
             e.printStackTrace();
         }
         Toast.makeText(context, "Zutaten geladen!", Toast.LENGTH_SHORT).show();
@@ -378,19 +378,19 @@ class DatabaseConnection extends SQLiteOpenHelper {
 
         } catch (JSONException e) {
            // Log.v(TAG,"loadLiquid: JSONException" );
-           // Log.e(TAG, "error: "+e);
+            Log.e(TAG, "error: "+e);
             e.printStackTrace();
         } catch (FileNotFoundException e) {
            // Log.v(TAG,"loadLiquid: no file" );
-           // Log.e(TAG, "error: "+e);
+            Log.e(TAG, "error: "+e);
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
            // Log.v(TAG,"loadLiquid: UnsupportedEncodingException" );
-           // Log.e(TAG, "error: "+e);
+            Log.e(TAG, "error: "+e);
             e.printStackTrace();
         } catch (IOException e) {
            // Log.v(TAG,"loadLiquid: IOException" );
-           // Log.e(TAG, "error: "+e);
+            Log.e(TAG, "error: "+e);
             e.printStackTrace();
         }
         Toast.makeText(context, "Rezepte geladen!", Toast.LENGTH_SHORT).show();
