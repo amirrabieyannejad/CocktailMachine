@@ -139,7 +139,7 @@ public enum ErrorStatus {
         } catch (JSONException | InterruptedException | NullPointerException e) {
 
             Log.i(TAG, "getErrorMessage: errored");
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
             Log.e(TAG, e.getMessage());
             setError("not");
         }
@@ -157,7 +157,7 @@ public enum ErrorStatus {
         } catch (JSONException | InterruptedException | NullPointerException e) {
 
             Log.i(TAG, "getErrorMessage: errored");
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
             Log.e(TAG, Objects.requireNonNull(e.getMessage()));
             setError("not");
             afterReading.post();
@@ -270,7 +270,7 @@ public enum ErrorStatus {
             Log.i(TAG, "resetted");
         } catch (JSONException | InterruptedException| NullPointerException e) {
             Log.i(TAG, "reset: errored");
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
             Log.e(TAG, e.getMessage());
             setError("not");
         }

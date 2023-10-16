@@ -290,7 +290,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
             json.put("ingredient", this.getIngredientIDs());
             return json;
         }catch (JSONException e){
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
             return null;
         }
     }

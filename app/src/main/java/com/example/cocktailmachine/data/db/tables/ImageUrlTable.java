@@ -69,7 +69,7 @@ public abstract class ImageUrlTable extends BasicColumn<SQLImageUrlElement>{
             String url = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME_URL));
             return this.initializeElement(id, url, iid);
         }catch (CursorIndexOutOfBoundsException e){
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
             return null;
         }
     }
@@ -86,7 +86,7 @@ public abstract class ImageUrlTable extends BasicColumn<SQLImageUrlElement>{
         try {
             this.deleteElementsWith(db, COLUMN_NAME_OWNER_ID, String.valueOf(ownerID));
         } catch (NoSuchColumnException e) {
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
         }
     }
 
@@ -107,7 +107,7 @@ public abstract class ImageUrlTable extends BasicColumn<SQLImageUrlElement>{
             return urltable != null ? Helper.getUrls(urltable) : null;
 
         } catch (NoSuchColumnException e) {
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
         }
         return new ArrayList<>();
     }
@@ -117,7 +117,7 @@ public abstract class ImageUrlTable extends BasicColumn<SQLImageUrlElement>{
             return this.getElementsWith(db, COLUMN_NAME_OWNER_ID, Long.toString(id));
 
         } catch (NoSuchColumnException e) {
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
         }
         return new ArrayList<>();
     }

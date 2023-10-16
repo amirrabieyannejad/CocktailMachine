@@ -254,8 +254,8 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 }
             }
         }catch (IllegalArgumentException e){
-           // Log.e(TAG, "getIDs", e);
-           // Log.getStackTraceString(e);
+            Log.e(TAG, "getIDs", e);
+            Log.getStackTraceString(e);
         }
 
          */
@@ -340,7 +340,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 this.ids.removeAll(del);
                 this.position = this.ids.indexOf(oldID);
             } catch (NoSuchColumnException e) {
-               // Log.e(TAG, "exclude", e);
+                Log.e(TAG, "exclude", e);
             }
         }
 
@@ -355,7 +355,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 this.ids.removeAll(del);
                 this.position = this.ids.indexOf(oldID);
             } catch (NoSuchColumnException e) {
-               // Log.e(TAG, "include", e);
+                Log.e(TAG, "include", e);
             }
         }
 
@@ -370,7 +370,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 this.ids.removeAll(del);
                 this.position = this.ids.indexOf(oldID);
             } catch (NoSuchColumnException e) {
-               // Log.e(TAG, "include", e);
+                Log.e(TAG, "include", e);
             }
         }
 
@@ -385,7 +385,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 this.ids.removeAll(del);
                 this.position = this.ids.indexOf(oldID);
             } catch (NoSuchColumnException e) {
-               // Log.e(TAG, "include", e);
+                Log.e(TAG, "include", e);
             }
         }
     }

@@ -52,7 +52,7 @@ public class Menue extends AppCompatActivity {
                 Log.v(TAG, "onCreate: DataBase is initialized");
                 //Log.v(TAG, Recipe.getAllRecipesAsMessage().toString());
             } catch (NotInitializedDBException e) {
-                e.printStackTrace();
+                Log.getStackTrace(e);
                 Log.e(TAG, "onCreate: DataBase is not initialized");
             }
         }

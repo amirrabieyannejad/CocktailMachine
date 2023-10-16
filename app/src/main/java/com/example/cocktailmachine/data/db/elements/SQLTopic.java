@@ -109,7 +109,7 @@ public class SQLTopic extends SQLDataBaseElement implements Topic {
             json.put("description", this.description);
             return json;
         }catch (JSONException e){
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
             return null;
         }
     }

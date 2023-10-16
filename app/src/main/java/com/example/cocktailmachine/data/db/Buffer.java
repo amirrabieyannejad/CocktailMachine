@@ -132,7 +132,7 @@ public class Buffer {
             try {
                 singleton.setLoad(context);
             } catch (NotInitializedDBException e) {
-                e.printStackTrace();
+                Log.e(TAG, "error", e);
             }
         }
         return singleton;
@@ -368,7 +368,7 @@ public class Buffer {
             DatabaseConnection.init(activity).loadDummy(activity);
         } catch (NotInitializedDBException | MissingIngredientPumpException e) {
            // Log.v(TAG, "loadDummy");
-           // Log.e(TAG, "error", e);
+            Log.e(TAG, "error", e);
            // Log.getStackTraceString(e);
         }
     }
@@ -967,7 +967,7 @@ public class Buffer {
                 this.setLoad(context);
             } catch (NotInitializedDBException e) {
                 //throw new RuntimeException(e);
-               // Log.e(TAG, "NotInitializedDBException", e);
+                Log.e(TAG, "NotInitializedDBException", e);
                // Log.getStackTraceString(e);
             }
         }
@@ -1163,9 +1163,9 @@ public class Buffer {
                 }
             }
         }catch (NullPointerException e){
-           // Log.e(TAG, "getIngredientToVol NullPointerException");
+            Log.e(TAG, "getIngredientToVol NullPointerException", e);
             //Log.e(TAG, e.getMessage());
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
         }
         for(SQLRecipeIngredient ri: this.recipeIngredients){
             if(ri.getRecipeID()==recipe.getID()){

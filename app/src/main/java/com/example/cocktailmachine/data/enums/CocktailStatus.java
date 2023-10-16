@@ -54,7 +54,7 @@ public enum CocktailStatus {
         } catch (JSONException | InterruptedException|NullPointerException e) {
             Log.e(TAG, "getCurrentStatus");
             Log.e(TAG, Objects.requireNonNull(e.getMessage()));
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
         }
         return currentState;
     }

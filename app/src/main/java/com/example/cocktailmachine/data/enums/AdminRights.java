@@ -66,8 +66,8 @@ public class AdminRights {
             Log.i(TAG, "setUser: done");
         } catch (JSONException e) {
             Log.i(TAG, "setUser: failed");
-            Log.i(TAG, "error: "+e);
-            e.printStackTrace();
+            Log.e(TAG, "error: ",e);
+            ////Log.e(TAG, "error", e);
         }
     }
 
@@ -85,8 +85,8 @@ public class AdminRights {
             Log.i(TAG, "getUserIdAsMessage: done");
         } catch (JSONException e) {
             Log.i(TAG, "getUserIdAsMessage: failed");
-            Log.i(TAG, "error: "+e);
-            e.printStackTrace();
+            Log.e(TAG, "error: ",e);
+            ////Log.e(TAG, "error", e);
         }
         return json;
     }
@@ -108,9 +108,9 @@ public class AdminRights {
             Log.i(TAG, "initUser done");
         } catch (JSONException | InterruptedException e) {
             //throw new RuntimeException(e);
-            Log.e(TAG, "init User failed");
-            Log.e(TAG, "error"+ e);
-            e.printStackTrace();
+            Log.i(TAG, "init User failed");
+            Log.e(TAG, "error",e);
+            //Log.e(TAG, "error", e);
         }
     }
 
@@ -126,9 +126,9 @@ public class AdminRights {
             json.put("user", getUserId());
             Log.i(TAG, "getUserAbortMessage done");
         } catch (JSONException e) {
-            Log.e(TAG, "getUserAbortMessage User failed");
-            Log.e(TAG, "error"+ e);
-            e.printStackTrace();
+            Log.i(TAG, "getUserAbortMessage User failed");
+            Log.e(TAG, "error",e);
+            //Log.e(TAG, "error", e);
         }
         return json;
     }

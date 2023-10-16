@@ -435,7 +435,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         try {
             bluetoothSingleton.userStartRecipe(this.getID(),activity);
         } catch (JSONException | InterruptedException e) {
-            e.printStackTrace();
+            e.printSt ackTrace();
         }
 
          */
@@ -486,7 +486,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
             return true;
         } catch (JSONException| InterruptedException|NullPointerException e) {
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
         }
         return false;
     }
@@ -498,7 +498,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
             );
             return true;
         } catch (JSONException | InterruptedException|NullPointerException e) {
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
         }
         return false;
     }
@@ -547,7 +547,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         try {
             setRecipes(answer);
         } catch (NotInitializedDBException | JSONException e) {
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
         }
 
          */

@@ -159,7 +159,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
             try {
                 this.loadUrls();
             } catch (NotInitializedDBException e) {
-                e.printStackTrace();
+                Log.e(TAG, "error", e);
             }
         }
         return this.imageUrls;
@@ -399,7 +399,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
                 this.ingredientPump.pump(volume);
                 return;
             } catch (NewlyEmptyIngredientException | NullPointerException e) {
-                e.printStackTrace();
+                Log.e(TAG, "error", e);
                 this.available = false;
                 throw new NewlyEmptyIngredientException(this);
             }
@@ -437,7 +437,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
             }
             return json;
         }catch (JSONException e){
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
             return null;
         }
 

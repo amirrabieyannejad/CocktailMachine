@@ -77,8 +77,8 @@ public class CocktailMachine {
             Log.i(TAG, "setCurrentWeight : done");
         } catch (JSONException e) {
             Log.i(TAG, "setCurrentWeight: failed");
-            Log.e(TAG, "error"+e);
-            e.printStackTrace();
+            Log.e(TAG, "error",e);
+            Log.e(TAG, "error", e);
             currentWeight = -1.0;
         }
         Log.i(TAG, "setCurrentWeight: "+currentWeight);
@@ -117,8 +117,8 @@ public class CocktailMachine {
             Log.i(TAG, "setCurrentCocktail: current weight "+currentWeight);
         } catch (JSONException e) {
             Log.i(TAG, "setCurrentCocktail failed");
-            Log.e(TAG, "error"+e);
-            e.printStackTrace();
+            Log.e(TAG, "error",e);
+            Log.e(TAG, "error", e);
         }
 
     }
@@ -225,8 +225,8 @@ public class CocktailMachine {
             Log.i(TAG,"getCurrentWeight: success");
         } catch (JSONException | InterruptedException|NullPointerException  e) {
             Log.i(TAG,"getCurrentWeight: error");
-            e.printStackTrace();
-            Log.e(TAG, "error: "+e);
+            Log.e(TAG, "error", e);
+            //Log.e(TAG, "error: "+e);
         }
         Log.i(TAG, "getCurrentWeight: "+currentWeight);
         return currentWeight;
@@ -272,8 +272,8 @@ public class CocktailMachine {
             Log.i(TAG,"getCurrentWeight: success");
         } catch (JSONException | InterruptedException|NullPointerException  e) {
             Log.i(TAG,"getCurrentWeight: error");
-            e.printStackTrace();
-            Log.e(TAG, "error: "+e);
+            Log.e(TAG, "error", e);
+            //Log.e(TAG, "error: "+e);
         }
         Log.i(TAG, "getCurrentWeight: "+currentWeight);
         return currentWeight;
@@ -323,8 +323,8 @@ public class CocktailMachine {
             Log.i(TAG, "isCocktailMachineSet: done");
         } catch (JSONException | InterruptedException|NullPointerException e) {
             Log.i(TAG, "isCocktailMachineSet: failed");
-            Log.e(TAG, "error: "+e);
-            e.printStackTrace();
+            //Log.e(TAG, "error: "+e);
+            Log.e(TAG, "error", e);
         }
         return Pump.getPumps().size()>0;
         //return r.nextDouble() >= 0.5;
@@ -347,8 +347,8 @@ public class CocktailMachine {
                 Log.i(TAG, "isCocktailMachineSet: done");
             } catch (JSONException | InterruptedException |NullPointerException e) {
                 Log.i(TAG, "isCocktailMachineSet: failed");
-                Log.e(TAG, "error: "+e);
-                e.printStackTrace();
+                //Log.e(TAG, "error: "+e);
+                Log.e(TAG, "error", e);
             }
             return Pump.getPumps().size()>0;
         }
@@ -387,7 +387,7 @@ public class CocktailMachine {
             BluetoothSingleton.getInstance().adminManuelCalibrateTareScale(activity);
             Log.i(TAG, "tareScale: done");
         } catch (JSONException | InterruptedException |NullPointerException e) {
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
             Log.i(TAG, "tareScale failed");
             Toast.makeText(activity, "Die Tarierung ist fehlgeschlagen!",Toast.LENGTH_SHORT).show();
         }
@@ -419,7 +419,7 @@ public class CocktailMachine {
         } catch (JSONException | InterruptedException  |NullPointerException e) {
             Log.i(TAG, "sendCalibrateScale: failed");
             Log.e(TAG, "error"+ e);
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
             Toast.makeText(activity, "Die Kalibrierung ist fehlgeschlagen!",Toast.LENGTH_SHORT).show();
         }
     }
@@ -470,7 +470,7 @@ public class CocktailMachine {
         } catch (JSONException | InterruptedException |NullPointerException e) {
             Log.i(TAG, "sendScaleFactor failed");
             Log.e(TAG, "error"+ e);
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
             Toast.makeText(activity, "ERROR",Toast.LENGTH_SHORT).show();
         }
     }
@@ -507,7 +507,7 @@ public class CocktailMachine {
         } catch (JSONException | InterruptedException|NullPointerException e) {
             Log.i(TAG, "getLastChange failed");
             Log.e(TAG, "error"+ e);
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
         }
     }
 
@@ -531,7 +531,7 @@ public class CocktailMachine {
             } catch (JSONException | InterruptedException|NullPointerException e) {
                 Log.i(TAG, "updateRecipeListIfChanged failed");
                 Log.e(TAG, "error"+ e);
-                e.printStackTrace();
+                Log.e(TAG, "error", e);
             }
         }
     }
@@ -587,7 +587,7 @@ public class CocktailMachine {
         } catch (JSONException | InterruptedException|NullPointerException e) {
             Log.i(TAG,  "queueRecipe: error");
             Log.e(TAG, "error"+ e);
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
         }
     }
 
@@ -607,8 +607,8 @@ public class CocktailMachine {
             Log.i(TAG,  "readUserQueue: queued");
         } catch (JSONException | InterruptedException|NullPointerException e) {
             Log.i(TAG,  "readUserQueue: error");
-            Log.e(TAG, "error: "+e);
-            e.printStackTrace();
+            //Log.e(TAG, "error: "+e);
+            Log.e(TAG, "error", e);
         }
     }
 
@@ -624,8 +624,8 @@ public class CocktailMachine {
         try {
             bluetoothSingleton.makeRecipe(this.getName());
         } catch (JSONException | InterruptedException e) {
-            e.printStackTrace();
-        }h
+            Log.e(TAG, "error), e
+;        }h
 
          */
         readUserQueue(activity);
@@ -681,8 +681,8 @@ public class CocktailMachine {
                 Log.i(TAG,  "startMixing: started");
             } catch (JSONException | InterruptedException |NullPointerException e) {
                 Log.i(TAG,  "startMixing: error");
-                Log.e(TAG, "error: "+e);
-                e.printStackTrace();
+                //Log.e(TAG, "error: "+e);
+                Log.e(TAG, "error", e);
             }
     }
 
@@ -732,8 +732,8 @@ public class CocktailMachine {
                 Log.i(TAG, "getCurrentCocktailStatus done");
             } catch (JSONException | InterruptedException|NullPointerException e) {
                 Log.i(TAG,  "getCurrentCocktailStatus: error");
-                Log.e(TAG, "error: "+e);
-                e.printStackTrace();
+                //Log.e(TAG, "error: "+e);
+                Log.e(TAG, "error", e);
                 //count down
             }
         }else{
@@ -766,8 +766,8 @@ public class CocktailMachine {
                         return false;
                     }
                 } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
-                    e.printStackTrace();
-                    return false;
+                    Log.e(TAG, "error), e
+;                    return false;
                 }
             }
             return true;
@@ -799,8 +799,8 @@ public class CocktailMachine {
                         return false;
                     }
                 } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
-                    e.printStackTrace();
-                    return false;
+                    Log.e(TAG, "error), e
+;                    return false;
                 }
             }
             return true;
@@ -833,8 +833,8 @@ public class CocktailMachine {
                         return false;
                     }
                 } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
-                    e.printStackTrace();
-                    return false;
+                    Log.e(TAG, "error), e
+;                    return false;
                 }
             }
             return true;
@@ -863,8 +863,8 @@ public class CocktailMachine {
             Log.i(TAG,  "takeCocktail: done");
         } catch (JSONException | InterruptedException|NullPointerException e) {
             Log.i(TAG,  "takeCocktail: error");
-            Log.e(TAG, "error: "+e);
-            e.printStackTrace();
+            //Log.e(TAG, "error: "+e);
+            Log.e(TAG, "error", e);
         }
     }
 
@@ -908,8 +908,8 @@ public class CocktailMachine {
                 Log.i(TAG,  "automaticCalibration: done");
             } catch (JSONException | InterruptedException|NullPointerException e) {
                 Log.e(TAG,"automaticCalibration. FAILED");
-                Log.e(TAG, "error: "+e);
-                e.printStackTrace();
+                //Log.e(TAG, "error: "+e);
+                Log.e(TAG, "error", e);
             }
             return;
         }
@@ -1007,8 +1007,8 @@ public class CocktailMachine {
             //throw new RuntimeException(e);
             Log.e(TAG,"automaticEmpty");
             Log.e(TAG, "error: )+e);
-            e.printStackTrace();
-        }
+            Log.e(TAG, "error), e
+;        }
     }
 
      */
@@ -1033,8 +1033,8 @@ public class CocktailMachine {
         } catch (JSONException | InterruptedException | NullPointerException e) {
             //throw new RuntimeException(e);
             Log.e(TAG, "automaticWeight: failed");
-            Log.e(TAG, "error: "+e);
-            e.printStackTrace();
+            //Log.e(TAG, "error: "+e);
+            Log.e(TAG, "error", e);
             return;
         }
 
@@ -1066,8 +1066,8 @@ public class CocktailMachine {
 
             //throw new RuntimeException(e);
             Log.e(TAG, "automaticEmptyPumping: failed");
-            Log.e(TAG, "error: "+e);
-            e.printStackTrace();
+            //Log.e(TAG, "error: "+e);
+            Log.e(TAG, "error", e);
         }
     }
 
@@ -1086,8 +1086,8 @@ public class CocktailMachine {
 
                 //throw new RuntimeException(e);
                 Log.e(TAG, "automaticEnd: failed");
-                Log.e(TAG, "error: "+e);
-                e.printStackTrace();
+                //Log.e(TAG, "error: "+e);
+                Log.e(TAG, "error", e);
             }
             return;
         }
@@ -1137,8 +1137,8 @@ public class CocktailMachine {
             Log.i(TAG, "clean: done");
         } catch (JSONException | InterruptedException|NullPointerException e) {
             Log.i(TAG, "clean: failed");
-            Log.e(TAG, "error: "+e);
-            e.printStackTrace();
+            //Log.e(TAG, "error: "+e);
+            Log.e(TAG, "error", e);
             Toast.makeText(activity,
                     "Der Reinigungsablauf konnten NICHT gestartet werden.",
                     Toast.LENGTH_SHORT).show();
@@ -1174,8 +1174,8 @@ public class CocktailMachine {
 
         } catch (JSONException | InterruptedException|NullPointerException e) {
             Log.i(TAG, "restart: failed");
-            Log.e(TAG, "error: "+e);
-            e.printStackTrace();
+            //Log.e(TAG, "error: "+e);
+            Log.e(TAG, "error", e);
             Toast.makeText(activity,
                     "Die Cocktailmaschine konnten NICHT neugestartet werden.",
                     Toast.LENGTH_SHORT).show();
@@ -1230,8 +1230,8 @@ public class CocktailMachine {
             Log.i(TAG, "factoryReset: done");
         } catch (JSONException | InterruptedException|NullPointerException e) {
             Log.i(TAG, "factoryReset: failed");
-            Log.e(TAG, "error: "+e);
-            e.printStackTrace();
+            //Log.e(TAG, "error: "+e);
+            Log.e(TAG, "error", e);
             Toast.makeText(activity,
                     "Werkseinstellungen konnten NICHT wieder hergestellt werden.",
                     Toast.LENGTH_SHORT).show();
@@ -1262,8 +1262,8 @@ public class CocktailMachine {
         } catch (JSONException | InterruptedException|NullPointerException e) {
             Toast.makeText(activity, "Reset ist fehlgeschlagen!", Toast.LENGTH_SHORT).show();
             Log.i(TAG, "Reset stored error");
-            Log.e(TAG, "error: "+e);
-            e.printStackTrace();
+            //Log.e(TAG, "error: "+e);
+            Log.e(TAG, "error", e);
         }
     }
 
@@ -1290,8 +1290,8 @@ public class CocktailMachine {
         try {
             BluetoothSingleton.getInstance().adminFactoryReset();
         } catch (JSONException | InterruptedException e) {
-            e.printStackTrace();
-        }
+            Log.e(TAG, "error), e
+;        }
     }
 
      */

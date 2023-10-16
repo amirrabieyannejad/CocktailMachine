@@ -85,7 +85,7 @@ public class EditModelFragment extends Fragment {
                                         .editTextPumpFillEmptyVolume
                                         .getText().toString()));
                     } catch (MissingIngredientPumpException e) {
-                        e.printStackTrace();
+                        Log.getStackTraceString(e);
                         Log.i(TAG, "saveNew: pump filling failed: pump: "+pump);
                     }
                     setUpEditPump();
@@ -180,7 +180,7 @@ public class EditModelFragment extends Fragment {
 
                         pump.sendRefill(this.activity);
                     } catch (MissingIngredientPumpException e) {
-                        e.printStackTrace();
+                        Log.getStackTraceString(e);
                         Log.i(TAG, "save: pump filling failed: pump: "+pump);
                     }
                     pump.save(activity);
@@ -555,7 +555,7 @@ public class EditModelFragment extends Fragment {
                 try {
                     pump.fill(Integer.parseInt(s.toString()));
                 } catch (MissingIngredientPumpException e) {
-                    e.printStackTrace();
+                    Log.getStackTraceString(e);
                     Log.i(TAG, "setUpEditPump: editTextPumpFillEmptyVolume: afterTextChanged: pump filling failed: pump: "+pump);
                 }
             }

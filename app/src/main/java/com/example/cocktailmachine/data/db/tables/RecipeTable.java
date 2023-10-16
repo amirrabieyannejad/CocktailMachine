@@ -99,7 +99,7 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
         try {
             return this.getElementsWith(db, COLUMN_NAME_AVAILABLE, String.valueOf(1));
         } catch (NoSuchColumnException e) {
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
             return new ArrayList<>();
         }
     }
@@ -110,7 +110,7 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
         try {
             this.updateColumnToConstant(db, cv);
         } catch (NoSuchColumnException e) {
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
         }
     }
 }

@@ -87,7 +87,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
         try {
             return this.getElementsWith(db, COLUMN_TYPE_RECIPE_ID, Long.toString(recipe.getID()));
         } catch (NoSuchColumnException e) {
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
             return new ArrayList<>();
         }
     }
@@ -113,7 +113,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
                     COLUMN_NAME_RECIPE_ID,
                     ids);
         } catch (NoSuchColumnException e) {
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
             return new ArrayList<>();
         }
     }
