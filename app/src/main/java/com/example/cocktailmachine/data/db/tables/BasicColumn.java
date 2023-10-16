@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  * @author Johanna Reidt
  */
 public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseColumns {
-    private static final String TAG = "BasicColumn";
+    static final String TAG = "BasicColumn";
 
     /**
      * gives name of table

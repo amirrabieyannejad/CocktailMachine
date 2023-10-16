@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
+import android.util.Log;
 
 import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.elements.SQLImageUrlElement;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
  * @author Johanna Reidt
  */
 public abstract class ImageUrlTable extends BasicColumn<SQLImageUrlElement>{
+    private static final String TAG = "ImageUrlTable";
     public String TABLE_NAME;
     public static final String COLUMN_NAME_URL = "URL";
     public static final String COLUMN_NAME_OWNER_ID = "OwnerID";
