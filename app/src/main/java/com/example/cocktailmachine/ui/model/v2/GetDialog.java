@@ -2420,7 +2420,7 @@ public class GetDialog {
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Bluetoothverbindung fehlerhaft");
-        builder.setMessage("Bitte überprüf die Bluetoothverbindung. ");
+        builder.setMessage("Bitte überprüfe die Bluetoothverbindung. ");
         builder.setPositiveButton("Alles ok!", (dialog, which) -> {});
         builder.setNegativeButton("Neu verbinden!", (dialog, which) -> {
             GetActivity.startAgain(activity);

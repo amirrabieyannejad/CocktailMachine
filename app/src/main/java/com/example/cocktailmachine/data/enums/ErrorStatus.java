@@ -239,13 +239,12 @@ public enum ErrorStatus {
     /**
      * checks if cocktailmachine is erroring
      * afterwards do: afterReading
+     *
      * @param afterReading
-     * @return
      * @author Johanna Reidt
      */
-    public static ErrorStatus getErrorStatus(Postexecute afterReading,Activity activity){
+    public static void getErrorStatus(Postexecute afterReading, Activity activity){
         updateError(afterReading,activity);
-        return status;
     }
 
 

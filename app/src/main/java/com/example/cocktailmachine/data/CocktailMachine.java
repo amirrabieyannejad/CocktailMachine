@@ -1240,7 +1240,7 @@ public class CocktailMachine {
     }
 
     /**
-     * reset CocktailMachine
+     * reset CocktailMachine,  stops cocktail mixing
      * @author Johanna Reidt
      * @param activity
      */
@@ -1261,7 +1261,7 @@ public class CocktailMachine {
             });
         } catch (JSONException | InterruptedException|NullPointerException e) {
             Toast.makeText(activity, "Reset ist fehlgeschlagen!", Toast.LENGTH_SHORT).show();
-            Log.i(TAG, "Reset stored error");
+            //Log.i(TAG, "Reset stored error");
             //Log.e(TAG, "error: "+e);
             Log.e(TAG, "error", e);
         }

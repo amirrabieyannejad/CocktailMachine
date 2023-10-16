@@ -67,9 +67,9 @@ public enum CalibrateStatus {
         try {
             return CalibrateStatus.valueOf(res);
         }catch (IllegalArgumentException e){
-            Log.i(TAG, "valueStringOf IllegalArgumentException");
+            //Log.i(TAG, "valueStringOf IllegalArgumentException");
             Log.e(TAG, "valueStringOf", e);
-            Log.getStackTraceString(e);
+            //Log.getStackTraceString(e);
             return CalibrateStatus.not;
         }
         /*
