@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 
@@ -64,7 +65,7 @@ public class FillAnimation extends AppCompatActivity {
                 }
                 if(true){
                     try {
-                        Toast.makeText(context, ""+recipe.getIngredients().get(0).getColor(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(context, ""+recipe.getIngredients().get(0).getColor(), Toast.LENGTH_SHORT).show();
                         image = BildgeneratorGlas.bildgenerationGlas(context,recipe, animatedValue);
                     } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
                         e.printStackTrace();
@@ -73,7 +74,7 @@ public class FillAnimation extends AppCompatActivity {
                             recipe != null ? recipe.getName() : "",
                             image);
                     replaceFragment(fragment);
-                    Toast.makeText(context, ""+animatedValue, Toast.LENGTH_SHORT).show();
+                    Log.i(TAG, "FillAnimation: Fill progress :"+animatedValue);
                 }
 
                 try {
