@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.widget.Toast;
 
 
 public class FillAnimation extends AppCompatActivity {
@@ -71,6 +72,7 @@ public class FillAnimation extends AppCompatActivity {
                             recipe != null ? recipe.getName() : "",
                             image);
                     replaceFragment(fragment);
+                    Toast.makeText(context, ""+animatedValue, Toast.LENGTH_SHORT).show();
                 }
 
                 try {
@@ -107,6 +109,10 @@ public class FillAnimation extends AppCompatActivity {
     private void replaceFragment(Fragment fragment){
 
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            FragmentManager.BackStackEntry first = fragmentManager.getBackStackEntryAt(0);
+            fragmentManager.popBackStack(first.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
         fragmentTransaction.setCustomAnimations(
                 R.anim.fade_in_slow,  // enter
                 R.anim.do_nothing  // popExit

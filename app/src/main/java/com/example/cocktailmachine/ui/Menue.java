@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
+import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
@@ -176,6 +177,7 @@ public class Menue extends AppCompatActivity {
     public void openGlassFillAnimationView(View view){
         Log.i(TAG, "openGlassFillAnimationView");
         Intent success = new Intent(this, FillAnimation.class);
+        success.putExtra(GetActivity.ID, Recipe.getAllRecipes(this).get(0).getID());
         startActivity(success);
 
     }
