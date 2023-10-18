@@ -60,9 +60,9 @@ public class FillAnimation extends AppCompatActivity {
             public void onAnimationUpdate(ValueAnimator updatedAnimation) {
                 float animatedValue = (float)updatedAnimation.getAnimatedValue();
                 Bitmap image = null;
-                if(recipe!=null) {
-                    recipe.save(context);
-                }
+                //if(recipe!=null) {
+                //    recipe.save(context);
+                //}
                 if(true){
                     try {
                         //Toast.makeText(context, ""+recipe.getIngredients().get(0).getColor(), Toast.LENGTH_SHORT).show();
