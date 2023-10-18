@@ -286,12 +286,6 @@ public class Menue extends AppCompatActivity {
 
     }
 
-    public void pumpCalibration(View view){
-        Log.i(TAG, "pumpCalibration");
-        //Intent success = new Intent(this, ListOfPumps.class);
-        //startActivity(success);
-        new DialogListOfPumps(this);
-    }
 
 
 }
