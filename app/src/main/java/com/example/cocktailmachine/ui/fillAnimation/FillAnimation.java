@@ -86,6 +86,7 @@ public class FillAnimation extends AppCompatActivity {
         });
 
         animation.start();
+
     }
 
 

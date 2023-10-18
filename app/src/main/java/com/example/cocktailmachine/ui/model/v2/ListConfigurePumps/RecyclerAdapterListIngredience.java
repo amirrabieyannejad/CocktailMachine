@@ -15,6 +15,7 @@ import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.ui.model.v2.ConfigurePumps;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class RecyclerAdapterListIngredience extends RecyclerView.Adapter<RecyclerAdapterListIngredience.IngtedienceViewHolder> {
@@ -22,7 +23,10 @@ public class RecyclerAdapterListIngredience extends RecyclerView.Adapter<Recycle
     Context context;
     List<Ingredient> ingredients;
 
+    HashMap<String, Long> ingredientsMap;
+
     Ingredient chosenIngredient;
+    String chosenIngredientString;
 
     RecyclerViewListenerListIngredience selectionListener;
 
@@ -40,6 +44,18 @@ public class RecyclerAdapterListIngredience extends RecyclerView.Adapter<Recycle
         //Todo Philipp des Listener muss wieder eingerichtet werden
         //this.selectionListener=(ListIngredience)context;
         this.chosenIngredient = chosenIngredient;
+
+    }
+
+
+
+    public RecyclerAdapterListIngredience(String chosenIngredient, HashMap<String, Long> ingredients, Context context) {
+        this.ingredientsMap = ingredients;
+        this.context = context;
+
+        //Todo Philipp des Listener muss wieder eingerichtet werden
+        //this.selectionListener=(ListIngredience)context;
+        this.chosenIngredientString = chosenIngredient;
 
     }
 
