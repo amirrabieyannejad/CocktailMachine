@@ -46,12 +46,12 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
 
 
 
-        listIngredients = Ingredient.getAllIngredients();
-        mapIngredients = Ingredient.getPumpSet(activity);
+        listIngredients = Ingredient.getAllIngredients(this.activity);
+        //mapIngredients = Ingredient.getPumpSet(activity);
 
 
         filteredListIngredients = new ArrayList<>(listIngredients);
-        filteredMapIngredients = new HashMap<>(mapIngredients);
+        //filteredMapIngredients = new HashMap<>(mapIngredients);
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
         View v = activity.getLayoutInflater().inflate(R.layout.dialog_layout_pump_configure, null);
