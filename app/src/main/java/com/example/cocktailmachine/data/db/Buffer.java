@@ -947,7 +947,7 @@ public class Buffer {
      */
     public List<String> getTopicNames(Context context, List<Long> ids){
         List<String> names = new ArrayList<>();
-        for(Topic i:this.topics){
+        for(Topic i:this.getTopics(context, ids)){
             if(ids.contains(i.getID())) {
                 names.add(i.getName());
             }
@@ -1000,12 +1000,15 @@ public class Buffer {
      * @author Johanna Reidt
      * @return
      */
+    /*
     public List<Recipe> getRecipes(){
         if(this.recipes == null){
             this.recipes = new ArrayList<>();
         }
         return this.recipes;
     }
+
+     */
 
     /**
      * get all recipes if recipe list empty get from db
@@ -1030,6 +1033,7 @@ public class Buffer {
      * @author Johanna Reidt
      * @param id
      */
+    /*
     @Nullable
     public Recipe getRecipe(long id){
         if(this.recipes==null){
@@ -1049,11 +1053,14 @@ public class Buffer {
         return null;
     }
 
+
+     */
     /**
      * get Recipe with needle in name from buffer
      * @author Johanna Reidt
      * @param needle
      */
+    /*
     @Nullable
     public Recipe getRecipe(String needle){
         if(isFast){
@@ -1071,6 +1078,8 @@ public class Buffer {
         return null;
     }
 
+
+     */
     /**
      * get Recipe with needle in name from buffer or if not existent check db
      * @author Johanna Reidt
@@ -1079,7 +1088,9 @@ public class Buffer {
      */
     @Nullable
     public Recipe getRecipe(Context context, long id){
+        return GetFromDB.loadRecipe(context, id);
        // Log.w(TAG, "getRecipe");
+        /*
         if(this.recipes == null){
             try {
                 this.setLoad(context);
@@ -1094,6 +1105,8 @@ public class Buffer {
             return res;
         }
         return GetFromDB.loadRecipe(context, id);
+        
+         */
     }
 
     /**
