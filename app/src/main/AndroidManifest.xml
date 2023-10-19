@@ -56,6 +56,9 @@
         android:theme="@style/Theme.CocktailMachine"
         tools:targetApi="21">
         <activity
+            android:name=".ui.BluetoothNotFound"
+            android:exported="false" />
+        <activity
             android:name=".ui.ListOfPumps.ListOfPumps"
             android:exported="false" />
         <activity
@@ -68,10 +71,10 @@
             android:exported="false" />
         <activity
             android:name=".ui.ListOfIngredience.ListIngredience"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".ui.BluetoothTestEnviroment"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".ui.model.v2.ListActivity"
             android:exported="false" />
@@ -123,6 +126,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -151,7 +155,6 @@
         <activity
             android:name=".ui.Menue"
             android:exported="true">
-
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
