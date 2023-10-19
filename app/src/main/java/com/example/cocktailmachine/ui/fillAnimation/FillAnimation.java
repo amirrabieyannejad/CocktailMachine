@@ -2,10 +2,13 @@ package com.example.cocktailmachine.ui.fillAnimation;
 
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
+import com.example.cocktailmachine.ui.ListOfIngredience.ListIngredience;
+import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.model.v2.GetActivity;
 import com.example.cocktailmachine.ui.model.v2.GetDialog;
 
@@ -18,6 +21,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 
@@ -59,11 +64,12 @@ public class FillAnimation extends AppCompatActivity {
             public void onAnimationUpdate(ValueAnimator updatedAnimation) {
                 float animatedValue = (float)updatedAnimation.getAnimatedValue();
                 Bitmap image = null;
-                if(recipe!=null) {
-                    recipe.save(context);
-                }
+                //if(recipe!=null) {
+                //    recipe.save(context);
+                //}
                 if(true){
                     try {
+                        //Toast.makeText(context, ""+recipe.getIngredients().get(0).getColor(), Toast.LENGTH_SHORT).show();
                         image = BildgeneratorGlas.bildgenerationGlas(context,recipe, animatedValue);
                     } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
                         e.printStackTrace();
@@ -72,7 +78,7 @@ public class FillAnimation extends AppCompatActivity {
                             recipe != null ? recipe.getName() : "",
                             image);
                     replaceFragment(fragment);
-                    Toast.makeText(context, ""+animatedValue, Toast.LENGTH_SHORT).show();
+                    Log.i(TAG, "FillAnimation: Fill progress :"+animatedValue);
                 }
 
                 try {
@@ -125,5 +131,14 @@ public class FillAnimation extends AppCompatActivity {
     public static float roundAvoid(float value, int places) {
         double scale = Math.pow(10, places);
         return (float)(Math.round(value * scale) / scale);
+    }
+
+    public void stopFillActivity(View view){
+        Log.i(TAG, "FillAnimation : stop Fill Activity");
+        CocktailMachine.reset(this);
+        Intent success = new Intent(this, Menue.class);
+        startActivity(success);
+        finish();
+
     }
 }

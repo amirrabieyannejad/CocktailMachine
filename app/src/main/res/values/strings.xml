@@ -138,4 +138,6 @@
     <string name="textview">TextView</string>
     <string name="example_vol">123 ml</string>
 
+    <string name="stop_action">Vorgang abbrechen</string>
+
 </resources>
