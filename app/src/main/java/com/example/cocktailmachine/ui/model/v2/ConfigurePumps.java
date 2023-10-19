@@ -12,24 +12,29 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.ui.model.v2.ListConfigurePumps.RecyclerAdapterListIngredience;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
-import com.example.cocktailmachine.ui.model.v2.ListConfigurePumps.RecyclerAdapterListIngredience;
 import com.example.cocktailmachine.ui.model.v2.ListConfigurePumps.RecyclerViewListenerListIngredience;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class ConfigurePumps implements RecyclerViewListenerListIngredience {
 
     //Variablen
     private List<Ingredient> listIngredients;
     private List<Ingredient> filteredListIngredients;
+    private HashMap<String, Long> mapIngredients;
+    private HashMap<String, Long> filteredMapIngredients;
     private RecyclerView recyclerView;
     private Button buttonConfirmChoice;
     private Activity activity;
     private Ingredient chosenIngredient;
+    private String chosenIngredientString;
     private ConfigurePumps configurePumpsContext;
 
     //Konstruktor
@@ -40,8 +45,13 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
         this.listIngredients = new LinkedList<>();
 
 
-        listIngredients = Ingredient.getAllIngredients();
+
+        listIngredients = Ingredient.getAllIngredients(this.activity);
+        //mapIngredients = Ingredient.getPumpSet(activity);
+
+
         filteredListIngredients = new ArrayList<>(listIngredients);
+        //filteredMapIngredients = new HashMap<>(mapIngredients);
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
         View v = activity.getLayoutInflater().inflate(R.layout.dialog_layout_pump_configure, null);
@@ -51,6 +61,7 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
         recyclerView = v.findViewById(R.id.recyclerViewDialogPumpconfigure);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.activity));
         RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,listIngredients,configurePumpsContext);
+        //RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredientString,mapIngredients,configurePumpsContext);
         recyclerView.setAdapter(adapterComments);
 
         //Einrichtung des Suchfeldes
@@ -127,6 +138,20 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
             output.addFirst(chosenIngredient);
         }
 
+        return output;
+
+    }
+
+    private HashMap<String, Long> ingredientMapFilter(HashMap<String, Long> map,String searchTerm){
+        if(searchTerm.equals("")){
+            return map;
+        }
+        HashMap<String, Long> output = new HashMap<String, Long>(map);
+        for (String item : map.keySet()){
+            if(!item.toLowerCase().contains(searchTerm.toLowerCase())){
+                output.remove(item);
+            }
+        }
         return output;
 
     }

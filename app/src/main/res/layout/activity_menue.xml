@@ -38,7 +38,7 @@
 
             <ImageView
                 android:id="@+id/imageView_test_ing_list"
-                android:layout_width="match_parent"
+                android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:onClick="listIngedients"
@@ -56,15 +56,6 @@
 
 
             <ImageView
-                android:id="@+id/imageView_test_pump_calib"
-                android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:layout_margin="30dp"
-                android:onClick="pumpCalibration"
-                app:contentDescription="pumpCalibration"
-                app:srcCompat="@drawable/ic_home" />
-
-            <ImageView
                 android:id="@+id/imageView_test_single_cockt"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
@@ -72,6 +63,14 @@
                 android:onClick="openSingleCocktailView"
                 android:contentDescription="swipe thing"
                 app:srcCompat="@drawable/ic_single_cocktail_choice_2" />
+            <ImageView
+                android:id="@+id/imageView_bluetooth_not_found"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
+                android:onClick="bluetoothNotFound"
+                android:contentDescription="swipe thing"
+                app:srcCompat="@drawable/baseline_auto_awesome_24" />
 
             <ImageView
                 android:layout_width="150dp"

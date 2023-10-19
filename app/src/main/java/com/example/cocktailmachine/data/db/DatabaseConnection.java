@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 
 class DatabaseConnection extends SQLiteOpenHelper {
     private static DatabaseConnection singleton = null;
-    private static final String DBname = "DB";
+    private static final String DBname = "DB.db";
     private static final String TAG = "DatabaseConnection";
     private static int version = 1;
     private static final SQLiteDatabase.CursorFactory factory = null;
@@ -60,7 +60,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
         return DatabaseConnection.singleton;
     }
 
-    private void loadDummy(Context context) throws NotInitializedDBException, MissingIngredientPumpException {
+    public void loadDummy(Context context) throws NotInitializedDBException, MissingIngredientPumpException {
         if(Dummy.isDummy) {
             //DatabaseConnection.singleton.emptyAll();
             BasicRecipes.loadTopics(context);

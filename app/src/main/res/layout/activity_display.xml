@@ -59,8 +59,8 @@
                 app:tint="@color/black"
                 app:srcCompat="@drawable/baseline_replay_24" />
 
-            <ImageView
-                android:id="@+id/imageView_display_to_home"
+            <ImageButton
+                android:id="@+id/imageButton_display_to_home"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

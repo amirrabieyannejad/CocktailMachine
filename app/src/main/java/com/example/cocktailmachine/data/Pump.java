@@ -26,7 +26,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 
 public interface Pump extends Comparable<Pump>, DataBaseElement {
     //300ml/min
@@ -153,17 +152,19 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
     /**
      * Set up k empty pumps.
-     *
+     * @author Johanna Reidt
+     * @param context
      * @param numberOfPumps k
      */
-    static void setOverrideEmptyPumps(Context context, int numberOfPumps) {
+    static void setOverrideEmptyPumps(Activity context, int numberOfPumps) {
         Log.i(TAG, "setOverrideEmptyPumps");
         Buffer.loadForSetUp(context);
         Log.i(TAG, "setOverrideEmptyPumps "+numberOfPumps);
         for (int i = 0; i < numberOfPumps; i++) {
             Pump pump = makeNew();
             pump.setSlot(i);
-            pump.save(context);
+            //pump.save(context);
+            pump.sendSave(context);
             Log.i(TAG, "setOverrideEmptyPumps: made Pump "+i);
             Log.i(TAG, "setOverrideEmptyPumps: made Pump "+pump.toString());
             Log.i(TAG, "setOverrideEmptyPumps: control list len "+ getPumps().size() );
@@ -175,13 +176,18 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     void setSlot(int i);
 
 
+    /**
+     * creates a new Pump with out any information
+     * @author Johanna Reidt
+     * @return
+     */
     static Pump makeNew() {
         Log.i(TAG, "makeNew");
         return new SQLPump();
     }
 
     /**
-     * update pump with ingredient name and volume
+     * create or update pump with ingredient name and volume
      *
      * @param liquidName
      * @param volume
@@ -469,7 +475,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             BluetoothSingleton.getInstance().adminDefinePump(
                     this.getIngredientName(),
                     this.getVolume(),
-                    this.getSlot(),activity);
+                    this.getSlot(),
+                    activity);
         } catch (JSONException | InterruptedException e) {
             Log.i(TAG, "sendSave failed");
             Log.e(TAG, "error ",e);

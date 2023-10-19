@@ -10,6 +10,8 @@ import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
+import com.example.cocktailmachine.data.Recipe;
+import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
@@ -70,9 +72,13 @@ public class Menue extends AppCompatActivity {
             binding.activityMenueLogout.setVisibility(View.GONE);
             binding.activityMenueLogin.setVisibility(View.VISIBLE);
         }
+        if(Dummy.isDummy){
+            Buffer.loadDummy(this);
+            Log.i(TAG, "onCreate: dummy: load Dummy");
+        }
         if(!Dummy.withSetCalibration){
             CocktailMachineCalibration.setIsDone(true);
-            Log.i(TAG, "onCreate: dummy: isDummy und not withSetCalibration ");
+            Log.i(TAG, "onCreate: dummy:  not withSetCalibration ");
         }
         if (!CocktailMachineCalibration.isIsDone()){
             Log.i(TAG, "onCreate: start calibration ");
@@ -86,7 +92,6 @@ public class Menue extends AppCompatActivity {
             binding.imageViewTestGrafik.setVisibility(View.GONE);
             binding.imageViewTestSingleCockt.setVisibility(View.GONE);
             binding.imageViewTestCal.setVisibility(View.GONE);
-            binding.imageViewTestPumpCalib.setVisibility(View.GONE);
         }else{
             Log.i(TAG, "onCreate: with test envs  ");
         }
@@ -172,6 +177,7 @@ public class Menue extends AppCompatActivity {
     public void openGlassFillAnimationView(View view){
         Log.i(TAG, "openGlassFillAnimationView");
         Intent success = new Intent(this, FillAnimation.class);
+        success.putExtra(GetActivity.ID, Recipe.getAllRecipes(this).get(0).getID());
         startActivity(success);
 
     }
@@ -281,12 +287,14 @@ public class Menue extends AppCompatActivity {
 
     }
 
-    public void pumpCalibration(View view){
-        Log.i(TAG, "pumpCalibration");
-        //Intent success = new Intent(this, ListOfPumps.class);
-        //startActivity(success);
-        new DialogListOfPumps(this);
+
+    public void bluetoothNotFound(View view){
+        Log.i(TAG, "listIngedients");
+        Intent success = new Intent(this, BluetoothNotFound.class);
+        startActivity(success);
+
     }
+
 
 
 }

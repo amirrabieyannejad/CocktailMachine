@@ -4,11 +4,9 @@ import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_TEXT;
 import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_BOOLEAN;
 import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_ID;
 import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_INTEGER;
-import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_LONG;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
@@ -17,6 +15,7 @@ import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -100,7 +99,7 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
             return cv;
     }
 
-    public List<SQLIngredient> getElement(SQLiteDatabase db, String name){
+    public List<SQLIngredient> getElements(SQLiteDatabase db, String name){
             try {
                 return this.getElementsLike(db,
                         COLUMN_NAME_NAME,
@@ -113,4 +112,63 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
             return new ArrayList<>();
     }
 
+    public HashMap<String, Long> getHashIngredientNameToID(SQLiteDatabase db) {
+        Cursor cursor = db.query(this.getName(),
+                getColumns().toArray(new String[0]),
+                null,
+                null,
+                null,
+                null,
+                null);
+        return this.cursorToHashIngredientNameToID(cursor);
+    }
+
+    public Iterator<HashMap<String, Long>> getIteratorHashIngredientNameToID(
+            SQLiteDatabase db,
+            int n) {
+        return new Iterator<HashMap<String, Long>>() {
+            private final List<Long> ids = IngredientTable.this.getIDs(db);
+            private int position = 0;
+            @Override
+            public boolean hasNext() {
+                return position<ids.size();
+            }
+
+            @Override
+            public HashMap<String, Long> next() {
+                int oldPosition = position;
+                position = position + n;
+                if(position>ids.size()){
+                    position = ids.size();
+                }
+                List<Long> temp = ids.subList(oldPosition, position);
+                return this.translate(IngredientTable.this.getElements(db, temp));
+            }
+
+            private HashMap<String, Long> translate(List<SQLIngredient> ings){
+                HashMap<String, Long> hashIngsIDs = new HashMap<>();
+                for(SQLIngredient ing: ings){
+                    hashIngsIDs.put(ing.getName(), ing.getID());
+                }
+                return hashIngsIDs;
+            }
+        };
+    }
+
+
+    private HashMap<String, Long> cursorToHashIngredientNameToID(Cursor cursor){
+        Log.i(TAG, "cursorToList");
+        HashMap<String, Long>  res = new HashMap<>();
+        int nameIndex = cursor.getColumnIndex(COLUMN_NAME_NAME);
+        int idIndex = cursor.getColumnIndex(_ID);
+        if(cursor.moveToFirst()) {
+            res.put(cursor.getString(nameIndex), cursor.getLong(idIndex));
+            while (cursor.moveToNext()) {
+                res.put(cursor.getString(nameIndex), cursor.getLong(idIndex));
+            }
+        }
+        cursor.close();
+        Log.i(TAG, "cursorToList : "+res);
+        return res;
+    }
 }

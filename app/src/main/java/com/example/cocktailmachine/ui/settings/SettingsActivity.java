@@ -10,17 +10,12 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cocktailmachine.Dummy;
-import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 
-import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.enums.AdminRights;
 
 import com.example.cocktailmachine.databinding.ActivitySettingsBinding;
-import com.example.cocktailmachine.ui.model.v1.ModelActivity;
-
-import com.example.cocktailmachine.ui.model.FragmentType;
 
 
 import com.example.cocktailmachine.ui.model.ModelType;

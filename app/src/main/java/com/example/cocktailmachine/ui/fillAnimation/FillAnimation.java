@@ -2,17 +2,13 @@ package com.example.cocktailmachine.ui.fillAnimation;
 
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.SingeltonTestdata;
-import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.CocktailMachine;
-import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
-import com.example.cocktailmachine.data.enums.AdminRights;
-import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
+import com.example.cocktailmachine.ui.ListOfIngredience.ListIngredience;
+import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.model.v2.GetActivity;
 import com.example.cocktailmachine.ui.model.v2.GetDialog;
 
@@ -26,8 +22,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
-
-import java.util.LinkedHashMap;
+import android.view.View;
+import android.widget.Toast;
 
 
 public class FillAnimation extends AppCompatActivity {
@@ -68,11 +64,12 @@ public class FillAnimation extends AppCompatActivity {
             public void onAnimationUpdate(ValueAnimator updatedAnimation) {
                 float animatedValue = (float)updatedAnimation.getAnimatedValue();
                 Bitmap image = null;
-                if(recipe!=null) {
-                    recipe.save(context);
-                }
+                //if(recipe!=null) {
+                //    recipe.save(context);
+                //}
                 if(true){
                     try {
+                        //Toast.makeText(context, ""+recipe.getIngredients().get(0).getColor(), Toast.LENGTH_SHORT).show();
                         image = BildgeneratorGlas.bildgenerationGlas(context,recipe, animatedValue);
                     } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
                         e.printStackTrace();
@@ -81,6 +78,7 @@ public class FillAnimation extends AppCompatActivity {
                             recipe != null ? recipe.getName() : "",
                             image);
                     replaceFragment(fragment);
+                    Log.i(TAG, "FillAnimation: Fill progress :"+animatedValue);
                 }
 
                 try {
@@ -96,6 +94,7 @@ public class FillAnimation extends AppCompatActivity {
         });
 
         animation.start();
+
     }
 
 
@@ -116,6 +115,10 @@ public class FillAnimation extends AppCompatActivity {
     private void replaceFragment(Fragment fragment){
 
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            FragmentManager.BackStackEntry first = fragmentManager.getBackStackEntryAt(0);
+            fragmentManager.popBackStack(first.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
         fragmentTransaction.setCustomAnimations(
                 R.anim.fade_in_slow,  // enter
                 R.anim.do_nothing  // popExit
@@ -128,5 +131,14 @@ public class FillAnimation extends AppCompatActivity {
     public static float roundAvoid(float value, int places) {
         double scale = Math.pow(10, places);
         return (float)(Math.round(value * scale) / scale);
+    }
+
+    public void stopFillActivity(View view){
+        Log.i(TAG, "FillAnimation : stop Fill Activity");
+        CocktailMachine.reset(this);
+        Intent success = new Intent(this, Menue.class);
+        startActivity(success);
+        finish();
+
     }
 }

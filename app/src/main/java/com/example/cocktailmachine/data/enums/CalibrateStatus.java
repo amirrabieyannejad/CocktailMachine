@@ -61,9 +61,17 @@ public enum CalibrateStatus {
     }
 
     public static CalibrateStatus valueStringOf(String value) {
+        Log.i(TAG, "valueStringOf");
         String res = value.replace(" ", "_");
         //return super(res);
-        return CalibrateStatus.valueOf(res);
+        try {
+            return CalibrateStatus.valueOf(res);
+        }catch (IllegalArgumentException e){
+            Log.i(TAG, "valueStringOf IllegalArgumentException");
+            Log.e(TAG, "valueStringOf", e);
+            Log.getStackTraceString(e);
+            return CalibrateStatus.not;
+        }
         /*
         switch (res) {
             case "ready":
@@ -104,7 +112,9 @@ public enum CalibrateStatus {
         if(!Dummy.isDummy) {
             CocktailStatus.getCurrentStatus(postexecute,activity);
         }else{
-            postexecute.post();
+            if(postexecute != null) {
+                postexecute.post();
+            }
         }
         return status;
     }
