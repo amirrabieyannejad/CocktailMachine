@@ -63,6 +63,14 @@
                 android:onClick="openSingleCocktailView"
                 android:contentDescription="swipe thing"
                 app:srcCompat="@drawable/ic_single_cocktail_choice_2" />
+            <ImageView
+                android:id="@+id/imageView_bluetooth_not_found"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
+                android:onClick="bluetoothNotFound"
+                android:contentDescription="swipe thing"
+                app:srcCompat="@drawable/baseline_auto_awesome_24" />
 
             <ImageView
                 android:layout_width="150dp"

@@ -294,5 +294,13 @@ public class Menue extends AppCompatActivity {
         new DialogListOfPumps(this);
     }
 
+    public void bluetoothNotFound(View view){
+        Log.i(TAG, "listIngedients");
+        Intent success = new Intent(this, BluetoothNotFound.class);
+        startActivity(success);
+
+    }
+
+
 
 }
