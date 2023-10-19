@@ -6,10 +6,12 @@ import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_ID;
 import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_INTEGER;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
@@ -170,5 +172,30 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
         cursor.close();
        // Log.v(TAG, "cursorToList : "+res);
         return res;
+    }
+
+
+    public List<SQLIngredient> getAvailableElements(SQLiteDatabase db){
+        return this.cursorToList(
+                db.query(true, this.getName(), this.getColumns().toArray(new String[]{}),
+                this._ID+" IN (SELECT "+
+                        IngredientPumpTable.COLUMN_NAME_INGREDIENT_ID+
+                        " FROM "+Tables.TABLE_INGREDIENT_PUMP.getName()+")"
+                        , null, null,null, null, null));
+    }
+
+    public List<SQLIngredient> getAvailableElements(SQLiteDatabase db, List<Long> ids){
+        try {
+            return this.cursorToList(
+                    db.query(true, this.getName(), this.getColumns().toArray(new String[]{}),
+                            "("+this._ID+" IN (SELECT "+
+                                    IngredientPumpTable.COLUMN_NAME_INGREDIENT_ID+
+                                    " FROM "+Tables.TABLE_INGREDIENT_PUMP.getName()+"))"+
+                                    " AND "+this._ID +" IN "+makeSelectionList(this._ID, ids)
+                            , null, null,null, null, null));
+        } catch (NoSuchColumnException e) {
+            Log.e(TAG, "getAvailableElements", e);
+            return new ArrayList<>();
+        }
     }
 }

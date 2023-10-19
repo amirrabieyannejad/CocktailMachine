@@ -2,6 +2,7 @@ package com.example.cocktailmachine.data.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.renderscript.Long4;
 import android.util.Log;
 
 import com.example.cocktailmachine.data.Ingredient;
@@ -14,8 +15,10 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 import com.example.cocktailmachine.data.db.tables.BasicColumn;
 import com.example.cocktailmachine.data.db.tables.Tables;
+import com.example.cocktailmachine.data.db.tables.TopicTable;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -43,6 +46,10 @@ public class GetFromDB {
     static List<SQLIngredient> loadIngredients(Context context, String needle){
        // Log.v(TAG, "loadIngredients");
         return Tables.TABLE_INGREDIENT.getElements(getReadableDatabase(context), needle);
+    }
+    static List<? extends Ingredient> loadIngredients(Context context, List<Long> ids){
+        // Log.v(TAG, "loadIngredients");
+        return Tables.TABLE_INGREDIENT.getElements(getReadableDatabase(context), ids);
     }
 
     static Ingredient loadIngredient(Context context, String name){
@@ -168,5 +175,40 @@ public class GetFromDB {
     public static HashMap<String, Long> loadIngredientPumpSet(Context context) {
        // Log.v(TAG, "loadIngredientPumpSet");
         return Tables.TABLE_INGREDIENT.getHashIngredientNameToID(getReadableDatabase(context));
+    }
+
+    public static List<? extends Ingredient> getAvailableIngredients(Context context, List<Long> ids) {
+        //List<Long> available = Tables.TABLE_INGREDIENT.getIDsIn(getReadableDatabase(context), Tables.TABLE_INGREDIENT)
+        return Tables.TABLE_INGREDIENT.getAvailableElements(getReadableDatabase(context), ids);
+    }
+
+    public static List<SQLRecipeIngredient> loadRecipeIngredients(Context context) {
+        return Tables.TABLE_RECIPE_INGREDIENT.getAllElements(getReadableDatabase(context));
+    }
+
+    public static List<SQLRecipeIngredient> loadRecipeIngredientFromRecipe(Context context, Recipe recipe) {
+        List<Long> ids = new ArrayList<>();
+        ids.add(recipe.getID());
+        return Tables.TABLE_RECIPE_INGREDIENT.getWithRecipes(getReadableDatabase(context), ids);
+    }
+
+    public static List<Long> loadIngredientIDs(Context context) {
+        return Tables.TABLE_INGREDIENT.getIDs(getReadableDatabase(context));
+    }
+
+    public static List<? extends Topic> getTopics(Context context){
+         return Tables.TABLE_TOPIC.getAllElements(getReadableDatabase(context));
+    }
+
+    public static List<? extends Topic> getTopics(Context context, List<Long> ids){
+        List<Object> obj = new ArrayList<>();
+        for(Long id: ids){
+            obj.add(id);
+        }
+        try {
+            return Tables.TABLE_TOPIC.getElementsIn(getReadableDatabase(context), TopicTable._ID,obj);
+        } catch (NoSuchColumnException e) {
+            return new ArrayList<>();
+        }
     }
 }

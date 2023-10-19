@@ -24,6 +24,7 @@ import com.example.cocktailmachine.data.db.exceptions.AccessDeniedException;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.tables.Tables;
+import com.example.cocktailmachine.ui.model.ModelType;
 import com.example.cocktailmachine.ui.settings.SettingsActivity;
 import com.opencsv.CSVReader;
 
@@ -62,6 +63,8 @@ public class Buffer {
     private static final String TAG = "Buffer";
     private final int CHUNK_SIZE = 150;
     private static Buffer singleton;
+
+    /*
     public static boolean isLoaded = false;
     private List<Ingredient> ingredients;
     private List<Topic> topics;
@@ -71,8 +74,11 @@ public class Buffer {
     private List<SQLRecipeIngredient> recipeIngredients;
     private List<SQLRecipeTopic> recipeTopics;
 
+     */
+
 
     //Fast access
+    /*
     private boolean isFast = false;
     private HashMap<Long, Ingredient> fastIDIngredient;
     private HashMap<Long, Recipe> fastIDRecipe;
@@ -95,8 +101,10 @@ public class Buffer {
     private HashMap<Long, Ingredient> fastIDAvailableIngredient;
     private HashMap<Long, Recipe> fastIDAvailableRecipe;
 
+     */
 
 
+/*
 
     private HashMap<Long, List<Long>> fastTopicRecipes;
     private HashMap<Long, List<Long>> fastRecipeTopics;
@@ -108,6 +116,8 @@ public class Buffer {
     private HashMap<Long, List<SQLRecipeIngredient>> fastIngredientRecipeIngredient;
     private HashMap<Long, List<SQLRecipeTopic>> fastTopicRecipeTopic;
 
+ */
+
 
 
 
@@ -117,6 +127,7 @@ public class Buffer {
     private Buffer(){}
 
 
+    /*
     public static Buffer getSingleton(){
         if(singleton == null){
             singleton = new Buffer();
@@ -124,6 +135,9 @@ public class Buffer {
         return singleton;
     }
 
+     */
+
+    /*
     public static Buffer getSingleton(Context context){
         if(singleton == null){
             singleton = new Buffer();
@@ -138,11 +152,14 @@ public class Buffer {
         return singleton;
     }
 
+     */
+
     public static HashMap<String, Long> getIngredientPumpSet(Context context) {
         return GetFromDB.loadIngredientPumpSet(context);
     }
 
 
+    /*
     private void setLoad(Context context) throws NotInitializedDBException {
        // Log.w(TAG, "setLoad");
         DatabaseConnection.init(context);
@@ -159,6 +176,8 @@ public class Buffer {
         //this.recipeIngredients = DatabaseConnection.getSingleton().loadIngredientVolumes();
         //this.recipeTopics = DatabaseConnection.getSingleton().loadRecipeTopic();
 
+
+     */
         /*
         this.ingredients = DatabaseConnection.getSingleton().loadAllIngredients();
         this.recipes = DatabaseConnection.getSingleton().loadAllRecipes();
@@ -169,10 +188,13 @@ public class Buffer {
 
          */
         //loadFast();
+    /*
         isLoaded = true;
     }
 
+     */
 
+    /*
     public void loadFast(){
         fastIDIngredient = new HashMap<>();
         fastNameIngredient = new HashMap<>();
@@ -327,11 +349,14 @@ public class Buffer {
         isLoaded = false;
     }
 
-    /**
+     */
+
+    /* *
      * empties buffer and loads new
      * @author Johanna Reidt
      * @param context
      */
+    /*
     public static void localRefresh(Context context){
         if(singleton != null) {
             singleton.noMemory();
@@ -339,11 +364,14 @@ public class Buffer {
         getSingleton(context);
     }
 
-    /**
+     */
+
+    /* *
      * load for setup with empty pumps, empty all pumps
      * @author Johanna Reidt
      * @param context
      */
+    /*
     public static void loadForSetUp(Context context){
         //TODO:
         //load(context);
@@ -351,11 +379,14 @@ public class Buffer {
         Buffer.setUpEmptyPumps(context);
     }
 
-    /**
+     */
+
+    /* *
      * load csv and json files prepared by phillip
      * @author Johanna Reidt
      * @param context
      */
+    /*
     public static void loadPreped(Context context) {
        // Log.v(TAG, "loadPreped" );
         DatabaseConnection.loadLiquid(context);
@@ -378,6 +409,13 @@ public class Buffer {
         DatabaseConnection.loadIfNotDoneDBFromAssets(context);
     }
 
+     */
+
+
+
+    public static void localRefresh(Context context){
+        //TODO: reload availability
+    }
 
 
 
@@ -393,6 +431,7 @@ public class Buffer {
 
 
 
+    /*
     public void addToBuffer(Ingredient e){
         this.ingredients.add(e);
         if(isFast){
@@ -418,14 +457,19 @@ public class Buffer {
         }
     }
 
+     */
+
     /**
      * get ingredient list form buffer
      * @author Johanna Reidt
      * @return
      */
+    /*
     public List<Ingredient> getIngredients(){
         return this.ingredients;
     }
+
+     */
 
     /**
      * get ingredient list if empty from db
@@ -433,16 +477,18 @@ public class Buffer {
      * @param context
      * @return
      */
-    public List<Ingredient> getIngredients(Context context)  {
-        if(this.ingredients == null || this.ingredients.isEmpty()) {
+    public static List<Ingredient> getIngredients(Context context)  {
+        //if(this.ingredients == null || this.ingredients.isEmpty()) {
+        List<Ingredient> ingredients = new ArrayList<>();
             DatabaseConnection.init(context);
             try {
-                this.ingredients = DatabaseConnection.getSingleton().loadAllIngredients();
+                ingredients = DatabaseConnection.getSingleton().loadAllIngredients();
             } catch (NotInitializedDBException e) {
-                this.ingredients = new ArrayList<>();
+                Log.e(TAG, "getIngredients", e);
+                //ingredients = new ArrayList<>();
             }
-        }
-        return this.ingredients;
+        //}
+        return ingredients;
     }
 
     /**
@@ -450,6 +496,7 @@ public class Buffer {
      * @author Johanna Reidt
      * @param id
      */
+    /*
     @Nullable
     public Ingredient getIngredient(long id){
         if(isFast){
@@ -463,11 +510,14 @@ public class Buffer {
         return null;
     }
 
+     */
+
     /**
      * get ingredient with needle in name from buffer
      * @author Johanna Reidt
      * @param needle
      */
+    /*
     @Nullable
     public Ingredient getIngredient(String needle){
         if(isFast){
@@ -485,6 +535,8 @@ public class Buffer {
         return null;
     }
 
+     */
+
     /**
      * get ingredient with needle in name from buffer or if not existent check db
      * @author Johanna Reidt
@@ -492,11 +544,14 @@ public class Buffer {
      * @param id
      */
     @Nullable
-    public Ingredient getIngredient(Context context, long id){
+    public static Ingredient getIngredient(Context context, long id){
+        /*
         Ingredient res = getIngredient(id);
         if(res != null){
             return res;
         }
+
+         */
         return GetFromDB.loadIngredient(context, id);
     }
 
@@ -506,12 +561,15 @@ public class Buffer {
      * @author Johanna Reidt
      * @return
      */
-    public List<String> getIngredientNames(){
+    public static List<String> getIngredientNames(Context context){
+        /*
         if(isFast){
             return new ArrayList<>(this.fastNameIngredient.keySet());
         }
+
+         */
         List<String> names = new ArrayList<>();
-        for(Ingredient i:this.ingredients){
+        for(Ingredient i: getIngredients(context)){
             names.add(i.getName());
         }
         return names;
@@ -521,22 +579,28 @@ public class Buffer {
      * @author Johanna Reidt
      * @return
      */
-    public List<String> getIngredientNameAndVol(){
+    public static List<String> getIngredientNameAndVol(Context context){
+        /*
         if(isFast){
             return new ArrayList<>(this.fastNameIngredient.keySet());
         }
+
+         */
         List<String> names = new ArrayList<>();
-        for(Ingredient i:this.ingredients){
+        for(Ingredient i:Buffer.getIngredients(context)){
             names.add(i.getName()+": "+i.getVolume()+" ml");
         }
         return names;
     }
-    public List<Ingredient> getAvailableIngredients(){
+    public static List<Ingredient> getAvailableIngredients(Context context){
+        /*
         if(isFast){
             return this.fastAvailableIngredient;
         }else{
+
+         */
             List<Ingredient> res = new ArrayList<>();
-            for(Ingredient recipe: this.ingredients){
+            for(Ingredient recipe: Buffer.getIngredients(context)){
                 if(recipe.isAvailable()){
                     res.add(recipe);
                 }
@@ -544,7 +608,7 @@ public class Buffer {
             }
             return res;
 
-        }
+        //}
     }
     /**
      * ingredient names
@@ -552,30 +616,33 @@ public class Buffer {
      * @author Johanna Reidt
      * @return
      */
-    public List<String> getAvailableIngredientNames(){
+    public static List<String> getAvailableIngredientNames(Context context){
+        /*
         if(isFast){
             return new ArrayList<>(this.fastNameAvailableIngredient.keySet());
         }
+
+         */
         List<String> names = new ArrayList<>();
-        for(Ingredient i:this.ingredients){
-            if(i.isAvailable()) {
+        for(Ingredient i:Buffer.singleton.getAvailableIngredients(context)){
+            //if(i.isAvailable()) {
                 names.add(i.getName());
-            }
+            //}
         }
         return names;
     }
 
 
-    public Ingredient getAvailableIngredient(Long id){
-        if(isFast){
-            return this.fastIDAvailableIngredient.get(id);
-        }else{
-            Ingredient res = getIngredient(id);
-            if(res != null && res.isAvailable()){
-                return res;
-            }
-            return null;
+    public static Ingredient getAvailableIngredient(Context context, Long id){
+        //if(isFast){
+        //    return this.fastIDAvailableIngredient.get(id);
+        //}else{
+        Ingredient res = GetFromDB.loadIngredient(context, id);
+        if(res != null && res.isAvailable()){
+            return res;
         }
+        return null;
+        //}
     }
 
 
@@ -585,7 +652,9 @@ public class Buffer {
      * @param ids
      * @return
      */
-    public List<Ingredient> getAvailableIngredients(List<Long> ids){
+    public static List<Ingredient> getAvailableIngredients(Context context,List<Long> ids){
+        return (List<Ingredient>) GetFromDB.getAvailableIngredients(context, ids);
+        /*
         List<Ingredient> res = new ArrayList<>();
         if(isFast){
             for(Ingredient i: this.fastAvailableIngredient){
@@ -603,6 +672,8 @@ public class Buffer {
             }
         }
         return res;
+
+         */
     }
 
 
@@ -613,7 +684,9 @@ public class Buffer {
      * @param ids
      * @return
      */
-    public List<Ingredient> getIngredients(List<Long> ids){
+    public static List<Ingredient> getIngredients(Context context, List<Long> ids){
+        return GetFromDB.loadIngredients(context, ids);
+        /*
         List<Ingredient> res = new ArrayList<>();
         if(ids == null){
             return res;
@@ -635,6 +708,8 @@ public class Buffer {
             }
         }
         return res;
+
+         */
     }
 
     /**
@@ -643,6 +718,7 @@ public class Buffer {
      * @author Johanna Reidt
      * @return
      */
+    /*
     public List<String> getIngredientNames(List<Long> ids){
         List<String> names = new ArrayList<>();
         for(Ingredient i:getIngredients(ids)){
@@ -650,11 +726,14 @@ public class Buffer {
         }
         return names;
     }
+
+     */
     /**
      * get ingredient names and current volume
      * @author Johanna Reidt
      * @return
      */
+    /*
     public List<String> getIngredientNameAndVol(List<Long> ids){
         List<String> names = new ArrayList<>();
         for(Ingredient i:this.getIngredients(ids)){
@@ -663,7 +742,11 @@ public class Buffer {
         return names;
     }
 
-    public List<Long> getIngredientIDs(){
+     */
+
+    public static List<Long> getIngredientIDs(Context context){
+        return GetFromDB.loadIngredientIDs(context);
+        /*
         List<Long> res = new ArrayList<>();
         if(this.ingredients == null){
             this.ingredients = new ArrayList<>();
@@ -672,6 +755,8 @@ public class Buffer {
             res.add(i.getID());
         }
         return res;
+
+         */
     }
 
 
@@ -685,6 +770,7 @@ public class Buffer {
 
 
 
+    /*
     public void addToBuffer(Topic e){
         this.topics.add(e);
         if(isFast){
@@ -700,14 +786,19 @@ public class Buffer {
         }
     }
 
+     */
+
     /**
      * get topic list from buffer
      * @author Johanna Reidt
      * @return
      */
+    /*
     public List<Topic> getTopics(){
         return this.topics;
     }
+
+     */
 
     /**
      * get topic list if empty load from db
@@ -716,6 +807,8 @@ public class Buffer {
      * @return
      */
     public List<Topic> getTopics(Context context)  {
+        return (List<Topic>) GetFromDB.getTopics(context);
+        /*
         if(this.topics == null || this.topics.isEmpty()) {
             DatabaseConnection.init(context);
             try {
@@ -726,6 +819,8 @@ public class Buffer {
         }
         return this.topics;
 
+         */
+
     }
 
     /**
@@ -733,6 +828,7 @@ public class Buffer {
      * @author Johanna Reidt
      * @param id
      */
+    /*
     @Nullable
     public Topic getTopic(long id){
         if(isFast){
@@ -746,11 +842,14 @@ public class Buffer {
         return null;
     }
 
+     */
+
     /**
      * get topic with needle in name from buffer
      * @author Johanna Reidt
      * @param needle
      */
+    /*
     @Nullable
     public Topic getTopic(String needle){
         if(isFast){
@@ -768,6 +867,8 @@ public class Buffer {
         return null;
     }
 
+     */
+
     /**
      * get topic with needle in name from buffer or if not existent check db
      * @author Johanna Reidt
@@ -776,10 +877,13 @@ public class Buffer {
      */
     @Nullable
     public Topic getTopic(Context context, long id){
+        /*
         Topic res = getTopic(id);
         if(res != null){
             return res;
         }
+
+         */
         return GetFromDB.loadTopic(context, id);
     }
 
@@ -788,12 +892,15 @@ public class Buffer {
      * @author Johanna Reidt
      * @return
      */
-    public List<String> getTopicNames(){
+    public List<String> getTopicNames(Context context){
+        /*
         if(isFast){
             return new ArrayList<>(this.fastNameTopic.keySet());
         }
+
+         */
         List<String> names = new ArrayList<>();
-        for(Topic i:this.topics){
+        for(Topic i: getTopics(context)){
             names.add(i.getName());
         }
         return names;
@@ -805,23 +912,31 @@ public class Buffer {
      * @param ids
      * @return
      */
-    public List<Topic> getTopics(List<Long> ids){
+    public List<Topic> getTopics(Context context,List<Long> ids){
+        return (List<Topic>) GetFromDB.getTopics(context, ids);
+        /*
         ArrayList<Topic> res = new ArrayList<>();
         if(ids ==null){
             return res;
         }
+        /*
         if(isFast) {//gets with hashmap
             for (Long id : ids) {
                 res.add(getTopic(id));
             }
-        }else{
-            for(Topic topic: this.topics){
+        }
+        else{
+         */
+        /*
+            for(Topic topic: getTopics(context)){
                 if(ids.contains(topic.getID())){
                     res.add(topic);
                 }
             }
-        }
+        //}
         return res;
+
+         */
     }
 
     /**
@@ -830,7 +945,7 @@ public class Buffer {
      * @param ids
      * @return
      */
-    public List<String> getTopicNames(List<Long> ids){
+    public List<String> getTopicNames(Context context, List<Long> ids){
         List<String> names = new ArrayList<>();
         for(Topic i:this.topics){
             if(ids.contains(i.getID())) {
@@ -854,6 +969,7 @@ public class Buffer {
 
 
 
+    /*
 
     public void addToBuffer(Recipe e){
         this.recipes.add(e);
@@ -877,6 +993,8 @@ public class Buffer {
             }
         }
     }
+
+     */
     /**
      * get all recipes in buffer
      * @author Johanna Reidt
@@ -1220,6 +1338,7 @@ public class Buffer {
         }
         return null;
     }
+    /*
 
     public void removeFromBuffer(Recipe recipe, Topic topic){
         removeFromBuffer(get(recipe, topic));
@@ -1247,6 +1366,8 @@ public class Buffer {
         }
     }
 
+     */
+
     public SQLRecipeIngredient get(Recipe recipe, Ingredient ingredient){
         if(isFast){
             if(this.fastRecipeRecipeIngredient.containsKey(recipe.getID())){
@@ -1269,6 +1390,7 @@ public class Buffer {
         }
         return null;
     }
+    /*
 
     public void removeFromBuffer(Recipe recipe, Ingredient ingredient){
         removeFromBuffer(get(recipe, ingredient));
@@ -1284,6 +1406,7 @@ public class Buffer {
          at com.example.cocktailmachine.data.db.DeleteFromDB.remove(DeleteFromDB.java:88)
          at com.example.cocktailmachine.data.db.DeleteFromDB.remove(DeleteFromDB.java:92)
          */
+    /*
         if(recipeIngredient == null){
             return;
         }
@@ -1302,6 +1425,7 @@ public class Buffer {
         }
     }
 
+     */
 
 
 
@@ -1314,6 +1438,9 @@ public class Buffer {
 
 
 
+
+
+    /*
 
     public void addToBuffer(Pump e){
         this.pumps.add(e);
@@ -1327,6 +1454,8 @@ public class Buffer {
             this.fastIDPump.remove(e.getID());
         }
     }
+
+     */
     /**
      * get pumps from buffer
      * @author Johanna Reidt
@@ -1407,6 +1536,7 @@ public class Buffer {
         }
         return names;
     }
+    /*
     public void addToBuffer(SQLIngredientPump e){
        // Log.v(TAG, "addToBuffer"+e.toString());
         this.ingredientPumps.add(e);
@@ -1414,6 +1544,8 @@ public class Buffer {
     public void removeFromBuffer(SQLIngredientPump e){
         this.ingredientPumps.remove(e);
     }
+
+     */
     public List<SQLIngredientPump> getIngredientPumps(){
 
         if(this.ingredientPumps == null){
@@ -1495,6 +1627,7 @@ public class Buffer {
 
 
 
+    /*
 
     public void addToBuffer(SQLRecipeTopic e){
         this.recipeTopics.add(e);
@@ -1514,6 +1647,8 @@ public class Buffer {
             }
         }
     }
+
+     */
     public List<SQLRecipeTopic> getRecipeTopics(){
         if(this.recipeTopics == null){
             this.recipeTopics = new ArrayList<>();
@@ -1543,6 +1678,7 @@ public class Buffer {
 
 
 
+    /*
 
     public void addToBuffer(SQLRecipeIngredient e){
         if(e == null){
@@ -1567,13 +1703,20 @@ public class Buffer {
            Objects.requireNonNull(this.fastIngredientRecipeIngredient.get(e.getIngredientID())).add(e);
         }
     }
-    public List<SQLRecipeIngredient> getRecipeIngredients(){
+
+     */
+    public static List<SQLRecipeIngredient> getRecipeIngredients(Context context){
+        /*
         if(this.recipeIngredients == null){
             this.recipeIngredients = new ArrayList<>();
         }
-        return this.recipeIngredients;
+
+         */
+        return GetFromDB.loadRecipeIngredients(context);
     }
-    public List<SQLRecipeIngredient> getRecipeIngredients(Recipe recipe){
+    public List<SQLRecipeIngredient> getRecipeIngredients(Context context,Recipe recipe){
+        return GetFromDB.loadRecipeIngredientFromRecipe(context, recipe);
+        /*
         if(isFast){
             if(this.fastRecipeRecipeIngredient.containsKey(recipe.getID())){
                 return this.fastRecipeRecipeIngredient.get(recipe.getID());
@@ -1586,17 +1729,22 @@ public class Buffer {
             }
         }
         return ris;
+
+         */
     }
 
 
 
 
+    /*
     public void loadAvailableIngredient(Context context) {
         if(isFast){
             this.fastAvailableIngredient = new ArrayList<>();
             this.fastIDAvailableIngredient = new HashMap<>();
             this.fastNameAvailableIngredient = new HashMap<>();
         }
+
+     */
         /*
         if(isFast){
             this.fastAvailableIngredient = new ArrayList<>();
@@ -1611,6 +1759,7 @@ public class Buffer {
         }
 
          */
+    /*
         this.ingredients = new ArrayList<>();
         for(SQLIngredientPump ip: this.ingredientPumps){
             Ingredient i = GetFromDB.loadIngredient(
@@ -1719,6 +1868,9 @@ public class Buffer {
         }
     }
 
+     */
+
+
 
 
 
@@ -1740,7 +1892,7 @@ public class Buffer {
 
     private static void setUpEmptyPumps(Context context) {
        // Log.v(TAG, "setUpEmptyPumps");
-        Buffer.getSingleton().noMemory();
+        //Buffer.getSingleton().noMemory();
         DatabaseConnection.init(context).setUpEmptyPumps(); //delete all pump Tables to be sure
         //no local refresh Buffer.localRefresh(context);
     }
@@ -1760,6 +1912,7 @@ public class Buffer {
             //DatabaseConnection.init(context).emptyUpPumps();
         }
 
+        /*
         if(isFast){
             for(Ingredient i: this.fastAvailableIngredient){
                 i.empty(context);
@@ -1770,6 +1923,8 @@ public class Buffer {
             this.fastAvailableIngredient = new ArrayList<>();
             this.fastAvailableRecipe = new ArrayList<>();
         }else{
+
+         */
             for(Ingredient i: this.getIngredients()){
                 i.empty(context);
             }
@@ -1806,6 +1961,7 @@ public class Buffer {
 
 
 
+    /*
     public void available(Recipe recipe, boolean available) {
         if (isFast) {
             if(available) {
@@ -1838,8 +1994,10 @@ public class Buffer {
         }
     }
 
+     */
 
-    public Pump getPumpWithSlot(int slot) {
+
+    public Pump getPumpWithSlot(Context context, int slot) {
         for(Pump p: this.getPumps()){
             if(p.getSlot() == slot){
                 return p;
@@ -1847,4 +2005,51 @@ public class Buffer {
         }
         return null;
     }
+
+
+
+
+
+
+    /**
+     * deletes element from db
+     * @author Johanna Reidt
+     * @param modelType
+     * @param ID
+     * @throws NotInitializedDBException
+     */
+    public static void deleteElement(Activity activity,
+                                     ModelType modelType,
+                                     Long ID) throws NotInitializedDBException {
+        switch (modelType){
+            case RECIPE:
+                Recipe.getRecipe(ID).delete(activity);
+            case PUMP:
+                Pump.getPump(ID).delete(activity);
+            case TOPIC:
+                Topic.getTopic(ID).delete(activity);
+            case INGREDIENT:
+                Ingredient.getIngredient(ID).delete(activity);
+        }
+    }
+
+    /**
+     * delete either topic or ingredient from recipe
+     * @author Johanna Reidt
+     * @param recipe
+     * @param modelType
+     * @param ID
+     */
+    public static void deleteElementFromRecipe(Context context,
+                                               Recipe recipe,
+                                               ModelType modelType,
+                                               Long ID){
+        switch (modelType){
+            case TOPIC:
+                recipe.remove(context, Topic.getTopic(ID));
+            case INGREDIENT:
+                recipe.remove(context, Ingredient.getIngredient(ID));
+        }
+    }
+
 }

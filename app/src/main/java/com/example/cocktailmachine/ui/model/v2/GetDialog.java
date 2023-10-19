@@ -730,12 +730,11 @@ public class GetDialog {
 
 
 
-
-    static void deleteAddElement(Activity activity, String name, Postexecute pickedDeleted){
-        Log.v(TAG, "deleteAddElement");
+    static void deleteElement(Activity activity, String name, Postexecute pickedDeleted){
+        Log.v(TAG, "deleteElement");
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Löschen");
-        builder.setMessage("Möchtest du wirklich "+name+" aus dem Rezept löschen?");
+        builder.setMessage("Möchtest du wirklich "+name+" löschen?");
         builder.setNegativeButton("Nein", (dialog, which) -> {
             Log.v(TAG, "deleteAddElement: Nein");
             dialog.dismiss();
@@ -749,6 +748,12 @@ public class GetDialog {
             dialog.dismiss();
         });
         builder.show();
+    }
+
+
+    static void deleteAddElement(Activity activity, String name, Postexecute pickedDeleted){
+        Log.v(TAG, "deleteAddElement");
+        deleteElement(activity, name+" aus dem Rezept", pickedDeleted );
     }
 
 
@@ -2195,7 +2200,7 @@ public class GetDialog {
         b.append(" aus dem Rezept "+recipe.getName()+" entfernen?");
         builder.setTitle(b.toString());
         builder.setPositiveButton("Bitte löschen!", (dialog, which) -> {
-            deleteElementFromRecipe(activity,
+            Buffer.deleteElementFromRecipe(activity,
                     recipe,
                     modelType,
                     ID);
@@ -2260,7 +2265,7 @@ public class GetDialog {
         builder.setTitle(getDeleteTitle(modelType, title));
         builder.setPositiveButton("Bitte löschen!", (dialog, which) -> {
             try {
-                deleteElement(activity,modelType, ID);
+                Buffer.deleteElement(activity,modelType, ID);
             } catch (NotInitializedDBException e) {
                 e.printStackTrace();
             }
@@ -2300,46 +2305,6 @@ public class GetDialog {
         return builder.toString();
     }
 
-    /**
-     * deletes element from db
-     * @author Johanna Reidt
-     * @param modelType
-     * @param ID
-     * @throws NotInitializedDBException
-     */
-    private static void deleteElement(Activity activity,
-                                      ModelType modelType,
-                                      Long ID) throws NotInitializedDBException {
-        switch (modelType){
-            case RECIPE:
-                Recipe.getRecipe(ID).delete(activity);
-            case PUMP:
-                Pump.getPump(ID).delete(activity);
-            case TOPIC:
-                Topic.getTopic(ID).delete(activity);
-            case INGREDIENT:
-                Ingredient.getIngredient(ID).delete(activity);
-        }
-    }
-
-    /**
-     * delete either topic or ingredient from recipe
-     * @author Johanna Reidt
-     * @param recipe
-     * @param modelType
-     * @param ID
-     */
-    private static void deleteElementFromRecipe(Context context,
-                                                Recipe recipe,
-                                                ModelType modelType,
-                                                Long ID){
-        switch (modelType){
-            case TOPIC:
-                recipe.remove(context, Topic.getTopic(ID));
-            case INGREDIENT:
-                recipe.remove(context, Ingredient.getIngredient(ID));
-        }
-    }
 
 
 

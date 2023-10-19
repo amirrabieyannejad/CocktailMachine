@@ -85,7 +85,7 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
 
     static List<Topic> getTopics(Context context){
         Log.i(TAG, "getTopics");
-        return Buffer.getSingleton(context).getTopics(context);
+        return Buffer.getSingleton().getTopics(context);
     }
 
     static List<String> getTopicTitles(){

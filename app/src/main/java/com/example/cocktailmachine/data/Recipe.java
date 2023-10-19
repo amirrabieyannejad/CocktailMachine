@@ -678,7 +678,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @return list of recipes
      */
     static List<Recipe> getAllRecipes(Context context) {
-        return Buffer.getSingleton(context).getRecipes(context);
+        return Buffer.getSingleton().getRecipes(context);
     }
 
 

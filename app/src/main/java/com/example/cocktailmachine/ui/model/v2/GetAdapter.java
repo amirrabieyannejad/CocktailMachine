@@ -17,8 +17,10 @@ import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
+import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Postexecute;
+import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
 
 import java.util.ArrayList;
@@ -510,13 +512,93 @@ public class GetAdapter {
  */
 
 
+    /**
+     *
+     * @created Do. 19.Okt 2023 - 13:34
+     * @project CocktailMachine
+     * @author Johanna Reidt
+     * @param <K>
+     */
+    static abstract class NameAdapter<K extends DataBaseElement> extends RecyclerView.Adapter<GetAdapter.StringView> {
+        private final static String TAG = "NameAdapter";
+        private final Activity activity;
+        private final ModelType type;
+        private final List<K> data;
+        public NameAdapter(Activity activity, ModelType type) {
+            this.activity = activity;
+            this.data = getList();
+            this.type = type;
+
+        }
+
+        @NonNull
+        @Override
+        public GetAdapter.StringView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            Log.v(TAG, "IngredientVolAdapter: onCreateViewHolder");
+            return new GetAdapter.StringView(LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_little_title, parent, false),
+                    this.activity);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull GetAdapter.StringView holder, int position) {
+            Log.v(TAG, "onBindViewHolder");
+            K i = this.data.get(position);
+            if (i == null) {
+                Log.e(TAG, "onBindViewHolder getting ingredient failed");
+                return;
+            }
+            String txt = getTitle(i);
+            View.OnLongClickListener delete =  v -> {
+                Log.v(TAG, "setTxt ingredient clicked");
+                GetDialog.deleteElement(this.activity, txt, new Postexecute() {
+                    @Override
+                    public void post() {
+                        Log.v(TAG, "setTxt choose to delete");
+                        NameAdapter.this.remove(i);
+                        i.delete(activity);
+                    }
+                });
+                return true;
+            };
+            View.OnClickListener goTo =  v -> {
+                Log.v(TAG, "setTxt ingredient clicked");
+                GetActivity.goToLook(this.activity,this.type  , i.getID());
+            };
+
+            holder.setTxt(txt,goTo, delete);
+        }
+
+        public abstract String getTitle(K i);
+
+        public abstract List<K> getList();
+
+
+        @Override
+        public int getItemCount() {
+            Log.v(TAG, "Nameadapter: getItemCount" +this.data.size());
+            return this.data.size();
+        }
+
+
+        public void remove(K k) {
+            Log.v(TAG, "remove");
+            int position = this.data.indexOf(k);
+            this.data.remove(k);
+            this.notifyItemRemoved(position);
+        }
+    }
+
+
+
+
 
     /**
      * @author Johanna Reidt
      * @created Di. 27.Jun 2023 - 15:21
      * @project CocktailMachine
      */
-    public static class TitleListAdapter extends RecyclerView.Adapter<GetAdapter.TitleListAdapter.TitleRow>{
+    static class TitleListAdapter extends RecyclerView.Adapter<GetAdapter.TitleListAdapter.TitleRow>{
         private static final String TAG = "TitleListAdapter";
 
         List<Long> IDs = new ArrayList<>();

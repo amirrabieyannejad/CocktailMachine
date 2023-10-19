@@ -114,7 +114,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
      * @param cursor
      * @return T element list
      */
-    private List<T> cursorToList(Cursor cursor){
+    List<T> cursorToList(Cursor cursor){
        // Log.v(TAG, "cursorToList");
         List<T> res = new ArrayList<>();
         if(cursor.moveToFirst()) {
@@ -149,7 +149,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         return res;
     }
 
-    private String makeSelectionList(String column_name,
+    String makeSelectionList(String column_name,
                                        List<? extends Object> ll)
             throws NoSuchColumnException {
 
@@ -219,14 +219,16 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
     @Nullable
     public T getElement(SQLiteDatabase db,
                         Long id){
-        Cursor cursor = db.query(this.getName(),
+        Cursor cursor = db.query(true,
+                this.getName(),
                 getColumns().toArray(new String[0]),
                 BasicColumn._ID+" = " + id.toString(),
                 null,
                 null,
                 null,
                 null,
-                "1");
+                "1",
+                null);
         if(cursor.moveToFirst()) {
             T res = makeElement(cursor);
             cursor.close();
@@ -237,8 +239,11 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
 
 
     public List<Long> getIDs(SQLiteDatabase db){
-        Cursor cursor = db.query(this.getName(),
+        Cursor cursor = db.query(true,
+                this.getName(),
                 new String[]{_ID},
+                null,
+                null,
                 null,
                 null,
                 null,
@@ -437,9 +442,12 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
             selection = "id in "+Helper.objToString(ids, "(", ", ", ")");
         }
 
-        Cursor cursor = db.query(this.getName(),
+        Cursor cursor = db.query(true,
+                this.getName(),
                 getColumns().toArray(new String[0]),
                 selection,
+                null,
+                null,
                 null,
                 null,
                 null,
@@ -454,8 +462,11 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
      * @return all elements in table as list
      */
     public List<T> getAllElements(SQLiteDatabase db){
-        Cursor cursor = db.query(this.getName(),
+        Cursor cursor = db.query(true,
+                this.getName(),
                 getColumns().toArray(new String[0]),
+                null,
+                null,
                 null,
                 null,
                 null,
@@ -471,13 +482,14 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         if(!getColumns().contains(column_name)){
             throw new NoSuchColumnException(getName(), column_name);
         }
-        Cursor cursor = db.query(this.getName(),
+        Cursor cursor = db.query(true,
+                this.getName(),
                 getColumns().toArray(new String[0]),
                 column_name+" LIKE ?",
                 new String[]{likeThis+"%"},
                 null,
                 null,
-                null);
+                null, null, null);
         return this.cursorToList(cursor);
     }
 
@@ -488,13 +500,14 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         if(!getColumns().contains(column_name)){
             throw new NoSuchColumnException(getName(), column_name);
         }
-        Cursor cursor = db.query(this.getName(),
+        Cursor cursor = db.query(true,
+                this.getName(),
                 getColumns().toArray(new String[0]),
                 column_name+" LIKE ?",
                 new String[]{likeThis+"%"},
                 null,
                 null,
-                null);
+                null, null, null);
         return this.cursorToIDList(cursor);
     }
 
@@ -505,13 +518,17 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         if(!getColumns().contains(column_name)){
             throw new NoSuchColumnException(getName(), column_name);
         }
-        Cursor cursor = db.query(this.getName(),
+        Cursor cursor = db.query(true,
+                this.getName(),
                 getColumns().toArray(new String[0]),
                 column_name+" NOT LIKE ?",
                 new String[]{likeThis+"%"},
                 null,
                 null,
-                null);
+                null,
+                null,
+                null
+        );
         return this.cursorToIDList(cursor);
     }
 
@@ -537,10 +554,13 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
        // Log.v(TAG, "getElementsSelectionOperator selection with List: "+ selection);
 
 
-        Cursor cursor = db.query(
+        Cursor cursor = db.query(true,
+
                 this.getName(),
                 getColumns().toArray(new String[0]),
                 selection,
+                null,
+                null,
                 null,
                 null,
                 null,
@@ -567,10 +587,13 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
        // Log.v(TAG, "getElementsSelectionOperator selection with List: "+ selection);
 
 
-        Cursor cursor = db.query(
+        Cursor cursor = db.query(true,
+
                 this.getName(),
                 getColumns().toArray(new String[0]),
                 selection,
+                null,
+                null,
                 null,
                 null,
                 null,
@@ -620,9 +643,12 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
 
     public List<T> getElementsWith(SQLiteDatabase db,
                                    String selection){
-        Cursor cursor = db.query(this.getName(),
+        Cursor cursor = db.query(true,
+                this.getName(),
                 getColumns().toArray(new String[0]),
                 selection,
+                null,
+                null,
                 null,
                 null,
                 null,
@@ -637,9 +663,12 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         if(!getColumns().contains(column_name)){
             throw new NoSuchColumnException(getName(), column_name);
         }
-        Cursor cursor = db.query(this.getName(),
+        Cursor cursor = db.query(true,
+                this.getName(),
                 getColumns().toArray(new String[0]),
                 column_name+" = "+equalsThis,
+                null,
+                null,
                 null,
                 null,
                 null,
@@ -654,9 +683,12 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         if(!getColumns().contains(column_name)){
             throw new NoSuchColumnException(getName(), column_name);
         }
-        Cursor cursor = db.query(this.getName(),
+        Cursor cursor = db.query(true,
+                this.getName(),
                 getColumns().toArray(new String[0]),
                 column_name+" = "+equalsThis,
+                null,
+                null,
                 null,
                 null,
                 null,
@@ -812,7 +844,6 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         cv.put(_ID, element.getID());
         return cv;
     }
-
 
 
 }

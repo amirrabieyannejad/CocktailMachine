@@ -183,7 +183,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
     @Override
     public List<SQLRecipeIngredient> getRecipeIngredient() {
-        return Buffer.getSingleton().getRecipeIngredients(this);
+        return Buffer.getRecipeIngredients(this);
     }
 
 
