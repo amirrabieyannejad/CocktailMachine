@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.cocktailmachine.Dummy;
 
 import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.enums.AdminRights;
 
 import com.example.cocktailmachine.databinding.ActivitySettingsBinding;

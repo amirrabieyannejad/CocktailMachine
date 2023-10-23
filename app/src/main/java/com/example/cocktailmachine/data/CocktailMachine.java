@@ -1,12 +1,13 @@
 package com.example.cocktailmachine.data;
 
 import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
-import com.example.cocktailmachine.data.db.Buffer;
+import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.CalibrateStatus;
@@ -90,7 +91,7 @@ public class CocktailMachine {
      * @author Johanna Reidt
      * @param jsonObject
      */
-    public static void setCurrentCocktail(JSONObject jsonObject) {
+    public static void setCurrentCocktail(Context context, JSONObject jsonObject) {
         Log.i(TAG, "setCurrentCocktail");
         /**
          * {"weight": 500.0, "content": [["beer", 250], ["lemonade", 250]]}
@@ -105,7 +106,7 @@ public class CocktailMachine {
             for(int i=0;i< array.length(); i++) {
                 JSONArray temp = array.getJSONArray(i);
                 Log.i(TAG, "setCurrentCocktail: elm "+temp.toString());
-                Ingredient ingredient = Ingredient.getIngredient(temp.getString(0));
+                Ingredient ingredient = Ingredient.getIngredient(context, temp.getString(0));
                 Log.i(TAG, "setCurrentCocktail: ing "+ingredient.toString());
                 int vol = temp.getInt(1);
                 Log.i(TAG, "setCurrentCocktail: vol "+vol);
@@ -311,7 +312,7 @@ public class CocktailMachine {
                 @Override
                 public void post() {
                     Log.i(TAG, "isCocktailMachineSet: post");
-                    if(Pump.getPumps().size()==0){
+                    if(Pump.getPumps(activity).size()==0){
                         Log.i(TAG, "isCocktailMachineSet: NOT SET");
                         notSet.post();
                     }else{
@@ -326,7 +327,7 @@ public class CocktailMachine {
             //Log.e(TAG, "error: "+e);
             Log.e(TAG, "error", e);
         }
-        return Pump.getPumps().size()>0;
+        return Pump.getPumps(activity).size()>0;
         //return r.nextDouble() >= 0.5;
         //return false;
     }
@@ -350,7 +351,7 @@ public class CocktailMachine {
                 //Log.e(TAG, "error: "+e);
                 Log.e(TAG, "error", e);
             }
-            return Pump.getPumps().size()>0;
+            return Pump.getPumps(activity).size()>0;
         }
         //return r.nextDouble() >= 0.5;
         //return false;
@@ -519,7 +520,7 @@ public class CocktailMachine {
         Log.i(TAG, "updateRecipeListIfChanged");
         if(Dummy.isDummy){
             Log.i(TAG, "updateRecipeListIfChanged: dummy");
-            Buffer.localRefresh(activity);
+            AddOrUpdateToDB.localRefresh(activity);
             Log.i(TAG, "updateRecipeListIfChanged: dummy: localRefresh done");
             return;
         }
@@ -929,10 +930,10 @@ public class CocktailMachine {
             if(dummyCounter<0){
                 Log.i(TAG, "tickDummy: dummycounter = 0");
                 dummyCounter = 0;
-                Log.i(TAG, "tickDummy: pumpe.size = "+Pump.getPumps().size());
+                Log.i(TAG, "tickDummy: pumpe.size = "+Pump.getPumps(activity).size());
             }
             //return new Random(42).nextBoolean();
-            if( dummyCounter==Pump.getPumps().size()){
+            if( dummyCounter==Pump.getPumps(activity).size()){
                 if(CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_calculation){
                     CocktailMachineCalibration.setIsDone(true);
                     Log.i(TAG, "tickDummy: CocktailMachineCalibration.setIsDone(true)");
@@ -946,7 +947,7 @@ public class CocktailMachine {
                     Log.i(TAG, "tickDummy: Dummy: ");
                     return;
                 }
-            } else if (dummyCounter<Pump.getPumps().size()) {
+            } else if (dummyCounter<Pump.getPumps(activity).size()) {
                 if(CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_pumps){
                     CalibrateStatus.setStatus(CalibrateStatus.calibration_empty_container);
                     Log.i(TAG, "tickDummy: Dummy: calibration_pumps -> calibration_empty_container");
@@ -964,7 +965,7 @@ public class CocktailMachine {
             }
             Log.i(TAG, "tickDummy: dummycounter = 0");
             dummyCounter = 0;
-            Log.i(TAG, "tickDummy: pumpe.size = "+Pump.getPumps().size());
+            Log.i(TAG, "tickDummy: pumpe.size = "+Pump.getPumps(activity).size());
             CalibrateStatus.setStatus(CalibrateStatus.calibration_pumps);
             Log.i(TAG, "tickDummy: ??? -> calibration_pumps");
         }

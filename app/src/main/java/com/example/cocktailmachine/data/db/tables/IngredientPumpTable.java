@@ -6,11 +6,7 @@ import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_LONG;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
-import com.example.cocktailmachine.data.Pump;
-import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 
 import java.util.ArrayList;

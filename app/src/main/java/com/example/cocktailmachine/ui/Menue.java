@@ -11,7 +11,6 @@ import android.widget.Toast;
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;

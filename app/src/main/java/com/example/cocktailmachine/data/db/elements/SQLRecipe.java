@@ -15,7 +15,6 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
-import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.ui.model.v2.GetDialog;
 import com.example.cocktailmachine.ui.model.v2.WaitingQueueCountDown;

@@ -8,7 +8,6 @@ import android.util.Log;
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
-import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;

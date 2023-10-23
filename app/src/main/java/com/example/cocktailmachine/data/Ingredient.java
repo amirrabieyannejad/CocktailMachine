@@ -6,12 +6,9 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 
-import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
@@ -295,9 +292,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
         return ingredient;
     }
 
-    static HashMap<String, Long> getPumpSet(Context context){
-        return Buffer.getIngredientPumpSet(context);
-    }
+
 
 
     //TODO: JSON Object

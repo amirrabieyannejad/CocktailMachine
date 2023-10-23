@@ -14,10 +14,8 @@ import android.view.View;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.SingeltonTestdata;
-import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
-import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Orientation;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;

@@ -9,7 +9,6 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityDisplayBinding;
 

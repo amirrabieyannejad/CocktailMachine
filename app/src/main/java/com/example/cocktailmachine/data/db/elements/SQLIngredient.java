@@ -9,7 +9,6 @@ import androidx.annotation.Nullable;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
-import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;

@@ -1,20 +1,16 @@
 package com.example.cocktailmachine.data.db.elements;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabaseCorruptException;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
-import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 
 import java.util.List;
-import java.util.Objects;
 
 public class SQLPump extends SQLDataBaseElement implements Pump {
     private static final String TAG = "SQLPump";

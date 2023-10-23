@@ -3,13 +3,10 @@ package com.example.cocktailmachine.data;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.GetFromDB;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface Topic extends Comparable<Topic>, DataBaseElement {

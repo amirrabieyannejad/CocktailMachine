@@ -1,16 +1,11 @@
 package com.example.cocktailmachine.data.db.elements;
 
 import android.content.Context;
-import android.util.Log;
-
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
-import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 public class SQLRecipeTopic extends SQLDataBaseElement {
     private static final String TAG = "SQLRecipeTopic";

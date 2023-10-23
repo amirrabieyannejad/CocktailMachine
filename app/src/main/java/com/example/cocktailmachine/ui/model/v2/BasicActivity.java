@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
-import com.example.cocktailmachine.data.db.Buffer;
 
 /**
  * @author Johanna Reidt
