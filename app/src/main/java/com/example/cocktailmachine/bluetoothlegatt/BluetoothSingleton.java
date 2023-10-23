@@ -2254,7 +2254,7 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                CocktailMachine.setCurrentCocktail(this.getJsonResult());
+                CocktailMachine.setCurrentCocktail(activity,this.getJsonResult());
                 Log.w(TAG, "To Save: " + this.getJsonResult());
             }
         };

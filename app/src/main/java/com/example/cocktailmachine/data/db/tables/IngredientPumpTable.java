@@ -6,8 +6,11 @@ import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_LONG;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
+import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +78,14 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
         cv.put(COLUMN_NAME_VOLUME, element.getVolume());
        // Log.v(TAG, "makeContentValues"+cv.toString());
         return cv;
+    }
+
+    public List<SQLIngredientPump> getElements(SQLiteDatabase db, Pump pump){
+        try {
+            return this.getElementsWith(db, COLUMN_NAME_PUMP_ID, String.valueOf(pump.getID()));
+        } catch (NoSuchColumnException e) {
+            return new ArrayList<>();
+        }
     }
 
 

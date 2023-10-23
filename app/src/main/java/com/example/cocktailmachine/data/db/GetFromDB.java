@@ -10,6 +10,7 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
+import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
@@ -279,5 +280,35 @@ public class GetFromDB {
     }
 
 
+    public static SQLIngredientPump getIngredientPump(Context context, Pump pump) {
+        List<SQLIngredientPump> res = Tables.TABLE_INGREDIENT_PUMP.getElements(getReadableDatabase(context), pump);
+        if(res.isEmpty()){
+            return null;
+        }
+        return res.get(0);
+    }
 
+    public static SQLRecipeTopic getRecipeTopic(Context context, Recipe recipe, Topic topic) {
+        try {
+            List<SQLRecipeTopic> res = Tables.TABLE_RECIPE_TOPIC.getElements(getReadableDatabase(context), recipe, topic);
+            if(res.isEmpty()){
+                return null;
+            }
+            return res.get(0);
+        } catch (NoSuchColumnException e) {
+            return null;
+        }
+    }
+
+    public static SQLRecipeIngredient getRecipeIngredient(Context context, Recipe recipe, Ingredient ingredient) {
+        try {
+            List<SQLRecipeIngredient> res =Tables.TABLE_RECIPE_INGREDIENT.getElements(getReadableDatabase(context), recipe, ingredient);
+            if(res.isEmpty()){
+                return null;
+            }
+            return res.get(0);
+        } catch (NoSuchColumnException e) {
+            return null;
+        }
+    }
 }

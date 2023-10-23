@@ -61,27 +61,27 @@ public class BasicRecipes {
     public static void loadPumps(Context context) throws  MissingIngredientPumpException {
 
         Pump t_p = Pump.makeNew();
-        t_p.setCurrentIngredient(context, Ingredient.getIngredient("Tequila"));
+        t_p.setCurrentIngredient(context, Ingredient.getIngredient(context,"Tequila"));
         t_p.fill(1000);
         t_p.save(context);
         Pump o_p = Pump.makeNew();
-        o_p.setCurrentIngredient(context, Ingredient.getIngredient("Orangenlikör"));//orangenlikör);
+        o_p.setCurrentIngredient(context, Ingredient.getIngredient(context, "Orangenlikör"));//orangenlikör);
         o_p.fill(1000);
         o_p.save(context);
         Pump l_p = Pump.makeNew();
-        l_p.setCurrentIngredient(context, Ingredient.getIngredient("Limettensaft"));//limettensaft);
+        l_p.setCurrentIngredient(context, Ingredient.getIngredient(context, "Limettensaft"));//limettensaft);
         l_p.fill(1000);
         l_p.save(context);
         Pump w_p = Pump.makeNew();
-        w_p.setCurrentIngredient(context, Ingredient.getIngredient("Wodka"));//wodka);
+        w_p.setCurrentIngredient(context, Ingredient.getIngredient(context, "Wodka"));//wodka);
         w_p.fill(1000);
         w_p.save(context);
         Pump r_p = Pump.makeNew();
-        r_p.setCurrentIngredient(context, Ingredient.getIngredient("Rum"));//rum);
+        r_p.setCurrentIngredient(context, Ingredient.getIngredient(context, "Rum"));//rum);
         r_p.fill(1000);
         r_p.save(context);
         Pump c_p = Pump.makeNew();
-        c_p.setCurrentIngredient(context, Ingredient.getIngredient("Cola"));//cola);
+        c_p.setCurrentIngredient(context, Ingredient.getIngredient(context, "Cola"));//cola);
         c_p.fill(1000);
         c_p.save(context);
 
@@ -103,10 +103,10 @@ public class BasicRecipes {
 
         
         Recipe magarita = Recipe.makeNew("Margarita");
-        magarita.add(context, Ingredient.getIngredient("Tequila"), 8);
-        magarita.add(context, Ingredient.getIngredient("Orangenlikör"), 4);
-        magarita.add(context, Ingredient.getIngredient("Limettensaft"), 4);
-        magarita.add(context, Topic.getTopic("Eis"));
+        magarita.add(context, Ingredient.getIngredient(context, "Tequila"), 8);
+        magarita.add(context, Ingredient.getIngredient(context, "Orangenlikör"), 4);
+        magarita.add(context, Ingredient.getIngredient(context, "Limettensaft"), 4);
+        magarita.add(context, Topic.getTopic(context, "Eis"));
         magarita.save(context);
 
 
@@ -119,9 +119,9 @@ public class BasicRecipes {
     public static void loadTequila(Context context) throws NotInitializedDBException {
         Log.i(TAG,"loadTequila");
         Recipe magarita = Recipe.makeNew("Margarita 2.0");
-        magarita.add(context, Ingredient.getIngredient("Tequila"), 8);
-        magarita.add(context, Ingredient.getIngredient("Orangenlikör"), 4);
-        magarita.add(context, Ingredient.getIngredient("Limettensaft"), 4);
+        magarita.add(context, Ingredient.getIngredient(context, "Tequila"), 8);
+        magarita.add(context, Ingredient.getIngredient(context, "Orangenlikör"), 4);
+        magarita.add(context, Ingredient.getIngredient(context, "Limettensaft"), 4);
         magarita.save(context);
 
         //DatabaseConnection.localRefresh();
@@ -143,14 +143,14 @@ public class BasicRecipes {
 
 
         Recipe magarita = Recipe.makeNew("Long Island Ice Tea");
-        magarita.add(context, Ingredient.getIngredient("Tequila"), 2);
-        magarita.add(context, Ingredient.getIngredient("Orangenlikör"), 2);
-        magarita.add(context, Ingredient.getIngredient("Limettensaft"), 2);
-        magarita.add(context, Ingredient.getIngredient("Wodka"), 2);
-        magarita.add(context, Ingredient.getIngredient("Rum"), 2);
-        magarita.add(context, Ingredient.getIngredient("Cola"), 25);
-        magarita.add(context, Topic.getTopic("Zuckersirup"));
-        magarita.add(context, Topic.getTopic("Eis"));
+        magarita.add(context, Ingredient.getIngredient(context, "Tequila"), 2);
+        magarita.add(context, Ingredient.getIngredient(context, "Orangenlikör"), 2);
+        magarita.add(context, Ingredient.getIngredient(context, "Limettensaft"), 2);
+        magarita.add(context, Ingredient.getIngredient(context, "Wodka"), 2);
+        magarita.add(context, Ingredient.getIngredient(context, "Rum"), 2);
+        magarita.add(context, Ingredient.getIngredient(context, "Cola"), 25);
+        magarita.add(context, Topic.getTopic(context, "Zuckersirup"));
+        magarita.add(context, Topic.getTopic(context, "Eis"));
         magarita.save(context);
 
 

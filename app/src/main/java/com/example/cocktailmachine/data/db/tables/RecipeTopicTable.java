@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.example.cocktailmachine.data.Recipe;
+import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
@@ -136,5 +137,25 @@ public class RecipeTopicTable extends BasicColumn<SQLRecipeTopic> {
         } catch (NoSuchColumnException e) {
             return new ArrayList<>();
         }
+    }
+
+    public List<SQLRecipeTopic> getElements(SQLiteDatabase db, Recipe recipe, Topic topic) throws NoSuchColumnException {
+        if(!getColumns().contains(COLUMN_NAME_RECIPE_ID)){
+            throw new NoSuchColumnException(getName(), COLUMN_NAME_RECIPE_ID);
+        }
+        if(!getColumns().contains(COLUMN_NAME_TOPIC_ID)){
+            throw new NoSuchColumnException(getName(), COLUMN_NAME_TOPIC_ID);
+        }
+        Cursor cursor = db.query(true,
+                this.getName(),
+                getColumns().toArray(new String[0]),
+                COLUMN_NAME_RECIPE_ID+" = "+recipe.getID()+" AND "+COLUMN_NAME_TOPIC_ID+" = "+topic.getID(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+        return this.cursorToList(cursor);
     }
 }

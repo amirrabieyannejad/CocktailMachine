@@ -37,14 +37,14 @@ public class DeleteFromDB {
         return DatabaseConnection.init(context).getWritableDatabase();
     }
 
-    //REMOVE in DB and buffer
+    //REMOVE in DB and //buffer
     public static void remove(Context context, Ingredient ingredient) {
         //TO DO: delete from recipes
        // Log.v(TAG, "remove");
         SQLiteDatabase db = getWritableDatabase(context);
         Tables.TABLE_INGREDIENT.deleteElement(db, ingredient.getID());
         Tables.TABLE_INGREDIENT_URL.deleteWithOwnerId(db, ingredient.getID());
-        Buffer.getSingleton(context).removeFromBuffer(ingredient);
+        //Buffer.getSingleton(context).removeFrom//Buffer(ingredient);
     }
 
     public static void remove(Context context, Recipe recipe) {
@@ -52,7 +52,7 @@ public class DeleteFromDB {
         SQLiteDatabase db = getWritableDatabase(context);
         Tables.TABLE_RECIPE.deleteElement(db, recipe.getID());
         Tables.TABLE_RECIPE_URL.deleteWithOwnerId(db, recipe.getID());
-        Buffer.getSingleton(context).removeFromBuffer(recipe);
+        //Buffer.getSingleton(context).removeFrom//Buffer(recipe);
     }
 
     public static void remove(Context context, Pump pump) {
@@ -60,46 +60,46 @@ public class DeleteFromDB {
        // Log.v(TAG, "remove");
         SQLiteDatabase db = getWritableDatabase(context);
         Tables.TABLE_PUMP.deleteElement(db, pump.getID());
-        Tables.TABLE_INGREDIENT_PUMP.deleteElement(db, Buffer.getSingleton().getIngredientPump(pump));
-        Buffer.getSingleton(context).removeFromBuffer(pump);
+        Tables.TABLE_INGREDIENT_PUMP.deleteElement(db, GetFromDB.getIngredientPump(context, pump)); //Buffer.getSingleton().getIngredientPump(pump));
+        //Buffer.getSingleton(context).removeFrom//Buffer(pump);
     }
 
 
     public static void remove(Context context, SQLRecipeTopic sQLRecipeTopic) {
        // Log.v(TAG, "remove");
         Tables.TABLE_RECIPE_TOPIC.deleteElement(getWritableDatabase(context), sQLRecipeTopic);
-        Buffer.getSingleton(context).removeFromBuffer(sQLRecipeTopic);
+        //Buffer.getSingleton(context).removeFrom//Buffer(sQLRecipeTopic);
     }
 
     public static void remove(Context context, Recipe recipe, Topic topic) {
        // Log.v(TAG, "remove");
-        SQLRecipeTopic rt = Buffer.getSingleton(context).get(recipe, topic);
+        SQLRecipeTopic rt = GetFromDB.getRecipeTopic(context, recipe, topic);//Buffer.getSingleton(context).get(recipe, topic);
         remove(context, rt);
-        //Buffer.getSingleton(context).removeFromBuffer(topic);
+        ////Buffer.getSingleton(context).removeFrom//Buffer(topic);
     }
 
     public static void remove(Context context, SQLTopic topic) {
         //TODO: delete from recipes
        // Log.v(TAG, "remove");
         Tables.TABLE_TOPIC.deleteElement(getWritableDatabase(context), topic);
-        Buffer.getSingleton(context).removeFromBuffer(topic);
+        //Buffer.getSingleton(context).removeFrom//Buffer(topic);
     }
 
     public static void remove(Context context, SQLRecipeIngredient recipeIngredient) {
        // Log.v(TAG, "remove");
         Tables.TABLE_RECIPE_INGREDIENT.deleteElement(getWritableDatabase(context),recipeIngredient);
-        Buffer.getSingleton(context).removeFromBuffer(recipeIngredient);
+        //Buffer.getSingleton(context).removeFrom//Buffer(recipeIngredient);
     }
     public static void remove(Context context, Recipe recipe, Ingredient ingredient) {
        // Log.v(TAG, "remove");
-        remove(context, Buffer.getSingleton(context).get(recipe, ingredient));
-        //Buffer.getSingleton(context).removeFromBuffer(recipe, ingredient);
+        remove(context, GetFromDB.getRecipeIngredient(context, recipe, ingredient)); //Buffer.getSingleton(context).get(recipe, ingredient));
+        ////Buffer.getSingleton(context).removeFrom//Buffer(recipe, ingredient);
     }
 
     public static void remove(Context context, SQLIngredientPump ingredientPump) {
        // Log.v(TAG, "remove");
         Tables.TABLE_INGREDIENT_PUMP.deleteElement(getWritableDatabase(context), ingredientPump);
-        Buffer.getSingleton(context).removeFromBuffer(ingredientPump);
+        //Buffer.getSingleton(context).removeFrom//Buffer(ingredientPump);
     }
 
     public static void remove(Context context, SQLRecipeImageUrlElement recipeImageUrlElement) {
@@ -115,6 +115,6 @@ public class DeleteFromDB {
 
     public static void removeAll(Context context) {
         DatabaseConnection.init(context).emptyAll();
-        Buffer.getSingleton(context).noMemory();
+        //Buffer.getSingleton(context).noMemory();
     }
 }
