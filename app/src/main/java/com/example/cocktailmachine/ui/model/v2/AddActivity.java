@@ -19,6 +19,7 @@ import com.mrudultora.colorpicker.ColorPickerPopUp;
 import java.util.Random;
 
 public class AddActivity extends BasicActivity {
+    //TODO: ConfigurePumps für add ingredients
     private static final String TAG = "AddActivity";
 
     private ActivityAddBinding binding;
