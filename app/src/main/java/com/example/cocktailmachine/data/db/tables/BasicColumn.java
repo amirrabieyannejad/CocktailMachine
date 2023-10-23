@@ -238,6 +238,46 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
     }
 
 
+    public List<Long> getIDs(SQLiteDatabase db, List<Long> ids){
+        try {
+            return getIDsIn(db, _ID, new ArrayList<>(ids));
+        } catch (NoSuchColumnException e) {
+            return new ArrayList<>();
+        }
+        /*
+        Cursor cursor = db.query(true,
+                this.getName(),
+                new String[]{_ID},
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+        /*
+        List<Long> ids = new ArrayList<>();
+        try {
+            if (cursor.moveToFirst()) {
+                ids.add(cursor.getLong(cursor.getColumnIndexOrThrow(_ID)));
+                while (cursor.moveToNext()) {
+                    ids.add(cursor.getLong(cursor.getColumnIndexOrThrow(_ID)));
+                }
+            }
+        }catch (IllegalArgumentException e){
+            Log.e(TAG, "getIDs", e);
+            Log.getStackTraceString(e);
+        }
+
+         */
+        /*
+        List<Long> ids = cursorToIDList(cursor);
+        cursor.close();
+        return ids;
+
+         */
+    }
+
     public List<Long> getIDs(SQLiteDatabase db){
         Cursor cursor = db.query(true,
                 this.getName(),
@@ -435,11 +475,11 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                                List<Long> ids){
         String selection = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            selection = "id in "+ids.stream()
+            selection = _ID+" in "+ids.stream()
                     .map(Object::toString)
                     .collect(Collectors.joining(", ", "(", ")"));
         }else {
-            selection = "id in "+Helper.objToString(ids, "(", ", ", ")");
+            selection = _ID+" in "+Helper.objToString(ids, "(", ", ", ")");
         }
 
         Cursor cursor = db.query(true,

@@ -1,5 +1,6 @@
 package com.example.cocktailmachine.data.db;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -188,4 +189,8 @@ public class AddOrUpdateToDB {
     }
 
 
+    public static void loadForSetUp(Activity context) {
+
+        DatabaseConnection.init(context).setUpEmptyPumps(); //delete all pump Tables to be sure
+    }
 }

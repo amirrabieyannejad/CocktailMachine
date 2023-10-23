@@ -7,8 +7,10 @@ import android.util.Log;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
+import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
+import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
@@ -158,7 +160,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     static void setOverrideEmptyPumps(Activity context, int numberOfPumps) {
         Log.i(TAG, "setOverrideEmptyPumps");
-        Buffer.loadForSetUp(context);
+        AddOrUpdateToDB.loadForSetUp(context);
         Log.i(TAG, "setOverrideEmptyPumps "+numberOfPumps);
         for (int i = 0; i < numberOfPumps; i++) {
             Pump pump = makeNew();
@@ -167,10 +169,10 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             pump.sendSave(context);
             Log.i(TAG, "setOverrideEmptyPumps: made Pump "+i);
             Log.i(TAG, "setOverrideEmptyPumps: made Pump "+pump.toString());
-            Log.i(TAG, "setOverrideEmptyPumps: control list len "+ getPumps().size() );
+            Log.i(TAG, "setOverrideEmptyPumps: control list len "+ getPumps(context).size() );
         }
         Log.i(TAG, "setOverrideEmptyPumps: control given len "+ numberOfPumps);
-        Log.i(TAG, "setOverrideEmptyPumps: control list len "+ getPumps().size() );
+        Log.i(TAG, "setOverrideEmptyPumps: control list len "+ getPumps(context).size() );
     }
 
     void setSlot(int i);
@@ -236,39 +238,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         return json;
     }
 
-    /**
-     * {"beer": 200, "lemonade": 2000, "orange juice": 2000}
-     *
-     * @return {"beer": 200, "lemonade": 2000, "orange juice": 2000}
-     * @throws JSONException
-     * @throws NotInitializedDBException
-     */
-    static JSONObject getLiquidStatus() throws JSONException, NotInitializedDBException {
-        JSONObject json = new JSONObject();
-        List<Pump> pumps = Pump.getPumps();
-        for (Pump p : pumps) {
-            json.put(p.getIngredientName(), p.getVolume());
-        }
-        return json;
-    }
 
-    /**
-     * {"1": {"liquid": "lemonade", "volume": 200}}
-     *
-     * @return {"beer": 200, "lemonade": 2000, "orange juice": 2000}
-     * @throws JSONException
-     */
-    static JSONObject getPumpStatus() throws JSONException {
-        JSONObject json = new JSONObject();
-        List<Pump> pumps = Pump.getPumps();
-        for (int i = 1; i <= pumps.size(); i++) {
-            Pump p = pumps.get(i);
-            JSONObject temp = new JSONObject();
-            temp.put(p.getIngredientName(), p.getVolume());
-            json.put(String.valueOf(i), temp);
-        }
-        return json;
-    }
+
+
 
 
 
@@ -305,7 +277,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 }catch(JSONException e){
                     Log.i(TAG, "updatePumpStatus: no calibrated" );
                 }
-                Pump pump = Buffer.getSingleton(context).getPumpWithSlot(slot);
+                Pump pump = getPumpWithSlot(context,slot);
                 if(pump == null){
                     pump = new SQLPump();
                 }
@@ -316,7 +288,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 pump.save(context);
                 toSave.add(pump.getID());
             }
-            for (Pump p : getPumps()) {
+            for (Pump p : getPumps(context)) {
                 if (!toSave.contains(p.getID())) {
                     DeleteFromDB.remove(context, p);
                 }
@@ -380,7 +352,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
          */
 
-        List<Pump> toDeletePumps = Pump.getPumps();
+        List<Pump> toDeletePumps = Pump.getPumps(context);
         for (int i = 0; i < t_names.length(); i++) {
             toDeletePumps.remove(
                     makeNewOrUpdate(context,
@@ -761,35 +733,16 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     //general access to db to all pumps
 
     /**
-     * Static access to pumps.
-     * Get available pumps.
-     *
-     * @return pumps
-     */
-    static List<Pump> getPumps() {
-        return Buffer.getSingleton().getPumps();
-    }
-
-    /**
      * get pumps if necessary from db
      * @author Johanna Reidt
      * @param context
      * @return
      */
     static List<Pump> getPumps(Context context){
-        return Buffer.getSingleton().getPumps(context);
+        return (List<Pump>) GetFromDB.getPumps(context);
     }
 
-    /**
-     * Static access to pumps.
-     * Get available pump with id k
-     *
-     * @param id pump id k
-     * @return
-     */
-    static Pump getPump(long id) {
-        return Buffer.getSingleton().getPump(id);
-    }
+
     /**
      * Static access to pumps.
      * Get available pump with id k
@@ -798,14 +751,11 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @return
      */
     static Pump getPump(Context context, long id) {
-        return Buffer.getSingleton(context).getPump(id);
+        return GetFromDB.getPump(context, id);
     }
 
-    static Pump getPumpWithSlot(int slot) {
-        return Buffer.getSingleton().getPumpWithSlot(slot);
-    }
     static Pump getPumpWithSlot(Context context, int slot) {
-        return Buffer.getSingleton(context).getPumpWithSlot(slot);
+        return GetFromDB.getPumpWithSlot(context, slot);
     }
 
 

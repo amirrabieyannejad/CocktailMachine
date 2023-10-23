@@ -248,4 +248,20 @@ public class GetFromDB {
         db.close();
         return res;
     }
+
+    public static List<? extends Pump> getPumps(Context context) {
+        return Tables.TABLE_PUMP.getAllElements(getReadableDatabase(context));
+    }
+
+    public static Pump getPump(Context context, long id) {
+        return Tables.TABLE_PUMP.getElement(getReadableDatabase(context), id);
+    }
+
+    public static Pump getPumpWithSlot(Context context, int slot) {
+        List<? extends SQLPump> res =  Tables.TABLE_PUMP.getPumpWithSlot(getReadableDatabase(context), slot);
+        if(res.isEmpty()){
+            return null;
+        }
+        return (Pump) res.get(0);
+    }
 }
