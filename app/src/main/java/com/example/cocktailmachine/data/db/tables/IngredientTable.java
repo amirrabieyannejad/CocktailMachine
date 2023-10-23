@@ -198,4 +198,35 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
             return new ArrayList<>();
         }
     }
+
+
+    public List<String> getNames(SQLiteDatabase db) {
+
+
+        Cursor cursor = db.query(true,
+                this.getName(),
+                getColumns().toArray(new String[0]),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+        return this.cursorToNames(cursor);
+
+    }
+
+    private List<String> cursorToNames(Cursor cursor){
+        ArrayList<String> res = new ArrayList<>();
+        if(cursor.moveToFirst()) {
+            res.add(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME_NAME)));
+            while (cursor.moveToNext()) {
+                res.add(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME_NAME)));
+            }
+        }
+        cursor.close();
+        // Log.v(TAG, "cursorToList : "+res);
+        return res;
+    }
 }

@@ -38,12 +38,12 @@ public class GetFromDB {
         return DatabaseConnection.init(context).getReadableDatabase();
     }
 
-    static Ingredient loadIngredient(Context context, long id){
+    public static Ingredient loadIngredient(Context context, long id){
        // Log.v(TAG, "loadIngredient");
         return Tables.TABLE_INGREDIENT.getElement(getReadableDatabase(context), id);
     }
 
-    static List<SQLIngredient> loadIngredients(Context context, String needle){
+    public static List<SQLIngredient> loadIngredients(Context context, String needle){
        // Log.v(TAG, "loadIngredients");
         return Tables.TABLE_INGREDIENT.getElements(getReadableDatabase(context), needle);
     }
@@ -191,6 +191,11 @@ public class GetFromDB {
         return Tables.TABLE_INGREDIENT.getAvailableElements(getReadableDatabase(context), ids);
     }
 
+    public static List<? extends Ingredient> getAvailableIngredients(Context context) {
+        //List<Long> available = Tables.TABLE_INGREDIENT.getIDsIn(getReadableDatabase(context), Tables.TABLE_INGREDIENT)
+        return Tables.TABLE_INGREDIENT.getAvailableElements(getReadableDatabase(context));
+    }
+
     public static List<SQLRecipeIngredient> loadRecipeIngredients(Context context) {
         return Tables.TABLE_RECIPE_INGREDIENT.getAllElements(getReadableDatabase(context));
     }
@@ -264,4 +269,15 @@ public class GetFromDB {
         }
         return (Pump) res.get(0);
     }
+
+    public static List<? extends SQLIngredient> loadIngredients(Context context) {
+        return Tables.TABLE_INGREDIENT.getAllElements(getReadableDatabase(context));
+    }
+
+    public static List<String> getIngredientNames(Context context) {
+        return  Tables.TABLE_INGREDIENT.getNames(getReadableDatabase(context));
+    }
+
+
+
 }

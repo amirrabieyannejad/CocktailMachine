@@ -153,14 +153,6 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
 
 
     //general
-    /**
-     * Static Access to ingredients.
-     * Get all ingredients.
-     * @return List of ingredients.
-     */
-    static List<Ingredient> getAllIngredients() {
-        return Buffer.getSingleton().getIngredients();
-    }
 
     /**
      * Static Access to ingredients if necessary from db
@@ -168,7 +160,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @return List of ingredients.
      */
     static List<Ingredient> getAllIngredients(Context context) {
-        return Buffer.getSingleton().getIngredients(context);
+        return (List<Ingredient>) GetFromDB.loadIngredients(context);
     }
 
     /**
@@ -177,7 +169,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @return List of ingredients.
      */
     static List<String> getAllIngredientNames(Context context) {
-        return Buffer.getSingleton().getIngredientNames(context);
+        return GetFromDB.getIngredientNames(context);
     }
 
 
@@ -186,8 +178,8 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * Get all available ingredients.
      * @return List of ingredients.
      */
-    static List<Ingredient> getAvailableIngredients() {
-        return Buffer.getSingleton().getAvailableIngredients();
+    static List<Ingredient> getAvailableIngredients(Context context) {
+        return (List<Ingredient>) GetFromDB.getAvailableIngredients(context);
     }
 
     /**
@@ -195,8 +187,14 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * Get all available ingredient names.
      * @return List of ingredients.
      */
-    static List<String> getAvailableIngredientNames() {
-        return Buffer.getSingleton().getAvailableIngredientNames();
+    static List<String> getAvailableIngredientNames(Context context) {
+        List<Ingredient> res = getAvailableIngredients(context);
+        List<String> name = new ArrayList<>();
+        for(Ingredient i: res){
+            name.add(i.getName());
+        }
+        return name;
+        //return GetFromDB.getAvailableIngredientNames(context);
     }
 
     /**
@@ -205,23 +203,14 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @param ingredientsIds k
      * @return List of ingredients.
      */
-    static List<Ingredient> getAvailableIngredients(List<Long> ingredientsIds) {
-        return Buffer.getSingleton().getAvailableIngredients(ingredientsIds);
+    static List<Ingredient> getAvailableIngredients(Context context,List<Long> ingredientsIds) {
+        return (List<Ingredient>) GetFromDB.getAvailableIngredients(context,ingredientsIds);
     }
 
-    /**
-     * Static Access to ingredients.
-     * Get available ingredients with id k.
-     * @param id k
-     * @return
-     */
-    @Nullable
-    static Ingredient getIngredient(long id) {
-        return Buffer.getSingleton().getIngredient(id);
-    }
+
 
     static Ingredient getIngredient(Context context, long id) {
-        return Buffer.getSingleton(context).getIngredient(id);
+        return GetFromDB.loadIngredient(context, id);
     }
 
     /**
@@ -230,9 +219,9 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @param name k
      * @return
      */
-    static Ingredient getIngredient(String name) {
+    static Ingredient getIngredient(Context context, String name) {
         Log.i(TAG, "getIngredient "+name);
-        return Buffer.getSingleton().getIngredient(name);
+        return (Ingredient) GetFromDB.loadIngredients(context, name);
     }
 
 
@@ -298,7 +287,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
 
 
     static Ingredient searchOrNew(Context context, String name){
-        Ingredient ingredient = Ingredient.getIngredient(name);
+        Ingredient ingredient = Ingredient.getIngredient(context, name);
         if(ingredient == null){
             ingredient =  Ingredient.makeNew(name);
             ingredient.save(context);
