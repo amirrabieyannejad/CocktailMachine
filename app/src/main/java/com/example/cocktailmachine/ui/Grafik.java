@@ -88,7 +88,7 @@ public class Grafik extends AppCompatActivity {
         magarita.add(this, limettensaft, 4);
 
 
-        List<Recipe> recipes = Recipe.getRecipes();
+        List<Recipe> recipes = Recipe.getRecipes(this);
 
 
         System.out.println(recipes);

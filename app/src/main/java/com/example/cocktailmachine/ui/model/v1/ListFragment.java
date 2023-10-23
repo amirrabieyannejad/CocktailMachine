@@ -152,7 +152,7 @@ public class ListFragment extends Fragment {
         type = ModelType.RECIPE;
         ListRecyclerViewAdapters.RecipeListRecyclerViewAdapter recyclerViewAdapter =
                 new ListRecyclerViewAdapters.RecipeListRecyclerViewAdapter();
-        recyclerViewAdapter.replaceRecipes(Recipe.getAllRecipes());
+        recyclerViewAdapter.replaceRecipes(Recipe.getAllRecipes(getContext()));
         this.recyclerViewAdapter = recyclerViewAdapter;
         set("Rezepte (Administrator)");
     }

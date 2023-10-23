@@ -50,7 +50,7 @@ public class FillAnimation extends AppCompatActivity {
             id = i.getLongExtra(GetActivity.ID, id);
         }
 
-        recipe = Recipe.getRecipe(id);//Recipe.getRecipe(id);//SingeltonTestdata.getSingelton().getRecipe();
+        recipe = Recipe.getRecipe(this,id);//Recipe.getRecipe(id);//SingeltonTestdata.getSingelton().getRecipe();
         Bitmap image = null;
 
         ValueAnimator animation = ValueAnimator.ofFloat(0f, 1f);

@@ -285,7 +285,7 @@ public class EditModelFragment extends Fragment {
         });
         final List<Ingredient> ingredients;
         ArrayList<String> ingredientNames = new ArrayList<>();
-        ingredients = Ingredient.getAllIngredients();
+        ingredients = Ingredient.getAllIngredients(getContext());
         for(Ingredient ingredient: ingredients){
             ingredientNames.add(ingredient.getName());
         }
@@ -319,18 +319,18 @@ public class EditModelFragment extends Fragment {
         }
         switch (type){
             case PUMP:
-                pump = Pump.getPump(id);
+                pump = Pump.getPump(getContext(),id);
                 setUpEditPump();
                 return;
             case TOPIC:
-                topic = Topic.getTopic(id);
+                topic = Topic.getTopic(getContext(),id);
                 setUpEditTopic();return;
             case RECIPE:
-                recipe = Recipe.getRecipe(id);
+                recipe = Recipe.getRecipe(getContext(),id);
                 setUpEditRecipe();
                 return;
             case INGREDIENT:
-                ingredient = Ingredient.getIngredient(id);
+                ingredient = Ingredient.getIngredient(getContext(),id);
                 setUpEditIngredient();
         }
     }
@@ -438,7 +438,7 @@ public class EditModelFragment extends Fragment {
                     dialog.dismiss();
                 }
             });
-            List<Ingredient> ingredients = Ingredient.getAllIngredients();
+            List<Ingredient> ingredients = Ingredient.getAllIngredients(getContext());
             ingredients.removeAll(recipe.getIngredients());
             String[] temp = new String[ingredients.size()];
             boolean[] tempB = new boolean[ingredients.size()];
@@ -568,7 +568,7 @@ public class EditModelFragment extends Fragment {
         });
         final List<Ingredient> ingredients;
         ArrayList<String> ingredientNames = new ArrayList<>();
-        ingredients = Ingredient.getAllIngredients();
+        ingredients = Ingredient.getAllIngredients(getContext());
         for(Ingredient ingredient: ingredients){
             ingredientNames.add(ingredient.getName());
         }

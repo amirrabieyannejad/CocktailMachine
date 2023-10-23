@@ -45,7 +45,7 @@ public class ListIngredience extends AppCompatActivity implements RecyclerViewLi
 
 
 
-        listIngredients = Ingredient.getAllIngredients();
+        listIngredients = Ingredient.getAllIngredients(this);
         filteredListIngredients = new ArrayList<>(listIngredients);
         /**try {
 

@@ -27,6 +27,7 @@ import java.util.List;
 public class ListRecyclerViewAdapters  {
     public abstract static class ListRecyclerViewAdapter<E extends RowViews.RowView> extends RecyclerView.Adapter<E> {
 
+        private final Context context;
         RowViews.RowType type;
         private static final String TAG = "ListRecyclerViewAdapter";
         private boolean lock = false;
@@ -38,7 +39,8 @@ public class ListRecyclerViewAdapters  {
 
         private Fragment fragment;
 
-        public ListRecyclerViewAdapter(RowViews.RowType type) {
+        public ListRecyclerViewAdapter(Context context, RowViews.RowType type) {
+            this.context = context;
             this.type = type;
         }
 
@@ -52,7 +54,7 @@ public class ListRecyclerViewAdapters  {
             Log.i(TAG, "reload");
             //views = new ArrayList<>();
             if(recipe!= null) {
-                recipe = Recipe.getRecipe(recipe.getID());
+                recipe = Recipe.getRecipe(fragment.getActivity(), recipe.getID());
             }
             lock = false;
             delete = false;
@@ -183,12 +185,13 @@ public class ListRecyclerViewAdapters  {
 
         public abstract void putIds();
 
-        public ListRecyclerViewAdapter() {
+        public ListRecyclerViewAdapter(Context context) {
             super();
+            this.context = context;
         }
 
         public void putRecipe(Long id){
-            this.recipe = Recipe.getRecipe(id);
+            this.recipe = Recipe.getRecipe(fragment.getActivity(), id);
         }
 
         public void putRecipe(Recipe recipe){
@@ -204,8 +207,8 @@ public class ListRecyclerViewAdapters  {
         private List<Recipe> recipes;
         private static final String TAG = "RecipeListRecyclerViewA";
 
-        public RecipeListRecyclerViewAdapter(List<Long> ids) {
-            super(RowViews.RowType.recipe);
+        public RecipeListRecyclerViewAdapter(List<Long> ids, Context context) {
+            super(context,RowViews.RowType.recipe);
             Log.i(TAG, "constructor");
             this.putIds(ids);
             Log.i(TAG, "recipes");
@@ -222,8 +225,8 @@ public class ListRecyclerViewAdapters  {
 
  */
 
-        public RecipeListRecyclerViewAdapter() {
-            super(RowViews.RowType.recipe);
+        public RecipeListRecyclerViewAdapter(Context context) {
+            super(context, RowViews.RowType.recipe);
             Log.i(TAG, "constructor");
             this.putIds();
             Log.i(TAG, "recipes");
@@ -257,15 +260,15 @@ public class ListRecyclerViewAdapters  {
 
         @Override
         public void putIds(List<Long> ids) {
-            recipes = Recipe.getRecipes(ids);
+            recipes = Recipe.getRecipes(super.context,ids);
         }
 
         @Override
         public void putIds() {
             if(AdminRights.isAdmin()){
-                recipes =Recipe.getAllRecipes();
+                recipes =Recipe.getAllRecipes(super.context);
             }else {
-                recipes = Recipe.getRecipes();
+                recipes = Recipe.getRecipes(super.context);
             }
         }
     }
@@ -273,12 +276,12 @@ public class ListRecyclerViewAdapters  {
     public static class TopicListRecyclerViewAdapter extends ListRecyclerViewAdapter<RowViews.TopicRowView> {
         private List<Topic> topics;
 
-        public TopicListRecyclerViewAdapter() {
-            super(RowViews.RowType.topic);
+        public TopicListRecyclerViewAdapter(Context context) {
+            super(context, RowViews.RowType.topic);
             this.putIds();
         }
-        public TopicListRecyclerViewAdapter(List<Long> ids) {
-            super(RowViews.RowType.topic);
+        public TopicListRecyclerViewAdapter(Context context, List<Long> ids) {
+            super(context, RowViews.RowType.topic);
             this.putIds(ids);
         }
 
@@ -302,32 +305,32 @@ public class ListRecyclerViewAdapters  {
 
         @Override
         public void putIds(List<Long> ids) {
-            topics = Topic.getTopics();
+            topics = Topic.getTopics(super.context);
         }
 
         @Override
         public void putIds() {
-            topics = Topic.getTopics();
+            topics = Topic.getTopics(super.context);
         }
 
         @Override
         public void putRecipe(Long id) {
             super.putRecipe(id);
-            topics = Topic.getTopics(super.recipe);
+            topics = Topic.getTopics(super.context, super.recipe);
         }
 
         @Override
         public void putRecipe(Recipe recipe) {
             super.putRecipe(recipe);
-            topics = Topic.getTopics(super.recipe);
+            topics = Topic.getTopics(super.context, super.recipe);
         }
     }
 
     public static class PumpListRecyclerViewAdapter extends ListRecyclerViewAdapter<RowViews.PumpRowView> {
         private List<Pump> pumps;
 
-        public PumpListRecyclerViewAdapter() {
-            super(RowViews.RowType.pump);
+        public PumpListRecyclerViewAdapter(Context context) {
+            super(context,RowViews.RowType.pump);
             this.putIds();
         }
 
@@ -353,24 +356,24 @@ public class ListRecyclerViewAdapters  {
 
         @Override
         public void putIds(List<Long> ids) {
-            pumps = Pump.getPumps();
+            pumps = Pump.getPumps(super.context);
         }
 
         @Override
         public void putIds() {
-            pumps = Pump.getPumps();
+            pumps = Pump.getPumps(super.context);
         }
     }
 
     public static class IngredientListRecyclerViewAdapter extends ListRecyclerViewAdapter<RowViews.IngredientRowView> {
         private List<Ingredient> data;
 
-        public IngredientListRecyclerViewAdapter() {
-            super(RowViews.RowType.ingredient);
+        public IngredientListRecyclerViewAdapter(Context context) {
+            super(context, RowViews.RowType.ingredient);
             this.putIds();
         }
-        public IngredientListRecyclerViewAdapter(List<Long > ids) {
-            super(RowViews.RowType.ingredient);
+        public IngredientListRecyclerViewAdapter(Context context, List<Long > ids) {
+            super(context, RowViews.RowType.ingredient);
             this.putIds(ids);
         }
 
@@ -395,22 +398,22 @@ public class ListRecyclerViewAdapters  {
         @Override
         public void putIds(List<Long> ids) {
 
-            data = Ingredient.getAvailableIngredients(ids);
+            data = Ingredient.getAvailableIngredients(super.context, ids);
         }
 
         @Override
         public void putIds() {
             if(AdminRights.isAdmin()){
-                data  = Ingredient.getAllIngredients();
+                data  = Ingredient.getAllIngredients(super.context);
             }else {
-                data  = Ingredient.getAvailableIngredients();
+                data  = Ingredient.getAvailableIngredients(super.context);
             }
         }
 
         @Override
         public void putRecipe(Long id) {
             super.putRecipe(id);
-            data = Recipe.getRecipe(id).getIngredients();
+            data = Recipe.getRecipe(super.context,id).getIngredients();
         }
 
         @Override
@@ -424,13 +427,13 @@ public class ListRecyclerViewAdapters  {
     public static class RecipeIngredientListRecyclerViewAdapter extends ListRecyclerViewAdapter<RowViews.RecipeIngredientRowView> {
         private List<Ingredient> data;
 
-        public RecipeIngredientListRecyclerViewAdapter(Long id) {
-            super(RowViews.RowType.recipeIngredient);
+        public RecipeIngredientListRecyclerViewAdapter(Context context, Long id) {
+            super(context,RowViews.RowType.recipeIngredient);
             this.putRecipe(id);
         }
 
-        public RecipeIngredientListRecyclerViewAdapter(Recipe recipe) {
-            super(RowViews.RowType.recipeIngredient);
+        public RecipeIngredientListRecyclerViewAdapter(Context context, Recipe recipe) {
+            super(context, RowViews.RowType.recipeIngredient);
             this.putRecipe(recipe);
         }
 
@@ -456,9 +459,9 @@ public class ListRecyclerViewAdapters  {
         @Override
         public void putIds(List<Long> ids) {
             if(ids==null){
-                data  = Ingredient.getAvailableIngredients();
+                data  = Ingredient.getAvailableIngredients(super.context);
             }else{
-                data = Ingredient.getAvailableIngredients(ids);
+                data = Ingredient.getAvailableIngredients(super.context, ids);
             }
         }
 
@@ -485,12 +488,12 @@ public class ListRecyclerViewAdapters  {
     public static class RecipeTopicListRecyclerViewAdapter extends ListRecyclerViewAdapter<RowViews.RecipeTopicRowView> {
         private List<Topic> data;
 
-        public RecipeTopicListRecyclerViewAdapter(Long id) {
-            super(RowViews.RowType.recipeIngredient);
+        public RecipeTopicListRecyclerViewAdapter(Context context, Long id) {
+            super(context, RowViews.RowType.recipeIngredient);
             this.putRecipe(id);
         }
-        public RecipeTopicListRecyclerViewAdapter(Recipe recipe) {
-            super(RowViews.RowType.recipeIngredient);
+        public RecipeTopicListRecyclerViewAdapter(Context context,Recipe recipe) {
+            super(context,RowViews.RowType.recipeIngredient);
             this.putRecipe(recipe);
         }
 
@@ -515,24 +518,24 @@ public class ListRecyclerViewAdapters  {
 
         @Override
         public void putIds(List<Long> ids) {
-            data  = Topic.getTopics();
+            data  = Topic.getTopics(super.context);
         }
 
         @Override
         public void putIds() {
-            data  = Topic.getTopics(super.recipe);
+            data  = Topic.getTopics(super.context,super.recipe);
         }
 
         @Override
         public void putRecipe(Long id) {
             super.putRecipe(id);
-            data  = Topic.getTopics(super.recipe);
+            data  = Topic.getTopics(super.context,super.recipe);
         }
 
         @Override
         public void putRecipe(Recipe recipe) {
             super.putRecipe(recipe);
-            data  = Topic.getTopics(super.recipe);
+            data  = Topic.getTopics(super.context,super.recipe);
         }
 
 
