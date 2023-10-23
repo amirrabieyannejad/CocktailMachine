@@ -8,8 +8,10 @@ import android.util.Log;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
-import com.example.cocktailmachine.data.db.Buffer;
+//import com.example.cocktailmachine.data.db.Buffer;
+import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
+import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
@@ -521,10 +523,10 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @throws NotInitializedDBException
      * @throws JSONException
      */
-    static JSONArray getRecipesAsMessage() throws NotInitializedDBException, JSONException, InterruptedException {
+    static JSONArray getRecipesAsMessage(Context context) throws NotInitializedDBException, JSONException, InterruptedException {
         //TO DO: USE THIS AMIR * Ich glaube ist für mich setRecipe interessant? *
         JSONArray json = new JSONArray();
-        for(Recipe r: getRecipes()){
+        for(Recipe r: getRecipes(context)){
             json.put(r.asMessage());
         }
 
@@ -553,7 +555,8 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
          */
         Pump.readPumpStatus(activity);
         CocktailMachine.updateRecipeListIfChanged(activity);
-        Buffer.localRefresh(activity);
+        //Buffer.localRefresh(activity);
+        AddOrUpdateToDB.localRefresh(activity);
     }
 
 
@@ -589,7 +592,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         //[{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}, {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
         for(int i=0; i<json.length(); i++){
             JSONObject j = json.optJSONObject(i);
-            Recipe temp = Recipe.searchOrNew(j.optString("name", "Default"));
+            Recipe temp = Recipe.searchOrNew(context, j.optString("name", "Default"));
             JSONArray a = j.optJSONArray("liquids");
             if(a != null){
                 for(int l=0; l<a.length(); l++){
@@ -611,15 +614,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
 
     //Getting from db considering all recipes
-    /**
-     * Static access to recipes.
-     * Get Recipe with id k.
-     * @param id id k
-     * @return Recipe
-     */
-    static Recipe getRecipe(long id) {
-        return Buffer.getSingleton().getRecipe(id);
-    }
+
     /**
      * Static access to recipes.
      * Get Recipe with id k.
@@ -627,18 +622,10 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @return Recipe
      */
     static Recipe getRecipe(Context context,long id) {
-        return Buffer.getSingleton(context).getRecipe(context,id);
+        return GetFromDB.loadRecipe(context, id);
     }
 
-    /**
-     * get recipe with name
-     * @param name
-     * @return
-     */
-    static Recipe getRecipe(String name){
-        return Buffer.getSingleton().getRecipe(name);
 
-    }
 
 
     /**
@@ -649,7 +636,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @return
      */
     static Recipe getRecipe(Context context, String name){
-        return Buffer.getSingleton(context).getRecipe(name);
+        return GetFromDB.loadRecipe(context, name);
 
     }
 
@@ -658,19 +645,11 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * Get available recipes.
      * @return list of recipes
      */
-     static List<Recipe> getRecipes() {
-        return Buffer.getSingleton().getAvailableRecipes();
+     static List<Recipe> getRecipes(Context context) {
+        return (List<Recipe>) GetFromDB.loadAvailableRecipes(context);
 
      }
 
-    /**
-     * Static access to recipes.
-     * Get all saved recipes.
-     * @return list of recipes
-     */
-    static List<Recipe> getAllRecipes() {
-        return Buffer.getSingleton().getRecipes();
-    }
 
     /**
      * Static access to recipes. if neccesary from db
@@ -678,7 +657,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @return list of recipes
      */
     static List<Recipe> getAllRecipes(Context context) {
-        return Buffer.getSingleton().getRecipes(context);
+        return (List<Recipe>) GetFromDB.loadRecipes(context);//Buffer.getSingleton().getRecipes(context);
     }
 
 
@@ -688,8 +667,8 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @param ids list of ids k
      * @return list of recipes
      */
-    static List<Recipe> getRecipes(List<Long> ids) {
-        return Buffer.getSingleton().getRecipes(ids);
+    static List<Recipe> getRecipes(Context context, List<Long> ids) {
+        return (List<Recipe>) GetFromDB.loadRecipes(context, ids);//Buffer.getSingleton().getRecipes(ids);
     }
 
     /**
@@ -701,19 +680,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         return new SQLRecipe(name);
     }
 
-    /**
-     * get recipe with name
-     * or create a new one with name
-     * @param name
-     * @return
-     */
-    static Recipe searchOrNew(String name){
-        Recipe recipe = Recipe.getRecipe(name);
-        if(recipe == null){
-            return Recipe.makeNew(name);
-        }
-        return recipe;
-    }
+
 
 
     /**

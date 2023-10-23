@@ -2,16 +2,10 @@ package com.example.cocktailmachine.data.db;
 
 import android.app.Activity;
 import android.content.Context;
-import android.media.MediaParser;
-import android.os.Build;
-import android.os.Environment;
-import android.util.JsonReader;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
@@ -20,39 +14,14 @@ import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
-import com.example.cocktailmachine.data.db.exceptions.AccessDeniedException;
-import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
-import com.example.cocktailmachine.data.db.tables.Tables;
 import com.example.cocktailmachine.ui.model.ModelType;
-import com.example.cocktailmachine.ui.settings.SettingsActivity;
-import com.opencsv.CSVReader;
 
-import org.apache.commons.collections4.Get;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 /**
  * @author Johanna Reidt
@@ -685,7 +654,7 @@ public class Buffer {
      * @return
      */
     public static List<Ingredient> getIngredients(Context context, List<Long> ids){
-        return GetFromDB.loadIngredients(context, ids);
+        return (List<Ingredient>) GetFromDB.loadIngredients(context, ids);
         /*
         List<Ingredient> res = new ArrayList<>();
         if(ids == null){
@@ -1018,6 +987,8 @@ public class Buffer {
      */
     public List<Recipe> getRecipes(Context context)  {
         //if(this.recipes == null|| this.recipes.isEmpty()){
+        return (List<Recipe>) GetFromDB.loadRecipes(context);
+        /*
         if(this.getRecipes().isEmpty()){
             DatabaseConnection.init(context);
             try {
@@ -1027,6 +998,8 @@ public class Buffer {
             }
         }
         return this.recipes;
+
+         */
     }
     /**
      * get Recipe with id from buffer
@@ -1114,24 +1087,34 @@ public class Buffer {
      * @author Johanna Reidt
      * @return
      */
-    public List<String> getRecipeNames(){
+    public List<String> getRecipeNames(Context context){
+        /*
         if(isFast){
             return new ArrayList<>(this.fastNameRecipe.keySet());
         }
+        */
+
         List<String> names = new ArrayList<>();
-        for(Recipe i:this.recipes){
+        for(Recipe i:this.getRecipes(context)){
             names.add(i.getName());
         }
         return names;
+
     }
+
+
+
 
     /**
      * get recipes with ids
-     * @author Johanna Reidt
+     *
      * @param ids
      * @return
+     * @author Johanna Reidt
      */
-    public List<Recipe> getRecipes(List<Long> ids){
+    public List<Recipe> getRecipes(Context context, List<Long> ids){
+        return (List<Recipe>) GetFromDB.loadRecipes(context, ids);
+        /*
         List<Recipe> res = new ArrayList<>();
         if(isFast){
             for(Long id: ids){
@@ -1145,6 +1128,8 @@ public class Buffer {
             }
         }
         return res;
+
+         */
     }
 
     public List<Recipe> getAvailableRecipes(){

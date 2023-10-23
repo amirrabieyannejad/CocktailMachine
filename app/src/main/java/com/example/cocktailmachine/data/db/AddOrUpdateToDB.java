@@ -24,7 +24,9 @@ import com.example.cocktailmachine.data.db.tables.Tables;
 public class AddOrUpdateToDB {
     private static String TAG = "AddOrUpdateToDB";
 
-
+    public static void localRefresh(Context context){
+        DatabaseConnection.init(context).refreshAvailable(context);
+    }
 
     /*
     private static SQLiteDatabase getReadableDatabase(Context context){
@@ -58,7 +60,7 @@ public class AddOrUpdateToDB {
            // Log.v(TAG, "first time saving");
             ingredient.setID(Tables.TABLE_INGREDIENT.addElement(getWritableDatabase(context), ingredient));
             //ingredients.add(ingredient);
-            Buffer.getSingleton(context).addToBuffer(ingredient);
+            //Buffer.getSingleton(context).addToBuffer(ingredient);
             ingredient.wasSaved();
         }
 
@@ -73,7 +75,7 @@ public class AddOrUpdateToDB {
         }else{
            // Log.v(TAG, "first time saving");
             recipe.setID(Tables.TABLE_RECIPE.addElement(getWritableDatabase(context), recipe));
-            Buffer.getSingleton(context).addToBuffer(recipe);
+            //Buffer.getSingleton(context).addToBuffer(recipe);
             recipe.wasSaved();
         }
     }
@@ -87,7 +89,7 @@ public class AddOrUpdateToDB {
         }else{
            // Log.v(TAG, "first time saving");
             topic.setID(Tables.TABLE_TOPIC.addElement(getWritableDatabase(context), topic));
-            Buffer.getSingleton(context).addToBuffer(topic);
+            //Buffer.getSingleton(context).addToBuffer(topic);
             topic.wasSaved();
         }
     }
@@ -102,9 +104,9 @@ public class AddOrUpdateToDB {
         }else{
            // Log.v(TAG, "first time saving");
             pump.setID(Tables.TABLE_PUMP.addElement(getWritableDatabase(context), pump));
-            //Buffer.getSingleton(context).addToBuffer(pump);
+            ////Buffer.getSingleton(context).addToBuffer(pump);
             pump.wasSaved();
-            Buffer.getSingleton(context).addToBuffer(pump);
+            //Buffer.getSingleton(context).addToBuffer(pump);
         }
     }
 
@@ -118,7 +120,7 @@ public class AddOrUpdateToDB {
            // Log.v(TAG, "first time saving");
             recipeTopic.setID(Tables.TABLE_RECIPE_TOPIC.addElement(getWritableDatabase(context), recipeTopic));
             recipeTopic.wasSaved();
-            Buffer.getSingleton(context).addToBuffer(recipeTopic);
+            //Buffer.getSingleton(context).addToBuffer(recipeTopic);
         }
     }
 
@@ -133,7 +135,7 @@ public class AddOrUpdateToDB {
            // Log.v(TAG, "first time saving");
             ingredientPump.setID(Tables.TABLE_INGREDIENT_PUMP.addElement(getWritableDatabase(context), ingredientPump));
             ingredientPump.wasSaved();
-            Buffer.getSingleton(context).addToBuffer(ingredientPump);
+            //Buffer.getSingleton(context).addToBuffer(ingredientPump);
         }
        // Log.v(TAG, "addOrUpdate: issaved???? "+ DatabaseConnection.init(context).loadIngredientPumps());
     }
@@ -150,7 +152,7 @@ public class AddOrUpdateToDB {
             recipeIngredient.setID(Tables.TABLE_RECIPE_INGREDIENT.addElement(getWritableDatabase(context), recipeIngredient));
             //Buffer.getSingleton().addToBuffer(recipeIngredient);
             recipeIngredient.wasSaved();
-            Buffer.getSingleton(context).addToBuffer(recipeIngredient);
+            //Buffer.getSingleton(context).addToBuffer(recipeIngredient);
         }
     }
 
@@ -165,7 +167,7 @@ public class AddOrUpdateToDB {
             recipeImageUrlElement.setID(Tables.TABLE_RECIPE_URL.addElement(getWritableDatabase(context), recipeImageUrlElement));
             recipeImageUrlElement.wasSaved();
         }
-        //TODO: Buffer.getSingleton(context).addToBuffer(recipeImageUrlElement);
+        //TO DO: //Buffer.getSingleton(context).addToBuffer(recipeImageUrlElement);
     }
 
     public static void addOrUpdate(Context context, SQLIngredientImageUrlElement ingredientImageUrlElement) {
@@ -182,7 +184,7 @@ public class AddOrUpdateToDB {
                             ingredientImageUrlElement));
             ingredientImageUrlElement.wasSaved();
         }
-        //TODO: Buffer.getSingleton(context).addToBuffer(ingredientImageUrlElement);
+        //TO DO: //Buffer.getSingleton(context).addToBuffer(ingredientImageUrlElement);
     }
 
 

@@ -71,8 +71,13 @@ public class GetFromDB {
         return Tables.TABLE_INGREDIENT.getChunkIterator(getReadableDatabase(context) ,n);
     }
 
+    public static Recipe loadRecipes(Context context){
+        // Log.v(TAG, "loadRecipe");
+        //res.loadAvailable(context);
+        return (Recipe) Tables.TABLE_RECIPE.getAllElements(getReadableDatabase(context));
+    }
 
-    static Recipe loadRecipe(Context context,long id){
+    public static Recipe loadRecipe(Context context, long id){
        // Log.v(TAG, "loadRecipe");
         //res.loadAvailable(context);
         return Tables.TABLE_RECIPE.getElement(getReadableDatabase(context), id);
@@ -83,8 +88,12 @@ public class GetFromDB {
        // Log.v(TAG, "loadRecipes");
         return Tables.TABLE_RECIPE.getElement(getReadableDatabase(context), needle);
     }
+    public static List<? extends Recipe> loadRecipes(Context context, List<Long> ids) {
+        // Log.v(TAG, "loadRecipes");
+        return Tables.TABLE_RECIPE.getElements(getReadableDatabase(context), ids);
+    }
 
-    static Recipe loadRecipe(Context context, String name){
+    public static Recipe loadRecipe(Context context, String name){
        // Log.v(TAG, "loadRecipe");
         List<SQLRecipe> ings = loadRecipes(context, name);
         if(ings.isEmpty()){
@@ -118,7 +127,7 @@ public class GetFromDB {
         //return Tables.TABLE_TOPIC.getElement(getReadableDatabase(context), needle);
         List<SQLRecipeTopic> res = new ArrayList<>();
         for(Recipe r: recipes) {
-            res.addAll(Tables.TABLE_RECIPE_TOPIC.getTopics(getReadableDatabase(context), (SQLRecipe) r));
+            res.addAll(Tables.TABLE_RECIPE_TOPIC.getTopics(getReadableDatabase(context), r));
         }
         return res;
     }
@@ -199,16 +208,44 @@ public class GetFromDB {
     public static List<? extends Topic> getTopics(Context context){
          return Tables.TABLE_TOPIC.getAllElements(getReadableDatabase(context));
     }
+    public static List<? extends Topic> getTopics(Context context, Recipe recipe){
+        SQLiteDatabase db = getReadableDatabase(context);
+        List<? extends Topic> res = Tables.TABLE_TOPIC.getElements(db, Tables.TABLE_RECIPE_TOPIC.getTopicIDs(db, recipe));
+        db.close();
+        return res;
+    }
 
     public static List<? extends Topic> getTopics(Context context, List<Long> ids){
-        List<Object> obj = new ArrayList<>();
-        for(Long id: ids){
-            obj.add(id);
-        }
         try {
+            List<Object> obj = new ArrayList<>(ids);
             return Tables.TABLE_TOPIC.getElementsIn(getReadableDatabase(context), TopicTable._ID,obj);
         } catch (NoSuchColumnException e) {
             return new ArrayList<>();
         }
+    }
+
+    public static List< ? extends Recipe> loadAvailableRecipes(Context context) {
+        return Tables.TABLE_RECIPE.getAvailable(getReadableDatabase(context));
+    }
+
+    public static Topic getTopic(Context context, long id) {
+        return Tables.TABLE_TOPIC.getElement(getReadableDatabase(context), id);
+    }
+    public static Topic getTopic(Context context, String name) {
+        return (Topic) Tables.TABLE_TOPIC.getElement(getReadableDatabase(context), name);
+    }
+
+    public static List<Long> getTopicIDs(Context context, Recipe recipe) {
+        SQLiteDatabase db = getReadableDatabase(context);
+        List<Long> res = Tables.TABLE_TOPIC.getIDs(db, Tables.TABLE_RECIPE_TOPIC.getTopicIDs(db, recipe));
+        db.close();
+        return res;
+    }
+
+    public static List<String> loadTopicTitles(Context context) {
+        SQLiteDatabase db = getReadableDatabase(context);
+        List<String> res = Tables.TABLE_TOPIC.getNames(db);
+        db.close();
+        return res;
     }
 }

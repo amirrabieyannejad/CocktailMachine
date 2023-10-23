@@ -452,6 +452,14 @@ class DatabaseConnection extends SQLiteOpenHelper {
 
 
 
+    public void refreshAvailable(Context context){
+
+    }
+
+
+
+
+
 
 
 

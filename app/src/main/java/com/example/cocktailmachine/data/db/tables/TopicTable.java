@@ -9,11 +9,14 @@ import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.example.cocktailmachine.data.db.Helper;
+import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -78,5 +81,62 @@ public class TopicTable extends BasicColumn<SQLTopic>{
         cv.put(COLUMN_NAME_NAME, element.getName());
         cv.put(COLUMN_NAME_DESCRIPTION, element.getDescription());
         return cv;
+    }
+
+
+    public List<String> getNames(SQLiteDatabase db, List<Long> ids) {
+        String selection = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            selection = _ID+" in "+ids.stream()
+                    .map(Object::toString)
+                    .collect(Collectors.joining(", ", "(", ")"));
+        }else {
+            selection = _ID+" in "+ Helper.objToString(ids, "(", ", ", ")");
+        }
+
+        Cursor cursor = db.query(true,
+                this.getName(),
+                getColumns().toArray(new String[0]),
+                selection,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+        return this.cursorToNames(cursor);
+
+    }
+
+
+
+    public List<String> getNames(SQLiteDatabase db) {
+
+
+        Cursor cursor = db.query(true,
+                this.getName(),
+                getColumns().toArray(new String[0]),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+        return this.cursorToNames(cursor);
+
+    }
+
+    private List<String> cursorToNames(Cursor cursor){
+        ArrayList<String> res = new ArrayList<>();
+        if(cursor.moveToFirst()) {
+            res.add(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME_NAME)));
+            while (cursor.moveToNext()) {
+                res.add(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME_NAME)));
+            }
+        }
+        cursor.close();
+        // Log.v(TAG, "cursorToList : "+res);
+        return res;
     }
 }
