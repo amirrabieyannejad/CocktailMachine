@@ -10,10 +10,12 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
+import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 
+import org.apache.commons.collections4.Get;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -88,7 +90,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         this.alcoholic = alcoholic;
         this.color = color;
         //this.loadUrls();
-        this.checkIngredientPumps();
+        //this.checkIngredientPumps();
     }
 
     public SQLIngredient(long ID,
@@ -196,8 +198,9 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
      * @return
      */
     public boolean loadAvailable() {
+        //TODO
        // Log.v(TAG, "loadAvailable");
-        this.checkIngredientPumps();
+        //this.checkIngredientPumps();
         boolean res = false;
        // Log.v(TAG,"loadAvailable: check all ingredientpumps for availability");
         if(this.ingredientPump != null){
@@ -206,7 +209,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         if(res != this.available){
            // Log.v(TAG, "loadAvailable: available changed");
             this.available = res;
-            Buffer.getSingleton().available(this, this.available);
+            //Buffer.getSingleton().available(this, this.available);
             this.wasChanged();
         }
         return isAvailable();
@@ -248,7 +251,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
     public int getVolume() {
         //return this.fluidInMillimeters;
        // Log.v(TAG,"getVolume");
-        this.checkIngredientPumps();
+        //this.checkIngredientPumps();
         if(this.ingredientPump!=null) {
            // Log.v(TAG, "getVolume: Ingredientpump is not null for ingredient "+this.getID()+this.name);
             return this.ingredientPump.getVolume();
@@ -264,7 +267,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
      */
     @Override
     public Pump getPump() {
-        this.checkIngredientPumps();
+        //this.checkIngredientPumps();
 
         if(this.ingredientPump!=null) {
             return this.ingredientPump.getPump();
@@ -279,7 +282,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
      */
     @Override
     public Long getPumpId() {
-        this.checkIngredientPumps();
+        //this.checkIngredientPumps();
         if(this.ingredientPump != null) {
             return this.ingredientPump.getPumpID();
         }
@@ -304,7 +307,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         //this.pump = pump;
         //this.volume = volume;
 
-        Pump pp = Pump.getPump(pump);
+        Pump pp = Pump.getPump(context,pump);
         if(pp != null) {
             pp.setCurrentIngredient(context,this);
             this.ingredientPump = new SQLIngredientPump(volume, pump, this.getID());
@@ -318,7 +321,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
      */
     @Override
     public void empty(Context context) {
-        this.checkIngredientPumps();
+        this.checkIngredientPumps(context);
         if(ingredientPump != null){
             this.ingredientPump.delete(context);
         }
@@ -345,11 +348,11 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
      * check for existing ingredient pump connection
      * @throws NotInitializedDBException
      */
-    private void checkIngredientPumps() {
+    private void checkIngredientPumps(Context context) {
        // Log.v(TAG, "checkIngredientPumps");
         if(this.ingredientPump==null){
            // Log.v(TAG,"checkIngredientPumps: check for ingredientpump");
-            List<SQLIngredientPump> ips = Buffer.getSingleton().getIngredientPumps();
+            List<SQLIngredientPump> ips = GetFromDB.getIngredientPumps(context);//Buffer.getSingleton().getIngredientPumps();
             for(SQLIngredientPump ip: ips){
                 if(ip.getIngredientID()==this.getID()){
                     this.setIngredientPump(ip);
@@ -392,7 +395,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         //this.wasChanged();
 
        // Log.v(TAG,"pump");
-        this.checkIngredientPumps();
+        //this.checkIngredientPumps();
         if(this.ingredientPump != null) {
             try {
                 this.ingredientPump.pump(volume);

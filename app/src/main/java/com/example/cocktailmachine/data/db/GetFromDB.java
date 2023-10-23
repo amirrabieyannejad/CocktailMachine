@@ -2,8 +2,6 @@ package com.example.cocktailmachine.data.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.renderscript.Long4;
-import android.util.Log;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
@@ -17,10 +15,10 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
+import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.data.db.tables.BasicColumn;
 import com.example.cocktailmachine.data.db.tables.Tables;
 import com.example.cocktailmachine.data.db.tables.TopicTable;
-import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -248,6 +246,14 @@ public class GetFromDB {
         return res;
     }
 
+
+    public static List<Long> getTopicIDs(Context context) {
+        SQLiteDatabase db = getReadableDatabase(context);
+        List<Long> res = Tables.TABLE_TOPIC.getIDs(db);
+        db.close();
+        return res;
+    }
+
     public static List<String> loadTopicTitles(Context context) {
         SQLiteDatabase db = getReadableDatabase(context);
         List<String> res = Tables.TABLE_TOPIC.getNames(db);
@@ -310,5 +316,78 @@ public class GetFromDB {
         } catch (NoSuchColumnException e) {
             return null;
         }
+    }
+
+    public static List<SQLIngredientPump> getIngredientPumps(Context context) {
+        return Tables.TABLE_INGREDIENT_PUMP.getAllElements(getReadableDatabase(context));
+    }
+
+    public static List<Long> getIngredientPumpsIDs(Context context) {
+        return Tables.TABLE_INGREDIENT_PUMP.getIDs(getReadableDatabase(context));
+    }
+
+    public static List<String> getTopicNames(Context context) {
+        return Tables.TABLE_TOPIC.getNames(getReadableDatabase(context));
+    }
+
+    public static List<SQLRecipeTopic> getRecipeTopics(Context context, SQLRecipe sqlRecipe) {
+        return Tables.TABLE_RECIPE_TOPIC.getElements(getReadableDatabase(context), sqlRecipe);
+    }
+
+    public static List<Ingredient> getIngredients(Context context, Recipe recipe) {
+        return (List<Ingredient>) Tables.TABLE_INGREDIENT.getElements(getReadableDatabase(context), recipe);
+    }
+
+    public static List<Long> getIngredientIDs(Context context) {
+        return Tables.TABLE_INGREDIENT.getIDs(getReadableDatabase(context));
+    }
+
+    public static int getVolume(Context context, SQLRecipe recipe, Ingredient ingredient) {
+        try {
+            return Tables.TABLE_RECIPE_INGREDIENT.getVolume(getReadableDatabase(context), recipe, ingredient);
+        } catch (TooManyTimesSettedIngredientEcxception e) {
+            AddOrUpdateToDB.deleteDoubleRecipeIngredientSettingsAndNulls(context);
+            return -1;
+        }
+    }
+
+    public static List<SQLRecipeIngredient> getRecipeIngredients(Context context, SQLRecipe sqlRecipe) {
+        return Tables.TABLE_RECIPE_INGREDIENT.getElements(getReadableDatabase(context), sqlRecipe);
+    }
+
+    public static List<String> getIngredientNameNVolumes(Context context, SQLRecipe sqlRecipe) {
+        List<SQLRecipeIngredient> q = getRecipeIngredients(context, sqlRecipe);
+        List<String> res = new ArrayList<>();
+        for(SQLRecipeIngredient ri: q){
+            res.add(ri.getIngredient(context).getName()+": "+ri.getVolume());
+        }
+        return res;
+    }
+
+    public static HashMap<Ingredient, Integer> getIngredientToVolume(Context context, SQLRecipe sqlRecipe) {
+        List<SQLRecipeIngredient> q = getRecipeIngredients(context, sqlRecipe);
+        HashMap<Ingredient, Integer> res = new HashMap<>();
+        for(SQLRecipeIngredient ri: q){
+            res.put(ri.getIngredient(context), ri.getVolume());
+        }
+        return res;
+    }
+
+    public static HashMap<Long, Integer> getIngredientIDToVolume(Context context, SQLRecipe sqlRecipe) {
+        List<SQLRecipeIngredient> q = getRecipeIngredients(context, sqlRecipe);
+        HashMap<Long, Integer> res = new HashMap<>();
+        for(SQLRecipeIngredient ri: q){
+            res.put(ri.getIngredientID(), ri.getVolume());
+        }
+        return res;
+    }
+
+    public static HashMap<String, Integer> getIngredientNameToVolume(Context context, SQLRecipe sqlRecipe) {
+        List<SQLRecipeIngredient> q = getRecipeIngredients(context, sqlRecipe);
+        HashMap<String, Integer> res = new HashMap<>();
+        for(SQLRecipeIngredient ri: q){
+            res.put(ri.getIngredient(context).getName(), ri.getVolume());
+        }
+        return res;
     }
 }

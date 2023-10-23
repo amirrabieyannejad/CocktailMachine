@@ -1,5 +1,9 @@
 package com.example.cocktailmachine.data.db.elements;
 
+import android.content.Context;
+
+import java.util.List;
+
 public abstract class SQLDataBaseElement implements DataBaseElement {
     private long ID = -1L;
     private boolean saved = false;
@@ -35,6 +39,5 @@ public abstract class SQLDataBaseElement implements DataBaseElement {
     public void wasChanged(){
         this.changed = true;
     }
-
 
 }

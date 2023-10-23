@@ -66,7 +66,7 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
         return GetFromDB.getTopic(context, name);
     }
 
-    static List<Topic> getTopics(Context context,Recipe recipe)  {
+    public static List<Topic> getTopics(Context context,Recipe recipe)  {
         Log.i(TAG, "getTopics");
         return (List<Topic>) GetFromDB.getTopics(context, recipe);
     }

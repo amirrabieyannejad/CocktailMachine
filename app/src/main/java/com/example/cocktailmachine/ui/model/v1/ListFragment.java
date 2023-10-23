@@ -79,7 +79,7 @@ public class ListFragment extends Fragment {
         Log.i(TAG, "setAddIngredients: "+recipe_id.toString());
         type = ModelType.INGREDIENT;
         recyclerViewAdapter =
-                new ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter(recipe_id);
+                new ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter(this.getContext(), recipe_id);
         recyclerViewAdapter.loadAdd();
         set( "Zutaten hinzufügen");
     }
@@ -88,7 +88,7 @@ public class ListFragment extends Fragment {
         Log.i(TAG, "setAddTopics: "+recipe_id.toString());
         type = ModelType.TOPIC;
         recyclerViewAdapter =
-                new ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter(recipe_id);
+                new ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter(this.getContext(), recipe_id);
         recyclerViewAdapter.loadAdd();
         set("Serviervorschläge hinzufügen");
     }
@@ -96,7 +96,7 @@ public class ListFragment extends Fragment {
     private void setIngredients(Long recipe_id){
         Log.i(TAG, "setIngredients: "+recipe_id.toString());
         recyclerViewAdapter =
-                new ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter(recipe_id);
+                new ListRecyclerViewAdapters.RecipeIngredientListRecyclerViewAdapter(this.getContext(), recipe_id);
         set( "Zutaten");
     }
 
@@ -104,7 +104,7 @@ public class ListFragment extends Fragment {
         Log.i(TAG, "setTopics: "+recipe_id.toString());
         type = ModelType.TOPIC;
         recyclerViewAdapter =
-                new ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter(recipe_id);
+                new ListRecyclerViewAdapters.RecipeTopicListRecyclerViewAdapter(this.getContext(), recipe_id);
         set("Serviervorschläge");
     }
 
@@ -119,7 +119,7 @@ public class ListFragment extends Fragment {
         }
         type = ModelType.PUMP;
         recyclerViewAdapter =
-                new ListRecyclerViewAdapters.PumpListRecyclerViewAdapter();
+                new ListRecyclerViewAdapters.PumpListRecyclerViewAdapter(this.getContext());
         set( "Pumpen");
     }
 
@@ -127,7 +127,7 @@ public class ListFragment extends Fragment {
         Log.i(TAG, "setIngredients");
         type = ModelType.INGREDIENT;
         recyclerViewAdapter =
-                new ListRecyclerViewAdapters.IngredientListRecyclerViewAdapter();
+                new ListRecyclerViewAdapters.IngredientListRecyclerViewAdapter(this.getContext());
         set( "Zutaten");
     }
 
@@ -135,7 +135,7 @@ public class ListFragment extends Fragment {
         Log.i(TAG, "setTopics");
         type = ModelType.TOPIC;
         recyclerViewAdapter =
-                new ListRecyclerViewAdapters.TopicListRecyclerViewAdapter();
+                new ListRecyclerViewAdapters.TopicListRecyclerViewAdapter(this.getContext());
         set("Serviervorschläge");
     }
 
@@ -143,7 +143,7 @@ public class ListFragment extends Fragment {
         Log.i(TAG, "setAvailableRecipes");
         type = ModelType.RECIPE;
         recyclerViewAdapter =
-                new ListRecyclerViewAdapters.RecipeListRecyclerViewAdapter();
+                new ListRecyclerViewAdapters.RecipeListRecyclerViewAdapter(this.getContext());
         set( "Rezepte");
     }
 
@@ -151,7 +151,7 @@ public class ListFragment extends Fragment {
         Log.i(TAG, "setAllRecipes");
         type = ModelType.RECIPE;
         ListRecyclerViewAdapters.RecipeListRecyclerViewAdapter recyclerViewAdapter =
-                new ListRecyclerViewAdapters.RecipeListRecyclerViewAdapter();
+                new ListRecyclerViewAdapters.RecipeListRecyclerViewAdapter(this.getContext());
         recyclerViewAdapter.replaceRecipes(Recipe.getAllRecipes(getContext()));
         this.recyclerViewAdapter = recyclerViewAdapter;
         set("Rezepte (Administrator)");

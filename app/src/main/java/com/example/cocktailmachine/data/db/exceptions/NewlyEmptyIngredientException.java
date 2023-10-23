@@ -18,7 +18,7 @@ public class NewlyEmptyIngredientException extends Exception{
     public NewlyEmptyIngredientException(long ingredientId) {
         super(String.valueOf(ingredientId));
         this.ingredientId = ingredientId;
-        this.ingredient = Ingredient.getIngredient(ingredientId);
+        //this.ingredient = Ingredient.getIngredient(ingredientId);
     }
 
     /**

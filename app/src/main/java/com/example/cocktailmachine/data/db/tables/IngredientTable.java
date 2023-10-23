@@ -13,6 +13,8 @@ import android.util.Log;
 
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
+import com.example.cocktailmachine.data.Recipe;
+import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
@@ -228,5 +230,19 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
         cursor.close();
         // Log.v(TAG, "cursorToList : "+res);
         return res;
+    }
+
+    public List<? extends Ingredient> getElements(SQLiteDatabase readableDatabase, Recipe recipe) {
+        ArrayList<Object> os = new ArrayList<>();
+        os.addAll(Tables.TABLE_RECIPE_INGREDIENT.getIngredientIDs(readableDatabase, recipe));
+        try {
+            return this.getElementsIn(
+                    readableDatabase,
+                    _ID,
+                    os
+            );
+        } catch (NoSuchColumnException e) {
+            return new ArrayList<>();
+        }
     }
 }

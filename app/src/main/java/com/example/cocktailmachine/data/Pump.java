@@ -198,7 +198,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     static Pump makeNewOrUpdate(Context context, String liquidName, int volume)
             throws MissingIngredientPumpException, NotInitializedDBException {
-        Ingredient ingredient = Ingredient.getIngredient(liquidName);
+        Ingredient ingredient = Ingredient.getIngredient(context,liquidName);
         if (ingredient == null) {
             ingredient = Ingredient.makeNew(liquidName);
             ingredient.save(context);
@@ -292,7 +292,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                     DeleteFromDB.remove(context, p);
                 }
             }
-            Buffer.localRefresh(context);
+            AddOrUpdateToDB.localRefresh(context);
         } catch (JSONException | MissingIngredientPumpException e) {
             Log.e(TAG, "updatePumpStatus: error");
             Log.e(TAG, "error ",e);
@@ -361,7 +361,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         for (Pump toDelete : toDeletePumps) {
             toDelete.delete(context);
         }
-        Buffer.localRefresh(context);
+        AddOrUpdateToDB.localRefresh(context);
     }
 
     /**
@@ -371,7 +371,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @throws JSONException
      * @throws NewlyEmptyIngredientException
      */
-    static void currentMixingCocktail(JSONArray json) throws JSONException, NewlyEmptyIngredientException {
+    static void currentMixingCocktail(Context context,JSONArray json) throws JSONException, NewlyEmptyIngredientException {
         //TO DO: USE THIS AMIR
         Log.i(TAG, "updatePumpStatus");
         int i = 0;
@@ -380,7 +380,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             String name = temp.getString(0);
             int volume = temp.getInt(1);
             try {
-                Ingredient.getIngredient(name).pump(volume);
+                Ingredient.getIngredient(context,name).pump(volume);
             } catch (MissingIngredientPumpException e) {
                 Log.i(TAG, "updatePumpStatus: should not happen");
                 Log.e(TAG, "error ",e);
@@ -675,7 +675,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     static void sync(Activity activity) {
         //TO DO sync
         readPumpStatus(activity);
-        Buffer.localRefresh(activity);
+        AddOrUpdateToDB.localRefresh(activity);
     }
 
     /**

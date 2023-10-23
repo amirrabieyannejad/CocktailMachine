@@ -16,6 +16,7 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
+import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.ui.model.v2.GetDialog;
 import com.example.cocktailmachine.ui.model.v2.WaitingQueueCountDown;
 
@@ -74,7 +75,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         this.available = available;
         this.imageUrls = imageUrls;
 
-        this.addTopics(context,Buffer.getSingleton(context).getTopics(topics));
+        this.addTopics(context, Topic.getTopics(context, this));
         this.addIngredients(context, ingredientIDtoVolumes);
         this.loadAvailable(context);
     }
@@ -93,7 +94,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         this.available = available;
         this.imageUrls = imageUrls;
 
-        this.addTopics(context,Buffer.getSingleton(context).getTopics(topics));
+        this.addTopics(context,Topic.getTopics(context, this));
         this.addIngredients(context, ingredientVolumes);
         this.loadAvailable(context);
     }
@@ -114,75 +115,81 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     }
 
     @Override
-    public List<Topic> getTopics() {
-        return Buffer.getSingleton().getTopics(this);
+    public List<Topic> getTopics(Context context) {
+        return Topic.getTopics(context, this);
     }
 
     @Override
-    public List<Long> getTopicIDs() {
-        return Buffer.getSingleton().getTopicIDs(this);
+    public List<Long> getTopicIDs(Context context) {
+        return GetFromDB.getTopicIDs(context);
     }
 
     @Override
-    public List<String> getTopicNames() {
-        return Buffer.getSingleton().getTopicNames(Buffer.getSingleton().getTopicIDs(this));
+    public List<String> getTopicNames(Context context) {
+        return GetFromDB.getTopicNames(context);
     }
 
     @Override
-    public List<SQLRecipeTopic> getRecipeTopic() {
-        return Buffer.getSingleton().getRecipeTopics(this);
-    }
-
-
-    @Override
-    public List<Ingredient> getIngredients() {
-        return Buffer.getSingleton().getIngredients(this);
-    }
-
-    @Override
-    public List<Long> getIngredientIDs() {
-        return Buffer.getSingleton().getIngredientIds(this);
-    }
-
-    @Override
-    public List<String> getIngredientNames() {
-        return Buffer.getSingleton().getIngredientNames(Buffer.getSingleton().getIngredientIds(this));
-    }
-
-    @Override
-    public List<String> getIngredientNameNVolumes() {
-        return Buffer.getSingleton().getIngredientNameAndVol(Buffer.getSingleton().getIngredientIds(this));
-    }
-
-    @Override
-    public HashMap<Ingredient, Integer> getIngredientToVolume() {
-        return Buffer.getSingleton().getIngredientToVol(this);
-    }
-
-    @Override
-    public HashMap<Long, Integer> getIngredientIDToVolume() {
-        return Buffer.getSingleton().getIngredientIDtoVol(this);
-    }
-
-    @Override
-    public HashMap<String, Integer> getIngredientNameToVolume() {
-        return Buffer.getSingleton().getIngredientNameToVol(this);
-    }
-
-    @Override
-    public int getVolume(Ingredient ingredient) {
-        return Buffer.getSingleton().getVolume(this, ingredient);
-    }
-
-    @Override
-    public int getVolume(long ingredientID) {
-        return this.getVolume(Ingredient.getIngredient(ingredientID));
+    public List<SQLRecipeTopic> getRecipeTopic(Context context) {
+        return GetFromDB.getRecipeTopics(context, this);
     }
 
 
     @Override
-    public List<SQLRecipeIngredient> getRecipeIngredient() {
-        return Buffer.getRecipeIngredients(this);
+    public List<Ingredient> getIngredients(Context context) {
+        return GetFromDB.getIngredients(context, this);
+    }
+
+    @Override
+    public List<Long> getIngredientIDs(Context context) {
+        return GetFromDB.getIngredientIDs(context);
+    }
+
+    @Override
+    public List<String> getIngredientNames(Context context) {
+        return GetFromDB.getIngredientNames(context);
+    }
+
+    @Override
+    public List<String> getIngredientNameNVolumes(Context context) {
+        return GetFromDB.getIngredientNameNVolumes(context, this) ;
+    }
+
+    @Override
+    public HashMap<Ingredient, Integer> getIngredientToVolume(Context context) {
+        return GetFromDB.getIngredientToVolume(context, this) ;
+    }
+
+    @Override
+    public HashMap<Long, Integer> getIngredientIDToVolume(Context context) {
+        return GetFromDB.getIngredientIDToVolume(context, this) ;
+    }
+
+    @Override
+    public HashMap<String, Integer> getIngredientNameToVolume(Context context) {
+        return GetFromDB.getIngredientNameToVolume(context, this) ;
+    }
+
+
+    @Override
+    public int getVolume(Context context, Ingredient ingredient) {
+        return GetFromDB.getVolume(context, this, ingredient);
+    }
+
+    @Override
+    public int getVolume(Context context, long ingredientID) {
+        return this.getVolume(context,Ingredient.getIngredient(context,ingredientID));
+    }
+
+    @Override
+    public boolean isAvailable(Context context) {
+        return false;
+    }
+
+
+    @Override
+    public List<SQLRecipeIngredient> getRecipeIngredient(Context context) {
+        return GetFromDB.getRecipeIngredients(context,this);
     }
 
 
@@ -255,17 +262,17 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     @Override
     public boolean loadAvailable(Context context) {
         this.available = true;
-        for(Ingredient i: this.getIngredients()){
+        for(Ingredient i: this.getIngredients(context)){
             this.available = this.available && i.isAvailable();
         }
-        Buffer.getSingleton().available(this, this.available);
+        //TODO: Avialable Buffer.getSingleton().available(this, this.available);
         return this.available;
     }
 
     @Override
     public boolean loadAlcoholic(Context context) {
         this.alcoholic = false;
-        for(Ingredient i: this.getIngredients()){
+        for(Ingredient i: this.getIngredients(context)){
             this.alcoholic = this.alcoholic || i.isAlcoholic();
         }
         return this.alcoholic;
@@ -286,7 +293,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
             json.put("alcoholic", this.alcoholic);
             json.put("available", this.available);
             json.put("imageUrls", this.imageUrls.toString());
-            json.put("ingredient", this.getIngredientIDs());
+            //json.put("ingredient", this.getIngredientIDs(context));
             return json;
         }catch (JSONException e){
             Log.e(TAG, "error", e);

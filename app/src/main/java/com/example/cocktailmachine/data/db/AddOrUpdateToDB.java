@@ -14,8 +14,14 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
+import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.tables.Tables;
+import com.example.cocktailmachine.ui.Menue;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Johanna Reidt
@@ -192,5 +198,40 @@ public class AddOrUpdateToDB {
     public static void loadForSetUp(Activity context) {
 
         DatabaseConnection.init(context).setUpEmptyPumps(); //delete all pump Tables to be sure
+    }
+
+    public static void loadDummy(Context context) {
+        // Log.v(TAG, "loadDummy");
+        try {
+            DatabaseConnection.init(context).loadDummy(context);
+        } catch (NotInitializedDBException| MissingIngredientPumpException  e) {
+            // Log.v(TAG, "loadDummy");
+            Log.e(TAG, "error", e);
+            // Log.getStackTraceString(e);
+        }
+    }
+
+    public static void deleteDoublePumpSettingsAndNulls(Context context) {
+        List<Long> pump_ids = new ArrayList<>();
+        //List<Long> toDelete = new ArrayList<>();
+        Iterator<SQLIngredientPump> it = GetFromDB.getIngredientPumps(context).iterator();
+        List<Long> toDelete = GetFromDB.getIngredientPumpsIDs(context);
+        while (it.hasNext()){
+            SQLIngredientPump ip = it.next();
+            if(ip == null){
+                it.remove();
+            }else if(!pump_ids.contains(ip.getPumpID())){
+                pump_ids.add(ip.getPumpID());
+                toDelete.remove(ip.getID());
+            }
+
+        }
+        for(Long id: toDelete){
+            DeleteFromDB.removeIngredientPump(context, id);
+        }
+    }
+
+    public static void deleteDoubleRecipeIngredientSettingsAndNulls(Context context) {
+        //TODO♦
     }
 }

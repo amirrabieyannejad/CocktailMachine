@@ -117,4 +117,8 @@ public class DeleteFromDB {
         DatabaseConnection.init(context).emptyAll();
         //Buffer.getSingleton(context).noMemory();
     }
+
+    public static void removeIngredientPump(Context context, long id) {
+        Tables.TABLE_INGREDIENT_PUMP.deleteElement(getWritableDatabase(context), id);
+    }
 }

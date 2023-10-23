@@ -1,15 +1,11 @@
 package com.example.cocktailmachine.data.db.elements;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
-
-import java.util.Objects;
 
 public class SQLRecipeIngredient extends SQLDataBaseElement {
     private static final String TAG = "SQLRecipeIngredient";
@@ -36,16 +32,16 @@ public class SQLRecipeIngredient extends SQLDataBaseElement {
         return ingredientID;
     }
 
-    public Ingredient getIngredient() {
-        return Ingredient.getIngredient(this.ingredientID);
+    public Ingredient getIngredient(Context context) {
+        return Ingredient.getIngredient(context,this.ingredientID);
     }
 
     public long getRecipeID() {
         return recipeID;
     }
 
-    public Recipe getRecipe() {
-        return Recipe.getRecipe(this.recipeID);
+    public Recipe getRecipe(Context context) {
+        return Recipe.getRecipe(context, this.recipeID);
     }
 
     public int getVolume() {
@@ -88,7 +84,7 @@ public class SQLRecipeIngredient extends SQLDataBaseElement {
      */
     public boolean loadAvailable() {
        // Log.v(TAG, "loadAvailable");
-        boolean res = (this.getIngredient()!=null)&&(this.getRecipe()!=null);
+        boolean res = (this.getIngredient(context)!=null)&&(this.getRecipe()!=null);
         if(res != this.available){
            // Log.v(TAG, "loadAvailable: has changed: "+res);
             this.available = res;

@@ -1,6 +1,7 @@
 package com.example.cocktailmachine.data.db.tables;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
@@ -324,6 +325,8 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
             }
         };
     }
+
+
 
 
     /**

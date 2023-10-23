@@ -49,61 +49,47 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     String getName();
     boolean isAlcoholic();
 
-    /**
-     * get topics
-     * @author Johanna Reidt
-     * @return
-     */
-    List<Topic> getTopics();
 
-    /**
-     * get Topic ids
-     * @author Johanna Reidt
-     * @return
-     */
-    List<Long> getTopicIDs();
+    List<Topic> getTopics(Context context);
 
-    /**
-     * get topic names
-     * @author Johanna Reidt
-     * @return
-     */
-    List<String> getTopicNames();
+
+    List<Long> getTopicIDs(Context context);
+
 
     /**
      * get ingredients
      * @author Johanna Reidt
      * @return
      */
-    List<Ingredient> getIngredients();
+    List<Ingredient> getIngredients(Context context);
 
     /**
      * get ingredient ids
      * @author Johanna Reidt
      * @return
      */
-    List<Long> getIngredientIDs();
+    List<Long> getIngredientIDs(Context context);
 
     /**
      * get ingreients names
      * @author Johanna Reidt
      * @return
      */
-    List<String> getIngredientNames();
+    List<String> getIngredientNames(Context context);
 
     /**
      * get list with "<ingredient_name>: <volume> ml"
      * @author Johanna Reidt
      * @return
      */
-    List<String> getIngredientNameNVolumes();
+    List<String> getIngredientNameNVolumes(Context context);
 
     /**
      * get hashmap ingredient id -> volume
      * @author Johanna Reidt
      * @return
      */
-    HashMap<Ingredient, Integer> getIngredientToVolume();
+    HashMap<Ingredient, Integer> getIngredientToVolume(Context context);
 
 
     /**
@@ -111,14 +97,14 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @author Johanna Reidt
      * @return
      */
-    HashMap<Long, Integer> getIngredientIDToVolume();
+    HashMap<Long, Integer> getIngredientIDToVolume(Context context);
 
     /**
      * get hasmap ingredient name -> volume
      * @author Johanna Reidt
      * @return
      */
-    HashMap<String, Integer> getIngredientNameToVolume();
+    HashMap<String, Integer> getIngredientNameToVolume(Context context);
 
     /**
      * get volume with ingredient
@@ -126,21 +112,21 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @param ingredient
      * @return
      */
-    int getVolume(Ingredient ingredient);
+    int getVolume(Context context, Ingredient ingredient);
     /**
      * get volume with ingredient
      * @author Johanna Reidt
      * @param ingredientID
      * @return
      */
-    int getVolume(long ingredientID);
+    int getVolume(Context context, long ingredientID);
 
     /**
      * gives availability
      * @author Johanna Reidt
      * @return
      */
-    boolean isAvailable();
+    boolean isAvailable(Context context);
 
 
 
@@ -150,6 +136,8 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
 
     //Setter
+
+    List<SQLRecipeIngredient> getRecipeIngredient(Context context);
 
     /**
      * set name  or replace
@@ -229,7 +217,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     default void replaceIngredients(Context context, HashMap<Ingredient, Integer> ingVol){
 
         Log.i(TAG, "replaceIngredients");
-        for(Ingredient i: this.getIngredients()){
+        for(Ingredient i: this.getIngredients(context)){
             if(!ingVol.containsKey(i)) {
                 this.remove(context, i);
             }
@@ -258,7 +246,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * @param topics
      */
     default void replaceTopics(Context context, List<Topic> topics){
-        for(Topic t: this.getTopics()){
+        for(Topic t: this.getTopics(context)){
             this.remove(context, t);
         }
         this.loadAvailable(context);
@@ -390,9 +378,9 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
     //JSON Formating Information from db
 
-    default JSONArray getLiquidsJSON(){
+    default JSONArray getLiquidsJSON(Context context){
         JSONArray json = new JSONArray();
-        HashMap<String, Integer> nameVol = this.getIngredientNameToVolume();
+        HashMap<String, Integer> nameVol = this.getIngredientNameToVolume(context);
         for(String e: nameVol.keySet()){
             JSONArray j = new JSONArray();
             j.put(e);
@@ -413,9 +401,8 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         // ** bitte nochmal überprüfen
         JSONObject json = new JSONObject();
         json.put("name", this.getName());
-        json.put("liquids", this.getLiquidsJSON());
+        //json.put("liquids", this.getLiquidsJSON());
         return json;
-
     }
 
     //Use Bluetooth
@@ -472,11 +459,11 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         }
         try {
             JSONArray array = new JSONArray();
-            List<Ingredient> is = this.getIngredients();
+            List<Ingredient> is = this.getIngredients(activity);
             for(Ingredient i: is){
                 JSONArray temp = new JSONArray();
                 temp.put(i.getName());
-                temp.put(this.getVolume(i));
+                temp.put(this.getVolume(activity,i));
                 array.put(temp);
             }
             //jsonObject.put("liquids", array);
@@ -700,9 +687,12 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         return recipe;
     }
 
-    List<SQLRecipeIngredient> getRecipeIngredient();
+    List<SQLRecipeTopic> getRecipeTopic(Context context);
 
 
-    List<SQLRecipeTopic> getRecipeTopic();
+
+
+    List<String> getTopicNames(Context context);
+
 
 }

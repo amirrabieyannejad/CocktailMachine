@@ -15,6 +15,7 @@ import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
+import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -279,5 +280,71 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
                 null,
                 null);
         return this.cursorToList(cursor);
+    }
+
+    public List<Long> getIngredientIDs(SQLiteDatabase db, Recipe recipe) {
+        Cursor cursor = db.query(this.getName(),
+                new String[]{COLUMN_NAME_INGREDIENT_ID},
+                COLUMN_NAME_RECIPE_ID+" = "+recipe.getID(),
+                null,
+                null,
+                null,
+                null);
+
+        List<Long> ids = new ArrayList<>();
+        int id_index = cursor.getColumnIndexOrThrow(COLUMN_NAME_INGREDIENT_ID);
+        if(cursor.moveToFirst()) {
+            ids.add(cursor.getLong(id_index));
+            while (cursor.moveToNext()) {
+                ids.add(cursor.getLong(id_index));
+            }
+        }
+        cursor.close();
+        // Log.v(TAG, "cursorToList : "+ids);
+        cursor.close();
+        return ids;
+    }
+
+    public int getVolume(SQLiteDatabase db, SQLRecipe recipe, Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception {
+        Cursor cursor = db.query(this.getName(),
+                new String[]{COLUMN_NAME_INGREDIENT_ID},
+                COLUMN_NAME_RECIPE_ID+
+                        " = "+
+                        recipe.getID() +
+                        " AND "+
+                        COLUMN_NAME_INGREDIENT_ID +
+                        " = "+
+                        ingredient.getID(),
+                null,
+                null,
+                null,
+                null);
+
+        List<Integer> ids = new ArrayList<>();
+        int id_index = cursor.getColumnIndexOrThrow(COLUMN_NAME_PUMP_TIME);
+        if(cursor.moveToFirst()) {
+            ids.add(cursor.getInt(id_index));
+            while (cursor.moveToNext()) {
+                ids.add(cursor.getInt(id_index));
+            }
+        }
+        cursor.close();
+        // Log.v(TAG, "cursorToList : "+ids);
+        cursor.close();
+        if(ids.isEmpty()){
+            return -1;
+        }
+        if(ids.size()>1){
+            throw new TooManyTimesSettedIngredientEcxception(recipe, ingredient.getID());
+        }
+        return ids.get(0);
+    }
+
+    public List<SQLRecipeIngredient> getElements(SQLiteDatabase db, SQLRecipe sqlRecipe) {
+        try {
+            return this.getElementsWith(db,COLUMN_NAME_RECIPE_ID, String.valueOf(sqlRecipe.getID()));
+        } catch (NoSuchColumnException e) {
+            return new ArrayList<>();
+        }
     }
 }

@@ -8,6 +8,7 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
+import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 
 import java.util.List;
@@ -65,7 +66,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     }
 
     private SQLIngredientPump getIngredientPump(Context context){
-        return Buffer.getSingleton(context).getIngredientPump(this);
+        return GetFromDB.getIngredientPump(context, this);//Buffer.getSingleton(context).getIngredientPump(this);
     }
 
     /**
@@ -137,8 +138,8 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
 
     @Override
     public void preSetIngredient(long id) {
-        //this.ingredientPump = new SQLIngredientPump(-1, this.getID(),id);
-        this.ingredientPump = Buffer.getSingleton().getIngredientPump(this);
+        this.ingredientPump = new SQLIngredientPump(-1, this.getID(),id);
+        //TODO this.ingredientPump = GetFromDB.getIngredientPumps(context);
         this.wasChanged();
     }
 
@@ -155,7 +156,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
            // Log.v(TAG, "setIngredientPump: delete old: "+this.ingredientPump);
             this.ingredientPump.delete(context);
         }
-        Buffer.getSingleton(context).deleteDoublePumpSettingsAndNulls(context);
+        AddOrUpdateToDB.deleteDoublePumpSettingsAndNulls(context);
         this.ingredientPump = ingredientPump;
         this.ingredientPump.save(context);
        // Log.v(TAG, "setIngredientPump: "+ingredientPump.toString());
@@ -177,7 +178,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
        // Log.v(TAG, "setIngredientPumps");
         if(this.ingredientPump == null){
            // Log.v(TAG, "setIngredientPumps: check ingredient pump");
-            List<SQLIngredientPump> ips = Buffer.getSingleton(context).getIngredientPumps();
+            List<SQLIngredientPump> ips = GetFromDB.getIngredientPumps(context);
             for(SQLIngredientPump ip: ips){
                 if(ip.getPumpID()==this.getID()){
                     this.setIngredientPump(context, ip);
