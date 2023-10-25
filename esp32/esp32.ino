@@ -921,7 +921,10 @@ calibration:
     switch (active->state) {
     case RecipeState::ready:
       err = check_recipe(active->name, active->ingredients);
-      if (err != Retcode::success) update_error(err, active->user);
+      if (err != Retcode::success) {
+        update_error(err, active->user);
+        return;
+      }
 
       debug("waiting for container");
       active->state = RecipeState::wait_container;
@@ -940,7 +943,10 @@ calibration:
 
     case RecipeState::mixing:
       err = advance_recipe(active);
-      if (err != Retcode::success) update_error(err, active->user);
+      if (err != Retcode::success) {
+        update_error(err, active->user);
+        return;
+      }
       break;
 
     case RecipeState::pumping:
@@ -1442,7 +1448,6 @@ Retcode CmdQueueRecipe::execute() {
   // look for recipe
   for (auto &r : recipes) {
     if (r.name == name) {
-      recipe = &r;
       break;
     }
   }

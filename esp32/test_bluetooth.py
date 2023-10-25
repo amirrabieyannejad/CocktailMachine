@@ -54,7 +54,7 @@ async def read_status(client):
     except Exception as e:
       logging.error(f"\t{char} ({uuid}) -> {e}")
 
-async def comm_msg(client, uuid, message, wait=None):
+async def comm_msg(client, uuid, message, wait=None, wait_time=10.0):
   notification_received1 = asyncio.Event()
   notification_received2 = asyncio.Event()
 
@@ -64,13 +64,20 @@ async def comm_msg(client, uuid, message, wait=None):
     notification_received2.set()
 
   if wait:
-    logging.info(f"waiting for {wait}")
+    logging.info(f"waiting for «{wait}»")
     state_uuid = STATUS["state"]
+    start = time.time()
+    end = start + wait_time
 
     await client.start_notify(state_uuid, notification_handler1)
 
     prev = None
     while True:
+      if time.time() > end:
+        logging.info("(timeout, cancelling)")
+        await client.stop_notify(state_uuid)
+        break
+
       value = bytes(await client.read_gatt_char(state_uuid)).decode('utf8')
       if value != prev:
         logging.info(f"  is: {value}")
