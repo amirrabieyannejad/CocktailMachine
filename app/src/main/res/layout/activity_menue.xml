@@ -73,6 +73,15 @@
                 app:srcCompat="@drawable/baseline_auto_awesome_24" />
 
             <ImageView
+                android:id="@+id/imageView_pump"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
+                android:onClick="pumpSetting"
+                android:contentDescription="swipe thing"
+                app:srcCompat="@drawable/baseline_auto_awesome_24" />
+
+            <ImageView
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
