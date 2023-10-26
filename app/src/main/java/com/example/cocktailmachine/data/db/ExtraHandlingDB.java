@@ -103,7 +103,7 @@ public class ExtraHandlingDB {
 
     public static void loadAvailabilityForAll(Context context){
         //TODO:set available in all recipes
-        
+
 
     }
 

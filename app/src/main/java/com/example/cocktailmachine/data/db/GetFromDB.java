@@ -43,7 +43,7 @@ public class GetFromDB {
         return Tables.TABLE_INGREDIENT.getElement(getReadableDatabase(context), id);
     }
 
-    public static List<SQLIngredient> loadIngredients(Context context, String needle){
+    public static List<? extends Ingredient> loadIngredients(Context context, String needle){
        // Log.v(TAG, "loadIngredients");
         return Tables.TABLE_INGREDIENT.getElements(getReadableDatabase(context), needle);
     }
@@ -54,7 +54,7 @@ public class GetFromDB {
 
     static Ingredient loadIngredient(Context context, String name){
        // Log.v(TAG, "loadIngredient");
-        List<SQLIngredient> ings = loadIngredients(context, name);
+        List<? extends Ingredient> ings = loadIngredients(context, name);
         if(ings.isEmpty()){
             return null;
         }

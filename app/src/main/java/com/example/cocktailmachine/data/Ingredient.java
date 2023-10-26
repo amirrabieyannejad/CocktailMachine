@@ -217,8 +217,13 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      */
     static Ingredient getIngredient(Context context, String name) {
         Log.i(TAG, "getIngredient "+name);
-        return (Ingredient) GetFromDB.loadIngredients(context, name);
+        List<Ingredient> g = (List<Ingredient>) GetFromDB.loadIngredients(context, name);
+        if(g.isEmpty()){
+            return null;
+        }
+        return g.get(0);
     }
+
 
 
 
