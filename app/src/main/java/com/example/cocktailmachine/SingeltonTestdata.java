@@ -14,7 +14,6 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.ui.model.v2.WaitingQueueCountDown;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 

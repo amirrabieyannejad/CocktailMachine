@@ -2,8 +2,6 @@ package com.example.cocktailmachine.data.db.elements;
 
 import android.content.Context;
 
-import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.db.ExtraHandlingDB;

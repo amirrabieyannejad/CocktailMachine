@@ -1,30 +1,21 @@
 package com.example.cocktailmachine.data.db;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
-import android.util.Log;
-
-import androidx.navigation.ActionOnlyNavDirections;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.tables.Tables;
 import com.example.cocktailmachine.ui.model.ModelType;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**

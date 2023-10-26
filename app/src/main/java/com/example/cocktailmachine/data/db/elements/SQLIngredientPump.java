@@ -1,7 +1,6 @@
 package com.example.cocktailmachine.data.db.elements;
 
 import android.content.Context;
-import android.os.Build;
 
 import androidx.annotation.Nullable;
 
@@ -11,7 +10,6 @@ import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.db.GetFromDB;
-import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
 
 import java.util.List;

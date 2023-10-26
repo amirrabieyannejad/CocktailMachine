@@ -2,7 +2,6 @@ package com.example.cocktailmachine.ui.model.v2;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.text.InputType;
 import android.util.Log;
@@ -23,7 +22,6 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.CalibrateStatus;
 import com.example.cocktailmachine.data.enums.ErrorStatus;

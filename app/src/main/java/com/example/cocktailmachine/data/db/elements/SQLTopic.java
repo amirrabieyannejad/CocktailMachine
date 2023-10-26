@@ -9,7 +9,6 @@ import androidx.annotation.Nullable;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 import org.json.JSONException;
 import org.json.JSONObject;

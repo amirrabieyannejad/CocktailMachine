@@ -8,7 +8,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 

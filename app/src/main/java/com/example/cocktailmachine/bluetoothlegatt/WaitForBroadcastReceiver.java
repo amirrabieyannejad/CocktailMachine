@@ -11,7 +11,6 @@ import com.example.cocktailmachine.data.enums.Postexecute;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 
 
 public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSONObject> {
