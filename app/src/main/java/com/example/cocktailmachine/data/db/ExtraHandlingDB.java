@@ -1,5 +1,7 @@
 package com.example.cocktailmachine.data.db;
 
+import static com.example.cocktailmachine.data.db.GetFromDB.getReadableDatabase;
+
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
@@ -9,6 +11,7 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.tables.Tables;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -100,19 +103,19 @@ public class ExtraHandlingDB {
 
     public static void loadAvailabilityForAll(Context context){
         //TODO:set available in all recipes
-
         
+
     }
 
-    public static boolean loadAvailability(Context context, SQLRecipeTopic recipeTopic){
-        return false; //TODO
+    public static boolean loadAvailability(Context context, SQLRecipeTopic recipeTopic) {
+        return true; //TODO
     }
 
     public static boolean loadAvailability(Context context, SQLRecipeIngredient recipeIngredient) {
-        return false; //TODO
+        return Tables.TABLE_INGREDIENT_PUMP.hasIngredient(getReadableDatabase(context), recipeIngredient.getIngredientID()); //TODO
     }
 
     public static boolean loadAvailability(Context context, SQLIngredientPump sqlIngredientPump) {
-        return false; //TODO
+        return true; //TODO
     }
 }

@@ -34,7 +34,7 @@ import java.util.List;
 public class GetFromDB {
     private static String TAG = "GetFromDB";
 
-    private static SQLiteDatabase getReadableDatabase(Context context){
+    static SQLiteDatabase getReadableDatabase(Context context){
         return DatabaseConnection.init(context).getReadableDatabase();
     }
 

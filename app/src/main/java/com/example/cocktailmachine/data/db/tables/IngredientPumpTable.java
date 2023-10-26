@@ -89,4 +89,12 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
     }
 
 
+    public boolean hasIngredient(SQLiteDatabase db, long ingredientID) {
+        try {
+            return !this.getElementsWith(db, COLUMN_NAME_INGREDIENT_ID, String.valueOf(ingredientID)).isEmpty();
+        } catch (NoSuchColumnException e) {
+            //throw new RuntimeException(e);
+            return false;
+        }
+    }
 }
