@@ -8,8 +8,8 @@ import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedExce
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
 import com.example.cocktailmachine.ui.Menue;
-import com.example.cocktailmachine.ui.model.v2.GetActivity;
-import com.example.cocktailmachine.ui.model.v2.GetDialog;
+import com.example.cocktailmachine.ui.model.helper.GetActivity;
+import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;

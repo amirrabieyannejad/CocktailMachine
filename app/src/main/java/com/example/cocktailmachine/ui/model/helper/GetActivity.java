@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.model.v2;
+package com.example.cocktailmachine.ui.model.helper;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,10 +9,14 @@ import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
-import com.example.cocktailmachine.ui.model.ModelType;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
+import com.example.cocktailmachine.ui.model.AddActivity;
+import com.example.cocktailmachine.ui.model.DisplayActivity;
+import com.example.cocktailmachine.ui.model.ListActivity;
+import com.example.cocktailmachine.ui.model.WaitNotSetActivity;
+import com.example.cocktailmachine.ui.model.enums.ModelType;
 
 /**
  * @author Johanna Reidt

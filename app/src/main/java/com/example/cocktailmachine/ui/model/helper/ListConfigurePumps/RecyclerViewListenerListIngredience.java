@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.model.v2.ListConfigurePumps;
+package com.example.cocktailmachine.ui.model.helper.ListConfigurePumps;
 
 import com.example.cocktailmachine.data.Ingredient;
 

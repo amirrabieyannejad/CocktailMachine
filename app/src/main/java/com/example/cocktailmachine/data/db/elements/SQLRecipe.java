@@ -17,8 +17,8 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.db.GetFromDB;
-import com.example.cocktailmachine.ui.model.v2.GetDialog;
-import com.example.cocktailmachine.ui.model.v2.WaitingQueueCountDown;
+import com.example.cocktailmachine.ui.model.helper.GetDialog;
+import com.example.cocktailmachine.ui.model.helper.WaitingQueueCountDown;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -17,8 +17,8 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
-import com.example.cocktailmachine.ui.model.v2.GetDialog;
-import com.example.cocktailmachine.ui.model.v2.WaitingQueueCountDown;
+import com.example.cocktailmachine.ui.model.helper.GetDialog;
+import com.example.cocktailmachine.ui.model.helper.WaitingQueueCountDown;
 
 
 import org.json.JSONArray;

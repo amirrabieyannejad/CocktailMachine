@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.model.v2;
+package com.example.cocktailmachine.ui.model.helper;
 
 import android.os.Handler;
 import android.os.Message;
