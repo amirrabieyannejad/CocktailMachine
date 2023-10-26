@@ -298,7 +298,7 @@ public class Menue extends AppCompatActivity {
 
     public void pumpSetting(View view){
         Log.i(TAG, " activity Pump Setting");
-        Intent success = new Intent(this, SinglePumpSetting.class);
+        Intent success = new Intent(this, LoadScrean.class);
         startActivity(success);
 
     }
