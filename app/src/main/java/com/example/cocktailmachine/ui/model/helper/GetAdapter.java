@@ -35,7 +35,7 @@ public class GetAdapter {
      * get a new vertical LinearLayoutManager
      * @return LinearLayoutManager
      */
-    static LinearLayoutManager getNewLinearLayoutManager(Context context){
+    public static LinearLayoutManager getNewLinearLayoutManager(Context context){
         //Log.v(TAG, "getNewLinearLayoutManager");
 
         LinearLayoutManager llm = new LinearLayoutManager(context);
@@ -88,7 +88,7 @@ public class GetAdapter {
     /**
      * topic row
      */
-    static class TopicAdapter extends RecyclerView.Adapter<GetAdapter.StringView> {
+    public static class TopicAdapter extends RecyclerView.Adapter<GetAdapter.StringView> {
         private final Activity activity;
         private final Recipe recipe;
         private final boolean withDelete;
@@ -196,7 +196,7 @@ public class GetAdapter {
     /**
      * ingredient row
      */
-    static class IngredientVolAdapter extends RecyclerView.Adapter<GetAdapter.StringView> {
+    public static class IngredientVolAdapter extends RecyclerView.Adapter<GetAdapter.StringView> {
         private final static String TAG = "IngredientVolAdapter";
         private final Activity activity;
         private final Recipe recipe;

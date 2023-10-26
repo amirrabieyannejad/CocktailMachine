@@ -914,7 +914,7 @@ public class GetDialog {
     }
 
      */
-    interface IngredientVolumeSaver{
+    public interface IngredientVolumeSaver{
         //void save(Ingredient ingredient,String tippedName, Integer volume);
         void save(Ingredient ingredient, String tippedName);
         void save(Integer volume);
