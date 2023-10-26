@@ -359,7 +359,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
                 String name = names.next();
                // Log.v(TAG, "loadPrepedRecipes: next recipe: "+name);
                 Recipe r = Recipe.searchOrNew(context,name);
-                r.removeIngredients(context, r.getIngredients());
+                r.removeIngredients(context, r.getIngredients(context));
                 JSONObject ingVol = json.getJSONObject(name);
                 Iterator<String> ings = ingVol.keys();
                 while(ings.hasNext()){
