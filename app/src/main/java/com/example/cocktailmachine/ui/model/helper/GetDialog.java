@@ -1158,7 +1158,7 @@ public class GetDialog {
 
     }
 
-    interface TopicSaver{
+    public interface TopicSaver{
         void save(Topic topic, DialogInterface dialogInterface);
     }
 

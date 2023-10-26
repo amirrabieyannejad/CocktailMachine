@@ -528,7 +528,7 @@ public class GetAdapter {
      * @author Johanna Reidt
      * @param <K>
      */
-    static abstract class NameAdapter<K extends DataBaseElement> extends RecyclerView.Adapter<GetAdapter.StringView> {
+    public static abstract class NameAdapter<K extends DataBaseElement> extends RecyclerView.Adapter<GetAdapter.StringView> {
         private final static String TAG = "NameAdapter";
         private final Activity activity;
         private final ModelType type;

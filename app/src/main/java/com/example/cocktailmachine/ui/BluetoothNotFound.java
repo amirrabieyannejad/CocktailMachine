@@ -18,6 +18,9 @@ import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredie
 import com.example.cocktailmachine.logic.Animation.CircularAnimation;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
 
+import org.apache.commons.lang3.ObjectUtils;
+
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -43,28 +46,26 @@ public class BluetoothNotFound extends AppCompatActivity {
         } catch (NoSuchIngredientSettedException e) {
             throw new RuntimeException(e);
         }
-        backgroundImage.setImageBitmap(image);
-    }
-
-    private Recipe getRandomRecipe(){
-        Recipe recipe = new SQLRecipe(-1, "random", false, true);
-        Random random = new Random();
-        int numberIngredience = random.nextInt(3)+2;
-        List<Ingredient> list = new LinkedList<>();
-        for (int i = 0; i < numberIngredience; i++) {
-            int color = (-1) * random.nextInt(16777216);
-            color = Color.BLUE;
-            Ingredient ingredient = new SQLIngredient("ingredient" + i, false, color);
-            list.add(ingredient);
-            recipe.add(this, ingredient,random.nextInt(5)+4);
-
-        }
 
         Animation anim = new CircularAnimation(loopImage, 100);
         anim.setDuration(3000);
         anim.setRepeatCount(Animation.INFINITE);
         loopImage.startAnimation(anim);
 
+        backgroundImage.setImageBitmap(image);
+    }
+
+    private Recipe getRandomRecipe(){
+        Recipe recipe;
+        Random random = new Random();
+
+        List<Recipe> list = Recipe.getAllRecipes(this);
+        int recipeNr = random.nextInt(list.size());
+        recipe = list.get(recipeNr);
+        list = null;
+        List<Ingredient> ingredience = recipe.getIngredients(this);
+        //int vol = recipe.getVolume(this,ingredience.get(0).getID());
+        HashMap<Long, Integer> re = recipe.getIngredientIDToVolume(this);
         return recipe;
     }
 }
