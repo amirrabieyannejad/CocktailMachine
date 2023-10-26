@@ -1,0 +1,741 @@
+rst:0x1 (POWERON_RESET),boot:0x17 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:1
+load:0x3fff0030,len:1344
+load:0x40078000,len:13964
+load:0x40080400,len:3600
+entry 0x400805f0
+[  1016][I][esp32.ino:678] setup(): Cocktail Machine v7 starting up
+[  1017][I][esp32.ino:704] setup(): found extension card at address 0x20
+[  1018][I][esp32.ino:714] setup(): total pump slots: 5/33
+[  1509][I][esp32.ino:726] setup(): scale initialized
+[  1509][D][esp32.ino:2195] ble_start(): starting ble
+[  2197][D][esp32.ino:2243] Service(): creating service: 8ccbf239-1cd2-4eb7-8872-1cb76c980d14 / c0605c38-3f94-33f6-ace6-7a5504544a80
+[  2199][D][esp32.ino:2243] Service(): creating service: 0f7742d4-ea2d-43c1-9b98-bb4186be905d / e9e4b3f2-fd3f-3b76-8688-088a0671843a
+[  2211][D][esp32.ino:2243] Service(): creating service: 0f7742d4-ea2d-43c1-9b98-bb4186be905d / fc60afb0-2b00-3af2-877a-69ae6815ca2f
+[  2222][D][esp32.ino:2243] Service(): creating service: 0f7742d4-ea2d-43c1-9b98-bb4186be905d / 1a9a598a-17ce-3fcd-be03-40a48587d04e
+[  2233][D][esp32.ino:2243] Service(): creating service: 0f7742d4-ea2d-43c1-9b98-bb4186be905d / 9ede6e03-f89b-3e52-bb15-5c6c72605f6c
+[  2245][D][esp32.ino:2243] Service(): creating service: 0f7742d4-ea2d-43c1-9b98-bb4186be905d / 7344136f-c552-3efc-b04f-a43793f16d43
+[  2256][D][esp32.ino:2243] Service(): creating service: 0f7742d4-ea2d-43c1-9b98-bb4186be905d / 586b5706-5856-34e1-ad17-94f840298816
+[  2268][D][esp32.ino:2243] Service(): creating service: 0f7742d4-ea2d-43c1-9b98-bb4186be905d / 2ce478ea-8d6f-30ba-9ac6-2389c8d5b172
+[  2280][D][esp32.ino:2243] Service(): creating service: 0f7742d4-ea2d-43c1-9b98-bb4186be905d / ff18f0ac-f039-4cd0-bee3-b546e3de5551
+[  2292][D][esp32.ino:2243] Service(): creating service: 0f7742d4-ea2d-43c1-9b98-bb4186be905d / 2e03aa0c-b25f-456a-a327-bd175771111a
+[  2303][D][esp32.ino:2243] Service(): creating service: dad995d1-f228-38ec-8b0f-593953973406 / eb61e31a-f00b-335f-ad14-d654aac8353d
+[  2316][D][esp32.ino:2243] Service(): creating service: dad995d1-f228-38ec-8b0f-593953973406 / 41044979-6a5d-36be-b9f1-d4d49e3f5b73
+[  2335][D][esp32.ino:2235] ble_start(): ble address: c8:f0:9e:52:75:0a
+[  2335][D][esp32.ino:2236] ble_start(): ble ready
+[  2341][D][esp32.ino:2619] config_load(): config loaded: 4610723673023535716
+[  2343][D][esp32.ino:2005] update_liquids(): updating pump state
+[  2349][D][esp32.ino:2044] update_liquids(): updating liquid state
+[  2366][D][esp32.ino:2496] config_save(): config saved: 4294967297
+[  2366][D][esp32.ino:2069] update_recipes(): updating recipes state
+[  2378][D][esp32.ino:2496] config_save(): config saved: 4610621675065441896
+[  2378][D][esp32.ino:768] setup(): user 0: admin
+[  2379][D][esp32.ino:2005] update_liquids(): updating pump state
+[  2384][D][esp32.ino:2044] update_liquids(): updating liquid state
+[  2401][D][esp32.ino:2496] config_save(): config saved: 4294967297
+[  2401][D][esp32.ino:1986] update_scale(): updating scale state
+[  2937][D][esp32.ino:2069] update_recipes(): updating recipes state
+[  2948][D][esp32.ino:2496] config_save(): config saved: 4610621675065441896
+[  2948][D][esp32.ino:1930] update_cocktail(): updating cocktail state
+[  3561][D][esp32.ino:2123] update_user(): updating user queue
+[  3562][D][esp32.ino:1970] update_state(): updating machine state: "ready"
+[  3563][D][esp32.ino:779] setup(): ready
+[137063][D][esp32.ino:2326] onConnect(): client connected:
+[137064][D][esp32.ino:2337] onConnect():   68:5d:43:8f:02:db -> 0
+[141685][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "factory_reset", "user": 0}
+[141687][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "factory_reset", "user": 0}»
+[141696][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, factory_reset
+[141704][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[141704][D][esp32.ino:789] loop(): processing queue (#0): factory_reset (0)
+[141723][D][esp32.ino:1930] update_cocktail(): updating cocktail state
+[142224][D][esp32.ino:2069] update_recipes(): updating recipes state
+[142232][D][esp32.ino:2496] config_save(): config saved: 4610621675065441896
+[142232][D][esp32.ino:2005] update_liquids(): updating pump state
+[142234][D][esp32.ino:2044] update_liquids(): updating liquid state
+[142250][D][esp32.ino:2496] config_save(): config saved: 4294967297
+[142250][D][esp32.ino:1986] update_scale(): updating scale state
+[142849][D][esp32.ino:2123] update_user(): updating user queue
+[142849][D][esp32.ino:1970] update_state(): updating machine state: "ready"
+[142850][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[142943][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[143183][D][esp32.ino:2359] onRead(): read: 0 (c0605c38-3f94-33f6-ace6-7a5504544a80) -> Cocktail Machine ESP32
+[143303][D][esp32.ino:2359] onRead(): read: 0 (e9e4b3f2-fd3f-3b76-8688-088a0671843a) -> "ready"
+[143423][D][esp32.ino:2359] onRead(): read: 0 (fc60afb0-2b00-3af2-877a-69ae6815ca2f) -> {}
+[143543][D][esp32.ino:2359] onRead(): read: 0 (1a9a598a-17ce-3fcd-be03-40a48587d04e) -> {}
+[143663][D][esp32.ino:2359] onRead(): read: 0 (9ede6e03-f89b-3e52-bb15-5c6c72605f6c) -> {}
+[143783][D][esp32.ino:2359] onRead(): read: 0 (7344136f-c552-3efc-b04f-a43793f16d43) -> {"weight":-317526.0,"content":[]}
+[143903][D][esp32.ino:2359] onRead(): read: 0 (586b5706-5856-34e1-ad17-94f840298816) -> 142225
+[144023][D][esp32.ino:2359] onRead(): read: 0 (2ce478ea-8d6f-30ba-9ac6-2389c8d5b172) -> []
+[144143][D][esp32.ino:2359] onRead(): read: 0 (ff18f0ac-f039-4cd0-bee3-b546e3de5551) -> {"weight":-317515.0,"calibrated":false}
+[144263][D][esp32.ino:2359] onRead(): read: 0 (2e03aa0c-b25f-456a-a327-bd175771111a) -> 
+[144504][D][esp32.ino:2384] onWrite(): write: 0 (eb61e31a-f00b-335f-ad14-d654aac8353d) -> {"cmd": "test"}
+[144506][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "test"}»
+[144511][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, test
+[144518][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[144518][D][esp32.ino:789] loop(): processing queue (#0): test (0)
+[144530][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[144623][D][esp32.ino:2374] onRead(): read: 0 (eb61e31a-f00b-335f-ad14-d654aac8353d) -> "ok"
+[144985][D][esp32.ino:2384] onWrite(): write: 0 (eb61e31a-f00b-335f-ad14-d654aac8353d) -> {"cmd": "init_user", "name": "test-user"}
+[144518][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[144518][D][esp32.ino:789] loop(): processing queue (#0): test (0)
+[144530][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[144623][D][esp32.ino:2374] onRead(): read: 0 (eb61e31a-f00b-335f-ad14-d654aac8353d) -> "ok"
+[144985][D][esp32.ino:2384] onWrite(): write: 0 (eb61e31a-f00b-335f-ad14-d654aac8353d) -> {"cmd": "init_user", "name": "test-user"}
+[144986][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "init_user", "name": "test-user"}»
+[144996][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, init_user
+[145004][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[145004][D][esp32.ino:789] loop(): processing queue (#0): init_user (0)
+[145028][D][esp32.ino:2496] config_save(): config saved: 4610723810463222397
+[145028][D][esp32.ino:2315] respond(): sending response to 0: {"user": 1}
+[145103][D][esp32.ino:2374] onRead(): read: 0 (eb61e31a-f00b-335f-ad14-d654aac8353d) -> {"user": 1}
+[145465][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "clean", "user": 0}
+[145466][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "clean", "user": 0}»
+[145474][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, clean
+[145481][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[145481][D][esp32.ino:789] loop(): processing queue (#0): clean (0)
+[145493][D][esp32.ino:2308] respond(): sending response to 0: "unsupported"
+[145583][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "unsupported"
+[145945][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "tare_scale", "user": 0}
+[145946][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "tare_scale", "user": 0}»
+[145954][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, tare_scale
+[145962][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[145962][D][esp32.ino:789] loop(): processing queue (#0): tare_scale (0)
+[146787][D][esp32.ino:2496] config_save(): config saved: 8589617043
+[146787][D][esp32.ino:1986] update_scale(): updating scale state
+[147399][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[147503][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[147925][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "calibrate_scale", "user": 0, "weight": 100}
+[147926][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "calibrate_scale", "user": 0, "weight": 100}»
+[147937][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, calibrate_scale
+[147945][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[147945][D][esp32.ino:789] loop(): processing queue (#0): calibrate_scale (0)
+[148753][D][esp32.ino:2496] config_save(): config saved: 4610723810462483283
+[148754][D][esp32.ino:1986] update_scale(): updating scale state
+[149362][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[149483][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[149905][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "set_scale_factor", "user": 0, "factor": 1.0}
+[149907][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "set_scale_factor", "user": 0, "factor": 1.0}»
+[149917][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, set_scale_factor
+[149925][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[149925][D][esp32.ino:789] loop(): processing queue (#0): set_scale_factor (0)
+[149996][D][esp32.ino:2496] config_save(): config saved: 4610724156206481407
+[149997][D][esp32.ino:1986] update_scale(): updating scale state
+[150522][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[150683][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[151049][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
+[151054][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}»
+[151067][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, define_pump
+[151075][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[151075][D][esp32.ino:789] loop(): processing queue (#0): define_pump (0)
+[151087][D][esp32.ino:2005] update_liquids(): updating pump state
+[151093][D][esp32.ino:2015] update_liquids():   pump: 1, liquid: water, vol: 1000.0
+[151102][D][esp32.ino:2044] update_liquids(): updating liquid state
+[151106][D][esp32.ino:2049] update_liquids():   liquid: water, vol: 1000.0
+[151141][D][esp32.ino:2496] config_save(): config saved: 4611099636206032644
+[151142][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[151223][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[151589][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "define_pump", "user": 0, "liquid": "beer", "volume": 2000, "slot": 2}
+[151594][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "define_pump", "user": 0, "liquid": "beer", "volume": 2000, "slot": 2}»
+[151607][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, define_pump
+[151614][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[151614][D][esp32.ino:789] loop(): processing queue (#0): define_pump (0)
+[151627][D][esp32.ino:2005] update_liquids(): updating pump state
+[151632][D][esp32.ino:2015] update_liquids():   pump: 1, liquid: water, vol: 1000.0
+[151640][D][esp32.ino:2015] update_liquids():   pump: 2, liquid: beer, vol: 2000.0
+[151650][D][esp32.ino:2044] update_liquids(): updating liquid state
+[151653][D][esp32.ino:2049] update_liquids():   liquid: beer, vol: 2000.0
+[151660][D][esp32.ino:2049] update_liquids():   liquid: water, vol: 1000.0
+[151704][D][esp32.ino:2496] config_save(): config saved: 4611099636206032112
+[151704][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[151823][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[152189][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "define_pump", "user": 0, "liquid": "lemonade", "volume": 3000, "slot": 7}
+[152195][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "define_pump", "user": 0, "liquid": "lemonade", "volume": 3000, "slot": 7}»
+[152208][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, define_pump
+[152216][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[152216][D][esp32.ino:789] loop(): processing queue (#0): define_pump (0)
+[152228][D][esp32.ino:2005] update_liquids(): updating pump state
+[152234][D][esp32.ino:2015] update_liquids():   pump: 1, liquid: water, vol: 1000.0
+[152241][D][esp32.ino:2015] update_liquids():   pump: 2, liquid: beer, vol: 2000.0
+[152248][D][esp32.ino:2015] update_liquids():   pump: 7, liquid: lemonade, vol: 3000.0
+[152260][D][esp32.ino:2044] update_liquids(): updating liquid state
+[152262][D][esp32.ino:2049] update_liquids():   liquid: lemonade, vol: 3000.0
+[152269][D][esp32.ino:2049] update_liquids():   liquid: water, vol: 1000.0
+[152275][D][esp32.ino:2049] update_liquids():   liquid: beer, vol: 2000.0
+[152370][D][esp32.ino:2496] config_save(): config saved: 4611099636206032984
+[152371][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[152543][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[152910][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "run_pump", "user": 0, "slot": 1, "time": 10}
+[152912][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "run_pump", "user": 0, "slot": 1, "time": 10}»
+[152923][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, run_pump
+[152930][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[152930][D][esp32.ino:789] loop(): processing queue (#0): run_pump (0)
+[152942][D][esp32.ino:1668] execute(): running pump 1 for 10ms
+[152948][D][esp32.ino:2123] update_user(): updating user queue
+[153465][D][esp32.ino:2005] update_liquids(): updating pump state
+[153465][D][esp32.ino:2015] update_liquids():   pump: 1, liquid: water, vol: 318649.0
+[153467][D][esp32.ino:2015] update_liquids():   pump: 2, liquid: beer, vol: 2000.0
+[153475][D][esp32.ino:2015] update_liquids():   pump: 7, liquid: lemonade, vol: 3000.0
+[153486][D][esp32.ino:2044] update_liquids(): updating liquid state
+[153488][D][esp32.ino:2049] update_liquids():   liquid: lemonade, vol: 3000.0
+[153495][D][esp32.ino:2049] update_liquids():   liquid: water, vol: 318649.0
+[153502][D][esp32.ino:2049] update_liquids():   liquid: beer, vol: 2000.0
+[153564][D][esp32.ino:2496] config_save(): config saved: 4611099636206033904
+[153564][D][esp32.ino:1986] update_scale(): updating scale state
+[154090][D][esp32.ino:1930] update_cocktail(): updating cocktail state
+[154714][D][esp32.ino:1940] update_cocktail():   ingredient: <run_pump 1>, amount: -317649.0
+[154715][D][esp32.ino:1970] update_state(): updating machine state: "ready"
+[154718][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[154823][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[155190][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "run_pump", "user": 0, "slot": 2, "time": 10}
+[155192][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "run_pump", "user": 0, "slot": 2, "time": 10}»
+[155202][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, run_pump
+[155210][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[155210][D][esp32.ino:789] loop(): processing queue (#0): run_pump (0)
+[155222][D][esp32.ino:1668] execute(): running pump 2 for 10ms
+[155227][D][esp32.ino:2123] update_user(): updating user queue
+[155695][D][esp32.ino:2005] update_liquids(): updating pump state
+[155695][D][esp32.ino:2015] update_liquids():   pump: 1, liquid: water, vol: 318649.0
+[155698][D][esp32.ino:2015] update_liquids():   pump: 2, liquid: beer, vol: 319541.0
+[155705][D][esp32.ino:2015] update_liquids():   pump: 7, liquid: lemonade, vol: 3000.0
+[155716][D][esp32.ino:2044] update_liquids(): updating liquid state
+[155719][D][esp32.ino:2049] update_liquids():   liquid: lemonade, vol: 3000.0
+[155726][D][esp32.ino:2049] update_liquids():   liquid: water, vol: 318649.0
+[155732][D][esp32.ino:2049] update_liquids():   liquid: beer, vol: 319541.0
+[155794][D][esp32.ino:2496] config_save(): config saved: 4611099636206035240
+[155794][D][esp32.ino:1986] update_scale(): updating scale state
+[156321][D][esp32.ino:1930] update_cocktail(): updating cocktail state
+[156944][D][esp32.ino:1940] update_cocktail():   ingredient: <run_pump 2>, amount: -317541.0
+[156945][D][esp32.ino:1940] update_cocktail():   ingredient: <run_pump 1>, amount: -317649.0
+[156951][D][esp32.ino:1970] update_state(): updating machine state: "ready"
+[156956][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[157043][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[157465][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "run_pump", "user": 0, "slot": 7, "time": 10}
+[157467][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "run_pump", "user": 0, "slot": 7, "time": 10}»
+[157478][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, run_pump
+[157485][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[157485][D][esp32.ino:789] loop(): processing queue (#0): run_pump (0)
+[157497][D][esp32.ino:1668] execute(): running pump 7 for 10ms
+[157503][D][esp32.ino:2123] update_user(): updating user queue
+[158015][D][esp32.ino:2005] update_liquids(): updating pump state
+[158015][D][esp32.ino:2015] update_liquids():   pump: 1, liquid: water, vol: 318649.0
+[158018][D][esp32.ino:2015] update_liquids():   pump: 2, liquid: beer, vol: 319541.0
+[158025][D][esp32.ino:2015] update_liquids():   pump: 7, liquid: lemonade, vol: 320617.0
+[158036][D][esp32.ino:2044] update_liquids(): updating liquid state
+[158038][D][esp32.ino:2049] update_liquids():   liquid: lemonade, vol: 320617.0
+[158046][D][esp32.ino:2049] update_liquids():   liquid: water, vol: 318649.0
+[158052][D][esp32.ino:2049] update_liquids():   liquid: beer, vol: 319541.0
+[158153][D][esp32.ino:2496] config_save(): config saved: 4611099636206031836
+[158153][D][esp32.ino:1986] update_scale(): updating scale state
+[158641][D][esp32.ino:1930] update_cocktail(): updating cocktail state
+[159264][D][esp32.ino:1940] update_cocktail():   ingredient: <run_pump 7>, amount: -317617.0
+[159265][D][esp32.ino:1940] update_cocktail():   ingredient: <run_pump 2>, amount: -317541.0
+[159270][D][esp32.ino:1940] update_cocktail():   ingredient: <run_pump 1>, amount: -317649.0
+[159280][D][esp32.ino:1970] update_state(): updating machine state: "ready"
+[159284][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[159383][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[159623][D][esp32.ino:2359] onRead(): read: 0 (c0605c38-3f94-33f6-ace6-7a5504544a80) -> Cocktail Machine ESP32
+[159743][D][esp32.ino:2359] onRead(): read: 0 (e9e4b3f2-fd3f-3b76-8688-088a0671843a) -> "ready"
+[159863][D][esp32.ino:2359] onRead(): read: 0 (fc60afb0-2b00-3af2-877a-69ae6815ca2f) -> {"lemonade":320617.0,"water":318649.0,"beer":319541.0}
+[159984][D][esp32.ino:2359] onRead(): read: 0 (1a9a598a-17ce-3fcd-be03-40a48587d04e) -> {"1":{"liquid":"water","volume":318649.0,"calibrated":false,"rate":0.0,"time_init":5000,"time_reverse":5000},"2":{"liquid":"beer","volume":319541.0,"calibrated":false,"rate":0.0,"time_init":5000,"time_reverse":5000},"7":{"liquid":"lemonade","volume":320617.0,"calibrated":false,"rate":0.0,"time_init":5000,"time_reverse":5000}}
+[160103][D][esp32.ino:2359] onRead(): read: 0 (9ede6e03-f89b-3e52-bb15-5c6c72605f6c) -> {}
+[160224][D][esp32.ino:2359] onRead(): read: 0 (7344136f-c552-3efc-b04f-a43793f16d43) -> {"weight":-317632.0,"content":[["<run_pump 7>",-317617.0],["<run_pump 2>",-317541.0],["<run_pump 1>",-317649.0]]}
+[160343][D][esp32.ino:2359] onRead(): read: 0 (586b5706-5856-34e1-ad17-94f840298816) -> 152372
+[160463][D][esp32.ino:2359] onRead(): read: 0 (2ce478ea-8d6f-30ba-9ac6-2389c8d5b172) -> []
+[160584][D][esp32.ino:2359] onRead(): read: 0 (ff18f0ac-f039-4cd0-bee3-b546e3de5551) -> {"weight":-317643.0,"calibrated":true}
+[160704][D][esp32.ino:2359] onRead(): read: 0 (2e03aa0c-b25f-456a-a327-bd175771111a) -> 
+[161009][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "calibrate_pump", "user": 0, "slot": 1, "time1": 11, "volume1": 10.0, "time2": 21, "volume2": 20.0}
+[161016][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "calibrate_pump", "user": 0, "slot": 1, "time1": 11, "volume1": 10.0, "time2": 21, "volume2": 20.0}»
+[161031][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, calibrate_pump
+[161039][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[161039][D][esp32.ino:789] loop(): processing queue (#0): calibrate_pump (0)
+[161051][D][esp32.ino:2700] calibrate(): trying to calibrate pump with t1: 11, t2: 21, v1: 10.0, v2: 20.0
+[161061][D][esp32.ino:2708] calibrate(): calibration raw data: -10.0, -10.0, 1.000000
+[161068][D][esp32.ino:2713] calibrate(): rate: 1.000000
+[161073][D][esp32.ino:2725] calibrate(): time init: 1, reverse: 1
+[161133][D][esp32.ino:2496] config_save(): config saved: 691804340786400
+[161134][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[161304][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[161726][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "set_pump_times", "user": 0, "slot": 2, "time_init": 1, "time_reverse": 1, "rate": 1.0}
+[161733][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "set_pump_times", "user": 0, "slot": 2, "time_init": 1, "time_reverse": 1, "rate": 1.0}»
+[161747][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, set_pump_times
+[161755][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[161755][D][esp32.ino:789] loop(): processing queue (#0): set_pump_times (0)
+[161861][D][esp32.ino:2496] config_save(): config saved: 4610724291498883872
+[161862][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[162024][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[162389][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "set_pump_times", "user": 0, "slot": 7, "time_init": 1, "time_reverse": 1, "rate": 1.0}
+[162396][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "set_pump_times", "user": 0, "slot": 7, "time_init": 1, "time_reverse": 1, "rate": 1.0}»
+[162410][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, set_pump_times
+[162418][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[162418][D][esp32.ino:789] loop(): processing queue (#0): set_pump_times (0)
+[162485][D][esp32.ino:2496] config_save(): config saved: 4610724291498883872
+[162485][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[162624][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[162990][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1}
+[162993][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1}»
+[163004][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, refill_pump
+[163012][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[163012][D][esp32.ino:789] loop(): processing queue (#0): refill_pump (0)
+[163024][D][esp32.ino:2005] update_liquids(): updating pump state
+[163030][D][esp32.ino:2015] update_liquids():   pump: 1, liquid: water, vol: 1000.0
+[163037][D][esp32.ino:2015] update_liquids():   pump: 2, liquid: beer, vol: 319541.0
+[163045][D][esp32.ino:2015] update_liquids():   pump: 7, liquid: lemonade, vol: 320617.0
+[163056][D][esp32.ino:2044] update_liquids(): updating liquid state
+[163058][D][esp32.ino:2049] update_liquids():   liquid: lemonade, vol: 320617.0
+[163065][D][esp32.ino:2049] update_liquids():   liquid: water, vol: 1000.0
+[163072][D][esp32.ino:2049] update_liquids():   liquid: beer, vol: 319541.0
+[163171][D][esp32.ino:2496] config_save(): config saved: 4611099636206031908
+[163172][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[163284][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[163650][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "refill_pump", "user": 0, "volume": 2000, "slot": 2}
+[163653][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "refill_pump", "user": 0, "volume": 2000, "slot": 2}»
+[163664][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, refill_pump
+[163672][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[163672][D][esp32.ino:789] loop(): processing queue (#0): refill_pump (0)
+[163684][D][esp32.ino:2005] update_liquids(): updating pump state
+[163690][D][esp32.ino:2015] update_liquids():   pump: 1, liquid: water, vol: 1000.0
+[163697][D][esp32.ino:2015] update_liquids():   pump: 2, liquid: beer, vol: 2000.0
+[163705][D][esp32.ino:2015] update_liquids():   pump: 7, liquid: lemonade, vol: 320617.0
+[163716][D][esp32.ino:2044] update_liquids(): updating liquid state
+[163718][D][esp32.ino:2049] update_liquids():   liquid: lemonade, vol: 320617.0
+[163725][D][esp32.ino:2049] update_liquids():   liquid: water, vol: 1000.0
+[163732][D][esp32.ino:2049] update_liquids():   liquid: beer, vol: 2000.0
+[163794][D][esp32.ino:2496] config_save(): config saved: 4611099636206033824
+[163794][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[163884][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[164250][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "refill_pump", "user": 0, "volume": 3000, "slot": 7}
+[164254][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "refill_pump", "user": 0, "volume": 3000, "slot": 7}»
+[164265][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, refill_pump
+[164273][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[164273][D][esp32.ino:789] loop(): processing queue (#0): refill_pump (0)
+[164285][D][esp32.ino:2005] update_liquids(): updating pump state
+[164291][D][esp32.ino:2015] update_liquids():   pump: 1, liquid: water, vol: 1000.0
+[164298][D][esp32.ino:2015] update_liquids():   pump: 2, liquid: beer, vol: 2000.0
+[164305][D][esp32.ino:2015] update_liquids():   pump: 7, liquid: lemonade, vol: 3000.0
+[164316][D][esp32.ino:2044] update_liquids(): updating liquid state
+[164319][D][esp32.ino:2049] update_liquids():   liquid: lemonade, vol: 3000.0
+[164326][D][esp32.ino:2049] update_liquids():   liquid: water, vol: 1000.0
+[164332][D][esp32.ino:2049] update_liquids():   liquid: beer, vol: 2000.0
+[164394][D][esp32.ino:2496] config_save(): config saved: 4611099636206033892
+[164394][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[164484][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[164845][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "reset", "user": 0}
+[164848][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "reset", "user": 0}»
+[164855][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, reset
+[164863][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[164863][D][esp32.ino:789] loop(): processing queue (#0): reset (0)
+[165692][D][esp32.ino:2496] config_save(): config saved: 8589616894
+[165693][D][esp32.ino:1930] update_cocktail(): updating cocktail state
+[166224][D][esp32.ino:1986] update_scale(): updating scale state
+[166849][D][esp32.ino:2123] update_user(): updating user queue
+[166849][D][esp32.ino:1930] update_cocktail(): updating cocktail state
+[167473][D][esp32.ino:1970] update_state(): updating machine state: "ready"
+[167473][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[167544][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[167784][D][esp32.ino:2359] onRead(): read: 0 (c0605c38-3f94-33f6-ace6-7a5504544a80) -> Cocktail Machine ESP32
+[167904][D][esp32.ino:2359] onRead(): read: 0 (e9e4b3f2-fd3f-3b76-8688-088a0671843a) -> "ready"
+[168024][D][esp32.ino:2359] onRead(): read: 0 (fc60afb0-2b00-3af2-877a-69ae6815ca2f) -> {"lemonade":3000.0,"water":1000.0,"beer":2000.0}
+[168144][D][esp32.ino:2359] onRead(): read: 0 (1a9a598a-17ce-3fcd-be03-40a48587d04e) -> {"1":{"liquid":"water","volume":1000.0,"calibrated":true,"rate":1.0,"time_init":1,"time_reverse":1},"2":{"liquid":"beer","volume":2000.0,"calibrated":true,"rate":1.0,"time_init":1,"time_reverse":1},"7":{"liquid":"lemonade","volume":3000.0,"calibrated":true,"rate":1.0,"time_init":1,"time_reverse":1}}
+[168264][D][esp32.ino:2359] onRead(): read: 0 (9ede6e03-f89b-3e52-bb15-5c6c72605f6c) -> {}
+[168384][D][esp32.ino:2359] onRead(): read: 0 (7344136f-c552-3efc-b04f-a43793f16d43) -> {"weight":-317670.0,"content":[]}
+[168504][D][esp32.ino:2359] onRead(): read: 0 (586b5706-5856-34e1-ad17-94f840298816) -> 152372
+[168624][D][esp32.ino:2359] onRead(): read: 0 (2ce478ea-8d6f-30ba-9ac6-2389c8d5b172) -> []
+[168744][D][esp32.ino:2359] onRead(): read: 0 (ff18f0ac-f039-4cd0-bee3-b546e3de5551) -> {"weight":-317653.0,"calibrated":true}
+[168864][D][esp32.ino:2359] onRead(): read: 0 (2e03aa0c-b25f-456a-a327-bd175771111a) -> 
+[169106][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "calibration_start", "user": 0}
+[169108][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "calibration_start", "user": 0}»
+[169117][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, calibration_start
+[169125][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[169125][D][esp32.ino:789] loop(): processing queue (#0): calibration_start (0)
+[169138][D][esp32.ino:1970] update_state(): updating machine state: "calibration empty container"
+[169147][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[169224][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[169586][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "calibration_cancel", "user": 0}
+[169588][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "calibration_cancel", "user": 0}»
+[169597][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, calibration_cancel
+[169605][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[169605][D][esp32.ino:789] loop(): processing queue (#0): calibration_cancel (0)
+[170471][D][esp32.ino:2496] config_save(): config saved: 8589616896
+[170471][D][esp32.ino:1970] update_state(): updating machine state: "ready"
+[170472][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[170544][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[170906][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "calibration_start", "user": 0}
+[170907][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "calibration_start", "user": 0}»
+[170916][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, calibration_start
+[170924][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[170924][D][esp32.ino:789] loop(): processing queue (#0): calibration_start (0)
+[170937][D][esp32.ino:1970] update_state(): updating machine state: "calibration empty container"
+[170946][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[171024][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[171384][D][esp32.ino:2359] onRead(): read: 0 (e9e4b3f2-fd3f-3b76-8688-088a0671843a) -> "calibration empty container"
+[171745][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "calibration_add_empty", "user": 0}
+[171749][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "calibration_add_empty", "user": 0}»
+[173183][D][esp32.ino:1986] update_scale(): updating scale state
+[173808][D][esp32.ino:2123] update_user(): updating user queue
+[174753][D][esp32.ino:2496] config_save(): config saved: 8589616797
+[174753][D][esp32.ino:1970] update_state(): updating machine state: "calibration known weight"
+[174756][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[174864][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[175224][D][esp32.ino:2359] onRead(): read: 0 (e9e4b3f2-fd3f-3b76-8688-088a0671843a) -> "calibration known weight"
+[175590][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "calibration_add_weight", "user": 0, "weight": 100.0}
+[175594][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "calibration_add_weight", "user": 0, "weight": 100.0}»
+[175605][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, calibration_add_weight
+[175614][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[175614][D][esp32.ino:789] loop(): processing queue (#0): calibration_add_weight (0)
+[176486][D][esp32.ino:2496] config_save(): config saved: 4610723810462483283
+[176487][D][esp32.ino:1970] update_state(): updating machine state: "calibration empty container"
+[176491][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[176664][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[177024][D][esp32.ino:2359] onRead(): read: 0 (e9e4b3f2-fd3f-3b76-8688-088a0671843a) -> "calibration empty container"
+[177387][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "calibration_add_empty", "user": 0}
+[177389][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "calibration_add_empty", "user": 0}»
+[177399][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, calibration_add_empty
+[177407][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[177407][D][esp32.ino:789] loop(): processing queue (#0): calibration_add_empty (0)
+[178233][D][esp32.ino:2496] config_save(): config saved: 8589616812
+[178233][D][esp32.ino:1930] update_cocktail(): updating cocktail state
+[178804][D][esp32.ino:1986] update_scale(): updating scale state
+[179428][D][esp32.ino:2123] update_user(): updating user queue
+[180374][D][esp32.ino:2496] config_save(): config saved: 8589616800
+[180374][D][esp32.ino:1970] update_state(): updating machine state: "calibration pumps"
+[180377][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[180383][D][esp32.ino:852] loop(): calibrating pump 0 (#1)
+[180388][D][esp32.ino:852] loop(): calibrating pump 1 (#1)
+[180393][D][esp32.ino:862] loop(): running pump 1 (#1) for 10000ms
+[180504][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[180864][D][esp32.ino:2359] onRead(): read: 0 (e9e4b3f2-fd3f-3b76-8688-088a0671843a) -> "calibration pumps"
+[191918][D][esp32.ino:880] loop():   -> weight: -317923.000000
+[191918][D][esp32.ino:1970] update_state(): updating machine state: "calibration empty container"
+[192266][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "calibration_add_empty", "user": 0}
+[192270][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "calibration_add_empty", "user": 0}»
+[192279][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, calibration_add_empty
+[192288][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[192288][D][esp32.ino:789] loop(): processing queue (#0): calibration_add_empty (0)
+[193172][D][esp32.ino:2496] config_save(): config saved: 8589616641
+[193172][D][esp32.ino:1930] update_cocktail(): updating cocktail state
+[193703][D][esp32.ino:1986] update_scale(): updating scale state
+[194328][D][esp32.ino:2123] update_user(): updating user queue
+[195273][D][esp32.ino:2496] config_save(): config saved: 8589616594
+[195273][D][esp32.ino:1970] update_state(): updating machine state: "calibration pumps"
+[195276][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[195282][D][esp32.ino:852] loop(): calibrating pump 2 (#1)
+[195287][D][esp32.ino:862] loop(): running pump 2 (#1) for 10000ms
+[195385][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[195745][D][esp32.ino:2359] onRead(): read: 0 (e9e4b3f2-fd3f-3b76-8688-088a0671843a) -> "calibration pumps"
+[206817][D][esp32.ino:880] loop():   -> weight: -317923.000000
+[206817][D][esp32.ino:1970] update_state(): updating machine state: "calibration empty container"
+[207148][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "calibration_add_empty", "user": 0}
+[207149][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "calibration_add_empty", "user": 0}»
+[207159][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, calibration_add_empty
+[207167][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[207167][D][esp32.ino:789] loop(): processing queue (#0): calibration_add_empty (0)
+[208069][D][esp32.ino:2496] config_save(): config saved: 8589616602
+[208069][D][esp32.ino:1930] update_cocktail(): updating cocktail state
+[208602][D][esp32.ino:1986] update_scale(): updating scale state
+[209227][D][esp32.ino:2123] update_user(): updating user queue
+[210172][D][esp32.ino:2496] config_save(): config saved: 8589616569
+[210172][D][esp32.ino:1970] update_state(): updating machine state: "calibration pumps"
+[210175][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[210181][D][esp32.ino:852] loop(): calibrating pump 3 (#1)
+[210185][D][esp32.ino:852] loop(): calibrating pump 4 (#1)
+[210190][D][esp32.ino:852] loop(): calibrating pump 5 (#1)
+[210196][D][esp32.ino:852] loop(): calibrating pump 6 (#1)
+[210201][D][esp32.ino:852] loop(): calibrating pump 7 (#1)
+[210206][D][esp32.ino:862] loop(): running pump 7 (#1) for 10000ms
+[210265][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[210625][D][esp32.ino:2359] onRead(): read: 0 (e9e4b3f2-fd3f-3b76-8688-088a0671843a) -> "calibration pumps"
+[211724][D][esp32.ino:880] loop():   -> weight: -317967.000000
+[211724][D][esp32.ino:1970] update_state(): updating machine state: "calibration empty container"
+[211826][D][esp32.ino:2359] onRead(): read: 0 (e9e4b3f2-fd3f-3b76-8688-088a0671843a) -> "calibration empty container"
+[212187][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "calibration_add_empty", "user": 0}
+[212191][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "calibration_add_empty", "user": 0}»
+[212200][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, calibration_add_empty
+[212209][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[212209][D][esp32.ino:789] loop(): processing queue (#0): calibration_add_empty (0)
+[213065][D][esp32.ino:2496] config_save(): config saved: 8589616558
+[213066][D][esp32.ino:1930] update_cocktail(): updating cocktail state
+[213598][D][esp32.ino:1986] update_scale(): updating scale state
+[214222][D][esp32.ino:2123] update_user(): updating user queue
+[215168][D][esp32.ino:2496] config_save(): config saved: 8589616655
+[215168][D][esp32.ino:1970] update_state(): updating machine state: "calibration pumps"
+[215171][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[215177][D][esp32.ino:852] loop(): calibrating pump 8 (#1)
+[215181][D][esp32.ino:852] loop(): calibrating pump 9 (#1)
+[215187][D][esp32.ino:852] loop(): calibrating pump 10 (#1)
+[215192][D][esp32.ino:852] loop(): calibrating pump 11 (#1)
+[215197][D][esp32.ino:852] loop(): calibrating pump 12 (#1)
+[215203][D][esp32.ino:852] loop(): calibrating pump 13 (#1)
+[215208][D][esp32.ino:852] loop(): calibrating pump 14 (#1)
+[215213][D][esp32.ino:852] loop(): calibrating pump 15 (#1)
+[215218][D][esp32.ino:852] loop(): calibrating pump 16 (#1)
+[215224][D][esp32.ino:852] loop(): calibrating pump 17 (#1)
+[215229][D][esp32.ino:852] loop(): calibrating pump 18 (#1)
+[215234][D][esp32.ino:852] loop(): calibrating pump 19 (#1)
+[215240][D][esp32.ino:852] loop(): calibrating pump 20 (#1)
+[215245][D][esp32.ino:852] loop(): calibrating pump 21 (#1)
+[215246][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[215250][D][esp32.ino:852] loop(): calibrating pump 22 (#1)
+[215264][D][esp32.ino:852] loop(): calibrating pump 23 (#1)
+[215269][D][esp32.ino:852] loop(): calibrating pump 24 (#1)
+[215274][D][esp32.ino:852] loop(): calibrating pump 25 (#1)
+[215280][D][esp32.ino:852] loop(): calibrating pump 26 (#1)
+[215285][D][esp32.ino:852] loop(): calibrating pump 27 (#1)
+[215290][D][esp32.ino:852] loop(): calibrating pump 28 (#1)
+[215295][D][esp32.ino:852] loop(): calibrating pump 29 (#1)
+[215301][D][esp32.ino:852] loop(): calibrating pump 30 (#1)
+[215306][D][esp32.ino:852] loop(): calibrating pump 31 (#1)
+[215311][D][esp32.ino:852] loop(): calibrating pump 32 (#1)
+[215317][D][esp32.ino:852] loop(): calibrating pump 0 (#2)
+[215322][D][esp32.ino:852] loop(): calibrating pump 1 (#2)
+[215327][D][esp32.ino:862] loop(): running pump 1 (#2) for 20000ms
+[215606][D][esp32.ino:2359] onRead(): read: 0 (e9e4b3f2-fd3f-3b76-8688-088a0671843a) -> "calibration pumps"
+[236792][D][esp32.ino:880] loop():   -> weight: -318142.000000
+[236792][D][esp32.ino:1970] update_state(): updating machine state: "calibration empty container"
+[237149][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "calibration_add_empty", "user": 0}
+[237151][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "calibration_add_empty", "user": 0}»
+[237161][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, calibration_add_empty
+[237170][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[237170][D][esp32.ino:789] loop(): processing queue (#0): calibration_add_empty (0)
+[238006][D][esp32.ino:2496] config_save(): config saved: 8589616410
+[238006][D][esp32.ino:1930] update_cocktail(): updating cocktail state
+[238577][D][esp32.ino:1986] update_scale(): updating scale state
+[239201][D][esp32.ino:2123] update_user(): updating user queue
+[240185][D][esp32.ino:2496] config_save(): config saved: 8589616177
+[240186][D][esp32.ino:1970] update_state(): updating machine state: "calibration pumps"
+[240189][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[240195][D][esp32.ino:852] loop(): calibrating pump 2 (#2)
+[240199][D][esp32.ino:862] loop(): running pump 2 (#2) for 20000ms
+[240266][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[240626][D][esp32.ino:2359] onRead(): read: 0 (e9e4b3f2-fd3f-3b76-8688-088a0671843a) -> "calibration pumps"
+[261681][D][esp32.ino:880] loop():   -> weight: -318318.000000
+[261681][D][esp32.ino:1970] update_state(): updating machine state: "calibration empty container"
+[262050][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "calibration_add_empty", "user": 0}
+[262052][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "calibration_add_empty", "user": 0}»
+[262061][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, calibration_add_empty
+[262069][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[262069][D][esp32.ino:789] loop(): processing queue (#0): calibration_add_empty (0)
+[262895][D][esp32.ino:2496] config_save(): config saved: 8589616235
+[262895][D][esp32.ino:1930] update_cocktail(): updating cocktail state
+[263466][D][esp32.ino:1986] update_scale(): updating scale state
+[264090][D][esp32.ino:2123] update_user(): updating user queue
+[265074][D][esp32.ino:2496] config_save(): config saved: 8589616299
+[265075][D][esp32.ino:1970] update_state(): updating machine state: "calibration pumps"
+[265078][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[265084][D][esp32.ino:852] loop(): calibrating pump 3 (#2)
+[265088][D][esp32.ino:852] loop(): calibrating pump 4 (#2)
+[265093][D][esp32.ino:852] loop(): calibrating pump 5 (#2)
+[265098][D][esp32.ino:852] loop(): calibrating pump 6 (#2)
+[265104][D][esp32.ino:852] loop(): calibrating pump 7 (#2)
+[265109][D][esp32.ino:862] loop(): running pump 7 (#2) for 20000ms
+[265167][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[265527][D][esp32.ino:2359] onRead(): read: 0 (e9e4b3f2-fd3f-3b76-8688-088a0671843a) -> "calibration pumps"
+[266587][D][esp32.ino:880] loop():   -> weight: -318319.000000
+[266587][D][esp32.ino:1970] update_state(): updating machine state: "calibration empty container"
+[266667][D][esp32.ino:2359] onRead(): read: 0 (e9e4b3f2-fd3f-3b76-8688-088a0671843a) -> "calibration empty container"
+[267029][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "calibration_add_empty", "user": 0}
+[267032][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "calibration_add_empty", "user": 0}»
+[267041][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, calibration_add_empty
+[267050][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[267050][D][esp32.ino:789] loop(): processing queue (#0): calibration_add_empty (0)
+[267890][D][esp32.ino:2496] config_save(): config saved: 8589616285
+[267890][D][esp32.ino:1930] update_cocktail(): updating cocktail state
+[268461][D][esp32.ino:1986] update_scale(): updating scale state
+[269086][D][esp32.ino:2123] update_user(): updating user queue
+[270069][D][esp32.ino:2496] config_save(): config saved: 8589616272
+[270070][D][esp32.ino:1970] update_state(): updating machine state: "calibration pumps"
+[270073][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[270079][D][esp32.ino:852] loop(): calibrating pump 8 (#2)
+[270083][D][esp32.ino:852] loop(): calibrating pump 9 (#2)
+[270088][D][esp32.ino:852] loop(): calibrating pump 10 (#2)
+[270094][D][esp32.ino:852] loop(): calibrating pump 11 (#2)
+[270099][D][esp32.ino:852] loop(): calibrating pump 12 (#2)
+[270104][D][esp32.ino:852] loop(): calibrating pump 13 (#2)
+[270109][D][esp32.ino:852] loop(): calibrating pump 14 (#2)
+[270115][D][esp32.ino:852] loop(): calibrating pump 15 (#2)
+[270120][D][esp32.ino:852] loop(): calibrating pump 16 (#2)
+[270125][D][esp32.ino:852] loop(): calibrating pump 17 (#2)
+[270131][D][esp32.ino:852] loop(): calibrating pump 18 (#2)
+[270136][D][esp32.ino:852] loop(): calibrating pump 19 (#2)
+[270141][D][esp32.ino:852] loop(): calibrating pump 20 (#2)
+[270147][D][esp32.ino:852] loop(): calibrating pump 21 (#2)
+[270147][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[270152][D][esp32.ino:852] loop(): calibrating pump 22 (#2)
+[270165][D][esp32.ino:852] loop(): calibrating pump 23 (#2)
+[270171][D][esp32.ino:852] loop(): calibrating pump 24 (#2)
+[270176][D][esp32.ino:852] loop(): calibrating pump 25 (#2)
+[270181][D][esp32.ino:852] loop(): calibrating pump 26 (#2)
+[270186][D][esp32.ino:852] loop(): calibrating pump 27 (#2)
+[270192][D][esp32.ino:852] loop(): calibrating pump 28 (#2)
+[270197][D][esp32.ino:852] loop(): calibrating pump 29 (#2)
+[270202][D][esp32.ino:852] loop(): calibrating pump 30 (#2)
+[270208][D][esp32.ino:852] loop(): calibrating pump 31 (#2)
+[270213][D][esp32.ino:852] loop(): calibrating pump 32 (#2)
+[270218][D][esp32.ino:1970] update_state(): updating machine state: "calibration calculation"
+[270227][D][esp32.ino:893] loop(): calculating calibration data...
+[270232][D][esp32.ino:2700] calibrate(): trying to calibrate pump with t1: 10000, t2: 20000, v1: -317923.0, v2: -318142.0
+[270243][D][esp32.ino:1980] update_error(): updating error state: "invalid volume"
+[270251][D][esp32.ino:2700] calibrate(): trying to calibrate pump with t1: 10000, t2: 20000, v1: -317923.0, v2: -318318.0
+[270261][D][esp32.ino:1980] update_error(): updating error state: "invalid volume"
+[270269][D][esp32.ino:2700] calibrate(): trying to calibrate pump with t1: 10000, t2: 20000, v1: -317967.0, v2: -318319.0
+[270279][D][esp32.ino:1980] update_error(): updating error state: "invalid volume"
+[270287][D][esp32.ino:1970] update_state(): updating machine state: "calibration done"
+[270508][D][esp32.ino:2359] onRead(): read: 0 (e9e4b3f2-fd3f-3b76-8688-088a0671843a) -> "calibration done"
+[270870][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "calibration_finish", "user": 0}
+[270872][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "calibration_finish", "user": 0}»
+[270881][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, calibration_finish
+[270890][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[270890][D][esp32.ino:789] loop(): processing queue (#0): calibration_finish (0)
+[271726][D][esp32.ino:2496] config_save(): config saved: 8589616187
+[271726][D][esp32.ino:1970] update_state(): updating machine state: "ready"
+[271728][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[271828][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[272068][D][esp32.ino:2359] onRead(): read: 0 (c0605c38-3f94-33f6-ace6-7a5504544a80) -> Cocktail Machine ESP32
+[272188][D][esp32.ino:2359] onRead(): read: 0 (e9e4b3f2-fd3f-3b76-8688-088a0671843a) -> "ready"
+[272308][D][esp32.ino:2359] onRead(): read: 0 (fc60afb0-2b00-3af2-877a-69ae6815ca2f) -> {"lemonade":3000.0,"water":1000.0,"beer":2000.0}
+[272488][D][esp32.ino:2359] onRead(): read: 0 (1a9a598a-17ce-3fcd-be03-40a48587d04e) -> {"1":{"liquid":"water","volume":1000.0,"calibrated":true,"rate":1.0,"time_init":1,"time_reverse":1},"2":{"liquid":"beer","volume":2000.0,"calibrated":true,"rate":1.0,"time_init":1,"time_reverse":1},"7":{"liquid":"lemonade","volume":3000.0,"calibrated":true,"rate":1.0,"time_init":1,"time_reverse":1}}
+[272608][D][esp32.ino:2359] onRead(): read: 0 (9ede6e03-f89b-3e52-bb15-5c6c72605f6c) -> {}
+[272728][D][esp32.ino:2359] onRead(): read: 0 (7344136f-c552-3efc-b04f-a43793f16d43) -> {"weight":-318314.0,"content":[]}
+[272848][D][esp32.ino:2359] onRead(): read: 0 (586b5706-5856-34e1-ad17-94f840298816) -> 152372
+[272968][D][esp32.ino:2359] onRead(): read: 0 (2ce478ea-8d6f-30ba-9ac6-2389c8d5b172) -> []
+[273088][D][esp32.ino:2359] onRead(): read: 0 (ff18f0ac-f039-4cd0-bee3-b546e3de5551) -> {"weight":-318355.0,"calibrated":true}
+[273268][D][esp32.ino:2359] onRead(): read: 0 (2e03aa0c-b25f-456a-a327-bd175771111a) -> "invalid volume"
+[273575][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1}
+[273577][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1}»
+[273588][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, refill_pump
+[273596][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[273596][D][esp32.ino:789] loop(): processing queue (#0): refill_pump (0)
+[273608][D][esp32.ino:2005] update_liquids(): updating pump state
+[273614][D][esp32.ino:2015] update_liquids():   pump: 1, liquid: water, vol: 1000.0
+[273622][D][esp32.ino:2015] update_liquids():   pump: 2, liquid: beer, vol: 638241.0
+[273629][D][esp32.ino:2015] update_liquids():   pump: 7, liquid: lemonade, vol: 639286.0
+[273640][D][esp32.ino:2044] update_liquids(): updating liquid state
+[273643][D][esp32.ino:2049] update_liquids():   liquid: lemonade, vol: 639286.0
+[273650][D][esp32.ino:2049] update_liquids():   liquid: water, vol: 1000.0
+[273657][D][esp32.ino:2049] update_liquids():   liquid: beer, vol: 638241.0
+[273719][D][esp32.ino:2496] config_save(): config saved: 4611099636206032212
+[273719][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[273808][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[274175][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "refill_pump", "user": 0, "volume": 2000, "slot": 2}
+[274178][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "refill_pump", "user": 0, "volume": 2000, "slot": 2}»
+[274189][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, refill_pump
+[274197][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[274197][D][esp32.ino:789] loop(): processing queue (#0): refill_pump (0)
+[274209][D][esp32.ino:2005] update_liquids(): updating pump state
+[274215][D][esp32.ino:2015] update_liquids():   pump: 1, liquid: water, vol: 1000.0
+[274222][D][esp32.ino:2015] update_liquids():   pump: 2, liquid: beer, vol: 2000.0
+[274229][D][esp32.ino:2015] update_liquids():   pump: 7, liquid: lemonade, vol: 639286.0
+[274241][D][esp32.ino:2044] update_liquids(): updating liquid state
+[274243][D][esp32.ino:2049] update_liquids():   liquid: lemonade, vol: 639286.0
+[274250][D][esp32.ino:2049] update_liquids():   liquid: water, vol: 1000.0
+[274257][D][esp32.ino:2049] update_liquids():   liquid: beer, vol: 2000.0
+[274355][D][esp32.ino:2496] config_save(): config saved: 4611099636206035104
+[274355][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[274468][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[274890][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "refill_pump", "user": 0, "volume": 3000, "slot": 7}
+[274893][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "refill_pump", "user": 0, "volume": 3000, "slot": 7}»
+[274904][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, refill_pump
+[274912][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[274912][D][esp32.ino:789] loop(): processing queue (#0): refill_pump (0)
+[274924][D][esp32.ino:2005] update_liquids(): updating pump state
+[274930][D][esp32.ino:2015] update_liquids():   pump: 1, liquid: water, vol: 1000.0
+[274937][D][esp32.ino:2015] update_liquids():   pump: 2, liquid: beer, vol: 2000.0
+[274945][D][esp32.ino:2015] update_liquids():   pump: 7, liquid: lemonade, vol: 3000.0
+[274956][D][esp32.ino:2044] update_liquids(): updating liquid state
+[274958][D][esp32.ino:2049] update_liquids():   liquid: lemonade, vol: 3000.0
+[274965][D][esp32.ino:2049] update_liquids():   liquid: water, vol: 1000.0
+[274972][D][esp32.ino:2049] update_liquids():   liquid: beer, vol: 2000.0
+[275033][D][esp32.ino:2496] config_save(): config saved: 4611099636206035684
+[275033][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[275188][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[275550][D][esp32.ino:2384] onWrite(): write: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> {"cmd": "reset", "user": 0}
+[275552][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "reset", "user": 0}»
+[275559][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, reset
+[275566][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[275566][D][esp32.ino:789] loop(): processing queue (#0): reset (0)
+[276403][D][esp32.ino:2496] config_save(): config saved: 8589616192
+[276404][D][esp32.ino:1930] update_cocktail(): updating cocktail state
+[276936][D][esp32.ino:1986] update_scale(): updating scale state
+[277560][D][esp32.ino:2123] update_user(): updating user queue
+[277561][D][esp32.ino:1930] update_cocktail(): updating cocktail state
+[278185][D][esp32.ino:1970] update_state(): updating machine state: "ready"
+[278185][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[278308][D][esp32.ino:2374] onRead(): read: 0 (41044979-6a5d-36be-b9f1-d4d49e3f5b73) -> "ok"
+[278608][D][esp32.ino:2359] onRead(): read: 0 (c0605c38-3f94-33f6-ace6-7a5504544a80) -> Cocktail Machine ESP32
+[278728][D][esp32.ino:2359] onRead(): read: 0 (e9e4b3f2-fd3f-3b76-8688-088a0671843a) -> "ready"
+[278848][D][esp32.ino:2359] onRead(): read: 0 (fc60afb0-2b00-3af2-877a-69ae6815ca2f) -> {"lemonade":3000.0,"water":1000.0,"beer":2000.0}
+[278968][D][esp32.ino:2359] onRead(): read: 0 (1a9a598a-17ce-3fcd-be03-40a48587d04e) -> {"1":{"liquid":"water","volume":1000.0,"calibrated":true,"rate":1.0,"time_init":1,"time_reverse":1},"2":{"liquid":"beer","volume":2000.0,"calibrated":true,"rate":1.0,"time_init":1,"time_reverse":1},"7":{"liquid":"lemonade","volume":3000.0,"calibrated":true,"rate":1.0,"time_init":1,"time_reverse":1}}
+[279088][D][esp32.ino:2359] onRead(): read: 0 (9ede6e03-f89b-3e52-bb15-5c6c72605f6c) -> {}
+[279208][D][esp32.ino:2359] onRead(): read: 0 (7344136f-c552-3efc-b04f-a43793f16d43) -> {"weight":-318408.0,"content":[]}
+[279328][D][esp32.ino:2359] onRead(): read: 0 (586b5706-5856-34e1-ad17-94f840298816) -> 152372
+[279448][D][esp32.ino:2359] onRead(): read: 0 (2ce478ea-8d6f-30ba-9ac6-2389c8d5b172) -> []
+[279568][D][esp32.ino:2359] onRead(): read: 0 (ff18f0ac-f039-4cd0-bee3-b546e3de5551) -> {"weight":-318401.0,"calibrated":true}
+[279688][D][esp32.ino:2359] onRead(): read: 0 (2e03aa0c-b25f-456a-a327-bd175771111a) -> "invalid volume"
+[279932][D][esp32.ino:2384] onWrite(): write: 0 (eb61e31a-f00b-335f-ad14-d654aac8353d) -> {"cmd": "define_recipe", "user": 1, "name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}
+[279939][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "define_recipe", "user": 1, "name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}»
+[279954][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, define_recipe
+[279962][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[279962][D][esp32.ino:789] loop(): processing queue (#0): define_recipe (0)
+[279974][D][esp32.ino:1396] execute(): adding recipe radler with 2 ingredients
+[279981][D][esp32.ino:2069] update_recipes(): updating recipes state
+[279987][D][esp32.ino:2076] update_recipes():   recipe: radler (can make: no)
+[279994][D][esp32.ino:2084] update_recipes():     ingredient: beer, amount: 250.0
+[280001][D][esp32.ino:2084] update_recipes():     ingredient: lemonade, amount: 250.0
+[280072][D][esp32.ino:2496] config_save(): config saved: 4610621675065441896
+[280072][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[280168][D][esp32.ino:2374] onRead(): read: 0 (eb61e31a-f00b-335f-ad14-d654aac8353d) -> "ok"
+[280532][D][esp32.ino:2384] onWrite(): write: 0 (eb61e31a-f00b-335f-ad14-d654aac8353d) -> {"cmd": "define_recipe", "user": 1, "name": "cheap beer", "liquids": [["beer", 250], ["water", 250]]}
+[280539][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "define_recipe", "user": 1, "name": "cheap beer", "liquids": [["beer", 250], ["water", 250]]}»
+[280554][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, define_recipe
+[280562][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[280562][D][esp32.ino:789] loop(): processing queue (#0): define_recipe (0)
+[280574][D][esp32.ino:1396] execute(): adding recipe cheap beer with 2 ingredients
+[280582][D][esp32.ino:2069] update_recipes(): updating recipes state
+[280588][D][esp32.ino:2076] update_recipes():   recipe: cheap beer (can make: no)
+[280595][D][esp32.ino:2084] update_recipes():     ingredient: beer, amount: 250.0
+[280602][D][esp32.ino:2084] update_recipes():     ingredient: water, amount: 250.0
+[280609][D][esp32.ino:2076] update_recipes():   recipe: radler (can make: no)
+[280616][D][esp32.ino:2084] update_recipes():     ingredient: beer, amount: 250.0
+[280624][D][esp32.ino:2084] update_recipes():     ingredient: lemonade, amount: 250.0
+[280745][D][esp32.ino:2496] config_save(): config saved: 4610621675065441896
+[280745][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[280828][D][esp32.ino:2374] onRead(): read: 0 (eb61e31a-f00b-335f-ad14-d654aac8353d) -> "ok"
+[281192][D][esp32.ino:2384] onWrite(): write: 0 (eb61e31a-f00b-335f-ad14-d654aac8353d) -> {"cmd": "edit_recipe", "user": 1, "name": "cheap beer", "liquids": [["beer", 100], ["water", 400]]}
+[281199][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "edit_recipe", "user": 1, "name": "cheap beer", "liquids": [["beer", 100], ["water", 400]]}»
+[281214][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, edit_recipe
+[281221][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[281221][D][esp32.ino:789] loop(): processing queue (#0): edit_recipe (0)
+[281234][D][esp32.ino:1413] execute(): updating recipe cheap beer with 2 ingredients
+[281241][D][esp32.ino:2069] update_recipes(): updating recipes state
+[281247][D][esp32.ino:2076] update_recipes():   recipe: cheap beer (can make: no)
+[281254][D][esp32.ino:2084] update_recipes():     ingredient: beer, amount: 100.0
+[281262][D][esp32.ino:2084] update_recipes():     ingredient: water, amount: 400.0
+[281269][D][esp32.ino:2076] update_recipes():   recipe: radler (can make: no)
+[281276][D][esp32.ino:2084] update_recipes():     ingredient: beer, amount: 250.0
+[281283][D][esp32.ino:2084] update_recipes():     ingredient: lemonade, amount: 250.0
+[281371][D][esp32.ino:2496] config_save(): config saved: 4610621675065441896
+[281371][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[281488][D][esp32.ino:2374] onRead(): read: 0 (eb61e31a-f00b-335f-ad14-d654aac8353d) -> "ok"
+[281855][D][esp32.ino:2384] onWrite(): write: 0 (eb61e31a-f00b-335f-ad14-d654aac8353d) -> {"cmd": "delete_recipe", "user": 0, "name": "cheap beer"}
+[281857][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "delete_recipe", "user": 0, "name": "cheap beer"}»
+[281868][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, delete_recipe
+[281876][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[281876][D][esp32.ino:789] loop(): processing queue (#0): delete_recipe (0)
+[281889][D][esp32.ino:1435] execute(): deleting recipe cheap beer
+[281895][D][esp32.ino:2069] update_recipes(): updating recipes state
+[281901][D][esp32.ino:2076] update_recipes():   recipe: radler (can make: no)
+[281907][D][esp32.ino:2084] update_recipes():     ingredient: beer, amount: 250.0
+[281915][D][esp32.ino:2084] update_recipes():     ingredient: lemonade, amount: 250.0
+[282032][D][esp32.ino:2496] config_save(): config saved: 4610621675065441896
+[282032][D][esp32.ino:2308] respond(): sending response to 0: "ok"
+[282148][D][esp32.ino:2374] onRead(): read: 0 (eb61e31a-f00b-335f-ad14-d654aac8353d) -> "ok"
+[282508][D][esp32.ino:2359] onRead(): read: 0 (e9e4b3f2-fd3f-3b76-8688-088a0671843a) -> "ready"
+[282930][D][esp32.ino:2384] onWrite(): write: 0 (eb61e31a-f00b-335f-ad14-d654aac8353d) -> {"cmd": "queue_recipe", "user": 1, "recipe": "radler"}
+[282932][D][esp32.ino:1008] parse_command(): processing json: «{"cmd": "queue_recipe", "user": 1, "recipe": "radler"}»
+[282943][D][esp32.ino:998] add_to_command_queue(): parsed, adding to queue: 0, queue_recipe
+[282950][D][esp32.ino:2394] onWrite(): parsed, waiting for queue
+[282950][D][esp32.ino:789] loop(): processing queue (#0): queue_recipe (0)
+[282963][D][esp32.ino:2308] respond(): sending response to 0: "recipe not found"
+[283108][D][esp32.ino:2374] onRead(): read: 0 (eb61e31a-f00b-335f-ad14-d654aac8353d) -> "recipe not found"
+[283468][D][esp32.ino:2359] onRead(): read: 0 (e9e4b3f2-fd3f-3b76-8688-088a0671843a) -> "ready"
