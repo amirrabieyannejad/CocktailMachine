@@ -81,8 +81,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
      * @author Johanna Reidt
      * @return
      */
-    @Override
-    public int getVolume() {
+    private int getVolume() {
         //this.setIngredientPumps();
 
         if(this.ingredientPump!=null) {
@@ -151,11 +150,15 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
 
     @Override
     public void preSetIngredient(long id) {
+        this.ingredientID = id;
         this.ingredientPump = new SQLIngredientPump(-1, this.getID(),id);
         //TODO this.ingredientPump = GetFromDB.getIngredientPumps(context);
         this.wasChanged();
     }
 
+    public long preGetIngredientID(){
+        return this.ingredientID;
+    }
 
     /**
      * set new ingredient pump connection and if existing delete old
@@ -209,6 +212,15 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     }
 
 
+    @Override
+    public int getVolume(Context context) {
+        if(this.ingredientPump == null) {
+            loadIngredientPump(context);
+            return this.loadedIngredientVolume;
+        }
+        return this.ingredientPump.getVolume();
+    }
+
     /**
      * no pump, check for one
      * delete if connection exists
@@ -252,23 +264,6 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         this.wasChanged();
     }
 
-
-    /**
-     * without checking for ingredientPump set Volume, throw missing ingredient if none set
-     * @author Johanna Reidt
-     * @param volume
-     * @throws MissingIngredientPumpException
-     */
-    @Override
-    public void fill(int volume) throws MissingIngredientPumpException {
-        //this.setIngredientPumps();
-        if(this.ingredientPump!=null) {
-            this.ingredientPump.setVolume(volume);
-        }else{
-            throw new MissingIngredientPumpException("There is no IngredientPump in Pump: "+this);
-        }
-        this.wasChanged();
-    }
 
 
     //General

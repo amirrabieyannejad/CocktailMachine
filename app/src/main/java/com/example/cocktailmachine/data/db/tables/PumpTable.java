@@ -71,9 +71,7 @@ public class PumpTable extends BasicColumn<SQLPump> {
         @Override
         public ContentValues makeContentValues(SQLPump element) {
             ContentValues cv = new ContentValues();
-            if(element.getCurrentIngredient() != null) {
-                cv.put(COLUMN_NAME_INGREDIENT_ID, element.getCurrentIngredient().getID());
-            }
+            cv.put(COLUMN_NAME_INGREDIENT_ID, element.preGetIngredientID());
             cv.put(COLUMN_NAME_SLOT_ID, element.getSlot());
             return cv;
         }
