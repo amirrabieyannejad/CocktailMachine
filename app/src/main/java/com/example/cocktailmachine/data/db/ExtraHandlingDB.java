@@ -73,4 +73,8 @@ public class ExtraHandlingDB {
     public static boolean loadAvailability(Context context, SQLRecipeIngredient recipeIngredient) {
         return false; //TODO
     }
+
+    public static boolean loadAvailability(Context context, SQLIngredientPump sqlIngredientPump) {
+        return false; //TODO
+    }
 }

@@ -9,6 +9,8 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
+import com.example.cocktailmachine.data.db.ExtraHandlingDB;
+import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
 
@@ -46,17 +48,13 @@ public class SQLIngredientPump extends SQLDataBaseElement {
         return this.volume;
     }
 
-    public Pump getPump(){
-        return Pump.getPump(this.pump);
+    public Pump getPump(Context context){
+        return Pump.getPump(context,this.pump);
     }
 
     public long getPumpID() {return this.pump;}
 
     @Nullable
-    public Ingredient getIngredient(){
-        return Ingredient.getIngredient(this.ingredient);
-
-    }
     public Ingredient getIngredient(Context context){
         return Ingredient.getIngredient(context, this.ingredient);
 
@@ -106,25 +104,11 @@ public class SQLIngredientPump extends SQLDataBaseElement {
 
     @Override
     public boolean loadAvailable(Context context) {
-        boolean res =  loadAvailable();
-        this.save(context);
-        return res;
-    }
-
-    /**
-     * true, if pump and ingredient exists and volume > zero
-     * @return
-     */
-    public boolean loadAvailable() {
-        boolean res = (getIngredient() != null)&&(getPump() != null);
-
-        if(res != this.available){
-           // Log.v(TAG, "loadAvailable: available has changed to: "+res);
-            this.available = res;
-            this.wasChanged();
-        }
+        this.available = ExtraHandlingDB.loadAvailability(context, this);
         return this.available&&this.isAvailable();
     }
+
+
 
     @Override
     public void save(Context context) {
@@ -150,32 +134,14 @@ public class SQLIngredientPump extends SQLDataBaseElement {
                 '}';
     }
 
-    private static List<SQLIngredientPump> getAvailableInstances(){
+    private static List<SQLIngredientPump> getAvailableInstances(Context context){
         //TO DO
-        return Buffer.getSingleton().getIngredientPumps();
+        return GetFromDB.getIngredientPumps(context);
     }
 
-    public static SQLIngredientPump getInstanceWithPump(long pump){
-        List<SQLIngredientPump> available = getAvailableInstances();
-        if(available != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                return available.stream().filter(ip -> ip.pump == pump).findFirst().orElse(null);
-            }
-            return Helper.getWithPumpID(available, pump);
-        }
-        return null;
-    }
 
-    public static SQLIngredientPump getInstanceWithIngredient(long ingredient) {
-        List<SQLIngredientPump> available = getAvailableInstances();
-        if (available != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                return available.stream().filter(ip -> ip.ingredient == ingredient).findFirst().orElse(null);
-            }
-            return Helper.getWithIngredientID(available, ingredient);
-        }
-        return null;
-    }
+
+
 
 
 }
