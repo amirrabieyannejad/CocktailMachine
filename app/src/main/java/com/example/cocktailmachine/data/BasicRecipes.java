@@ -62,27 +62,27 @@ public class BasicRecipes {
 
         Pump t_p = Pump.makeNew();
         t_p.setCurrentIngredient(context, Ingredient.getIngredient(context,"Tequila"));
-        t_p.fill(1000);
+        t_p.fill(context, 1000);
         t_p.save(context);
         Pump o_p = Pump.makeNew();
         o_p.setCurrentIngredient(context, Ingredient.getIngredient(context, "Orangenlikör"));//orangenlikör);
-        o_p.fill(1000);
+        o_p.fill(context, 1000);
         o_p.save(context);
         Pump l_p = Pump.makeNew();
         l_p.setCurrentIngredient(context, Ingredient.getIngredient(context, "Limettensaft"));//limettensaft);
-        l_p.fill(1000);
+        l_p.fill(context, 1000);
         l_p.save(context);
         Pump w_p = Pump.makeNew();
         w_p.setCurrentIngredient(context, Ingredient.getIngredient(context, "Wodka"));//wodka);
-        w_p.fill(1000);
+        w_p.fill(context, 1000);
         w_p.save(context);
         Pump r_p = Pump.makeNew();
         r_p.setCurrentIngredient(context, Ingredient.getIngredient(context, "Rum"));//rum);
-        r_p.fill(1000);
+        r_p.fill(context, 1000);
         r_p.save(context);
         Pump c_p = Pump.makeNew();
         c_p.setCurrentIngredient(context, Ingredient.getIngredient(context, "Cola"));//cola);
-        c_p.fill(1000);
+        c_p.fill(context, 1000);
         c_p.save(context);
 
         //DatabaseConnection.localRefresh();

@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.cocktailmachine.Dummy;
 
 import com.example.cocktailmachine.data.Recipe;
+import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
 
 import com.example.cocktailmachine.databinding.ActivitySettingsBinding;
@@ -293,14 +294,14 @@ public class SettingsActivity extends AppCompatActivity {
 
          */
         Log.v(TAG, "loadNew");
-        Buffer.localRefresh(this);
+        ExtraHandlingDB.localRefresh(this);
         Toast.makeText(this,"Lade aus der Datenbank neu!",Toast.LENGTH_SHORT).show();
     }
 
 
     public void loadPreped(View view) {
         Log.v(TAG, "loadPreped");
-        Buffer.loadPreped(this);
+        ExtraHandlingDB.loadPreped(this);
     }
 
     public void login(View view) {

@@ -269,7 +269,7 @@ public class DisplayActivity extends BasicActivity {
                 return true;
             }
         });
-        String vol = pump.getVolume() +" ml";
+        String vol = pump.getVolume(this) +" ml";
         binding.includeDisplayPump.textViewPumpVolume.setText(vol);
         binding.includeDisplayPump.buttonRunPump.setOnClickListener(new View.OnClickListener() {
             @Override

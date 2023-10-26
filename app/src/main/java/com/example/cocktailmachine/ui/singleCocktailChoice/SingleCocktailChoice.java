@@ -71,7 +71,7 @@ public class SingleCocktailChoice extends AppCompatActivity {
         testData = new LinkedList<>();
         counter = 0;
         while (testData.size() == 0 && counter++ < 9){
-            testData = Recipe.getAllRecipes();
+            testData = Recipe.getAllRecipes(this);
         }
 
 
@@ -242,7 +242,7 @@ public class SingleCocktailChoice extends AppCompatActivity {
     }
 
     private List<Recipe> loadRecipes(Context context) throws NotInitializedDBException {
-        List<Recipe> recipes = Buffer.getSingleton(context).getRecipes(context);
+        List<Recipe> recipes = Recipe.getRecipes(context);
         /*
         try {
             recipes = DatabaseConnection.getDataBase().loadAllRecipes();

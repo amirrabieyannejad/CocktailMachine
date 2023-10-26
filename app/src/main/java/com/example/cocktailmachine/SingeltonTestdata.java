@@ -169,11 +169,6 @@ public class SingeltonTestdata {
                     }
 
                     @Override
-                    public Pump getPump() {
-                        return null;
-                    }
-
-                    @Override
                     public Long getPumpId() {
                         return null;
                     }
@@ -193,6 +188,10 @@ public class SingeltonTestdata {
 
                     }
 
+                    @Override
+                    public Pump getPump(Context context) {
+                        return null;
+                    }
 
 
                     @Override
@@ -313,7 +312,6 @@ public class SingeltonTestdata {
                         return 0;
                     }
 
-                    @Override
                     public Pump getPump() {
                         return null;
                     }
@@ -336,6 +334,11 @@ public class SingeltonTestdata {
                     @Override
                     public void removeImageUrl(String url) {
 
+                    }
+
+                    @Override
+                    public Pump getPump(Context context) {
+                        return null;
                     }
 
 
@@ -684,10 +687,7 @@ public class SingeltonTestdata {
                         return 0;
                     }
 
-                    @Override
-                    public Pump getPump() {
-                        return null;
-                    }
+
 
                     @Override
                     public Long getPumpId() {
@@ -707,6 +707,11 @@ public class SingeltonTestdata {
                     @Override
                     public void removeImageUrl(String url) {
 
+                    }
+
+                    @Override
+                    public Pump getPump(Context context) {
+                        return null;
                     }
 
 
@@ -829,10 +834,6 @@ public class SingeltonTestdata {
                         return 0;
                     }
 
-                    @Override
-                    public Pump getPump() {
-                        return null;
-                    }
 
                     @Override
                     public Long getPumpId() {
@@ -852,6 +853,11 @@ public class SingeltonTestdata {
                     @Override
                     public void removeImageUrl(String url) {
 
+                    }
+
+                    @Override
+                    public Pump getPump(Context context) {
+                        return null;
                     }
 
 

@@ -21,6 +21,18 @@ public class ExtraHandlingDB {
         DatabaseConnection.init(context).refreshAvailable(context);
     }
 
+
+    /* *
+     * load csv and json files prepared by phillip
+     * @author Johanna Reidt
+     * @param context
+     */
+    public static void loadPreped(Context context) {
+       // Log.v(TAG, "loadPreped" );
+        DatabaseConnection.loadLiquid(context);
+        DatabaseConnection.loadPrepedRecipes(context);
+    }
+
     public static void loadForSetUp(Activity context) {
 
         DatabaseConnection.init(context).setUpEmptyPumps(); //delete all pump Tables to be sure
