@@ -97,7 +97,7 @@ public class GetAdapter {
             this.recipe = recipe;
             this.withDelete = withDelete;
             this.withDisplay = withDisplay;
-            this.topics = new ArrayList<>(this.recipe.getTopics());
+            this.topics = new ArrayList<>(this.recipe.getTopics(activity));
         }
 
         @NonNull
@@ -207,7 +207,7 @@ public class GetAdapter {
         public IngredientVolAdapter(Activity activity,  Recipe recipe, boolean withDelete, boolean withDisplay) {
             this.activity = activity;
             this.recipe = recipe;
-            this.ingredientVol = recipe.getIngredientToVolume();
+            this.ingredientVol = recipe.getIngredientToVolume(activity);
             this.ingredients = new ArrayList<>(this.ingredientVol.keySet());
             
             this.withDelete = withDelete;
