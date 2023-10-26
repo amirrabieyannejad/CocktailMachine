@@ -105,7 +105,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * Get Pump representative class, where the ingredient is within.
      * @return pump
      */
-    Pump getPump();
+    Pump getPump(Context context);
 
     /**
      * Get Pump representative class, where the ingredient is within.

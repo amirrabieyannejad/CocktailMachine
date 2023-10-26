@@ -266,11 +266,11 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
      * @return
      */
     @Override
-    public Pump getPump() {
+    public Pump getPump(Context context) {
         //this.checkIngredientPumps();
 
         if(this.ingredientPump!=null) {
-            return this.ingredientPump.getPump();
+            return this.ingredientPump.getPump(context);
         }
         return null;
     }
