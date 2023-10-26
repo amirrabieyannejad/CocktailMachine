@@ -139,7 +139,7 @@ public class BildgeneratorGlas {
         }
 
         Resources res = context.getResources();
-        List<Ingredient> ingredientList = recipe.getIngredients();
+        List<Ingredient> ingredientList = recipe.getIngredients(context);
         int animationSlots= listIdGlasFlüssigkeit.length;
         int slotCounter= 0;
 
