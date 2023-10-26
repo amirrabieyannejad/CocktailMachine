@@ -233,7 +233,7 @@ public class GetAdapter {
                 i = this.ingredients.get(position);
             }catch (IndexOutOfBoundsException e){
                 Log.e(TAG, "onBindViewHolder getting ingredient failed", e);
-                holder.setGone();
+                //holder.setGone();
                 return;
             }
             if (i == null) {

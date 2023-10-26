@@ -8,9 +8,23 @@ import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
 
 import java.util.List;
+import java.util.Objects;
 
 public interface Topic extends Comparable<Topic>, DataBaseElement {
     String TAG = "Topic";
+
+    static Topic searchOrNew(Context context, String name, String ex) {
+        Topic t = Topic.getTopic(context,name);
+        if(t == null){
+            t = Topic.makeNew(name, ex);
+            t.save(context);
+        }
+        if(!Objects.equals(t.getDescription(), ex)) {
+            t.setName(ex);
+            t.save(context);
+        }
+        return t;
+    }
 
     /**
      * Get id.
