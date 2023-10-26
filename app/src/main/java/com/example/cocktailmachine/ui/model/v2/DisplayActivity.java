@@ -9,6 +9,7 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
+import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityDisplayBinding;
 
@@ -142,7 +143,7 @@ public class DisplayActivity extends BasicActivity {
 
     @Override
     void setUpIngredient(){
-        Ingredient ingredient = Ingredient.getIngredient(getID());
+        Ingredient ingredient = Ingredient.getIngredient(this, getID());
         if(ingredient == null){
             binding.textViewDisplayTitle.setText("Fehler");
             binding.textViewDisplayDescription.setText("Die Zutat konnte nicht gefunden werden.");
@@ -201,7 +202,7 @@ public class DisplayActivity extends BasicActivity {
 
     @Override
     void setUpTopic(){
-        Topic topic = Topic.getTopic(getID());
+        Topic topic = Topic.getTopic(this,getID());
         if(topic == null){
             binding.textViewDisplayTitle.setText("Fehler");
             binding.textViewDisplayDescription.setText("Der Serviervorschlag konnte nicht gefunden werden.");
@@ -247,7 +248,7 @@ public class DisplayActivity extends BasicActivity {
 
     @Override
     void setUpPump(){
-        Pump pump = Pump.getPump(getID());
+        Pump pump = Pump.getPump(this,getID());
         if(pump == null){
             binding.textViewDisplayTitle.setText("Fehler");
             binding.textViewDisplayDescription.setText("Der Pumpe konnte nicht gefunden werden.");
@@ -323,7 +324,7 @@ public class DisplayActivity extends BasicActivity {
     }
 
     public void reload(View view) {
-        Buffer.localRefresh(this);
+        ExtraHandlingDB.localRefresh(this);
         DisplayActivity.this.reload();
         setUp();
     }
