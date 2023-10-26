@@ -12,6 +12,7 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.tables.Tables;
+import com.example.cocktailmachine.ui.Menue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -117,5 +118,9 @@ public class ExtraHandlingDB {
 
     public static boolean loadAvailability(Context context, SQLIngredientPump sqlIngredientPump) {
         return true; //TODO
+    }
+
+    public static void loadPrepedDB(Context context) {
+        DatabaseConnection.loadIfNotDoneDBFromAssets(context);
     }
 }

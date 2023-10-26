@@ -20,40 +20,33 @@ public class BasicRecipes {
 
     public static void loadTopics(Context context) {
 
-        Topic ice_crushed = Topic.makeNew("Crushed Eis", "klein gehaktes Eis");
-        ice_crushed.save(context);
+        Topic ice_crushed = Topic.searchOrNew(context,"Crushed Eis", "klein gehaktes Eis");
 
-        Topic ice_cubes = Topic.makeNew("Eis", "gefrorenes Wasser");
-        ice_cubes.save(context);
+        Topic ice_cubes = Topic.searchOrNew(context,"Eis", "gefrorenes Wasser");
 
-        Topic zuckersirup = Topic.makeNew("Zuckersirup", "steht neben der Maschine, versüßt, einmal pumpen");
-        zuckersirup.save(context);
+        Topic zuckersirup = Topic.searchOrNew(context,"Zuckersirup", "steht neben der Maschine, versüßt, einmal pumpen");
 
-        Topic melone = Topic.makeNew("Melone", "eine Scheibe an den Rand stecken");
-        melone.save(context);
+        Topic melone = Topic.searchOrNew(context,"Melone", "eine Scheibe an den Rand stecken");
 
     }
 
     public static void loadIngredients(Context context) {
-        Ingredient tequila = Ingredient.makeNew("Tequila", true, Color.WHITE);
-        tequila.save(context);
-        Ingredient orangenlikör = Ingredient.makeNew("Orangenlikör", true, Color.YELLOW);
-        orangenlikör.save(context);
-        Ingredient limettensaft = Ingredient.makeNew("Limettensaft", false, Color.CYAN);
-        limettensaft.save(context);
+        Ingredient.searchOrNew(context,"Tequila", true, Color.WHITE);
+        Ingredient.searchOrNew(context,"Orangenlikör", true, Color.YELLOW);
+        Ingredient.searchOrNew(context,"Limettensaft", false, Color.CYAN);
 
         /*
-        Ingredient tequila = Ingredient.makeNew("Tequila", true, Color.RED);
-        Ingredient orangenlikör = Ingredient.makeNew("Orangenlikör", true, Color.YELLOW);
-        Ingredient limettensaft = Ingredient.makeNew("Limettensaft", false, Color.WHITE);
+        Ingredient tequila = Ingredient.searchOrNew("Tequila", true, Color.RED);
+        Ingredient orangenlikör = Ingredient.searchOrNew("Orangenlikör", true, Color.YELLOW);
+        Ingredient limettensaft = Ingredient.searchOrNew("Limettensaft", false, Color.WHITE);
 
          */
-        Ingredient wodka = Ingredient.makeNew("Wodka", true, Color.BLUE);
-        wodka.save(context);
-        Ingredient rum = Ingredient.makeNew("Rum", true, Color.GRAY);
-        rum.save(context);
-        Ingredient cola = Ingredient.makeNew("Cola", false, Color.BLACK);
-        cola.save(context);
+        Ingredient wodka = Ingredient.searchOrNew(context,"Wodka", true, Color.BLUE);
+
+        Ingredient rum = Ingredient.searchOrNew(context,"Rum", true, Color.GRAY);
+
+        Ingredient cola = Ingredient.searchOrNew(context,"Cola", false, Color.BLACK);
+
 
         //DatabaseConnection.localRefresh();
     }
@@ -102,7 +95,7 @@ public class BasicRecipes {
          **/
 
         
-        Recipe magarita = Recipe.makeNew("Margarita");
+        Recipe magarita = Recipe.searchOrNew(context,"Margarita");
         magarita.add(context, Ingredient.getIngredient(context, "Tequila"), 8);
         magarita.add(context, Ingredient.getIngredient(context, "Orangenlikör"), 4);
         magarita.add(context, Ingredient.getIngredient(context, "Limettensaft"), 4);
@@ -118,7 +111,7 @@ public class BasicRecipes {
 
     public static void loadTequila(Context context) throws NotInitializedDBException {
         Log.i(TAG,"loadTequila");
-        Recipe magarita = Recipe.makeNew("Margarita 2.0");
+        Recipe magarita = Recipe.searchOrNew(context,"Margarita 2.0");
         magarita.add(context, Ingredient.getIngredient(context, "Tequila"), 8);
         magarita.add(context, Ingredient.getIngredient(context, "Orangenlikör"), 4);
         magarita.add(context, Ingredient.getIngredient(context, "Limettensaft"), 4);
@@ -142,7 +135,7 @@ public class BasicRecipes {
          */
 
 
-        Recipe magarita = Recipe.makeNew("Long Island Ice Tea");
+        Recipe magarita = Recipe.searchOrNew(context,"Long Island Ice Tea");
         magarita.add(context, Ingredient.getIngredient(context, "Tequila"), 2);
         magarita.add(context, Ingredient.getIngredient(context, "Orangenlikör"), 2);
         magarita.add(context, Ingredient.getIngredient(context, "Limettensaft"), 2);

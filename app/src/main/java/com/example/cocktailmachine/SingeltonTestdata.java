@@ -453,7 +453,7 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public List<SQLRecipeIngredient> getRecipeIngredient(Context context) {
+            public List<SQLRecipeIngredient> getRecipeIngredients(Context context) {
                 return null;
             }
 
@@ -535,7 +535,7 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public List<SQLRecipeTopic> getRecipeTopic(Context context) {
+            public List<SQLRecipeTopic> getRecipeTopics(Context context) {
                 return null;
             }
 
@@ -976,7 +976,7 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public List<SQLRecipeIngredient> getRecipeIngredient(Context context) {
+            public List<SQLRecipeIngredient> getRecipeIngredients(Context context) {
                 return null;
             }
 
@@ -1059,7 +1059,7 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public List<SQLRecipeTopic> getRecipeTopic(Context context) {
+            public List<SQLRecipeTopic> getRecipeTopics(Context context) {
                 return null;
             }
 

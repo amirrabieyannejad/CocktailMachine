@@ -70,7 +70,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @param volume
      * @throws MissingIngredientPumpException
      */
-    void fill(Context context,int volume) throws MissingIngredientPumpException;
+    void fill(Context context, int volume) throws MissingIngredientPumpException;
 
 
 
@@ -474,16 +474,18 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         JSONObject answer = new JSONObject();
 
          */
-        if(Dummy.isDummy){
-            save(activity);
-            return;
-        }
+
         try {
             fill(activity,volume);
         } catch (MissingIngredientPumpException e) {
             Log.i(TAG, "sendRefill failed");
             Log.e(TAG, "error ",e);
             Log.getStackTraceString(e);
+        }
+        if(Dummy.isDummy){
+
+            save(activity);
+            return;
         }
         save(activity);
         sendRefill(activity);

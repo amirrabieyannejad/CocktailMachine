@@ -31,6 +31,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
     String TAG = "Ingredient";
 
 
+
     //Reminder: Only liquids!!!
 
     /**
@@ -294,6 +295,14 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
             ingredient.save(context);
         }
         return ingredient;
+    }
+
+    static Ingredient searchOrNew(Context context, String name, boolean alcoholic, int color) {
+        Ingredient i = Ingredient.searchOrNew(context, name);
+        i.setAlcoholic(alcoholic);
+        i.setColor(color);
+        i.save(context);
+        return i;
     }
 
 
