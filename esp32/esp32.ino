@@ -1,7 +1,7 @@
 // general system settings
 #define BLE_NAME             	"Cocktail Machine ESP32"	// bluetooth server name
 #define CORE_DEBUG_LEVEL     	4                       	// 1 = error; 3 = info ; 4 = debug
-const unsigned int VERSION   	= 7;                    	// version number (used for configs etc)
+const unsigned int VERSION   	= 8;                    	// version number (used for configs etc)
                              	                        	
 const unsigned char MAX_PUMPS	= 1 + 4*8;              	// maximum number of supported pumps;
                              	                        	
@@ -205,18 +205,6 @@ struct Pump {
     : slot(slot), liquid(liquid), volume(volume),
       time_init(time_init), time_reverse(time_reverse), rate(rate),
       calibrated(calibrated), cal_volume()
-    {};
-
-  Pump(PumpSlot *slot, String liquid, float volume, dur_t time_init, dur_t time_reverse, float rate)
-    : slot(slot), liquid(liquid), volume(volume),
-      time_init(time_init), time_reverse(time_reverse), rate(rate),
-      calibrated(false), cal_volume()
-    {};
-
-  Pump(PumpSlot *slot, String liquid, float volume)
-    : slot(slot), liquid(liquid), volume(volume),
-      time_init(S(5)), time_reverse(S(5)), rate(350.0 / MIN(1)),
-      calibrated(false), cal_volume()
     {};
 
   Retcode drain(float amount);
@@ -661,8 +649,7 @@ void update_scale(void);
 void update_recipes(void);
 void update_config_state(time_t ts);
 void update_user(void);
-void update_all_possible_recipes(void);
-void update_possible_recipes(String liquid);
+void update_possible_recipes(void);
 void update_error(Retcode error, User user);
 
 // init
@@ -775,8 +762,6 @@ void setup() {
   update_cocktail();
   update_user();
   update_state();
-
-  debug("ready");
 }
 
 void loop() {
@@ -1313,9 +1298,9 @@ Retcode CmdDefinePump::execute() {
 
   // save new pump
   PumpSlot *pump_slot = pump_slots[slot];
-  Pump *p = new Pump(pump_slot, this->liquid, volume);
+  Pump *p = new Pump(pump_slot, this->liquid, volume, S(1), S(1), 1.0, false);
   pumps[slot] = p;
-
+  
   // update machine state
   update_liquids();
   update_config_state(timestamp_ms());
@@ -1374,7 +1359,7 @@ Retcode CmdRefillPump::execute() {
 
   // update machine state
   update_liquids();
-  update_possible_recipes(p->liquid);
+  update_possible_recipes();
 
   return Retcode::success;
 }
@@ -1384,7 +1369,7 @@ Retcode CmdDefineRecipe::execute() {
   const String name = this->name;
 
   for (auto const &r : recipes) {
-    if (r.name == name) return Retcode::duplicate_recipe;
+    if (!strcmp(r.name.c_str(), name.c_str())) return Retcode::duplicate_recipe;
   }
 
   size_t num = 0;
@@ -1413,7 +1398,7 @@ Retcode CmdEditRecipe::execute() {
   debug("updating recipe %s with %d ingredients", name, num);
 
   for (auto it = recipes.begin(); it != recipes.end(); it++) {
-    if (it->name == name) {
+    if (!strcmp(it->name.c_str(), name.c_str())) {
       // TODO memory leak?
       it->ingredients = this->ingredients;
 
@@ -1433,7 +1418,7 @@ Retcode CmdDeleteRecipe::execute() {
   const String name = this->name;
 
   debug("deleting recipe %s", name);
-  recipes.remove_if([name](Recipe r){ return r.name == name; });
+  recipes.remove_if([name](Recipe r){ return !strcmp(r.name.c_str(), name.c_str()); });
 
   // update state
   update_recipes();
@@ -1447,7 +1432,8 @@ Retcode CmdQueueRecipe::execute() {
 
   // look for recipe
   for (auto &r : recipes) {
-    if (r.name == name) {
+    if (!strcmp(r.name.c_str(), name.c_str())) {
+      recipe = &r;
       break;
     }
   }
@@ -1681,7 +1667,7 @@ Retcode CmdRunPump::execute() {
   p->volume = std::max(p->volume - volume, 0.0f);
 
   update_liquids();
-  update_possible_recipes(p->liquid);
+  update_possible_recipes();
   update_scale();
   update_cocktail();
   update_state();
@@ -1793,7 +1779,7 @@ Retcode check_liquid(String liquid, float volume) {
     Pump *p = pumps[i];
     if (p == NULL) continue;
 
-    if (p->liquid == liquid) {
+    if (!strcmp(p->liquid.c_str(), liquid.c_str())) {
       found = true;
       debug("  in pump %d: %.1f", i, p->volume);
       have += p->volume;
@@ -1871,7 +1857,7 @@ Retcode advance_recipe(ActiveRecipe *recipe) {
     Pump *p = pumps[i];
     if (p == NULL) continue;
 
-    if (p->liquid == next_ing.name) {
+    if (!strcmp(p->liquid.c_str(), next_ing.name.c_str())) {
       debug("  need %.1f, using pump %d: %.1f", need, i, p->volume);
       float use = std::min(p->volume, need);
       Retcode err = p->drain(use);
@@ -1896,7 +1882,7 @@ Retcode advance_recipe(ActiveRecipe *recipe) {
   update_liquids();
   update_scale();
   update_cocktail();
-  update_possible_recipes(next_ing.name);
+  update_possible_recipes();
 
   // shouldn't happen, but do a sanity check
   if (need >= LIQUID_CUTOFF) return Retcode::insufficient;
@@ -2069,7 +2055,7 @@ void update_recipes() {
   debug("updating recipes state");
 
   // update can_make state of all recipes
-  update_all_possible_recipes();
+  update_possible_recipes();
 
   String out = String('{');
   for (auto r = recipes.begin(); r != recipes.end(); r++) {
@@ -2140,47 +2126,52 @@ void update_user() {
   all_status[ID_USER]->update(out, false);
 }
 
-void update_all_possible_recipes() {
+void update_possible_recipes() {
+  debug("updating possible recipes...");
+  bool updated = false;
+  
   // calculate total liquids
-  std::unordered_set<std::string> liquids = {};
+  std::unordered_map<std::string, float> liquids = {};
   for(int i=0; i<MAX_PUMPS; i++) {
     Pump *pump = pumps[i];
     if (pump == NULL) continue;
 
     std::string liquid = pump->liquid.c_str();
-    liquids.insert(liquid);
-  }
 
-  for (auto const &liquid : liquids) {
-    update_possible_recipes(String(liquid.c_str()));
-  }
-}
-
-void update_possible_recipes(String liquid) {
-  bool updated = false;
-
-  // calculate the total available
-  float have = 0;
-  for (int i=0; i<MAX_PUMPS; i++) {
-    Pump *p = pumps[i];
-    if (p == NULL) continue;
-    have += p->volume;
+    // update saved total
+    float sum = liquids[liquid] + pump->volume;
+    liquids[liquid] = sum;
   }
 
   // adjust recipes
   for (auto &recipe : recipes) {
-    float need = 0;
+    bool can_make = true;
+
+    // sum up the ingredients
+    std::unordered_map<std::string, float> needs = {};
     for (auto const &ing : recipe.ingredients) {
-      if (ing.name == liquid) {
-        need += ing.amount;
+      std::string liquid = ing.name.c_str();
+      float need = needs[liquid] + ing.amount;
+      needs[liquid] = need;
+    }
+    
+    for(auto const &pair : needs) {
+      std::string liquid	= pair.first;
+      float need        	= pair.second;
+      float have        	= liquids[liquid];
+      float diff        	= have - need;
+    
+      debug("  -> %s needs %.1f of %s, we have %.1f, diff is %.1f", recipe.name.c_str(), need, liquid.c_str(), have, diff);
+    
+      if (need > 0 && diff <= LIQUID_CUTOFF) {
+        can_make = false;
+        break;
       }
     }
-    if (need > 0) {
-      bool can_make = (have - need < LIQUID_CUTOFF);
-      if (recipe.can_make != can_make) {
-        updated = true;
-        recipe.can_make = can_make;
-      }
+    
+    if (recipe.can_make != can_make) {
+      updated = true;
+      recipe.can_make = can_make;
     }
   }
 
@@ -2731,16 +2722,17 @@ Retcode Pump::calibrate(dur_t time1, dur_t time2, float volume1, float volume2) 
 
 // scale
 float scale_weigh() {
+  float weight = 0.0;
+
   if (scale_available) {
     // TODO maybe use a different read command or times value?
-    return scale.read_median();
+    weight = std::max(scale.read_median(), 0.0f);
   } else {
-    float weight = 0.0;
     for (auto const ing : cocktail) {
       weight += ing.amount;
     }
-    return weight;
   }
+  return weight;
 }
 
 float scale_estimate(dur_t init, dur_t time, float rate) {

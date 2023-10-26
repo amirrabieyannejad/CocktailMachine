@@ -6,12 +6,9 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 
-import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
@@ -19,7 +16,6 @@ import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -33,6 +29,7 @@ import java.util.List;
  */
 public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
     String TAG = "Ingredient";
+
 
 
     //Reminder: Only liquids!!!
@@ -108,7 +105,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * Get Pump representative class, where the ingredient is within.
      * @return pump
      */
-    Pump getPump();
+    Pump getPump(Context context);
 
     /**
      * Get Pump representative class, where the ingredient is within.
@@ -153,14 +150,6 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
 
 
     //general
-    /**
-     * Static Access to ingredients.
-     * Get all ingredients.
-     * @return List of ingredients.
-     */
-    static List<Ingredient> getAllIngredients() {
-        return Buffer.getSingleton().getIngredients();
-    }
 
     /**
      * Static Access to ingredients if necessary from db
@@ -168,7 +157,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @return List of ingredients.
      */
     static List<Ingredient> getAllIngredients(Context context) {
-        return Buffer.getSingleton().getIngredients(context);
+        return (List<Ingredient>) GetFromDB.loadIngredients(context);
     }
 
     /**
@@ -176,8 +165,8 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * Get all ingredient names
      * @return List of ingredients.
      */
-    static List<String> getAllIngredientNames() {
-        return Buffer.getSingleton().getIngredientNames();
+    static List<String> getAllIngredientNames(Context context) {
+        return GetFromDB.getIngredientNames(context);
     }
 
 
@@ -186,8 +175,8 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * Get all available ingredients.
      * @return List of ingredients.
      */
-    static List<Ingredient> getAvailableIngredients() {
-        return Buffer.getSingleton().getAvailableIngredients();
+    static List<Ingredient> getAvailableIngredients(Context context) {
+        return (List<Ingredient>) GetFromDB.getAvailableIngredients(context);
     }
 
     /**
@@ -195,8 +184,14 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * Get all available ingredient names.
      * @return List of ingredients.
      */
-    static List<String> getAvailableIngredientNames() {
-        return Buffer.getSingleton().getAvailableIngredientNames();
+    static List<String> getAvailableIngredientNames(Context context) {
+        List<Ingredient> res = getAvailableIngredients(context);
+        List<String> name = new ArrayList<>();
+        for(Ingredient i: res){
+            name.add(i.getName());
+        }
+        return name;
+        //return GetFromDB.getAvailableIngredientNames(context);
     }
 
     /**
@@ -205,23 +200,14 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @param ingredientsIds k
      * @return List of ingredients.
      */
-    static List<Ingredient> getAvailableIngredients(List<Long> ingredientsIds) {
-        return Buffer.getSingleton().getAvailableIngredients(ingredientsIds);
+    static List<Ingredient> getAvailableIngredients(Context context,List<Long> ingredientsIds) {
+        return (List<Ingredient>) GetFromDB.getAvailableIngredients(context,ingredientsIds);
     }
 
-    /**
-     * Static Access to ingredients.
-     * Get available ingredients with id k.
-     * @param id k
-     * @return
-     */
-    @Nullable
-    static Ingredient getIngredient(long id) {
-        return Buffer.getSingleton().getIngredient(id);
-    }
+
 
     static Ingredient getIngredient(Context context, long id) {
-        return Buffer.getSingleton(context).getIngredient(id);
+        return GetFromDB.loadIngredient(context, id);
     }
 
     /**
@@ -230,10 +216,15 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @param name k
      * @return
      */
-    static Ingredient getIngredient(String name) {
+    static Ingredient getIngredient(Context context, String name) {
         Log.i(TAG, "getIngredient "+name);
-        return Buffer.getSingleton().getIngredient(name);
+        List<Ingredient> g = (List<Ingredient>) GetFromDB.loadIngredients(context, name);
+        if(g.isEmpty()){
+            return null;
+        }
+        return g.get(0);
     }
+
 
 
 
@@ -298,7 +289,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
 
 
     static Ingredient searchOrNew(Context context, String name){
-        Ingredient ingredient = Ingredient.getIngredient(name);
+        Ingredient ingredient = Ingredient.getIngredient(context, name);
         if(ingredient == null){
             ingredient =  Ingredient.makeNew(name);
             ingredient.save(context);
@@ -306,9 +297,15 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
         return ingredient;
     }
 
-    static HashMap<String, Long> getPumpSet(Context context){
-        return Buffer.getIngredientPumpSet(context);
+    static Ingredient searchOrNew(Context context, String name, boolean alcoholic, int color) {
+        Ingredient i = Ingredient.searchOrNew(context, name);
+        i.setAlcoholic(alcoholic);
+        i.setColor(color);
+        i.save(context);
+        return i;
     }
+
+
 
 
     //TODO: JSON Object

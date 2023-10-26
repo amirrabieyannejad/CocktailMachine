@@ -3,16 +3,28 @@ package com.example.cocktailmachine.data;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.cocktailmachine.data.db.Buffer;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
+import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public interface Topic extends Comparable<Topic>, DataBaseElement {
     String TAG = "Topic";
+
+    static Topic searchOrNew(Context context, String name, String ex) {
+        Topic t = Topic.getTopic(context,name);
+        if(t == null){
+            t = Topic.makeNew(name, ex);
+            t.save(context);
+        }
+        if(!Objects.equals(t.getDescription(), ex)) {
+            t.setName(ex);
+            t.save(context);
+        }
+        return t;
+    }
 
     /**
      * Get id.
@@ -58,38 +70,35 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
         return new SQLTopic(name, description);
     }
 
-    static Topic getTopic(long id)  {
+    static Topic getTopic(Context context, long id)  {
         Log.i(TAG, "getTopic");
-        return Buffer.getSingleton().getTopic(id);
+        return GetFromDB.getTopic(context, id);
     }
 
-    static Topic getTopic(String name)  {
+    static Topic getTopic(Context context, String name)  {
         Log.i(TAG, "getTopic");
-        return Buffer.getSingleton().getTopic(name);
+        return GetFromDB.getTopic(context, name);
     }
 
-    static List<Topic> getTopics(Recipe recipe)  {
+    public static List<Topic> getTopics(Context context,Recipe recipe)  {
         Log.i(TAG, "getTopics");
-        return Buffer.getSingleton().getTopics(recipe);
+        return (List<Topic>) GetFromDB.getTopics(context, recipe);
     }
 
-    static List<Long> getTopicIDs(Recipe recipe)  {
+    static List<Long> getTopicIDs(Context context,Recipe recipe)  {
         Log.i(TAG, "getTopics");
-        return Buffer.getSingleton().getTopicIDs(recipe);
+        return GetFromDB.getTopicIDs(context, recipe);
     }
 
-    static List<Topic> getTopics(){
-        Log.i(TAG, "getTopics");
-        return Buffer.getSingleton().getTopics();
-    }
+
 
     static List<Topic> getTopics(Context context){
         Log.i(TAG, "getTopics");
-        return Buffer.getSingleton(context).getTopics(context);
+        return (List<Topic>) GetFromDB.getTopics(context);
     }
 
-    static List<String> getTopicTitles(){
-       return Buffer.getSingleton().getTopicNames();
+    static List<String> getTopicTitles(Context context){
+       return GetFromDB.loadTopicTitles(context);
     }
 
 }

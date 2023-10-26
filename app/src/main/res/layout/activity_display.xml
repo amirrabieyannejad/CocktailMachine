@@ -1,172 +1,212 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.model.v2.DisplayActivity">
+    tools:context=".ui.model.DisplayActivity">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/textViewDisplayTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:padding="8dp"
+        android:text="@string/title"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display3"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/textViewDisplayTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:text="@string/title"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display3"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:focusable="false">
-
-            <ImageButton
-                android:id="@+id/imageButton_edit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="@color/cardview_shadow_end_color"
-                android:clickable="true"
-                android:contentDescription="@string/btn_editRecipe"
-                android:focusable="true"
-                android:longClickable="false"
-                android:minWidth="48dp"
-                android:minHeight="48dp"
-                android:onClick="edit"
-                app:srcCompat="@drawable/ic_edit"
-                app:tint="@color/black" />
-
-            <ImageButton
-                android:id="@+id/imageButtonReload"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="@color/cardview_shadow_end_color"
-                android:contentDescription="@string/reload"
-                android:clickable="true"
-                android:focusable="true"
-                android:longClickable="false"
-                android:minWidth="48dp"
-                android:minHeight="48dp"
-                android:onClick="reload"
-                app:tint="@color/black"
-                app:srcCompat="@drawable/baseline_replay_24" />
-
-            <ImageButton
-                android:id="@+id/imageButton_display_to_home"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="@color/cardview_shadow_end_color"
-                android:contentDescription="@string/home"
-                android:clickable="true"
-                android:focusable="true"
-                android:longClickable="false"
-                android:minWidth="48dp"
-                android:minHeight="48dp"
-                android:onClick="home"
-                app:tint="@color/black"
-                app:srcCompat="@drawable/ic_home" />
-
-            <ImageButton
-                android:id="@+id/imageButtonList"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="@color/cardview_shadow_end_color"
-                android:contentDescription="@string/gotolist"
-                android:clickable="true"
-                android:focusable="true"
-                android:longClickable="false"
-                android:minWidth="48dp"
-                android:minHeight="48dp"
-                android:onClick="list"
-                app:tint="@color/black"
-                app:srcCompat="@drawable/baseline_article_24" />
-        </LinearLayout>
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewDisplayTitle">
 
         <ImageButton
-            android:id="@+id/imageButton_show_color"
-            android:layout_width="match_parent"
+            android:id="@+id/imageButton_edit"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:backgroundTint="@color/cardview_shadow_end_color"
-            android:contentDescription="@string/change_color"
-            app:tint="@color/design_default_color_error"
-            app:srcCompat="@drawable/baseline_auto_awesome_24" />
+            android:clickable="true"
+            android:contentDescription="@string/btn_editRecipe"
+            android:focusable="true"
+            android:longClickable="false"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
+            android:onClick="edit"
+            app:srcCompat="@drawable/ic_edit"
+            app:tint="@color/black" />
 
-        <TextView
-            android:id="@+id/textViewDisplayDescription"
-            android:layout_width="match_parent"
+        <ImageButton
+            android:id="@+id/imageButtonReload"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:layout_marginTop="16dp"
-            android:text="@string/large_text"
-            android:visibility="gone" />
+            android:layout_weight="1"
+            android:backgroundTint="@color/cardview_shadow_end_color"
+            android:clickable="true"
+            android:contentDescription="@string/reload"
+            android:focusable="true"
+            android:longClickable="false"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
+            android:onClick="reload"
+            app:srcCompat="@drawable/baseline_replay_24"
+            app:tint="@color/black" />
 
-
-        <include
-            android:id="@+id/includeDisplayPump"
-            layout="@layout/layout_pump"
-            android:layout_width="match_parent"
+        <ImageButton
+            android:id="@+id/imageButton_display_to_home"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp" />
+            android:layout_weight="1"
+            android:backgroundTint="@color/cardview_shadow_end_color"
+            android:clickable="true"
+            android:contentDescription="@string/home"
+            android:focusable="true"
+            android:longClickable="false"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
+            android:onClick="home"
+            app:srcCompat="@drawable/ic_home"
+            app:tint="@color/black" />
 
-        <include
-            android:id="@+id/includeDisplayAvailable"
-            layout="@layout/layout_available"
-            android:layout_width="match_parent"
+        <ImageButton
+            android:id="@+id/imageButtonList"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp" />
-
-        <include
-            android:id="@+id/includeDisplayNotAvailable"
-            layout="@layout/layout_not_available"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp" />
-
-        <include
-            android:id="@+id/includeDisplayAlcoholic"
-            layout="@layout/layout_alcoholic"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp" />
-
-        <include
-            android:id="@+id/includeDisplayNotAlcoholic"
-            layout="@layout/layout_not_alcoholic"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp" />
-
-        <include
-            android:id="@+id/includeDisplayIngredientAdmin"
-            layout="@layout/layout_ingredient_admin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp" />
-
-
-        <include
-            android:id="@+id/includeRecipeIngredientsList"
-            layout="@layout/layout_list_with_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <include
-            android:id="@+id/includeRecipeTopicsList"
-            layout="@layout/layout_list_with_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_weight="1"
+            android:backgroundTint="@color/cardview_shadow_end_color"
+            android:clickable="true"
+            android:contentDescription="@string/gotolist"
+            android:focusable="true"
+            android:longClickable="false"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
+            android:onClick="list"
+            app:srcCompat="@drawable/baseline_article_24"
+            app:tint="@color/black" />
 
     </LinearLayout>
 
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="16dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@+id/button_send_recipe"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
 
-</androidx.core.widget.NestedScrollView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+
+            <ImageButton
+                    android:id="@+id/imageButton_show_color"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/cardview_shadow_end_color"
+                    android:contentDescription="@string/change_color"
+                    app:srcCompat="@drawable/baseline_auto_awesome_24"
+                    app:tint="@color/design_default_color_error" />
+
+            <include
+                    android:id="@+id/includeDisplayIngredientAdmin"
+                    layout="@layout/layout_ingredient_admin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp" />
+
+            <include
+                    android:id="@+id/includeDisplayPump"
+                    layout="@layout/layout_pump"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp" />
+
+
+            <TextView
+                android:id="@+id/textViewDisplayDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="0dp"
+                android:text="@string/medium_text"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textSize="16sp" />
+
+
+
+                <include
+                    android:id="@+id/includeDisplayAvailable"
+                    layout="@layout/layout_available"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp" />
+
+            <include
+                    android:id="@+id/includeDisplayNotAvailable"
+                    layout="@layout/layout_not_available"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp" />
+
+            <include
+                    android:id="@+id/includeDisplayAlcoholic"
+                    layout="@layout/layout_alcoholic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp" />
+
+            <include
+                    android:id="@+id/includeDisplayNotAlcoholic"
+                    layout="@layout/layout_not_alcoholic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp" />
+
+
+
+
+
+            <include
+                    android:id="@+id/includeRecipeIngredientsList"
+                    layout="@layout/layout_list_with_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            <include
+                    android:id="@+id/includeRecipeTopicsList"
+                    layout="@layout/layout_list_with_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <Button
+        android:id="@+id/button_send_recipe"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="Mix den Cocktail!"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,10 +7,9 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
-import com.example.cocktailmachine.ui.ListOfIngredience.ListIngredience;
 import com.example.cocktailmachine.ui.Menue;
-import com.example.cocktailmachine.ui.model.v2.GetActivity;
-import com.example.cocktailmachine.ui.model.v2.GetDialog;
+import com.example.cocktailmachine.ui.model.helper.GetActivity;
+import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -23,7 +22,6 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 
 public class FillAnimation extends AppCompatActivity {
@@ -50,7 +48,7 @@ public class FillAnimation extends AppCompatActivity {
             id = i.getLongExtra(GetActivity.ID, id);
         }
 
-        recipe = Recipe.getRecipe(id);//Recipe.getRecipe(id);//SingeltonTestdata.getSingelton().getRecipe();
+        recipe = Recipe.getRecipe(this,id);//Recipe.getRecipe(id);//SingeltonTestdata.getSingelton().getRecipe();
         Bitmap image = null;
 
         ValueAnimator animation = ValueAnimator.ofFloat(0f, 1f);

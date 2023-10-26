@@ -1,17 +1,9 @@
 package com.example.cocktailmachine.data.db;
 
-import android.util.Log;
-
-import com.example.cocktailmachine.data.Ingredient;
-import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLImageUrlElement;
-import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
-import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 import java.util.ArrayList;
 import java.util.HashMap;

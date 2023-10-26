@@ -14,9 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Ingredient;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class RecyclerAdapterListIngredience extends RecyclerView.Adapter<RecyclerAdapterListIngredience.IngtedienceViewHolder> {
 

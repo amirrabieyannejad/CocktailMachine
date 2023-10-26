@@ -12,15 +12,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.cocktailmachine.Dummy;
 
 import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.db.Buffer;
+import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
 
 import com.example.cocktailmachine.databinding.ActivitySettingsBinding;
 
 
-import com.example.cocktailmachine.ui.model.ModelType;
-import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
-import com.example.cocktailmachine.ui.model.v2.GetActivity;
+import com.example.cocktailmachine.ui.model.enums.ModelType;
+import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
+import com.example.cocktailmachine.ui.model.helper.GetActivity;
 
 /**
  * Settings
@@ -34,12 +34,12 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "onCreate");
+        Log.v(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         binding = ActivitySettingsBinding.inflate(getLayoutInflater());
-        Log.i(TAG, "onCreate: binding set");
+        Log.v(TAG, "onCreate: binding set");
         setContentView(binding.getRoot());
-        Log.i(TAG, "onCreate: setContentView");
+        Log.v(TAG, "onCreate: setContentView");
 
         //setContentView(R.layout.activity_settings);
         /*
@@ -68,7 +68,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        Log.i(TAG, "onResume");
+        Log.v(TAG, "onResume");
         super.onResume();
         setVisibility();
     }
@@ -78,9 +78,9 @@ public class SettingsActivity extends AppCompatActivity {
      * @author Johanna Reidt
      */
     private void setVisibility(){
-        Log.i(TAG, "setVisibility");
+        Log.v(TAG, "setVisibility");
         if(AdminRights.isAdmin()){
-            Log.i(TAG, "setVisibility: isAdmin");
+            Log.v(TAG, "setVisibility: isAdmin");
             binding.textViewSettingsPumps.setVisibility(View.VISIBLE);
             binding.textViewMachine.setVisibility(View.VISIBLE);
             binding.textViewMachineClick.setVisibility(View.VISIBLE);
@@ -90,7 +90,7 @@ public class SettingsActivity extends AppCompatActivity {
 
 
         }else{
-            Log.i(TAG, "setVisibility: is no Admin");
+            Log.v(TAG, "setVisibility: is no Admin");
             binding.textViewSettingsPumps.setVisibility(View.GONE);
             binding.textViewMachine.setVisibility(View.GONE);
             binding.textViewMachineClick.setVisibility(View.GONE);
@@ -293,19 +293,19 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
          */
-        Log.i(TAG, "loadNew");
-        Buffer.localRefresh(this);
+        Log.v(TAG, "loadNew");
+        ExtraHandlingDB.localRefresh(this);
         Toast.makeText(this,"Lade aus der Datenbank neu!",Toast.LENGTH_SHORT).show();
     }
 
 
     public void loadPreped(View view) {
-        Log.i(TAG, "loadPreped");
-        Buffer.loadPreped(this);
+        Log.v(TAG, "loadPreped");
+        ExtraHandlingDB.loadPreped(this);
     }
 
     public void login(View view) {
-        Log.i(TAG, "login");
+        Log.v(TAG, "login");
         AdminRights.login(this, getLayoutInflater(), new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
@@ -315,7 +315,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public void logout(View view) {
-        Log.i(TAG, "logout");
+        Log.v(TAG, "logout");
         AdminRights.logout();
         setVisibility();
     }

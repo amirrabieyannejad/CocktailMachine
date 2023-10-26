@@ -35,5 +35,11 @@ public class calibrationScale extends AppCompatActivity {
                 System.out.println("dkjflkjldsök");
             }
         },this));
+        CocktailStatus.getCurrentStatus( new Postexecute() {
+            @Override
+            public void post() {
+                System.out.println("Der momentane Status ist " +CocktailStatus.getCurrentStatus()+".");
+            }
+        },this);
     }
 }

@@ -1,7 +1,6 @@
 package com.example.cocktailmachine.data.db.elements;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.io.File;
 
@@ -26,12 +25,12 @@ public abstract class SQLImageUrlElement extends SQLDataBaseElement {
     }
 
     public String getUrl(){
-        Log.i(TAG, "getUrl");
+       // Log.v(TAG, "getUrl");
         return this.url;
     }
 
     public long getOwnerID(){
-        Log.i(TAG, "getOwnerID");
+       // Log.v(TAG, "getOwnerID");
         return this.ownerID;
     }
 
@@ -41,7 +40,7 @@ public abstract class SQLImageUrlElement extends SQLDataBaseElement {
      */
     @Override
     public boolean isAvailable() {
-        Log.i(TAG, "isAvailable");
+       // Log.v(TAG, "isAvailable");
         return this.available;
     }
 
@@ -51,7 +50,7 @@ public abstract class SQLImageUrlElement extends SQLDataBaseElement {
      */
     @Override
     public boolean loadAvailable(Context context) {
-        Log.i(TAG, "loadAvailable");
+       // Log.v(TAG, "loadAvailable");
         File f = new File(getUrl());
         this.available = f.exists() && !f.isDirectory();
         return isAvailable();

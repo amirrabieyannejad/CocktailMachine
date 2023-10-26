@@ -10,7 +10,6 @@ import android.widget.Toast;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Pump;
-import com.example.cocktailmachine.ui.ListOfIngredience.RecyclerAdapterListIngredience;
 
 import java.util.List;
 

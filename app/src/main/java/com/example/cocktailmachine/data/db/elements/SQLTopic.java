@@ -9,7 +9,6 @@ import androidx.annotation.Nullable;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -90,13 +89,13 @@ public class SQLTopic extends SQLDataBaseElement implements Topic {
 
     @Override
     public void save(Context context) {
-        Log.i(TAG, "save");
+       // Log.v(TAG, "save");
         AddOrUpdateToDB.addOrUpdate(context, this);
     }
 
     @Override
     public void delete(Context context) {
-        Log.i(TAG, "delete");
+       // Log.v(TAG, "delete");
         DeleteFromDB.remove(context, this);
     }
 
@@ -109,7 +108,7 @@ public class SQLTopic extends SQLDataBaseElement implements Topic {
             json.put("description", this.description);
             return json;
         }catch (JSONException e){
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
             return null;
         }
     }

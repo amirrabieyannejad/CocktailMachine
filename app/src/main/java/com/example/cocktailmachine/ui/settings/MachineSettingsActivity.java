@@ -3,7 +3,6 @@ package com.example.cocktailmachine.ui.settings;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,10 +28,10 @@ public class MachineSettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(TAG, "onCreate");
+        Log.v(TAG, "onCreate");
         setContentView(R.layout.activity_machine_settings);
 
-        //TODO: bind bluetooth
+        //TO DO: bind bluetooth
 
 
     }
@@ -44,7 +43,7 @@ public class MachineSettingsActivity extends AppCompatActivity {
      * @author Johanna Reidt
      */
     public void calibratePump(View view) {
-        Log.i(TAG, "calibratePump");
+        Log.v(TAG, "calibratePump");
         //TO DO Go To Pump Settings
         //Toast.makeText(this,"calibratePump",Toast.LENGTH_SHORT).show();
 
@@ -60,7 +59,7 @@ public class MachineSettingsActivity extends AppCompatActivity {
      * @author Johanna Reidt
      */
     public void calibrateScale(View view) {
-        Log.i(TAG, "calibrateScale");
+        Log.v(TAG, "calibrateScale");
         //TO DO: open calibration Scale settings
         //Toast.makeText(this,"calibrateScale",Toast.LENGTH_SHORT).show();
         //CocktailMachine.calibrateScale(this);
@@ -78,7 +77,7 @@ public class MachineSettingsActivity extends AppCompatActivity {
      * @author Johanna Reidt
      */
     public void status(View view) {
-        Log.i(TAG, "status");
+        Log.v(TAG, "status");
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Es lädt ...");
         CocktailStatus.getCurrentStatus(new Postexecute() {
@@ -99,7 +98,7 @@ public class MachineSettingsActivity extends AppCompatActivity {
      * @author Johanna Reidt
      */
     public void clean(View view) {
-        Log.i(TAG, "clean");
+        Log.v(TAG, "clean");
         CocktailMachine.clean(this);
     }
 
@@ -116,7 +115,7 @@ public class MachineSettingsActivity extends AppCompatActivity {
      * @author Johanna Reidt
      */
     public void restart(View view) {
-        Log.i(TAG, "restart");
+        Log.v(TAG, "restart");
         CocktailMachine.restart(this);
         Toast.makeText(this,"Die Cocktailmaschine wurde wieder gestartet!",Toast.LENGTH_SHORT).show();
     }
@@ -132,7 +131,7 @@ public class MachineSettingsActivity extends AppCompatActivity {
      * @author Johanna Reidt
      */
     public void factoryReset(View view) {
-        Log.i(TAG, "factoryReset");
+        Log.v(TAG, "factoryReset");
         CocktailMachine.factoryReset(this);
         AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.User);
         Toast.makeText(this,"Die Cocktailmaschine wurde geresettet!",Toast.LENGTH_SHORT).show();

@@ -88,14 +88,14 @@ public class Grafik extends AppCompatActivity {
         magarita.add(this, limettensaft, 4);
 
 
-        List<Recipe> recipes = Recipe.getRecipes();
+        List<Recipe> recipes = Recipe.getRecipes(this);
 
 
         System.out.println(recipes);
 
         Recipe drink = recipes.get(idRecipe);
 
-        List<Ingredient> ing = drink.getIngredients();
+        List<Ingredient> ing = drink.getIngredients(this);
         System.out.println(drink);
         Context context = this;
 
@@ -105,7 +105,7 @@ public class Grafik extends AppCompatActivity {
         animation.setDuration(10000);
 
         Recipe finalRecipe = drink;// SingeltonTestdata.getSingelton().getRecipe();
-        System.out.println("Die Farbe ist = " + finalRecipe.getIngredients());
+        System.out.println("Die Farbe ist = " + finalRecipe.getIngredients(this));
         animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator updatedAnimation) {

@@ -9,14 +9,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
+import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -87,7 +88,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
         try {
             return this.getElementsWith(db, COLUMN_TYPE_RECIPE_ID, Long.toString(recipe.getID()));
         } catch (NoSuchColumnException e) {
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
             return new ArrayList<>();
         }
     }
@@ -113,7 +114,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
                     COLUMN_NAME_RECIPE_ID,
                     ids);
         } catch (NoSuchColumnException e) {
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
             return new ArrayList<>();
         }
     }
@@ -164,7 +165,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
             temp = this.getElementsNotIn(db, COLUMN_NAME_INGREDIENT_ID, resIDs);
 
         } catch (NoSuchColumnException e) {
-            Log.e(TAG, "getWithIngredients" );
+           Log.e(TAG, "getWithIngredients" );
         }
         List<Long> res = new ArrayList<>();
         for(SQLRecipeIngredient ri: temp){
@@ -188,7 +189,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
             res = this.getElementsIn(db, COLUMN_NAME_INGREDIENT_ID, resIDs);
 
         } catch (NoSuchColumnException e) {
-            Log.e(TAG, "getWithIngredients" );
+           Log.e(TAG, "getWithIngredients" );
         }
 
         return res;
@@ -212,7 +213,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
             }
         }
         cursor.close();
-        Log.i(TAG, "cursorToList : "+ids);
+       // Log.v(TAG, "cursorToList : "+ids);
         cursor.close();
         return ids;
     }
@@ -235,7 +236,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
             }
         }
         cursor.close();
-        Log.i(TAG, "cursorToList : "+ids);
+       // Log.v(TAG, "cursorToList : "+ids);
         cursor.close();
         return ids;
     }
@@ -258,5 +259,91 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
         }
 
         return res;
+    }
+
+    public List<SQLRecipeIngredient> getElements(SQLiteDatabase db, Recipe recipe, Ingredient ingredient) throws NoSuchColumnException {
+        if(!getColumns().contains(COLUMN_NAME_RECIPE_ID)){
+            throw new NoSuchColumnException(getName(), COLUMN_NAME_RECIPE_ID);
+        }
+        if(!getColumns().contains(COLUMN_NAME_INGREDIENT_ID)){
+            throw new NoSuchColumnException(getName(), COLUMN_NAME_INGREDIENT_ID);
+        }
+        Cursor cursor = db.query(true,
+                this.getName(),
+                getColumns().toArray(new String[0]),
+                COLUMN_NAME_RECIPE_ID+" = "+recipe.getID()+" AND "+COLUMN_NAME_INGREDIENT_ID+" = "+ingredient.getID(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+        return this.cursorToList(cursor);
+    }
+
+    public List<Long> getIngredientIDs(SQLiteDatabase db, Recipe recipe) {
+        Cursor cursor = db.query(this.getName(),
+                new String[]{COLUMN_NAME_INGREDIENT_ID},
+                COLUMN_NAME_RECIPE_ID+" = "+recipe.getID(),
+                null,
+                null,
+                null,
+                null);
+
+        List<Long> ids = new ArrayList<>();
+        int id_index = cursor.getColumnIndexOrThrow(COLUMN_NAME_INGREDIENT_ID);
+        if(cursor.moveToFirst()) {
+            ids.add(cursor.getLong(id_index));
+            while (cursor.moveToNext()) {
+                ids.add(cursor.getLong(id_index));
+            }
+        }
+        cursor.close();
+        // Log.v(TAG, "cursorToList : "+ids);
+        cursor.close();
+        return ids;
+    }
+
+    public int getVolume(SQLiteDatabase db, SQLRecipe recipe, Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception {
+        Cursor cursor = db.query(this.getName(),
+                new String[]{COLUMN_NAME_INGREDIENT_ID},
+                COLUMN_NAME_RECIPE_ID+
+                        " = "+
+                        recipe.getID() +
+                        " AND "+
+                        COLUMN_NAME_INGREDIENT_ID +
+                        " = "+
+                        ingredient.getID(),
+                null,
+                null,
+                null,
+                null);
+
+        List<Integer> ids = new ArrayList<>();
+        int id_index = cursor.getColumnIndexOrThrow(COLUMN_NAME_PUMP_TIME);
+        if(cursor.moveToFirst()) {
+            ids.add(cursor.getInt(id_index));
+            while (cursor.moveToNext()) {
+                ids.add(cursor.getInt(id_index));
+            }
+        }
+        cursor.close();
+        // Log.v(TAG, "cursorToList : "+ids);
+        cursor.close();
+        if(ids.isEmpty()){
+            return -1;
+        }
+        if(ids.size()>1){
+            throw new TooManyTimesSettedIngredientEcxception(recipe, ingredient.getID());
+        }
+        return ids.get(0);
+    }
+
+    public List<SQLRecipeIngredient> getElements(SQLiteDatabase db, SQLRecipe sqlRecipe) {
+        try {
+            return this.getElementsWith(db,COLUMN_NAME_RECIPE_ID, String.valueOf(sqlRecipe.getID()));
+        } catch (NoSuchColumnException e) {
+            return new ArrayList<>();
+        }
     }
 }

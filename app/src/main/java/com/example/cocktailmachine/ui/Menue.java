@@ -11,17 +11,17 @@ import android.widget.Toast;
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.db.Buffer;
+import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
 import com.example.cocktailmachine.ui.ListOfIngredience.ListIngredience;
 import com.example.cocktailmachine.ui.calibration.scale.calibrationScale;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
-import com.example.cocktailmachine.ui.model.ModelType;
-import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
-import com.example.cocktailmachine.ui.model.v2.DialogListOfPumps;
-import com.example.cocktailmachine.ui.model.v2.GetActivity;
+import com.example.cocktailmachine.ui.model.enums.ModelType;
+import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
+import com.example.cocktailmachine.ui.model.helper.DialogListOfPumps;
+import com.example.cocktailmachine.ui.model.helper.GetActivity;
 import com.example.cocktailmachine.ui.settings.SettingsActivity;
 import com.example.cocktailmachine.ui.settings.SinglePumpSetting;
 import com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice;
@@ -41,52 +41,53 @@ public class Menue extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(TAG, "onCreate");
+        Log.v(TAG, "onCreate");
         //setContentView(R.layout.activity_menue);
         binding = ActivityMenueBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         /*
         if(!DatabaseConnection.isInitialized()) {
-            Log.i(TAG, "onCreate: DataBase is not yet initialized");
+            Log.v(TAG, "onCreate: DataBase is not yet initialized");
             DatabaseConnection.initializeSingleton(this, UserPrivilegeLevel.Admin);
             try {
                 DatabaseConnection.getDataBase();
-                Log.i(TAG, "onCreate: DataBase is initialized");
-                //Log.i(TAG, Recipe.getAllRecipesAsMessage().toString());
+                Log.v(TAG, "onCreate: DataBase is initialized");
+                //Log.v(TAG, Recipe.getAllRecipesAsMessage().toString());
             } catch (NotInitializedDBException e) {
-                e.printStackTrace();
+                Log.getStackTrace(e);
                 Log.e(TAG, "onCreate: DataBase is not initialized");
             }
         }
 
          */
+        ExtraHandlingDB.loadPrepedDB(this);
         if(Dummy.asAdmin){
-            Log.i(TAG, "onCreate: dummy asadmin");
+            Log.v(TAG, "onCreate: dummy asadmin");
             AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.Admin);
         }
         if(AdminRights.isAdmin()){
-            Log.i(TAG, "onCreate: Admin Modus");
+            Log.v(TAG, "onCreate: Admin Modus");
             binding.activityMenueLogout.setVisibility(View.VISIBLE);
             binding.activityMenueLogin.setVisibility(View.GONE);
         }else{
-            Log.i(TAG, "onCreate: User Modus");
+            Log.v(TAG, "onCreate: User Modus");
             binding.activityMenueLogout.setVisibility(View.GONE);
             binding.activityMenueLogin.setVisibility(View.VISIBLE);
         }
         if(Dummy.isDummy){
-            Buffer.loadDummy(this);
-            Log.i(TAG, "onCreate: dummy: load Dummy");
+            ExtraHandlingDB.loadDummy(this);
+            Log.v(TAG, "onCreate: dummy: load Dummy");
         }
         if(!Dummy.withSetCalibration){
             CocktailMachineCalibration.setIsDone(true);
-            Log.i(TAG, "onCreate: dummy:  not withSetCalibration ");
+            Log.v(TAG, "onCreate: dummy:  not withSetCalibration ");
         }
         if (!CocktailMachineCalibration.isIsDone()){
-            Log.i(TAG, "onCreate: start calibration ");
+            Log.w(TAG, "onCreate: start calibration ");
             CocktailMachineCalibration.start(this);
         }
         if(!Dummy.withTestEnvs){
-            Log.i(TAG, "onCreate: without test envs  ");
+            Log.v(TAG, "onCreate: without test envs  ");
             binding.imageViewTestBlue.setVisibility(View.GONE);
             binding.imageViewTestIngList.setVisibility(View.GONE);
             binding.imageViewTestFillAn.setVisibility(View.GONE);
@@ -94,7 +95,7 @@ public class Menue extends AppCompatActivity {
             binding.imageViewTestSingleCockt.setVisibility(View.GONE);
             binding.imageViewTestCal.setVisibility(View.GONE);
         }else{
-            Log.i(TAG, "onCreate: with test envs  ");
+            Log.v(TAG, "onCreate: with test envs  ");
         }
 
 
@@ -107,7 +108,7 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void openRecipeList(View view) {
-        Log.i(TAG, "openRecipeList");
+        Log.v(TAG, "openRecipeList");
         /*
         Intent success = new Intent(this, ModelActivity.class);
         Bundle b = new Bundle();
@@ -127,7 +128,7 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void openRecipeCreator(View view){
-        Log.i(TAG, "openRecipeCreator");
+        Log.v(TAG, "openRecipeCreator");
         /*
 
         Intent success = new Intent(this,
@@ -150,7 +151,7 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void openSettings(View view){
-        Log.i(TAG, "openSettings");
+        Log.v(TAG, "openSettings");
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
@@ -163,7 +164,7 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void openSingleCocktailView(View view){
-        Log.i(TAG, "openSingleCocktailView");
+        Log.v(TAG, "openSingleCocktailView");
         Intent success = new Intent(this, SingleCocktailChoice.class);
         startActivity(success);
 
@@ -176,7 +177,7 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void openGlassFillAnimationView(View view){
-        Log.i(TAG, "openGlassFillAnimationView");
+        Log.v(TAG, "openGlassFillAnimationView");
         Intent success = new Intent(this, FillAnimation.class);
         success.putExtra(GetActivity.ID, Recipe.getAllRecipes(this).get(0).getID());
         startActivity(success);
@@ -190,7 +191,7 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void openGrafik(View view){
-        Log.i(TAG, "openGrafik");
+        Log.v(TAG, "openGrafik");
         Intent success = new Intent(this, Grafik.class);
         startActivity(success);
 
@@ -203,7 +204,7 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void openDeviceScan(View view){
-        Log.i(TAG, "openDeviceScan");
+        Log.v(TAG, "openDeviceScan");
         Intent success = new Intent(this, DeviceScanActivity.class);
         startActivity(success);
     }
@@ -214,11 +215,11 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void login(View view){
-        Log.i(TAG, "login");
+        Log.v(TAG, "login");
         AdminRights.login(this,
                 getLayoutInflater(),
                 dialog -> successfulLogin());
-        Log.i(TAG, "finished login");
+        Log.v(TAG, "finished login");
     }
 
     /**
@@ -226,9 +227,9 @@ public class Menue extends AppCompatActivity {
      * @author Johanna Reidt
      */
     public void successfulLogin(){
-        Log.i(TAG, "successfulLogin");
+        Log.v(TAG, "successfulLogin");
         if(AdminRights.isAdmin()) {
-            Log.i(TAG, "successful login: admin");
+            Log.v(TAG, "successful login: admin");
             binding.activityMenueLogout.setVisibility(View.VISIBLE);
             binding.activityMenueLogin.setVisibility(View.GONE);
         }
@@ -240,12 +241,12 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void logout(View view){
-        Log.i(TAG, "logout");
+        Log.v(TAG, "logout");
         AdminRights.logout();
         binding.activityMenueLogout.setVisibility(View.GONE);
         binding.activityMenueLogin.setVisibility(View.VISIBLE);
         Toast.makeText(this,"Ausgeloggt!",Toast.LENGTH_SHORT).show();
-        Log.i(TAG, "finished logout");
+        Log.v(TAG, "finished logout");
     }
 
 
@@ -256,7 +257,7 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void exit(View view){
-        Log.i(TAG, "exit");
+        Log.v(TAG, "exit");
         Intent success = new Intent(this, Grafik.class);
         startActivity(success);
 
@@ -269,25 +270,30 @@ public class Menue extends AppCompatActivity {
      * @param view
      */
     public void testEnviroment(View view){
-        Log.i(TAG, "testEnviroment");
+        Log.v(TAG, "testEnviroment");
         Intent success = new Intent(this, BluetoothTestEnviroment.class);
         startActivity(success);
-
     }
 
     public void calibration(View view){
-        Log.i(TAG, "calibration");
+        Log.v(TAG, "calibration");
         Intent success = new Intent(this, calibrationScale.class);
         startActivity(success);
     }
 
     public void listIngedients(View view){
-        Log.i(TAG, "listIngedients");
+        Log.v(TAG, "listIngedients");
         Intent success = new Intent(this, ListIngredience.class);
         startActivity(success);
 
     }
 
+    public void pumpCalibration(View view){
+        Log.v(TAG, "pumpCalibration");
+        //Intent success = new Intent(this, ListOfPumps.class);
+        //startActivity(success);
+        new DialogListOfPumps(this);
+    }
 
     public void bluetoothNotFound(View view){
         Log.i(TAG, "listIngedients");

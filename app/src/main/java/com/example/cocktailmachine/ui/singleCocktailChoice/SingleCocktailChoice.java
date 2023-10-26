@@ -14,10 +14,8 @@ import android.view.View;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.SingeltonTestdata;
-import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
-import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Orientation;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
@@ -73,7 +71,7 @@ public class SingleCocktailChoice extends AppCompatActivity {
         testData = new LinkedList<>();
         counter = 0;
         while (testData.size() == 0 && counter++ < 9){
-            testData = Recipe.getAllRecipes();
+            testData = Recipe.getAllRecipes(this);
         }
 
 
@@ -244,7 +242,7 @@ public class SingleCocktailChoice extends AppCompatActivity {
     }
 
     private List<Recipe> loadRecipes(Context context) throws NotInitializedDBException {
-        List<Recipe> recipes = Buffer.getSingleton(context).getRecipes(context);
+        List<Recipe> recipes = Recipe.getRecipes(context);
         /*
         try {
             recipes = DatabaseConnection.getDataBase().loadAllRecipes();

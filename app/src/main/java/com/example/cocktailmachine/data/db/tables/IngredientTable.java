@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.example.cocktailmachine.data.Ingredient;
+import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
@@ -105,7 +106,7 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
                         COLUMN_NAME_NAME,
                         name);
             } catch (NoSuchColumnException e) {
-                Log.i(TAG, "getElement name failed");
+               // Log.v(TAG, "getElement name failed");
                 Log.e(TAG, "error", e);
                 Log.getStackTraceString(e);
             }
@@ -157,7 +158,7 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
 
 
     private HashMap<String, Long> cursorToHashIngredientNameToID(Cursor cursor){
-        Log.i(TAG, "cursorToList");
+       // Log.v(TAG, "cursorToList");
         HashMap<String, Long>  res = new HashMap<>();
         int nameIndex = cursor.getColumnIndex(COLUMN_NAME_NAME);
         int idIndex = cursor.getColumnIndex(_ID);
@@ -168,7 +169,77 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
             }
         }
         cursor.close();
-        Log.i(TAG, "cursorToList : "+res);
+       // Log.v(TAG, "cursorToList : "+res);
         return res;
+    }
+
+
+    public List<SQLIngredient> getAvailableElements(SQLiteDatabase db){
+        return this.cursorToList(
+                db.query(true, this.getName(), this.getColumns().toArray(new String[]{}),
+                this._ID+" IN (SELECT "+
+                        IngredientPumpTable.COLUMN_NAME_INGREDIENT_ID+
+                        " FROM "+Tables.TABLE_INGREDIENT_PUMP.getName()+")"
+                        , null, null,null, null, null));
+    }
+
+    public List<SQLIngredient> getAvailableElements(SQLiteDatabase db, List<Long> ids){
+        try {
+            return this.cursorToList(
+                    db.query(true, this.getName(), this.getColumns().toArray(new String[]{}),
+                            "("+this._ID+" IN (SELECT "+
+                                    IngredientPumpTable.COLUMN_NAME_INGREDIENT_ID+
+                                    " FROM "+Tables.TABLE_INGREDIENT_PUMP.getName()+"))"+
+                                    " AND "+this._ID +" IN "+makeSelectionList(this._ID, ids)
+                            , null, null,null, null, null));
+        } catch (NoSuchColumnException e) {
+            Log.e(TAG, "getAvailableElements", e);
+            return new ArrayList<>();
+        }
+    }
+
+
+    public List<String> getNames(SQLiteDatabase db) {
+
+
+        Cursor cursor = db.query(true,
+                this.getName(),
+                getColumns().toArray(new String[0]),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+        return this.cursorToNames(cursor);
+
+    }
+
+    private List<String> cursorToNames(Cursor cursor){
+        ArrayList<String> res = new ArrayList<>();
+        if(cursor.moveToFirst()) {
+            res.add(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME_NAME)));
+            while (cursor.moveToNext()) {
+                res.add(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME_NAME)));
+            }
+        }
+        cursor.close();
+        // Log.v(TAG, "cursorToList : "+res);
+        return res;
+    }
+
+    public List<? extends Ingredient> getElements(SQLiteDatabase readableDatabase, Recipe recipe) {
+        ArrayList<Object> os = new ArrayList<>();
+        os.addAll(Tables.TABLE_RECIPE_INGREDIENT.getIngredientIDs(readableDatabase, recipe));
+        try {
+            return this.getElementsIn(
+                    readableDatabase,
+                    _ID,
+                    os
+            );
+        } catch (NoSuchColumnException e) {
+            return new ArrayList<>();
+        }
     }
 }

@@ -7,16 +7,17 @@ import android.util.Log;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
-import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
+import com.example.cocktailmachine.data.db.ExtraHandlingDB;
+import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
-import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
-import com.example.cocktailmachine.ui.model.v2.GetDialog;
+import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
+import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,15 +50,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @author Johanna Reidt
      * @return
      */
-    int getVolume();
-
-    /**
-     * set volume
-     *
-     * @param volume
-     * @throws MissingIngredientPumpException
-     */
-    void fill(int volume) throws MissingIngredientPumpException;
+    int getVolume(Context context);
 
 
 
@@ -77,7 +70,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @param volume
      * @throws MissingIngredientPumpException
      */
-    void fill(Context context,int volume) throws MissingIngredientPumpException;
+    void fill(Context context, int volume) throws MissingIngredientPumpException;
 
 
 
@@ -114,7 +107,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      *
      * @return current ingredient
      */
-    Ingredient getCurrentIngredient();
+    Ingredient getCurrentIngredient(Context context);
 
 
     /**
@@ -123,6 +116,12 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @param ingredient next ingredient.
      */
     default void setCurrentIngredient(Context context, Ingredient ingredient) {
+        if (
+                ingredient == null
+        ) {
+            return;
+        }
+
         setCurrentIngredient(context,ingredient.getID());
     }
 
@@ -158,7 +157,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     static void setOverrideEmptyPumps(Activity context, int numberOfPumps) {
         Log.i(TAG, "setOverrideEmptyPumps");
-        Buffer.loadForSetUp(context);
+        ExtraHandlingDB.loadForSetUp(context);
         Log.i(TAG, "setOverrideEmptyPumps "+numberOfPumps);
         for (int i = 0; i < numberOfPumps; i++) {
             Pump pump = makeNew();
@@ -167,10 +166,10 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             pump.sendSave(context);
             Log.i(TAG, "setOverrideEmptyPumps: made Pump "+i);
             Log.i(TAG, "setOverrideEmptyPumps: made Pump "+pump.toString());
-            Log.i(TAG, "setOverrideEmptyPumps: control list len "+ getPumps().size() );
+            Log.i(TAG, "setOverrideEmptyPumps: control list len "+ getPumps(context).size() );
         }
         Log.i(TAG, "setOverrideEmptyPumps: control given len "+ numberOfPumps);
-        Log.i(TAG, "setOverrideEmptyPumps: control list len "+ getPumps().size() );
+        Log.i(TAG, "setOverrideEmptyPumps: control list len "+ getPumps(context).size() );
     }
 
     void setSlot(int i);
@@ -197,22 +196,22 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     static Pump makeNewOrUpdate(Context context, String liquidName, int volume)
             throws MissingIngredientPumpException, NotInitializedDBException {
-        Ingredient ingredient = Ingredient.getIngredient(liquidName);
+        Ingredient ingredient = Ingredient.getIngredient(context,liquidName);
         if (ingredient == null) {
             ingredient = Ingredient.makeNew(liquidName);
             ingredient.save(context);
         }
-        if (ingredient.getPump() == null) {
+        if (ingredient.getPump(context) == null) {
             Pump pump = makeNew();
             pump.setCurrentIngredient(context, ingredient);
-            pump.fill(volume);
+            pump.fill(context,volume);
         } else {
-            ingredient.getPump().fill(volume);
+            ingredient.getPump(context).fill(context,volume);
         }
         ingredient.save(context);
-        ingredient.getPump().save(context);
+        ingredient.getPump(context).save(context);
 
-        return ingredient.getPump();
+        return ingredient.getPump(context);
     }
 
 
@@ -224,51 +223,10 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
     // creation
 
-    /**
-     * {"beer": 200}
-     *
-     * @return
-     * @throws JSONException
-     */
-    default JSONObject asMesssage() throws JSONException {
-        JSONObject json = new JSONObject();
-        json.put(this.getIngredientName(), this.getVolume());
-        return json;
-    }
 
-    /**
-     * {"beer": 200, "lemonade": 2000, "orange juice": 2000}
-     *
-     * @return {"beer": 200, "lemonade": 2000, "orange juice": 2000}
-     * @throws JSONException
-     * @throws NotInitializedDBException
-     */
-    static JSONObject getLiquidStatus() throws JSONException, NotInitializedDBException {
-        JSONObject json = new JSONObject();
-        List<Pump> pumps = Pump.getPumps();
-        for (Pump p : pumps) {
-            json.put(p.getIngredientName(), p.getVolume());
-        }
-        return json;
-    }
 
-    /**
-     * {"1": {"liquid": "lemonade", "volume": 200}}
-     *
-     * @return {"beer": 200, "lemonade": 2000, "orange juice": 2000}
-     * @throws JSONException
-     */
-    static JSONObject getPumpStatus() throws JSONException {
-        JSONObject json = new JSONObject();
-        List<Pump> pumps = Pump.getPumps();
-        for (int i = 1; i <= pumps.size(); i++) {
-            Pump p = pumps.get(i);
-            JSONObject temp = new JSONObject();
-            temp.put(p.getIngredientName(), p.getVolume());
-            json.put(String.valueOf(i), temp);
-        }
-        return json;
-    }
+
+
 
 
 
@@ -305,23 +263,23 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 }catch(JSONException e){
                     Log.i(TAG, "updatePumpStatus: no calibrated" );
                 }
-                Pump pump = Buffer.getSingleton(context).getPumpWithSlot(slot);
+                Pump pump = getPumpWithSlot(context,slot);
                 if(pump == null){
                     pump = new SQLPump();
                 }
                 pump.setSlot(slot);
                 //pump.setMinimumPumpVolume();
                 pump.setCurrentIngredient(context, ingredient);
-                pump.fill(vol);
+                pump.fill(context,vol);
                 pump.save(context);
                 toSave.add(pump.getID());
             }
-            for (Pump p : getPumps()) {
+            for (Pump p : getPumps(context)) {
                 if (!toSave.contains(p.getID())) {
                     DeleteFromDB.remove(context, p);
                 }
             }
-            Buffer.localRefresh(context);
+            ExtraHandlingDB.localRefresh(context);
         } catch (JSONException | MissingIngredientPumpException e) {
             Log.e(TAG, "updatePumpStatus: error");
             Log.e(TAG, "error ",e);
@@ -380,7 +338,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
          */
 
-        List<Pump> toDeletePumps = Pump.getPumps();
+        List<Pump> toDeletePumps = Pump.getPumps(context);
         for (int i = 0; i < t_names.length(); i++) {
             toDeletePumps.remove(
                     makeNewOrUpdate(context,
@@ -390,7 +348,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         for (Pump toDelete : toDeletePumps) {
             toDelete.delete(context);
         }
-        Buffer.localRefresh(context);
+        ExtraHandlingDB.localRefresh(context);
     }
 
     /**
@@ -400,7 +358,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @throws JSONException
      * @throws NewlyEmptyIngredientException
      */
-    static void currentMixingCocktail(JSONArray json) throws JSONException, NewlyEmptyIngredientException {
+    static void currentMixingCocktail(Context context,JSONArray json) throws JSONException, NewlyEmptyIngredientException {
         //TO DO: USE THIS AMIR
         Log.i(TAG, "updatePumpStatus");
         int i = 0;
@@ -409,7 +367,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             String name = temp.getString(0);
             int volume = temp.getInt(1);
             try {
-                Ingredient.getIngredient(name).pump(volume);
+                Ingredient.getIngredient(context,name).pump(volume);
             } catch (MissingIngredientPumpException e) {
                 Log.i(TAG, "updatePumpStatus: should not happen");
                 Log.e(TAG, "error ",e);
@@ -473,8 +431,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
         try {
             BluetoothSingleton.getInstance().adminDefinePump(
-                    this.getIngredientName(),
-                    this.getVolume(),
+                    this.getIngredientName(activity),
+                    this.getVolume(activity),
                     this.getSlot(),
                     activity);
         } catch (JSONException | InterruptedException e) {
@@ -516,16 +474,18 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         JSONObject answer = new JSONObject();
 
          */
-        if(Dummy.isDummy){
-            save(activity);
-            return;
-        }
+
         try {
-            fill(volume);
+            fill(activity,volume);
         } catch (MissingIngredientPumpException e) {
             Log.i(TAG, "sendRefill failed");
             Log.e(TAG, "error ",e);
             Log.getStackTraceString(e);
+        }
+        if(Dummy.isDummy){
+
+            save(activity);
+            return;
         }
         save(activity);
         sendRefill(activity);
@@ -565,7 +525,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
          */
         if(!Dummy.isDummy) {
             try {
-                BluetoothSingleton.getInstance().adminRefillPump(this.getVolume(),
+                BluetoothSingleton.getInstance().adminRefillPump(this.getVolume(activity),
                         this.getSlot(), activity);
             } catch (JSONException | InterruptedException e) {
                 Log.i(TAG, "sendRefill failed");
@@ -585,7 +545,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     default void run(Activity activity, int time) {
         if(Dummy.isDummy){
             try {
-                this.fill(activity, this.getVolume()-time);
+                this.fill(activity, this.getVolume(activity)-time);
             } catch (MissingIngredientPumpException e) {
                 Log.i(TAG, "run failed: MissingIngredientPumpException");
                 Log.e(TAG, "error ",e);
@@ -704,7 +664,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     static void sync(Activity activity) {
         //TO DO sync
         readPumpStatus(activity);
-        Buffer.localRefresh(activity);
+        ExtraHandlingDB.localRefresh(activity);
     }
 
     /**
@@ -761,35 +721,16 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     //general access to db to all pumps
 
     /**
-     * Static access to pumps.
-     * Get available pumps.
-     *
-     * @return pumps
-     */
-    static List<Pump> getPumps() {
-        return Buffer.getSingleton().getPumps();
-    }
-
-    /**
      * get pumps if necessary from db
      * @author Johanna Reidt
      * @param context
      * @return
      */
     static List<Pump> getPumps(Context context){
-        return Buffer.getSingleton(context).getPumps();
+        return (List<Pump>) GetFromDB.getPumps(context);
     }
 
-    /**
-     * Static access to pumps.
-     * Get available pump with id k
-     *
-     * @param id pump id k
-     * @return
-     */
-    static Pump getPump(long id) {
-        return Buffer.getSingleton().getPump(id);
-    }
+
     /**
      * Static access to pumps.
      * Get available pump with id k
@@ -798,14 +739,11 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @return
      */
     static Pump getPump(Context context, long id) {
-        return Buffer.getSingleton(context).getPump(id);
+        return GetFromDB.getPump(context, id);
     }
 
-    static Pump getPumpWithSlot(int slot) {
-        return Buffer.getSingleton().getPumpWithSlot(slot);
-    }
     static Pump getPumpWithSlot(Context context, int slot) {
-        return Buffer.getSingleton(context).getPumpWithSlot(slot);
+        return GetFromDB.getPumpWithSlot(context, slot);
     }
 
 

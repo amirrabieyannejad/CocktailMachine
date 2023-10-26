@@ -68,7 +68,7 @@
             android:name=".ui.ListOfPumps.ListOfPumps"
             android:exported="false" />
         <activity
-            android:name=".ui.model.v2.AddActivity"
+            android:name=".ui.model.AddActivity"
             android:exported="false"
             android:label="@string/title_activity_add"
             android:theme="@style/Theme.CocktailMachine" />
@@ -82,10 +82,10 @@
             android:name=".ui.BluetoothTestEnviroment"
             android:exported="true" />
         <activity
-            android:name=".ui.model.v2.ListActivity"
+            android:name=".ui.model.ListActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.model.v2.DisplayActivity"
+            android:name=".ui.model.DisplayActivity"
             android:exported="false" />
         <activity
             android:name=".ui.settings.MachineSettingsActivity"
@@ -103,14 +103,6 @@
             android:exported="false"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name=".ui.model.v1.ModelActivity"
-            android:exported="true"
-            android:label="ModelActivity">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
             android:name=".ui.cocktail.cocktailList.CocktailList"
             android:exported="false">
             <meta-data
@@ -127,11 +119,7 @@
         <activity
             android:name=".bluetoothlegatt.DeviceScanActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
 
             <meta-data
                 android:name="android.app.lib_name"
@@ -164,6 +152,10 @@
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <service

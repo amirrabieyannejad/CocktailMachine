@@ -44,6 +44,13 @@
 
         "Motion provides meaning.\n\n"
     </string>
+
+    <string name="medium_text">
+        Material is the metaphor.\n
+        A material metaphor is the unifying theory of a rationalized space and a system of motion.
+        The material is grounded in tactile reality, inspired by the study of paper and ink, yet
+        technologically advanced and open to imagination and magic.
+    </string>
     <string name="title">Title</string>
     <string name="verf_gbar">verfügbar</string>
     <string name="show_if_available_or_not">show if available or not</string>

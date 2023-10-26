@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
+import android.util.Log;
 
 import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.elements.SQLImageUrlElement;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
  * @author Johanna Reidt
  */
 public abstract class ImageUrlTable extends BasicColumn<SQLImageUrlElement>{
+    private static final String TAG = "ImageUrlTable";
     public String TABLE_NAME;
     public static final String COLUMN_NAME_URL = "URL";
     public static final String COLUMN_NAME_OWNER_ID = "OwnerID";
@@ -69,7 +71,7 @@ public abstract class ImageUrlTable extends BasicColumn<SQLImageUrlElement>{
             String url = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME_URL));
             return this.initializeElement(id, url, iid);
         }catch (CursorIndexOutOfBoundsException e){
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
             return null;
         }
     }
@@ -86,7 +88,7 @@ public abstract class ImageUrlTable extends BasicColumn<SQLImageUrlElement>{
         try {
             this.deleteElementsWith(db, COLUMN_NAME_OWNER_ID, String.valueOf(ownerID));
         } catch (NoSuchColumnException e) {
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
         }
     }
 
@@ -107,7 +109,7 @@ public abstract class ImageUrlTable extends BasicColumn<SQLImageUrlElement>{
             return urltable != null ? Helper.getUrls(urltable) : null;
 
         } catch (NoSuchColumnException e) {
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
         }
         return new ArrayList<>();
     }
@@ -117,7 +119,7 @@ public abstract class ImageUrlTable extends BasicColumn<SQLImageUrlElement>{
             return this.getElementsWith(db, COLUMN_NAME_OWNER_ID, Long.toString(id));
 
         } catch (NoSuchColumnException e) {
-            e.printStackTrace();
+            Log.e(TAG, "error", e);
         }
         return new ArrayList<>();
     }

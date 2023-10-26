@@ -36,5 +36,4 @@ public abstract class SQLDataBaseElement implements DataBaseElement {
         this.changed = true;
     }
 
-
 }

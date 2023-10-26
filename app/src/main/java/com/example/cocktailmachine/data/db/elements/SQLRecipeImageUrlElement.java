@@ -1,11 +1,9 @@
 package com.example.cocktailmachine.data.db.elements;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 public class SQLRecipeImageUrlElement extends SQLImageUrlElement {
     private static final String TAG = "SQLRecipeImageUrlEl" ;
@@ -31,13 +29,13 @@ public class SQLRecipeImageUrlElement extends SQLImageUrlElement {
 
     @Override
     public void save(Context context) {
-        Log.i(TAG, "save");
+       // Log.v(TAG, "save");
         AddOrUpdateToDB.addOrUpdate(context,this);
     }
 
     @Override
     public void delete(Context context) {
-        Log.i(TAG, "delete");
+       // Log.v(TAG, "delete");
         DeleteFromDB.remove(context, this);
     }
 }

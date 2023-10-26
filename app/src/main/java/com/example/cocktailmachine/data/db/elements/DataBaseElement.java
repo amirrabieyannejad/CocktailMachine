@@ -2,13 +2,6 @@ package com.example.cocktailmachine.data.db.elements;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-
-import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
-import com.example.cocktailmachine.data.db.Buffer;
-import com.example.cocktailmachine.data.db.DeleteFromDB;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
-
 import java.util.Objects;
 
 public interface DataBaseElement {

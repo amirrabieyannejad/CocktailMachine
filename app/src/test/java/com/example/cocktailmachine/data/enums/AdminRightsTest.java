@@ -1,7 +1,5 @@
 package com.example.cocktailmachine.data.enums;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 
 /**

@@ -7,11 +7,10 @@ import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_LONG;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import com.example.cocktailmachine.data.Pump;
-import com.example.cocktailmachine.data.db.Buffer;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,9 +76,25 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
         cv.put(COLUMN_NAME_INGREDIENT_ID, element.getIngredientID());
         cv.put(COLUMN_NAME_PUMP_ID, element.getPumpID());
         cv.put(COLUMN_NAME_VOLUME, element.getVolume());
-        Log.i(TAG, "makeContentValues"+cv.toString());
+       // Log.v(TAG, "makeContentValues"+cv.toString());
         return cv;
     }
 
+    public List<SQLIngredientPump> getElements(SQLiteDatabase db, Pump pump){
+        try {
+            return this.getElementsWith(db, COLUMN_NAME_PUMP_ID, String.valueOf(pump.getID()));
+        } catch (NoSuchColumnException e) {
+            return new ArrayList<>();
+        }
+    }
 
+
+    public boolean hasIngredient(SQLiteDatabase db, long ingredientID) {
+        try {
+            return !this.getElementsWith(db, COLUMN_NAME_INGREDIENT_ID, String.valueOf(ingredientID)).isEmpty();
+        } catch (NoSuchColumnException e) {
+            //throw new RuntimeException(e);
+            return false;
+        }
+    }
 }

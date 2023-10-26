@@ -11,7 +11,6 @@ import com.example.cocktailmachine.data.enums.Postexecute;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 
 
 public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSONObject> {
@@ -75,7 +74,7 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
                 }
 
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Log.getStackTraceString(e);
             }
             Log.w(TAG, "we are in WaitForBroadcast doInBackground after try-catch!");
 
@@ -88,12 +87,11 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
 
         }catch(NullPointerException e){
             Log.w(TAG, "waitForBroadcastReceiver: result is null");
-            return new JSONObject();
+            jsonObject =  new JSONObject();
         } catch (JSONException e) {
             //throw new RuntimeException(e);
             Log.w(TAG, "waitForBroadcastReceiver: the response Value is no JSON Format..!");
-
-
+            jsonObject =  new JSONObject();
         }
         return jsonObject;
     }
@@ -115,7 +113,8 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
                      | NotInitializedDBException
                      | JSONException |
                      MissingIngredientPumpException e) {
-                e.printStackTrace();
+                Log.e(TAG, "onPostExecute", e);
+                //Log.getStackTraceString(e);
             }
 
 
