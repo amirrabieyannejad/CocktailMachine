@@ -6,6 +6,7 @@ import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.data.CocktailMachine;
+import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
 
 import java.util.Random;
@@ -21,7 +22,7 @@ public class CocktailMachineCalibration {
 
     public static void start(Activity activity) {
         Log.v(TAG, "start");
-        Buffer.loadForSetUp(activity);
+        ExtraHandlingDB.loadForSetUp(activity);
         Log.v(TAG, "start: loaded db");
         AdminRights.login(activity, activity.getLayoutInflater(), dialog -> {
             Log.v(TAG, "start: login dismissing");
