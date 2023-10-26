@@ -346,7 +346,7 @@ public class GetFromDB {
         try {
             return Tables.TABLE_RECIPE_INGREDIENT.getVolume(getReadableDatabase(context), recipe, ingredient);
         } catch (TooManyTimesSettedIngredientEcxception e) {
-            AddOrUpdateToDB.deleteDoubleRecipeIngredientSettingsAndNulls(context);
+            ExtraHandlingDB.deleteDoubleRecipeIngredientSettingsAndNulls(context);
             return -1;
         }
     }

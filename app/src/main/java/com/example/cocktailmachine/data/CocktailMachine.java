@@ -7,8 +7,8 @@ import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
-import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
+import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.CalibrateStatus;
 import com.example.cocktailmachine.data.enums.CocktailStatus;
@@ -520,7 +520,7 @@ public class CocktailMachine {
         Log.i(TAG, "updateRecipeListIfChanged");
         if(Dummy.isDummy){
             Log.i(TAG, "updateRecipeListIfChanged: dummy");
-            AddOrUpdateToDB.localRefresh(activity);
+            ExtraHandlingDB.localRefresh(activity);
             Log.i(TAG, "updateRecipeListIfChanged: dummy: localRefresh done");
             return;
         }

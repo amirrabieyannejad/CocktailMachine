@@ -9,8 +9,8 @@ import android.util.Log;
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 //import com.example.cocktailmachine.data.db.Buffer;
-import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
+import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
@@ -543,7 +543,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         Pump.readPumpStatus(activity);
         CocktailMachine.updateRecipeListIfChanged(activity);
         //Buffer.localRefresh(activity);
-        AddOrUpdateToDB.localRefresh(activity);
+        ExtraHandlingDB.localRefresh(activity);
     }
 
 

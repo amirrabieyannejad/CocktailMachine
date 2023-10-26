@@ -7,8 +7,8 @@ import android.util.Log;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
-import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
+import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
@@ -159,7 +159,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     static void setOverrideEmptyPumps(Activity context, int numberOfPumps) {
         Log.i(TAG, "setOverrideEmptyPumps");
-        AddOrUpdateToDB.loadForSetUp(context);
+        ExtraHandlingDB.loadForSetUp(context);
         Log.i(TAG, "setOverrideEmptyPumps "+numberOfPumps);
         for (int i = 0; i < numberOfPumps; i++) {
             Pump pump = makeNew();
@@ -292,7 +292,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                     DeleteFromDB.remove(context, p);
                 }
             }
-            AddOrUpdateToDB.localRefresh(context);
+            ExtraHandlingDB.localRefresh(context);
         } catch (JSONException | MissingIngredientPumpException e) {
             Log.e(TAG, "updatePumpStatus: error");
             Log.e(TAG, "error ",e);
@@ -361,7 +361,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         for (Pump toDelete : toDeletePumps) {
             toDelete.delete(context);
         }
-        AddOrUpdateToDB.localRefresh(context);
+        ExtraHandlingDB.localRefresh(context);
     }
 
     /**
@@ -675,7 +675,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     static void sync(Activity activity) {
         //TO DO sync
         readPumpStatus(activity);
-        AddOrUpdateToDB.localRefresh(activity);
+        ExtraHandlingDB.localRefresh(activity);
     }
 
     /**

@@ -8,6 +8,7 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
+import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 
@@ -156,7 +157,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
            // Log.v(TAG, "setIngredientPump: delete old: "+this.ingredientPump);
             this.ingredientPump.delete(context);
         }
-        AddOrUpdateToDB.deleteDoublePumpSettingsAndNulls(context);
+        ExtraHandlingDB.deleteDoublePumpSettingsAndNulls(context);
         this.ingredientPump = ingredientPump;
         this.ingredientPump.save(context);
        // Log.v(TAG, "setIngredientPump: "+ingredientPump.toString());

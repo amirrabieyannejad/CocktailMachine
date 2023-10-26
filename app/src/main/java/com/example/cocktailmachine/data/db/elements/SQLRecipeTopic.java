@@ -6,6 +6,7 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
+import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 
 public class SQLRecipeTopic extends SQLDataBaseElement {
     private static final String TAG = "SQLRecipeTopic";
@@ -33,14 +34,6 @@ public class SQLRecipeTopic extends SQLDataBaseElement {
         return topicID;
     }
 
-    public Recipe getRecipe() {
-        return Recipe.getRecipe(recipeID);
-    }
-
-    public Topic getTopic() {
-        return Topic.getTopic(topicID);
-    }
-
     @Override
     public String getClassName() {
         return "SQLRecipeTopic";
@@ -53,23 +46,16 @@ public class SQLRecipeTopic extends SQLDataBaseElement {
 
     @Override
     public boolean loadAvailable(Context context) {
-        loadAvailable();
-        this.save(context);
-        return this.available;
-    }
-
-    /**
-     * true, if topic and recipe exists
-     * @return
-     */
-    public boolean loadAvailable() {
-       // Log.v(TAG, "loadAvailable");
-        boolean res = (this.getTopic()!=null)&&(this.getRecipe()!=null);
+        boolean res = ExtraHandlingDB.loadAvailability(context, this);
+        /* not needed
         if(res != this.available){
-           // Log.v(TAG, "loadAvailable: has changed: "+res);
+            // Log.v(TAG, "loadAvailable: has changed: "+res);
             this.available = res;
             this.wasChanged();
         }
+        this.save(context);
+
+         */
         return this.available;
     }
 
