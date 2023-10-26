@@ -96,13 +96,6 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
 
     //Ingredient
-
-    /**
-     * get ingredient name or "Keine Zutat"
-     * @author Johanna Reidt
-     * @return
-     */
-    String getIngredientName();
     /**
      * get ingredient name or "Keine Zutat"
      * @author Johanna Reidt
@@ -115,7 +108,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      *
      * @return current ingredient
      */
-    Ingredient getCurrentIngredient();
+    Ingredient getCurrentIngredient(Context context);
 
 
     /**

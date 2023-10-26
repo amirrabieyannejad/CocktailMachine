@@ -32,30 +32,17 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         //this.setIngredientPumps();
     }
 
-
-
     /**
      * get ingredient name
      * or "Keine Zutat"
      * @author Johanna Reidt
+     * @param context
      * @return
      */
     @Override
-    public String getIngredientName() {
-        //this.setIngredientPumps();
-        if(this.ingredientPump!=null) {
-            Ingredient temp = this.ingredientPump.getIngredient();
-            if(temp != null){
-                return temp.getName();
-            }
-        }
-        return "Keine Zutat";
-    }
-
-    @Override
     public String getIngredientName(Context context) {
         if(this.ingredientPump == null){
-            this.ingredientPump = getIngredientPump(context);
+            getIngredientPump(context);
         }
         if(this.ingredientPump!=null) {
             Ingredient temp = this.ingredientPump.getIngredient(context);
@@ -66,8 +53,8 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         return "Keine Zutat";
     }
 
-    private SQLIngredientPump getIngredientPump(Context context){
-        return GetFromDB.getIngredientPump(context, this);//Buffer.getSingleton(context).getIngredientPump(this);
+    private void getIngredientPump(Context context){
+        this.ingredientPump = GetFromDB.getIngredientPump(context, this);//Buffer.getSingleton(context).getIngredientPump(this);
     }
 
     /**
@@ -93,10 +80,10 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
      * @return
      */
     @Override
-    public Ingredient getCurrentIngredient() {
+    public Ingredient getCurrentIngredient(Context context) {
         //this.setIngredientPumps();
         if(this.ingredientPump!=null) {
-            return this.ingredientPump.getIngredient();
+            return this.ingredientPump.getIngredient(context);
         }
         return null;
     }
