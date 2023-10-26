@@ -19,6 +19,7 @@ import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredie
 import com.example.cocktailmachine.data.db.tables.BasicColumn;
 import com.example.cocktailmachine.data.db.tables.Tables;
 import com.example.cocktailmachine.data.db.tables.TopicTable;
+import com.example.cocktailmachine.ui.model.ModelType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -390,4 +391,28 @@ public class GetFromDB {
         }
         return res;
     }
+
+
+    /**
+     * check if element with id from type modeltype is deleted
+     * @author Johanna Reidt
+     * @param modelType
+     * @param ID
+     * @return
+     */
+    public static boolean checkDeleted(Context context, ModelType modelType, Long ID){
+        switch (modelType){
+            case RECIPE:
+                return Recipe.getRecipe(context,ID)==null;
+            case PUMP:
+                return Pump.getPump(context,ID)==null;
+            case TOPIC:
+                return Topic.getTopic(context,ID)==null;
+            case INGREDIENT:
+                return Ingredient.getIngredient(context, ID)==null;
+        }
+        return false;
+    }
+
+
 }

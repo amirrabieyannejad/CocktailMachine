@@ -2,6 +2,7 @@ package com.example.cocktailmachine.ui.model.v2;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.text.InputType;
 import android.util.Log;
@@ -13,6 +14,8 @@ import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.data.db.DeleteFromDB;
+import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.ui.model.ModelType;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
@@ -201,7 +204,7 @@ public class GetDialog {
             GetActivity.goToMenu(activity);
         });
         alertDialog.setCancelable(true);
-        List<Topic> topics = Topic.getTopics(recipe);
+        List<Topic> topics = Topic.getTopics(activity, recipe);
         if(topics.size()==0){
             GetActivity.goToMenu(activity);
             return;
@@ -544,7 +547,7 @@ public class GetDialog {
         //TO DO
 
         Log.v("GetDialog", "setIngredientsForPumps");
-        List<Pump> pumps = Pump.getPumps();
+        List<Pump> pumps = Pump.getPumps(activity);
         Log.v(TAG, "setIngredientsForPumps: pumps len "+pumps.size());
         Log.v(TAG, "setIngredientsForPumps"+pumps);
 
@@ -565,7 +568,7 @@ public class GetDialog {
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setTitle("Setze die Zutat für Slot "+pump.getSlot()+":");
 
-            List<Ingredient> ingredients = Ingredient.getAllIngredients();
+            List<Ingredient> ingredients = Ingredient.getAllIngredients(activity);
             ArrayList<String> names = new ArrayList<>();
             for(Ingredient ingredient: ingredients){
                 names.add(ingredient.getName());
@@ -675,7 +678,7 @@ public class GetDialog {
     private static boolean allPumpsConfigured(Activity activity){
         List<Pump> pumps = Pump.getPumps(activity);
         for (Pump pump : pumps){
-            if(pump.getVolume()<=0 || pump.getIngredientName()==""){
+            if(pump.getVolume(activity)<=0 || pump.getIngredientName()==""){
                 return false;
             }
         }
@@ -828,11 +831,11 @@ public class GetDialog {
         private String getNameFromDB(){
             switch(modelType){
                 case INGREDIENT:
-                    return Ingredient.getIngredient(ID).getName();
+                    return Ingredient.getIngredient(activity,ID).getName();
                 case RECIPE:
-                    return Recipe.getRecipe(ID).getName();
+                    return Recipe.getRecipe(activity,ID).getName();
                 case TOPIC:
-                    return Topic.getTopic(ID).getName();
+                    return Topic.getTopic(activity,ID).getName();
             }
             return "";
         }
@@ -842,7 +845,7 @@ public class GetDialog {
         public void save(){
             switch(modelType){
                 case INGREDIENT:
-                    Ingredient ingredient = Ingredient.getIngredient(ID);
+                    Ingredient ingredient = Ingredient.getIngredient(activity,ID);
                     if(ingredient==null){
                         ingredient = Ingredient.makeNew(getName());
                     }else {
@@ -851,7 +854,7 @@ public class GetDialog {
                     ingredient.save(activity);
                     return;
                 case RECIPE:
-                    Recipe recipe = Recipe.getRecipe(ID);
+                    Recipe recipe = Recipe.getRecipe(activity,ID);
                     if(recipe==null){
                         recipe = Recipe.makeNew(getName());
                     }else {
@@ -860,7 +863,7 @@ public class GetDialog {
                     recipe.save(activity);
                     return;
                 case TOPIC:
-                    Topic topic = Topic.getTopic(ID);
+                    Topic topic = Topic.getTopic(activity,ID);
                     if(topic==null){
                         topic = Topic.makeNew(getName(), "");
                     }else {
@@ -874,7 +877,7 @@ public class GetDialog {
 
         public void send(){
             if(ModelType.RECIPE == modelType) {
-                Objects.requireNonNull(Recipe.getRecipe(this.ID)).send(activity);
+                Objects.requireNonNull(Recipe.getRecipe(activity,this.ID)).send(activity);
             }
         }
     }
@@ -1143,12 +1146,12 @@ public class GetDialog {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Wähle einen Serviervorschlag!");
-        String[] names = Topic.getTopicTitles().toArray(new String[0]);
+        String[] names = Topic.getTopicTitles(activity).toArray(new String[0]);
         builder.setItems(names, (dialog, which) -> {
             Log.v(TAG, "addTopic: picked "+names[which]);
 
             //recipe.addOrUpdate(Topic.getTopic(names[which]));
-            topicSaver.save(Topic.getTopic(names[which]), dialog);
+            topicSaver.save(Topic.getTopic(activity,names[which]), dialog);
         });
         builder.setNegativeButton("Abbrechen", (dialog, which) -> {
             Log.v(TAG, "addTopic: stop, none picked");
@@ -1262,7 +1265,7 @@ public class GetDialog {
         }
 
         private String getVolumeFromDB(){
-            return String.valueOf(this.pump.getVolume());
+            return String.valueOf(this.pump.getVolume(this.activity));
         }
         private int getVolume(){
             try {
@@ -1300,7 +1303,7 @@ public class GetDialog {
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setTitle("Setze die Zutat für Slot"+pump.getSlot()+":");
 
-            List<Ingredient> ingredients = Ingredient.getAllIngredients();
+            List<Ingredient> ingredients = Ingredient.getAllIngredients(activity);
             ArrayList<String> names = new ArrayList<>();
             for(Ingredient ingredient: ingredients){
                 names.add(ingredient.getName());
@@ -1530,7 +1533,7 @@ public class GetDialog {
         }
 
         public void send(){
-            for(Pump p: Pump.getPumps()) {
+            for(Pump p: Pump.getPumps(activity)) {
                 p.sendCalibrate(activity,
                         getTime1(),
                         getTime2(),
@@ -1690,7 +1693,7 @@ public class GetDialog {
         }
 
         public void send(){
-            for(Pump pump: Pump.getPumps()) {
+            for(Pump pump: Pump.getPumps(activity)) {
                 pump.sendPumpTimes(
                         activity,
                         getTimeInit(),
@@ -1817,7 +1820,7 @@ public class GetDialog {
 
         @Override
         public void send() {
-            for(Pump p: Pump.getPumps()){
+            for(Pump p: Pump.getPumps(super.activity)){
                 p.sendSave(activity);
             }
         }
@@ -2116,7 +2119,7 @@ public class GetDialog {
 
     //Pick a ingredient for pump
     public static void chooseIngredient(Activity activity, Pump pump){
-        List<Ingredient> ingredients= Ingredient.getAllIngredients();
+        List<Ingredient> ingredients= Ingredient.getAllIngredients(activity);
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Änderung");
 
@@ -2146,7 +2149,7 @@ public class GetDialog {
             pump.sendSave(activity);
             Toast.makeText(activity,"Cocktailmaschine wird informiert.",Toast.LENGTH_SHORT).show();
             //DatabaseConnection.localRefresh();
-            Buffer.localRefresh(activity);
+            ExtraHandlingDB.localRefresh(activity);
             Toast.makeText(activity,"DB-Synchronisation läuft!",Toast.LENGTH_SHORT).show();
 
         });
@@ -2189,16 +2192,16 @@ public class GetDialog {
         b.append("Möchtest du ");
         switch (modelType){
             case TOPIC:
-                b.append("den Serviervorschlag "+ Objects.requireNonNull(Topic.getTopic(ID)).getName());
+                b.append("den Serviervorschlag "+ Objects.requireNonNull(Topic.getTopic(activity,ID)).getName());
                 break;
             case INGREDIENT:
-                b.append("die Zutat "+ Objects.requireNonNull(Ingredient.getIngredient(ID)).getName());
+                b.append("die Zutat "+ Objects.requireNonNull(Ingredient.getIngredient(activity,ID)).getName());
                 break;
         }
         b.append(" aus dem Rezept "+recipe.getName()+" entfernen?");
         builder.setTitle(b.toString());
         builder.setPositiveButton("Bitte löschen!", (dialog, which) -> {
-            Buffer.deleteElementFromRecipe(activity,
+            DeleteFromDB.deleteElementFromRecipe(activity,
                     recipe,
                     modelType,
                     ID);
@@ -2228,27 +2231,6 @@ public class GetDialog {
 
     //DELETE FOR ALL
 
-    /**
-     * check if element with id from type modeltype is deleted
-     * @author Johanna Reidt
-     * @param modelType
-     * @param ID
-     * @return
-     */
-    public static boolean checkDeleted(ModelType modelType, Long ID){
-        switch (modelType){
-            case RECIPE:
-                return Recipe.getRecipe(ID)==null;
-            case PUMP:
-                return Pump.getPump(ID)==null;
-            case TOPIC:
-                return Topic.getTopic(ID)==null;
-            case INGREDIENT:
-                return Ingredient.getIngredient(ID)==null;
-        }
-        return false;
-    }
-
 
     /**
      * delete element with id from type modeltype is deleted
@@ -2262,11 +2244,8 @@ public class GetDialog {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(getDeleteTitle(modelType, title));
         builder.setPositiveButton("Bitte löschen!", (dialog, which) -> {
-            try {
-                Buffer.deleteElement(activity,modelType, ID);
-            } catch (NotInitializedDBException e) {
-                e.printStackTrace();
-            }
+            DeleteFromDB.delete(activity,modelType, ID);
+
         });
         builder.setNeutralButton("Nein.", (dialog, which) -> {
 

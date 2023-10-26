@@ -1,5 +1,6 @@
 package com.example.cocktailmachine.data.db;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
@@ -20,9 +21,11 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.tables.Tables;
+import com.example.cocktailmachine.ui.model.ModelType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Johanna Reidt
@@ -120,5 +123,25 @@ public class DeleteFromDB {
 
     public static void removeIngredientPump(Context context, long id) {
         Tables.TABLE_INGREDIENT_PUMP.deleteElement(getWritableDatabase(context), id);
+    }
+
+    public static void delete(Context context, ModelType modelType, Long id) {
+        switch (modelType){
+            case TOPIC: Topic.getTopic(context,id).delete(context);return;
+            case RECIPE:Recipe.getRecipe(context,id).delete(context);return;
+            case INGREDIENT: Ingredient.getIngredient(context, id).delete(context);return;
+            case PUMP: Pump.getPump(context, id).delete(context);return;
+        }
+        return;
+    }
+
+    public static void deleteElementFromRecipe(Context context, Recipe recipe, ModelType modelType, Long id) {
+        if(modelType == ModelType.INGREDIENT){
+            Objects.requireNonNull(GetFromDB.getRecipeIngredient(context, recipe, Ingredient.getIngredient(context, id))).delete(context);
+            return;
+        }
+        if(modelType == ModelType.TOPIC){
+            Objects.requireNonNull(GetFromDB.getRecipeTopic(context, recipe, Topic.getTopic(context, id))).delete(context);
+        }
     }
 }
