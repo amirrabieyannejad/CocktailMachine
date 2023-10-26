@@ -83,18 +83,9 @@ public class SingeltonTestdata {
             }
 
 
-            @Override
-            public List<String> getIngredientNames() {
-                return null;
-            }
 
             @Override
-            public List<String> getIngredientNameNVolumes() {
-                return null;
-            }
-
-            @Override
-            public List<Ingredient> getIngredients() {
+            public List<Ingredient> getIngredients(Context context) {
                 List<Ingredient> list = new LinkedList();
                 list.add(new Ingredient() {
                     @Override
@@ -387,39 +378,12 @@ public class SingeltonTestdata {
                 return list;
             }
 
-            @Override
-            public List<Long> getIngredientIDs() {
-                return null;
-            }
+
 
 
 
             @Override
-            public HashMap<Ingredient, Integer> getIngredientToVolume() {
-                return null;
-            }
-
-            @Override
-            public HashMap<Long, Integer> getIngredientIDToVolume() {
-                return null;
-            }
-
-            @Override
-            public HashMap<String, Integer> getIngredientNameToVolume() {
-                return null;
-            }
-
-
-
-            @Override
-            public int getVolume(long ingredientID) {
-                return 0;
-            }
-
-
-
-            @Override
-            public int getVolume(Ingredient ingredient)  {
+            public int getVolume(Context context,Ingredient ingredient)  {
                 if (ingredient.getID() == 1){
                     return 30;
                 }
@@ -432,6 +396,63 @@ public class SingeltonTestdata {
             @Override
             public boolean isAlcoholic() {
                 return false;
+            }
+
+            @Override
+            public List<Topic> getTopics(Context context) {
+                return null;
+            }
+
+            @Override
+            public List<Long> getTopicIDs(Context context) {
+                return null;
+            }
+
+
+            @Override
+            public List<Long> getIngredientIDs(Context context) {
+                return null;
+            }
+
+            @Override
+            public List<String> getIngredientNames(Context context) {
+                return null;
+            }
+
+            @Override
+            public List<String> getIngredientNameNVolumes(Context context) {
+                return null;
+            }
+
+            @Override
+            public HashMap<Ingredient, Integer> getIngredientToVolume(Context context) {
+                return null;
+            }
+
+            @Override
+            public HashMap<Long, Integer> getIngredientIDToVolume(Context context) {
+                return null;
+            }
+
+            @Override
+            public HashMap<String, Integer> getIngredientNameToVolume(Context context) {
+                return null;
+            }
+
+
+            @Override
+            public int getVolume(Context context, long ingredientID) {
+                return 0;
+            }
+
+            @Override
+            public boolean isAvailable(Context context) {
+                return false;
+            }
+
+            @Override
+            public List<SQLRecipeIngredient> getRecipeIngredient(Context context) {
+                return null;
             }
 
             @Override
@@ -500,25 +521,6 @@ public class SingeltonTestdata {
             }
 
 
-            @Override
-            public List<Long> getTopicIDs() {
-                return null;
-            }
-
-            @Override
-            public List<String> getTopicNames() {
-                return null;
-            }
-
-            @Override
-            public List<Topic> getTopics() {
-                return null;
-            }
-
-            @Override
-            public JSONArray getLiquidsJSON() {
-                return Recipe.super.getLiquidsJSON();
-            }
 
             @Override
             public JSONObject asMessage() throws JSONException {
@@ -531,12 +533,12 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public List<SQLRecipeIngredient> getRecipeIngredient() {
+            public List<SQLRecipeTopic> getRecipeTopic(Context context) {
                 return null;
             }
 
             @Override
-            public List<SQLRecipeTopic> getRecipeTopic() {
+            public List<String> getTopicNames(Context context) {
                 return null;
             }
 
@@ -596,33 +598,9 @@ public class SingeltonTestdata {
             }
 
 
-            @Override
-            public List<String> getIngredientNames() {
-                return null;
-            }
 
             @Override
-            public List<String> getIngredientNameNVolumes() {
-                return null;
-            }
-
-            @Override
-            public HashMap<Ingredient, Integer> getIngredientToVolume() {
-                return null;
-            }
-
-            @Override
-            public HashMap<Long, Integer> getIngredientIDToVolume() {
-                return null;
-            }
-
-            @Override
-            public HashMap<String, Integer> getIngredientNameToVolume() {
-                return null;
-            }
-
-            @Override
-            public List<Ingredient> getIngredients() {
+            public List<Ingredient> getIngredients(Context context) {
                 List<Ingredient> list = new LinkedList();
                 list.add(new Ingredient() {
                     @Override
@@ -915,14 +893,58 @@ public class SingeltonTestdata {
                 return list;
             }
 
+
+
+
+
+
             @Override
-            public List<Long> getIngredientIDs() {
+            public boolean isAlcoholic() {
+                return false;
+            }
+
+            @Override
+            public List<Topic> getTopics(Context context) {
                 return null;
             }
 
+            @Override
+            public List<Long> getTopicIDs(Context context) {
+                return null;
+            }
 
             @Override
-            public int getVolume(Ingredient ingredient) {
+            public List<Long> getIngredientIDs(Context context) {
+                return null;
+            }
+
+            @Override
+            public List<String> getIngredientNames(Context context) {
+                return null;
+            }
+
+            @Override
+            public List<String> getIngredientNameNVolumes(Context context) {
+                return null;
+            }
+
+            @Override
+            public HashMap<Ingredient, Integer> getIngredientToVolume(Context context) {
+                return null;
+            }
+
+            @Override
+            public HashMap<Long, Integer> getIngredientIDToVolume(Context context) {
+                return null;
+            }
+
+            @Override
+            public HashMap<String, Integer> getIngredientNameToVolume(Context context) {
+                return null;
+            }
+
+            @Override
+            public int getVolume(Context context, Ingredient ingredient) {
                 if (ingredient.getID() == 1){
                     return 30;
                 }
@@ -933,13 +955,24 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public int getVolume(long ingredientID) {
-                return 0;
+            public int getVolume(Context context, long ingredientID) {
+                if (ingredientID == 1){
+                    return 30;
+                }
+                if (ingredientID == 2){
+                    return 60;
+                }
+                return 80;
             }
 
             @Override
-            public boolean isAlcoholic() {
+            public boolean isAvailable(Context context) {
                 return false;
+            }
+
+            @Override
+            public List<SQLRecipeIngredient> getRecipeIngredient(Context context) {
+                return null;
             }
 
             @Override
@@ -1008,27 +1041,7 @@ public class SingeltonTestdata {
 
             }
 
-            @Override
-            public List<Long> getTopicIDs() {
-                return null;
-            }
 
-            @Override
-            public List<String> getTopicNames() {
-                return null;
-            }
-
-            @Override
-            public List<Topic> getTopics() {
-                return null;
-            }
-
-
-
-            @Override
-            public JSONArray getLiquidsJSON() {
-                return Recipe.super.getLiquidsJSON();
-            }
 
             @Override
             public JSONObject asMessage() throws JSONException {
@@ -1041,12 +1054,12 @@ public class SingeltonTestdata {
             }
 
             @Override
-            public List<SQLRecipeIngredient> getRecipeIngredient() {
+            public List<SQLRecipeTopic> getRecipeTopic(Context context) {
                 return null;
             }
 
             @Override
-            public List<SQLRecipeTopic> getRecipeTopic() {
+            public List<String> getTopicNames(Context context) {
                 return null;
             }
 

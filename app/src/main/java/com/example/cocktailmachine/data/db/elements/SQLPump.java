@@ -21,6 +21,11 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     private SQLIngredientPump ingredientPump = null;
     private boolean available = false;
 
+
+
+    //private loaded
+    private String loadedIngredientName = "nicht geladen";
+
     public SQLPump(){
         super();
     }
@@ -72,6 +77,12 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
        // Log.v(TAG, "getVolume: no ingredient pump");
         return -1;
     }
+
+    @Override
+    public String getIngredientName() {
+        return this.loadedIngredientName;
+    }
+
 
     /**
      * get current ingredient
