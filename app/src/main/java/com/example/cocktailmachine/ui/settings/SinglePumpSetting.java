@@ -7,6 +7,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.Pump;
 
 public class SinglePumpSetting extends AppCompatActivity {
@@ -32,6 +33,9 @@ public class SinglePumpSetting extends AppCompatActivity {
         this.textViewHeader.setText("Pumpe " + pump.getSlot());
         this.textViewIngredient.setText(pump.getIngredientName());
         this.textViewIngredientVolumen.setText(""+pump.getVolume());
+
+        //pump.sendRefill(this);
+        //BluetoothSingleton.getInstance().
 
 
 
