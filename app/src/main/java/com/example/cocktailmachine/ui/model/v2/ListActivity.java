@@ -4,19 +4,15 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.databinding.ActivityListBinding;
 import com.example.cocktailmachine.ui.model.ModelType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ListActivity extends BasicActivity {

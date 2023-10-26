@@ -3,9 +3,7 @@ package com.example.cocktailmachine.ui.ListOfPumps;
 
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +16,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
-import com.example.cocktailmachine.ui.ListOfIngredience.ListIngredience;
 
 import java.util.List;
 

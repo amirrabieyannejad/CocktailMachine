@@ -1,11 +1,9 @@
 package com.example.cocktailmachine.data.db.elements;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 public class SQLRecipeImageUrlElement extends SQLImageUrlElement {
     private static final String TAG = "SQLRecipeImageUrlEl" ;

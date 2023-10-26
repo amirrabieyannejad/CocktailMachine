@@ -7,7 +7,6 @@ import android.os.Bundle;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.ui.Menue;
-import com.example.cocktailmachine.ui.settings.SettingsActivity;
 
 public class SingleCocktailChoiceIsNotPossible extends AppCompatActivity {
 

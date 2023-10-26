@@ -17,10 +17,10 @@ import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
+import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Postexecute;
-import com.example.cocktailmachine.ui.model.FragmentType;
 import com.example.cocktailmachine.ui.model.ModelType;
 
 import java.util.ArrayList;
@@ -681,7 +681,7 @@ public class GetAdapter {
                                 modelType,
                                 text,
                                 ID);
-                        return GetDialog.checkDeleted(modelType, ID);
+                        return GetFromDB.checkDeleted(activity,modelType, ID);
                     });
                 }
             }

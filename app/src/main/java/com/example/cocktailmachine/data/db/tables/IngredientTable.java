@@ -6,15 +6,12 @@ import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_ID;
 import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_INTEGER;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 

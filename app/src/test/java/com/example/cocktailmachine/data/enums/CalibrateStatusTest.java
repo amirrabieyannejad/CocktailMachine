@@ -3,11 +3,6 @@ package com.example.cocktailmachine.data.enums;
 import static org.junit.jupiter.api.Assertions.*;
 
 import android.app.Activity;
-import android.content.Context;
-
-import androidx.test.platform.app.InstrumentationRegistry;
-
-import com.example.cocktailmachine.ui.Menue;
 
 import org.junit.jupiter.api.Test;
 

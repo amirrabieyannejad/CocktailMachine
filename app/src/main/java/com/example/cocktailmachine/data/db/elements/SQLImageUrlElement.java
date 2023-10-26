@@ -1,7 +1,6 @@
 package com.example.cocktailmachine.data.db.elements;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.io.File;
 

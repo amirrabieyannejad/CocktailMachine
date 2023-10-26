@@ -1,7 +1,5 @@
 package com.example.cocktailmachine.ui.ListOfIngredience;
 
-import static com.example.cocktailmachine.data.Topic.TAG;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -10,15 +8,12 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Ingredient;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
-import com.example.cocktailmachine.data.enums.AdminRights;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

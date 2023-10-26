@@ -5,12 +5,10 @@ import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_ID;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.example.cocktailmachine.data.db.Helper;
-import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 

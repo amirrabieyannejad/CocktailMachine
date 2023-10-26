@@ -7,7 +7,6 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
-import com.example.cocktailmachine.ui.ListOfIngredience.ListIngredience;
 import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.model.v2.GetActivity;
 import com.example.cocktailmachine.ui.model.v2.GetDialog;
@@ -23,7 +22,6 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 
 public class FillAnimation extends AppCompatActivity {

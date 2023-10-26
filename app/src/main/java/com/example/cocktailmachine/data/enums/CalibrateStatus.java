@@ -7,9 +7,6 @@ import android.app.Activity;
 import androidx.annotation.NonNull;
 
 import com.example.cocktailmachine.Dummy;
-import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
-
-import org.json.JSONException;
 
 public enum CalibrateStatus {
     /**

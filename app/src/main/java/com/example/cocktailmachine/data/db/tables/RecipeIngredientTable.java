@@ -18,7 +18,6 @@ import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -49,7 +49,6 @@ import androidx.core.app.ActivityCompat;
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.ui.BluetoothTestEnviroment;
-import com.example.cocktailmachine.ui.model.v2.GetActivity;
 
 import java.util.ArrayList;
 import java.util.UUID;

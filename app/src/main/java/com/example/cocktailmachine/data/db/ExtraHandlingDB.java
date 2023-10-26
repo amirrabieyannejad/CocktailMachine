@@ -18,7 +18,7 @@ public class ExtraHandlingDB {
     private static final String TAG = "ExtraHandlingDB";
 
     public static void localRefresh(Context context) {
-        DatabaseConnection.init(context).refreshAvailable(context);
+        //TODO: DatabaseConnection.init(context).refreshAvailable(context);
     }
 
 

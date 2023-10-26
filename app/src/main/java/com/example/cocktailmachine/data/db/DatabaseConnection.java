@@ -1,10 +1,8 @@
 package com.example.cocktailmachine.data.db;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -12,7 +10,6 @@ import androidx.annotation.Nullable;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.BasicRecipes;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
@@ -21,17 +18,13 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
-import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
-import com.example.cocktailmachine.data.db.elements.SQLTopic;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
-import com.example.cocktailmachine.data.db.exceptions.AccessDeniedException;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.tables.Tables;
-import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 import com.opencsv.CSVReader;
 
 import org.json.JSONException;
@@ -47,13 +40,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 class DatabaseConnection extends SQLiteOpenHelper {
     private static DatabaseConnection singleton = null;
@@ -451,10 +440,6 @@ class DatabaseConnection extends SQLiteOpenHelper {
 
 
 
-
-    public void refreshAvailable(Context context){
-
-    }
 
 
 

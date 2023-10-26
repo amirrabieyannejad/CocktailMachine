@@ -278,7 +278,7 @@ public class GetFromDB {
         return (Pump) res.get(0);
     }
 
-    public static List<? extends SQLIngredient> loadIngredients(Context context) {
+    public static List<? extends Ingredient> loadIngredients(Context context) {
         return Tables.TABLE_INGREDIENT.getAllElements(getReadableDatabase(context));
     }
 
