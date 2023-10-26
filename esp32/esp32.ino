@@ -763,7 +763,7 @@ void setup() {
   update_user();
   update_state();
 
-  debug("ready");
+  info("Cocktail Machine v%d ready", VERSION);
 }
 
 void loop() {
