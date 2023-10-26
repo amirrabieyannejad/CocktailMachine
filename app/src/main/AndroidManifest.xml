@@ -97,14 +97,6 @@
             android:exported="false"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name=".ui.model.v1.ModelActivity"
-            android:exported="true"
-            android:label="ModelActivity">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
             android:name=".ui.cocktail.cocktailList.CocktailList"
             android:exported="false">
             <meta-data
