@@ -11,8 +11,10 @@ import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpExcep
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class ExtraHandlingDB {
     private static final String TAG = "ExtraHandlingDB";
@@ -71,11 +73,35 @@ public class ExtraHandlingDB {
 
     public static void deleteDoubleRecipeIngredientSettingsAndNulls(Context context) {
         //TODO♦
+        HashMap<Long, List<Long>> set = new HashMap<>();
+        //List<Long> toDelete = new ArrayList<>();
+        Iterator<SQLRecipeIngredient> it = GetFromDB.getRecipeIngredientIterator(context);
+        List<Long> toDelete = GetFromDB.getRecipeIngredientIDs(context);
+        while (it.hasNext()) {
+            SQLRecipeIngredient ip = it.next();
+            if (ip == null) {
+                it.remove();
+            }else if(!set.containsKey(ip.getRecipeID())){
+                List<Long> n = new ArrayList<>();
+                n.add(ip.getIngredientID());
+                set.put(ip.getRecipeID(), n);
+                toDelete.remove(ip.getID());
+            } else if (!Objects.requireNonNull(set.get(ip.getRecipeID())).contains(ip.getIngredientID())) {
+                Objects.requireNonNull(set.get(ip.getRecipeID())).add(ip.getIngredientID());
+                toDelete.remove(ip.getID());
+            }
+
+        }
+        for (Long id : toDelete) {
+            DeleteFromDB.removeIngredientPump(context, id);
+        }
     }
 
 
     public static void loadAvailabilityForAll(Context context){
-        //TODO:
+        //TODO:set available in all recipes
+
+        
     }
 
     public static boolean loadAvailability(Context context, SQLRecipeTopic recipeTopic){

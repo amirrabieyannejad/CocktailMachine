@@ -415,4 +415,11 @@ public class GetFromDB {
     }
 
 
+    public static Iterator<SQLRecipeIngredient> getRecipeIngredientIterator(Context context) {
+        return Tables.TABLE_RECIPE_INGREDIENT.getIterator(getReadableDatabase(context));
+    }
+
+    public static List<Long> getRecipeIngredientIDs(Context context) {
+        return Tables.TABLE_RECIPE_INGREDIENT.getIDs(getReadableDatabase(context));
+    }
 }
