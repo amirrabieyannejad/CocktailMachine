@@ -203,9 +203,9 @@ public class CocktailMachine {
                 current = new LinkedHashMap<>();
             }
             if(currentRecipe != null){
-                for(Ingredient i: currentRecipe.getIngredients()){
+                for(Ingredient i: currentRecipe.getIngredients(activity)){
                     if(!current.containsKey(i)){
-                        current.put(i, currentRecipe.getVolume(i));
+                        current.put(i, currentRecipe.getVolume(activity,i));
                         Log.i(TAG, "getCurrentWeight: dummy: add ing: "+i);
                         break;
                     }
@@ -249,9 +249,9 @@ public class CocktailMachine {
                 current = new LinkedHashMap<>();
             }
             if(currentRecipe != null){
-                for(Ingredient i: currentRecipe.getIngredients()){
+                for(Ingredient i: currentRecipe.getIngredients(activity)){
                     if(!current.containsKey(i)){
-                        current.put(i, currentRecipe.getVolume(i));
+                        current.put(i, currentRecipe.getVolume(activity,i));
                         Log.i(TAG, "getCurrentWeight: dummy: add ing: "+i);
                         break;
                     }
@@ -712,10 +712,10 @@ public class CocktailMachine {
                 }
                 CocktailStatus.setStatus(CocktailStatus.mixing);
                 Log.i(TAG, "getCurrentCocktailStatus :  status to mixing");
-                for(Ingredient i: currentRecipe.getIngredients()){
+                for(Ingredient i: currentRecipe.getIngredients(activity)){
                     if(!current.containsKey(i)){
                         Log.i(TAG, "getCurrentCocktailStatus :  adding another ingredient and volume:");
-                        current.put(i, currentRecipe.getVolume(i));
+                        current.put(i, currentRecipe.getVolume(activity,i));
                         Log.i(TAG, "getCurrentCocktailStatus :  ingredient: "+i);
                         Log.i(TAG, "getCurrentCocktailStatus :  current: "+current);
                         Log.i(TAG, "getCurrentCocktailStatus :  return");
