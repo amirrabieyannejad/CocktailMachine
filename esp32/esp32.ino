@@ -762,8 +762,6 @@ void setup() {
   update_cocktail();
   update_user();
   update_state();
-
-  info("Cocktail Machine v%d ready", VERSION);
 }
 
 void loop() {
@@ -2185,15 +2183,18 @@ void update_possible_recipes() {
 
 // bluetooth
 bool ble_start(void) {
+  String name = String(BLE_NAME " v");
+  name.concat(String(VERSION));
+  
   debug("starting ble");
-  BLEDevice::init(BLE_NAME);
+  BLEDevice::init(name.c_str());
   ble_server = BLEDevice::createServer();
 
   // setup callback
   ble_server->setCallbacks(new ServerCB());
 
   // init services
-  all_id[ID_NAME]         	= new ID(UUID_ID_NAME,             	String(BLE_NAME));
+  all_id[ID_NAME]         	= new ID(UUID_ID_NAME,             	name);
                           	                                   	
   all_status[ID_STATE]    	= new Status(UUID_STATUS_STATE,    	String("\"init\""));
   all_status[ID_LIQUIDS]  	= new Status(UUID_STATUS_LIQUIDS,  	String("{}"));
