@@ -99,9 +99,8 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         this.loadAvailable(context);
     }
 
-
-
-
+    public SQLRecipe() {
+    }
 
 
     @Override
@@ -130,7 +129,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     }
 
     @Override
-    public List<SQLRecipeTopic> getRecipeTopic(Context context) {
+    public List<SQLRecipeTopic> getRecipeTopics(Context context) {
         return GetFromDB.getRecipeTopics(context, this);
     }
 
@@ -188,7 +187,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
 
     @Override
-    public List<SQLRecipeIngredient> getRecipeIngredient(Context context) {
+    public List<SQLRecipeIngredient> getRecipeIngredients(Context context) {
         return GetFromDB.getRecipeIngredients(context,this);
     }
 

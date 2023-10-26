@@ -137,7 +137,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
     //Setter
 
-    List<SQLRecipeIngredient> getRecipeIngredient(Context context);
+    List<SQLRecipeIngredient> getRecipeIngredients(Context context);
 
     /**
      * set name  or replace
@@ -667,6 +667,14 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         return new SQLRecipe(name);
     }
 
+    /**
+     * Make a new recipe.
+     * @return new recipe instance with given name. It is already saved in the database!
+     */
+    static Recipe makeNew(){
+        return new SQLRecipe();
+    }
+
 
 
 
@@ -687,7 +695,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         return recipe;
     }
 
-    List<SQLRecipeTopic> getRecipeTopic(Context context);
+    List<SQLRecipeTopic> getRecipeTopics(Context context);
 
 
 
@@ -695,4 +703,16 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     List<String> getTopicNames(Context context);
 
 
+    /**
+     * deletes all ingredients and topics
+     * @author Johanna Reidt
+     */
+    default void clean(Context context){
+        for(SQLRecipeTopic rt: this.getRecipeTopics(context)) {
+            rt.delete(context);
+        }
+        for(SQLRecipeIngredient rt: this.getRecipeIngredients(context)) {
+            rt.delete(context);
+        }
+    }
 }

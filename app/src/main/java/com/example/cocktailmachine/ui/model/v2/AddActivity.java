@@ -319,7 +319,8 @@ public class AddActivity extends BasicActivity {
         Log.v(TAG, "setUpRecipe");
         this.recipe = Recipe.getRecipe(this, this.getID());
         if(this.getID()==-1 || this.recipe == null){
-            this.recipe = Recipe.makeNew("temp");
+            this.recipe = Recipe.makeNew();
+            this.recipe.clean(this);
             //this.ingredientVolumeHashMap = new HashMap<>();
             //this.topics = new ArrayList<>();
         } else {
