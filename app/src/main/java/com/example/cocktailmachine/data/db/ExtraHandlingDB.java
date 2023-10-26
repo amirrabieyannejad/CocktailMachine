@@ -5,6 +5,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
+import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
@@ -66,6 +67,10 @@ public class ExtraHandlingDB {
     }
 
     public static boolean loadAvailability(Context context, SQLRecipeTopic recipeTopic){
+        return false; //TODO
+    }
+
+    public static boolean loadAvailability(Context context, SQLRecipeIngredient recipeIngredient) {
         return false; //TODO
     }
 }

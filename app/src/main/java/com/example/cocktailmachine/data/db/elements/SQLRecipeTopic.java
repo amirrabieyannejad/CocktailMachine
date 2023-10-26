@@ -46,7 +46,7 @@ public class SQLRecipeTopic extends SQLDataBaseElement {
 
     @Override
     public boolean loadAvailable(Context context) {
-        boolean res = ExtraHandlingDB.loadAvailability(context, this);
+        this.available = ExtraHandlingDB.loadAvailability(context, this);
         /* not needed
         if(res != this.available){
             // Log.v(TAG, "loadAvailable: has changed: "+res);
