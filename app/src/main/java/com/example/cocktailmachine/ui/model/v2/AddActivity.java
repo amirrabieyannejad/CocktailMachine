@@ -87,7 +87,7 @@ public class AddActivity extends BasicActivity {
         binding.textViewAddTitle.setText("Pumpe");
 
         //maybe needed
-        pump = Pump.getPump(this.getID());
+        pump = Pump.getPump(this, this.getID());
         if(pump == null){
             error("???");
             return;
@@ -181,7 +181,7 @@ public class AddActivity extends BasicActivity {
 
         binding.textViewAddTitle.setText(title_tag);
 
-        topic = Topic.getTopic(this.getID());
+        topic = Topic.getTopic(this, this.getID());
         if(topic == null){
             Log.v(TAG, "setUpPump: new topic");
             binding.buttonSave.setOnClickListener(v -> {
@@ -216,7 +216,7 @@ public class AddActivity extends BasicActivity {
     @Override
     void setUpIngredient() {
         Log.v(TAG, "setUpIngredient");
-        ingredient = Ingredient.getIngredient(this.getID());
+        ingredient = Ingredient.getIngredient(this, this.getID());
         //nedded
         binding.editTextAddTitle.setVisibility(View.VISIBLE);
         binding.textViewAddTitle.setVisibility(View.VISIBLE);
@@ -317,7 +317,7 @@ public class AddActivity extends BasicActivity {
     @Override
     void setUpRecipe() {
         Log.v(TAG, "setUpRecipe");
-        this.recipe = Recipe.getRecipe(this.getID());
+        this.recipe = Recipe.getRecipe(this, this.getID());
         if(this.getID()==-1 || this.recipe == null){
             this.recipe = Recipe.makeNew("temp");
             //this.ingredientVolumeHashMap = new HashMap<>();

@@ -50,15 +50,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @author Johanna Reidt
      * @return
      */
-    int getVolume();
-
-    /**
-     * set volume
-     *
-     * @param volume
-     * @throws MissingIngredientPumpException
-     */
-    void fill(int volume) throws MissingIngredientPumpException;
+    int getVolume(Context context);
 
 
 
@@ -203,17 +195,17 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             ingredient = Ingredient.makeNew(liquidName);
             ingredient.save(context);
         }
-        if (ingredient.getPump() == null) {
+        if (ingredient.getPump(context) == null) {
             Pump pump = makeNew();
             pump.setCurrentIngredient(context, ingredient);
-            pump.fill(volume);
+            pump.fill(context,volume);
         } else {
-            ingredient.getPump().fill(volume);
+            ingredient.getPump(context).fill(context,volume);
         }
         ingredient.save(context);
-        ingredient.getPump().save(context);
+        ingredient.getPump(context).save(context);
 
-        return ingredient.getPump();
+        return ingredient.getPump(context);
     }
 
 
@@ -225,17 +217,6 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
     // creation
 
-    /**
-     * {"beer": 200}
-     *
-     * @return
-     * @throws JSONException
-     */
-    default JSONObject asMesssage() throws JSONException {
-        JSONObject json = new JSONObject();
-        json.put(this.getIngredientName(), this.getVolume());
-        return json;
-    }
 
 
 
@@ -283,7 +264,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 pump.setSlot(slot);
                 //pump.setMinimumPumpVolume();
                 pump.setCurrentIngredient(context, ingredient);
-                pump.fill(vol);
+                pump.fill(context,vol);
                 pump.save(context);
                 toSave.add(pump.getID());
             }
@@ -444,8 +425,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
         try {
             BluetoothSingleton.getInstance().adminDefinePump(
-                    this.getIngredientName(),
-                    this.getVolume(),
+                    this.getIngredientName(activity),
+                    this.getVolume(activity),
                     this.getSlot(),
                     activity);
         } catch (JSONException | InterruptedException e) {
@@ -492,7 +473,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             return;
         }
         try {
-            fill(volume);
+            fill(activity,volume);
         } catch (MissingIngredientPumpException e) {
             Log.i(TAG, "sendRefill failed");
             Log.e(TAG, "error ",e);
@@ -536,7 +517,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
          */
         if(!Dummy.isDummy) {
             try {
-                BluetoothSingleton.getInstance().adminRefillPump(this.getVolume(),
+                BluetoothSingleton.getInstance().adminRefillPump(this.getVolume(activity),
                         this.getSlot(), activity);
             } catch (JSONException | InterruptedException e) {
                 Log.i(TAG, "sendRefill failed");
@@ -556,7 +537,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     default void run(Activity activity, int time) {
         if(Dummy.isDummy){
             try {
-                this.fill(activity, this.getVolume()-time);
+                this.fill(activity, this.getVolume(activity)-time);
             } catch (MissingIngredientPumpException e) {
                 Log.i(TAG, "run failed: MissingIngredientPumpException");
                 Log.e(TAG, "error ",e);

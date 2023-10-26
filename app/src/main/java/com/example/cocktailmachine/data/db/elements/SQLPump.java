@@ -21,10 +21,12 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     private SQLIngredientPump ingredientPump = null;
     private boolean available = false;
 
+    private long ingredientID = -1L;
 
 
     //private loaded
-    private String loadedIngredientName = "nicht geladen";
+    private String loadedIngredientName = "Keine Zutat";
+    private int loadedIngredientVolume = -1;
 
     public SQLPump(){
         super();
@@ -34,6 +36,13 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         super(ID);
         this.wasSaved();
         this.slot = slot_id;
+        //this.setIngredientPumps();
+    }
+    public SQLPump(long ID, int slot_id, long ingredientID) {
+        super(ID);
+        this.wasSaved();
+        this.slot = slot_id;
+        this.ingredientID = ingredientID;
         //this.setIngredientPumps();
     }
 
@@ -47,19 +56,23 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     @Override
     public String getIngredientName(Context context) {
         if(this.ingredientPump == null){
-            getIngredientPump(context);
+            loadIngredientPump(context);
         }
+        return this.loadedIngredientName;
+
+        //return "Keine Zutat";
+    }
+
+    private void loadIngredientPump(Context context){
+        this.ingredientPump = GetFromDB.getIngredientPump(context, this);//Buffer.getSingleton(context).getIngredientPump(this);
         if(this.ingredientPump!=null) {
             Ingredient temp = this.ingredientPump.getIngredient(context);
             if(temp!=null){
-                return temp.getName();
+                this.ingredientID = temp.getID();
+                this.loadedIngredientName = temp.getName();
+                this.loadedIngredientVolume = this.ingredientPump.getVolume();
             }
         }
-        return "Keine Zutat";
-    }
-
-    private void getIngredientPump(Context context){
-        this.ingredientPump = GetFromDB.getIngredientPump(context, this);//Buffer.getSingleton(context).getIngredientPump(this);
     }
 
     /**
@@ -71,6 +84,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     @Override
     public int getVolume() {
         //this.setIngredientPumps();
+
         if(this.ingredientPump!=null) {
             return this.ingredientPump.getVolume();
         }
