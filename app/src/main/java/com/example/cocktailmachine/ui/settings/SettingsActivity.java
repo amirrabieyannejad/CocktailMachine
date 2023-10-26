@@ -18,9 +18,9 @@ import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivitySettingsBinding;
 
 
-import com.example.cocktailmachine.ui.model.ModelType;
-import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
-import com.example.cocktailmachine.ui.model.v2.GetActivity;
+import com.example.cocktailmachine.ui.model.enums.ModelType;
+import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
+import com.example.cocktailmachine.ui.model.helper.GetActivity;
 
 /**
  * Settings

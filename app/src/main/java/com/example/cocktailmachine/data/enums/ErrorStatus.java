@@ -8,8 +8,8 @@ import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
-import com.example.cocktailmachine.ui.model.v2.GetActivity;
-import com.example.cocktailmachine.ui.model.v2.GetDialog;
+import com.example.cocktailmachine.ui.model.helper.GetActivity;
+import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
 import org.json.JSONException;
 

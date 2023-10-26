@@ -10,7 +10,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.example.cocktailmachine.databinding.ActivityScaleSettingsBinding;
-import com.example.cocktailmachine.ui.model.v2.GetDialog;
+import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
 /**
  *

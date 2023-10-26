@@ -16,8 +16,8 @@ import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
-import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
-import com.example.cocktailmachine.ui.model.v2.GetDialog;
+import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
+import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;

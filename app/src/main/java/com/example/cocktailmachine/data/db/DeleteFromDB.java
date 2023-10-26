@@ -14,7 +14,7 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
 import com.example.cocktailmachine.data.db.tables.Tables;
-import com.example.cocktailmachine.ui.model.ModelType;
+import com.example.cocktailmachine.ui.model.enums.ModelType;
 
 import java.util.Objects;
 

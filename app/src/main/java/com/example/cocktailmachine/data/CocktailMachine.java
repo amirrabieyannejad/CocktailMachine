@@ -13,9 +13,9 @@ import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.CalibrateStatus;
 import com.example.cocktailmachine.data.enums.CocktailStatus;
 import com.example.cocktailmachine.data.enums.Postexecute;
-import com.example.cocktailmachine.ui.model.v2.CocktailMachineCalibration;
-import com.example.cocktailmachine.ui.model.v2.GetActivity;
-import com.example.cocktailmachine.ui.model.v2.GetDialog;
+import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
+import com.example.cocktailmachine.ui.model.helper.GetActivity;
+import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
