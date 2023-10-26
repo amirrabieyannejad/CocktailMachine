@@ -144,7 +144,7 @@ public class BildgeneratorGlas {
         int slotCounter= 0;
 
         Map<Ingredient,Integer> proportionenFlüssigkeitenImGlas =
-                this.getProportionOfLiquidInCocktail(recipe,  ingredientList, animationSlots);
+                this.getProportionOfLiquidInCocktail(context,recipe,  ingredientList, animationSlots);
 
         for (Ingredient ingredient : ingredientList){
             int numberSlots = proportionenFlüssigkeitenImGlas.get(ingredient);
@@ -164,42 +164,42 @@ public class BildgeneratorGlas {
         return canvas;
     }
 
-    private List<Ingredient> sortIngredientsAscending(Recipe recipe, List<Ingredient> ingredientList){
+    private List<Ingredient> sortIngredientsAscending(Context context,Recipe recipe, List<Ingredient> ingredientList){
         List<Ingredient> list = new LinkedList<>(ingredientList);
         Collections.sort(list,new Comparator<Ingredient>() {
             @Override
             public int compare(Ingredient ingredient, Ingredient t1) {
-                return (recipe.getVolume(ingredient)-recipe.getVolume(t1));
+                return (recipe.getVolume(context,ingredient)-recipe.getVolume(context,t1));
             }
         });
         return list;
     }
 
-    private int getNumberOfSlots(float sumLiquit, int animationSlots, Recipe recipe, Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
+    private int getNumberOfSlots(Context context, float sumLiquit, int animationSlots, Recipe recipe, Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
         float liquitProSlot = sumLiquit/animationSlots;
-        if(liquitProSlot>recipe.getVolume(ingredient)){
+        if(liquitProSlot>recipe.getVolume(context,ingredient)){
             return 1;
         }
-        return (int) (recipe.getVolume(ingredient)/liquitProSlot);
+        return (int) (recipe.getVolume(context,ingredient)/liquitProSlot);
 
     }
 
-    private Map<Ingredient,Integer> getProportionOfLiquidInCocktail(Recipe recipe, List<Ingredient> ingredientList,int animationSlots) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
+    private Map<Ingredient,Integer> getProportionOfLiquidInCocktail(Context context,Recipe recipe, List<Ingredient> ingredientList,int animationSlots) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
         int sumLiquit = 0;
         int slotCounter= 0;
-        List<Ingredient> newIngredientList = this.sortIngredientsAscending(recipe,ingredientList);
+        List<Ingredient> newIngredientList = this.sortIngredientsAscending(context,recipe,ingredientList);
 
         Map<Ingredient,Integer> outputMap = new HashMap<>();
 
-        for (Ingredient ingredient : recipe.getIngredients()){
-            sumLiquit += recipe.getVolume(ingredient);
+        for (Ingredient ingredient : recipe.getIngredients(context)){
+            sumLiquit += recipe.getVolume(context,ingredient);
         }
 
         for (Ingredient ingredient : newIngredientList){
-            int numberSlots = this.getNumberOfSlots(sumLiquit,animationSlots-slotCounter,recipe, ingredient);
+            int numberSlots = this.getNumberOfSlots(context,sumLiquit,animationSlots-slotCounter,recipe, ingredient);
             outputMap.put(ingredient,numberSlots);
             slotCounter += numberSlots;
-            sumLiquit -= recipe.getVolume(ingredient);
+            sumLiquit -= recipe.getVolume(context,ingredient);
         }
 
         return(outputMap);
