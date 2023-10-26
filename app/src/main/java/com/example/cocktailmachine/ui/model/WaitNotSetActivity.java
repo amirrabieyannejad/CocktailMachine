@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.model.v2;
+package com.example.cocktailmachine.ui.model;
 
 import android.app.Activity;
 import android.content.DialogInterface;
@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.enums.AdminRights;
+import com.example.cocktailmachine.ui.model.helper.GetActivity;
+import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
 public class WaitNotSetActivity extends AppCompatActivity {
 

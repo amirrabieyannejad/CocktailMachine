@@ -62,7 +62,7 @@
             android:name=".ui.ListOfPumps.ListOfPumps"
             android:exported="false" />
         <activity
-            android:name=".ui.model.v2.AddActivity"
+            android:name=".ui.model.AddActivity"
             android:exported="false"
             android:label="@string/title_activity_add"
             android:theme="@style/Theme.CocktailMachine" />
@@ -76,10 +76,10 @@
             android:name=".ui.BluetoothTestEnviroment"
             android:exported="true" />
         <activity
-            android:name=".ui.model.v2.ListActivity"
+            android:name=".ui.model.ListActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.model.v2.DisplayActivity"
+            android:name=".ui.model.DisplayActivity"
             android:exported="false" />
         <activity
             android:name=".ui.settings.MachineSettingsActivity"

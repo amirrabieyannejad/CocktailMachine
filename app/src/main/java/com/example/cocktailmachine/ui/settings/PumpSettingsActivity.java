@@ -9,7 +9,7 @@ import android.view.View;
 import com.example.cocktailmachine.R;
 
 import com.example.cocktailmachine.data.Pump;
-import com.example.cocktailmachine.ui.model.v2.GetDialog;
+import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
 /**
  * Pumpenkalibrierung und Pumpenzeit

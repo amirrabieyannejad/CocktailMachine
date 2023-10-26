@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.model;
+package com.example.cocktailmachine.ui.model.enums;
 
 /**
  * @author Johanna Reidt

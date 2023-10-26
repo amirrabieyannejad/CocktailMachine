@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.model.v2;
+package com.example.cocktailmachine.ui.model.helper;
 
 import android.app.Activity;
 import android.content.Context;
@@ -21,7 +21,7 @@ import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Postexecute;
-import com.example.cocktailmachine.ui.model.ModelType;
+import com.example.cocktailmachine.ui.model.enums.ModelType;
 
 import java.util.ArrayList;
 import java.util.HashMap;

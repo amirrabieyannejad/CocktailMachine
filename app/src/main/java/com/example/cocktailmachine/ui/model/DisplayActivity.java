@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.model.v2;
+package com.example.cocktailmachine.ui.model;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -12,6 +12,9 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityDisplayBinding;
+import com.example.cocktailmachine.ui.model.helper.GetActivity;
+import com.example.cocktailmachine.ui.model.helper.GetAdapter;
+import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
 public class DisplayActivity extends BasicActivity {
     private static final String TAG = "DisplayActivity";

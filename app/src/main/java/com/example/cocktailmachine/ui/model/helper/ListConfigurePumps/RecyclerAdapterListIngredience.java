@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.model.v2.ListConfigurePumps;
+package com.example.cocktailmachine.ui.model.helper.ListConfigurePumps;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Ingredient;
-import com.example.cocktailmachine.ui.model.v2.ConfigurePumps;
+import com.example.cocktailmachine.ui.model.helper.ConfigurePumps;
 
 import java.util.HashMap;
 import java.util.List;

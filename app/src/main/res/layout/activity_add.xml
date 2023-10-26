@@ -7,7 +7,7 @@
     android:clickable="false"
     android:focusable="false"
     android:longClickable="false"
-    tools:context=".ui.model.v2.AddActivity">
+    tools:context=".ui.model.AddActivity">
 
 
     <androidx.core.widget.NestedScrollView

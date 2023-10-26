@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.model.v2;
+package com.example.cocktailmachine.ui.model;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -13,7 +13,10 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityAddBinding;
-import com.example.cocktailmachine.ui.model.ModelType;
+import com.example.cocktailmachine.ui.model.enums.ModelType;
+import com.example.cocktailmachine.ui.model.helper.GetActivity;
+import com.example.cocktailmachine.ui.model.helper.GetAdapter;
+import com.example.cocktailmachine.ui.model.helper.GetDialog;
 import com.mrudultora.colorpicker.ColorPickerPopUp;
 
 import java.util.Random;

@@ -19,7 +19,7 @@ import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredie
 import com.example.cocktailmachine.data.db.tables.BasicColumn;
 import com.example.cocktailmachine.data.db.tables.Tables;
 import com.example.cocktailmachine.data.db.tables.TopicTable;
-import com.example.cocktailmachine.ui.model.ModelType;
+import com.example.cocktailmachine.ui.model.enums.ModelType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
