@@ -36,7 +36,7 @@ public class GetAdapter {
      * @return LinearLayoutManager
      */
     static LinearLayoutManager getNewLinearLayoutManager(Context context){
-        Log.v(TAG, "getNewLinearLayoutManager");
+        //Log.v(TAG, "getNewLinearLayoutManager");
 
         LinearLayoutManager llm = new LinearLayoutManager(context);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
@@ -54,7 +54,7 @@ public class GetAdapter {
         public StringView(@NonNull View itemView, Activity activity) {
             super(itemView);
             this.activity = activity;
-            Log.v(TAG, "StringView");
+            //Log.v(TAG, "StringView");
             txt = itemView.findViewById(R.id.textView_item_little_title);
         }
 
@@ -105,7 +105,7 @@ public class GetAdapter {
         @NonNull
         @Override
         public GetAdapter.StringView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            Log.v(TAG, "TopicAdapter: onCreateViewHolder");
+            //Log.v(TAG, "TopicAdapter: onCreateViewHolder");
             return new GetAdapter.StringView(LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_little_title, parent, false),
                     this.activity);
@@ -113,18 +113,18 @@ public class GetAdapter {
 
         @Override
         public void onBindViewHolder(@NonNull GetAdapter.StringView holder, int position) {
-            Log.v(TAG, "TopicAdapter: onBindViewHolder");
-            Log.v(TAG, "TopicAdapter: onBindViewHolder position: "+position);
+            //Log.v(TAG, "TopicAdapter: onBindViewHolder");
+            //Log.v(TAG, "TopicAdapter: onBindViewHolder position: "+position);
             Topic topic = this.topics.get(position);
-            Log.v(TAG, "TopicAdapter: onBindViewHolder topic: "+topic.toString());
+            //Log.v(TAG, "TopicAdapter: onBindViewHolder topic: "+topic.toString());
             View.OnLongClickListener delete =  v -> {
-                Log.v(TAG, "TopicAdapter: setTxt topic clicked");
+                //Log.v(TAG, "TopicAdapter: setTxt topic clicked");
                 GetDialog.deleteAddElement(this.activity, "den Serviervorschlag " + topic.getName(), new Postexecute() {
                     @Override
                     public void post() {
-                        Log.v(TAG, "TopicAdapter: setTxt choose to delete");
+                        //Log.v(TAG, "TopicAdapter: setTxt choose to delete");
                         TopicAdapter.this.remove(topic);
-                        Log.v(TAG, "TopicAdapter: setTxt remove from list");
+                        //Log.v(TAG, "TopicAdapter: setTxt remove from list");
                         //this.activity.updateTopics();
                     }
                 });
@@ -148,35 +148,35 @@ public class GetAdapter {
 
         @Override
         public int getItemCount() {
-            Log.v(TAG, "TopicAdapter: getItemCount");
+            //Log.v(TAG, "TopicAdapter: getItemCount");
             return this.topics.size();
         }
 
         public void add(Topic topic){
-            Log.v(TAG, "add");
+            //Log.v(TAG, "add");
             if(topic != null) {
                 if(!this.topics.contains(topic)) {
                     this.topics.add(topic);
                     this.notifyItemInserted(this.topics.indexOf(topic));
                 }
             }
-            Log.v(TAG, "add: "+this.topics);
+            //Log.v(TAG, "add: "+this.topics);
         }
 
 
         public void remove(Topic topic){
-            Log.v(TAG, "remove t");
+            //Log.v(TAG, "remove t");
             this.remove(this.topics.indexOf(topic));
-            Log.v(TAG, "remove t: "+this.topics);
+            //Log.v(TAG, "remove t: "+this.topics);
         }
 
         public void remove(int position){
-            Log.v(TAG, "remove position");
+            //Log.v(TAG, "remove position");
             if(position != -1) {
                 this.topics.remove(position);
                 this.notifyItemRemoved(position);
             }
-            Log.v(TAG, "remove position: "+this.topics);
+            //Log.v(TAG, "remove position: "+this.topics);
         }
 
         public void save(){
@@ -219,7 +219,7 @@ public class GetAdapter {
         @NonNull
         @Override
         public GetAdapter.StringView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            Log.v(TAG, "IngredientVolAdapter: onCreateViewHolder");
+            //Log.v(TAG, "IngredientVolAdapter: onCreateViewHolder");
             return new GetAdapter.StringView(LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_little_title, parent, false),
                     this.activity);
@@ -227,7 +227,7 @@ public class GetAdapter {
 
         @Override
         public void onBindViewHolder(@NonNull GetAdapter.StringView holder, int position) {
-            Log.v(TAG, "onBindViewHolder");
+            //Log.v(TAG, "onBindViewHolder");
             Ingredient i;
             try {
                 i = this.ingredients.get(position);
@@ -246,11 +246,11 @@ public class GetAdapter {
                 vol = -1;
             }
             View.OnLongClickListener delete =  v -> {
-                            Log.v(TAG, "setTxt ingredient clicked");
+                            //Log.v(TAG, "setTxt ingredient clicked");
                             GetDialog.deleteAddElement(this.activity, "die Zutat " + i.getName(), new Postexecute() {
                                 @Override
                                 public void post() {
-                                    Log.v(TAG, "setTxt choose to delete");
+                                    //Log.v(TAG, "setTxt choose to delete");
                                     IngredientVolAdapter.this.remove(i);
 
                                 }
@@ -258,7 +258,7 @@ public class GetAdapter {
                             return true;
                         };
             View.OnClickListener goTo =  v -> {
-                Log.v(TAG, "setTxt ingredient clicked");
+                //Log.v(TAG, "setTxt ingredient clicked");
                 GetActivity.goToLook(this.activity, ModelType.INGREDIENT, i.getID());
             };
 
@@ -281,7 +281,7 @@ public class GetAdapter {
 
         @Override
         public int getItemCount() {
-            Log.v(TAG, "IngredientVolAdapter: getItemCount" +this.ingredientVol.size());
+            //Log.v(TAG, "IngredientVolAdapter: getItemCount" +this.ingredientVol.size());
             return this.ingredientVol.size();
         }
 
@@ -296,7 +296,7 @@ public class GetAdapter {
             this.recipe.replaceIngredients(this.activity, this.ingredientVol);
         }
         public void add(Ingredient ingredient, Integer volume) {
-            Log.v(TAG, "add");
+            //Log.v(TAG, "add");
             if(ingredient != null) {
                 this.ingredients.add(ingredient);
                 this.ingredientVol.put(ingredient, volume);
@@ -305,7 +305,7 @@ public class GetAdapter {
         }
 
         public void remove(Ingredient ingredient) {
-            Log.v(TAG, "remove");
+            //Log.v(TAG, "remove");
             int position = this.ingredients.indexOf(ingredient);
             this.ingredients.remove(ingredient);
             this.ingredientVol.remove(ingredient);
@@ -326,7 +326,7 @@ public class GetAdapter {
 
         @Override
         public String toString(int position) {
-            Log.v(TAG,"toString");
+            //Log.v(TAG,"toString");
             Ingredient i = this.get(position);
             if (i == null) {
                 Log.e(TAG, "toString getting ingredient failed");
@@ -342,7 +342,7 @@ public class GetAdapter {
 
         @Override
         public void save() {
-            Log.v(TAG,"toString");
+            //Log.v(TAG,"toString");
             this.recipe.replaceIngredients(
                     this.getActivity(),
                     this.ingVols);
@@ -369,11 +369,11 @@ public class GetAdapter {
         @Override
         public View.OnLongClickListener delete(int position) {
             return v -> {
-                Log.v(TAG, "setTxt ingredient clicked");
+                //Log.v(TAG, "setTxt ingredient clicked");
                 GetDialog.deleteAddElement(this.getActivity(), "die Zutat " + this.get(position).getName(), new Postexecute() {
                     @Override
                     public void post() {
-                        Log.v(TAG, "setTxt choose to delete");
+                        //Log.v(TAG, "setTxt choose to delete");
                         IngredientVolumeAdapter.this.remove(position);
                     }
                 });
@@ -384,7 +384,7 @@ public class GetAdapter {
         @Override
         public View.OnClickListener goTo(int position) {
             return  v -> {
-                Log.v(TAG, "setTxt ingredient clicked");
+                //Log.v(TAG, "setTxt ingredient clicked");
                 GetActivity.goToLook(this.getActivity(), ModelType.INGREDIENT, this.get(position).getID());
             };
         }
@@ -543,7 +543,7 @@ public class GetAdapter {
         @NonNull
         @Override
         public GetAdapter.StringView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            Log.v(TAG, "IngredientVolAdapter: onCreateViewHolder");
+            //Log.v(TAG, "IngredientVolAdapter: onCreateViewHolder");
             return new GetAdapter.StringView(LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_little_title, parent, false),
                     this.activity);
@@ -551,7 +551,7 @@ public class GetAdapter {
 
         @Override
         public void onBindViewHolder(@NonNull GetAdapter.StringView holder, int position) {
-            Log.v(TAG, "onBindViewHolder");
+            //Log.v(TAG, "onBindViewHolder");
             K i = this.data.get(position);
             if (i == null) {
                 Log.e(TAG, "onBindViewHolder getting ingredient failed");
@@ -559,11 +559,11 @@ public class GetAdapter {
             }
             String txt = getTitle(i);
             View.OnLongClickListener delete =  v -> {
-                Log.v(TAG, "setTxt ingredient clicked");
+                //Log.v(TAG, "setTxt ingredient clicked");
                 GetDialog.deleteElement(this.activity, txt, new Postexecute() {
                     @Override
                     public void post() {
-                        Log.v(TAG, "setTxt choose to delete");
+                        //Log.v(TAG, "setTxt choose to delete");
                         NameAdapter.this.remove(i);
                         i.delete(activity);
                     }
@@ -571,7 +571,7 @@ public class GetAdapter {
                 return true;
             };
             View.OnClickListener goTo =  v -> {
-                Log.v(TAG, "setTxt ingredient clicked");
+                //Log.v(TAG, "setTxt ingredient clicked");
                 GetActivity.goToLook(this.activity,this.type  , i.getID());
             };
 
@@ -585,13 +585,13 @@ public class GetAdapter {
 
         @Override
         public int getItemCount() {
-            Log.v(TAG, "Nameadapter: getItemCount" +this.data.size());
+            //Log.v(TAG, "Nameadapter: getItemCount" +this.data.size());
             return this.data.size();
         }
 
 
         public void remove(K k) {
-            Log.v(TAG, "remove");
+            //Log.v(TAG, "remove");
             int position = this.data.indexOf(k);
             this.data.remove(k);
             this.notifyItemRemoved(position);
@@ -621,11 +621,11 @@ public class GetAdapter {
             this.modelType = modelType;
             this.activity = activity;
             this.names = names;
-            Log.v(TAG, "TitleListAdapter: ");
-            Log.v(TAG, "IDs: "+IDs.toString());
-            Log.v(TAG, "modelType: "+modelType.toString());
-            Log.v(TAG, "activity: "+activity.toString());
-            Log.v(TAG, "names: "+names.toString());
+            //Log.v(TAG, "TitleListAdapter: ");
+            //Log.v(TAG, "IDs: "+IDs.toString());
+            //Log.v(TAG, "modelType: "+modelType.toString());
+            //Log.v(TAG, "activity: "+activity.toString());
+            //Log.v(TAG, "names: "+names.toString());
         }
 
 
@@ -662,13 +662,13 @@ public class GetAdapter {
             public TitleRow(@NonNull View itemView) {
                 super(itemView);
                 if(itemView == null){
-                    Log.w(TAG, "itemView is null");
+                    Log.e(TAG, "itemView is null");
                 }if(itemView.getContext()==null){
-                    Log.w(TAG, "itemView is null");
+                    Log.e(TAG, "itemView is null");
                 }
                 title = itemView.findViewById(R.id.textView_item_title);
                 if(title == null){
-                    Log.w(TAG, "TextView title is null");
+                    Log.e(TAG, "TextView title is null");
                 }
             }
 
