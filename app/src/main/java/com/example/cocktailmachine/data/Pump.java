@@ -116,6 +116,12 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @param ingredient next ingredient.
      */
     default void setCurrentIngredient(Context context, Ingredient ingredient) {
+        if (
+                ingredient == null
+        ) {
+            return;
+        }
+
         setCurrentIngredient(context,ingredient.getID());
     }
 

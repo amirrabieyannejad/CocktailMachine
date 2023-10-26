@@ -37,7 +37,7 @@ public class TopicTable extends BasicColumn<SQLTopic>{
         return TABLE_NAME;
     }
 
-    public List<SQLTopic> getElement(SQLiteDatabase db, String needle){
+    public List<SQLTopic> getElements(SQLiteDatabase db, String needle){
         try {
             return this.getElementsLike(db, COLUMN_NAME_NAME, needle);
         } catch (NoSuchColumnException e) {
@@ -45,6 +45,13 @@ public class TopicTable extends BasicColumn<SQLTopic>{
             Log.getStackTraceString(e);
         }
         return new ArrayList<>();
+    }
+    public SQLTopic getElement(SQLiteDatabase db, String needle){
+        List<SQLTopic> t = getElements(db, needle);
+        if(t.isEmpty()){
+            return null;
+        }
+        return t.get(0);
     }
 
     @Override

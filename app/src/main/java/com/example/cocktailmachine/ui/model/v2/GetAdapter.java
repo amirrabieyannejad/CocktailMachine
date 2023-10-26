@@ -80,7 +80,9 @@ public class GetAdapter {
         }
 
 
-
+        public void setGone() {
+            this.itemView.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -226,7 +228,14 @@ public class GetAdapter {
         @Override
         public void onBindViewHolder(@NonNull GetAdapter.StringView holder, int position) {
             Log.v(TAG, "onBindViewHolder");
-            Ingredient i = this.ingredients.get(position);
+            Ingredient i;
+            try {
+                i = this.ingredients.get(position);
+            }catch (IndexOutOfBoundsException e){
+                Log.e(TAG, "onBindViewHolder getting ingredient failed", e);
+                holder.setGone();
+                return;
+            }
             if (i == null) {
                 Log.e(TAG, "onBindViewHolder getting ingredient failed");
                 return;

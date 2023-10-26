@@ -71,10 +71,10 @@ public class GetFromDB {
         return Tables.TABLE_INGREDIENT.getChunkIterator(getReadableDatabase(context) ,n);
     }
 
-    public static Recipe loadRecipes(Context context){
+    public static List<? extends Recipe> loadRecipes(Context context){
         // Log.v(TAG, "loadRecipe");
         //res.loadAvailable(context);
-        return (Recipe) Tables.TABLE_RECIPE.getAllElements(getReadableDatabase(context));
+        return Tables.TABLE_RECIPE.getAllElements(getReadableDatabase(context));
     }
 
     public static Recipe loadRecipe(Context context, long id){
@@ -119,7 +119,7 @@ public class GetFromDB {
 
     static List<SQLTopic> loadTopics(Context context, String needle) {
        // Log.v(TAG, "loadTopics");
-        return Tables.TABLE_TOPIC.getElement(getReadableDatabase(context), needle);
+        return Tables.TABLE_TOPIC.getElements(getReadableDatabase(context), needle);
     }
 
     static List<SQLRecipeTopic> loadRecipeTopics(Context context, List<Recipe> recipes) {
@@ -271,7 +271,7 @@ public class GetFromDB {
     }
 
     public static Pump getPumpWithSlot(Context context, int slot) {
-        List<? extends SQLPump> res =  Tables.TABLE_PUMP.getPumpWithSlot(getReadableDatabase(context), slot);
+        List<? extends Pump> res =  Tables.TABLE_PUMP.getPumpWithSlot(getReadableDatabase(context), slot);
         if(res.isEmpty()){
             return null;
         }
