@@ -40,6 +40,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,12 +58,15 @@ import java.util.UUID;
  * Activity for scanning and displaying available Bluetooth LE devices.
  */
 public class DeviceScanActivity extends ListActivity {
+    public static final String TAG = "bluetoothScanActivity";
     private BluetoothAdapter bluetoothAdapter;
     private LeDeviceListAdapter mLeDeviceListAdapter;
     private BluetoothLeScanner bluetoothLeScanner;
+    Button btnRloadBle = findViewById(R.id.buttonReloadBle);
 
     private boolean scanning;
     final private Handler handler = new Handler();
+    final private Handler handlerCore = new Handler();
 
     private ScanSettings bleScanSettings = null;
 
@@ -95,11 +99,16 @@ public class DeviceScanActivity extends ListActivity {
         else
             ActivityCompat.requestPermissions(activity, BLE_PERMISSIONS, requestCode);
     }
-
+    @SuppressLint("MissingPermission")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i("Device","onCreate");
+        Toast.makeText(this, "Connecting to Cocktail Device!",
+                Toast.LENGTH_SHORT).show();
         super.onCreate(savedInstanceState);
+        btnRloadBle.setOnClickListener(v -> {
+            scanLeDevice(true);
+        });
         if(Dummy.isDummy){
             //GetActivity.goToMenu(this);
             return;
@@ -123,11 +132,34 @@ public class DeviceScanActivity extends ListActivity {
             final BluetoothManager bluetoothManager =
                     (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
             bluetoothAdapter = bluetoothManager.getAdapter();
-
+            Log.d(TAG, "onCreate: we are hier");
             // Checks if Bluetooth is supported on the device.
             if (bluetoothAdapter == null) {
                 Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
                 finish();
+            } else {
+                handler.postDelayed(() -> {
+                    final BluetoothDevice device = mLeDeviceListAdapter.getDevice(0);
+                    if (device == null) {
+                        Toast.makeText(this, "Cocktail device not found!",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    final Intent intent = new Intent(this, BluetoothTestEnviroment.class);
+                    //final Intent intent = new Intent(this, DeviceControlActivity.class);
+                    Toast.makeText(this, "Cocktail device has been found!",
+                            Toast.LENGTH_SHORT).show();
+                    BluetoothSingleton settings = BluetoothSingleton.getInstance();
+                    settings.setEspDeviceName(device.getName());
+                    settings.setEspDeviceAddress(device.getAddress());
+                    if (scanning) {
+                        bluetoothLeScanner.stopScan(leScanCallback);
+                        scanning = false;
+                    }
+                    startActivity(intent);
+                }, 3000);
+
+
             }
         }
 
@@ -183,8 +215,6 @@ public class DeviceScanActivity extends ListActivity {
             // Initializes list view adapter.
             mLeDeviceListAdapter = new LeDeviceListAdapter();
             bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
-
-
             setListAdapter(mLeDeviceListAdapter);
             scanLeDevice(true);
         }
@@ -255,7 +285,8 @@ public class DeviceScanActivity extends ListActivity {
             ScanFilter.Builder builder = new ScanFilter.Builder();
             String serviceUuidMaskString = "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF";
             ParcelUuid parcelUuidMask = ParcelUuid.fromString(serviceUuidMaskString);
-            builder.setServiceUuid(new ParcelUuid(UUID_COCKTAIL_MACHINE), parcelUuidMask);
+            //builder.setServiceUuid(new ParcelUuid(UUID_COCKTAIL_MACHINE), parcelUuidMask);
+            builder.setDeviceName("Cocktail Machine ESP32");
             filters.add(builder.build());
             if (filters.isEmpty()) {
                 Toast.makeText(this, "UUID has not found!",
@@ -290,7 +321,10 @@ public class DeviceScanActivity extends ListActivity {
         }
 
         public BluetoothDevice getDevice(int position) {
-            return mLeDevices.get(position);
+            if (!mLeDevices.isEmpty()) {
+                return mLeDevices.get(position);
+            }
+            return null;
         }
 
         public void clear() {
@@ -348,6 +382,7 @@ public class DeviceScanActivity extends ListActivity {
                 @Override
                 public void onScanResult(int callbackType, ScanResult result) {
                     super.onScanResult(callbackType, result);
+                    Log.d(TAG, "onScanResult: Scan Call back");
                     mLeDeviceListAdapter.addDevice(result.getDevice());
                     mLeDeviceListAdapter.notifyDataSetChanged();
                 }
@@ -360,4 +395,5 @@ public class DeviceScanActivity extends ListActivity {
         TextView deviceName;
         TextView deviceAddress;
     }
+
 }
