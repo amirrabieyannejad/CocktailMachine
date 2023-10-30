@@ -308,8 +308,8 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
 
 
 
-    //TODO: JSON Object
-    //TODO: JSON Array
-    //TODO: nachschauen ob DB schon mit infos geladen sein kann beim runterladen
+    //TO DO: JSON Object
+    //TO  DO: JSON Array
+    //TO DO: nachschauen ob DB schon mit infos geladen sein kann beim runterladen
 
 }

@@ -9,16 +9,23 @@ import android.view.animation.Animation;
 import android.widget.ImageView;
 
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.bluetoothlegatt.WaitForBroadcastReceiver;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
+import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.data.enums.CocktailStatus;
+import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.logic.Animation.CircularAnimation;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
+import com.example.cocktailmachine.ui.model.helper.GetActivity;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.json.JSONException;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -30,6 +37,10 @@ public class BluetoothNotFound extends AppCompatActivity {
     Bitmap image = null;
     ImageView backgroundImage = null;
     ImageView loopImage = null;
+    // CocktailStatus getCurrentStatus(Postexecute postexecute,Activity activity)
+    // not == keine Verbindung
+
+    //  public boolean connect = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +64,15 @@ public class BluetoothNotFound extends AppCompatActivity {
         loopImage.startAnimation(anim);
 
         backgroundImage.setImageBitmap(image);
+        //Idea: how to get connection
+        //BluetoothSineelton   public boolean connect = false;
+        CocktailStatus.getCurrentStatus(new Postexecute() {
+            @Override
+            public void post() {
+                //GetActivity.goToMenu(BluetoothNotFound.this);
+                //go back
+            }
+        }, BluetoothNotFound.this);
     }
 
     private Recipe getRandomRecipe(){

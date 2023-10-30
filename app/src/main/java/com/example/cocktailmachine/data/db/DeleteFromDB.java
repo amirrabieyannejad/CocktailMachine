@@ -73,7 +73,7 @@ public class DeleteFromDB {
     }
 
     public static void remove(Context context, SQLTopic topic) {
-        //TODO: delete from recipes
+        //TO DO: delete from recipes
        // Log.v(TAG, "remove");
         Tables.TABLE_TOPIC.deleteElement(getWritableDatabase(context), topic);
         //Buffer.getSingleton(context).removeFrom//Buffer(topic);
