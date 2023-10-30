@@ -55,6 +55,7 @@ public enum CocktailStatus {
             Log.e(TAG, "getCurrentStatus");
             Log.e(TAG, Objects.requireNonNull(e.getMessage()));
             Log.e(TAG, "error", e);
+            currentState = CocktailStatus.not;
         }
         return currentState;
     }

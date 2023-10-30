@@ -305,8 +305,10 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
     }
 
     public int getVolume(SQLiteDatabase db, SQLRecipe recipe, Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception {
+        //TODO: check this
+
         Cursor cursor = db.query(this.getName(),
-                new String[]{COLUMN_NAME_INGREDIENT_ID},
+                new String[]{COLUMN_TYPE_PUMP_TIME},
                 COLUMN_NAME_RECIPE_ID+
                         " = "+
                         recipe.getID() +

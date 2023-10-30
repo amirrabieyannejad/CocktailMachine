@@ -620,7 +620,7 @@ public class CocktailMachine {
      */
     public static int getNumberOfUsersUntilThisUsersTurn(Activity activity) {
         Log.i(TAG, "getNumberOfUsersUntilThisUsersTurn");
-        /*TODO:
+        /*TO DO:
         BluetoothSingleton bluetoothSingleton = BluetoothSingleton.getInstance();
         try {
             bluetoothSingleton.makeRecipe(this.getName());
