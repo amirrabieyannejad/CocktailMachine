@@ -54,7 +54,7 @@ async def read_status(client):
     except Exception as e:
       logging.error(f"\t{char} ({uuid}) -> {e}")
 
-async def comm_msg(client, uuid, message, wait=None, wait_time=10.0):
+async def comm_msg(client, uuid, message, wait=None, wait_time=30.0):
   notification_received1 = asyncio.Event()
   notification_received2 = asyncio.Event()
 
