@@ -2,6 +2,7 @@ package com.example.cocktailmachine.data;
 
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
@@ -16,6 +17,7 @@ import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -150,6 +152,11 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
 
 
     //general
+
+
+    static Iterator<List<SQLIngredient>> getChunkIterator(Context context, int n) {
+        return GetFromDB.getIngredientChunkIterator(context, n);
+    }
 
     /**
      * Static Access to ingredients if necessary from db

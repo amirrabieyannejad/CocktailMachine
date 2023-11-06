@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.widget.Toast;
@@ -155,12 +156,12 @@ public class BildgeneratorGlas {
                 }
                 Drawable myImage =  ResourcesCompat.getDrawable(res, listIdGlasFlüssigkeit[i+slotCounter], null);
                 myImage.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-                myImage.setColorFilter(ingredient.getColor(), PorterDuff.Mode.MULTIPLY);//MULTIPLY,SRC_IN,SRC_ATOP
+                int color = ingredient.getColor() | ((0xff) << 24);
+                myImage.setColorFilter(color, PorterDuff.Mode.MULTIPLY);//MULTIPLY,SRC_IN,SRC_ATOP
                 myImage.draw(canvas);
             }
             slotCounter += numberSlots;
         }
-
         return canvas;
     }
 

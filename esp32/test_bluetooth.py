@@ -87,6 +87,7 @@ async def comm_msg(client, uuid, message, wait=None, wait_time=30.0):
         await client.stop_notify(state_uuid)
         break
 
+      time.sleep(1)
       await notification_received1.wait()
       notification_received1.clear()
 
@@ -184,8 +185,9 @@ async def test_run(client):
 
   await read_status(client)
 
-  # TODO should fail
-  await user({"cmd": "add_liquid", "user": 1, "liquid": "beer", "volume": 100})
+  # this should fail
+  await user({"cmd":  "add_liquid",  "user": 1, "liquid": "beer", "volume": 100})
+  await admin({"cmd": "reset_error", "user": 0})
   await read_status(client)
 
   # automatically calibrate pumps
@@ -206,14 +208,18 @@ async def test_run(client):
     await admin({"cmd": "calibration_add_weight", "user": 0, "weight": 100.0},	cal_wait="calibration known weight")
     await admin({"cmd": "calibration_add_empty",  "user": 0},                 	cal_wait="calibration empty container")
 
-    for p in range(2):
-      for i in range(3):
-        await admin({"cmd": "calibration_add_empty",  "user": 0},	cal_wait="calibration empty container")
+    # reset the scale factor because this is just a basic test without any weights
+    await admin({"cmd": "set_scale_factor", "user": 0, "factor": 1.0})
 
-        await admin({"cmd": "calibration_finish", "user": 0}, cal_wait="calibration done")
-        await read_status(client)
+    for cal_pass in range(2):
+      for pump in range(3):
+        await admin({"cmd": "calibration_add_empty", "user": 0}, cal_wait="calibration empty container")
+
+    await admin({"cmd": "calibration_finish", "user": 0}, cal_wait="calibration done")
+    await read_status(client)
 
     await admin({"cmd": "reset", "user": 0})
+    await admin({"cmd": "reset_error", "user": 0}) # assume calibration data is wrong
     await read_status(client)
 
   await read_all_chars(client)
