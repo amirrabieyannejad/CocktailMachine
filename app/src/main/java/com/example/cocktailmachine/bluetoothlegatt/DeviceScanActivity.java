@@ -62,7 +62,7 @@ public class DeviceScanActivity extends ListActivity {
     private BluetoothAdapter bluetoothAdapter;
     private LeDeviceListAdapter mLeDeviceListAdapter;
     private BluetoothLeScanner bluetoothLeScanner;
-    Button btnRloadBle = findViewById(R.id.buttonReloadBle);
+    Button btnRloadBle;
 
     private boolean scanning;
     final private Handler handler = new Handler();
