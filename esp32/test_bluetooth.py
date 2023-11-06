@@ -54,7 +54,7 @@ async def read_status(client):
     except Exception as e:
       logging.error(f"\t{char} ({uuid}) -> {e}")
 
-async def comm_msg(client, uuid, message, wait=None, wait_time=10.0):
+async def comm_msg(client, uuid, message, wait=None, wait_time=30.0):
   notification_received1 = asyncio.Event()
   notification_received2 = asyncio.Event()
 
@@ -157,30 +157,6 @@ async def test_run(client):
   await admin({"cmd": "reset", "user": 0})
   await read_status(client)
 
-  # automatically calibrate pumps
-  await admin({"cmd": "calibration_start", "user": 0})
-  await admin({"cmd": "calibration_cancel", "user": 0}) # try cancelling immediately
-
-  await admin({"cmd": "calibration_start", "user": 0})
-  await admin({"cmd": "calibration_add_empty",  "user": 0},                 	cal_wait="calibration empty container")
-  await admin({"cmd": "calibration_add_weight", "user": 0, "weight": 100.0},	cal_wait="calibration known weight")
-  await admin({"cmd": "calibration_add_empty",  "user": 0},                 	cal_wait="calibration empty container")
-
-  for p in range(2):
-    for i in range(3):
-      await admin({"cmd": "calibration_add_empty",  "user": 0},	cal_wait="calibration empty container")
-
-  await admin({"cmd": "calibration_finish", "user": 0}, cal_wait="calibration done")
-  await read_status(client)
-
-    # refill and reset pumps
-  await admin({"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1})
-  await admin({"cmd": "refill_pump", "user": 0, "volume": 2000, "slot": 2})
-  await admin({"cmd": "refill_pump", "user": 0, "volume": 3000, "slot": 7})
-
-  await admin({"cmd": "reset", "user": 0})
-  await read_status(client)
-
   # define recipes
   await user({"cmd": "define_recipe", "user": 1, "name": "radler",     "liquids": [["beer", 250], ["lemonade", 250]]})
   await user({"cmd": "define_recipe", "user": 1, "name": "cheap beer", "liquids": [["beer", 250], ["water", 250]]})
@@ -212,16 +188,38 @@ async def test_run(client):
   await user({"cmd": "add_liquid", "user": 1, "liquid": "beer", "volume": 100})
   await read_status(client)
 
-  # test all pumps
-  # await user({"cmd": "reset", "user": 0})
-  # await user({"cmd": "add_liquid", "user": 1, "liquid": "water",    "volume": 100})
-  # await user({"cmd": "add_liquid", "user": 1, "liquid": "beer",     "volume": 100})
-  # await user({"cmd": "add_liquid", "user": 1, "liquid": "lemonade", "volume": 100})
+  # automatically calibrate pumps
+  if True:
+    # refill and reset pumps
+    await admin({"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1})
+    await admin({"cmd": "refill_pump", "user": 0, "volume": 2000, "slot": 2})
+    await admin({"cmd": "refill_pump", "user": 0, "volume": 3000, "slot": 7})
 
-  # await user({"cmd": "reset", "user": 0})
-  # await read_status(client)
+    await admin({"cmd": "reset", "user": 0})
+    await read_status(client)
+
+    await admin({"cmd": "calibration_start",  "user": 0})
+    await admin({"cmd": "calibration_cancel", "user": 0}) # try cancelling immediately
+
+    await admin({"cmd": "calibration_start",      "user": 0})
+    await admin({"cmd": "calibration_add_empty",  "user": 0},                 	cal_wait="calibration empty container")
+    await admin({"cmd": "calibration_add_weight", "user": 0, "weight": 100.0},	cal_wait="calibration known weight")
+    await admin({"cmd": "calibration_add_empty",  "user": 0},                 	cal_wait="calibration empty container")
+
+    for p in range(2):
+      for i in range(3):
+        await admin({"cmd": "calibration_add_empty",  "user": 0},	cal_wait="calibration empty container")
+
+        await admin({"cmd": "calibration_finish", "user": 0}, cal_wait="calibration done")
+        await read_status(client)
+
+    await admin({"cmd": "reset", "user": 0})
+    await read_status(client)
 
   await read_all_chars(client)
+
+  # reset machine again
+  await admin({"cmd": "factory_reset", "user": 0})
 
 async def main():
   parser = argparse.ArgumentParser(
