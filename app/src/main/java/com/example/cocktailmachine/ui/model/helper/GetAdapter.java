@@ -692,7 +692,7 @@ public class GetAdapter {
                             //recyclerView.scrollToPosition(scrollPosition);
 
                         }
-                    }, 2000);
+                    }, 500);
 
         }
 

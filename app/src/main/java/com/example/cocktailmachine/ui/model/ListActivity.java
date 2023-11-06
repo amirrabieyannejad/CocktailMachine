@@ -88,6 +88,7 @@ public class ListActivity extends BasicActivity {
 
          */
 
+        /*
         adapter = new GetAdapter.NameAdapter<Topic>(this, ModelType.TOPIC) {
             @Override
             public String getTitle(Topic i) {
@@ -99,6 +100,10 @@ public class ListActivity extends BasicActivity {
                 return Topic.getTopics(ListActivity.this);
             }
         };
+
+         */
+
+        adapter = new GetAdapter.TopicScrollAdapter(this, 20).initScrollListener(binding.recyclerViewListAc);
     }
 
     @Override
@@ -111,6 +116,7 @@ public class ListActivity extends BasicActivity {
             names.add(e.getName());
         }
          */
+        /*
         adapter = new GetAdapter.NameAdapter<Ingredient>(this, ModelType.INGREDIENT) {
             @Override
             public String getTitle(Ingredient i) {
@@ -122,6 +128,10 @@ public class ListActivity extends BasicActivity {
                 return Ingredient.getAllIngredients(ListActivity.this);
             }
         };
+
+         */
+
+        adapter = new GetAdapter.IngredientScrollAdapter(this, 20).initScrollListener(binding.recyclerViewListAc);
     }
 
     @Override
