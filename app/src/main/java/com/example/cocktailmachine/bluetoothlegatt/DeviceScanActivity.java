@@ -62,7 +62,7 @@ public class DeviceScanActivity extends ListActivity {
     private BluetoothAdapter bluetoothAdapter;
     private LeDeviceListAdapter mLeDeviceListAdapter;
     private BluetoothLeScanner bluetoothLeScanner;
-    Button btnRloadBle;
+    Button btnReloadBle;
 
     private boolean scanning;
     final private Handler handler = new Handler();
@@ -106,14 +106,14 @@ public class DeviceScanActivity extends ListActivity {
         Toast.makeText(this, "Connecting to Cocktail Device!",
                 Toast.LENGTH_SHORT).show();
         super.onCreate(savedInstanceState);
-        btnRloadBle.setOnClickListener(v -> {
-            scanLeDevice(true);
-        });
         if(Dummy.isDummy){
             //GetActivity.goToMenu(this);
             return;
         }else {
-
+            btnReloadBle = findViewById(R.id.buttonReloadBle);
+            btnReloadBle.setOnClickListener(v -> {
+                scanLeDevice(true);
+            });
             //getActionBar().setTitle(R.string.title_devices);
             mLeDeviceListAdapter = new LeDeviceListAdapter();
 
