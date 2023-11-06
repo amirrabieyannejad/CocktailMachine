@@ -2,6 +2,8 @@ package com.example.cocktailmachine.ui.model.helper;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,13 +62,6 @@ public class GetAdapter {
             this.activity = activity;
             //Log.v(TAG, "StringView");
             txt = itemView.findViewById(R.id.textView_item_little_title);
-        }
-        public StringView(@NonNull View itemView, Activity activity, boolean load) {
-            super(itemView);
-            this.activity = activity;
-            //Log.v(TAG, "StringView");
-            this.txt = itemView.findViewById(R.id.textView_item_little_title);
-            this.load = load;
         }
 
         private void setTxt(String txt){
@@ -627,8 +622,6 @@ public class GetAdapter {
 
     private static abstract class ScrollAdapter<K extends DataBaseElement> extends NameAdapter<K>{
         private final static String TAG = "ScrollAdapter";
-        private final int VIEW_TYPE_ITEM = 0;
-        private final int VIEW_TYPE_LOADING = 1;
         boolean isLoading = false;
 
         Iterator<List<K>> iterator;
@@ -637,26 +630,9 @@ public class GetAdapter {
         public ScrollAdapter(Activity activity, ModelType type, int n) {
             super(activity, type);
             iterator = initIterator( n);
+            loadMore();
         }
 
-
-        @NonNull
-        @Override
-        public StringView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            if (viewType == VIEW_TYPE_ITEM) {
-                return super.onCreateViewHolder(parent, viewType);
-            } else {
-                return new StringView(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_little_title, parent, false),
-                        getActivity(),
-                        true);
-            }
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            return this.getList().get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
-        }
 
 
         @Override
@@ -664,7 +640,7 @@ public class GetAdapter {
             return new ArrayList<>();
         }
 
-        private void initScrollListener(RecyclerView recyclerView) {
+        public ScrollAdapter<K> initScrollListener(RecyclerView recyclerView) {
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -677,42 +653,72 @@ public class GetAdapter {
 
                     LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
 
-                    if (!isLoading) {
-                        if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == ScrollAdapter.this.getItemCount() - 1) {
-                            //bottom of list!
-                            loadMore();
-                            isLoading = true;
+                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == ScrollAdapter.this.getItemCount() - 1) {
+                        //bottom of list!
+                        Log.i(TAG, "end of list");
+                        if(!isLoading) {
+                            loadMore(recyclerView);
+                        }else{
+                            Log.i(TAG, "still loading from last time");
                         }
                     }
                 }
             });
 
+            return ScrollAdapter.this;
+
 
         }
 
         abstract Iterator<List<K>> initIterator(int n);
-
         private void loadMore() {
-            this.getList().add(null);
-            this.notifyItemInserted(this.getList().size() - 1);
+            Log.i(TAG, "loadMore");
             isLoading = true;
+            //ScrollAdapter.this.getList().remove(ScrollAdapter.this.getItemCount() - 1);
+            new Handler(Looper.getMainLooper()).postDelayed(
+                    //Do something after 100ms
 
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            int scrollPosition = ScrollAdapter.this.getList().size();
 
-           Runnable r = () -> {
-               ScrollAdapter.this.getList().remove(ScrollAdapter.this.getItemCount() - 1);
-               int scrollPosition = ScrollAdapter.this.getList().size();
-               ScrollAdapter.this.notifyItemRemoved(scrollPosition);
+                            ScrollAdapter.this.getList().addAll(ScrollAdapter.this.iterator.next());
 
-               ScrollAdapter.this.getList().addAll(ScrollAdapter.this.iterator.next());
+                            for(int i = scrollPosition; i<ScrollAdapter.this.getItemCount(); i++){
+                                ScrollAdapter.this.notifyItemInserted(i);
+                            }
+                            ScrollAdapter.this.isLoading = false;
+                            //recyclerView.scrollToPosition(scrollPosition);
 
-               for(int i = scrollPosition; i<ScrollAdapter.this.getItemCount(); i++){
-                   ScrollAdapter.this.notifyItemInserted(i);
-               }
+                        }
+                    }, 2000);
 
-               isLoading = false;
-           };
-           r.run();
+        }
+        
 
+        private void loadMore(RecyclerView recyclerView) {
+            Log.i(TAG, "loadMore");
+            isLoading = true;
+            //ScrollAdapter.this.getList().remove(ScrollAdapter.this.getItemCount() - 1);
+            new Handler(Looper.getMainLooper()).postDelayed(
+                    //Do something after 100ms
+
+            new Runnable() {
+                @Override
+                public void run() {
+                    int scrollPosition = ScrollAdapter.this.getList().size();
+
+                    ScrollAdapter.this.getList().addAll(ScrollAdapter.this.iterator.next());
+
+                    for(int i = scrollPosition; i<ScrollAdapter.this.getItemCount(); i++){
+                        ScrollAdapter.this.notifyItemInserted(i);
+                    }
+                    ScrollAdapter.this.isLoading = false;
+                    recyclerView.scrollToPosition(scrollPosition);
+
+                }
+            }, 2000);
 
         }
 

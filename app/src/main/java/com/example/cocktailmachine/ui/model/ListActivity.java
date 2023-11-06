@@ -149,7 +149,8 @@ public class ListActivity extends BasicActivity {
         };
 
          */
-        adapter = new GetAdapter.RecipeScrollAdapter(this, 20);
+        adapter = new GetAdapter.RecipeScrollAdapter(this, 20).initScrollListener(binding.recyclerViewListAc);
+
     }
 
     @Override

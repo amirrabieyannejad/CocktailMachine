@@ -50,6 +50,7 @@ import androidx.core.app.ActivityCompat;
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.ui.BluetoothTestEnviroment;
+import com.example.cocktailmachine.ui.model.helper.GetActivity;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -62,7 +63,7 @@ public class DeviceScanActivity extends ListActivity {
     private BluetoothAdapter bluetoothAdapter;
     private LeDeviceListAdapter mLeDeviceListAdapter;
     private BluetoothLeScanner bluetoothLeScanner;
-    Button btnRloadBle;
+    private Button btnRloadBle;
 
     private boolean scanning;
     final private Handler handler = new Handler();
@@ -106,11 +107,12 @@ public class DeviceScanActivity extends ListActivity {
         Toast.makeText(this, "Connecting to Cocktail Device!",
                 Toast.LENGTH_SHORT).show();
         super.onCreate(savedInstanceState);
+
         if(Dummy.isDummy){
-            //GetActivity.goToMenu(this);
+            GetActivity.goToMenu(this);
             return;
         }else {
-            findViewById(R.id.buttonReloadBle);
+            btnRloadBle = findViewById(R.id.buttonReloadBle);
             btnRloadBle.setOnClickListener(v -> {
                 scanLeDevice(true);
             });
