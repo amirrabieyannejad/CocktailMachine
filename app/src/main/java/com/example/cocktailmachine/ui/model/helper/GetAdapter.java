@@ -695,7 +695,7 @@ public class GetAdapter {
                     }, 2000);
 
         }
-        
+
 
         private void loadMore(RecyclerView recyclerView) {
             Log.i(TAG, "loadMore");

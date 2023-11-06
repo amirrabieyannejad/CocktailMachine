@@ -112,10 +112,12 @@ public class DeviceScanActivity extends ListActivity {
             GetActivity.goToMenu(this);
             return;
         }else {
+
             btnRloadBle = findViewById(R.id.buttonReloadBle);
             btnRloadBle.setOnClickListener(v -> {
                 scanLeDevice(true);
             });
+
 
             //getActionBar().setTitle(R.string.title_devices);
             mLeDeviceListAdapter = new LeDeviceListAdapter();
