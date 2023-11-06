@@ -2695,13 +2695,10 @@ Retcode Pump::calibrate(dur_t time1, dur_t time2, float volume1, float volume2) 
 
   float vol_diff  = volume1 - volume2;
   float time_diff = (float) time1 - (float) time2;
-  float rate = vol_diff / time_diff;
+  float rate      = vol_diff / time_diff;
   debug("calibration raw data: %0.1f, %0.1f, %f", vol_diff, time_diff, rate);
 
   if (rate <= 0.0) return Retcode::invalid_calibration;
-
-  this->rate = rate;
-  debug("rate: %f", rate);
 
   float init1 = std::round((float) time1 - (volume1 / rate));
   float init2 = std::round((float) time2 - (volume2 / rate));
@@ -2711,9 +2708,10 @@ Retcode Pump::calibrate(dur_t time1, dur_t time2, float volume1, float volume2) 
   if (std::abs(init1 - init2) > S(1)) return Retcode::invalid_calibration;
   if (init <= 0) return Retcode::invalid_calibration;
 
-  this->time_init = init;
+  this->rate         = rate;
+  this->time_init    = init;
   this->time_reverse = init; // TODO should this be different?
-  debug("time init: %lld, reverse: %lld", time_init, time_reverse);
+  debug("pump rate: %f, time init: %lld, reverse: %lld", rate, time_init, time_reverse);
 
   this->calibrated = true;
   config_save();
@@ -2758,6 +2756,8 @@ Retcode scale_calibrate(float weight) {
   if (weight <= 0.0) return Retcode::invalid_weight;
 
   scale.calibrate_scale(weight);
+  debug("scale factor: %.1f", scale.get_scale());
+
   scale_calibrated = true;
   config_save();
   return Retcode::success;
@@ -2767,6 +2767,8 @@ Retcode scale_tare() {
   if (!scale_available) return Retcode::success;
 
   scale.tare();
+  debug("scale offset: %ld", scale.get_offset());
+
   config_save();
   return Retcode::success;
 }
@@ -2775,6 +2777,8 @@ Retcode scale_set_factor(float factor) {
   if (!scale_available) return Retcode::success;
 
   scale.set_scale(factor);
+  debug("scale factor: %.1f", scale.get_scale());
+
   scale_calibrated = true;
   config_save();
   return Retcode::success;
