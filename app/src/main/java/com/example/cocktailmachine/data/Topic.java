@@ -105,7 +105,7 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
     }
 
 
-    static Iterator<List<SQLPump>> getChunkIterator(Context context, int n){
-        return GetFromDB.getPumpChunkIterator(context, n);
+    static Iterator<List<SQLTopic>> getChunkIterator(Context context, int n){
+        return GetFromDB.getTopicChunkIterator(context, n);
     }
 }

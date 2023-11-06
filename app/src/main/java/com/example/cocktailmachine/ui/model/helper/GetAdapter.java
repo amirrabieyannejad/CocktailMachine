@@ -15,11 +15,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Ingredient;
+import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
-import com.example.cocktailmachine.data.enums.AdminRights;
+import com.example.cocktailmachine.data.db.elements.SQLIngredient;
+import com.example.cocktailmachine.data.db.elements.SQLPump;
+import com.example.cocktailmachine.data.db.elements.SQLRecipe;
+import com.example.cocktailmachine.data.db.elements.SQLTopic;
 import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.ui.model.enums.ModelType;
 
@@ -50,12 +53,20 @@ public class GetAdapter {
         //for layout item_little_title
         private final TextView txt;
         private final Activity activity;
+        private boolean load = false;
 
         public StringView(@NonNull View itemView, Activity activity) {
             super(itemView);
             this.activity = activity;
             //Log.v(TAG, "StringView");
             txt = itemView.findViewById(R.id.textView_item_little_title);
+        }
+        public StringView(@NonNull View itemView, Activity activity, boolean load) {
+            super(itemView);
+            this.activity = activity;
+            //Log.v(TAG, "StringView");
+            this.txt = itemView.findViewById(R.id.textView_item_little_title);
+            this.load = load;
         }
 
         private void setTxt(String txt){
@@ -79,10 +90,6 @@ public class GetAdapter {
             this.txt.setOnLongClickListener(longClickListener);
         }
 
-
-        public void setGone() {
-            this.itemView.setVisibility(View.GONE);
-        }
     }
 
     /**
@@ -535,7 +542,7 @@ public class GetAdapter {
         private final List<K> data;
         public NameAdapter(Activity activity, ModelType type) {
             this.activity = activity;
-            this.data = getList();
+            this.data = initList();
             this.type = type;
 
         }
@@ -554,6 +561,10 @@ public class GetAdapter {
             //Log.v(TAG, "onBindViewHolder");
             K i = this.data.get(position);
             if (i == null) {
+                if(holder.load){
+                    holder.setTxt("Laden...");
+                    return;
+                }
                 Log.e(TAG, "onBindViewHolder getting ingredient failed");
                 return;
             }
@@ -580,14 +591,21 @@ public class GetAdapter {
 
         public abstract String getTitle(K i);
 
-        public abstract List<K> getList();
+
+        public List<K> getList(){
+            return this.data;
+        }
+
+        public abstract List<K> initList();
 
 
         @Override
         public int getItemCount() {
             //Log.v(TAG, "Nameadapter: getItemCount" +this.data.size());
-            return this.data.size();
+            return data == null ? 0 : data.size();
         }
+
+
 
 
         public void remove(K k) {
@@ -596,104 +614,171 @@ public class GetAdapter {
             this.data.remove(k);
             this.notifyItemRemoved(position);
         }
+
+        ModelType getType(){
+            return type;
+        }
+
+        Activity getActivity(){
+            return activity;
+        }
     }
 
 
+    private static abstract class ScrollAdapter<K extends DataBaseElement> extends NameAdapter<K>{
+        private final static String TAG = "ScrollAdapter";
+        private final int VIEW_TYPE_ITEM = 0;
+        private final int VIEW_TYPE_LOADING = 1;
+        boolean isLoading = false;
+
+        Iterator<List<K>> iterator;
 
 
-
-    /**
-     * @author Johanna Reidt
-     * @created Di. 27.Jun 2023 - 15:21
-     * @project CocktailMachine
-     */
-    static class TitleListAdapter extends RecyclerView.Adapter<GetAdapter.TitleListAdapter.TitleRow>{
-        private static final String TAG = "TitleListAdapter";
-
-        List<Long> IDs = new ArrayList<>();
-        List<String> names = new ArrayList<>();
-        ModelType modelType = ModelType.RECIPE;
-        Activity activity;
-
-
-        TitleListAdapter(Activity activity, List<Long> IDs, List<String> names, ModelType modelType){
-            this.IDs = IDs;
-            this.modelType = modelType;
-            this.activity = activity;
-            this.names = names;
-            //Log.v(TAG, "TitleListAdapter: ");
-            //Log.v(TAG, "IDs: "+IDs.toString());
-            //Log.v(TAG, "modelType: "+modelType.toString());
-            //Log.v(TAG, "activity: "+activity.toString());
-            //Log.v(TAG, "names: "+names.toString());
+        public ScrollAdapter(Activity activity, ModelType type, int n) {
+            super(activity, type);
+            iterator = initIterator( n);
         }
 
 
         @NonNull
         @Override
-        public GetAdapter.TitleListAdapter.TitleRow onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            return new GetAdapter.TitleListAdapter.TitleRow(
-                    LayoutInflater
-                            .from(parent.getContext())
-                            .inflate(R.layout.item_title,
-                                    parent,
-                                    false));
+        public StringView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            if (viewType == VIEW_TYPE_ITEM) {
+                return super.onCreateViewHolder(parent, viewType);
+            } else {
+                return new StringView(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_little_title, parent, false),
+                        getActivity(),
+                        true);
+            }
         }
 
         @Override
-        public void onBindViewHolder(@NonNull GetAdapter.TitleListAdapter.TitleRow holder, int position) {
-            holder.set(activity, this.names.get(position),this.IDs.get(position),this.modelType);
+        public int getItemViewType(int position) {
+            return this.getList().get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
+        }
+
+
+        @Override
+        public List<K> initList() {
+            return new ArrayList<>();
+        }
+
+        private void initScrollListener(RecyclerView recyclerView) {
+            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+                }
+
+                @Override
+                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+
+                    LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+                    if (!isLoading) {
+                        if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == ScrollAdapter.this.getItemCount() - 1) {
+                            //bottom of list!
+                            loadMore();
+                            isLoading = true;
+                        }
+                    }
+                }
+            });
+
+
+        }
+
+        abstract Iterator<List<K>> initIterator(int n);
+
+        private void loadMore() {
+            this.getList().add(null);
+            this.notifyItemInserted(this.getList().size() - 1);
+            isLoading = true;
+
+
+           Runnable r = () -> {
+               ScrollAdapter.this.getList().remove(ScrollAdapter.this.getItemCount() - 1);
+               int scrollPosition = ScrollAdapter.this.getList().size();
+               ScrollAdapter.this.notifyItemRemoved(scrollPosition);
+
+               ScrollAdapter.this.getList().addAll(ScrollAdapter.this.iterator.next());
+
+               for(int i = scrollPosition; i<ScrollAdapter.this.getItemCount(); i++){
+                   ScrollAdapter.this.notifyItemInserted(i);
+               }
+
+               isLoading = false;
+           };
+           r.run();
+
+
+        }
+
+    }
+
+    public static class RecipeScrollAdapter extends ScrollAdapter<SQLRecipe>{
+        public RecipeScrollAdapter(Activity activity,  int n) {
+            super(activity, ModelType.RECIPE, n);
         }
 
         @Override
-        public int getItemCount() {
-            return IDs.size();
+        public String getTitle(SQLRecipe i) {
+            return i.getName();
         }
 
-        public static class TitleRow extends RecyclerView.ViewHolder{
+        @Override
+        Iterator<List<SQLRecipe>> initIterator(int n) {
+            return Recipe.getChunkIterator(this.getActivity(), n);
+        }
+    }
 
-            private static final String TAG = "TitleRow";
-            private ModelType modelType;
-            private long ID;
-            private String text;
+    public static class IngredientScrollAdapter extends ScrollAdapter<SQLIngredient>{
+        public IngredientScrollAdapter(Activity activity,  int n) {
+            super(activity, ModelType.INGREDIENT, n);
+        }
 
-            private final TextView title;
+        @Override
+        public String getTitle(SQLIngredient i) {
+            return i.getName();
+        }
 
-            public TitleRow(@NonNull View itemView) {
-                super(itemView);
-                if(itemView == null){
-                    Log.e(TAG, "itemView is null");
-                }if(itemView.getContext()==null){
-                    Log.e(TAG, "itemView is null");
-                }
-                title = itemView.findViewById(R.id.textView_item_title);
-                if(title == null){
-                    Log.e(TAG, "TextView title is null");
-                }
-            }
+        @Override
+        Iterator<List<SQLIngredient>> initIterator(int n) {
+            return Ingredient.getChunkIterator(this.getActivity(), n);
+        }
+    }
 
-            private void set(Activity activity, String text, long ID, ModelType modelType){
-                this.text = text;
-                this.ID = ID;
-                this.modelType = modelType;
-                this.title.setText(text);
-                this.title.setOnClickListener(v ->
-                        GetActivity.goToLook(
-                                activity,
-                                modelType,
-                                ID));
-                if(AdminRights.isAdmin()){
-                    //TO DO: open AlertDialog to delete
-                    this.title.setOnLongClickListener(v -> {
-                        GetDialog.delete(
-                                activity,
-                                modelType,
-                                text,
-                                ID);
-                        return GetFromDB.checkDeleted(activity,modelType, ID);
-                    });
-                }
-            }
+    public static class TopicScrollAdapter extends ScrollAdapter<SQLTopic>{
+        public TopicScrollAdapter(Activity activity,  int n) {
+            super(activity, ModelType.TOPIC, n);
+        }
+
+        @Override
+        public String getTitle(SQLTopic i) {
+            return i.getName();
+        }
+
+        @Override
+        Iterator<List<SQLTopic>> initIterator(int n) {
+            return Topic.getChunkIterator(this.getActivity(), n);
+        }
+    }
+
+    public static class PumpScrollAdapter extends ScrollAdapter<SQLPump>{
+        public PumpScrollAdapter(Activity activity,  int n) {
+            super(activity, ModelType.PUMP, n);
+        }
+
+        @Override
+        public String getTitle(SQLPump i) {
+            return "Slot: "+i.getSlot();
+        }
+
+        @Override
+        Iterator<List<SQLPump>> initIterator(int n) {
+            return Pump.getChunkIterator(this.getActivity(), n);
         }
     }
 

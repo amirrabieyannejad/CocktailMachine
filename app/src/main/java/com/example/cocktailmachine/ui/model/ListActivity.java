@@ -61,7 +61,7 @@ public class ListActivity extends BasicActivity {
             }
 
             @Override
-            public List<Pump> getList() {
+            public List<Pump> initList() {
                 return  Pump.getPumps(ListActivity.this);
             }
         };
@@ -95,7 +95,7 @@ public class ListActivity extends BasicActivity {
             }
 
             @Override
-            public List<Topic> getList() {
+            public List<Topic> initList() {
                 return Topic.getTopics(ListActivity.this);
             }
         };
@@ -118,7 +118,7 @@ public class ListActivity extends BasicActivity {
             }
 
             @Override
-            public List<Ingredient> getList() {
+            public List<Ingredient> initList() {
                 return Ingredient.getAllIngredients(ListActivity.this);
             }
         };
@@ -135,6 +135,7 @@ public class ListActivity extends BasicActivity {
         }
 
          */
+        /*
         adapter = new GetAdapter.NameAdapter<Recipe>(this, ModelType.RECIPE){
             @Override
             public String getTitle(Recipe i) {
@@ -142,10 +143,13 @@ public class ListActivity extends BasicActivity {
             }
 
             @Override
-            public List<Recipe> getList() {
+            public List<Recipe> initList() {
                 return Recipe.getAllRecipes(ListActivity.this);
             }
         };
+
+         */
+        adapter = new GetAdapter.RecipeScrollAdapter(this, 20);
     }
 
     @Override
