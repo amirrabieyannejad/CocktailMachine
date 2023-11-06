@@ -1241,6 +1241,10 @@ Retcode CmdFactoryReset::execute() {
 
     users.clear();
     users[0] = "admin";
+    
+    cal_state   = CalibrationState::inactive;
+    error_state = Retcode::success;
+    error_user  = USER_UNKNOWN;
   }
 
   // update machine state
@@ -1273,6 +1277,7 @@ Retcode CmdInitUser::execute() {
 Retcode CmdResetError::execute() {
   if (!is_admin(this->user)) return Retcode::unauthorized;
   error_state = Retcode::success;
+  error_user  = USER_UNKNOWN;
 
   return Retcode::success;
 }
