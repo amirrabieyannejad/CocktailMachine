@@ -1,0 +1,84 @@
+INFO 23-11-06 14:56:51: --- run started (#1) ---
+INFO 23-11-06 14:57:00: message: {"cmd": "factory_reset", "user": 0}
+INFO 23-11-06 14:57:02: -> response: "ok"
+INFO 23-11-06 14:57:02: reading status...
+INFO 23-11-06 14:57:02:   - base -> Cocktail Machine ESP32
+INFO 23-11-06 14:57:03:   - state -> "calibration empty container"
+INFO 23-11-06 14:57:03:   - liquids -> {}
+INFO 23-11-06 14:57:03:   - pumps -> {}
+INFO 23-11-06 14:57:03:   - recipes -> {}
+INFO 23-11-06 14:57:03:   - cocktail -> {"weight":0.0,"content":[]}
+INFO 23-11-06 14:57:03:   - timestamp -> 297458
+INFO 23-11-06 14:57:04:   - user -> []
+INFO 23-11-06 14:57:04:   - scale -> {"weight":0.0,"calibrated":true}
+INFO 23-11-06 14:57:04:   - error ->
+INFO 23-11-06 14:57:04: message: {"cmd": "test"}
+INFO 23-11-06 14:57:05: -> response: "ok"
+INFO 23-11-06 14:57:05: message: {"cmd": "init_user", "name": "test-user"}
+INFO 23-11-06 14:57:06: -> response: {"user": 1}
+INFO 23-11-06 14:57:06: message: {"cmd": "clean", "user": 0}
+INFO 23-11-06 14:57:07: -> response: "unsupported"
+INFO 23-11-06 14:57:07: message: {"cmd": "tare_scale", "user": 0}
+INFO 23-11-06 14:57:09: -> response: "ok"
+INFO 23-11-06 14:57:09: message: {"cmd": "calibrate_scale", "user": 0, "weight": 100}
+INFO 23-11-06 14:57:11: -> response: "ok"
+INFO 23-11-06 14:57:11: message: {"cmd": "set_scale_factor", "user": 0, "factor": 1.0}
+INFO 23-11-06 14:57:12: -> response: "ok"
+INFO 23-11-06 14:57:13: message: {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
+INFO 23-11-06 14:57:13: -> response: "ok"
+INFO 23-11-06 14:57:14: message: {"cmd": "define_pump", "user": 0, "liquid": "beer", "volume": 2000, "slot": 2}
+INFO 23-11-06 14:57:14: -> response: "ok"
+INFO 23-11-06 14:57:14: message: {"cmd": "define_pump", "user": 0, "liquid": "lemonade", "volume": 3000, "slot": 7}
+INFO 23-11-06 14:57:15: -> response: "ok"
+INFO 23-11-06 14:57:15: message: {"cmd": "run_pump", "user": 0, "slot": 1, "time": 10}
+INFO 23-11-06 14:57:17: -> response: "ok"
+INFO 23-11-06 14:57:18: message: {"cmd": "run_pump", "user": 0, "slot": 2, "time": 10}
+INFO 23-11-06 14:57:20: -> response: "ok"
+INFO 23-11-06 14:57:21: message: {"cmd": "run_pump", "user": 0, "slot": 7, "time": 10}
+INFO 23-11-06 14:57:23: -> response: "ok"
+INFO 23-11-06 14:57:23: reading status...
+INFO 23-11-06 14:57:23:   - base -> Cocktail Machine ESP32
+INFO 23-11-06 14:57:23:   - state -> "calibration empty container"
+INFO 23-11-06 14:57:24:   - liquids -> {"lemonade":3000.0,"water":1000.0,"beer":2000.0}
+INFO 23-11-06 14:57:24:   - pumps -> {"1":{"liquid":"water","volume":1000.0,"calibrated":false,"rate":1.0,"time_init":1000,"time_reverse":1000},"2":{"liquid":"beer","volume":2000.0,"calibrated":false,"rate":1.0,"time_init":1000,"time_reverse":1000},"7":{"liquid":"lemonade","volume":3000.0,"calibrated":false,"rate":1.0,"time_init":1000,"time_reverse":1000}}
+INFO 23-11-06 14:57:24:   - recipes -> {}
+INFO 23-11-06 14:57:24:   - cocktail -> {"weight":0.0,"content":[["<run_pump 7>",0.0],["<run_pump 2>",0.0],["<run_pump 1>",0.0]]}
+INFO 23-11-06 14:57:24:   - timestamp -> 310998
+INFO 23-11-06 14:57:24:   - user -> []
+INFO 23-11-06 14:57:25:   - scale -> {"weight":0.0,"calibrated":true}
+INFO 23-11-06 14:57:25:   - error ->
+INFO 23-11-06 14:57:25: message: {"cmd": "calibrate_pump", "user": 0, "slot": 1, "time1": 11, "volume1": 10.0, "time2": 21, "volume2": 20.0}
+INFO 23-11-06 14:57:25: -> response: "ok"
+INFO 23-11-06 14:57:25: message: {"cmd": "set_pump_times", "user": 0, "slot": 2, "time_init": 1, "time_reverse": 1, "rate": 1.0}
+INFO 23-11-06 14:57:26: -> response: "ok"
+INFO 23-11-06 14:57:26: message: {"cmd": "set_pump_times", "user": 0, "slot": 7, "time_init": 1, "time_reverse": 1, "rate": 1.0}
+INFO 23-11-06 14:57:26: -> response: "ok"
+INFO 23-11-06 14:57:27: message: {"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1}
+INFO 23-11-06 14:57:27: -> response: "ok"
+INFO 23-11-06 14:57:28: message: {"cmd": "refill_pump", "user": 0, "volume": 2000, "slot": 2}
+INFO 23-11-06 14:57:28: -> response: "ok"
+INFO 23-11-06 14:57:29: message: {"cmd": "refill_pump", "user": 0, "volume": 3000, "slot": 7}
+INFO 23-11-06 14:57:29: -> response: "ok"
+INFO 23-11-06 14:57:30: message: {"cmd": "reset", "user": 0}
+INFO 23-11-06 14:57:33: -> response: "ok"
+INFO 23-11-06 14:57:33: reading status...
+INFO 23-11-06 14:57:33:   - base -> Cocktail Machine ESP32
+INFO 23-11-06 14:57:33:   - state -> "calibration empty container"
+INFO 23-11-06 14:57:34:   - liquids -> {"lemonade":3000.0,"water":1000.0,"beer":2000.0}
+INFO 23-11-06 14:57:34:   - pumps -> {"1":{"liquid":"water","volume":1000.0,"calibrated":true,"rate":1.0,"time_init":1,"time_reverse":1},"2":{"liquid":"beer","volume":2000.0,"calibrated":true,"rate":1.0,"time_init":1,"time_reverse":1},"7":{"liquid":"lemonade","volume":3000.0,"calibrated":true,"rate":1.0,"time_init":1,"time_reverse":1}}
+INFO 23-11-06 14:57:34:   - recipes -> {}
+INFO 23-11-06 14:57:34:   - cocktail -> {"weight":0.0,"content":[]}
+INFO 23-11-06 14:57:34:   - timestamp -> 310998
+INFO 23-11-06 14:57:34:   - user -> []
+INFO 23-11-06 14:57:35:   - scale -> {"weight":0.0,"calibrated":true}
+INFO 23-11-06 14:57:35:   - error ->
+INFO 23-11-06 14:57:35: message: {"cmd": "define_recipe", "user": 1, "name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}
+INFO 23-11-06 14:57:36: -> response: "ok"
+INFO 23-11-06 14:57:36: message: {"cmd": "define_recipe", "user": 1, "name": "cheap beer", "liquids": [["beer", 250], ["water", 250]]}
+INFO 23-11-06 14:57:37: -> response: "ok"
+INFO 23-11-06 14:57:37: message: {"cmd": "edit_recipe", "user": 1, "name": "cheap beer", "liquids": [["beer", 100], ["water", 400]]}
+INFO 23-11-06 14:57:38: -> response: "ok"
+INFO 23-11-06 14:57:38: message: {"cmd": "delete_recipe", "user": 0, "name": "cheap beer"}
+INFO 23-11-06 14:57:39: -> response: "ok"
+INFO 23-11-06 14:57:39: waiting for «ready»
+INFO 23-11-06 14:57:39:   is: "calibration empty container"
