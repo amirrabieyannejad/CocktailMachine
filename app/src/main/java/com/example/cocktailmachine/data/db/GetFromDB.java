@@ -422,4 +422,20 @@ public class GetFromDB {
     public static List<Long> getRecipeIngredientIDs(Context context) {
         return Tables.TABLE_RECIPE_INGREDIENT.getIDs(getReadableDatabase(context));
     }
+
+    public static Iterator<List<SQLRecipe>> getRecipeChunkIterator(Context context, int n) {
+        return Tables.TABLE_RECIPE.getChunkIterator(getReadableDatabase(context), n);
+    }
+
+    public static Iterator<List<SQLIngredient>> getIngredientChunkIterator(Context context, int n) {
+        return Tables.TABLE_INGREDIENT.getChunkIterator(getReadableDatabase(context), n);
+    }
+
+    public static Iterator<List<SQLTopic>> getTopicChunkIterator(Context context, int n) {
+        return Tables.TABLE_TOPIC.getChunkIterator(getReadableDatabase(context), n);
+    }
+
+    public static Iterator<List<SQLPump>> getPumpChunkIterator(Context context, int n) {
+        return Tables.TABLE_PUMP.getChunkIterator(getReadableDatabase(context), n);
+    }
 }

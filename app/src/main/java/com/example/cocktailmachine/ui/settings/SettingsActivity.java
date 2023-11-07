@@ -60,7 +60,7 @@ public class SettingsActivity extends AppCompatActivity {
          */
         setVisibility();
 
-        //TODO: bind bluetooth
+        //TO DO: bind bluetooth
 
     }
 

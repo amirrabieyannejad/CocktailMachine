@@ -26,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 public interface Recipe extends Comparable<Recipe>, DataBaseElement {
@@ -612,9 +613,6 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         return GetFromDB.loadRecipe(context, id);
     }
 
-
-
-
     /**
      * get recipe with name
      * @author Johanna Reidt
@@ -626,6 +624,8 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         return GetFromDB.loadRecipe(context, name);
 
     }
+
+
 
     /**
      * Static access to recipes.
@@ -658,6 +658,17 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         return (List<Recipe>) GetFromDB.loadRecipes(context, ids);//Buffer.getSingleton().getRecipes(ids);
     }
 
+
+
+
+    static Iterator<List<SQLRecipe>> getChunkIterator(Context context, int n){
+        return GetFromDB.getRecipeChunkIterator(context, n);
+    }
+
+
+    // New
+
+
     /**
      * Make a new recipe.
      * @param name name of the new recipe
@@ -675,7 +686,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         return new SQLRecipe();
     }
 
-
+    //recipe.getVolume(context,ingredient)
 
 
     /**

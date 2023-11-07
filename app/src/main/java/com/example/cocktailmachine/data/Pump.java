@@ -32,6 +32,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     //300ml/min
     String TAG = "Pump";
 
+
     /**
      * Get Id.
      *
@@ -728,6 +729,11 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     static List<Pump> getPumps(Context context){
         return (List<Pump>) GetFromDB.getPumps(context);
+    }
+
+
+    static Iterator<List<SQLPump>> getChunkIterator(Context context, int n) {
+        return GetFromDB.getPumpChunkIterator(context, n);
     }
 
 

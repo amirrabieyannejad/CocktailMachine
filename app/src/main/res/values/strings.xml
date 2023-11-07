@@ -139,5 +139,8 @@
     <string name="example_vol">123 ml</string>
 
     <string name="stop_action">Vorgang abbrechen</string>
+    <string name="menu_scan">Scan</string>
+    <string name="menu_stop">Stop</string>
+    <string name="title_devices">Cocktail Machine Scan</string>
 
 </resources>

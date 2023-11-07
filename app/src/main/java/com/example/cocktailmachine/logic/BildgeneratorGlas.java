@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.widget.Toast;
@@ -155,12 +156,12 @@ public class BildgeneratorGlas {
                 }
                 Drawable myImage =  ResourcesCompat.getDrawable(res, listIdGlasFlüssigkeit[i+slotCounter], null);
                 myImage.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-                myImage.setColorFilter(ingredient.getColor(), PorterDuff.Mode.MULTIPLY);//MULTIPLY,SRC_IN,SRC_ATOP
+                int color = ingredient.getColor() | ((0xff) << 24);
+                myImage.setColorFilter(color, PorterDuff.Mode.MULTIPLY);//MULTIPLY,SRC_IN,SRC_ATOP
                 myImage.draw(canvas);
             }
             slotCounter += numberSlots;
         }
-
         return canvas;
     }
 
@@ -169,7 +170,13 @@ public class BildgeneratorGlas {
         Collections.sort(list,new Comparator<Ingredient>() {
             @Override
             public int compare(Ingredient ingredient, Ingredient t1) {
-                return (recipe.getVolume(context,ingredient)-recipe.getVolume(context,t1));
+                try{
+                    return (recipe.getVolume(context,ingredient)-recipe.getVolume(context,t1));
+                }catch (Exception e){
+                    HashMap<Long, Integer> re = recipe.getIngredientIDToVolume(context);
+                    return(re.get(ingredient.getID())-re.get(t1.getID()));
+                }
+
             }
         });
         return list;
@@ -177,10 +184,18 @@ public class BildgeneratorGlas {
 
     private int getNumberOfSlots(Context context, float sumLiquit, int animationSlots, Recipe recipe, Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
         float liquitProSlot = sumLiquit/animationSlots;
-        if(liquitProSlot>recipe.getVolume(context,ingredient)){
+        int volume = 0;
+        try{
+            volume = recipe.getVolume(context,ingredient);
+        }catch (Exception e){
+            HashMap<Long, Integer> re = recipe.getIngredientIDToVolume(context);
+            volume =re.get(ingredient.getID());
+        }
+
+        if(liquitProSlot>volume){
             return 1;
         }
-        return (int) (recipe.getVolume(context,ingredient)/liquitProSlot);
+        return (int) (volume/liquitProSlot);
 
     }
 
@@ -188,18 +203,19 @@ public class BildgeneratorGlas {
         int sumLiquit = 0;
         int slotCounter= 0;
         List<Ingredient> newIngredientList = this.sortIngredientsAscending(context,recipe,ingredientList);
+        HashMap<Long, Integer> volumeIngredient = recipe.getIngredientIDToVolume(context);
 
         Map<Ingredient,Integer> outputMap = new HashMap<>();
 
         for (Ingredient ingredient : recipe.getIngredients(context)){
-            sumLiquit += recipe.getVolume(context,ingredient);
+            sumLiquit += volumeIngredient.get(ingredient.getID());
         }
 
         for (Ingredient ingredient : newIngredientList){
             int numberSlots = this.getNumberOfSlots(context,sumLiquit,animationSlots-slotCounter,recipe, ingredient);
             outputMap.put(ingredient,numberSlots);
             slotCounter += numberSlots;
-            sumLiquit -= recipe.getVolume(context,ingredient);
+            sumLiquit -= volumeIngredient.get(ingredient.getID());
         }
 
         return(outputMap);

@@ -61,7 +61,7 @@ public class ListActivity extends BasicActivity {
             }
 
             @Override
-            public List<Pump> getList() {
+            public List<Pump> initList() {
                 return  Pump.getPumps(ListActivity.this);
             }
         };
@@ -88,6 +88,7 @@ public class ListActivity extends BasicActivity {
 
          */
 
+        /*
         adapter = new GetAdapter.NameAdapter<Topic>(this, ModelType.TOPIC) {
             @Override
             public String getTitle(Topic i) {
@@ -95,10 +96,14 @@ public class ListActivity extends BasicActivity {
             }
 
             @Override
-            public List<Topic> getList() {
+            public List<Topic> initList() {
                 return Topic.getTopics(ListActivity.this);
             }
         };
+
+         */
+
+        adapter = new GetAdapter.TopicScrollAdapter(this, 20).initScrollListener(binding.recyclerViewListAc);
     }
 
     @Override
@@ -111,6 +116,7 @@ public class ListActivity extends BasicActivity {
             names.add(e.getName());
         }
          */
+        /*
         adapter = new GetAdapter.NameAdapter<Ingredient>(this, ModelType.INGREDIENT) {
             @Override
             public String getTitle(Ingredient i) {
@@ -118,10 +124,14 @@ public class ListActivity extends BasicActivity {
             }
 
             @Override
-            public List<Ingredient> getList() {
+            public List<Ingredient> initList() {
                 return Ingredient.getAllIngredients(ListActivity.this);
             }
         };
+
+         */
+
+        adapter = new GetAdapter.IngredientScrollAdapter(this, 20).initScrollListener(binding.recyclerViewListAc);
     }
 
     @Override
@@ -135,6 +145,7 @@ public class ListActivity extends BasicActivity {
         }
 
          */
+        /*
         adapter = new GetAdapter.NameAdapter<Recipe>(this, ModelType.RECIPE){
             @Override
             public String getTitle(Recipe i) {
@@ -142,10 +153,14 @@ public class ListActivity extends BasicActivity {
             }
 
             @Override
-            public List<Recipe> getList() {
+            public List<Recipe> initList() {
                 return Recipe.getAllRecipes(ListActivity.this);
             }
         };
+
+         */
+        adapter = new GetAdapter.RecipeScrollAdapter(this, 20).initScrollListener(binding.recyclerViewListAc);
+
     }
 
     @Override

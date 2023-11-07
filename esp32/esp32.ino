@@ -1,7 +1,7 @@
 // general system settings
 #define BLE_NAME             	"Cocktail Machine ESP32"	// bluetooth server name
 #define CORE_DEBUG_LEVEL     	4                       	// 1 = error; 3 = info ; 4 = debug
-const unsigned int VERSION   	= 8;                    	// version number (used for configs etc)
+const unsigned int VERSION   	= 9;                    	// version number (used for configs etc)
                              	                        	
 const unsigned char MAX_PUMPS	= 1 + 4*8;              	// maximum number of supported pumps;
                              	                        	
@@ -1241,6 +1241,10 @@ Retcode CmdFactoryReset::execute() {
 
     users.clear();
     users[0] = "admin";
+    
+    cal_state   = CalibrationState::inactive;
+    error_state = Retcode::success;
+    error_user  = USER_UNKNOWN;
   }
 
   // update machine state
@@ -1273,6 +1277,7 @@ Retcode CmdInitUser::execute() {
 Retcode CmdResetError::execute() {
   if (!is_admin(this->user)) return Retcode::unauthorized;
   error_state = Retcode::success;
+  error_user  = USER_UNKNOWN;
 
   return Retcode::success;
 }
@@ -2695,13 +2700,10 @@ Retcode Pump::calibrate(dur_t time1, dur_t time2, float volume1, float volume2) 
 
   float vol_diff  = volume1 - volume2;
   float time_diff = (float) time1 - (float) time2;
-  float rate = vol_diff / time_diff;
+  float rate      = vol_diff / time_diff;
   debug("calibration raw data: %0.1f, %0.1f, %f", vol_diff, time_diff, rate);
 
   if (rate <= 0.0) return Retcode::invalid_calibration;
-
-  this->rate = rate;
-  debug("rate: %f", rate);
 
   float init1 = std::round((float) time1 - (volume1 / rate));
   float init2 = std::round((float) time2 - (volume2 / rate));
@@ -2711,9 +2713,10 @@ Retcode Pump::calibrate(dur_t time1, dur_t time2, float volume1, float volume2) 
   if (std::abs(init1 - init2) > S(1)) return Retcode::invalid_calibration;
   if (init <= 0) return Retcode::invalid_calibration;
 
-  this->time_init = init;
+  this->rate         = rate;
+  this->time_init    = init;
   this->time_reverse = init; // TODO should this be different?
-  debug("time init: %lld, reverse: %lld", time_init, time_reverse);
+  debug("pump rate: %f, time init: %lld, reverse: %lld", rate, time_init, time_reverse);
 
   this->calibrated = true;
   config_save();
@@ -2758,6 +2761,8 @@ Retcode scale_calibrate(float weight) {
   if (weight <= 0.0) return Retcode::invalid_weight;
 
   scale.calibrate_scale(weight);
+  debug("scale factor: %.1f", scale.get_scale());
+
   scale_calibrated = true;
   config_save();
   return Retcode::success;
@@ -2767,6 +2772,8 @@ Retcode scale_tare() {
   if (!scale_available) return Retcode::success;
 
   scale.tare();
+  debug("scale offset: %ld", scale.get_offset());
+
   config_save();
   return Retcode::success;
 }
@@ -2775,6 +2782,8 @@ Retcode scale_set_factor(float factor) {
   if (!scale_available) return Retcode::success;
 
   scale.set_scale(factor);
+  debug("scale factor: %.1f", scale.get_scale());
+
   scale_calibrated = true;
   config_save();
   return Retcode::success;
