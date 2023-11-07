@@ -398,10 +398,11 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                                 int chunkSize,
                                 String orderBy,
                                 boolean available){
-            this.ids = BasicColumn.this.getIDs()IDs(readableDB, orderBy);
+            this.ids = BasicColumn.this.getIDs(readableDB, orderBy);
             this.chunkSize = chunkSize;
             this.readableDB = readableDB;
             //this.table = loadTable();
+            //TODO: get available if in column names
         }
 
         @Override
