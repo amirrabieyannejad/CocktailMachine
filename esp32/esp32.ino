@@ -1,7 +1,7 @@
 // general system settings
 #define BLE_NAME             	"Cocktail Machine ESP32"	// bluetooth server name
 #define CORE_DEBUG_LEVEL     	4                       	// 1 = error; 3 = info ; 4 = debug
-const unsigned int VERSION   	= 8;                    	// version number (used for configs etc)
+const unsigned int VERSION   	= 9;                    	// version number (used for configs etc)
                              	                        	
 const unsigned char MAX_PUMPS	= 1 + 4*8;              	// maximum number of supported pumps;
                              	                        	
@@ -1241,6 +1241,10 @@ Retcode CmdFactoryReset::execute() {
 
     users.clear();
     users[0] = "admin";
+    
+    cal_state   = CalibrationState::inactive;
+    error_state = Retcode::success;
+    error_user  = USER_UNKNOWN;
   }
 
   // update machine state
@@ -1273,6 +1277,7 @@ Retcode CmdInitUser::execute() {
 Retcode CmdResetError::execute() {
   if (!is_admin(this->user)) return Retcode::unauthorized;
   error_state = Retcode::success;
+  error_user  = USER_UNKNOWN;
 
   return Retcode::success;
 }

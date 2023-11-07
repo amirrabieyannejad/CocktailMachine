@@ -44,11 +44,14 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.MenuItem;
+import android.view.Menu;
 
 import androidx.core.app.ActivityCompat;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.ui.BluetoothNotFound;
 import com.example.cocktailmachine.ui.BluetoothTestEnviroment;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
 
@@ -63,7 +66,6 @@ public class DeviceScanActivity extends ListActivity {
     private BluetoothAdapter bluetoothAdapter;
     private LeDeviceListAdapter mLeDeviceListAdapter;
     private BluetoothLeScanner bluetoothLeScanner;
-    private Button btnRloadBle;
 
     private boolean scanning;
     final private Handler handler = new Handler();
@@ -77,7 +79,6 @@ public class DeviceScanActivity extends ListActivity {
 
     /**
      * This block is for requesting permissions up to Android 12+
-     *
      */
     public final static UUID UUID_COCKTAIL_MACHINE =
             UUID.fromString(SampleGattAttributes.COCKTAIL_MACHINE);
@@ -100,31 +101,23 @@ public class DeviceScanActivity extends ListActivity {
         else
             ActivityCompat.requestPermissions(activity, BLE_PERMISSIONS, requestCode);
     }
+
     @SuppressLint("MissingPermission")
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.i("Device","onCreate");
-        Toast.makeText(this, "Connecting to Cocktail Device!",
+        Log.i("Device", "onCreate");
+        Toast.makeText(this, "Connecting to Cocktail Device...",
                 Toast.LENGTH_SHORT).show();
         super.onCreate(savedInstanceState);
-
-        if(Dummy.isDummy){
+        getActionBar().setTitle(R.string.title_devices);
+        if (Dummy.isDummy) {
             GetActivity.goToMenu(this);
             return;
-        }else {
+        } else {
 
-            btnRloadBle = findViewById(R.id.buttonReloadBle);
-            btnRloadBle.setOnClickListener(v -> {
-                scanLeDevice(true);
-            });
-
-
-            //getActionBar().setTitle(R.string.title_devices);
             mLeDeviceListAdapter = new LeDeviceListAdapter();
 
-
             requestBlePermissions(this, PERMISSIONS_REQUEST_CODE);
-
             // Use this check to determine whether BLE is supported on the device.  Then you can
             // selectively disable BLE-related features.
             if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -144,24 +137,7 @@ public class DeviceScanActivity extends ListActivity {
                 finish();
             } else {
                 handler.postDelayed(() -> {
-                    final BluetoothDevice device = mLeDeviceListAdapter.getDevice(0);
-                    if (device == null) {
-                        Toast.makeText(this, "Cocktail device not found!",
-                                Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    final Intent intent = new Intent(this, BluetoothTestEnviroment.class);
-                    //final Intent intent = new Intent(this, DeviceControlActivity.class);
-                    Toast.makeText(this, "Cocktail device has been found!",
-                            Toast.LENGTH_SHORT).show();
-                    BluetoothSingleton settings = BluetoothSingleton.getInstance();
-                    settings.setEspDeviceName(device.getName());
-                    settings.setEspDeviceAddress(device.getAddress());
-                    if (scanning) {
-                        bluetoothLeScanner.stopScan(leScanCallback);
-                        scanning = false;
-                    }
-                    startActivity(intent);
+                    bleConnect();
                 }, 3000);
 
 
@@ -170,18 +146,18 @@ public class DeviceScanActivity extends ListActivity {
 
     }
 
-    /*@Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         if (!scanning) {
             menu.findItem(R.id.menu_stop).setVisible(false);
             menu.findItem(R.id.menu_scan).setVisible(true);
-            menu.findItem(R.id.menu_refresh).setActionView(null);
+            //menu.findItem(R.id.menu_refresh).setActionView(null);
         } else {
             menu.findItem(R.id.menu_stop).setVisible(true);
             menu.findItem(R.id.menu_scan).setVisible(false);
-            menu.findItem(R.id.menu_refresh).setActionView(
-                    R.layout.actionbar_indeterminate_progress);
+            //menu.findItem(R.id.menu_refresh).setActionView(
+             //       R.layout.actionbar_indeterminate_progress);
         }
         return true;
     }
@@ -191,24 +167,28 @@ public class DeviceScanActivity extends ListActivity {
         switch (item.getItemId()) {
             case R.id.menu_scan:
                 mLeDeviceListAdapter.clear();
+                mLeDeviceListAdapter.notifyDataSetChanged();
                 scanLeDevice(true);
+                handlerCore.postDelayed(() -> {
+                    bleConnect();
+                }, 3000);
                 break;
             case R.id.menu_stop:
                 scanLeDevice(false);
                 break;
         }
         return true;
-    }*/
+    }
 
     @SuppressLint("MissingPermission")
     @Override
     protected void onResume() {
         super.onResume();
-        if(Dummy.isDummy){
-            Log.i("Device","onResume" );
+        if (Dummy.isDummy) {
+            Log.i("Device", "onResume");
             //GetActivity.goToMenu(this);
             return;
-        }else {
+        } else {
 
             // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
             // fire an intent to display a dialog asking the user to grant permission to enable it.
@@ -238,11 +218,11 @@ public class DeviceScanActivity extends ListActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if(Dummy.isDummy){
-            Log.i("Device","onPause" );
+        if (Dummy.isDummy) {
+            Log.i("Device", "onPause");
             //GetActivity.goToMenu(this);
             return;
-        }else {
+        } else {
             scanLeDevice(false);
             mLeDeviceListAdapter.clear();
         }
@@ -258,6 +238,30 @@ public class DeviceScanActivity extends ListActivity {
         BluetoothSingleton settings = BluetoothSingleton.getInstance();
         settings.setEspDeviceName(device.getName());
         settings.setEspDeviceAddress(device.getAddress());
+
+        if (scanning) {
+            bluetoothLeScanner.stopScan(leScanCallback);
+            scanning = false;
+        }
+        startActivity(intent);
+    }
+
+    @SuppressLint("MissingPermission")
+    private void bleConnect() {
+        final BluetoothDevice device = mLeDeviceListAdapter.getDevice(0);
+        if (device == null) {
+            Toast.makeText(this, "Cocktail device not found!",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+        final Intent intent = new Intent(this, BluetoothTestEnviroment.class);
+        //final Intent intent = new Intent(this, DeviceControlActivity.class);
+        BluetoothSingleton settings = BluetoothSingleton.getInstance();
+        settings.setEspDeviceName(device.getName());
+        settings.setEspDeviceAddress(device.getAddress());
+        Toast.makeText(this, "Cocktail device has been found!",
+                Toast.LENGTH_SHORT).show();
+
         if (scanning) {
             bluetoothLeScanner.stopScan(leScanCallback);
             scanning = false;
@@ -272,11 +276,9 @@ public class DeviceScanActivity extends ListActivity {
             handler.postDelayed(() -> {
                 scanning = false;
                 bluetoothLeScanner.stopScan(leScanCallback);
-                //invalidateOptionsMenu();
+
+                invalidateOptionsMenu();
             }, SCAN_PERIOD);
-
-
-
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                 bleScanSettings = new ScanSettings.Builder().
                         setScanMode(ScanSettings.SCAN_MODE_LOW_POWER).
@@ -288,8 +290,8 @@ public class DeviceScanActivity extends ListActivity {
 
             ArrayList<ScanFilter> filters = new ArrayList<>();
             ScanFilter.Builder builder = new ScanFilter.Builder();
-            String serviceUuidMaskString = "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF";
-            ParcelUuid parcelUuidMask = ParcelUuid.fromString(serviceUuidMaskString);
+            //String serviceUuidMaskString = "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF";
+            //ParcelUuid parcelUuidMask = ParcelUuid.fromString(serviceUuidMaskString);
             //builder.setServiceUuid(new ParcelUuid(UUID_COCKTAIL_MACHINE), parcelUuidMask);
             builder.setDeviceName("Cocktail Machine ESP32");
             filters.add(builder.build());
@@ -299,13 +301,13 @@ public class DeviceScanActivity extends ListActivity {
             }
 
             scanning = true;
-            bluetoothLeScanner.startScan(filters,bleScanSettings,leScanCallback);
+            bluetoothLeScanner.startScan(filters, bleScanSettings, leScanCallback);
             //bluetoothLeScanner.startScan(leScanCallback);
         } else {
             scanning = false;
             bluetoothLeScanner.stopScan(leScanCallback);
         }
-        //invalidateOptionsMenu();
+        invalidateOptionsMenu();
     }
 
     // Adapter for holding devices found through scanning.
@@ -320,7 +322,7 @@ public class DeviceScanActivity extends ListActivity {
         }
 
         public void addDevice(BluetoothDevice device) {
-            if(!mLeDevices.contains(device)) {
+            if (!mLeDevices.contains(device)) {
                 mLeDevices.add(device);
             }
         }
@@ -372,28 +374,29 @@ public class DeviceScanActivity extends ListActivity {
                 viewHolder.deviceName.setText(deviceName);
             else
                 viewHolder.deviceName.setText(R.string.unknown_device);
-            viewHolder.deviceAddress.setText(device.getAddress());
+                viewHolder.deviceAddress.setText(device.getAddress());
 
             return view;
         }
     }
 
-   // Device scan callback.
 
-    // Device scan callback.
     // Device scan callback.
     final private ScanCallback leScanCallback =
             new ScanCallback() {
                 @Override
                 public void onScanResult(int callbackType, ScanResult result) {
                     super.onScanResult(callbackType, result);
-                    Log.d(TAG, "onScanResult: Scan Call back");
-                    mLeDeviceListAdapter.addDevice(result.getDevice());
-                    mLeDeviceListAdapter.notifyDataSetChanged();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d(TAG, "onScanResult: Scan Call back");
+                            mLeDeviceListAdapter.addDevice(result.getDevice());
+                            mLeDeviceListAdapter.notifyDataSetChanged();
+                        }
+                    });
                 }
             };
-
-
 
 
     static class ViewHolder {

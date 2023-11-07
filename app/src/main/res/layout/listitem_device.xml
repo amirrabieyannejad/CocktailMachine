@@ -23,25 +23,7 @@
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/textViewTitle"
-            android:text="Bluetooth Cocktail-Gerät Scan"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="24sp"/>
-
-        <Button
-            android:id="@+id/buttonReloadBle"
-            android:layout_alignEnd="@id/textViewTitle"
-            android:layout_width="50dp"
-            android:layout_height="35dp"
-            android:background="@drawable/baseline_replay_24"
-            android:contentDescription="@string/reload"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-    </RelativeLayout>
+        android:layout_height="wrap_content"/>
 
 
     <TextView
