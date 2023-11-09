@@ -1029,6 +1029,44 @@ public class BluetoothSingleton {
     }
 
     /**
+     * define_pumps (ADMIN): add specific number of pumps to ESP at one time and give temporary
+     * liquid and volume
+     * JSON-sample: {"cmd": "define_pumps", "user": 0, "liquid": "water", "volume": 0, "quantity": 2}
+     * like described in ProjektDokumente/esp/Befehle.md
+     * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
+     * @return
+     * @throws JSONException
+     */
+    @SuppressLint("MissingPermission")
+    public void adminDefinePumps(String liquid, float volume,int quantity,Activity activity)
+            throws JSONException, InterruptedException {
+        singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
+        // generate JSON Format
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cmd", "define_pumps");
+        jsonObject.put("user", 0);
+        jsonObject.put("liquid", liquid);
+        jsonObject.put("volume", volume);
+        jsonObject.put("quantity", quantity);
+        singleton.sendReadWrite(jsonObject,true,true);
+
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+            @Override
+            public void toSave() throws InterruptedException {
+                if (!check()) {
+                    throw new InterruptedException();
+                }
+
+                Log.w(TAG, "To Save: " + this.getStringResult());
+            }
+        };
+        wfb.execute();
+        //
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+    }
+
+    /**
      * edit_pump (ADMIN): Edits a pump
      * JSON-sample: {"cmd": "edit_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
      * like described in ProjektDokumente/esp/Befehle.md
