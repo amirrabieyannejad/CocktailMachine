@@ -1241,7 +1241,7 @@ Retcode CmdFactoryReset::execute() {
 
     users.clear();
     users[0] = "admin";
-    
+
     cal_state   = CalibrationState::inactive;
     error_state = Retcode::success;
     error_user  = USER_UNKNOWN;
@@ -1305,7 +1305,7 @@ Retcode CmdDefinePump::execute() {
   PumpSlot *pump_slot = pump_slots[slot];
   Pump *p = new Pump(pump_slot, this->liquid, volume, S(1), S(1), 1.0, false);
   pumps[slot] = p;
-  
+
   // update machine state
   update_liquids();
   update_config_state(timestamp_ms());
@@ -2134,7 +2134,7 @@ void update_user() {
 void update_possible_recipes() {
   debug("updating possible recipes...");
   bool updated = false;
-  
+
   // calculate total liquids
   std::unordered_map<std::string, float> liquids = {};
   for(int i=0; i<MAX_PUMPS; i++) {
@@ -2159,21 +2159,21 @@ void update_possible_recipes() {
       float need = needs[liquid] + ing.amount;
       needs[liquid] = need;
     }
-    
+
     for(auto const &pair : needs) {
       std::string liquid	= pair.first;
       float need        	= pair.second;
       float have        	= liquids[liquid];
       float diff        	= have - need;
-    
+
       debug("  -> %s needs %.1f of %s, we have %.1f, diff is %.1f", recipe.name.c_str(), need, liquid.c_str(), have, diff);
-    
+
       if (need > 0 && diff <= LIQUID_CUTOFF) {
         can_make = false;
         break;
       }
     }
-    
+
     if (recipe.can_make != can_make) {
       updated = true;
       recipe.can_make = can_make;
