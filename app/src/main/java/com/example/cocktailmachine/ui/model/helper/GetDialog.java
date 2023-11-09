@@ -1812,7 +1812,7 @@ public class GetDialog {
                 throw new IllegalStateException("Missing number!");
             } else {
                 Log.e(TAG, "PumpNumberChangeView: save setOverrideEmptyPumps");
-                Pump.setOverrideEmptyPumps(activity,res);
+                Pump.setOverrideEmptyPumps(activity, res);
             }
         }
 

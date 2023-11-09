@@ -19,8 +19,6 @@ public class SQLIngredientPump extends SQLDataBaseElement {
     private int volume = 0;
     private long pump = -1L;
     private long ingredient = -1L;
-    private boolean available = false;
-
 
 
     public SQLIngredientPump(int volume, long pump, long ingredient) {
@@ -102,8 +100,8 @@ public class SQLIngredientPump extends SQLDataBaseElement {
 
     @Override
     public boolean loadAvailable(Context context) {
-        this.available = ExtraHandlingDB.loadAvailability(context, this);
-        return this.available&&this.isAvailable();
+        boolean available = ExtraHandlingDB.loadAvailability(context, this);
+        return available &&this.isAvailable();
     }
 
 
