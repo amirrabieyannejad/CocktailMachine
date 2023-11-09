@@ -5,6 +5,7 @@ import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_BOOLEAN;
 import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_ID;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -133,5 +134,10 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
         } catch (NoSuchColumnException e) {
             Log.e(TAG, "error", e);
         }
+    }
+
+    @Override
+    public BasicColumn<SQLRecipe>.DatabaseIterator getChunkIterator(Context db, int n) {
+        return super.getChunkIterator(db, n, COLUMN_NAME_NAME);
     }
 }

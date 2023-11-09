@@ -181,6 +181,8 @@ public class ListActivity extends BasicActivity {
     @Override
     public void reload() {
         //setUp();
+        //TODO:
+        adapter.reload(this);
     }
 
 

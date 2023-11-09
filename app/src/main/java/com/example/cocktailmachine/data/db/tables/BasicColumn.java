@@ -1,6 +1,9 @@
 package com.example.cocktailmachine.data.db.tables;
 
+import static com.example.cocktailmachine.data.db.GetFromDB.getReadableDatabase;
+
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
@@ -310,6 +313,40 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         return ids;
     }
 
+    public List<Long> getIDs(SQLiteDatabase db, boolean closeDB){
+        Cursor cursor = db.query(true,
+                this.getName(),
+                new String[]{_ID},
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+        /*
+        List<Long> ids = new ArrayList<>();
+        try {
+            if (cursor.moveToFirst()) {
+                ids.add(cursor.getLong(cursor.getColumnIndexOrThrow(_ID)));
+                while (cursor.moveToNext()) {
+                    ids.add(cursor.getLong(cursor.getColumnIndexOrThrow(_ID)));
+                }
+            }
+        }catch (IllegalArgumentException e){
+            Log.e(TAG, "getIDs", e);
+            Log.getStackTraceString(e);
+        }
+
+         */
+        List<Long> ids = cursorToIDList(cursor);
+        cursor.close();
+        if(closeDB) {
+            db.close();
+        }
+        return ids;
+    }
+
     public List<Long> getIDs(SQLiteDatabase db, String orderBy){
         Cursor cursor = db.query(true,
                 this.getName(),
@@ -339,6 +376,40 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         List<Long> ids = cursorToIDList(cursor);
         cursor.close();
         db.close();
+        return ids;
+    }
+
+    public List<Long> getIDs(SQLiteDatabase db, boolean closeDB, String orderBy){
+        Cursor cursor = db.query(true,
+                this.getName(),
+                new String[]{_ID},
+                null,
+                null,
+                null,
+                null,
+                orderBy,
+                null,
+                null);
+        /*
+        List<Long> ids = new ArrayList<>();
+        try {
+            if (cursor.moveToFirst()) {
+                ids.add(cursor.getLong(cursor.getColumnIndexOrThrow(_ID)));
+                while (cursor.moveToNext()) {
+                    ids.add(cursor.getLong(cursor.getColumnIndexOrThrow(_ID)));
+                }
+            }
+        }catch (IllegalArgumentException e){
+            Log.e(TAG, "getIDs", e);
+            Log.getStackTraceString(e);
+        }
+
+         */
+        List<Long> ids = cursorToIDList(cursor);
+        cursor.close();
+        if(closeDB) {
+            db.close();
+        }
         return ids;
     }
 
@@ -372,39 +443,50 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         private final List<Long> ids;
         private int position = 0;
         private final int chunkSize;
-        private final SQLiteDatabase readableDB;
+        private final Context context;
 
 
-        public DatabaseIterator(SQLiteDatabase readableDB){
-            this.ids = BasicColumn.this.getIDs(readableDB);
+        public DatabaseIterator(Context context){
+            this.ids = BasicColumn.this.getIDs(getReadableDatabase(context));
             this.chunkSize = 30;
-            this.readableDB = readableDB;
+            this.context = context;
             //this.table = loadTable();
         }
 
-        public DatabaseIterator(SQLiteDatabase readableDB,
+        public DatabaseIterator(Context context,
                                 int chunkSize){
-            this.ids = BasicColumn.this.getIDs(readableDB);
+            this.ids = BasicColumn.this.getIDs(getReadableDatabase(context));
             this.chunkSize = chunkSize;
-            this.readableDB = readableDB;
+            this.context = context;
             //this.table = loadTable();
         }
-        public DatabaseIterator(SQLiteDatabase readableDB,
+        public DatabaseIterator(Context context,
                                 int chunkSize,
                                 String orderBy){
-            this.ids = BasicColumn.this.getIDs(readableDB, orderBy);
+            this.ids = BasicColumn.this.getIDs(getReadableDatabase(context),  orderBy);
             this.chunkSize = chunkSize;
-            this.readableDB = readableDB;
+            this.context = context;
             //this.table = loadTable();
         }
 
-        public DatabaseIterator(SQLiteDatabase readableDB,
+        public DatabaseIterator(Context context,
                                 int chunkSize,
                                 String orderBy,
                                 boolean available){
-            this.ids = BasicColumn.this.getIDs(readableDB, orderBy);
+            this.ids = BasicColumn.this.getIDs(getReadableDatabase(context),  orderBy);
             this.chunkSize = chunkSize;
-            this.readableDB = readableDB;
+            this.context = context;
+            //this.table = loadTable();
+            //TODO: get available if in column names
+        }
+
+
+        public DatabaseIterator(Context context,
+                                int chunkSize,
+                                boolean available){
+            this.ids = BasicColumn.this.getIDs(getReadableDatabase(context), false);
+            this.chunkSize = chunkSize;
+            this.context = context;
             //this.table = loadTable();
             //TODO: get available if in column names
         }
@@ -425,14 +507,14 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
             List<Long> temp = this.ids.subList(
                     oldPosition,
                     this.position);
-            return BasicColumn.this.getElements(this.readableDB, temp);
+            return BasicColumn.this.getElements(getReadableDatabase(context), temp);
         }
 
         public void exclude(String columnName,
                             List<Object> exclude){
             try {
                 List<Long> del = BasicColumn.this.getIDsIn(
-                        readableDB,
+                        getReadableDatabase(context),
                         columnName,
                         exclude);
                 Long oldID = this.ids.get(position);
@@ -447,7 +529,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                             List<Object> include){
             try {
                 List<Long> del = BasicColumn.this.getIDsNotIn(
-                        readableDB,
+                        getReadableDatabase(context),
                         columnName,
                         include);
                 Long oldID = this.ids.get(position);
@@ -462,7 +544,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                             String needle){
             try {
                 List<Long> del = BasicColumn.this.getIDsLike(
-                        readableDB,
+                        getReadableDatabase(context),
                         columnName,
                         needle);
                 Long oldID = this.ids.get(position);
@@ -477,7 +559,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                             String needle){
             try {
                 List<Long> del = BasicColumn.this.getIDsNotLike(
-                        readableDB,
+                        getReadableDatabase(context),
                         columnName,
                         needle);
                 Long oldID = this.ids.get(position);
@@ -490,9 +572,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
     }
 
 
-
-
-    public DatabaseIterator getChunkIterator(SQLiteDatabase db, int n){
+    public DatabaseIterator getChunkIterator(Context db, int n){
         /*
         return new Iterator<List<T>>() {
             private final List<Long> ids = BasicColumn.this.getIDs(db);
@@ -516,6 +596,87 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
 
          */
         return new DatabaseIterator(db, n);
+    }
+
+
+    public DatabaseIterator getChunkIterator(Context db, int n, String sortBy){
+        /*
+        return new Iterator<List<T>>() {
+            private final List<Long> ids = BasicColumn.this.getIDs(db);
+            private int position = 0;
+            @Override
+            public boolean hasNext() {
+                return position<ids.size();
+            }
+
+            @Override
+            public List<T> next() {
+                int oldPosition = position;
+                position = position + n;
+                if(position>ids.size()){
+                    position = ids.size();
+                }
+                List<Long> temp = ids.subList(oldPosition, position);
+                return BasicColumn.this.getElements(db, temp);
+            }
+        };
+
+         */
+        return new DatabaseIterator(db, n, sortBy);
+    }
+
+
+    public DatabaseIterator getChunkIterator(Context db, int n, String sortBy, boolean available){
+        /*
+        return new Iterator<List<T>>() {
+            private final List<Long> ids = BasicColumn.this.getIDs(db);
+            private int position = 0;
+            @Override
+            public boolean hasNext() {
+                return position<ids.size();
+            }
+
+            @Override
+            public List<T> next() {
+                int oldPosition = position;
+                position = position + n;
+                if(position>ids.size()){
+                    position = ids.size();
+                }
+                List<Long> temp = ids.subList(oldPosition, position);
+                return BasicColumn.this.getElements(db, temp);
+            }
+        };
+
+         */
+        return new DatabaseIterator(db, n, sortBy, available);
+    }
+
+
+    public DatabaseIterator getChunkIterator(Context db, int n, boolean available){
+        /*
+        return new Iterator<List<T>>() {
+            private final List<Long> ids = BasicColumn.this.getIDs(db);
+            private int position = 0;
+            @Override
+            public boolean hasNext() {
+                return position<ids.size();
+            }
+
+            @Override
+            public List<T> next() {
+                int oldPosition = position;
+                position = position + n;
+                if(position>ids.size()){
+                    position = ids.size();
+                }
+                List<Long> temp = ids.subList(oldPosition, position);
+                return BasicColumn.this.getElements(db, temp);
+            }
+        };
+
+         */
+        return new DatabaseIterator(db, n, available);
     }
 
     /**
@@ -547,7 +708,43 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 null,
                 null);
         List<T> res = this.cursorToList(cursor);
-        db.close();
+        //db.close();
+        return res;
+    }
+
+    /**
+     * get elements with given ids
+     * @author Johanna Reidt
+     * @param db
+     * @param ids
+     * @return list of elements with given ids
+     */
+    public List<T> getElements(SQLiteDatabase db,
+                               List<Long> ids,
+                               boolean closeDB){
+        String selection = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            selection = _ID+" in "+ids.stream()
+                    .map(Object::toString)
+                    .collect(Collectors.joining(", ", "(", ")"));
+        }else {
+            selection = _ID+" in "+Helper.objToString(ids, "(", ", ", ")");
+        }
+
+        Cursor cursor = db.query(true,
+                this.getName(),
+                getColumns().toArray(new String[0]),
+                selection,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+        List<T> res = this.cursorToList(cursor);
+        if(closeDB) {
+            db.close();
+        }
         return res;
     }
 

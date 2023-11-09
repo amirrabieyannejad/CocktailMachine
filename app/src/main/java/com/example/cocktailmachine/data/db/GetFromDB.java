@@ -34,7 +34,7 @@ import java.util.List;
 public class GetFromDB {
     private static String TAG = "GetFromDB";
 
-    static SQLiteDatabase getReadableDatabase(Context context){
+    public static SQLiteDatabase getReadableDatabase(Context context){
         return DatabaseConnection.init(context).getReadableDatabase();
     }
 
@@ -68,7 +68,7 @@ public class GetFromDB {
 
     static BasicColumn<SQLIngredient>.DatabaseIterator loadIngredientChunkIterator(Context context, int n){
        // Log.v(TAG, "loadIngredientChunkIterator");
-        return Tables.TABLE_INGREDIENT.getChunkIterator(getReadableDatabase(context) ,n);
+        return Tables.TABLE_INGREDIENT.getChunkIterator(context ,n);
     }
 
     public static List<? extends Recipe> loadRecipes(Context context){
@@ -109,7 +109,7 @@ public class GetFromDB {
 
     static BasicColumn<SQLRecipe>.DatabaseIterator loadRecipeChunkIterator(Context context, int n){
        // Log.v(TAG, "loadRecipeChunkIterator");
-        return Tables.TABLE_RECIPE.getChunkIterator(getReadableDatabase(context) ,n);
+        return Tables.TABLE_RECIPE.getChunkIterator(context ,n);
     }
 
     static Topic loadTopic(Context context,long id){
@@ -148,7 +148,7 @@ public class GetFromDB {
 
     static BasicColumn<SQLTopic>.DatabaseIterator loadTopicChunkIterator(Context context, int n){
        // Log.v(TAG, "loadTopicChunkIterator");
-        return Tables.TABLE_TOPIC.getChunkIterator(getReadableDatabase(context), n);
+        return Tables.TABLE_TOPIC.getChunkIterator(context, n);
     }
 
 
@@ -164,7 +164,7 @@ public class GetFromDB {
 
     static Iterator<List<SQLPump>> loadPumpChunkIterator(Context context, int n){
        // Log.v(TAG, "loadPumpChunkIterator");
-        return Tables.TABLE_PUMP.getChunkIterator(getReadableDatabase(context), n);
+        return Tables.TABLE_PUMP.getChunkIterator(context, n);
     }
 
 
@@ -424,18 +424,18 @@ public class GetFromDB {
     }
 
     public static Iterator<List<SQLRecipe>> getRecipeChunkIterator(Context context, int n) {
-        return Tables.TABLE_RECIPE.getChunkIterator(getReadableDatabase(context), n);
+        return Tables.TABLE_RECIPE.getChunkIterator(context, n);
     }
 
     public static Iterator<List<SQLIngredient>> getIngredientChunkIterator(Context context, int n) {
-        return Tables.TABLE_INGREDIENT.getChunkIterator(getReadableDatabase(context), n);
+        return Tables.TABLE_INGREDIENT.getChunkIterator(context, n);
     }
 
     public static Iterator<List<SQLTopic>> getTopicChunkIterator(Context context, int n) {
-        return Tables.TABLE_TOPIC.getChunkIterator(getReadableDatabase(context), n);
+        return Tables.TABLE_TOPIC.getChunkIterator(context, n);
     }
 
     public static Iterator<List<SQLPump>> getPumpChunkIterator(Context context, int n) {
-        return Tables.TABLE_PUMP.getChunkIterator(getReadableDatabase(context), n);
+        return Tables.TABLE_PUMP.getChunkIterator(context, n);
     }
 }

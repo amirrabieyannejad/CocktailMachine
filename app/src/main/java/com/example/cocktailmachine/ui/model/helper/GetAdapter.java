@@ -18,16 +18,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
+import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
+import com.example.cocktailmachine.data.db.tables.Tables;
 import com.example.cocktailmachine.data.enums.Postexecute;
+import com.example.cocktailmachine.ui.model.ListActivity;
 import com.example.cocktailmachine.ui.model.enums.ModelType;
 
 import java.util.ArrayList;
@@ -536,7 +540,7 @@ public class GetAdapter {
         private final static String TAG = "NameAdapter";
         private final Activity activity;
         private final ModelType type;
-        private final List<K> data;
+        private List<K> data;
         public NameAdapter(Activity activity, ModelType type) {
             this.activity = activity;
             this.data = initList();
@@ -624,6 +628,11 @@ public class GetAdapter {
         }
 
 
+        public void reload(Context context) {
+            ExtraHandlingDB.localRefresh(context);
+            data = getList();
+            notifyDataSetChanged();
+        }
     }
 
 
@@ -742,6 +751,8 @@ public class GetAdapter {
 
             this.h.postDelayed(this.r, 500);
         }
+
+
 
     }
 

@@ -26,7 +26,8 @@ public class ExtraHandlingDB {
     private static final String TAG = "ExtraHandlingDB";
 
     public static void localRefresh(Context context) {
-        //TODO: DatabaseConnection.init(context).refreshAvailable(context);
+        //TO DO: DatabaseConnection.init(context).refreshAvailable(context);
+        loadAvailabilityForAll(context);
     }
 
 
@@ -41,9 +42,10 @@ public class ExtraHandlingDB {
         DatabaseConnection.loadPrepedRecipes(context);
     }
 
-    public static void loadForSetUp(Activity context) {
+    public static void loadForSetUp(Context context) {
 
         DatabaseConnection.init(context).setUpEmptyPumps(); //delete all pump Tables to be sure
+        Tables.TABLE_RECIPE.setEmptyPumps(getWritableDatabase(context));
     }
 
     public static void loadDummy(Context context) {
@@ -105,7 +107,7 @@ public class ExtraHandlingDB {
 
 
     public static void loadAvailabilityForAll(Context context){
-        //TODO:set available in all recipes
+        //TO DO:set available in all recipes
         List<Long> availableIngredients = Tables.TABLE_INGREDIENT_PUMP.getIngredientIDs(getReadableDatabase(context));
         List<Long> maybeRecipes = Tables.TABLE_RECIPE_INGREDIENT.getRecipeIDsWithIngs(getReadableDatabase(context), availableIngredients);
         List<Long> notRecipes = Tables.TABLE_RECIPE_INGREDIENT.getRecipeIDsWithoutIngs(getReadableDatabase(context), availableIngredients);
