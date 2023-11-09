@@ -29,7 +29,7 @@ public class AddOrUpdateToDB {
     }
 
      */
-    private static SQLiteDatabase getWritableDatabase(Context context){
+    static SQLiteDatabase getWritableDatabase(Context context){
         try {
             return DatabaseConnection.getSingleton().getWritableDatabase();
         } catch (NotInitializedDBException e) {

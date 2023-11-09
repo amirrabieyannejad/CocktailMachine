@@ -97,4 +97,41 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
             return false;
         }
     }
+
+    public List<Long> getIngredientIDs(SQLiteDatabase db) {
+        Cursor cursor = db.query(true,
+                this.getName(),
+                new String[]{COLUMN_NAME_INGREDIENT_ID},
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+        List<Long> res = this.cursorToIngredientIDList(cursor);
+        db.close();
+        return res;
+    }
+
+    /**
+     * reads with given cursor each given rows to List of ids
+     * @author Johanna Reidt
+     * @param cursor
+     * @return Long list
+     */
+    private List<Long> cursorToIngredientIDList(Cursor cursor){
+        // Log.v(TAG, "cursorToList");
+        List<Long> res = new ArrayList<>();
+        int id_index = cursor.getColumnIndexOrThrow(COLUMN_NAME_INGREDIENT_ID);
+        if(cursor.moveToFirst()) {
+            res.add(cursor.getLong(id_index));
+            while (cursor.moveToNext()) {
+                res.add(cursor.getLong(id_index));
+            }
+        }
+        cursor.close();
+        // Log.v(TAG, "cursorToList : "+res);
+        return res;
+    }
 }

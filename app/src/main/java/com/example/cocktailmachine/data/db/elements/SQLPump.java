@@ -26,7 +26,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
 
     //private loaded
     private String loadedIngredientName = "Keine Zutat";
-    private int loadedIngredientVolume = -1;
+    private int loadedIngredientVolume = 0;
 
     public SQLPump(){
         super();

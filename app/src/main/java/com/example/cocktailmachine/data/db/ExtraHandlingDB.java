@@ -1,5 +1,6 @@
 package com.example.cocktailmachine.data.db;
 
+import static com.example.cocktailmachine.data.db.AddOrUpdateToDB.getWritableDatabase;
 import static com.example.cocktailmachine.data.db.GetFromDB.getReadableDatabase;
 
 import android.app.Activity;
@@ -13,6 +14,7 @@ import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpExcep
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.tables.Tables;
 import com.example.cocktailmachine.ui.Menue;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +26,8 @@ public class ExtraHandlingDB {
     private static final String TAG = "ExtraHandlingDB";
 
     public static void localRefresh(Context context) {
-        //TODO: DatabaseConnection.init(context).refreshAvailable(context);
+        //TO DO: DatabaseConnection.init(context).refreshAvailable(context);
+        loadAvailabilityForAll(context);
     }
 
 
@@ -39,9 +42,10 @@ public class ExtraHandlingDB {
         DatabaseConnection.loadPrepedRecipes(context);
     }
 
-    public static void loadForSetUp(Activity context) {
+    public static void loadForSetUp(Context context) {
 
         DatabaseConnection.init(context).setUpEmptyPumps(); //delete all pump Tables to be sure
+        Tables.TABLE_RECIPE.setEmptyPumps(getWritableDatabase(context));
     }
 
     public static void loadDummy(Context context) {
@@ -103,13 +107,18 @@ public class ExtraHandlingDB {
 
 
     public static void loadAvailabilityForAll(Context context){
-        //TODO:set available in all recipes
+        //TO DO:set available in all recipes
+        List<Long> availableIngredients = Tables.TABLE_INGREDIENT_PUMP.getIngredientIDs(getReadableDatabase(context));
+        List<Long> maybeRecipes = Tables.TABLE_RECIPE_INGREDIENT.getRecipeIDsWithIngs(getReadableDatabase(context), availableIngredients);
+        List<Long> notRecipes = Tables.TABLE_RECIPE_INGREDIENT.getRecipeIDsWithoutIngs(getReadableDatabase(context), availableIngredients);
 
-
+        Tables.TABLE_RECIPE.setEmptyPumps(getWritableDatabase(context));
+        Tables.TABLE_RECIPE.setAvailable(getWritableDatabase(context), maybeRecipes);
+        Tables.TABLE_RECIPE.setNotAvailable(getWritableDatabase(context), notRecipes);
     }
 
     public static boolean loadAvailability(Context context, SQLRecipeTopic recipeTopic) {
-        return true; //TODO
+        return true; //TO DO
     }
 
     public static boolean loadAvailability(Context context, SQLRecipeIngredient recipeIngredient) {
@@ -117,7 +126,8 @@ public class ExtraHandlingDB {
     }
 
     public static boolean loadAvailability(Context context, SQLIngredientPump sqlIngredientPump) {
-        return true; //TODO
+        return Tables.TABLE_INGREDIENT_PUMP.hasIngredient(getReadableDatabase(context), sqlIngredientPump.getIngredientID());
+        //return true; //TO DO
     }
 
     public static void loadPrepedDB(Context context) {
