@@ -17,9 +17,13 @@ import com.example.cocktailmachine.data.db.elements.SQLTopic;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.data.db.tables.BasicColumn;
+import com.example.cocktailmachine.data.db.tables.IngredientTable;
+import com.example.cocktailmachine.data.db.tables.PumpTable;
+import com.example.cocktailmachine.data.db.tables.RecipeTable;
 import com.example.cocktailmachine.data.db.tables.Tables;
 import com.example.cocktailmachine.data.db.tables.TopicTable;
 import com.example.cocktailmachine.ui.model.enums.ModelType;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -424,18 +428,18 @@ public class GetFromDB {
     }
 
     public static Iterator<List<SQLRecipe>> getRecipeChunkIterator(Context context, int n) {
-        return Tables.TABLE_RECIPE.getChunkIterator(context, n);
+        return Tables.TABLE_RECIPE.getChunkIterator(context, n, RecipeTable.COLUMN_NAME_NAME);
     }
 
     public static Iterator<List<SQLIngredient>> getIngredientChunkIterator(Context context, int n) {
-        return Tables.TABLE_INGREDIENT.getChunkIterator(context, n);
+        return Tables.TABLE_INGREDIENT.getChunkIterator(context, n, IngredientTable.COLUMN_NAME_NAME);
     }
 
     public static Iterator<List<SQLTopic>> getTopicChunkIterator(Context context, int n) {
-        return Tables.TABLE_TOPIC.getChunkIterator(context, n);
+        return Tables.TABLE_TOPIC.getChunkIterator(context, n, TopicTable.COLUMN_NAME_NAME);
     }
 
     public static Iterator<List<SQLPump>> getPumpChunkIterator(Context context, int n) {
-        return Tables.TABLE_PUMP.getChunkIterator(context, n);
+        return Tables.TABLE_PUMP.getChunkIterator(context, n, PumpTable.COLUMN_TYPE_SLOT_ID);
     }
 }

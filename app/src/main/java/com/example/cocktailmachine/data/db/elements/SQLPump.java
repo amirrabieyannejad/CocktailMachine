@@ -21,7 +21,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     private SQLIngredientPump ingredientPump = null;
     private boolean available = false;
 
-    private long ingredientID = -1L;
+    private long ingredientID = 0L;
 
 
     //private loaded

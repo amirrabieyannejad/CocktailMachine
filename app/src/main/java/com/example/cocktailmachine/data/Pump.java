@@ -246,7 +246,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     static void updatePumpStatus(Context context, JSONObject json) {
         Log.i(TAG, "updatePumpStatus");
-        //TO DO: USE THIS AMIR
+        Log.i(TAG, "updatePumpStatus: "+json.toString());
         List<Long> toSave = new ArrayList<>();
         try {
             Iterator<String> t_ids = json.keys();
