@@ -113,4 +113,25 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
             Log.e(TAG, "error", e);
         }
     }
+
+    public void setAvailable(SQLiteDatabase db, List<Long> maybeAvailableRecipeIDs) {
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_NAME_AVAILABLE, true);
+        try {
+            this.updateColumnsValues(db, cv, maybeAvailableRecipeIDs);
+        } catch (NoSuchColumnException e) {
+            Log.e(TAG, "error", e);
+        }
+
+    }
+
+    public void setNotAvailable(SQLiteDatabase db, List<Long> notAvailableRecipeIDs) {
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_NAME_AVAILABLE, false);
+        try {
+            this.updateColumnsValues(db, cv, notAvailableRecipeIDs);
+        } catch (NoSuchColumnException e) {
+            Log.e(TAG, "error", e);
+        }
+    }
 }

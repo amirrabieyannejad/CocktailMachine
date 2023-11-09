@@ -103,7 +103,7 @@ public class ListActivity extends BasicActivity {
 
          */
 
-        adapter = new GetAdapter.TopicScrollAdapter(this, 20, 0.8).initScrollListener(binding.recyclerViewListAc);
+        adapter = new GetAdapter.TopicScrollAdapter(this, 100, 0.8).initScrollListener(binding.recyclerViewListAc);
     }
 
     @Override
@@ -131,7 +131,7 @@ public class ListActivity extends BasicActivity {
 
          */
 
-        adapter = new GetAdapter.IngredientScrollAdapter(this, 20, 0.8).initScrollListener(binding.recyclerViewListAc);
+        adapter = new GetAdapter.IngredientScrollAdapter(this, 100, 0.8).initScrollListener(binding.recyclerViewListAc);
     }
 
     @Override
@@ -159,7 +159,7 @@ public class ListActivity extends BasicActivity {
         };
 
          */
-        adapter = new GetAdapter.RecipeScrollAdapter(this, 20 , 0.8).initScrollListener(binding.recyclerViewListAc);
+        adapter = new GetAdapter.RecipeScrollAdapter(this, 100 , 0.8).initScrollListener(binding.recyclerViewListAc);
 
     }
 

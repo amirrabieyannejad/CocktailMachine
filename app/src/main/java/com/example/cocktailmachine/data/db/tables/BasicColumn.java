@@ -127,10 +127,10 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
     }
 
     /**
-     * reads with given crusor each given rows to a T element
+     * reads with given cursor each given rows to a List of IDs
      * @author Johanna Reidt
      * @param cursor
-     * @return T element list
+     * @return Long list
      */
     private List<Long> cursorToIDList(Cursor cursor){
        // Log.v(TAG, "cursorToList");
@@ -230,8 +230,10 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         if(cursor.moveToFirst()) {
             T res = makeElement(cursor);
             cursor.close();
+            db.close();
             return res;
         }
+        db.close();
         return null;
     }
 
@@ -304,6 +306,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
          */
         List<Long> ids = cursorToIDList(cursor);
         cursor.close();
+        db.close();
         return ids;
     }
 
@@ -335,6 +338,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
          */
         List<Long> ids = cursorToIDList(cursor);
         cursor.close();
+        db.close();
         return ids;
     }
 
@@ -542,7 +546,9 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 null,
                 null,
                 null);
-        return this.cursorToList(cursor);
+        List<T> res = this.cursorToList(cursor);
+        db.close();
+        return res;
     }
 
     /**
@@ -562,7 +568,9 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 null,
                 null,
                 null);
-        return this.cursorToList(cursor);
+        List<T> res = this.cursorToList(cursor);
+        db.close();
+        return res;
     }
 
     public List<T> getElementsLike(SQLiteDatabase db,
@@ -580,7 +588,9 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 null,
                 null,
                 null, null, null);
-        return this.cursorToList(cursor);
+        List<T> res = this.cursorToList(cursor);
+        db.close();
+        return res;
     }
 
     public List<Long> getIDsLike(SQLiteDatabase db,
@@ -598,7 +608,9 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 null,
                 null,
                 null, null, null);
-        return this.cursorToIDList(cursor);
+        List<Long> res =  this.cursorToIDList(cursor);
+        db.close();
+        return res;
     }
 
     public List<Long> getIDsNotLike(SQLiteDatabase db,
@@ -619,7 +631,9 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 null,
                 null
         );
-        return this.cursorToIDList(cursor);
+        List<Long> res =  this.cursorToIDList(cursor);
+        db.close();
+        return res;
     }
 
     private List<T> getElementsSelectionOperator(SQLiteDatabase db,
@@ -655,7 +669,9 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 null,
                 null,
                 null);
-        return this.cursorToList(cursor);
+        List<T> res = this.cursorToList(cursor);
+        db.close();
+        return res;
     }
 
     private List<Long> getIDsSelectionOperator(SQLiteDatabase db,
@@ -688,7 +704,9 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 null,
                 null,
                 null);
-        return this.cursorToIDList(cursor);
+        List<Long> res =  this.cursorToIDList(cursor);
+        db.close();
+        return res;
     }
 
     public List<T> getElementsIn(SQLiteDatabase db,
@@ -743,7 +761,9 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 null,
                 null,
                 null);
-        return this.cursorToList(cursor);
+        List<T> res = this.cursorToList(cursor);
+        db.close();
+        return res;
     }
 
     public List<T> getElementsWith(SQLiteDatabase db,
@@ -763,7 +783,9 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 null,
                 null,
                 null);
-        return this.cursorToList(cursor);
+        List<T> res = this.cursorToList(cursor);
+        db.close();
+        return res;
     }
 
     public List<Long> getIDsWith(SQLiteDatabase db,
@@ -783,7 +805,9 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 null,
                 null,
                 null);
-        return this.cursorToIDList(cursor);
+        List<Long> res =  this.cursorToIDList(cursor);
+        db.close();
+        return res;
     }
 
 
@@ -800,6 +824,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
     public void deleteElement(SQLiteDatabase db,
                               long id){
         db.delete(getName(), this._ID+" = ?", new String[]{Long.toString(id)});
+        db.close();
     }
 
     public void deleteElementsSelectionOperators(SQLiteDatabase db,
@@ -846,7 +871,9 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
 
     public long addElement(SQLiteDatabase db,
                            T element){
-        return db.insertOrThrow(getName(), null, makeContentValues(element));
+        long res = db.insertOrThrow(getName(), null, makeContentValues(element));
+        db.close();
+        return res;
     }
 
     public List<Long> addElements(SQLiteDatabase db,
@@ -856,6 +883,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
             ids.add(db.insertOrThrow(getName(), null, makeContentValues(element)));
             element.setID(ids.get(ids.size()-1));
         }
+        db.close();
         return ids;
     }
 
@@ -867,6 +895,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 makeContentValues(element),
                 this._ID+" = ?",
                 new String[]{Long.toString(element.getID())});
+        db.close();
     }
 
     public void updateColumnsValuesSelectionOperator(SQLiteDatabase db,
@@ -885,6 +914,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 cv,
                 where_column+" "+selectionOperator+" ?",
                 new String[]{makeSelectionList(where_column, ll)});
+        db.close();
     }
 
     public void updateColumnsValues(SQLiteDatabase db,
@@ -901,6 +931,24 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 cv,
                 where_column+" = ?",
                 makeSelectionList(where_column, equals_value));
+        db.close();
+    }
+
+    public void updateColumnsValues(SQLiteDatabase db,
+                                    ContentValues cv,
+                                    List<Long> IDs) throws NoSuchColumnException {
+        List<Object> where = new ArrayList<>(IDs);
+
+        for(String key: cv.keySet()) {
+            if (!getColumns().contains(key)) {
+                throw new NoSuchColumnException(getName(), key);
+            }
+        }
+        db.update(getName(),
+                cv,
+                this._ID+" IN "+ makeSelectionList(this._ID, where),
+                null);
+        db.close();
     }
 
     public void updateColumnsValues(SQLiteDatabase db,
