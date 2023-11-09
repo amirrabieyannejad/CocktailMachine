@@ -132,6 +132,9 @@ async def test_run(client):
   await admin({"cmd": "set_scale_factor", "user": 0, "factor": 1.0})
 
   # set up pumps
+  await admin({"cmd": "define_pumps", "user": 0, "liquid": "none", "volume": 0, "quantity": 2})
+  await read_status(client)
+
   await admin({"cmd": "define_pump", "user": 0, "liquid": "water",    "volume": 1000, "slot": 1})
   await admin({"cmd": "define_pump", "user": 0, "liquid": "beer",     "volume": 2000, "slot": 2})
   await admin({"cmd": "define_pump", "user": 0, "liquid": "lemonade", "volume": 3000, "slot": 7})

@@ -138,6 +138,7 @@ enum struct Retcode {
   missing_command,
   wrong_comm,
   invalid_slot,
+  invalid_quantity,
   invalid_volume,
   invalid_weight,
   invalid_times,
@@ -151,6 +152,7 @@ enum struct Retcode {
   cant_start_recipe,
   cant_take_cocktail,
   invalid_cal_state,
+
 };
 
 const char* retcode_str[] = {
@@ -166,6 +168,7 @@ const char* retcode_str[] = {
   J("command missing even though it parsed right"),
   J("wrong comm channel"),
   J("invalid pump slot"),
+  J("invalid pump quantity"),
   J("invalid volume"),
   J("invalid weight"),
   J("invalid times"),
@@ -406,6 +409,16 @@ struct CmdDefinePump : public Command {
   float volume;
   CmdDefinePump(User user, const int32_t slot, String liquid, const float volume) :
     user(user), slot(slot), liquid(liquid), volume(volume) {}
+};
+
+struct CmdDefinePumps : public Command {
+  def_cmd("define_pumps", ADMIN);
+  User user;
+  String liquid;
+  float volume;
+  int32_t quantity;
+  CmdDefinePumps(User user, String liquid, const float volume, const int32_t quantity) :
+    user(user), quantity(quantity), liquid(liquid), volume(volume) {}
 };
 
 struct CmdEditPump : public Command {
@@ -1121,6 +1134,13 @@ Parsed parse_command(const String json) {
     parse_int32(slot);
     cmd = new CmdDefinePump(user, slot, liquid, volume);
 
+  } else if (match_name(CmdDefinePumps)) {
+    parse_user();
+    parse_str(liquid);
+    parse_float(volume);
+    parse_int32(quantity);
+    cmd = new CmdDefinePumps(user, liquid, volume, quantity);
+
   } else if (match_name(CmdEditPump)) {
     parse_user();
     parse_str(liquid);
@@ -1305,6 +1325,39 @@ Retcode CmdDefinePump::execute() {
   PumpSlot *pump_slot = pump_slots[slot];
   Pump *p = new Pump(pump_slot, this->liquid, volume, S(1), S(1), 1.0, false);
   pumps[slot] = p;
+
+  // update machine state
+  update_liquids();
+  update_config_state(timestamp_ms());
+
+  return Retcode::success;
+}
+
+Retcode CmdDefinePumps::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
+
+  float volume = this->volume;
+  String liquid = this->liquid;
+
+  if (quantity < 0 || quantity >= MAX_PUMPS-1) {
+    return Retcode::invalid_quantity;
+  }
+
+  if (volume < 0) {
+    return Retcode::invalid_volume;
+  }
+
+  for (int slot=1; slot <= this->quantity; slot++) {
+    if (pumps[slot] != NULL) {
+      // clear out old pump
+      delete pumps[slot];
+    }
+
+    // save new pump
+    PumpSlot *pump_slot = pump_slots[slot];
+    Pump *p = new Pump(pump_slot, liquid, volume, S(1), S(1), 1.0, false);
+    pumps[slot] = p;
+  }
 
   // update machine state
   update_liquids();
