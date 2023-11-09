@@ -53,6 +53,7 @@ import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.ui.BluetoothNotFound;
 import com.example.cocktailmachine.ui.BluetoothTestEnviroment;
+import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
 
 import java.util.ArrayList;
@@ -233,7 +234,8 @@ public class DeviceScanActivity extends ListActivity {
     protected void onListItemClick(ListView l, View v, int position, long id) {
         final BluetoothDevice device = mLeDeviceListAdapter.getDevice(position);
         if (device == null) return;
-        final Intent intent = new Intent(this, BluetoothTestEnviroment.class);
+        //final Intent intent = new Intent(this, BluetoothTestEnviroment.class);
+        Intent intent = new Intent(this, Menue.class);
         //final Intent intent = new Intent(this, DeviceControlActivity.class);
         BluetoothSingleton settings = BluetoothSingleton.getInstance();
         settings.setEspDeviceName(device.getName());
