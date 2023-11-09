@@ -16,7 +16,7 @@ import java.util.List;
 
 public class SQLIngredientPump extends SQLDataBaseElement {
     private static final String TAG = "SQLIngredientPump";
-    private int volume = -1;
+    private int volume = 0;
     private long pump = -1L;
     private long ingredient = -1L;
     private boolean available = false;
