@@ -1,5 +1,7 @@
 package com.example.cocktailmachine.ui.model.helper;
 
+import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_SETTLING;
+
 import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
@@ -578,11 +580,14 @@ public class GetAdapter {
             };
             View.OnClickListener goTo =  v -> {
                 //Log.v(TAG, "setTxt ingredient clicked");
+                this.stop();
                 GetActivity.goToLook(this.activity,this.type  , i.getID());
             };
 
             holder.setTxt(txt,goTo, delete);
         }
+
+        public void stop(){}
 
         public abstract String getTitle(K i);
 
@@ -617,23 +622,41 @@ public class GetAdapter {
         Activity getActivity(){
             return activity;
         }
+
+
     }
 
 
     private static abstract class ScrollAdapter<K extends DataBaseElement> extends NameAdapter<K>{
         private final static String TAG = "ScrollAdapter";
-        boolean isLoading = false;
+        private boolean isLoading = false;
+        private double percentToLoadMore = 0.8;
 
-        Iterator<List<K>> iterator;
+        private Iterator<List<K>> iterator;
 
 
-        public ScrollAdapter(Activity activity, ModelType type, int n) {
+        private Handler h;
+        private Runnable r;
+
+
+
+        public ScrollAdapter(Activity activity, ModelType type, int n, double percentToLoadMore) {
             super(activity, type);
-            iterator = initIterator( n);
-            loadMore();
+            this.h = new Handler(Looper.myLooper());
+            this.iterator = initIterator( n);
+            if((percentToLoadMore >= 0.4) && (percentToLoadMore <= 1)) {
+                this.percentToLoadMore = percentToLoadMore;
+            }
+            initData();
         }
 
-
+        @Override
+        public void stop() {
+            super.stop();
+            if(isLoading) {
+                this.h.removeCallbacks(this.r);
+            }
+        }
 
         @Override
         public List<K> initList() {
@@ -645,22 +668,36 @@ public class GetAdapter {
                 @Override
                 public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                     super.onScrollStateChanged(recyclerView, newState);
+                    Log.i(TAG, "onScrollStateChanged");
+                    if(newState == SCROLL_STATE_SETTLING){
+                        onScrolled(recyclerView, 0,0);
+                    }
                 }
 
                 @Override
                 public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                     super.onScrolled(recyclerView, dx, dy);
 
-                    LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                    //Log.i(TAG, "scroll: x: "+dx+"y: "+ dy );
 
-                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == ScrollAdapter.this.getItemCount() - 1) {
-                        //bottom of list!
-                        Log.i(TAG, "end of list");
-                        if(!isLoading) {
-                            loadMore(recyclerView);
-                        }else{
-                            Log.i(TAG, "still loading from last time");
+                    //int scroll = recyclerView.getVerticalScrollbarPosition();
+                    LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();//(LinearLayoutManager) recyclerView.getLayoutManager();
+                    //int scroll = linearLayoutManager.findLastCompletelyVisibleItemPosition();
+                    //Log.i(TAG, "scroll: "+scroll );
+                    //int layoutItemCount = linearLayoutManager.getItemCount();
+
+                    if(!isLoading) {
+                        if (linearLayoutManager != null) {
+                            int last = linearLayoutManager.findLastCompletelyVisibleItemPosition();
+                            Log.i(TAG, "last: " + last);
+                            if (last>= percentToLoadMore * (ScrollAdapter.this.getItemCount() - 1)) {
+                                //percentToLoadMore * bottom of list!
+                                Log.i(TAG, "end of list");
+                                loadMore();
+                            }
                         }
+                    }else {
+                        Log.i(TAG, "still loading from last time");
                     }
                 }
             });
@@ -671,62 +708,46 @@ public class GetAdapter {
         }
 
         abstract Iterator<List<K>> initIterator(int n);
-        private void loadMore() {
-            Log.i(TAG, "loadMore");
-            isLoading = true;
+        private void initData() {
+            Log.i(TAG, "initData");
+            //isLoading = true;
             //ScrollAdapter.this.getList().remove(ScrollAdapter.this.getItemCount() - 1);
-            new Handler(Looper.getMainLooper()).postDelayed(
-                    //Do something after 100ms
 
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            int scrollPosition = ScrollAdapter.this.getList().size();
+            ScrollAdapter.this.getList().addAll(ScrollAdapter.this.iterator.next());
 
-                            ScrollAdapter.this.getList().addAll(ScrollAdapter.this.iterator.next());
-
-                            for(int i = scrollPosition; i<ScrollAdapter.this.getItemCount(); i++){
-                                ScrollAdapter.this.notifyItemInserted(i);
-                            }
-                            ScrollAdapter.this.isLoading = false;
-                            //recyclerView.scrollToPosition(scrollPosition);
-
-                        }
-                    }, 500);
+            for(int i = 0; i<ScrollAdapter.this.getItemCount(); i++){
+                ScrollAdapter.this.notifyItemInserted(i);
+            }
+            ScrollAdapter.this.isLoading = false;
+            this.r = null;
+            //recyclerView.scrollToPosition(scrollPosition);
 
         }
 
 
-        private void loadMore(RecyclerView recyclerView) {
+        private void loadMore() {
             Log.i(TAG, "loadMore");
             isLoading = true;
             //ScrollAdapter.this.getList().remove(ScrollAdapter.this.getItemCount() - 1);
-            new Handler(Looper.getMainLooper()).postDelayed(
-                    //Do something after 100ms
-
-            new Runnable() {
-                @Override
-                public void run() {
-                    int scrollPosition = ScrollAdapter.this.getList().size();
-
-                    ScrollAdapter.this.getList().addAll(ScrollAdapter.this.iterator.next());
-
-                    for(int i = scrollPosition; i<ScrollAdapter.this.getItemCount(); i++){
-                        ScrollAdapter.this.notifyItemInserted(i);
-                    }
-                    ScrollAdapter.this.isLoading = false;
-                    recyclerView.scrollToPosition(scrollPosition);
-
+            this.r = () -> {
+                int scrollPosition = ScrollAdapter.this.getList().size();
+                ScrollAdapter.this.getList().addAll(ScrollAdapter.this.iterator.next());
+                for(int i = scrollPosition; i<ScrollAdapter.this.getItemCount(); i++){
+                    ScrollAdapter.this.notifyItemInserted(i);
                 }
-            }, 2000);
+                ScrollAdapter.this.isLoading = false;
+                //recyclerView.scrollToPosition(scrollPosition);
+                this.r = null;
+            };
 
+            this.h.postDelayed(this.r, 500);
         }
 
     }
 
     public static class RecipeScrollAdapter extends ScrollAdapter<SQLRecipe>{
-        public RecipeScrollAdapter(Activity activity,  int n) {
-            super(activity, ModelType.RECIPE, n);
+        public RecipeScrollAdapter(Activity activity,  int n, double percentToLoadMore) {
+            super(activity, ModelType.RECIPE, n, percentToLoadMore);
         }
 
         @Override
@@ -741,8 +762,8 @@ public class GetAdapter {
     }
 
     public static class IngredientScrollAdapter extends ScrollAdapter<SQLIngredient>{
-        public IngredientScrollAdapter(Activity activity,  int n) {
-            super(activity, ModelType.INGREDIENT, n);
+        public IngredientScrollAdapter(Activity activity,  int n, double percentToLoadMore) {
+            super(activity, ModelType.INGREDIENT, n, percentToLoadMore);
         }
 
         @Override
@@ -757,8 +778,8 @@ public class GetAdapter {
     }
 
     public static class TopicScrollAdapter extends ScrollAdapter<SQLTopic>{
-        public TopicScrollAdapter(Activity activity,  int n) {
-            super(activity, ModelType.TOPIC, n);
+        public TopicScrollAdapter(Activity activity,  int n, double percentToLoadMore) {
+            super(activity, ModelType.TOPIC, n, percentToLoadMore);
         }
 
         @Override
@@ -773,8 +794,8 @@ public class GetAdapter {
     }
 
     public static class PumpScrollAdapter extends ScrollAdapter<SQLPump>{
-        public PumpScrollAdapter(Activity activity,  int n) {
-            super(activity, ModelType.PUMP, n);
+        public PumpScrollAdapter(Activity activity,  int n, double percentToLoadMore) {
+            super(activity, ModelType.PUMP, n, percentToLoadMore);
         }
 
         @Override

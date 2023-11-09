@@ -5,7 +5,7 @@ public class Dummy {
     public static boolean isDummy = false;
     //if true-> keine Bluetoothverbindung, für VM-testing,
     // false -> Bluetooth
-    public static boolean withSetCalibration =  false;
+    public static boolean withSetCalibration =  true;
     //false -> keine Kalibrierungscheck,
     // true -> kalibrierungscheck  und ggf. automatische kalibrirung,
 

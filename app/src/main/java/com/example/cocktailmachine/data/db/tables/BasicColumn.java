@@ -307,6 +307,37 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         return ids;
     }
 
+    public List<Long> getIDs(SQLiteDatabase db, String orderBy){
+        Cursor cursor = db.query(true,
+                this.getName(),
+                new String[]{_ID},
+                null,
+                null,
+                null,
+                null,
+                orderBy,
+                null,
+                null);
+        /*
+        List<Long> ids = new ArrayList<>();
+        try {
+            if (cursor.moveToFirst()) {
+                ids.add(cursor.getLong(cursor.getColumnIndexOrThrow(_ID)));
+                while (cursor.moveToNext()) {
+                    ids.add(cursor.getLong(cursor.getColumnIndexOrThrow(_ID)));
+                }
+            }
+        }catch (IllegalArgumentException e){
+            Log.e(TAG, "getIDs", e);
+            Log.getStackTraceString(e);
+        }
+
+         */
+        List<Long> ids = cursorToIDList(cursor);
+        cursor.close();
+        return ids;
+    }
+
     public Iterator<T> getIterator(SQLiteDatabase db){
 
         return new Iterator<T>() {
@@ -353,6 +384,25 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
             this.chunkSize = chunkSize;
             this.readableDB = readableDB;
             //this.table = loadTable();
+        }
+        public DatabaseIterator(SQLiteDatabase readableDB,
+                                int chunkSize,
+                                String orderBy){
+            this.ids = BasicColumn.this.getIDs(readableDB, orderBy);
+            this.chunkSize = chunkSize;
+            this.readableDB = readableDB;
+            //this.table = loadTable();
+        }
+
+        public DatabaseIterator(SQLiteDatabase readableDB,
+                                int chunkSize,
+                                String orderBy,
+                                boolean available){
+            this.ids = BasicColumn.this.getIDs(readableDB, orderBy);
+            this.chunkSize = chunkSize;
+            this.readableDB = readableDB;
+            //this.table = loadTable();
+            //TODO: get available if in column names
         }
 
         @Override
