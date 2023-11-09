@@ -256,7 +256,8 @@ public class DeviceScanActivity extends ListActivity {
                     Toast.LENGTH_SHORT).show();
             return;
         }
-        final Intent intent = new Intent(this, BluetoothTestEnviroment.class);
+        //final Intent intent = new Intent(this, BluetoothTestEnviroment.class);
+        Intent intent = new Intent(this, Menue.class);
         //final Intent intent = new Intent(this, DeviceControlActivity.class);
         BluetoothSingleton settings = BluetoothSingleton.getInstance();
         settings.setEspDeviceName(device.getName());

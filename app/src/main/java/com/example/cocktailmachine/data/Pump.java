@@ -163,6 +163,15 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         for (int i = 0; i < numberOfPumps; i++) {
             Pump pump = makeNew();
             pump.setSlot(i);
+            Ingredient water = Ingredient.makeNew("Wasser");
+            water.save(context);
+            pump.setCurrentIngredient(context, water);
+            pump.save(context);
+            try {
+                pump.fill(context, 100);
+            } catch (MissingIngredientPumpException e) {
+                Log.e(TAG, "setOverrideEmptyPumps", e);
+            }
             //pump.save(context);
             pump.sendSave(context);
             Log.i(TAG, "setOverrideEmptyPumps: made Pump "+i);
@@ -246,7 +255,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     static void updatePumpStatus(Context context, JSONObject json) {
         Log.i(TAG, "updatePumpStatus");
-        //TO DO: USE THIS AMIR
+        Log.i(TAG, "updatePumpStatus: "+json.toString());
         List<Long> toSave = new ArrayList<>();
         try {
             Iterator<String> t_ids = json.keys();

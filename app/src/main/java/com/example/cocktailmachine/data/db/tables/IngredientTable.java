@@ -177,7 +177,7 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
     public List<SQLIngredient> getAvailableElements(SQLiteDatabase db){
         return this.cursorToList(
                 db.query(true, this.getName(), this.getColumns().toArray(new String[]{}),
-                this._ID+" IN (SELECT "+
+                this._ID+" IN (SELECT "+ //ingredientpumptable getingredient ids
                         IngredientPumpTable.COLUMN_NAME_INGREDIENT_ID+
                         " FROM "+Tables.TABLE_INGREDIENT_PUMP.getName()+")"
                         , null, null,null, null, null));
@@ -185,13 +185,15 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
 
     public List<SQLIngredient> getAvailableElements(SQLiteDatabase db, List<Long> ids){
         try {
-            return this.cursorToList(
+            List<SQLIngredient> res= this.cursorToList(
                     db.query(true, this.getName(), this.getColumns().toArray(new String[]{}),
                             "("+this._ID+" IN (SELECT "+
                                     IngredientPumpTable.COLUMN_NAME_INGREDIENT_ID+
                                     " FROM "+Tables.TABLE_INGREDIENT_PUMP.getName()+"))"+
                                     " AND "+this._ID +" IN "+makeSelectionList(this._ID, ids)
                             , null, null,null, null, null));
+            db.close();
+            return res;
         } catch (NoSuchColumnException e) {
             Log.e(TAG, "getAvailableElements", e);
             return new ArrayList<>();
@@ -212,7 +214,9 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
                 null,
                 null,
                 null);
-        return this.cursorToNames(cursor);
+        List<String> res = this.cursorToNames(cursor);
+        db.close();
+        return res;
 
     }
 
