@@ -16,6 +16,7 @@ import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
+import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
@@ -156,16 +157,17 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @param context
      * @param numberOfPumps k
      */
-    static void setOverrideEmptyPumps(Activity context, int numberOfPumps) {
+    static void setOverrideEmptyPumps(Activity context, int numberOfPumps, Postexecute postexecute) {
         Log.i(TAG, "setOverrideEmptyPumps");
         ExtraHandlingDB.loadForSetUp(context);
         Log.i(TAG, "setOverrideEmptyPumps "+numberOfPumps);
-        for (int i = 0; i < numberOfPumps; i++) {
-            Pump pump = makeNew();
+        for (int i = 1; i < numberOfPumps+1; i++) {
+
+            Pump pump = Pump.makeNew();
             pump.setSlot(i);
-            Ingredient water = Ingredient.makeNew("Wasser");
-            water.save(context);
-            pump.setCurrentIngredient(context, water);
+            //Ingredient water = Ingredient.makeNew("Wasser");
+            //water.save(context);
+            //pump.setCurrentIngredient(context, water);
             pump.save(context);
             try {
                 pump.fill(context, 100);
@@ -173,7 +175,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 Log.e(TAG, "setOverrideEmptyPumps", e);
             }
             //pump.save(context);
-            pump.sendSave(context);
+            pump.sendSave(context, postexecute);
             Log.i(TAG, "setOverrideEmptyPumps: made Pump "+i);
             Log.i(TAG, "setOverrideEmptyPumps: made Pump "+pump.toString());
             Log.i(TAG, "setOverrideEmptyPumps: control list len "+ getPumps(context).size() );
@@ -445,6 +447,55 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                     this.getVolume(activity),
                     this.getSlot(),
                     activity);
+        } catch (JSONException | InterruptedException e) {
+            Log.i(TAG, "sendSave failed");
+            Log.e(TAG, "error ",e);
+            Log.getStackTraceString(e);
+        }
+    }
+
+
+    /**
+     * send new Pump with Bluetooth
+     * ### define_pump: fügt Pumpe zu ESP hinzu
+     * - user: User
+     * - liquid: str
+     * - volume: float
+     * - slot: int
+     * <p>
+     * JSON-Beispiel:
+     * <p>
+     * {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
+     */
+    default void sendSave(Activity activity, Postexecute postexecute) {
+        save(activity);
+        if(Dummy.isDummy){
+            return;
+        }
+        /*
+        //TO DO: AMIR
+        JSONObject request = new JSONObject();
+        try {
+            request.put("cmd", "define_pump");
+            request.put("user", AdminRights.getUserId());
+            request.put("liquid", this.getIngredientName());
+            request.put("volume", this.getVolume());
+            request.put( "slot", 1);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        //TO DO: send define pump
+        JSONObject answer = new JSONObject();
+
+         */
+
+        try {
+            BluetoothSingleton.getInstance().adminDefinePump(
+                    this.getIngredientName(activity),
+                    this.getVolume(activity),
+                    this.getSlot(),
+                    activity,
+                    postexecute);
         } catch (JSONException | InterruptedException e) {
             Log.i(TAG, "sendSave failed");
             Log.e(TAG, "error ",e);
