@@ -16,10 +16,13 @@ import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
+import com.example.cocktailmachine.data.enums.CocktailStatus;
 import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
+import org.apache.commons.collections.ArrayStack;
+import org.apache.commons.collections.list.AbstractLinkedList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -161,6 +164,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         Log.i(TAG, "setOverrideEmptyPumps");
         ExtraHandlingDB.loadForSetUp(context);
         Log.i(TAG, "setOverrideEmptyPumps "+numberOfPumps);
+
         for (int i = 1; i < numberOfPumps+1; i++) {
 
             Pump pump = Pump.makeNew();
@@ -174,8 +178,70 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             } catch (MissingIngredientPumpException e) {
                 Log.e(TAG, "setOverrideEmptyPumps", e);
             }
+
+            pump.save(context);
             //pump.save(context);
-            pump.sendSave(context, postexecute);
+            //pump.sendSave(context, postexecute);
+
+
+            //Wait for ready
+            // try 3 times with wait 1000 ms
+
+
+            final Postexecute doAfterWait = postexecute;
+            final List<Boolean> count = new ArrayList<>();
+            //final int count = 0;
+            final int timesToTry= 3;
+
+            postexecute = new Postexecute() {
+                @Override
+                public void post() {
+
+                    Log.i(TAG,"setOverrideEmptyPumps: wait for ready status" );
+                    CocktailStatus.getCurrentStatus(
+                            new Postexecute() {
+                                @Override
+                                public void post() {
+                                    Log.i(TAG,"setOverrideEmptyPumps: status received :"+CocktailStatus.getCurrentStatus() );
+                                    if(CocktailStatus.getCurrentStatus() == CocktailStatus.ready) {
+                                        Log.i(TAG,"setOverrideEmptyPumps: ready" );
+                                        doAfterWait.post();
+                                        return;
+                                    } else if (count.size()<=timesToTry) {
+                                        Log.i(TAG,"setOverrideEmptyPumps: tried times for ready status: "+count.size());
+                                        count.add(false);
+                                        try {
+                                            Log.i(TAG,"setOverrideEmptyPumps: sleep");
+                                            Thread.sleep(1000);
+                                        } catch (InterruptedException e) {
+                                            Log.e(TAG, "error", e);
+                                        }
+                                        Log.i(TAG,"setOverrideEmptyPumps: post wait again");
+                                        this.post();
+                                        return;
+                                    }
+                                    Log.i(TAG,"setOverrideEmptyPumps: handle bluetooth/esp fail");
+                                    GetDialog.handleBluetoothFailed(context);
+                                }
+                            }, context);
+                }
+            };
+
+
+            //Send Save
+
+            Postexecute nextStep = postexecute;
+            postexecute = new Postexecute() {
+                @Override
+                public void post() {
+                    Log.i(TAG,"setOverrideEmptyPumps: sendSave: Slot: "+pump.getSlot());
+                    pump.sendSave(context, nextStep);
+                }
+            };
+
+
+
+
             Log.i(TAG, "setOverrideEmptyPumps: made Pump "+i);
             Log.i(TAG, "setOverrideEmptyPumps: made Pump "+pump.toString());
             Log.i(TAG, "setOverrideEmptyPumps: control list len "+ getPumps(context).size() );
