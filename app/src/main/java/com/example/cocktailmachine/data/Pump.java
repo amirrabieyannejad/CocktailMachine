@@ -557,10 +557,10 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
         try {
             BluetoothSingleton.getInstance().adminDefinePump(
+                    activity,
+                    this.getSlot(),
                     this.getIngredientName(activity),
                     this.getVolume(activity),
-                    this.getSlot(),
-                    activity,
                     postexecute);
         } catch (JSONException | InterruptedException e) {
             Log.i(TAG, "sendSave failed");
