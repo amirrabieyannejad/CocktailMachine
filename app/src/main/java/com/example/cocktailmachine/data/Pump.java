@@ -160,10 +160,17 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @param context
      * @param numberOfPumps k
      */
-    static void setOverrideEmptyPumps(Activity context, int numberOfPumps, Postexecute postexecute) {
+    static void setOverrideEmptyPumps(Activity context, int numberOfPumps) {
         Log.i(TAG, "setOverrideEmptyPumps");
         ExtraHandlingDB.loadForSetUp(context);
         Log.i(TAG, "setOverrideEmptyPumps "+numberOfPumps);
+
+        Postexecute postexecute = new Postexecute() {
+            @Override
+            public void post() {
+                Log.i(TAG, "setOverrideEmptyPumps: done");
+            }
+        };
 
         for (int i = 1; i < numberOfPumps+1; i++) {
 
@@ -186,7 +193,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
             //Wait for ready
             // try 3 times with wait 1000 ms
-
+/*
 
             final Postexecute doAfterWait = postexecute;
             final List<Boolean> count = new ArrayList<>();
@@ -202,6 +209,12 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                             new Postexecute() {
                                 @Override
                                 public void post() {
+                                    if(Dummy.isDummy){
+                                        Log.i(TAG,"setOverrideEmptyPumps: dummy" );
+                                        doAfterWait.post();
+                                        return;
+                                    }
+
                                     Log.i(TAG,"setOverrideEmptyPumps: status received :"+CocktailStatus.getCurrentStatus() );
                                     if(CocktailStatus.getCurrentStatus() == CocktailStatus.ready) {
                                         Log.i(TAG,"setOverrideEmptyPumps: ready" );
@@ -239,6 +252,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 }
             };
 
+ */
+
 
 
 
@@ -246,6 +261,27 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             Log.i(TAG, "setOverrideEmptyPumps: made Pump "+pump.toString());
             Log.i(TAG, "setOverrideEmptyPumps: control list len "+ getPumps(context).size() );
         }
+
+        if(!Dummy.isDummy) {
+            CocktailStatus.getCurrentStatus( new Postexecute() {
+                @Override
+                public void post() {
+                    if(Dummy.isDummy){
+                        return;
+                    }
+                    if(CocktailStatus.getCurrentStatus() == CocktailStatus.ready) {
+                        try {
+                            BluetoothSingleton.getInstance().adminDefinePumps(context, "Wasser", 100, numberOfPumps);
+                        } catch (JSONException | InterruptedException e) {
+                            //throw new RuntimeException(e);
+                            Log.e(TAG, "setOverrideEmptyPumps: send preset Pumps ", e);
+                        }
+                    }
+                }
+            }, context);
+
+        }
+
         Log.i(TAG, "setOverrideEmptyPumps: control given len "+ numberOfPumps);
         Log.i(TAG, "setOverrideEmptyPumps: control list len "+ getPumps(context).size() );
     }
@@ -509,10 +545,10 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
         try {
             BluetoothSingleton.getInstance().adminDefinePump(
-                    this.getIngredientName(activity),
-                    this.getVolume(activity),
+                    activity,
                     this.getSlot(),
-                    activity);
+                    this.getIngredientName(activity),
+                    this.getVolume(activity));
         } catch (JSONException | InterruptedException e) {
             Log.i(TAG, "sendSave failed");
             Log.e(TAG, "error ",e);

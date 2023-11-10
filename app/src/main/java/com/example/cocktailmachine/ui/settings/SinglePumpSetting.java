@@ -32,7 +32,7 @@ public class SinglePumpSetting extends AppCompatActivity {
 
         this.textViewHeader.setText("Pumpe " + pump.getSlot());
         this.textViewIngredient.setText(pump.getIngredientName());
-        this.textViewIngredientVolumen.setText(""+pump.getVolume());
+        this.textViewIngredientVolumen.setText(""+pump.getVolume(this));
 
         //pump.sendRefill(this);
         //BluetoothSingleton.getInstance().

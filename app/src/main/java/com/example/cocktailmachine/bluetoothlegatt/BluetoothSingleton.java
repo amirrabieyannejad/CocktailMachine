@@ -989,42 +989,7 @@ public class BluetoothSingleton {
         Log.w(TAG, "this is the end of world!" + singleton.getEspResponseValue());
     }
 
-    /**
-     * define_pump (ADMIN): add a new pump to ESP
-     * JSON-sample: {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
-     * like described in ProjektDokumente/esp/Befehle.md
-     * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
-     * @return
-     * @throws JSONException
-     */
-    @SuppressLint("MissingPermission")
-    public void adminDefinePump(String liquid, float volume, int slot,Activity activity)
-            throws JSONException, InterruptedException {
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        // generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "define_pump");
-        jsonObject.put("user", 0);
-        jsonObject.put("liquid", liquid);
-        jsonObject.put("volume", volume);
-        jsonObject.put("slot", slot);
-        singleton.sendReadWrite(jsonObject,true,true);
 
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
-
-                Log.w(TAG, "To Save: " + this.getStringResult());
-            }
-        };
-        wfb.execute();
-        //
-        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
-    }
 
 
 

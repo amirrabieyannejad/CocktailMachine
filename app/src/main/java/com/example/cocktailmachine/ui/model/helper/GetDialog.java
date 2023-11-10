@@ -1725,7 +1725,6 @@ public class GetDialog {
 
         builder.setPositiveButton("Speichern", (dialog, which) -> {
             try {
-
                 pumpNumberChangeView.send();
                 dialog.dismiss();
             }catch (IllegalStateException e){
