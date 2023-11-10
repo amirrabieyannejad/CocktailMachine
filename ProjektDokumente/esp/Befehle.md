@@ -161,6 +161,16 @@ JSON-Beispiel:
 
     {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
 
+### define_pumps (ADMIN): fügt mehrere Pumpe zu ESP hinzu
+- user: User
+- liquid: str
+- volume: float
+- quantity: int
+
+JSON-Beispiel:
+
+    {"cmd": "define_pumps", "user": 0, "liquid": "water", "volume": 0, "quantity": 3}
+
 ### edit_pump (ADMIN): editiert eine Pumpe
 - user: User
 - liquid: str

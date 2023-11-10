@@ -14,6 +14,7 @@ Mögliche Fehler, die vom ESP zurückgegeben werden können. (s. [Befehle.md]())
 - `command missing even though it parsed right`: Befehl wurde im ESP fehlerhaft implementiert :)
 - `wrong comm channel`: falscher Channel für den Befehl (Admin vs. User)
 - `invalid pump slot`: ungültige Pumpe ausgewählt
+- `invalid pump quantity`: ungültige Anzahl an Pumpen ausgewählt
 - `invalid volume`: ungültige Menge (z.B. `-5`)
 - `invalid weight`: ungültiges Gewicht (z.B. `-5`)
 - `invalid times`: ungültige Zeit (z.B. `-5`)

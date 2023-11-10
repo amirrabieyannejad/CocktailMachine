@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.settings.SinglePumpSetting">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textView_SinglePumpSetting_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="24dp"
+            android:text="Pumpe 1"
+            android:textAlignment="center"
+            android:textSize="30dp" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="123dp"
+            android:layout_gravity="center"
+            android:layout_margin="24dp"
+            android:foregroundGravity="center"
+            android:minWidth="400dp"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/textView_SinglePumpSetting_header_zutaten"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="Zutat"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:layout_editor_absoluteY="83dp" />
+
+            <TextView
+                android:id="@+id/textView_SinglePumpSetting_zutat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="30dp"
+                android:text="TextView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/textView_SinglePumpSetting_header_zutaten" />
+
+            <TextView
+                android:id="@+id/textView_SinglePumpSetting_header_menge_zutaten"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="60dp"
+                android:text="Menge in ml"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView_SinglePumpSetting_zutat" />
+
+            <TextView
+                android:id="@+id/textView_SinglePumpSetting_menge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="80dp"
+                android:text="TextView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/textView_SinglePumpSetting_header_menge_zutaten" />
+
+
+        </androidx.cardview.widget.CardView>
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:width="100dp"
+            android:gravity="center"
+            android:minWidth="400dp"
+            android:text="Button" />
+
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:gravity="center"
+            android:minWidth="400dp"
+            android:text="Button" />
+
+        <Button
+            android:id="@+id/button4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:minWidth="400dp"
+            android:text="Button" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

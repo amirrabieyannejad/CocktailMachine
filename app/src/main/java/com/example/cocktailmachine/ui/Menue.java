@@ -23,6 +23,7 @@ import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.helper.DialogListOfPumps;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
 import com.example.cocktailmachine.ui.settings.SettingsActivity;
+import com.example.cocktailmachine.ui.settings.SinglePumpSetting;
 import com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice;
 
 /**
@@ -297,6 +298,13 @@ public class Menue extends AppCompatActivity {
     public void bluetoothNotFound(View view){
         Log.i(TAG, "listIngedients");
         Intent success = new Intent(this, BluetoothNotFound.class);
+        startActivity(success);
+
+    }
+
+    public void pumpSetting(View view){
+        Log.i(TAG, " activity Pump Setting");
+        Intent success = new Intent(this, LoadScrean.class);
         startActivity(success);
 
     }

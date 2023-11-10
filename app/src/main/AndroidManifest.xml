@@ -56,6 +56,12 @@
         android:theme="@style/Theme.CocktailMachine"
         tools:targetApi="21">
         <activity
+            android:name=".ui.LoadScrean"
+            android:exported="false" />
+        <activity
+            android:name=".ui.settings.SinglePumpSetting"
+            android:exported="false" />
+        <activity
             android:name=".ui.BluetoothNotFound"
             android:exported="false" />
         <activity
