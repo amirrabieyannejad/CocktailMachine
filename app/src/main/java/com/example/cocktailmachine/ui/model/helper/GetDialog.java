@@ -41,6 +41,32 @@ public class GetDialog {
 
     private static final String TAG = "GetDialog";
 
+
+
+    public static AlertDialog loadingBluetooth(Activity activity){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Es lädt... ");
+
+        //TODO: PHILLLLLLLLLLLLLLLLLLLLLLLLLLIPP add VIEW Loading Circle Animation
+        //builder.setView(view);
+        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                //stop animation
+            }
+        });
+        return builder.create();
+    }
+
+
+
+
+
+
+
+
+
+
     //ERROR
     public static void errorMessage(Activity activity){
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
