@@ -38,6 +38,7 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
 
     public void post(){
         dialog.dismiss();
+        //dialog.cancel();
         if(postexecute != null){
             postexecute.post();
         }
