@@ -725,8 +725,8 @@ public class GetAdapter {
                     } else if(newState == SCROLL_INDICATOR_END){
                         Log.i(TAG, "onScrollStateChanged: SCROLL_INDICATOR_END");
                         onScrolled(recyclerView, 0,0);
-                    } else if(newState == 0){
-                        Log.i(TAG, "onScrollStateChanged: SCROLL_INDICATOR_END");
+                    } else if(newState == 1){
+                        Log.i(TAG, "onScrollStateChanged: 1");
                         onScrolled(recyclerView, 0,0);
                     }
                 }
@@ -792,8 +792,11 @@ public class GetAdapter {
                 try {
                     List<K> temp = ScrollAdapter.this.iterator.next();
                     Log.i(GetAdapter.TAG, "loadMore: temp loaded: "+temp.size());
+
                     if (this.getAvailability()) {
                         Log.i(GetAdapter.TAG, "loadMore: available: ");
+                        Log.i(GetAdapter.TAG, "loadMore: available: unavailable current size: "+this.getUnavailable().size());
+                        int k = this.getUnavailable().size();
                         for (K elm : temp) {
                             if (elm.isAvailable()) {
                                 ScrollAdapter.this.getList().add(elm);
@@ -802,6 +805,18 @@ public class GetAdapter {
                                 ScrollAdapter.this.getUnavailable().add(elm);
                             }
                         }
+                        Log.i(GetAdapter.TAG, "loadMore: available: unavailable current size: "+this.getUnavailable().size());
+                        Log.i(GetAdapter.TAG, "loadMore: available: finish");
+                        if(this.getUnavailable().size()-k < 20){
+                            Log.i(GetAdapter.TAG,
+                                    "loadMore: available: no unavailable");
+                            //loadMore();
+                        }else{
+                            Log.i(GetAdapter.TAG, "loadMore: available: no added repeat loadmore");
+                            loadMore();
+                        }
+
+
                     } else {
                         Log.i(GetAdapter.TAG, "loadMore: not available: ");
                         int scrollPosition = ScrollAdapter.this.getList().size();
@@ -809,15 +824,17 @@ public class GetAdapter {
                         for (int i = scrollPosition; i < ScrollAdapter.this.getItemCount(); i++) {
                             ScrollAdapter.this.notifyItemInserted(i);
                         }
+                        Log.i(GetAdapter.TAG, "loadMore: not available: finish");
                     }
                 }catch (NoSuchElementException e){
                     Log.e(TAG, "loadMore: in runnable: ", e);
                     Toast.makeText(this.getActivity(), "Ende erreicht!", Toast.LENGTH_LONG).show();
                 }finally {
-
+                    Log.i(GetAdapter.TAG, "loadMore: finished: set false");
                     ScrollAdapter.this.isLoading = false;
                     //recyclerView.scrollToPosition(scrollPosition);
                     this.r = null;
+                    Log.i(GetAdapter.TAG, "loadMore: finished: ");
                 }
 
             };

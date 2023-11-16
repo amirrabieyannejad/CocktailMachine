@@ -1,12 +1,15 @@
 package com.example.cocktailmachine.bluetoothlegatt;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.Postexecute;
+import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,19 +18,26 @@ import org.json.JSONObject;
 
 public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSONObject> {
     private final static String TAG = WaitForBroadcastReceiver.class.getSimpleName();
-    BluetoothSingleton singleton = BluetoothSingleton.getInstance();
-    JSONObject jsonObject;
-    JSONArray jsonArray;
+    private BluetoothSingleton singleton = BluetoothSingleton.getInstance();
+    private JSONObject jsonObject;
+    private JSONArray jsonArray;
     String result;
 
-    Postexecute postexecute = null;
+    private Postexecute postexecute = null;
+    private AlertDialog dialog;
 
-    public WaitForBroadcastReceiver(){}
-    public WaitForBroadcastReceiver(Postexecute postexecute){
+
+
+    public WaitForBroadcastReceiver(Activity activity){
+        dialog = GetDialog.loadingBluetooth(activity);
+    }
+    public WaitForBroadcastReceiver(Activity activity, Postexecute postexecute){
+        dialog = GetDialog.loadingBluetooth(activity);
         this.postexecute = postexecute;
     }
 
     public void post(){
+        dialog.dismiss();
         if(postexecute != null){
             postexecute.post();
         }
@@ -57,6 +67,7 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
     @SuppressLint("MissingPermission")
     @Override
     protected JSONObject doInBackground(Void... voids) {
+        this.dialog.show();
         int timeout = 500;
         int timeoutMax = 0;
         while (singleton.getEspResponseValue() == null
