@@ -155,6 +155,8 @@ CocktailMachine.getCurrentCocktailStatus(new Postexecute() {
         //AlertDialog.Builder builder = new AlertDialog.Builder(this);
         //singleton.userInitUser("amir", BluetoothTestEnviroment.this);
         //singleton.adminReadPumpsStatus(BluetoothTestEnviroment.this);
+        //singleton.adminDefinePumps(BluetoothTestEnviroment.this,"Water",100,2);
+        singleton.adminReadLiquidsStatus(BluetoothTestEnviroment.this);
 
 
     }
