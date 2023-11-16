@@ -40,10 +40,8 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
 
     }
 
-    @SuppressLint("MissingPermission")
     public void addUser(View view) throws JSONException,
             InterruptedException, NotInitializedDBException {
-
         String user = editText.getText().toString();
 
         // Automatische Kalibrierung
@@ -75,11 +73,11 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
         //singleton.adminDefinePump("water",2000,2,this);
 
         // manuelCalibration
-        // singleton.adminManuelCalibrateRunPump(1,10000,
+       // singleton.adminManuelCalibrateRunPump(1,10000,
         //        BluetoothTestEnviroment.this);
-        //  singleton.adminManuelCalibrateRunPump(1,20000,
-        //          BluetoothTestEnviroment.this);
-        // singleton.adminManuelCalibratePump(1,10000,20000,29.2, 87.5
+      //  singleton.adminManuelCalibrateRunPump(1,20000,
+      //          BluetoothTestEnviroment.this);
+       // singleton.adminManuelCalibratePump(1,10000,20000,29.2, 87.5
         //,BluetoothTestEnviroment.this);
         /*
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -112,9 +110,7 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
                 builder.setNeutralButton("Fertig!", (dialog, which) -> {});
                 builder.show();
             }
-        },BluetoothTestEnviroment.this);
-
- */
+        },BluetoothTestEnviroment.this);*/
 
         /*
         singleton.adminReadCurrentCocktail(new Postexecute() {
@@ -157,8 +153,12 @@ CocktailMachine.getCurrentCocktailStatus(new Postexecute() {
         //        BluetoothTestEnviroment.this);
 
         //AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        singleton.userInitUser("amir", BluetoothTestEnviroment.this);
-        //singleton.connectGatt(BluetoothTestEnviroment.this);
+        //singleton.userInitUser("amir", BluetoothTestEnviroment.this);
+        singleton.adminReadPumpsStatus(BluetoothTestEnviroment.this);
+        //singleton.adminDefinePumps(BluetoothTestEnviroment.this,"Water",100,2);
+        //singleton.adminReadLiquidsStatus(BluetoothTestEnviroment.this);
+
+
     }
 
     public void showUser(View view) throws JSONException {

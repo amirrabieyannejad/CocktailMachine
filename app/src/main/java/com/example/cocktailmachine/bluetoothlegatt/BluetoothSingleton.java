@@ -4,7 +4,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -39,7 +38,6 @@ import com.example.cocktailmachine.data.enums.CalibrateStatus;
 import com.example.cocktailmachine.data.enums.CocktailStatus;
 import com.example.cocktailmachine.data.enums.ErrorStatus;
 import com.example.cocktailmachine.data.enums.Postexecute;
-import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,6 +46,8 @@ import org.json.JSONObject;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.UUID;
+
+
 
 
 public class BluetoothSingleton {
@@ -71,8 +71,11 @@ public class BluetoothSingleton {
     public String EspDeviceName;
     public String EspDeviceAddress;
     public BluetoothLeService mBluetoothLeService;
-    private final Boolean state = false;
+    private Boolean flag = false;
+    public Boolean asyncFlag = false;
+    public Boolean busy = false;
     private BluetoothSingleton singleton;
+
     // Code to manage Service lifecycle.
 
 
@@ -164,8 +167,8 @@ public class BluetoothSingleton {
     public String value;
     private String finalValue;
     public String result;
-    private Thread threadWaitForBroadcast;
-    private Thread threadReadFirstValue;
+    private Thread threadWaitForWriteNotification;
+    private Thread threadWaitForReadNotification;
     private Thread threadReadSecondValue;
     private Thread threadConnection;
     private Thread threadDisconnect;
@@ -221,44 +224,20 @@ public class BluetoothSingleton {
                 String finalValue = new String(data, StandardCharsets.UTF_8);
 
                 // START
-                //if (finalValue.equals("\"processing\"") ||
-                //        finalValue.equals("\"ready\"") || finalValue == "") {
                 if (finalValue.equals("processing")) {
-                Log.w(TAG, "onCharacteristicRead: read Alert Notification: " +
+                    Log.w(TAG, "onCharacteristicRead: read Alert Notification: " +
                             finalValue);
                     singleton.mBluetoothGatt.readCharacteristic(characteristic);
                 } else {
-                    Log.w(TAG, "read Response Value!" + finalValue);
+                    Log.w(TAG, "Read Notification Value:" + finalValue);
+                    flag = true;
                     singleton.setEspResponseValue(finalValue);
+                    Log.w(TAG, "read characteristic.getValue:" + data[0]);
                 }
                 singleton.setEspResponseValue(
                         characteristic.getStringValue(0));
-                Log.w(TAG, "onCharacteristicRead: read Alert Notification: " +
+                Log.w(TAG, "onCharacteristicRead: Alert Notification is-> " +
                         singleton.getEspResponseValue());
-                /*Handler handle = new Handler();
-                Runnable readResponse = () -> {
-                    Log.w(TAG, "onCharacteristicRead: Start!");
-                    singleton = BluetoothSingleton.getInstance();
-
-                    Log.w(TAG, "onCharacteristicRead: " +
-                            singleton.getEspResponseValue());
-                    };
-                handle.postDelayed(readResponse,3000);*/
-                //END
-                //singleton.setEspResponseValue(characteristic.getStringValue(0));
-/*                finalValue = characteristic.getStringValue(0);
-                if (finalValue.equals("\"processing\"") ||
-                        finalValue.equals("\"ready\"") || finalValue == "") {
-                    Log.w(TAG, "onCharacteristicRead: read Alert Notification: " + finalValue);
-                } else {
-                    Log.w(TAG, "read Response Value!" + finalValue);
-                    singleton.setEspResponseValue(finalValue);
-                }
-                isReading = false;
-                synchronized (this) {
-                    isReading = false;
-                    this.notifyAll();
-                }*/
 
             } else {
                 Log.d(TAG, "onCharacteristicRead error: " + status);
@@ -334,7 +313,7 @@ public class BluetoothSingleton {
                 int timeoutMax = 0;
                 while (!connect) {
                     try {
-                        Log.w(TAG, "Connection: Connection to ESP GATT Server Failed!" +
+                        Log.w(TAG, "STAGE_1:Connection: Connection to ESP GATT Server Failed!" +
                                 " try again after ..."
                                 + timeout + "ms");
                         singleton.mBluetoothGatt = device.connectGatt
@@ -343,7 +322,7 @@ public class BluetoothSingleton {
                         Thread.sleep(timeout);
                         timeoutMax = timeoutMax + 500;
                         if (timeoutMax == 2000) {
-                            Log.w(TAG, "Connection: Timeout, unable to " +
+                            Log.w(TAG, "STAGE_1:Connection: Timeout, unable to " +
                                     "connect ESP");
                             break;
                         }
@@ -383,6 +362,7 @@ public class BluetoothSingleton {
 
         //Log.w(TAG, "try to connect: " + singleton.EspDeviceAddress);
         //singleton.connect(activity, "78:E3:6D:1A:87:9E");
+
         singleton.connect(activity, singleton.getEspDeviceAddress());
         return true;
     }
@@ -447,8 +427,8 @@ public class BluetoothSingleton {
 
             //Handler handler1 = new Handler();
             //handler1.postDelayed(() -> singleton.readCharacteristic(mGattCharacteristics),
-              //      2000);
-            Log.w(TAG, "readCharactersitc first");
+            //      2000);
+            //Log.w(TAG, "readCharactersitc first");
 
 /*            @SuppressLint("HandlerLeak") Handler handle = new Handler() {
                 @Override
@@ -497,7 +477,7 @@ public class BluetoothSingleton {
                 public void handleMessage(Message msg) {
                     //singleton.value = finalValue;
 
-                    Log.w(TAG, "readSecondValue " );
+                    Log.w(TAG, "STATUS-READING...!");
                 }
             };
 
@@ -507,16 +487,13 @@ public class BluetoothSingleton {
                     int timeout = 500;
                     int timeoutMax = 0;
                     while (!singleton.mBluetoothGatt.readCharacteristic(mGattCharacteristics)) {
-                        Log.w(TAG, "run2: Is reading Characteristic  in Process!");
+                        Log.w(TAG, "Reading Characteristic  in Process!");
 
                         try {
-                            Log.w(TAG, "run2: read Characteristic: Reading from ESP is in Process!"
-                                    + timeout);
-
                             Thread.sleep(timeout);
                             timeoutMax = timeoutMax + 500;
                             if (timeoutMax == 3000) {
-                                Log.w(TAG, "run: read Characteristic: Timeout, unable to " +
+                                Log.w(TAG, "Read Characteristic: Timeout, unable to " +
                                         "read value from ESP");
                                 break;
                             }
@@ -562,7 +539,7 @@ public class BluetoothSingleton {
          */
         //threadDisconnect = new
 
-             //   Thread(runDisconnectGatt);
+        //   Thread(runDisconnectGatt);
         //threadReadSecondValue.join();
         //threadDisconnect.start();
 
@@ -570,7 +547,6 @@ public class BluetoothSingleton {
         return singleton.value;
 
     }
-
 
 
     @SuppressLint("MissingPermission")
@@ -588,7 +564,7 @@ public class BluetoothSingleton {
             public void handleMessage(Message msg) {
                 //singleton.value = finalValue;
 
-                Log.w(TAG, "writeCharacteristic");
+                Log.w(TAG, "writeCharacteristic handleMessage");
             }
         };
         Runnable writeCharacteristic = new Runnable() {
@@ -596,17 +572,17 @@ public class BluetoothSingleton {
             public void run() {
                 int timeout = 500;
                 int timeoutMax = 0;
-                while (!connect) {
-                    Log.w(TAG, "writeCharacteristic: wait for Connection!");
+/*               while (!connect) {
+                    Log.w(TAG, "STAGE_2:writeCharacteristic: wait for Connection!");
 
                     try {
-                        Log.w(TAG, "writeCharacteristic: wait for Connection!"
+                        Log.w(TAG, "STAGE_2:writeCharacteristic: wait for Connection!"
                                 + timeout);
 
                         Thread.sleep(timeout);
                         timeoutMax = timeoutMax + 500;
                         if (timeoutMax == 3000) {
-                            Log.w(TAG, "writeCharacteristic:  " +
+                            Log.w(TAG, "STAGE_2:writeCharacteristic:  " +
                                     "Timeout, unable to " +
                                     "connect ESP");
                             break;
@@ -614,35 +590,36 @@ public class BluetoothSingleton {
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
-                }
-                Log.w(TAG, "writeCharacteristic: after while");
-                    singleton = BluetoothSingleton.getInstance();
-                    BluetoothGattService mCustomService = singleton.mBluetoothGatt.getService
-                            (UUID.fromString(SampleGattAttributes.lookupUuid(SERVICE_READ_WRITE)));
-                    if (mCustomService == null) {
-                        Log.w(TAG, "write Characteristic: Custom BLE Service not found");
-
-                    }
-                    BluetoothGattCharacteristic mWriteCharacteristic;
-                    // get the characteristic from the service
-                    if (admin) {
-                        mWriteCharacteristic = mCustomService.getCharacteristic
-                                (UUID.fromString(SampleGattAttributes.lookupUuid(CHARACTERISTIC_MESSAGE_ADMIN)));
-                    } else {
-                        mWriteCharacteristic = mCustomService.getCharacteristic
-                                (UUID.fromString(SampleGattAttributes.lookupUuid(CHARACTERISTIC_MESSAGE_USER)));
-                    }
-                    mWriteCharacteristic.setValue(value);
-                    mWriteCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
-                    mCustomService.addCharacteristic(mWriteCharacteristic);
-                    Log.w(TAG, "Characteristic has been written. The value is now: " +
-                            mWriteCharacteristic.getStringValue(0));
-
-
-                    if (!singleton.mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
-                        Log.w(TAG, "Failed to write characteristic");
+                }*/
+                Log.w(TAG, "STAGE_2::writeCharacteristic: after while");
+                singleton = BluetoothSingleton.getInstance();
+                BluetoothGattService mCustomService = singleton.mBluetoothGatt.getService
+                        (UUID.fromString(SampleGattAttributes.lookupUuid(SERVICE_READ_WRITE)));
+                if (mCustomService == null) {
+                    Log.w(TAG, "write Characteristic: Custom BLE Service not found");
 
                 }
+                BluetoothGattCharacteristic mWriteCharacteristic;
+                // get the characteristic from the service
+                if (admin) {
+                    mWriteCharacteristic = mCustomService.getCharacteristic
+                            (UUID.fromString(SampleGattAttributes.lookupUuid(CHARACTERISTIC_MESSAGE_ADMIN)));
+                } else {
+                    mWriteCharacteristic = mCustomService.getCharacteristic
+                            (UUID.fromString(SampleGattAttributes.lookupUuid(CHARACTERISTIC_MESSAGE_USER)));
+                }
+                mWriteCharacteristic.setValue(value);
+                mWriteCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
+                mCustomService.addCharacteristic(mWriteCharacteristic);
+                Log.w(TAG, "Characteristic has been written. The value is now: " +
+                        mWriteCharacteristic.getStringValue(0));
+                if (!singleton.mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
+                    Log.w(TAG, "Failed to write characteristic");
+
+                }
+
+                Log.w(TAG, "STAGE_3:writeCharacteristic LOOP END");
+
                 handle.sendEmptyMessage(0);
             }
         };
@@ -729,11 +706,9 @@ public class BluetoothSingleton {
             boolean mConnected;
             if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
                 mConnected = true;
-            }
-            else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
+            } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 mConnected = false;
-            }
-            else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
+            } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 // Show all the supported services and characteristics on the user interface.
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
                 singleton.setEspResponseValue(null);
@@ -861,14 +836,13 @@ public class BluetoothSingleton {
     }
 
     @SuppressLint("MissingPermission")
-    private void waitForBroadcastReceiver() throws InterruptedException {
+    private void waitForWriteNotification() throws InterruptedException {
         singleton = BluetoothSingleton.getInstance();
-        singleton.result = null;
+        //singleton.result = null;
         @SuppressLint("HandlerLeak") Handler handle = new Handler() {
             @Override
             public void handleMessage(@NonNull Message msg) {
                 //singleton.value = finalValue;
-                result = singleton.getEspResponseValue();
                 Log.w(TAG, "waitForBroadcastReceiver"
                         + singleton.result);
             }
@@ -882,35 +856,94 @@ public class BluetoothSingleton {
                 try {
 
 
-                    while (singleton.getEspResponseValue() == null
-                            || singleton.getEspResponseValue().equals("\"processing\"")) {
-                        synchronized (this) {
-                            try {
-                                Log.w(TAG, "wait for target value...!" +
-                                        singleton.getEspResponseValue());
-                                Thread.sleep(timeout);
-                                timeoutMax = timeoutMax + 500;
-                                if (timeoutMax == 5000) {
-                                    break;
-                                }
-
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
+                    while (!flag) {
+                        try {
+                            Log.w(TAG, "STAGE_4:wait for target value...!" +
+                                    singleton.getEspResponseValue());
+                            Thread.sleep(timeout);
+                            timeoutMax = timeoutMax + 500;
+                            if (timeoutMax == 5000) {
+                                Log.w(TAG, "STAGE_4:waitforBraodcastReceiver: timeout...");
+                                break;
                             }
+
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
                     }
+                    if (flag) {
+                        Log.w(TAG, "STAGE_4:receive Notification-> " + singleton.getEspResponseValue());
+                        flag = false;
+                        asyncFlag = true;
+                    } else {
+                        Log.w(TAG, "STAGE_4:not receive Notification");
+                    }
+
                 } catch (RuntimeException e) {
                     e.printStackTrace();
                 }
                 handle.sendEmptyMessage(0);
             }
         };
-        threadWaitForBroadcast = new Thread(waitForBroadcast);
-        threadReadSecondValue.join();
-        threadWaitForBroadcast.start();
+        threadWaitForWriteNotification = new Thread(waitForBroadcast);
+        threadWriteCharacteristic.join();
+        threadWaitForWriteNotification.start();
     }
+    @SuppressLint("MissingPermission")
+    private void waitForReadNotification() throws InterruptedException {
+        singleton = BluetoothSingleton.getInstance();
+        //singleton.result = null;
+        @SuppressLint("HandlerLeak") Handler handle = new Handler() {
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                //singleton.value = finalValue;
+                //Log.w(TAG, "waitForBroadcastReceiver"
+                //        + singleton.result);
+            }
+        };
 
-    private void send(JSONObject jsonObject , Boolean admin, Boolean write, String service,
+        Runnable waitForBroadcast = new Runnable() {
+            @Override
+            public void run() {
+                int timeout = 500;
+                int timeoutMax = 0;
+                try {
+
+
+                    while (!flag) {
+                        try {
+                            Log.w(TAG, "STAGE_4:wait for target value...!" +
+                                    singleton.getEspResponseValue());
+                            Thread.sleep(timeout);
+                            timeoutMax = timeoutMax + 500;
+                            if (timeoutMax == 5000) {
+                                Log.w(TAG, "STAGE_4:waitforBraodcastReceiver: timeout...");
+                                break;
+                            }
+
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if (flag) {
+                        Log.w(TAG, "STAGE_4:receive Notification-> " + singleton.getEspResponseValue());
+                        flag = false;
+                        asyncFlag = true;
+                    } else {
+                        Log.w(TAG, "STAGE_4:not receive Notification");
+                    }
+
+                } catch (RuntimeException e) {
+                    e.printStackTrace();
+                }
+                handle.sendEmptyMessage(0);
+            }
+        };
+        threadWaitForReadNotification = new Thread(waitForBroadcast);
+        threadConnection.join();
+        threadWaitForReadNotification.start();
+    }
+    private void send(JSONObject jsonObject, Boolean admin, Boolean write, String service,
                       String characteristic
     ) throws InterruptedException, JSONException {
         singleton = BluetoothSingleton.getInstance();
@@ -919,7 +952,6 @@ public class BluetoothSingleton {
             return;
         }
         singleton.setEspResponseValue(null);
-        //singleton.connect(activity, "54:43:B2:A9:32:26");
         Log.w(TAG, "sendMethod: BluetoothAdapter initialized!");
         //generate JSON Format
         if (write) {
@@ -935,26 +967,38 @@ public class BluetoothSingleton {
                         throw new RuntimeException(e);
                     }
                 },
-                     2000);
+                2000);
 
 
     }
 
     private void sendStatus(String status) throws InterruptedException, JSONException {
-       send(null,true,false,
-               SERVICE_STATUS_STATE,
-               status
-                );
+        send(null, true, false,
+                SERVICE_STATUS_STATE,
+                status
+        );
         //singleton.waitForBroadcastReceiver();
 
     }
 
-    private void sendReadWrite(JSONObject jsonObject , Boolean admin, Boolean write)
+    private void sendReadWrite(JSONObject jsonObject, Boolean admin, Boolean write)
             throws InterruptedException, JSONException {
-        send(jsonObject,admin,write,
+        send(jsonObject, admin, write,
                 SERVICE_READ_WRITE,
-                (admin)?CHARACTERISTIC_MESSAGE_ADMIN:CHARACTERISTIC_MESSAGE_USER);
+                (admin) ? CHARACTERISTIC_MESSAGE_ADMIN : CHARACTERISTIC_MESSAGE_USER);
 
+    }
+    private void sleepThread() throws InterruptedException {
+        int timeout = 1000;
+        int timeoutMax = 0;
+        while (singleton.busy) {
+            Thread.sleep(timeout);
+            timeoutMax = timeoutMax + 500;
+            if (timeoutMax == 5000) {
+                Log.w(TAG, "sleepThread Timeout...!");
+                break;
+            }
+        }
     }
 
     /*
@@ -973,43 +1017,36 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void userInitUser(String name, Activity activity) throws JSONException,
             InterruptedException {
+
+
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "init_user");
         jsonObject.put("name", name);
         singleton.sendReadWrite(jsonObject, false, true);
-
+        singleton.waitForWriteNotification();
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
             @Override
             public void toSave() {
                 AdminRights.setUser(this.getJsonResult());
                 Log.w(TAG, "To Save: " + this.getJsonResult());
-
             }
         };
         wfb.execute();
         Log.w(TAG, "this is the end of world!" + singleton.getEspResponseValue());
+
     }
 
 
-
-
-
-
-
-
-
-
-
     /**
-
      * define_pumps (ADMIN): add specific number of pumps to ESP at one time and give temporary
      * liquid and volume
      * JSON-sample: {"cmd": "define_pumps", "user": 0, "liquid": "water", "volume": 0, "quantity": 2}
-> >>>>>> 74da54749d9714adf8936adc62479700248127bb
+     * > >>>>>> 74da54749d9714adf8936adc62479700248127bb
      * like described in ProjektDokumente/esp/Befehle.md
      * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
+     *
      * @return
      * @throws JSONException
      */
@@ -1027,7 +1064,7 @@ public class BluetoothSingleton {
         jsonObject.put("liquid", liquid);
         jsonObject.put("volume", volume);
         jsonObject.put("quantity", quantity);
-        singleton.sendReadWrite(jsonObject,true,true);
+        singleton.sendReadWrite(jsonObject, true, true);
 
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
             @Override
@@ -1039,19 +1076,19 @@ public class BluetoothSingleton {
                 Log.w(TAG, "To Save: " + this.getStringResult());
             }
         };
-            wfb.execute();
-            //
-            // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        wfb.execute();
+        //
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
 
-
     /**
-     <<<<   <<< HEAD
+     * <<<<   <<< HEAD
      * define_pump (ADMIN): add a new pump to ESP
      * JSON-sample: {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
      * like described in ProjektDokumente/esp/Befehle.md
      * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
+     *
      * @return
      * @throws JSONException
      */
@@ -1070,7 +1107,7 @@ public class BluetoothSingleton {
         jsonObject.put("liquid", liquid);
         jsonObject.put("volume", volume);
         jsonObject.put("slot", slot);
-        singleton.sendReadWrite(jsonObject,true,true);
+        singleton.sendReadWrite(jsonObject, true, true);
 
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
             @Override
@@ -1088,13 +1125,13 @@ public class BluetoothSingleton {
     }
 
 
-
     /**
-     <<<  <<<< HEAD
+     * <<<  <<<< HEAD
      * define_pump (ADMIN): add a new pump to ESP
      * JSON-sample: {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
      * like described in ProjektDokumente/esp/Befehle.md
      * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
+     *
      * @return
      * @throws JSONException
      */
@@ -1114,9 +1151,9 @@ public class BluetoothSingleton {
         jsonObject.put("liquid", liquid);
         jsonObject.put("volume", volume);
         jsonObject.put("slot", slot);
-        singleton.sendReadWrite(jsonObject,true,true);
+        singleton.sendReadWrite(jsonObject, true, true);
 
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity, postexecute) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity,postexecute) {
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1132,24 +1169,12 @@ public class BluetoothSingleton {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * edit_pump (ADMIN): Edits a pump
      * JSON-sample: {"cmd": "edit_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
      * like described in ProjektDokumente/esp/Befehle.md
      * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
+     *
      * @return
      * @throws JSONException
      */
@@ -1165,7 +1190,7 @@ public class BluetoothSingleton {
         jsonObject.put("liquid", liquid);
         jsonObject.put("volume", volume);
         jsonObject.put("slot", slot);
-        singleton.sendReadWrite(jsonObject,true,true);
+        singleton.sendReadWrite(jsonObject, true, true);
 
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
             @Override
@@ -1183,16 +1208,16 @@ public class BluetoothSingleton {
 
 
     /**
-     *
      * define_recipe (USER): defines a new recipe or changes an existing recipe
      * JSON-sample: {"cmd": "define_recipe", "user": 0, "name": "radler",
      * "ingredients": [["beer", 250], ["lemonade", 250]]}
      * like described in ProjektDokumente/esp/Befehle.md
      * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
+     *
      * @return
      * @throws JSONException
      */
-    public void userDefineRecipe(long user,String name, JSONArray ingredients, Activity activity)
+    public void userDefineRecipe(long user, String name, JSONArray ingredients, Activity activity)
     //public void defineRecipe(float user,String name, JSONArray liquids)
             throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
@@ -1216,7 +1241,7 @@ public class BluetoothSingleton {
         jsonObject.put("name", name);
         jsonObject.put("ingredients", ingredients);
 
-        singleton.sendReadWrite(jsonObject,false,true);
+        singleton.sendReadWrite(jsonObject, false, true);
 
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
             @Override
@@ -1228,7 +1253,7 @@ public class BluetoothSingleton {
             }
         };
         wfb.execute();
-       // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -1237,11 +1262,12 @@ public class BluetoothSingleton {
      * "ingredients": [["beer", 250], ["lemonade", 250]]}
      * like described in ProjektDokumente/esp/Befehle.md
      * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
+     *
      * @return
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void userEditRecipe(float user,String name, ArrayList<Pair<String, Float>> ingredients
+    public void userEditRecipe(float user, String name, ArrayList<Pair<String, Float>> ingredients
             , Activity activity)
             throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
@@ -1262,7 +1288,7 @@ public class BluetoothSingleton {
         jsonObject.put("name", name);
         jsonObject.put("ingredients", arrayIngredients);
 
-        singleton.sendReadWrite(jsonObject,false,true);
+        singleton.sendReadWrite(jsonObject, false, true);
 
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
             @Override
@@ -1283,6 +1309,7 @@ public class BluetoothSingleton {
      * like described in ProjektDokumente/esp/Befehle.md
      * JSON-sample: {"cmd": "start_recipe", "user": 8858}
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     *
      * @return
      * @throws JSONException
      */
@@ -1316,6 +1343,7 @@ public class BluetoothSingleton {
      * like described in ProjektDokumente/esp/Befehle.md
      * JSON-sample: {"cmd": "cancel_recipe", "user": 483}
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     *
      * @return
      * @throws JSONException
      */
@@ -1349,6 +1377,7 @@ public class BluetoothSingleton {
      * like described in ProjektDokumente/esp/Befehle.md
      * JSON-sample: {"cmd": "take_cocktail", "user": 483}
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     *
      * @return
      * @throws JSONException
      */
@@ -1412,6 +1441,7 @@ public class BluetoothSingleton {
         wfb.execute();
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
+
     /**
      * queue_recipe (USER): commissions a recipe
      * like described in ProjektDokumente/esp/Befehle.md
@@ -1500,7 +1530,7 @@ public class BluetoothSingleton {
         jsonObject.put("user", 0);
         singleton.sendReadWrite(jsonObject, true, true);
 
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity, postexecute) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity,postexecute) {
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1622,7 +1652,8 @@ public class BluetoothSingleton {
 
     }
 
-    /** Manual Calibration
+    /**
+     * Manual Calibration
      * run_pump (ADMIN): Runs the pump for a certain time. The time is given in milliseconds.
      * like described in ProjektDokumente/esp/Befehle.md
      * JSON-sample: {"cmd": "run_pump", "user": 0, "slot": 1, "time": 1000}
@@ -1658,7 +1689,8 @@ public class BluetoothSingleton {
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
-    /** Automatic Calibration
+    /**
+     * Automatic Calibration
      * calibration_start (ADMIN): Start automated calibration
      * like described in ProjektDokumente/esp/Befehle.md
      * JSON-sample: {"cmd": "calibration_start", "user": 0}
@@ -1693,7 +1725,8 @@ public class BluetoothSingleton {
     }
 
 
-    /** Automatic Calibration
+    /**
+     * Automatic Calibration
      * calibration_add_empty (ADMIN): empty vessel is ready
      * like described in ProjektDokumente/esp/Befehle.md
      * JSON-sample: {"cmd": "calibration_add_empty", "user": 0}
@@ -1727,7 +1760,8 @@ public class BluetoothSingleton {
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
-    /** Automatic Calibration
+    /**
+     * Automatic Calibration
      * calibration_cancel (ADMIN): Cancel automated calibration
      * like described in ProjektDokumente/esp/Befehle.md
      * JSON-sample: {"cmd": "calibration_cancel", "user": 0}
@@ -1761,7 +1795,8 @@ public class BluetoothSingleton {
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
-    /** Automatic Calibration
+    /**
+     * Automatic Calibration
      * calibration_finish (ADMIN): Calibration ready
      * like described in ProjektDokumente/esp/Befehle.md
      * JSON-sample: {"cmd": "calibration_finish", "user": 0}
@@ -1795,8 +1830,8 @@ public class BluetoothSingleton {
     }
 
 
-
-    /** Automatic Calibration
+    /**
+     * Automatic Calibration
      * calibration_add_weight (ADMIN): Vessel is filled with a quantity of water
      * Automatic Calibration
      * like described in ProjektDokumente/esp/Befehle.md
@@ -1833,9 +1868,8 @@ public class BluetoothSingleton {
     }
 
 
-
-
-    /** Manuel Calibration
+    /**
+     * Manuel Calibration
      * calibratePump: For calibration, two measured values must be available for which the pump
      * has been running for a different time. This is then used to calculate the flow rate and
      * the pump rate. The times are given in milliseconds and the liquids in millilitres.
@@ -1849,7 +1883,7 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminManuelCalibratePump(int slot, int time1, int time2,
-                                     double volume1, double  volume2, Activity activity)
+                                         double volume1, double volume2, Activity activity)
             throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
@@ -1874,10 +1908,11 @@ public class BluetoothSingleton {
             }
         };
         wfb.execute();
-       // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
-    /** Manuel Calibration
+    /**
+     * Manuel Calibration
      * set_pump_times (ADMIN): sets the calibration values for a pump. time_init is the lead time
      * and time_reverse is the return time in milliseconds. Normally these values should be similar
      * or the same. The rate is given in mL/ms.
@@ -1920,7 +1955,8 @@ public class BluetoothSingleton {
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
-    /** Manuel Calibration
+    /**
+     * Manuel Calibration
      * tare_scale (ADMIN): Tares the scale
      * JSON-Sample: {"cmd": "tare_scale", "user": 0}
      * like described in ProjektDokumente/esp/Befehle.md
@@ -1930,7 +1966,7 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminManuelCalibrateTareScale( Activity activity) throws JSONException,
+    public void adminManuelCalibrateTareScale(Activity activity) throws JSONException,
             InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
@@ -1951,10 +1987,11 @@ public class BluetoothSingleton {
             }
         };
         wfb.execute();
-      //  Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        //  Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
-    /** Manuel Calibration
+    /**
+     * Manuel Calibration
      * set_scale_factor (ADMIN): calibrates the scale. The weight is given in milligrams.
      * JSON-Sample: {"cmd": "calibrate_scale", "user": 0, "weight": 100.0}
      * like described in ProjektDokumente/esp/Befehle.md
@@ -1985,11 +2022,12 @@ public class BluetoothSingleton {
             }
         };
         wfb.execute();
-       // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
 
-    /** Manuel Calibration
+    /**
+     * Manuel Calibration
      * set_scale_factor (ADMIN): sets the calibration value for the scale
      * JSON-Sample: {"cmd": "set_scale_factor", "user": 0, "factor": 1.0}
      * like described in ProjektDokumente/esp/Befehle.md
@@ -2020,7 +2058,7 @@ public class BluetoothSingleton {
             }
         };
         wfb.execute();
-       // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -2033,7 +2071,7 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminRestart( Activity activity) throws JSONException, InterruptedException {
+    public void adminRestart(Activity activity) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         //generate JSON Format
@@ -2054,7 +2092,7 @@ public class BluetoothSingleton {
             }
         };
         wfb.execute();
-       // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -2067,7 +2105,7 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminFactoryReset( Activity activity) throws JSONException, InterruptedException {
+    public void adminFactoryReset(Activity activity) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         //generate JSON Format
@@ -2102,7 +2140,7 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminFactoryReset( Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
+    public void adminFactoryReset(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         //generate JSON Format
@@ -2112,7 +2150,7 @@ public class BluetoothSingleton {
         jsonObject.put("user", 0);
 
         singleton.sendReadWrite(jsonObject, true, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity, postexecute) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity,postexecute) {
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -2180,19 +2218,23 @@ public class BluetoothSingleton {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_PUMPS);
+
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
             @Override
             public void toSave() throws InterruptedException, NotInitializedDBException, JSONException, MissingIngredientPumpException {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                Pump.updatePumpStatus(activity,this.getJsonResult());
+                Pump.updatePumpStatus(activity, this.getJsonResult());
                 Log.w(TAG, "To Save: " + this.getJsonResult());
             }
         };
         wfb.execute();
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+
+
     }
+
     /**
      * adminPumpsStatus: Map of all available pumps and their level
      * JSON-Sample: {"1":{"liquid":"water","volume":1000.0,"calibrated":true,
@@ -2209,19 +2251,19 @@ public class BluetoothSingleton {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_PUMPS);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity, postexecute) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity,postexecute) {
             @Override
             public void toSave() throws InterruptedException, NotInitializedDBException
                     , JSONException, MissingIngredientPumpException {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                Pump.updatePumpStatus(activity,this.getJsonResult());
+                Pump.updatePumpStatus(activity, this.getJsonResult());
                 Log.w(TAG, "To Save: " + this.getJsonResult());
             }
         };
         wfb.execute();
-       // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -2236,7 +2278,7 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReadLastChange( Activity activity) throws JSONException, InterruptedException {
+    public void adminReadLastChange(Activity activity) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_LAST_CHANGE);
@@ -2252,7 +2294,7 @@ public class BluetoothSingleton {
             }
         };
         wfb.execute();
-      //  Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        //  Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -2269,18 +2311,20 @@ public class BluetoothSingleton {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_LIQUIDS);
+        singleton.waitForReadNotification();
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
             @Override
             public void toSave() throws InterruptedException, NotInitializedDBException, JSONException, MissingIngredientPumpException {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                Pump.updateLiquidStatus(activity,this.getJsonResult());
                 Log.w(TAG, "To Save: " + this.getJsonResult());
+                Pump.updateLiquidStatus(activity, this.getJsonResult());
+
             }
         };
         wfb.execute();
-       // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
     /**
@@ -2304,7 +2348,7 @@ public class BluetoothSingleton {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_STATE);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity, postexecute) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity,postexecute) {
             @Override
             public void toSave() throws InterruptedException, JSONException {
                 if (!check()) {
@@ -2342,7 +2386,7 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                Recipe.setRecipes(activity,this.getJSONArrayResult());
+                Recipe.setRecipes(activity, this.getJSONArrayResult());
                 Log.w(TAG, "To Save: " + this.getJSONArrayResult());
             }
         };
@@ -2365,13 +2409,13 @@ public class BluetoothSingleton {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_COCKTAIL);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity, postexecute) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity,postexecute) {
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                CocktailMachine.setCurrentCocktail(activity,this.getJsonResult());
+                CocktailMachine.setCurrentCocktail(activity, this.getJsonResult());
                 Log.w(TAG, "To Save: " + this.getJsonResult());
             }
         };
@@ -2454,7 +2498,7 @@ public class BluetoothSingleton {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_SCALE);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity, postexecute) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity,postexecute) {
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -2512,7 +2556,7 @@ public class BluetoothSingleton {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_ERROR);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity, postexecute) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity,postexecute) {
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -2525,7 +2569,6 @@ public class BluetoothSingleton {
         wfb.execute();
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
-
 
 
 }
