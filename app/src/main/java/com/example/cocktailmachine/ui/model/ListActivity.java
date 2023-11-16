@@ -2,6 +2,7 @@ package com.example.cocktailmachine.ui.model;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 
@@ -178,11 +179,12 @@ public class ListActivity extends BasicActivity {
         binding.imageButtonListReload.setOnClickListener(v -> ListActivity.this.reload());
         binding.imageButtonListToHome.setOnClickListener(v -> GetActivity.goToMenu(activity));
 
-        binding.switchAvailable.setChecked(true);
+        binding.switchAvailable.setChecked(false);
         binding.switchAvailable.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 adapter.setAvailability(isChecked);
+                Log.i(TAG, "onCheckedChanged: switchAvailable: ischecked: "+isChecked);
             }
         });
     }

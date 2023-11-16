@@ -262,9 +262,9 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     public boolean loadAvailable(Context context) {
         this.available = true;
         for(Ingredient i: this.getIngredients(context)){
-            this.available = this.available && i.isAvailable();
+            this.available = this.available && i.loadAvailable(context);
         }
-        //TODO: Avialable Buffer.getSingleton().available(this, this.available);
+        //TO DO: Avialable Buffer.getSingleton().available(this, this.available);
         return this.available;
     }
 

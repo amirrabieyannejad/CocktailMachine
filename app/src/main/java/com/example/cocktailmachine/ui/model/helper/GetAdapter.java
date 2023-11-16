@@ -1,5 +1,7 @@
 package com.example.cocktailmachine.ui.model.helper;
 
+import static android.view.View.SCROLL_INDICATOR_BOTTOM;
+import static android.view.View.SCROLL_INDICATOR_END;
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_SETTLING;
 
 import android.app.Activity;
@@ -12,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 //import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -38,6 +41,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class GetAdapter {
     private static final String TAG = "GetAdapter";
@@ -541,6 +545,10 @@ public class GetAdapter {
         private final Activity activity;
         private final ModelType type;
         private List<K> data;
+
+        private boolean availability = false;
+
+        private final List<K> unavailable = new ArrayList<>();
         public NameAdapter(Activity activity, ModelType type) {
             this.activity = activity;
             this.data = initList();
@@ -610,7 +618,16 @@ public class GetAdapter {
         }
 
 
+        List<K> getUnavailable(){
+            return this.unavailable;
+        }
 
+        boolean getAvailability(){
+            return this.availability;
+        }
+        void setParamAvailability(boolean availability){
+            this.availability = availability;
+        }
 
         public void remove(K k) {
             //Log.v(TAG, "remove");
@@ -632,10 +649,29 @@ public class GetAdapter {
             ExtraHandlingDB.localRefresh(context);
             data = getList();
             notifyDataSetChanged();
+            setAvailability(this.availability);
+
         }
 
-        public void setAvailability(boolean isChecked) {
-
+        public void setAvailability(boolean availability) {
+            this.setParamAvailability(availability);
+            if(availability){
+                for(int i = 0; i<NameAdapter.this.getItemCount(); i++) {
+                    K elm = this.getList().get(i);
+                    if(!elm.isAvailable()){
+                        NameAdapter.this.unavailable.add(elm);
+                        NameAdapter.this.getList().remove(elm);
+                        NameAdapter.this.notifyItemRemoved(i);
+                    }
+                }
+            }else {
+                int scrollPosition = NameAdapter.this.getList().size();
+                NameAdapter.this.getList().addAll(this.unavailable);
+                for(int i = scrollPosition; i<NameAdapter.this.getItemCount(); i++) {
+                    NameAdapter.this.notifyItemInserted(i);
+                }
+                this.unavailable.clear();
+            }
         }
     }
 
@@ -645,18 +681,18 @@ public class GetAdapter {
         private boolean isLoading = false;
         private double percentToLoadMore = 0.8;
 
-        private Iterator<List<K>> iterator;
+        private final Iterator<List<K>> iterator;
 
-
-        private Handler h;
+        private final Handler h;
         private Runnable r;
+
 
 
 
         public ScrollAdapter(Activity activity, ModelType type, int n, double percentToLoadMore) {
             super(activity, type);
             this.h = new Handler(Looper.myLooper());
-            this.iterator = initIterator( n);
+            this.iterator = initIterator(n);
             if((percentToLoadMore >= 0.4) && (percentToLoadMore <= 1)) {
                 this.percentToLoadMore = percentToLoadMore;
             }
@@ -682,7 +718,15 @@ public class GetAdapter {
                 public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                     super.onScrollStateChanged(recyclerView, newState);
                     Log.i(TAG, "onScrollStateChanged");
+                    Log.i(TAG, "onScrollStateChanged: newState: "+newState);
                     if(newState == SCROLL_STATE_SETTLING){
+                        Log.i(TAG, "onScrollStateChanged: SCROLL_STATE_SETTLING");
+                        onScrolled(recyclerView, 0,0);
+                    } else if(newState == SCROLL_INDICATOR_END){
+                        Log.i(TAG, "onScrollStateChanged: SCROLL_INDICATOR_END");
+                        onScrolled(recyclerView, 0,0);
+                    } else if(newState == 0){
+                        Log.i(TAG, "onScrollStateChanged: SCROLL_INDICATOR_END");
                         onScrolled(recyclerView, 0,0);
                     }
                 }
@@ -703,9 +747,9 @@ public class GetAdapter {
                         if (linearLayoutManager != null) {
                             int last = linearLayoutManager.findLastCompletelyVisibleItemPosition();
                             Log.i(TAG, "last: " + last);
-                            if (last>= percentToLoadMore * (ScrollAdapter.this.getItemCount() - 1)) {
+                            if (last>= percentToLoadMore * (ScrollAdapter.this.getItemCount() - 1 - ScrollAdapter.this.getUnavailable().size())) {
                                 //percentToLoadMore * bottom of list!
-                                Log.i(TAG, "end of list");
+                                Log.i(TAG, "scrollable: end of list -> loadmore");
                                 loadMore();
                             }
                         }
@@ -721,6 +765,8 @@ public class GetAdapter {
         }
 
         abstract Iterator<List<K>> initIterator(int n);
+
+
         private void initData() {
             Log.i(TAG, "initData");
             //isLoading = true;
@@ -743,19 +789,74 @@ public class GetAdapter {
             isLoading = true;
             //ScrollAdapter.this.getList().remove(ScrollAdapter.this.getItemCount() - 1);
             this.r = () -> {
-                int scrollPosition = ScrollAdapter.this.getList().size();
-                ScrollAdapter.this.getList().addAll(ScrollAdapter.this.iterator.next());
-                for(int i = scrollPosition; i<ScrollAdapter.this.getItemCount(); i++){
-                    ScrollAdapter.this.notifyItemInserted(i);
+                try {
+                    List<K> temp = ScrollAdapter.this.iterator.next();
+                    Log.i(GetAdapter.TAG, "loadMore: temp loaded: "+temp.size());
+                    if (this.getAvailability()) {
+                        Log.i(GetAdapter.TAG, "loadMore: available: ");
+                        for (K elm : temp) {
+                            if (elm.isAvailable()) {
+                                ScrollAdapter.this.getList().add(elm);
+                                ScrollAdapter.this.notifyItemInserted(this.getItemCount() - 1);
+                            } else {
+                                ScrollAdapter.this.getUnavailable().add(elm);
+                            }
+                        }
+                    } else {
+                        Log.i(GetAdapter.TAG, "loadMore: not available: ");
+                        int scrollPosition = ScrollAdapter.this.getList().size();
+                        ScrollAdapter.this.getList().addAll(temp);
+                        for (int i = scrollPosition; i < ScrollAdapter.this.getItemCount(); i++) {
+                            ScrollAdapter.this.notifyItemInserted(i);
+                        }
+                    }
+                }catch (NoSuchElementException e){
+                    Log.e(TAG, "loadMore: in runnable: ", e);
+                    Toast.makeText(this.getActivity(), "Ende erreicht!", Toast.LENGTH_LONG).show();
+                }finally {
+
+                    ScrollAdapter.this.isLoading = false;
+                    //recyclerView.scrollToPosition(scrollPosition);
+                    this.r = null;
                 }
+
+            };
+
+            this.h.postDelayed(this.r, 100);
+        }
+
+        @Override
+        public void setAvailability(boolean availability){
+            this.setParamAvailability(availability);
+            ScrollAdapter.this.isLoading = true;
+            this.r = () -> {
+                if(this.getAvailability()){
+                    for(int i = 0; i<ScrollAdapter.this.getItemCount(); i++) {
+                        K elm = this.getList().get(i);
+                        if(!elm.isAvailable()){//elm.loadAvailable(ScrollAdapter.this.getActivity())){
+                            ScrollAdapter.this.getUnavailable().add(elm);
+                            ScrollAdapter.this.getList().remove(elm);
+                            ScrollAdapter.this.notifyItemRemoved(i);
+                        }
+                    }
+                }else {
+                    int scrollPosition = ScrollAdapter.this.getList().size();
+                    ScrollAdapter.this.getList().addAll(this.getUnavailable());
+                    for(int i = scrollPosition; i<ScrollAdapter.this.getItemCount(); i++) {
+                        ScrollAdapter.this.notifyItemInserted(i);
+                    }
+                    this.getUnavailable().clear();
+                }
+
+
                 ScrollAdapter.this.isLoading = false;
                 //recyclerView.scrollToPosition(scrollPosition);
                 this.r = null;
             };
 
-            this.h.postDelayed(this.r, 500);
+            this.h.postDelayed(this.r, 100);
+            //loadMore();
         }
-
 
 
     }
