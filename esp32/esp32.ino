@@ -2341,7 +2341,12 @@ void Status::update(const String value, bool force) {
     if (value.equals(String(old.c_str()))) return; // skip if the value hasn't changed
   }
 
-  this->ble_char->setValue(value.c_str());
+  // truncate value if necessary
+  if (value.length() > ESP_GATT_MAX_ATTR_LEN) {
+    this->ble_char->setValue((uint8_t*) value.c_str(), ESP_GATT_MAX_ATTR_LEN);
+  } else {
+    this->ble_char->setValue(value.c_str());
+  }
   this->ble_char->notify();
 }
 
