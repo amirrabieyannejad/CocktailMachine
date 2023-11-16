@@ -49,6 +49,12 @@ public class GetDialog {
 
         //TODO: PHILLLLLLLLLLLLLLLLLLLLLLLLLLIPP add VIEW Loading Circle Animation
         //builder.setView(view);
+        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                //stop animation
+            }
+        });
         return builder.create();
     }
 

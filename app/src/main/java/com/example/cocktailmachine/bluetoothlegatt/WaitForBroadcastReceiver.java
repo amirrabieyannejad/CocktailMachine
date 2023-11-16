@@ -24,7 +24,7 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
     String result;
 
     private Postexecute postexecute = null;
-    private AlertDialog dialog;
+    private final AlertDialog dialog;
 
 
 
