@@ -1,7 +1,7 @@
 // general system settings
 #define BLE_NAME             	"Cocktail Machine ESP32"	// bluetooth server name
 #define CORE_DEBUG_LEVEL     	4                       	// 1 = error; 3 = info ; 4 = debug
-const unsigned int VERSION   	= 9;                    	// version number (used for configs etc)
+const unsigned int VERSION   	= 10;                   	// version number (used for configs etc)
                              	                        	
 const unsigned char MAX_PUMPS	= 1 + 4*8;              	// maximum number of supported pumps;
                              	                        	
