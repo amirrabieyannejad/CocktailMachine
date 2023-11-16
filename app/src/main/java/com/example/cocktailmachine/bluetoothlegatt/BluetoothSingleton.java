@@ -985,6 +985,7 @@ public class BluetoothSingleton {
             public void toSave() {
                 AdminRights.setUser(this.getJsonResult());
                 Log.w(TAG, "To Save: " + this.getJsonResult());
+
             }
         };
         wfb.execute();
