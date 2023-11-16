@@ -633,6 +633,10 @@ public class GetAdapter {
             data = getList();
             notifyDataSetChanged();
         }
+
+        public void setAvailability(boolean isChecked) {
+
+        }
     }
 
 
