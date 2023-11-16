@@ -53,8 +53,7 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
         } else {
             Log.w(TAG, "ASYNC-TASK-onPostExecute-Check-> NULL" );
         }
-        return (jsonObject != null) ||
-                (result != null);
+        return (jsonObject != null) || (result != null);
     }
 
     public JSONObject getJsonResult() {
@@ -129,6 +128,7 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
                 singleton.value = null;
                 singleton.asyncFlag = false;
                 singleton.busy = false;
+                jsonObject = null;
 
             } catch (InterruptedException
                      | NotInitializedDBException

@@ -296,7 +296,7 @@ public class DeviceScanActivity extends ListActivity {
             //String serviceUuidMaskString = "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF";
             //ParcelUuid parcelUuidMask = ParcelUuid.fromString(serviceUuidMaskString);
             //builder.setServiceUuid(new ParcelUuid(UUID_COCKTAIL_MACHINE), parcelUuidMask);
-            builder.setDeviceName("Cocktail Machine ESP32 v9");
+            builder.setDeviceName("Cocktail Machine ESP32 v10");
             filters.add(builder.build());
             if (filters.isEmpty()) {
                 Toast.makeText(this, "UUID has not found!",
