@@ -99,7 +99,7 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
 
          */
         //TODO: Johana/Amir getCurrentCocktailCocktail liefert null Object zurück
-
+/*
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("PumpsStatus");
         CocktailMachine.getCurrentCocktailStatus(new Postexecute() {
@@ -110,7 +110,7 @@ public class BluetoothTestEnviroment extends AppCompatActivity {
                 builder.setNeutralButton("Fertig!", (dialog, which) -> {});
                 builder.show();
             }
-        },BluetoothTestEnviroment.this);
+        },BluetoothTestEnviroment.this);*/
 
         /*
         singleton.adminReadCurrentCocktail(new Postexecute() {
@@ -154,6 +154,8 @@ CocktailMachine.getCurrentCocktailStatus(new Postexecute() {
 
         //AlertDialog.Builder builder = new AlertDialog.Builder(this);
         //singleton.userInitUser("amir", BluetoothTestEnviroment.this);
+        //singleton.adminReadPumpsStatus(BluetoothTestEnviroment.this);
+
 
     }
 

@@ -57,10 +57,9 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
     @SuppressLint("MissingPermission")
     @Override
     protected JSONObject doInBackground(Void... voids) {
-        int timeout = 500;
+        int timeout = 1000;
         int timeoutMax = 0;
-        while (singleton.getEspResponseValue() == null
-                || singleton.getEspResponseValue().equals("processing")) {
+        while (!singleton.asyncFlag) {
             Log.w(TAG, "we are in WaitForBroadcast doInBackground before try-catch!");
             try {
                 Log.w(TAG, "waitForBroadcastReceiverAsyncTask: Waiting for target value.." +
@@ -80,6 +79,8 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
 
         }
         result = singleton.getEspResponseValue();
+
+        //initUserResult
         Log.w(TAG, "waitForBroadcastReceiver: " + result);
         try {
             jsonObject = new JSONObject(result);
@@ -107,8 +108,12 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
                 toSave();
                 post();
                 singleton.mBluetoothGatt.disconnect();
+                Log.w(TAG, "POST_EXECUTE:BluetoothGATT is Disconnected!");
                 singleton.connect = false;
                 singleton.value = null;
+                singleton.asyncFlag = false;
+                singleton.busy = false;
+
             } catch (InterruptedException
                      | NotInitializedDBException
                      | JSONException |

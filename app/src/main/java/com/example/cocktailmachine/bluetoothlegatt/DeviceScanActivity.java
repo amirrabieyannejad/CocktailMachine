@@ -234,8 +234,8 @@ public class DeviceScanActivity extends ListActivity {
     protected void onListItemClick(ListView l, View v, int position, long id) {
         final BluetoothDevice device = mLeDeviceListAdapter.getDevice(position);
         if (device == null) return;
-        //final Intent intent = new Intent(this, BluetoothTestEnviroment.class);
-        Intent intent = new Intent(this, Menue.class);
+        final Intent intent = new Intent(this, BluetoothTestEnviroment.class);
+        //Intent intent = new Intent(this, Menue.class);
         //final Intent intent = new Intent(this, DeviceControlActivity.class);
         BluetoothSingleton settings = BluetoothSingleton.getInstance();
         settings.setEspDeviceName(device.getName());
@@ -256,8 +256,8 @@ public class DeviceScanActivity extends ListActivity {
                     Toast.LENGTH_SHORT).show();
             return;
         }
-        //final Intent intent = new Intent(this, BluetoothTestEnviroment.class);
-        Intent intent = new Intent(this, Menue.class);
+        final Intent intent = new Intent(this, BluetoothTestEnviroment.class);
+        //Intent intent = new Intent(this, Menue.class);
         //final Intent intent = new Intent(this, DeviceControlActivity.class);
         BluetoothSingleton settings = BluetoothSingleton.getInstance();
         settings.setEspDeviceName(device.getName());
@@ -296,7 +296,7 @@ public class DeviceScanActivity extends ListActivity {
             //String serviceUuidMaskString = "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF";
             //ParcelUuid parcelUuidMask = ParcelUuid.fromString(serviceUuidMaskString);
             //builder.setServiceUuid(new ParcelUuid(UUID_COCKTAIL_MACHINE), parcelUuidMask);
-            builder.setDeviceName("Cocktail Machine ESP32");
+            builder.setDeviceName("Cocktail Machine ESP32 v9");
             filters.add(builder.build());
             if (filters.isEmpty()) {
                 Toast.makeText(this, "UUID has not found!",
