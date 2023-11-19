@@ -1,7 +1,7 @@
 // general system settings
 #define BLE_NAME             	"Cocktail Machine ESP32"	// bluetooth server name
 #define CORE_DEBUG_LEVEL     	4                       	// 1 = error; 3 = info ; 4 = debug
-const unsigned int VERSION   	= 9;                    	// version number (used for configs etc)
+const unsigned int VERSION   	= 10;                   	// version number (used for configs etc)
                              	                        	
 const unsigned char MAX_PUMPS	= 1 + 4*8;              	// maximum number of supported pumps;
                              	                        	
@@ -2069,15 +2069,15 @@ void update_liquids() {
       out.concat(pump->liquid);
       out.concat("\",\"volume\":");
       out.concat(String(pump->volume, 1));
-      out.concat(",\"calibrated\":");
-      out.concat(pump->calibrated ? "true" : "false");
-      out.concat(",\"rate\":");
-      out.concat(String(pump->rate, 1));
-      out.concat(",\"time_init\":");
-      out.concat(String(pump->time_init));
-      out.concat(",\"time_reverse\":");
-      out.concat(String(pump->time_reverse));
-      out.concat('}');
+      out.concat(",\"cal\":[");
+      if (pump->calibrated) {
+        out.concat(String(pump->rate, 1));
+        out.concat(',');
+        out.concat(String(pump->time_init));
+        out.concat(',');
+        out.concat(String(pump->time_reverse));
+      }
+      out.concat("]}");
 
       prev = true;
     }
@@ -2341,7 +2341,12 @@ void Status::update(const String value, bool force) {
     if (value.equals(String(old.c_str()))) return; // skip if the value hasn't changed
   }
 
-  this->ble_char->setValue(value.c_str());
+  // truncate value if necessary
+  if (value.length() > ESP_GATT_MAX_ATTR_LEN) {
+    this->ble_char->setValue((uint8_t*) value.c_str(), ESP_GATT_MAX_ATTR_LEN);
+  } else {
+    this->ble_char->setValue(value.c_str());
+  }
   this->ble_char->notify();
 }
 
