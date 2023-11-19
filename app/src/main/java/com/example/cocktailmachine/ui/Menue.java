@@ -311,6 +311,11 @@ public class Menue extends AppCompatActivity {
 
     }
 
+    public void loadAnimation(View view){
+        Log.i(TAG, " activity LoadDataAnimation");
+        Intent success = new Intent(this, LoadDataAnimation.class);
+        startActivity(success);
 
+    }
 
 }

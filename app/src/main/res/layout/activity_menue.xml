@@ -77,8 +77,8 @@
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
-                android:onClick="pumpSetting"
                 android:contentDescription="swipe thing"
+                android:onClick="loadAnimation"
                 app:srcCompat="@drawable/baseline_auto_awesome_24" />
 
             <ImageView
