@@ -28,6 +28,7 @@ public class CircularAnimation extends Animation {
 
     @Override
     public void initialize(int width, int height, int parentWidth, int parentHeight) {
+
         // calculate position of image center
         int cxImage = width / 2;
         int cyImage = height / 2;
@@ -45,6 +46,8 @@ public class CircularAnimation extends Animation {
             t.getMatrix().setTranslate(prevDx, prevDy);
             return;
         }
+
+        this.view.setVisibility(View.VISIBLE);
 
         float angleDeg = (interpolatedTime * 360f + 90) % 360;
         float angleRad = (float) Math.toRadians(angleDeg);
