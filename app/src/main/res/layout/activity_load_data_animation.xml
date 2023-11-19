@@ -28,4 +28,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/glas_fordere_darstellung" />
+    <ImageView
+        android:id="@+id/imageViewLoadDataAnimationImage2"
+        android:layout_width="81dp"
+        android:layout_height="118dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/glas_fordere_darstellung" />
+    <ImageView
+        android:id="@+id/imageViewLoadDataAnimationImage3"
+        android:layout_width="81dp"
+        android:layout_height="118dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/glas_fordere_darstellung" />
 </androidx.constraintlayout.widget.ConstraintLayout>

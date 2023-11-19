@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Random;
 
 public class LoadDataAnimation extends AppCompatActivity {
-    ImageView loadImage1;
+    ImageView loadImage1,loadImage2,loadImage3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +39,17 @@ public class LoadDataAnimation extends AppCompatActivity {
         setContentView(R.layout.activity_load_data_animation);
 
         loadImage1 = findViewById(R.id.imageViewLoadDataAnimationImage1);
+        loadImage2 = findViewById(R.id.imageViewLoadDataAnimationImage2);
+        loadImage3 = findViewById(R.id.imageViewLoadDataAnimationImage3);
+
 
         try {
             Bitmap image = BildgeneratorGlas.bildgenerationGlas(this,this.getRandomRecipe(),(float)1.0);
             loadImage1.setImageBitmap(image);
+            image = BildgeneratorGlas.bildgenerationGlas(this,this.getRandomRecipe(),(float)1.0);
+            loadImage2.setImageBitmap(image);
+            image = BildgeneratorGlas.bildgenerationGlas(this,this.getRandomRecipe(),(float)1.0);
+            loadImage3.setImageBitmap(image);
         } catch (TooManyTimesSettedIngredientEcxception e) {
             throw new RuntimeException(e);
         } catch (NoSuchIngredientSettedException e) {
