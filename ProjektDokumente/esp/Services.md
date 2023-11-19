@@ -50,11 +50,11 @@ Die ID ist also 100 und kann dann in anderen Befehlen mit angegeben werden.
 ### Pumpen
 - UUID Characteristic: 1a9a598a-17ce-3fcd-be03-40a48587d04e
 
-Wert: Map aller verfügbaren Pumpen und deren Füllstand und Kalibrierung
+Wert: Map aller verfügbaren Pumpen und deren Füllstand und Kalibrierung. `"cal"` ist dabei ein Array aus [Rate, Zeit davor, Zeit danach], wenn die Pumpe kalibriert ist, und sonst ein leeres Array.
 
 Beispiel:
 
-    {"1":{"liquid":"water","volume":1000.0,"calibrated":true,"rate":0.0,"time_init":1000,"time_reverse":1000}
+    {"1":{"liquid":"water","volume":1000.0,"cal":[0.0,1000,1000]}
 
 ### Flüssigkeiten
 - UUID Characteristic: fc60afb0-2b00-3af2-877a-69ae6815ca2f

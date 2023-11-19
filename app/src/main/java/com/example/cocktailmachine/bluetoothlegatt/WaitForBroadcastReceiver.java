@@ -37,7 +37,8 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
     }
 
     public void post(){
-        dialog.dismiss();
+        //dialog.dismiss();
+        //dialog.cancel();
         if(postexecute != null){
             postexecute.post();
         }
@@ -47,11 +48,16 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
             NotInitializedDBException, MissingIngredientPumpException;
 
     public Boolean check() {
-        return (jsonObject != null) ||
-                (result != null);
+        if (jsonObject != null) {
+            Log.w(TAG, "ASYNC-TASK-onPostExecute-Check->" + jsonObject);
+        } else {
+            Log.w(TAG, "ASYNC-TASK-onPostExecute-Check-> NULL" );
+        }
+        return (jsonObject != null) || (result != null);
     }
 
     public JSONObject getJsonResult() {
+        Log.w(TAG, "ASYNC-TASK-onPostExecute-getJsonResult->" + jsonObject);
         return jsonObject;
     }
     public String getStringResult() {
@@ -70,38 +76,37 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
         this.dialog.show();
         int timeout = 500;
         int timeoutMax = 0;
-        while (singleton.getEspResponseValue() == null
-                || singleton.getEspResponseValue().equals("processing")) {
-            Log.w(TAG, "we are in WaitForBroadcast doInBackground before try-catch!");
+        while (!singleton.asyncFlag) {
+            Log.w(TAG, "");
             try {
-                Log.w(TAG, "waitForBroadcastReceiverAsyncTask: Waiting for target value.." +
-                        singleton.getEspResponseValue());
+                Log.w(TAG, "ASYNC-TASK-doInBackground: Waiting for target value..");
 
                 Thread.sleep(timeout);
                 timeoutMax = timeoutMax + 500;
                 if (timeoutMax == 5000) {
-                    Log.w(TAG, "waitforBraodcastReceiver: timeout...");
+                    Log.w(TAG, "ASYNC-TASK-doInBackground: timeout...");
                     break;
                 }
 
             } catch (InterruptedException e) {
                 Log.getStackTraceString(e);
             }
-            Log.w(TAG, "we are in WaitForBroadcast doInBackground after try-catch!");
 
         }
         result = singleton.getEspResponseValue();
-        Log.w(TAG, "waitForBroadcastReceiver: " + result);
+
+        //initUserResult
+        Log.w(TAG, "ASYNC-TASK-doInBackground: Check Value-> " + result);
         try {
             jsonObject = new JSONObject(result);
             //jsonArray = jsonObject.getJSONArray(result);
 
         }catch(NullPointerException e){
-            Log.w(TAG, "waitForBroadcastReceiver: result is null");
+            Log.w(TAG, "ASYNC-TASK-doInBackground:  Value is Null");
             jsonObject =  new JSONObject();
         } catch (JSONException e) {
             //throw new RuntimeException(e);
-            Log.w(TAG, "waitForBroadcastReceiver: the response Value is no JSON Format..!");
+            Log.w(TAG, "ASYNC-TASK-doInBackground: the response Value is no JSON Format..!");
             jsonObject =  new JSONObject();
         }
         return jsonObject;
@@ -113,18 +118,23 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
         @SuppressLint("MissingPermission")
     protected void onPostExecute(JSONObject result) {
         super.onPostExecute(result);
-            Log.w(TAG, "we are in WaitForBroadcast Post Execute!");
+            Log.w(TAG, "ASYNC-TASK-onPostExecute has been reached!");
             try {
                 toSave();
                 post();
                 singleton.mBluetoothGatt.disconnect();
+                Log.w(TAG, "ASYNC-TASK-onPostExecute:BluetoothGATT is Disconnected!");
                 singleton.connect = false;
                 singleton.value = null;
+                singleton.asyncFlag = false;
+                singleton.busy = false;
+                jsonObject = null;
+
             } catch (InterruptedException
                      | NotInitializedDBException
                      | JSONException |
                      MissingIngredientPumpException e) {
-                Log.e(TAG, "onPostExecute", e);
+                Log.e(TAG, "ASYNC-TASK-onPostExecute", e);
                 //Log.getStackTraceString(e);
             }
 
