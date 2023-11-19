@@ -1,5 +1,6 @@
 package com.example.cocktailmachine.ui;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import com.example.cocktailmachine.data.Ingredient;
@@ -14,6 +15,7 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.view.animation.Animation;
+import android.widget.ImageView;
 
 import androidx.core.view.WindowCompat;
 import androidx.navigation.NavController;
@@ -29,14 +31,28 @@ import java.util.List;
 import java.util.Random;
 
 public class LoadDataAnimation extends AppCompatActivity {
-
-    private AppBarConfiguration appBarConfiguration;
-    private ActivityLoadDataAnimationBinding binding;
+    ImageView loadImage1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_load_data_animation);
+
+        loadImage1 = findViewById(R.id.imageViewLoadDataAnimationImage1);
+
+        try {
+            Bitmap image = BildgeneratorGlas.bildgenerationGlas(this,this.getRandomRecipe(),(float)1.0);
+            loadImage1.setImageBitmap(image);
+        } catch (TooManyTimesSettedIngredientEcxception e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchIngredientSettedException e) {
+            throw new RuntimeException(e);
+        }
+
+        Animation anim = new CircularAnimation(loadImage1, 200);
+        anim.setDuration(3000);
+        anim.setRepeatCount(Animation.INFINITE);
+        loadImage1.startAnimation(anim);
 
         /**backgroundImage = findViewById(R.id.bluetoothNotFoundBackgroundImage);
         loopImage = findViewById(R.id.bluetoothNotFoundLoopImage);

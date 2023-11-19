@@ -9,7 +9,7 @@ public class Dummy {
     //false -> keine Kalibrierungscheck,
     // true -> kalibrierungscheck  und ggf. automatische kalibrirung,
 
-    public static boolean withTestEnvs = false;
+    public static boolean withTestEnvs = true;
     //false -> keine Test Activities
     //true -> Test Activities zugänglich
 
