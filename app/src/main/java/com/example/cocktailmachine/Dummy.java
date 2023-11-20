@@ -9,11 +9,11 @@ public class Dummy {
     //false -> keine Kalibrierungscheck,
     // true -> kalibrierungscheck  und ggf. automatische kalibrirung,
 
-    public static boolean withTestEnvs = true;
+    public static boolean withTestEnvs = false;
     //false -> keine Test Activities
     //true -> Test Activities zugänglich
 
-    public static boolean asAdmin = true;
+    public static boolean asAdmin = false;
     //true  -> direkt admin
     //false -> normaler User
 }
