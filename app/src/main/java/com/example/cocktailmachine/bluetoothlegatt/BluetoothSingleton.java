@@ -2289,7 +2289,7 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
                 //Pump.updatePumpStatus(this.getResult());
-                CocktailMachine.setLastChange(this.result);
+                CocktailMachine.setLastChange(this.getStringResult());
                 Log.w(TAG, "To Save: " + this.getStringResult());
             }
         };
@@ -2533,7 +2533,7 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                ErrorStatus.setError(this.result);
+                ErrorStatus.setError(this.getStringResult());
                 Log.w(TAG, "To Save: " + this.getStringResult());
             }
         };
@@ -2562,7 +2562,7 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                ErrorStatus.setError(this.result);
+                ErrorStatus.setError(this.getStringResult());
                 Log.w(TAG, "To Save: " + this.getStringResult());
             }
         };
