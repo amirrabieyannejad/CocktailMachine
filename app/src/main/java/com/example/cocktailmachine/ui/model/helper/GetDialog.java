@@ -73,14 +73,14 @@ public class GetDialog {
         loadImage2.setVisibility(View.GONE);
         loadImage3.setVisibility(View.GONE);
 
-        List<Recipe> sublistRecipe = getListOfRandomRecipe(3);
+        List<Recipe> sublistRecipe = getListOfRandomRecipe(3,activity);
 
         try {
-            Bitmap image = BildgeneratorGlas.bildgenerationGlas(this,sublistRecipe.get(0),(float)1.0);
+            Bitmap image = BildgeneratorGlas.bildgenerationGlas(activity,sublistRecipe.get(0),(float)1.0);
             loadImage1.setImageBitmap(image);
-            image = BildgeneratorGlas.bildgenerationGlas(this,sublistRecipe.get(1),(float)1.0);
+            image = BildgeneratorGlas.bildgenerationGlas(activity,sublistRecipe.get(1),(float)1.0);
             loadImage2.setImageBitmap(image);
-            image = BildgeneratorGlas.bildgenerationGlas(this,sublistRecipe.get(2),(float)1.0);
+            image = BildgeneratorGlas.bildgenerationGlas(activity,sublistRecipe.get(2),(float)1.0);
             loadImage3.setImageBitmap(image);
         } catch (TooManyTimesSettedIngredientEcxception e) {
             throw new RuntimeException(e);
@@ -2508,7 +2508,7 @@ public class GetDialog {
         builder.show();
     }
 
-    private List<Recipe> getListOfRandomRecipe(int numberOfRecipes, Activity activity){
+    private static List<Recipe> getListOfRandomRecipe(int numberOfRecipes, Activity activity){
         //Recipe recipe;
         Random random = new Random();
         List<Recipe> output = new LinkedList<>();
