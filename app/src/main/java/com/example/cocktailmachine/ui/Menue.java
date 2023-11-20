@@ -22,6 +22,7 @@ import com.example.cocktailmachine.ui.model.enums.ModelType;
 import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.helper.DialogListOfPumps;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
+import com.example.cocktailmachine.ui.model.helper.GetDialog;
 import com.example.cocktailmachine.ui.settings.SettingsActivity;
 import com.example.cocktailmachine.ui.settings.SinglePumpSetting;
 import com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice;
@@ -311,6 +312,12 @@ public class Menue extends AppCompatActivity {
 
     }
 
+    public void loadAnimation(View view){
+        Log.i(TAG, " activity LoadDataAnimation");
+        //Intent success = new Intent(this, LoadDataAnimation.class);
+        //startActivity(success);
+        GetDialog.loadingBluetooth(this).show();
 
+    }
 
 }
