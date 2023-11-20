@@ -56,7 +56,6 @@ public class GetDialog {
 
     public static AlertDialog loadingBluetooth(Activity activity){
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle("Es lädt... ");
 
         View v = activity.getLayoutInflater().inflate(R.layout.activity_load_data_animation, null);
 
