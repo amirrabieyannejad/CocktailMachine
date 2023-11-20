@@ -127,6 +127,7 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
                      MissingIngredientPumpException e) {
                 Log.e(TAG, "onPostExecute", e);
                 //Log.getStackTraceString(e);
+                dialog.setTitle("Fehler!");
             }
 
 
