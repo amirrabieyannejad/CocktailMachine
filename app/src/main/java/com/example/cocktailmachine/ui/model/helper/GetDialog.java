@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.drawable.ColorDrawable;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
@@ -56,7 +57,6 @@ public class GetDialog {
 
     public static AlertDialog loadingBluetooth(Activity activity){
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle("Es lädt... ");
 
         View v = activity.getLayoutInflater().inflate(R.layout.activity_load_data_animation, null);
 
@@ -114,7 +114,17 @@ public class GetDialog {
                 //stop animation
             }
         });
-        return builder.create();
+
+        //Set Windows Sice and Return
+        AlertDialog alertDialog = builder.create();
+
+
+        int width = (int)(activity.getResources().getDisplayMetrics().widthPixels*0.90);
+        int height = (int)(activity.getResources().getDisplayMetrics().heightPixels*0.90);
+
+        alertDialog.getWindow().setLayout(width, height);
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        return alertDialog;
     }
 
 
