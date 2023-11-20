@@ -316,7 +316,7 @@ public class Menue extends AppCompatActivity {
         Log.i(TAG, " activity LoadDataAnimation");
         //Intent success = new Intent(this, LoadDataAnimation.class);
         //startActivity(success);
-        GetDialog.loadingBluetooth(this);
+        GetDialog.loadingBluetooth(this).show();
 
     }
 
