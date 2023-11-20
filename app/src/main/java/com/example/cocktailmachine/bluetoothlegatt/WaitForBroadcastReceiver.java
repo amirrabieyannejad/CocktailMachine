@@ -18,10 +18,9 @@ import org.json.JSONObject;
 
 public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSONObject> {
     private final static String TAG = WaitForBroadcastReceiver.class.getSimpleName();
-    private BluetoothSingleton singleton = BluetoothSingleton.getInstance();
+    private final BluetoothSingleton singleton = BluetoothSingleton.getInstance();
     private JSONObject jsonObject;
-    private JSONArray jsonArray;
-    String result;
+    private String result;
 
     private Postexecute postexecute = null;
     private final AlertDialog dialog;
@@ -61,13 +60,15 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
         return jsonObject;
     }
     public String getStringResult() {
-        result = result.replaceAll("\"", "");
+        //if(this.result != null) {
+        //    result = result.replaceAll("\"", "");
+        //}
         return result;
     }
 
     public JSONArray getJSONArrayResult() throws JSONException {
-        jsonArray = jsonObject.getJSONArray("");
-        return jsonArray;
+        return new JSONArray(this.result);
+        //return jsonObject.getJSONArray("");
     }
 
     @SuppressLint("MissingPermission")
@@ -114,32 +115,35 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
 
 
 
-        @Override
-        @SuppressLint("MissingPermission")
+    @Override
+    @SuppressLint("MissingPermission")
     protected void onPostExecute(JSONObject result) {
         super.onPostExecute(result);
-            Log.w(TAG, "ASYNC-TASK-onPostExecute has been reached!");
-            try {
-                toSave();
-                post();
-                singleton.mBluetoothGatt.disconnect();
-                Log.w(TAG, "ASYNC-TASK-onPostExecute:BluetoothGATT is Disconnected!");
-                singleton.connect = false;
-                singleton.value = null;
-                singleton.asyncFlag = false;
-                singleton.busy = false;
-                jsonObject = null;
+        Log.w(TAG, "ASYNC-TASK-onPostExecute has been reached!");
+        singleton.mBluetoothGatt.disconnect();
+        Log.w(TAG, "ASYNC-TASK-onPostExecute:BluetoothGATT is Disconnected!");
+        singleton.connect = false;
+        singleton.value = null;
+        singleton.asyncFlag = false;
+        singleton.busy = false;
+        jsonObject = null;
+        try {
+            Log.i(TAG, "ASYNC-TASK-onPostExecute: start toSave");
+            toSave();
 
-            } catch (InterruptedException
-                     | NotInitializedDBException
-                     | JSONException |
-                     MissingIngredientPumpException e) {
-                Log.e(TAG, "ASYNC-TASK-onPostExecute", e);
-                //Log.getStackTraceString(e);
-                dialog.setTitle("Fehler!");
-            }
+        } catch (InterruptedException
+                 | NotInitializedDBException
+                 | JSONException
+                 | MissingIngredientPumpException e) {
+            Log.e(TAG, "ASYNC-TASK-onPostExecute", e);
+            //Log.getStackTraceString(e);
+            dialog.setTitle("Fehler!");
 
-
+        }finally {
+            Log.i(TAG, "ASYNC-TASK-onPostExecute: start post");
+            post();
         }
+
+    }
 
 }
