@@ -80,36 +80,6 @@ public class LoadDataAnimation extends AppCompatActivity {
         anim3.setStartOffset(1500);
         loadImage3.startAnimation(anim3);
 
-        //loadImage1.setVisibility(View.VISIBLE);
-        //loadImage2.setVisibility(View.VISIBLE);
-        //loadImage3.setVisibility(View.VISIBLE);
-
-        /**backgroundImage = findViewById(R.id.bluetoothNotFoundBackgroundImage);
-        loopImage = findViewById(R.id.bluetoothNotFoundLoopImage);
-
-        try {
-            image = BildgeneratorGlas.bildgenerationGlas(this,this.getRandomRecipe(),(float)1.0);
-        } catch (TooManyTimesSettedIngredientEcxception e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchIngredientSettedException e) {
-            throw new RuntimeException(e);
-        }
-
-        Animation anim = new CircularAnimation(loopImage, 100);
-        anim.setDuration(3000);
-        anim.setRepeatCount(Animation.INFINITE);
-        loopImage.startAnimation(anim);
-
-        backgroundImage.setImageBitmap(image);
-        //Idea: how to get connection
-        //BluetoothSineelton   public boolean connect = false;
-        CocktailStatus.getCurrentStatus(new Postexecute() {
-            @Override
-            public void post() {
-                //GetActivity.goToMenu(BluetoothNotFound.this);
-                //go back
-            }
-        }, BluetoothNotFound.this);**/
     }
 
     private Recipe getRandomRecipe(){

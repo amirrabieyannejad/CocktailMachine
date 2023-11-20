@@ -3,11 +3,14 @@ package com.example.cocktailmachine.ui.model.helper;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,16 +24,22 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
+import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.CalibrateStatus;
 import com.example.cocktailmachine.data.enums.ErrorStatus;
 import com.example.cocktailmachine.data.enums.Postexecute;
+import com.example.cocktailmachine.logic.Animation.CircularAnimation;
+import com.example.cocktailmachine.logic.BildgeneratorGlas;
 import com.example.cocktailmachine.ui.model.enums.ModelType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 /**
  * @author Johanna Reidt
@@ -43,9 +52,59 @@ public class GetDialog {
 
 
 
+
+
     public static AlertDialog loadingBluetooth(Activity activity){
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Es lädt... ");
+
+        View v = activity.getLayoutInflater().inflate(R.layout.activity_load_data_animation, null);
+
+        builder.setView(v);
+        builder.setCancelable(false);
+
+        ImageView loadImage1,loadImage2,loadImage3;
+
+        loadImage1 = v.findViewById(R.id.imageViewLoadDataAnimationImage1);
+        loadImage2 = v.findViewById(R.id.imageViewLoadDataAnimationImage2);
+        loadImage3 = v.findViewById(R.id.imageViewLoadDataAnimationImage3);
+
+        loadImage1.setVisibility(View.GONE);
+        loadImage2.setVisibility(View.GONE);
+        loadImage3.setVisibility(View.GONE);
+
+        List<Recipe> sublistRecipe = getListOfRandomRecipe(3,activity);
+
+        try {
+            Bitmap image = BildgeneratorGlas.bildgenerationGlas(activity,sublistRecipe.get(0),(float)1.0);
+            loadImage1.setImageBitmap(image);
+            image = BildgeneratorGlas.bildgenerationGlas(activity,sublistRecipe.get(1),(float)1.0);
+            loadImage2.setImageBitmap(image);
+            image = BildgeneratorGlas.bildgenerationGlas(activity,sublistRecipe.get(2),(float)1.0);
+            loadImage3.setImageBitmap(image);
+        } catch (TooManyTimesSettedIngredientEcxception e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchIngredientSettedException e) {
+            throw new RuntimeException(e);
+        }
+
+        Animation anim1 = new CircularAnimation(loadImage1, 200);
+        anim1.setDuration(3000);
+        anim1.setRepeatCount(Animation.INFINITE);
+        anim1.setStartOffset(500);
+        loadImage1.startAnimation(anim1);
+
+        Animation anim2 = new CircularAnimation(loadImage2, 200);
+        anim2.setDuration(2500);
+        anim2.setRepeatCount(Animation.INFINITE);
+        anim2.setStartOffset(1000);
+        loadImage2.startAnimation(anim2);
+
+        Animation anim3 = new CircularAnimation(loadImage3, 200);
+        anim3.setDuration(2000);
+        anim3.setRepeatCount(Animation.INFINITE);
+        anim3.setStartOffset(1500);
+        loadImage3.startAnimation(anim3);
 
         //TODO: PHILLLLLLLLLLLLLLLLLLLLLLLLLLIPP add VIEW Loading Circle Animation
         //builder.setView(view);
@@ -2447,6 +2506,18 @@ public class GetDialog {
             Log.v(TAG, "handleUnauthorized: user choosed to do nothing");
         });
         builder.show();
+    }
+
+    private static List<Recipe> getListOfRandomRecipe(int numberOfRecipes, Activity activity){
+        //Recipe recipe;
+        Random random = new Random();
+        List<Recipe> output = new LinkedList<>();
+        List<Recipe> list = Recipe.getAllRecipes(activity);
+        for (int i = 0; i < numberOfRecipes;i++){
+            int recipeNr = random.nextInt(list.size());
+            output.add( list.get(recipeNr));
+        }
+        return output;
     }
 
 
