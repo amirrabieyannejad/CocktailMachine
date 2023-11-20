@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.drawable.ColorDrawable;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
@@ -122,6 +123,7 @@ public class GetDialog {
         int height = (int)(activity.getResources().getDisplayMetrics().heightPixels*0.90);
 
         alertDialog.getWindow().setLayout(width, height);
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         return alertDialog;
     }
 
