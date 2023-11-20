@@ -113,7 +113,16 @@ public class GetDialog {
                 //stop animation
             }
         });
-        return builder.create();
+
+        //Set Windows Sice and Return
+        AlertDialog alertDialog = builder.create();
+
+
+        int width = (int)(activity.getResources().getDisplayMetrics().widthPixels*0.90);
+        int height = (int)(activity.getResources().getDisplayMetrics().heightPixels*0.90);
+
+        alertDialog.getWindow().setLayout(width, height);
+        return alertDialog;
     }
 
 
