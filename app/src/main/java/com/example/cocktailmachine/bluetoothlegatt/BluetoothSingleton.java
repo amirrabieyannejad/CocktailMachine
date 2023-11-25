@@ -1040,6 +1040,39 @@ public class BluetoothSingleton {
 
 
     /**
+     * initUser(USER): register as a new user and receive a user ID
+     * JSON-sample: {"cmd": "init_user", "name": "Jane"}
+     * like described in ProjektDokumente/esp/Befehle.md
+     * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     *
+     * @return
+     * @throws JSONException
+     */
+    @SuppressLint("MissingPermission")
+    public void userInitUser(String name, Activity activity, Postexecute postexecute) throws JSONException,
+            InterruptedException {
+
+
+        singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cmd", "init_user");
+        jsonObject.put("name", name);
+        singleton.sendReadWrite(jsonObject, false, true);
+        singleton.waitForWriteNotification();
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity, postexecute) {
+            @Override
+            public void toSave() {
+                Log.w(TAG, "To Save: " + this.getJsonResult());
+                AdminRights.setUser(this.getJsonResult());
+            }
+        };
+        wfb.execute();
+        Log.w(TAG, "this is the end of world!" + singleton.getEspResponseValue());
+
+    }
+
+    /**
      * define_pumps (ADMIN): add specific number of pumps to ESP at one time and give temporary
      * liquid and volume
      * JSON-sample: {"cmd": "define_pumps", "user": 0, "liquid": "water", "volume": 0, "quantity": 2}

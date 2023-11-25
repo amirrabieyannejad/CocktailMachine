@@ -120,6 +120,29 @@ public class AdminRights {
     }
 
     /**
+     * init user with bluetooth
+     * @return
+     */
+    public static void initUser(Activity activity, String name, Postexecute postexecute){
+        //TO DO: DUMMY
+        Log.i(TAG, "initUser");
+        if(Dummy.isDummy) {
+            Log.i(TAG, "initUser dummy");
+            getSingleton().userId = 3;
+            return;
+        }
+        try{
+            BluetoothSingleton.getInstance().userInitUser(name,activity, postexecute);
+            Log.i(TAG, "initUser done");
+        } catch (JSONException | InterruptedException e) {
+            //throw new RuntimeException(e);
+            Log.i(TAG, "init User failed");
+            Log.e(TAG, "error",e);
+            //Log.e(TAG, "error", e);
+        }
+    }
+
+    /**
      * {"cmd": "abort", "user": 483}
      * @return
      */

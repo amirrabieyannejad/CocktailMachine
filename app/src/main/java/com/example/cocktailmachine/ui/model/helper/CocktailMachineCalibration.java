@@ -8,6 +8,7 @@ import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
+import com.example.cocktailmachine.data.enums.Postexecute;
 
 import java.util.Random;
 
@@ -26,22 +27,26 @@ public class CocktailMachineCalibration {
         Log.v(TAG, "start: loaded db");
         AdminRights.login(activity, activity.getLayoutInflater(), dialog -> {
             Log.v(TAG, "start: login dismissing");
-            AdminRights.initUser(activity, String.valueOf(new Random().nextInt()));
-            Log.v(TAG, "start: login init");
-            if(CocktailMachine.isCocktailMachineSet(activity)){
-                Log.v(TAG, "start: login isCocktailMachineSet");
-                isDone = true;
-                Log.v(CocktailMachineCalibration.TAG, "is set");
-                Toast.makeText(activity, "Cocktailmaschine ist bereit.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if(AdminRights.isAdmin()){
-                Log.v(TAG, "start: is admin");
-                GetDialog.startAutomaticCalibration(activity);
-            }else{
-                Log.v(TAG, "start: is user");
-                GetActivity.waitNotSet(activity);
-            }
+            AdminRights.initUser(activity, String.valueOf(new Random().nextInt()), new Postexecute() {
+                @Override
+                public void post() {
+                    Log.v(TAG, "start: login init");
+                    if(CocktailMachine.isCocktailMachineSet(activity)){
+                        Log.v(TAG, "start: login isCocktailMachineSet");
+                        isDone = true;
+                        Log.v(CocktailMachineCalibration.TAG, "is set");
+                        Toast.makeText(activity, "Cocktailmaschine ist bereit.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if(AdminRights.isAdmin()){
+                        Log.v(TAG, "start: is admin");
+                        GetDialog.startAutomaticCalibration(activity);
+                    }else{
+                        Log.v(TAG, "start: is user");
+                        GetActivity.waitNotSet(activity);
+                    }
+                }
+            });
             //Pump.calibratePumpsAndTimes(activity);
             /*
             for(Pump p: Pump.getPumps()){
