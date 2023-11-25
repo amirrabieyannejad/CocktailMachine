@@ -347,6 +347,53 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
     //reading json objects
 
+    /*
+    {"1":{"liquid":"water","volume":1000.0,"cal":[0.0,1000,1000]}
+     */
+    static void updatePumpStatus(Context context, JSONObject json){
+        Log.i(TAG, "updatePumpStatus");
+        Log.i(TAG, "updatePumpStatus: "+json.toString());
+        List<Long> toSave = new ArrayList<>();
+        try {
+            Iterator<String> t_ids = json.keys();
+            while (t_ids.hasNext()){
+                String key = t_ids.next();
+                JSONObject jsonTemp = json.getJSONObject(key);
+                int slot = Integer.parseInt(key);
+                int vol = (int) jsonTemp.getDouble("volume");
+                Ingredient ingredient = Ingredient.searchOrNew(context, jsonTemp.getString("liquid"));
+                try {
+                    boolean calibrated = jsonTemp.getBoolean("calibrated");
+                    if(!calibrated){
+                        CocktailMachineCalibration.setIsDone(false);
+                    }
+                }catch(JSONException e){
+                    Log.i(TAG, "updatePumpStatus: no calibrated" );
+                }
+                Pump pump = getPumpWithSlot(context,slot);
+                if(pump == null){
+                    pump = new SQLPump();
+                }
+                pump.setSlot(slot);
+                //pump.setMinimumPumpVolume();
+                pump.setCurrentIngredient(context, ingredient);
+                pump.fill(context,vol);
+                pump.save(context);
+                toSave.add(pump.getID());
+            }
+            for (Pump p : getPumps(context)) {
+                if (!toSave.contains(p.getID())) {
+                    DeleteFromDB.remove(context, p);
+                }
+            }
+            ExtraHandlingDB.localRefresh(context);
+        } catch (JSONException | MissingIngredientPumpException e) {
+            Log.e(TAG, "updatePumpStatus: error");
+            Log.e(TAG, "error ",e);
+            Log.getStackTraceString(e);
+        }
+    }
+
     /**
      * {"1":{"liquid":"water","volume":1000.0,"calibrated":true,
      *      "rate":0.0,"time_init":1000,"time_reverse":1000},
@@ -357,6 +404,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      *
      * @param json
      */
+    /*
     static void updatePumpStatus(Context context, JSONObject json) {
         Log.i(TAG, "updatePumpStatus");
         Log.i(TAG, "updatePumpStatus: "+json.toString());
@@ -401,6 +449,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         }
 
     }
+
+     */
 
     /**
      * {"beer": 200, "lemonade": 2000, "orange juice": 2000} Flüssigkeiten Status

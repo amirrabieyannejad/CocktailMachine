@@ -126,7 +126,6 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
         singleton.value = null;
         singleton.asyncFlag = false;
         singleton.busy = false;
-        jsonObject = null;
         try {
             Log.i(TAG, "ASYNC-TASK-onPostExecute: start toSave");
             toSave();
@@ -142,6 +141,8 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
         }finally {
             Log.i(TAG, "ASYNC-TASK-onPostExecute: start post");
             post();
+
+            jsonObject = null;
         }
 
     }

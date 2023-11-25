@@ -1029,8 +1029,8 @@ public class BluetoothSingleton {
         WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
             @Override
             public void toSave() {
-                AdminRights.setUser(this.getJsonResult());
                 Log.w(TAG, "To Save: " + this.getJsonResult());
+                AdminRights.setUser(this.getJsonResult());
             }
         };
         wfb.execute();
@@ -2569,6 +2569,5 @@ public class BluetoothSingleton {
         wfb.execute();
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
-
 
 }

@@ -61,6 +61,11 @@ public class AdminRights {
         Log.i(TAG, "setUser");
         //TO DO: USE THIS AMIR **DONE**
 
+        if(jsonObject == null){
+            Log.w(TAG, "setUser: jsonObject null");
+            return;
+        }
+
         try {
             setUserId(jsonObject.getInt("user"));
             Log.i(TAG, "setUser: done");
