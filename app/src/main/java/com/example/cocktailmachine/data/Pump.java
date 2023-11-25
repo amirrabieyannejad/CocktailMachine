@@ -362,6 +362,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 int slot = Integer.parseInt(key);
                 int vol = (int) jsonTemp.getDouble("volume");
                 Ingredient ingredient = Ingredient.searchOrNew(context, jsonTemp.getString("liquid"));
+                /*
                 try {
                     boolean calibrated = jsonTemp.getBoolean("calibrated");
                     if(!calibrated){
@@ -370,6 +371,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 }catch(JSONException e){
                     Log.i(TAG, "updatePumpStatus: no calibrated" );
                 }
+                 */
                 Pump pump = getPumpWithSlot(context,slot);
                 if(pump == null){
                     pump = new SQLPump();
