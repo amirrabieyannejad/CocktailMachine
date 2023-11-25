@@ -23,15 +23,14 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
     private String result;
 
     private Postexecute postexecute = null;
-    private final AlertDialog dialog;
+    //private final AlertDialog dialog;
 
 
-
-    public WaitForBroadcastReceiver(Activity activity){
-        dialog = GetDialog.loadingBluetooth(activity);
+    public WaitForBroadcastReceiver(){
+        this.postexecute = postexecute;
     }
-    public WaitForBroadcastReceiver(Activity activity, Postexecute postexecute){
-        dialog = GetDialog.loadingBluetooth(activity);
+
+    public WaitForBroadcastReceiver(Postexecute postexecute){
         this.postexecute = postexecute;
     }
 
@@ -74,7 +73,7 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
     @SuppressLint("MissingPermission")
     @Override
     protected JSONObject doInBackground(Void... voids) {
-        this.dialog.show();
+        //this.dialog.show();
         int timeout = 500;
         int timeoutMax = 0;
         while (!singleton.asyncFlag) {
@@ -136,10 +135,11 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
                  | MissingIngredientPumpException e) {
             Log.e(TAG, "ASYNC-TASK-onPostExecute", e);
             //Log.getStackTraceString(e);
-            dialog.setTitle("Fehler!");
+            //dialog.setTitle("Fehler!");
 
         }finally {
             Log.i(TAG, "ASYNC-TASK-onPostExecute: start post");
+            //dialog.cancel();
             post();
 
             jsonObject = null;

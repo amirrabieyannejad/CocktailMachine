@@ -1026,7 +1026,7 @@ public class BluetoothSingleton {
         jsonObject.put("name", name);
         singleton.sendReadWrite(jsonObject, false, true);
         singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() {
                 Log.w(TAG, "To Save: " + this.getJsonResult());
@@ -1060,7 +1060,7 @@ public class BluetoothSingleton {
         jsonObject.put("name", name);
         singleton.sendReadWrite(jsonObject, false, true);
         singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity, postexecute) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( postexecute) {
             @Override
             public void toSave() {
                 Log.w(TAG, "To Save: " + this.getJsonResult());
@@ -1099,7 +1099,7 @@ public class BluetoothSingleton {
         jsonObject.put("quantity", quantity);
         singleton.sendReadWrite(jsonObject, true, true);
 
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1142,7 +1142,7 @@ public class BluetoothSingleton {
         jsonObject.put("slot", slot);
         singleton.sendReadWrite(jsonObject, true, true);
 
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1186,7 +1186,7 @@ public class BluetoothSingleton {
         jsonObject.put("slot", slot);
         singleton.sendReadWrite(jsonObject, true, true);
 
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity,postexecute) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1225,7 +1225,7 @@ public class BluetoothSingleton {
         jsonObject.put("slot", slot);
         singleton.sendReadWrite(jsonObject, true, true);
 
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1276,7 +1276,7 @@ public class BluetoothSingleton {
 
         singleton.sendReadWrite(jsonObject, false, true);
 
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1323,7 +1323,7 @@ public class BluetoothSingleton {
 
         singleton.sendReadWrite(jsonObject, false, true);
 
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1357,7 +1357,7 @@ public class BluetoothSingleton {
         jsonObject.put("cmd", "start_recipe");
         jsonObject.put("user", user);
         singleton.sendReadWrite(jsonObject, false, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1391,7 +1391,7 @@ public class BluetoothSingleton {
         jsonObject.put("cmd", "cancel_recipe");
         jsonObject.put("user", user);
         singleton.sendReadWrite(jsonObject, false, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1425,7 +1425,7 @@ public class BluetoothSingleton {
         jsonObject.put("cmd", "take_cocktail");
         jsonObject.put("user", user);
         singleton.sendReadWrite(jsonObject, false, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1461,7 +1461,7 @@ public class BluetoothSingleton {
         jsonObject.put("user", user);
         jsonObject.put("name", name);
         singleton.sendReadWrite(jsonObject, false, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1496,7 +1496,7 @@ public class BluetoothSingleton {
         jsonObject.put("user", user);
         jsonObject.put("recipe", recipe);
         singleton.sendReadWrite(jsonObject, false, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1529,7 +1529,7 @@ public class BluetoothSingleton {
         jsonObject.put("user", 0);
         singleton.sendReadWrite(jsonObject, true, true);
 
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1563,7 +1563,7 @@ public class BluetoothSingleton {
         jsonObject.put("user", 0);
         singleton.sendReadWrite(jsonObject, true, true);
 
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity,postexecute) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1599,7 +1599,7 @@ public class BluetoothSingleton {
         jsonObject.put("user", 0);
         singleton.sendReadWrite(jsonObject, true, true);
 
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1635,7 +1635,7 @@ public class BluetoothSingleton {
         jsonObject.put("liquid", liquid);
         jsonObject.put("volume", volume);
         singleton.sendReadWrite(jsonObject, false, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1670,7 +1670,7 @@ public class BluetoothSingleton {
         jsonObject.put("volume", volume);
         jsonObject.put("slot", slot);
         singleton.sendReadWrite(jsonObject, true, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1708,7 +1708,7 @@ public class BluetoothSingleton {
         jsonObject.put("slot", slot);
         jsonObject.put("time", time);
         singleton.sendReadWrite(jsonObject, true, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1743,7 +1743,7 @@ public class BluetoothSingleton {
         jsonObject.put("cmd", "calibration_start");
         jsonObject.put("user", 0);
         singleton.sendReadWrite(jsonObject, true, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1779,7 +1779,7 @@ public class BluetoothSingleton {
         jsonObject.put("cmd", "calibration_add_empty");
         jsonObject.put("user", 0);
         singleton.sendReadWrite(jsonObject, true, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1814,7 +1814,7 @@ public class BluetoothSingleton {
         jsonObject.put("cmd", "calibration_cancel");
         jsonObject.put("user", 0);
         singleton.sendReadWrite(jsonObject, true, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1849,7 +1849,7 @@ public class BluetoothSingleton {
         jsonObject.put("cmd", "calibration_finish");
         jsonObject.put("user", 0);
         singleton.sendReadWrite(jsonObject, true, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1886,7 +1886,7 @@ public class BluetoothSingleton {
         jsonObject.put("user", 0);
         jsonObject.put("weight", weight);
         singleton.sendReadWrite(jsonObject, true, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1930,7 +1930,7 @@ public class BluetoothSingleton {
         jsonObject.put("volume1", volume1);
         jsonObject.put("volume2", volume2);
         singleton.sendReadWrite(jsonObject, true, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1974,7 +1974,7 @@ public class BluetoothSingleton {
         jsonObject.put("rate", rate);
 
         singleton.sendReadWrite(jsonObject, true, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -2009,7 +2009,7 @@ public class BluetoothSingleton {
         jsonObject.put("user", 0);
 
         singleton.sendReadWrite(jsonObject, true, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -2044,7 +2044,7 @@ public class BluetoothSingleton {
         jsonObject.put("weight", weight);
 
         singleton.sendReadWrite(jsonObject, true, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -2080,7 +2080,7 @@ public class BluetoothSingleton {
         jsonObject.put("factor", factor);
 
         singleton.sendReadWrite(jsonObject, true, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -2114,7 +2114,7 @@ public class BluetoothSingleton {
         jsonObject.put("user", 0);
 
         singleton.sendReadWrite(jsonObject, true, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -2148,7 +2148,7 @@ public class BluetoothSingleton {
         jsonObject.put("user", 0);
 
         singleton.sendReadWrite(jsonObject, true, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -2183,7 +2183,7 @@ public class BluetoothSingleton {
         jsonObject.put("user", 0);
 
         singleton.sendReadWrite(jsonObject, true, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity,postexecute) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -2217,7 +2217,7 @@ public class BluetoothSingleton {
         jsonObject.put("user", 0);
 
         singleton.sendReadWrite(jsonObject, true, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -2252,7 +2252,7 @@ public class BluetoothSingleton {
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_PUMPS);
 
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException, NotInitializedDBException, JSONException, MissingIngredientPumpException {
                 if (!check()) {
@@ -2284,7 +2284,7 @@ public class BluetoothSingleton {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_PUMPS);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity,postexecute) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
             @Override
             public void toSave() throws InterruptedException, NotInitializedDBException
                     , JSONException, MissingIngredientPumpException {
@@ -2315,7 +2315,7 @@ public class BluetoothSingleton {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_LAST_CHANGE);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException, NotInitializedDBException, JSONException, MissingIngredientPumpException {
                 if (!check()) {
@@ -2345,7 +2345,7 @@ public class BluetoothSingleton {
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_LIQUIDS);
         singleton.waitForReadNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException, NotInitializedDBException, JSONException, MissingIngredientPumpException {
                 if (!check()) {
@@ -2381,7 +2381,7 @@ public class BluetoothSingleton {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_STATE);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity,postexecute) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
             @Override
             public void toSave() throws InterruptedException, JSONException {
                 if (!check()) {
@@ -2412,7 +2412,7 @@ public class BluetoothSingleton {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_RECIPES);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException, JSONException,
                     NotInitializedDBException {
@@ -2442,7 +2442,7 @@ public class BluetoothSingleton {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_COCKTAIL);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity,postexecute) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -2472,7 +2472,7 @@ public class BluetoothSingleton {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_USER_QUEUE);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException, JSONException {
                 if (!check()) {
@@ -2501,7 +2501,7 @@ public class BluetoothSingleton {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_SCALE);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -2531,7 +2531,7 @@ public class BluetoothSingleton {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_SCALE);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity,postexecute) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -2560,7 +2560,7 @@ public class BluetoothSingleton {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_ERROR);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -2589,7 +2589,7 @@ public class BluetoothSingleton {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_ERROR);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(activity,postexecute) {
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
