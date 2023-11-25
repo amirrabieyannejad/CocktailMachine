@@ -791,6 +791,17 @@ public class GetAdapter {
             this.r = () -> {
                 try {
                     List<K> temp = ScrollAdapter.this.iterator.next();
+                    if(temp.size() == 0){
+                        Log.i(TAG, "loadMore: finished: ");
+                        Toast.makeText(this.getActivity(), "Ende erreicht!", Toast.LENGTH_LONG).show();
+
+                        Log.i(GetAdapter.TAG, "loadMore: finished: set false");
+                        ScrollAdapter.this.isLoading = false;
+                        //recyclerView.scrollToPosition(scrollPosition);
+                        this.r = null;
+                        Log.i(GetAdapter.TAG, "loadMore: finished: ");
+                        return;
+                    }
                     Log.i(GetAdapter.TAG, "loadMore: temp loaded: "+temp.size());
 
                     if (this.getAvailability()) {
@@ -813,7 +824,7 @@ public class GetAdapter {
                             //loadMore();
                         }else{
                             Log.i(GetAdapter.TAG, "loadMore: available: no added repeat loadmore");
-                            loadMore();
+                            //TODO: loadMore();
                         }
 
 
