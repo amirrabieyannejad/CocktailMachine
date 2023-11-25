@@ -106,8 +106,6 @@ public class GetDialog {
         anim3.setStartOffset(1500);
         loadImage3.startAnimation(anim3);
 
-        //TODO: PHILLLLLLLLLLLLLLLLLLLLLLLLLLIPP add VIEW Loading Circle Animation
-        //builder.setView(view);
         builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
