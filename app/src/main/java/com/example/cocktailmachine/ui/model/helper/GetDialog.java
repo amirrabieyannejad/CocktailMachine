@@ -2522,10 +2522,15 @@ public class GetDialog {
         //Recipe recipe;
         Random random = new Random();
         List<Recipe> output = new LinkedList<>();
-        List<Recipe> list = Recipe.getAllRecipes(activity);
         for (int i = 0; i < numberOfRecipes;i++){
-            int recipeNr = random.nextInt(list.size());
-            output.add( list.get(recipeNr));
+            int recipeNr = random.nextInt(5000);
+            Recipe recipe = Recipe.getRecipe(activity,recipeNr);
+            if (recipe == null){
+                i--;
+            }else{
+                output.add(recipe);
+            }
+
         }
         return output;
     }
