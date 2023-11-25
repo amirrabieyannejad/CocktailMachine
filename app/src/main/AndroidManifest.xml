@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.cocktailmachine"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="1.0">
     <!-- Min/target SDK versions (<uses-sdk>) managed by build.gradle -->
     <!--
  Declare this required feature if you want to make the app available to BLE-capable
@@ -54,7 +54,10 @@
         android:roundIcon="@mipmap/ic_app_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CocktailMachine"
-        tools:targetApi="21" >
+        tools:targetApi="21">
+        <activity
+            android:name=".ui.SceanUserWaitForCalibration"
+            android:exported="false" />
         <activity
             android:name=".ui.LoadDataAnimation"
             android:exported="false"
@@ -109,14 +112,14 @@
             android:label="@string/title_activity_settings" />
         <activity
             android:name=".ui.cocktail.cocktailList.CocktailList"
-            android:exported="false" >
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".bluetoothlegatt.DeviceControlActivity"
-            android:exported="false" >
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -124,7 +127,7 @@
         <activity
             android:name=".bluetoothlegatt.DeviceScanActivity"
             android:exported="true"
-            android:theme="@android:style/Theme.Holo.Light" >
+            android:theme="@android:style/Theme.Holo.Light">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -137,35 +140,35 @@
         </activity>
         <activity
             android:name=".ui.singleCocktailChoice.SingleCocktailChoice"
-            android:exported="true" >
+            android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".ui.fillAnimation.FillAnimation"
-            android:exported="true" >
+            android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".ui.Grafik"
-            android:exported="true" >
+            android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".ui.Menue"
-            android:exported="true" >
+            android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".ui.model.WaitNotSetActivity"
-            android:exported="true" >
+            android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
