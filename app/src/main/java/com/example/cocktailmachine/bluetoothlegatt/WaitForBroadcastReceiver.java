@@ -74,7 +74,7 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
     @SuppressLint("MissingPermission")
     @Override
     protected JSONObject doInBackground(Void... voids) {
-        this.dialog.show();
+        //this.dialog.show();
         int timeout = 500;
         int timeoutMax = 0;
         while (!singleton.asyncFlag) {
