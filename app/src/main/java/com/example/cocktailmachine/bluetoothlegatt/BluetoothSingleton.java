@@ -256,28 +256,7 @@ public class BluetoothSingleton {
         }
     };
 
-    private boolean initialize(Activity activity) {
-        singleton = BluetoothSingleton.getInstance();
-        // For API level 18 and above, get a reference to BluetoothAdapter through
-        // BluetoothManager.
-        if (singleton.mBluetoothManager == null) {
-            singleton.mBluetoothManager =
-                    (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
-            if (singleton.mBluetoothManager == null) {
-                Log.e(TAG, "Unable to initialize BluetoothManager.");
-                return false;
-            }
-            Log.w(TAG, "get Instance of BluetoothManager! ");
-        }
 
-        singleton.mBluetoothAdapter = singleton.mBluetoothManager.getAdapter();
-        if (singleton.mBluetoothAdapter == null) {
-            Log.e(TAG, "Unable to obtain a BluetoothAdapter.");
-            return false;
-        }
-        Log.w(TAG, "Adapter has been read!");
-        return true;
-    }
 
     @SuppressLint("MissingPermission")
     private boolean connect(Activity activity, String address) {
@@ -287,12 +266,12 @@ public class BluetoothSingleton {
             return false;
         }
         singleton.requestBlePermissions(activity);
-        Log.w(TAG, "BluetoothAdapter is initialized! Address is specified!");
+        Log.w(TAG, "STAGE_0:Bluetooth Adapter is initialized! Address is specified!");
         // Previously connected device.  Try to reconnect.
         //if (address.equals("54:43:B2:A9:32:26")
         if (address.equals(singleton.getEspDeviceAddress())
                 && singleton.mBluetoothGatt != null) {
-            Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
+            Log.w(TAG, "STAGE_1:Trying to use an existing mBluetoothGatt for connection.");
             return singleton.mBluetoothGatt.connect();
         }
 
@@ -352,7 +331,7 @@ public class BluetoothSingleton {
 
     @SuppressLint("MissingPermission")
     public Boolean connectGatt(Activity activity) {
-        Log.w(TAG, "try to initialize BluetoothGATT!");
+        //Log.w(TAG, "STAGE_0:try to initialize BluetoothGATT!");
         singleton = BluetoothSingleton.getInstance();
         if (!singleton.initialize(activity)) {
             Log.e(TAG, "Unable to initialize Bluetooth");
@@ -364,6 +343,28 @@ public class BluetoothSingleton {
         //singleton.connect(activity, "78:E3:6D:1A:87:9E");
 
         singleton.connect(activity, singleton.getEspDeviceAddress());
+        return true;
+    }
+    private boolean initialize(Activity activity) {
+        singleton = BluetoothSingleton.getInstance();
+        // For API level 18 and above, get a reference to BluetoothAdapter through
+        // BluetoothManager.
+        if (singleton.mBluetoothManager == null) {
+            singleton.mBluetoothManager =
+                    (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
+            if (singleton.mBluetoothManager == null) {
+                Log.e(TAG, "Unable to initialize BluetoothManager.");
+                return false;
+            }
+            Log.w(TAG, "get Instance of BluetoothManager! ");
+        }
+
+        singleton.mBluetoothAdapter = singleton.mBluetoothManager.getAdapter();
+        if (singleton.mBluetoothAdapter == null) {
+            Log.e(TAG, "Unable to obtain a BluetoothAdapter.");
+            return false;
+        }
+        Log.w(TAG, "STAGE_0:Bluetooth Adapter has been specified!");
         return true;
     }
 
@@ -854,8 +855,6 @@ public class BluetoothSingleton {
                 int timeout = 500;
                 int timeoutMax = 0;
                 try {
-
-
                     while (!flag) {
                         try {
                             Log.w(TAG, "STAGE_4:wait for target value...!" +
@@ -872,7 +871,8 @@ public class BluetoothSingleton {
                         }
                     }
                     if (flag) {
-                        Log.w(TAG, "STAGE_4:receive Notification-> " + singleton.getEspResponseValue());
+                        Log.w(TAG, "STAGE_4:receive Notification-> " +
+                                singleton.getEspResponseValue());
                         flag = false;
                         asyncFlag = true;
                     } else {
