@@ -134,6 +134,11 @@ public enum CocktailStatus {
     }
 
     public  static void setStatus(String status) {
+
+        if(status == null){
+            currentState = CocktailStatus.not;
+            return;
+        }
         //TO DO: figure out if only string or JSON Object and put in currentStatus
         status = status.replace("\"", "");
         status = status.replace("'", "");

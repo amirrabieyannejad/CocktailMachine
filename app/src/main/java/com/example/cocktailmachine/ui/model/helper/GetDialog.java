@@ -174,6 +174,7 @@ public class GetDialog {
         final String txt = s.toString();
         builder.setMessage(txt);
 
+        /*
         Toast.makeText(activity,"Synchronisierung läuft!",Toast.LENGTH_SHORT).show();
         Pump.sync(activity, new Postexecute(){
             @Override
@@ -181,6 +182,8 @@ public class GetDialog {
                 Recipe.syncRecipeDBWithCocktailmachine(activity);
             }
         });
+
+         */
         AlertDialog dialog = builder.show();
 
 

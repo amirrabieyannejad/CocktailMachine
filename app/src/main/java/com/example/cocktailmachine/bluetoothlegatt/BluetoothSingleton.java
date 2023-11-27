@@ -2287,10 +2287,20 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                CocktailStatus.
-                        setStatus(getStringResult());
-                CalibrateStatus.setStatus(getStringResult());
-                Log.w(TAG, "returned result is now:" + getStringResult());
+                Log.w(TAG, "returned result:" + getStringResult());
+                Log.w(TAG, "returned result: start saving");
+                try {
+                    CocktailStatus.setStatus(getStringResult());
+                }catch (Exception e){
+                    e.printStackTrace();
+                }finally {
+                    try{
+                        CalibrateStatus.setStatus(getStringResult());
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+                Log.w(TAG, "returned result finished");
             }
         };
         wfb.execute();
