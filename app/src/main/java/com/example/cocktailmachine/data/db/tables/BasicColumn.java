@@ -160,6 +160,9 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         }
         //String ttype = getColumnsAndTypes().get(column_name);
 
+        if(ll.isEmpty()){
+            return "()";
+        }
         StringBuilder builder = new StringBuilder();
         builder.append( "(");
         builder.append(ll.get(0));
@@ -1134,6 +1137,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
     public void updateColumnsValues(SQLiteDatabase db,
                                     ContentValues cv,
                                     List<Long> IDs) throws NoSuchColumnException {
+
         List<Object> where = new ArrayList<>(IDs);
 
         for(String key: cv.keySet()) {
