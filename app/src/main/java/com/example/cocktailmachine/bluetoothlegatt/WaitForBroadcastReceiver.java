@@ -76,10 +76,12 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
         //this.dialog.show();
         int timeout = 500;
         int timeoutMax = 0;
+        Log.w(TAG, "ASYNC-TASK-doInBackground: doInBackground has been reached asyncFlag value " +
+                "is: " + singleton.asyncFlag);
         while (!singleton.asyncFlag) {
-            Log.w(TAG, "");
+
             try {
-                Log.w(TAG, "ASYNC-TASK-doInBackground: Waiting for target value..");
+                Log.w(TAG, "ASYNC-TASK-doInBackground: syncFlag is True - Waiting for target value..");
 
                 Thread.sleep(timeout);
                 timeoutMax = timeoutMax + 500;
@@ -141,8 +143,8 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
             Log.i(TAG, "ASYNC-TASK-onPostExecute: start post");
             //dialog.cancel();
             post();
-
             jsonObject = null;
+
         }
 
     }
