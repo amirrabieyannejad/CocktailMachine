@@ -173,7 +173,13 @@ CocktailMachine.getCurrentCocktailStatus(new Postexecute() {
 
         //singleton.adminReadPumpsStatus(BluetoothTestEnviroment.this);
         //singleton.adminAutoCalibrateAddEmpty(BluetoothTestEnviroment.this);
-        singleton.adminAutoCalibrateStart(BluetoothTestEnviroment.this);
+        //singleton.adminAutoCalibrateStart(BluetoothTestEnviroment.this);
+        singleton.adminReadState(BluetoothTestEnviroment.this, new Postexecute() {
+            @Override
+            public void post() {
+                Log.i("adminReadState: ", "after read STate");
+            }
+        });
 
     }
 

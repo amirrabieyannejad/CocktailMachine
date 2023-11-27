@@ -1617,7 +1617,7 @@ public class BluetoothSingleton {
      */
 
     @SuppressLint("MissingPermission")
-    public void adminAutoCalibrateStart(Activity activity) throws JSONException,
+    public void adminAutoCalibrateStart(Activity activity, Postexecute postexecute) throws JSONException,
             InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         //generate JSON Format
@@ -1627,7 +1627,7 @@ public class BluetoothSingleton {
         jsonObject.put("user", 0);
         singleton.sendReadWrite(jsonObject, true, true);
         singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
