@@ -23,15 +23,14 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
     private String result;
 
     private Postexecute postexecute = null;
-    private final AlertDialog dialog;
+    //private final AlertDialog dialog;
 
 
-
-    public WaitForBroadcastReceiver(Activity activity){
-        dialog = GetDialog.loadingBluetooth(activity);
+    public WaitForBroadcastReceiver(){
+        this.postexecute = postexecute;
     }
-    public WaitForBroadcastReceiver(Activity activity, Postexecute postexecute){
-        dialog = GetDialog.loadingBluetooth(activity);
+
+    public WaitForBroadcastReceiver(Postexecute postexecute){
         this.postexecute = postexecute;
     }
 
@@ -77,10 +76,12 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
         //this.dialog.show();
         int timeout = 500;
         int timeoutMax = 0;
+        Log.w(TAG, "ASYNC-TASK-doInBackground: doInBackground has been reached asyncFlag value " +
+                "is: " + singleton.asyncFlag);
         while (!singleton.asyncFlag) {
-            Log.w(TAG, "");
+
             try {
-                Log.w(TAG, "ASYNC-TASK-doInBackground: Waiting for target value..");
+                Log.w(TAG, "ASYNC-TASK-doInBackground: syncFlag is True - Waiting for target value..");
 
                 Thread.sleep(timeout);
                 timeoutMax = timeoutMax + 500;
@@ -136,13 +137,14 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
                  | MissingIngredientPumpException e) {
             Log.e(TAG, "ASYNC-TASK-onPostExecute", e);
             //Log.getStackTraceString(e);
-            dialog.setTitle("Fehler!");
+            //dialog.setTitle("Fehler!");
 
         }finally {
             Log.i(TAG, "ASYNC-TASK-onPostExecute: start post");
+            //dialog.cancel();
             post();
-
             jsonObject = null;
+
         }
 
     }
