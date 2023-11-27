@@ -9,7 +9,6 @@ import android.widget.Toast;
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
-import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.CalibrateStatus;
 import com.example.cocktailmachine.data.enums.CocktailStatus;
@@ -428,7 +427,7 @@ public class CocktailMachine {
 
      {"cmd": "calibrate_scale", "user": 0, "weight": 100.0}
      */
-    public static void sendCalibrateScale(Activity activity, float weight){
+    public static void sendCalibrateScale(Activity activity, float weight, Postexecute postexecute){
         Log.i(TAG, "sendCalibrateScale");
         Toast.makeText(activity, "Kalibrierung der Waage mit Gewicht: "+weight+" g",Toast.LENGTH_SHORT).show();
         //TO DO: calibrateScale
@@ -437,7 +436,7 @@ public class CocktailMachine {
             return;
         }
         try {
-            BluetoothSingleton.getInstance().adminManuelCalibrateScale(weight,activity);
+            BluetoothSingleton.getInstance().adminManuelCalibrateScale(weight,activity, postexecute);
             Log.i(TAG, "sendCalibrateScale: done");
         } catch (JSONException | InterruptedException  |NullPointerException e) {
             Log.i(TAG, "sendCalibrateScale: failed");
@@ -483,18 +482,28 @@ public class CocktailMachine {
     public static void sendScaleFactor(Activity activity, Float factor){
         Log.i(TAG, "sendScaleFactor");
         Toast.makeText(activity, "Skalierung der Waage mit Faktor: "+factor,Toast.LENGTH_SHORT).show();
+        AlertDialog wait = GetDialog.loadingBluetooth(activity);
+        wait.show();
+        Postexecute postexecute = new Postexecute() {
+            @Override
+            public void post() {
+                wait.dismiss();
+            }
+        };
         if(Dummy.isDummy){
+            postexecute.post();
             return;
         }
         //TO DO: send scale factor
         try {
-            BluetoothSingleton.getInstance().adminManuelCalibrateSetScaleFactor(factor,activity);
+            BluetoothSingleton.getInstance().adminManuelCalibrateSetScaleFactor(factor,activity, postexecute);
             Log.i(TAG, "sendScaleFactor done");
         } catch (JSONException | InterruptedException |NullPointerException e) {
             Log.i(TAG, "sendScaleFactor failed");
             Log.e(TAG, "error"+ e);
             Log.e(TAG, "error", e);
             Toast.makeText(activity, "ERROR",Toast.LENGTH_SHORT).show();
+            GetDialog.errorStatus(activity, e);
         }
     }
 

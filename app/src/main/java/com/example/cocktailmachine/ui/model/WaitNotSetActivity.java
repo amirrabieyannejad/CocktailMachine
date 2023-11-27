@@ -27,14 +27,11 @@ public class WaitNotSetActivity extends AppCompatActivity {
 
     public void login(View view) {
         Activity a = this;
-        AdminRights.login(this, this.getLayoutInflater(), new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                dialog.dismiss();
-                if(AdminRights.isAdmin()) {
-                    GetDialog.startAutomaticCalibration(a);
-                    //GetActivity.goToMenu(a);
-                }
+        AdminRights.login(this, this.getLayoutInflater(), dialog -> {
+            dialog.dismiss();
+            if(AdminRights.isAdmin()) {
+                GetDialog.startAutomaticCalibration(a);
+                //GetActivity.goToMenu(a);
             }
         });
     }

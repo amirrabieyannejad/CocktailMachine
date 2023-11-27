@@ -98,8 +98,13 @@ public enum ErrorStatus {
     }
 
     public static void setError(String msg){
-        error = msg;
-        status = valueOfString(error);
+        if(msg == null){
+            error = "null";
+            status = ErrorStatus.not;
+        }else {
+            error = msg;
+            status = valueOfString(error);
+        }
     }
 
 
