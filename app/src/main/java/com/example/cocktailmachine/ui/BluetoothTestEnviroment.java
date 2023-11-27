@@ -171,7 +171,9 @@ CocktailMachine.getCurrentCocktailStatus(new Postexecute() {
 
     public void showUser(View view) throws JSONException, InterruptedException {
 
-        singleton.adminReadPumpsStatus(BluetoothTestEnviroment.this);
+        //singleton.adminReadPumpsStatus(BluetoothTestEnviroment.this);
+        //singleton.adminAutoCalibrateAddEmpty(BluetoothTestEnviroment.this);
+        singleton.adminAutoCalibrateStart(BluetoothTestEnviroment.this);
 
     }
 

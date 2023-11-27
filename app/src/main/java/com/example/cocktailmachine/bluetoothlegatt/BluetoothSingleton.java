@@ -1641,7 +1641,6 @@ public class BluetoothSingleton {
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
-
     /**
      * Automatic Calibration
      * calibration_add_empty (ADMIN): empty vessel is ready
@@ -2503,8 +2502,9 @@ public class BluetoothSingleton {
                 if (!check()) {
                     throw new InterruptedException();
                 }
-                ErrorStatus.setError(this.getStringResult());
                 Log.w(TAG, "To Save: " + this.getStringResult());
+                ErrorStatus.setError(this.getStringResult());
+
             }
         };
         wfb.execute();

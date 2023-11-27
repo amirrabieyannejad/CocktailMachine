@@ -46,11 +46,6 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
             NotInitializedDBException, MissingIngredientPumpException;
 
     public Boolean check() {
-        if (jsonObject != null) {
-            Log.w(TAG, "ASYNC-TASK-onPostExecute-Check->" + jsonObject);
-        } else {
-            Log.w(TAG, "ASYNC-TASK-onPostExecute-Check-> NULL" );
-        }
         return (jsonObject != null) || (result != null);
     }
 
