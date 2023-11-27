@@ -16,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.app.NotificationCompat;
+
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
@@ -2062,11 +2064,19 @@ public class GetDialog {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Setze jetzt das jetzige Gewicht auf der Waage:");
 
+        AlertDialog wait = GetDialog.loadingBluetooth(activity);
+
         View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
         GetDialog.ScaleChangeView scaleChangeView =
                 new GetDialog.ScaleChangeView(
                         activity,
-                        v);
+                        v,
+                        new Postexecute(){
+                            @Override
+                            public void post() {
+                                wait.dismiss();
+                            }
+                        });
 
         builder.setView(v);
 
@@ -2081,11 +2091,16 @@ public class GetDialog {
     }
 
     public static class ScaleChangeView extends FloatChangeView{
-        private ScaleChangeView(Activity activity, View v) {
+
+        private final Postexecute postexecute;
+
+        private ScaleChangeView(Activity activity, View v, Postexecute postexecute) {
             super(activity, v, "Gewicht");
+            this.postexecute = postexecute;
         }
+
         public void send(){
-            CocktailMachine.sendCalibrateScale(super.activity, super.getFloat() );
+            CocktailMachine.sendCalibrateScale(super.activity, super.getFloat() , postexecute);
         }
     }
 

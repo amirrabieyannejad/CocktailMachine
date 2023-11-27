@@ -1925,7 +1925,7 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminManuelCalibrateScale(float weight, Activity activity) throws JSONException, InterruptedException {
+    public void adminManuelCalibrateScale(float weight, Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         //generate JSON Format
@@ -1936,7 +1936,7 @@ public class BluetoothSingleton {
 
         singleton.sendReadWrite(jsonObject, true, true);
         singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1962,7 +1962,7 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminManuelCalibrateSetScaleFactor(float factor, Activity activity) throws JSONException, InterruptedException {
+    public void adminManuelCalibrateSetScaleFactor(float factor, Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         //generate JSON Format
@@ -1973,7 +1973,7 @@ public class BluetoothSingleton {
 
         singleton.sendReadWrite(jsonObject, true, true);
         singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
