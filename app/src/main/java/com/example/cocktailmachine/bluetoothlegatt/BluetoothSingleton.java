@@ -1116,6 +1116,51 @@ public class BluetoothSingleton {
 
 
     /**
+     * define_pumps (ADMIN): add specific number of pumps to ESP at one time and give temporary
+     * liquid and volume
+     * JSON-sample: {"cmd": "define_pumps", "user": 0, "liquid": "water", "volume": 0, "quantity": 2}
+     * > >>>>>> 74da54749d9714adf8936adc62479700248127bb
+     * like described in ProjektDokumente/esp/Befehle.md
+     * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
+     *
+     * @return
+     * @throws JSONException
+     */
+    @SuppressLint("MissingPermission")
+
+    public void adminDefinePumps(Activity activity,
+                                 Postexecute postexecute,
+                                 String liquid, float volume, int quantity)
+            throws JSONException, InterruptedException {
+        singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
+        // generate JSON Format
+        JSONObject jsonObject = new JSONObject();
+
+        jsonObject.put("cmd", "define_pumps");
+        jsonObject.put("user", 0);
+        jsonObject.put("liquid", liquid);
+        jsonObject.put("volume", volume);
+        jsonObject.put("quantity", quantity);
+        singleton.sendReadWrite(jsonObject, true, true);
+
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
+            @Override
+            public void toSave() throws InterruptedException {
+                if (!check()) {
+                    throw new InterruptedException();
+                }
+
+                Log.w(TAG, "To Save: " + this.getStringResult());
+            }
+        };
+        wfb.execute();
+        //
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+    }
+
+
+    /**
      * <<<<   <<< HEAD
      * define_pump (ADMIN): add a new pump to ESP
      * JSON-sample: {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
@@ -1659,7 +1704,7 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminRefillPump(float volume, int slot, Activity activity) throws JSONException, InterruptedException {
+    public void adminRefillPump(float volume, int slot, Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
 
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
@@ -1670,7 +1715,7 @@ public class BluetoothSingleton {
         jsonObject.put("volume", volume);
         jsonObject.put("slot", slot);
         singleton.sendReadWrite(jsonObject, true, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1697,7 +1742,7 @@ public class BluetoothSingleton {
      */
 
     @SuppressLint("MissingPermission")
-    public void adminManuelCalibrateRunPump(int slot, int time, Activity activity) throws JSONException,
+    public void adminManuelCalibrateRunPump(int slot, int time, Activity activity, Postexecute postexecute) throws JSONException,
             InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
@@ -1708,7 +1753,7 @@ public class BluetoothSingleton {
         jsonObject.put("slot", slot);
         jsonObject.put("time", time);
         singleton.sendReadWrite(jsonObject, true, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1999,7 +2044,7 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminManuelCalibrateTareScale(Activity activity) throws JSONException,
+    public void adminManuelCalibrateTareScale(Activity activity, Postexecute postexecute) throws JSONException,
             InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
@@ -2009,7 +2054,7 @@ public class BluetoothSingleton {
         jsonObject.put("user", 0);
 
         singleton.sendReadWrite(jsonObject, true, true);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -2311,11 +2356,11 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReadLastChange(Activity activity) throws JSONException, InterruptedException {
+    public void adminReadLastChange(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_LAST_CHANGE);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
             @Override
             public void toSave() throws InterruptedException, NotInitializedDBException, JSONException, MissingIngredientPumpException {
                 if (!check()) {
@@ -2408,11 +2453,11 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminReadRecipesStatus(Activity activity) throws JSONException, InterruptedException {
+    public void adminReadRecipesStatus(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_RECIPES);
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
             @Override
             public void toSave() throws InterruptedException, JSONException,
                     NotInitializedDBException {
