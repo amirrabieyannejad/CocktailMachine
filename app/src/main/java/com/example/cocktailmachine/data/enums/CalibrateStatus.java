@@ -58,6 +58,10 @@ public enum CalibrateStatus {
     }
 
     public static CalibrateStatus valueStringOf(String value) {
+        if(value == null){
+            return CalibrateStatus.not;
+        }
+
         Log.i(TAG, "valueStringOf");
         String res = value.replace(" ", "_");
         //return super(res);
