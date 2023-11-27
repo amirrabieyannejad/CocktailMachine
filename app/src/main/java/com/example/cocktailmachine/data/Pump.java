@@ -169,9 +169,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
             Pump pump = Pump.makeNew();
             pump.setSlot(i);
-            //Ingredient water = Ingredient.makeNew("Wasser");
-            //water.save(context);
-            //pump.setCurrentIngredient(context, water);
+            Ingredient water = Ingredient.searchOrNew(context,"Wasser");
+            water.save(context);
+            pump.setCurrentIngredient(context, water);
             pump.save(context);
             try {
                 pump.fill(context, 100);
