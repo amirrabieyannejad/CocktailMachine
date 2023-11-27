@@ -116,6 +116,14 @@ public enum ErrorStatus {
         return status != ErrorStatus.processing;
     }
 
+    public static ErrorStatus getErrorStatus(){
+        return status;
+    }
+
+    public static String getError(){
+        return error;
+    }
+
 
 
 
@@ -294,6 +302,7 @@ public enum ErrorStatus {
             GetDialog.handleUnauthorized(activity);
         } else {
             Log.i(TAG, "handleIfExistingError: no error, status: "+status);
+            Toast.makeText(activity, "No error!", Toast.LENGTH_SHORT).show();
         }
 
 

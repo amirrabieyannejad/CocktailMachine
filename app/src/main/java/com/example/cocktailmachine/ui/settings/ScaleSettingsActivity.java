@@ -1,5 +1,6 @@
 package com.example.cocktailmachine.ui.settings;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 
 import com.example.cocktailmachine.data.CocktailMachine;
@@ -8,7 +9,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
+import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.databinding.ActivityScaleSettingsBinding;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
 

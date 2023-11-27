@@ -160,17 +160,10 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @param context
      * @param numberOfPumps k
      */
-    static void setOverrideEmptyPumps(Activity context, int numberOfPumps) {
+    static void setOverrideEmptyPumps(Activity context, int numberOfPumps, Postexecute postexecute) {
         Log.i(TAG, "setOverrideEmptyPumps");
         ExtraHandlingDB.loadForSetUp(context);
         Log.i(TAG, "setOverrideEmptyPumps "+numberOfPumps);
-
-        Postexecute postexecute = new Postexecute() {
-            @Override
-            public void post() {
-                Log.i(TAG, "setOverrideEmptyPumps: done");
-            }
-        };
 
         for (int i = 1; i < numberOfPumps+1; i++) {
 
@@ -267,11 +260,12 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 @Override
                 public void post() {
                     if(Dummy.isDummy){
+                        postexecute.post();
                         return;
                     }
                     if(CocktailStatus.getCurrentStatus() == CocktailStatus.ready) {
                         try {
-                            BluetoothSingleton.getInstance().adminDefinePumps(context, "Wasser", 100, numberOfPumps);
+                            BluetoothSingleton.getInstance().adminDefinePumps(context,postexecute, "Wasser", 100, numberOfPumps);
                         } catch (JSONException | InterruptedException e) {
                             //throw new RuntimeException(e);
                             Log.e(TAG, "setOverrideEmptyPumps: send preset Pumps ", e);
@@ -362,6 +356,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 int slot = Integer.parseInt(key);
                 int vol = (int) jsonTemp.getDouble("volume");
                 Ingredient ingredient = Ingredient.searchOrNew(context, jsonTemp.getString("liquid"));
+                /*
                 try {
                     boolean calibrated = jsonTemp.getBoolean("calibrated");
                     if(!calibrated){
@@ -370,6 +365,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 }catch(JSONException e){
                     Log.i(TAG, "updatePumpStatus: no calibrated" );
                 }
+                 */
                 Pump pump = getPumpWithSlot(context,slot);
                 if(pump == null){
                     pump = new SQLPump();
@@ -622,6 +618,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     default void sendSave(Activity activity, Postexecute postexecute) {
         save(activity);
         if(Dummy.isDummy){
+            postexecute.post();
             return;
         }
         /*
@@ -670,6 +667,40 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @param volume
      * @author Johanna Reidt
      */
+    default void sendRefill(Activity activity, int volume, Postexecute postexecute) {
+        try {
+            fill(activity,volume);
+        } catch (MissingIngredientPumpException e) {
+            Log.i(TAG, "sendRefill failed");
+            Log.e(TAG, "error ",e);
+            Log.getStackTraceString(e);
+        }
+        if(Dummy.isDummy){
+
+            save(activity);
+            postexecute.post();
+            return;
+        }
+        save(activity);
+        sendRefill(activity, postexecute);
+    }
+
+
+    /**
+     * sendRefill
+     * ### refill_pump: füllt Pumpe auf
+     * - user: User
+     * - liquid: str
+     * - slot: int
+     * <p>
+     * JSON-Beispiel:
+     * <p>
+     * {"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1}
+     *
+     * @param activity
+     * @param volume
+     * @author Johanna Reidt
+     */
     default void sendRefill(Activity activity, int volume) {
         //TO DO: AMIR
         //TO DO: refillPump
@@ -696,13 +727,13 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             Log.getStackTraceString(e);
         }
         if(Dummy.isDummy){
-
             save(activity);
             return;
         }
         save(activity);
         sendRefill(activity);
     }
+
 
 
     /**
@@ -720,26 +751,35 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @author Johanna Reidt
      */
     default void sendRefill(Activity activity) {
-        //TO DO: AMIR
-        //TO DO: refillPump
-        /*
-        JSONObject request = new JSONObject();
-        try {
-            request.put("cmd", "refill_pump");
-            request.put("user", AdminRights.getUserId());
-            request.put("volume", this.getVolume());
-            request.put( "slot", 1);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-        //TO DO: send refillPump
-        JSONObject answer = new JSONObject();
+        sendRefill(activity, new Postexecute() {
+            @Override
+            public void post() {
+                Log.i(TAG, "Refill send done, no post");
+            }
+        });
+    }
 
-         */
+
+    /**
+     * sendRefill from volume already settted und updated in db
+     * ### refill_pump: füllt Pumpe auf
+     * - user: User
+     * - liquid: str
+     * - slot: int
+     * <p>
+     * JSON-Beispiel:
+     * <p>
+     * {"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1}
+     *
+     * @param activity
+     * @author Johanna Reidt
+     */
+    default void sendRefill(Activity activity, Postexecute postexecute) {
+
         if(!Dummy.isDummy) {
             try {
                 BluetoothSingleton.getInstance().adminRefillPump(this.getVolume(activity),
-                        this.getSlot(), activity);
+                        this.getSlot(), activity, postexecute);
             } catch (JSONException | InterruptedException e) {
                 Log.i(TAG, "sendRefill failed");
                 Log.e(TAG, "error ",e);
@@ -769,13 +809,19 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         try {
             BluetoothSingleton.getInstance().adminManuelCalibrateRunPump(
                     this.getSlot(),
-                    time,activity);
+                    time,
+                    activity,
+                    new Postexecute(){
+                        @Override
+                        public void post() {
+                            sync(activity);
+                        }
+                    });
         } catch (JSONException | InterruptedException e) {
             Log.i(TAG, "run failed");
             Log.e(TAG, "error ",e);
             Log.getStackTraceString(e);
         }
-        sync(activity);
     }
 
 
@@ -818,7 +864,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                     time1,
                     time2,
                     volume1,
-                    volume2,activity);
+                    volume2,
+                    activity);
         } catch (JSONException | InterruptedException e) {
             Log.i(TAG, "sendCalibrate failed ");
             Log.e(TAG, "error ",e);
@@ -876,8 +923,28 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     static void sync(Activity activity) {
         //TO DO sync
-        readPumpStatus(activity);
-        ExtraHandlingDB.localRefresh(activity);
+        readPumpStatus(activity, new Postexecute() {
+            @Override
+            public void post() {
+                ExtraHandlingDB.localRefresh(activity);
+            }
+        });
+    }
+
+    /**
+     * ask for pump status to update db with availability
+     *
+     * @param activity
+     */
+    static void sync(Activity activity, Postexecute postexecute) {
+        //TO DO sync
+        readPumpStatus(activity, new Postexecute() {
+            @Override
+            public void post() {
+                ExtraHandlingDB.localRefresh(activity);
+                postexecute.post();
+            }
+        });
     }
 
     /**
@@ -898,6 +965,23 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         }
     }
 
+    /**
+     * read pump status without refresh of availability
+     *
+     * @param activity
+     * @author Johanna Reidt
+     */
+    static void readPumpStatus(Activity activity, Postexecute postexecute) {
+        if(!Dummy.isDummy) {
+            try {
+                BluetoothSingleton.getInstance().adminReadPumpsStatus(activity, postexecute);
+            } catch (JSONException | InterruptedException e) {
+                Log.i(TAG, "readPumpStatus failed ");
+                Log.e(TAG, "error ",e);
+                Log.getStackTraceString(e);
+            }
+        }
+    }
     /**
      * read liquid status without refresh of availability
      *
