@@ -38,7 +38,8 @@ public enum CocktailStatus {
      *
      * @return
      */
-    public static CocktailStatus getCurrentStatus(Postexecute postexecute,Activity activity) {
+    public static CocktailStatus getCurrentStatus(Postexecute postexecute,
+                                                  Activity activity) {
         //BluetoothSingleton blSingelton = BluetoothSingleton.getInstance();
         //blSingelton.connectGatt(activity);
         //TO DO: Bluetoothlegatt
