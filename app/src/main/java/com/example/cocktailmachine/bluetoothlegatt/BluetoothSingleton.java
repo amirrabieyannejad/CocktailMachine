@@ -1640,6 +1640,41 @@ public class BluetoothSingleton {
         wfb.execute();
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
+    /**
+     * Automatic Calibration
+     * calibration_start (ADMIN): Start automated calibration
+     * like described in ProjektDokumente/esp/Befehle.md
+     * JSON-sample: {"cmd": "calibration_start", "user": 0}
+     * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     *
+     * @return
+     * @throws JSONException
+     */
+
+    @SuppressLint("MissingPermission")
+    public void adminAutoCalibrateStart(Activity activity) throws JSONException,
+            InterruptedException {
+        singleton = BluetoothSingleton.getInstance();
+        //generate JSON Format
+        singleton.connectGatt(activity);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cmd", "calibration_start");
+        jsonObject.put("user", 0);
+        singleton.sendReadWrite(jsonObject, true, true);
+        singleton.waitForWriteNotification();
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(){
+            @Override
+            public void toSave() throws InterruptedException {
+                if (!check()) {
+                    throw new InterruptedException();
+                }
+
+                Log.w(TAG, "returned <String> result is now:" + this.getStringResult());
+            }
+        };
+        wfb.execute();
+        //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+    }
 
     /**
      * Automatic Calibration
