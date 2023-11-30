@@ -1,6 +1,7 @@
 package com.example.cocktailmachine.data;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
@@ -8,7 +9,6 @@ import android.widget.Toast;
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
-import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.CalibrateStatus;
 import com.example.cocktailmachine.data.enums.CocktailStatus;
@@ -369,6 +369,7 @@ public class CocktailMachine {
 
     //SCALE
 
+
     /**
      ### tare_scale: tariert die Waage
      - user: User
@@ -379,18 +380,38 @@ public class CocktailMachine {
      */
     public static void tareScale(Activity activity){
         Log.i(TAG, "tareScale");
+        AlertDialog wait = GetDialog.loadingBluetooth(activity);
+        tareScale(activity, new Postexecute() {
+            @Override
+            public void post() {
+                wait.dismiss();
+            }
+        });
+    }
+    /**
+     ### tare_scale: tariert die Waage
+     - user: User
+
+     JSON-Beispiel:
+
+     {"cmd": "tare_scale", "user": 0}
+     */
+    public static void tareScale(Activity activity, Postexecute postexecute){
+        Log.i(TAG, "tareScale");
         Toast.makeText(activity, "Tarierung der Waage eingeleitet.",Toast.LENGTH_SHORT).show();
         //TO DO: tareScale
         if(Dummy.isDummy){
+            postexecute.post();
             return;
         }
         try {
-            BluetoothSingleton.getInstance().adminManuelCalibrateTareScale(activity);
+            BluetoothSingleton.getInstance().adminManuelCalibrateTareScale(activity, postexecute);
             Log.i(TAG, "tareScale: done");
         } catch (JSONException | InterruptedException |NullPointerException e) {
             Log.e(TAG, "error", e);
             Log.i(TAG, "tareScale failed");
             Toast.makeText(activity, "Die Tarierung ist fehlgeschlagen!",Toast.LENGTH_SHORT).show();
+            postexecute.post();
         }
     }
 
@@ -406,7 +427,7 @@ public class CocktailMachine {
 
      {"cmd": "calibrate_scale", "user": 0, "weight": 100.0}
      */
-    public static void sendCalibrateScale(Activity activity, float weight){
+    public static void sendCalibrateScale(Activity activity, float weight, Postexecute postexecute){
         Log.i(TAG, "sendCalibrateScale");
         Toast.makeText(activity, "Kalibrierung der Waage mit Gewicht: "+weight+" g",Toast.LENGTH_SHORT).show();
         //TO DO: calibrateScale
@@ -415,7 +436,7 @@ public class CocktailMachine {
             return;
         }
         try {
-            BluetoothSingleton.getInstance().adminManuelCalibrateScale(weight,activity);
+            BluetoothSingleton.getInstance().adminManuelCalibrateScale(weight,activity, postexecute);
             Log.i(TAG, "sendCalibrateScale: done");
         } catch (JSONException | InterruptedException  |NullPointerException e) {
             Log.i(TAG, "sendCalibrateScale: failed");
@@ -461,18 +482,28 @@ public class CocktailMachine {
     public static void sendScaleFactor(Activity activity, Float factor){
         Log.i(TAG, "sendScaleFactor");
         Toast.makeText(activity, "Skalierung der Waage mit Faktor: "+factor,Toast.LENGTH_SHORT).show();
+        AlertDialog wait = GetDialog.loadingBluetooth(activity);
+        wait.show();
+        Postexecute postexecute = new Postexecute() {
+            @Override
+            public void post() {
+                wait.dismiss();
+            }
+        };
         if(Dummy.isDummy){
+            postexecute.post();
             return;
         }
         //TO DO: send scale factor
         try {
-            BluetoothSingleton.getInstance().adminManuelCalibrateSetScaleFactor(factor,activity);
+            BluetoothSingleton.getInstance().adminManuelCalibrateSetScaleFactor(factor,activity, postexecute);
             Log.i(TAG, "sendScaleFactor done");
         } catch (JSONException | InterruptedException |NullPointerException e) {
             Log.i(TAG, "sendScaleFactor failed");
             Log.e(TAG, "error"+ e);
             Log.e(TAG, "error", e);
             Toast.makeText(activity, "ERROR",Toast.LENGTH_SHORT).show();
+            GetDialog.errorStatus(activity, e);
         }
     }
 
@@ -495,20 +526,22 @@ public class CocktailMachine {
      * get LastChange timestamp  from ESP-DB
      * @author Johanna Reidt
      */
-    public static void getLastChange(Activity activity){
+    public static void getLastChange(Activity activity, Postexecute postexecute){
         Log.i(TAG, "getLastChange");
         if(Dummy.isDummy){
             Log.i(TAG, "getLastChange: dummy");
             dbChanged = false;
+            postexecute.post();
             return;
         }
         try {
-            BluetoothSingleton.getInstance().adminReadLastChange(activity);
+            BluetoothSingleton.getInstance().adminReadLastChange(activity, postexecute);
             Log.i(TAG, "getLastChange: done");
         } catch (JSONException | InterruptedException|NullPointerException e) {
             Log.i(TAG, "getLastChange failed");
             Log.e(TAG, "error"+ e);
             Log.e(TAG, "error", e);
+            postexecute.post();
         }
     }
 
@@ -516,25 +549,34 @@ public class CocktailMachine {
      * update DB If Cange in ESP-DB
      * @author Johanna Reidt
      */
-    public static void updateRecipeListIfChanged(Activity activity){
+    public static void updateRecipeListIfChanged(Activity activity, Postexecute postexecute){
         Log.i(TAG, "updateRecipeListIfChanged");
         if(Dummy.isDummy){
             Log.i(TAG, "updateRecipeListIfChanged: dummy");
-            ExtraHandlingDB.localRefresh(activity);
-            Log.i(TAG, "updateRecipeListIfChanged: dummy: localRefresh done");
+            postexecute.post();
+            // in post execute drin: ExtraHandlingDB.localRefresh(activity);
+            Log.i(TAG, "updateRecipeListIfChanged: dummy: post done");
             return;
         }
-        getLastChange(activity);
-        if(dbChanged){
-            try {
-                BluetoothSingleton.getInstance().adminReadRecipesStatus(activity);
-                Log.i(TAG, "updateRecipeListIfChanged: done");
-            } catch (JSONException | InterruptedException|NullPointerException e) {
-                Log.i(TAG, "updateRecipeListIfChanged failed");
-                Log.e(TAG, "error"+ e);
-                Log.e(TAG, "error", e);
+        getLastChange(activity, new Postexecute() {
+            @Override
+            public void post() {
+                if(dbChanged){
+                    try {
+                        BluetoothSingleton.getInstance().adminReadRecipesStatus(activity, postexecute);
+                        Log.i(TAG, "updateRecipeListIfChanged: done");
+                    } catch (JSONException | InterruptedException|NullPointerException e) {
+                        Log.i(TAG, "updateRecipeListIfChanged failed");
+                        Log.e(TAG, "error"+ e);
+                        Log.e(TAG, "error", e);
+                        postexecute.post();
+                    }
+                }else{
+                    postexecute.post();
+                }
             }
-        }
+        });
+
     }
 
 

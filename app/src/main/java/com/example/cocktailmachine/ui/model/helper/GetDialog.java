@@ -2,6 +2,7 @@ package com.example.cocktailmachine.ui.model.helper;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
@@ -14,6 +15,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.core.app.NotificationCompat;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
@@ -35,7 +38,10 @@ import com.example.cocktailmachine.logic.Animation.CircularAnimation;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
 import com.example.cocktailmachine.ui.model.enums.ModelType;
 
+import org.apache.commons.collections4.Get;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -150,6 +156,54 @@ public class GetDialog {
         });
         builder.show();
     }
+
+
+    //ERROR
+    public static void errorStatus(Activity activity, Exception e){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("FEHLER");
+        StringBuilder s = new StringBuilder();
+        s.append("Es ist ein Fehler aufgetreten. \n");
+        if(e != null){
+            s.append(" Behandle den Fehler: \n");
+            s.append(e.getMessage());
+            s.append("\n");
+            s.append(Arrays.toString(e.getStackTrace()));
+        }
+
+        final String txt = s.toString();
+        builder.setMessage(txt);
+
+        /*
+        Toast.makeText(activity,"Synchronisierung läuft!",Toast.LENGTH_SHORT).show();
+        Pump.sync(activity, new Postexecute(){
+            @Override
+            public void post() {
+                Recipe.syncRecipeDBWithCocktailmachine(activity);
+            }
+        });
+
+         */
+        AlertDialog dialog = builder.show();
+
+
+        ErrorStatus.getErrorMessage(new Postexecute() {
+            @Override
+            public void post() {
+                dialog.setMessage(ErrorStatus.getErrorStatus().toString()+ "\n\n"+txt  );
+                dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Reset",
+                        (dialog1, which) ->
+                        ErrorStatus.handleIfExistingError(activity));
+                dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Abbrechen",
+                        (dialog12, which) -> {
+
+                });
+            }
+        }, activity);
+    }
+
+
+
 
 
 
@@ -353,6 +407,10 @@ public class GetDialog {
 
 
     private static void enterNumberOfPumps(Activity activity){
+
+        Dialog wait = loadingBluetooth(activity);
+
+
         Log.v(TAG, "enterNumberOfPumps");
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Setze die Anzahl der Pumpen:");
@@ -361,20 +419,33 @@ public class GetDialog {
         GetDialog.PumpNumberChangeView pumpNumberChangeView =
                 new GetDialog.PumpNumberChangeView(
                         activity,
-                        v);
+                        v,
+                        new Postexecute() {
+                            @Override
+                            public void post() {
+                                wait.dismiss();
+                                firstAutomaticDialog(activity);
+                            }
+                        });
 
         builder.setView(v);
         builder.setPositiveButton("Speichern", (dialog, which) -> {
+            wait.show();
             try {
                 pumpNumberChangeView.save(); //set up n new Pumps
                 //pumpNumberChangeView.send();
                 //dialog.dismiss();
                 //getGlass(activity);
-                firstAutomaticDialog(activity);
+                Toast.makeText(activity, "Es lädt...", Toast.LENGTH_SHORT).show();
             }catch (IllegalStateException e){
                 Log.e(TAG, "enterNumberOfPumps pumpNumberChangeView save error");
                 Log.e(TAG, e.toString());
                 e.printStackTrace();
+                wait.dismiss();
+                Toast.makeText(activity, "Fehler!", Toast.LENGTH_SHORT).show();
+                //ErrorStatus.handleIfExistingError(activity);
+                //TO DO
+                GetDialog.errorStatus(activity, e);
             }
         });
         builder.show();
@@ -413,9 +484,11 @@ public class GetDialog {
 
     private static void firstTaring(Activity activity){
         Log.v(TAG, "firstTaring");
+        AlertDialog wait = loadingBluetooth(activity);
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Waagentarierung");
-        builder.setMessage("Bitte stelle sicher, dass keine Gefässe, Gewichte oder Ähnliches unter der Cocktailmaschine steht. " +
+        builder.setMessage("Bitte stelle sicher, dass keine Gefässe, " +
+                "Gewichte oder Ähnliches unter der Cocktailmaschine steht. " +
                 "Gemeint ist der Bereich an dem später die Gläser stehen." +
                 "Auch das Auffangbecken muss leer sein!");
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
@@ -427,11 +500,18 @@ public class GetDialog {
 
             //CocktailMachine.automaticEmpty(activity);
             //enterNumberOfPumps(activity);
-            CocktailMachine.tareScale(activity);
             dialog.dismiss();
-            //enterNumberOfPumps(activity);
-            getGlass(activity);
-        });
+            wait.show();
+            CocktailMachine.tareScale(activity,
+                    new Postexecute(){
+                        @Override
+                        public void post() {
+                            wait.dismiss();
+                            //enterNumberOfPumps(activity);
+                            getGlass(activity);
+                        }
+                    });
+            });
         builder.show();
     }
 
@@ -670,12 +750,20 @@ public class GetDialog {
                     android.R.layout.simple_list_item_1,
                     names);
 
+            AlertDialog wait = GetDialog.loadingBluetooth(activity);
             builder.setAdapter(adapter,
                     (dialog, which) -> {
+                        dialog.dismiss();
+                        wait.show();
                         pump.setCurrentIngredient(activity, ingredients.get(which));
                         Toast.makeText(activity, names.get(which)+" gewählt.",Toast.LENGTH_SHORT).show();
-                        pump.sendSave(activity);
-                        setFixedPumpVolume(activity, pumps, position);
+                        pump.sendSave(activity, new Postexecute() {
+                            @Override
+                            public void post() {
+                                wait.dismiss();
+                                setFixedPumpVolume(activity, pumps, position);
+                            }
+                        });
                     });
             /*
             builder.setPositiveButton("Speichern", (dialog, which) -> {
@@ -709,7 +797,20 @@ public class GetDialog {
                             activity,
                             pump,
                             v,
-                            false);
+                            false,
+                            new Postexecute(){
+
+                                @Override
+                                public void post() {
+                                    if(position+1 == pumps.size()){
+                                        GetActivity.goToMenu(activity);
+
+                                    }else {
+                                        new DialogListOfPumps(activity);
+                                        //setFixedPumpIngredient(activity,pumps, position+1);
+                                    }
+                                }
+                            });
 
             builder.setView(v);
 
@@ -718,13 +819,7 @@ public class GetDialog {
                 volumeChangeView.send();
                 //dialog.dismiss();
                 //setFixedPumpMinVolume(activity, pump, next);
-                if(position+1 == pumps.size()){
-                    GetActivity.goToMenu(activity);
 
-                }else {
-                    new DialogListOfPumps(activity);
-                    //setFixedPumpIngredient(activity,pumps, position+1);
-                }
             });
             builder.show();
         }else{
@@ -745,20 +840,26 @@ public class GetDialog {
                             activity,
                             pump,
                             v,
-                            false);
+                            false,
+                            new Postexecute() {
+                                @Override
+                                public void post() {
+
+                                    if(allPumpsConfigured(activity)){
+                                        GetActivity.goToMenu(activity);
+
+                                    }else {
+                                        new DialogListOfPumps(activity);
+                                        //setFixedPumpIngredient(activity,pumps, position+1);
+                                    }
+                                }
+                            });
 
             builder.setView(v);
 
             builder.setPositiveButton("Speichern", (dialog, which) -> {
                 volumeChangeView.save();
                 volumeChangeView.send();
-                if(allPumpsConfigured(activity)){
-                    GetActivity.goToMenu(activity);
-
-                }else {
-                    new DialogListOfPumps(activity);
-                    //setFixedPumpIngredient(activity,pumps, position+1);
-                }
             });
             builder.show();
         }else{
@@ -769,7 +870,7 @@ public class GetDialog {
     private static boolean allPumpsConfigured(Activity activity){
         List<Pump> pumps = Pump.getPumps(activity);
         for (Pump pump : pumps){
-            if(pump.getVolume(activity)<=0 || pump.getIngredientName()==""){
+            if(pump.getVolume(activity)<=0 || Objects.equals(pump.getIngredientName(), "")){
                 return false;
             }
         }
@@ -1283,7 +1384,13 @@ public class GetDialog {
                             activity,
                             pump,
                             v,
-                            false);
+                            false,
+                            new Postexecute() {
+                                @Override
+                                public void post() {
+                                    Log.i(TAG, "setPumpVolume: done");
+                                }
+                            });
 
             builder.setView(v);
 
@@ -1342,7 +1449,8 @@ public class GetDialog {
         private final Pump pump;
         private final View v;
         private final Activity activity;
-        private VolumeChangeView(Activity activity, Pump pump, View v, boolean minimum) {
+        private final Postexecute postexecute;
+        private VolumeChangeView(Activity activity, Pump pump, View v, boolean minimum, Postexecute postexecute) {
             this.activity = activity;
             this.t = v.findViewById(R.id.textView_edit_text);
             this.e = v.findViewById(R.id.editText_edit_text);
@@ -1353,6 +1461,7 @@ public class GetDialog {
             String name = getVolumeFromDB();
             this.e.setHint(name +" ml");
             this.e.setText(name);
+            this.postexecute = postexecute;
         }
 
         private String getVolumeFromDB(){
@@ -1382,7 +1491,7 @@ public class GetDialog {
 
         public void send(){
             Log.v(TAG, "send");
-            pump.sendRefill(activity, getVolume());
+            pump.sendRefill(activity, getVolume(), postexecute);
         }
     }
 
@@ -1868,16 +1977,22 @@ public class GetDialog {
         GetDialog.PumpNumberChangeView pumpNumberChangeView =
                 new GetDialog.PumpNumberChangeView(
                         activity,
-                        v);
+                        v,
+                        new Postexecute() {
+                            @Override
+                            public void post() {
+                                GetDialog.startAutomaticCalibration(activity);
+                            }
+                        });
 
         builder.setView(v);
 
         builder.setPositiveButton("Speichern", (dialog, which) -> {
             try {
                 pumpNumberChangeView.save();
+                //dialog.dismiss();
+                Toast.makeText(activity, "Es lädt...", Toast.LENGTH_SHORT).show();
                 //Pump.calibratePumpsAndTimes(activity);
-                dialog.dismiss();
-                GetDialog.startAutomaticCalibration(activity);
             }catch (IllegalStateException e){
                 Log.e(TAG, "setPumpNumber pumpNumberChangeView save error");
                 Log.e(TAG, e.toString());
@@ -1892,8 +2007,10 @@ public class GetDialog {
     }
 
     public static class PumpNumberChangeView extends FloatChangeView{
-        private PumpNumberChangeView(Activity activity, View v) {
+        private  Postexecute postexecute;
+        private PumpNumberChangeView(Activity activity, View v, Postexecute postexecute) {
             super(activity, v, "Anzahl");
+            this.postexecute = postexecute ;
         }
         public void save() throws IllegalStateException{
             Log.v(TAG, "PumpNumberChangeView: save");
@@ -1904,7 +2021,7 @@ public class GetDialog {
                 throw new IllegalStateException("Missing number!");
             } else {
                 Log.e(TAG, "PumpNumberChangeView: save setOverrideEmptyPumps");
-                Pump.setOverrideEmptyPumps(activity, res);
+                Pump.setOverrideEmptyPumps(activity, res, this.postexecute);
             }
         }
 
@@ -1950,11 +2067,19 @@ public class GetDialog {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Setze jetzt das jetzige Gewicht auf der Waage:");
 
+        AlertDialog wait = GetDialog.loadingBluetooth(activity);
+
         View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
         GetDialog.ScaleChangeView scaleChangeView =
                 new GetDialog.ScaleChangeView(
                         activity,
-                        v);
+                        v,
+                        new Postexecute(){
+                            @Override
+                            public void post() {
+                                wait.dismiss();
+                            }
+                        });
 
         builder.setView(v);
 
@@ -1969,11 +2094,16 @@ public class GetDialog {
     }
 
     public static class ScaleChangeView extends FloatChangeView{
-        private ScaleChangeView(Activity activity, View v) {
+
+        private final Postexecute postexecute;
+
+        private ScaleChangeView(Activity activity, View v, Postexecute postexecute) {
             super(activity, v, "Gewicht");
+            this.postexecute = postexecute;
         }
+
         public void send(){
-            CocktailMachine.sendCalibrateScale(super.activity, super.getFloat() );
+            CocktailMachine.sendCalibrateScale(super.activity, super.getFloat() , postexecute);
         }
     }
 

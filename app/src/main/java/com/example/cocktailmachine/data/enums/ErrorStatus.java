@@ -98,8 +98,13 @@ public enum ErrorStatus {
     }
 
     public static void setError(String msg){
-        error = msg;
-        status = valueOfString(error);
+        if(msg == null){
+            error = "null";
+            status = ErrorStatus.not;
+        }else {
+            error = msg;
+            status = valueOfString(error);
+        }
     }
 
 
@@ -114,6 +119,14 @@ public enum ErrorStatus {
             return false;
         }
         return status != ErrorStatus.processing;
+    }
+
+    public static ErrorStatus getErrorStatus(){
+        return status;
+    }
+
+    public static String getError(){
+        return error;
     }
 
 
@@ -294,6 +307,7 @@ public enum ErrorStatus {
             GetDialog.handleUnauthorized(activity);
         } else {
             Log.i(TAG, "handleIfExistingError: no error, status: "+status);
+            Toast.makeText(activity, "No error!", Toast.LENGTH_SHORT).show();
         }
 
 

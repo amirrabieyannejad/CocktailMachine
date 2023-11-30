@@ -61,6 +61,11 @@ public class AdminRights {
         Log.i(TAG, "setUser");
         //TO DO: USE THIS AMIR **DONE**
 
+        if(jsonObject == null){
+            Log.w(TAG, "setUser: jsonObject null");
+            return;
+        }
+
         try {
             setUserId(jsonObject.getInt("user"));
             Log.i(TAG, "setUser: done");
@@ -105,6 +110,29 @@ public class AdminRights {
         }
         try{
             BluetoothSingleton.getInstance().userInitUser(name,activity);
+            Log.i(TAG, "initUser done");
+        } catch (JSONException | InterruptedException e) {
+            //throw new RuntimeException(e);
+            Log.i(TAG, "init User failed");
+            Log.e(TAG, "error",e);
+            //Log.e(TAG, "error", e);
+        }
+    }
+
+    /**
+     * init user with bluetooth
+     * @return
+     */
+    public static void initUser(Activity activity, String name, Postexecute postexecute){
+        //TO DO: DUMMY
+        Log.i(TAG, "initUser");
+        if(Dummy.isDummy) {
+            Log.i(TAG, "initUser dummy");
+            getSingleton().userId = 3;
+            return;
+        }
+        try{
+            BluetoothSingleton.getInstance().userInitUser(name,activity, postexecute);
             Log.i(TAG, "initUser done");
         } catch (JSONException | InterruptedException e) {
             //throw new RuntimeException(e);

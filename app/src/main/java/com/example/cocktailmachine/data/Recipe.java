@@ -17,6 +17,7 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
+import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
 import com.example.cocktailmachine.ui.model.helper.WaitingQueueCountDown;
 
@@ -541,10 +542,18 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         }
 
          */
-        Pump.readPumpStatus(activity);
-        CocktailMachine.updateRecipeListIfChanged(activity);
+        Pump.readPumpStatus(activity, new Postexecute() {
+            @Override
+            public void post() {
+                CocktailMachine.updateRecipeListIfChanged(activity, new Postexecute(){
+                    @Override
+                    public void post() {
+                        ExtraHandlingDB.localRefresh(activity);
+                    }
+                });
+            }
+        });
         //Buffer.localRefresh(activity);
-        ExtraHandlingDB.localRefresh(activity);
     }
 
 
