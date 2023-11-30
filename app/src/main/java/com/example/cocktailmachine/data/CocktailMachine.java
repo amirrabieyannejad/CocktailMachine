@@ -21,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.PortUnreachableException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -616,21 +617,27 @@ public class CocktailMachine {
      * @author Johanna Reidt
      * @param recipe
      */
-    public static void queueRecipe(Recipe recipe , Activity activity){
+    public static void queueRecipe(Recipe recipe , Activity activity, Postexecute continueHere, Postexecute errorHandle){
         Log.i(TAG,  "queueRecipe");
         currentRecipe = recipe;
         if(Dummy.isDummy){
             Log.i(TAG,  "queueRecipe: Dummy queue");
+            continueHere.post();
             return;
         }
         try {
-            BluetoothSingleton.getInstance().userQueueRecipe(AdminRights.getUserId()
-                    , recipe.getName(),activity);
+            BluetoothSingleton.getInstance().userQueueRecipe(AdminRights.getUserId(),
+                    recipe.getName(),
+                    activity,
+                    continueHere,
+                    errorHandle
+                    );
             Log.i(TAG,  "queueRecipe: queued");
         } catch (JSONException | InterruptedException|NullPointerException e) {
             Log.i(TAG,  "queueRecipe: error");
             Log.e(TAG, "error"+ e);
             Log.e(TAG, "error", e);
+            errorHandle.post();
         }
     }
 

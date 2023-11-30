@@ -1,44 +1,72 @@
 package com.example.cocktailmachine.bluetoothlegatt;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.enums.Postexecute;
-import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+
 
 public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSONObject> {
+    private final static String CONTINUE = "continueHere";
+    private final static String ERROR = "errorHandle";
     private final static String TAG = WaitForBroadcastReceiver.class.getSimpleName();
     private final BluetoothSingleton singleton = BluetoothSingleton.getInstance();
     private JSONObject jsonObject;
     private String result;
 
-    private Postexecute postexecute = null;
+    private Postexecute continueHere = null;
     //private final AlertDialog dialog;
+
+    private Postexecute errorHandle = null;
 
 
     public WaitForBroadcastReceiver(){
-        this.postexecute = postexecute;
+        this.continueHere = continueHere;
     }
 
-    public WaitForBroadcastReceiver(Postexecute postexecute){
-        this.postexecute = postexecute;
+    public WaitForBroadcastReceiver(Postexecute continueHere){
+        this.continueHere = continueHere;
+    }
+
+
+    public WaitForBroadcastReceiver(Postexecute continueHere, Postexecute errorHandle){
+        this.continueHere = continueHere;
+        this.errorHandle = errorHandle;
+    }
+
+    public WaitForBroadcastReceiver(HashMap<String, Postexecute> dos){
+        if(dos != null) {
+            if (dos.containsKey(ERROR)) {
+                errorHandle = dos.get(ERROR);
+            }
+            if (dos.containsKey(CONTINUE)) {
+                continueHere = dos.get(CONTINUE);
+            }
+        }
     }
 
     public void post(){
         //dialog.dismiss();
         //dialog.cancel();
-        if(postexecute != null){
-            postexecute.post();
+        if(continueHere != null){
+            continueHere.post();
+        }
+    }
+
+    public void error(){
+        //dialog.dismiss();
+        //dialog.cancel();
+        if(errorHandle != null){
+            errorHandle.post();
         }
     }
 
@@ -126,19 +154,28 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
             Log.i(TAG, "ASYNC-TASK-onPostExecute: start toSave");
             toSave();
 
-        } catch (InterruptedException
-                 | NotInitializedDBException
-                 | JSONException
-                 | MissingIngredientPumpException e) {
-            Log.e(TAG, "ASYNC-TASK-onPostExecute", e);
+        } catch (InterruptedException e) {
+            Log.e(TAG, "ASYNC-TASK-onPostExecute interrupted", e);
             //Log.getStackTraceString(e);
             //dialog.setTitle("Fehler!");
+
+            error();
+            return;
+
+
+        } catch (NotInitializedDBException
+                 | JSONException
+                 | MissingIngredientPumpException e) {
+            Log.e(TAG, "ASYNC-TASK-onPostExecute other exception", e);
+            //Log.getStackTraceString(e);
+            //dialog.setTitle("Fehler!");
+
 
         }finally {
             Log.i(TAG, "ASYNC-TASK-onPostExecute: start post");
             //dialog.cancel();
             post();
-            jsonObject = null;
+            //jsonObject = null;
 
         }
 

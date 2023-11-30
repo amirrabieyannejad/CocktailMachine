@@ -1125,7 +1125,7 @@ public class BluetoothSingleton {
      * @return
      * @throws JSONException
      */
-    public void userDefineRecipe(long user, String name, JSONArray ingredients, Activity activity)
+    public void userDefineRecipe(long user, String name, JSONArray ingredients, Activity activity, Postexecute postexecute)
     //public void defineRecipe(float user,String name, JSONArray liquids)
             throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
@@ -1151,7 +1151,7 @@ public class BluetoothSingleton {
 
         singleton.sendReadWrite(jsonObject, false, true);
         singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1364,7 +1364,7 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void userQueueRecipe(long user, String recipe, Activity activity) throws
+    public void userQueueRecipe(long user, String recipe, Activity activity, Postexecute postexecute, Postexecute errorHandle) throws
             JSONException, InterruptedException {
 
         singleton = BluetoothSingleton.getInstance();
@@ -1376,7 +1376,7 @@ public class BluetoothSingleton {
         jsonObject.put("recipe", recipe);
         singleton.sendReadWrite(jsonObject, false, true);
         singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute, errorHandle){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
@@ -1470,7 +1470,7 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminResetError(Activity activity) throws JSONException, InterruptedException {
+    public void adminResetError(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         //generate JSON Format
@@ -1479,7 +1479,7 @@ public class BluetoothSingleton {
         jsonObject.put("user", 0);
         singleton.sendReadWrite(jsonObject, true, true);
         singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {

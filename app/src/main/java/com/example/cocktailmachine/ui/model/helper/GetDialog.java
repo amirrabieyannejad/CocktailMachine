@@ -32,6 +32,7 @@ import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedExce
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.CalibrateStatus;
+import com.example.cocktailmachine.data.enums.CocktailStatus;
 import com.example.cocktailmachine.data.enums.ErrorStatus;
 import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.logic.Animation.CircularAnimation;
@@ -220,12 +221,14 @@ public class GetDialog {
     //Recipe Send
     public static void sendRecipe(Activity activity, Recipe recipe){
 
-        Postexecute doAgain = new Postexecute() {
+        /*Postexecute doAgain = new Postexecute() {
             @Override
             public void post() {
                 CocktailMachine.queueRecipe(recipe, activity);
             }
         };
+
+         */
         Postexecute continueHere = new Postexecute() {
             @Override
             public void post() {
@@ -236,15 +239,29 @@ public class GetDialog {
 
             @Override
             public void post() {
-                recipe.sendSave(activity);
-                CocktailMachine.queueRecipe(recipe, activity);
+                recipe.sendSave(activity,
+                        new Postexecute(){
+                    @Override
+                    public void post() {
+                        CocktailMachine.queueRecipe(recipe, activity, continueHere, ErrorStatus.errorHandle(activity));
+                    }
+                });
             }
         };
 
         HashMap<ErrorStatus, Postexecute> errorHandle=new HashMap<>();
         errorHandle.put(ErrorStatus.recipe_not_found, notFound);
         errorHandle.put(ErrorStatus.cant_start_recipe_yet, doAgain);
-        ErrorStatus.handleSpecificErrorMethod(activity, doAgain, continueHere, errorHandle);
+
+        CocktailMachine.queueRecipe(recipe,
+                activity,
+            ErrorStatus.checkHandle(
+                    activity,
+                     errorHandle,
+                    continueHere)
+        );
+
+        //ErrorStatus.handleSpecificErrorMethod(activity, doAgain, continueHere, errorHandle);
 
     }
     //Count down
