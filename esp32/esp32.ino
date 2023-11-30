@@ -1624,6 +1624,7 @@ Retcode CmdReset::execute() {
 
 
 Retcode CmdCalibrationStart::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
   if (cal_state != CalibrationState::inactive) return Retcode::invalid_cal_state;
 
   cal_pass = 0;
@@ -1644,6 +1645,8 @@ Retcode CmdCalibrationStart::execute() {
 };
 
 Retcode CmdCalibrationCancel::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
+
   scale_tare();
   cal_state = CalibrationState::inactive;
   update_state();
@@ -1651,6 +1654,8 @@ Retcode CmdCalibrationCancel::execute() {
 };
 
 Retcode CmdCalibrationFinish::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
+
   scale_tare();
   cal_state = CalibrationState::inactive;
   update_state();
@@ -1658,6 +1663,7 @@ Retcode CmdCalibrationFinish::execute() {
 };
 
 Retcode CmdCalibrationAddEmpty::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
   if (cal_state != CalibrationState::empty) return Retcode::invalid_cal_state;
 
   reset_cocktail();
@@ -1685,6 +1691,7 @@ Retcode CmdCalibrationAddEmpty::execute() {
 };
 
 Retcode CmdCalibrationAddWeight::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
   if (cal_state != CalibrationState::weight) return Retcode::invalid_cal_state;
 
   scale_calibrate(this->weight);
