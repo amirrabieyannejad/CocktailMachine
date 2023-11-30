@@ -749,9 +749,6 @@ void setup() {
 
     cal_state = CalibrationState::inactive;
 
-    error_state = Retcode::success;
-    error_user  = USER_UNKNOWN;
-
     ble_server = NULL;
   }
 
@@ -775,6 +772,7 @@ void setup() {
   update_cocktail();
   update_user();
   update_state();
+  update_error(Retcode::success, USER_UNKNOWN);
 }
 
 void loop() {
@@ -1262,9 +1260,7 @@ Retcode CmdFactoryReset::execute() {
     users.clear();
     users[0] = "admin";
 
-    cal_state   = CalibrationState::inactive;
-    error_state = Retcode::success;
-    error_user  = USER_UNKNOWN;
+    cal_state = CalibrationState::inactive;
   }
 
   // update machine state
@@ -1275,6 +1271,7 @@ Retcode CmdFactoryReset::execute() {
   update_scale();
   update_user();
   update_state();
+  update_error(Retcode::success, USER_UNKNOWN);
 
   return Retcode::success;
 }
@@ -1296,8 +1293,7 @@ Retcode CmdInitUser::execute() {
 
 Retcode CmdResetError::execute() {
   if (!is_admin(this->user)) return Retcode::unauthorized;
-  error_state = Retcode::success;
-  error_user  = USER_UNKNOWN;
+  update_error(Retcode::success, USER_UNKNOWN);
 
   return Retcode::success;
 }
@@ -2262,7 +2258,7 @@ bool ble_start(void) {
   all_status[ID_TIMESTAMP]	= new Status(UUID_STATUS_TIMESTAMP,	String("0"));
   all_status[ID_USER]     	= new Status(UUID_STATUS_USER,     	String("[]"));
   all_status[ID_SCALE]    	= new Status(UUID_STATUS_SCALE,    	String("{}"));
-  all_status[ID_ERROR]    	= new Status(UUID_STATUS_ERROR,    	String(""));
+  all_status[ID_ERROR]    	= new Status(UUID_STATUS_ERROR,    	String("\"ok\""));
                           	
   all_comm[ID_MSG_USER]   	= new Comm(UUID_COMM_USER);
   all_comm[ID_MSG_ADMIN]  	= new Comm(UUID_COMM_ADMIN);
