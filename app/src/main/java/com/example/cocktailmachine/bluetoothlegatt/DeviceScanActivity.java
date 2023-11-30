@@ -71,7 +71,7 @@ public class DeviceScanActivity extends ListActivity {
     private boolean scanning;
     final private Handler handler = new Handler();
     final private Handler handlerCore = new Handler();
-
+    private Boolean test = false;
     private ScanSettings bleScanSettings = null;
 
     private static final int REQUEST_ENABLE_BT = 1;
@@ -234,9 +234,13 @@ public class DeviceScanActivity extends ListActivity {
     protected void onListItemClick(ListView l, View v, int position, long id) {
         final BluetoothDevice device = mLeDeviceListAdapter.getDevice(position);
         if (device == null) return;
-        //final Intent intent = new Intent(this, BluetoothTestEnviroment.class);
-        Intent intent = new Intent(this, Menue.class);
-        //final Intent intent = new Intent(this, DeviceControlActivity.class);
+        Intent intent;
+        if (test) {
+             intent = new Intent(this, BluetoothTestEnviroment.class);
+        } else {
+             intent = new Intent(this, Menue.class);
+        }
+
         BluetoothSingleton settings = BluetoothSingleton.getInstance();
         settings.setEspDeviceName(device.getName());
         settings.setEspDeviceAddress(device.getAddress());
@@ -256,9 +260,12 @@ public class DeviceScanActivity extends ListActivity {
                     Toast.LENGTH_SHORT).show();
             return;
         }
-        //final Intent intent = new Intent(this, BluetoothTestEnviroment.class);
-        Intent intent = new Intent(this, Menue.class);
-        //final Intent intent = new Intent(this, DeviceControlActivity.class);
+        Intent intent;
+        if (test) {
+            intent = new Intent(this, BluetoothTestEnviroment.class);
+        } else {
+            intent = new Intent(this, Menue.class);
+        }
         BluetoothSingleton settings = BluetoothSingleton.getInstance();
         settings.setEspDeviceName(device.getName());
         settings.setEspDeviceAddress(device.getAddress());
