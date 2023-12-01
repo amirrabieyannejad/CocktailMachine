@@ -473,7 +473,13 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
                     this.getID(),
                     this.getName(),
                     array,
-                    activity);
+                    activity,
+                    new Postexecute() {
+                        @Override
+                        public void post() {
+                            Log.i(TAG, "saving done");
+                        }
+                    });
 
             return true;
         } catch (JSONException| InterruptedException|NullPointerException e) {

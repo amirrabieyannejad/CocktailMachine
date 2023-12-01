@@ -274,15 +274,16 @@ public enum ErrorStatus {
      */
     private static void reset(Activity activity, Postexecute postexecute){
         if(Dummy.isDummy){
+            Log.i(TAG, "reset: dummy not");
             setError("not");
             return;
         }
         try {
             BluetoothSingleton.getInstance().adminResetError(activity, postexecute);
-            Log.i(TAG, "resetted");
+            Log.i(TAG, "reset: resetted");
         } catch (JSONException | InterruptedException| NullPointerException e) {
             Log.i(TAG, "reset: errored");
-            Log.e(TAG, "error", e);
+            Log.e(TAG, "reset: error", e);
             Log.e(TAG, e.getMessage());
             setError("not");
         }
@@ -321,6 +322,34 @@ public enum ErrorStatus {
 
     private static void handleRecipeError(Activity activity){
         //TODO: handle all cases
+        Log.i(TAG, "handleRecipeError: "+ status.toString());
+
+        switch (status){
+            case invalid_pump_slot:
+                Log.i(TAG, "handleRecipeError: "+ status.toString());
+                //GetDialog.errorMessage();
+            case invalid_volume:
+                Log.i(TAG, "handleRecipeError: invalid_pump_slot");
+            case invalid_weight:
+                Log.i(TAG, "handleRecipeError: invalid_pump_slot");
+            case invalid_times:
+                Log.i(TAG, "handleRecipeError: invalid_pump_slot");
+            case insufficient_amounts_of_liquid_available:
+                Log.i(TAG, "handleRecipeError: invalid_pump_slot");
+            case liquid_unavailable:
+                Log.i(TAG, "handleRecipeError: invalid_pump_slot");
+            case recipe_not_found:
+                Log.i(TAG, "handleRecipeError: invalid_pump_slot");
+            case recipe_already_exists:
+                Log.i(TAG, "handleRecipeError: invalid_pump_slot");
+            case missing_ingredients:
+                Log.i(TAG, "handleRecipeError: invalid_pump_slot");
+            case cant_start_recipe_yet:
+                Log.i(TAG, "handleRecipeError: cant_start_recipe_yet");
+            case cant_take_cocktail_yet:
+                Log.i(TAG, "handleRecipeError: cant_take_cocktail_yet");
+        }
+
     }
 
 
@@ -332,7 +361,7 @@ public enum ErrorStatus {
      * ERROR CODE: calibration_command_invalid_at_this_time
      * show Dialog
      * @param activity
-     * @param dialog
+     * @par am dialog
      * @author Johanna Reidt
      */
     /*
@@ -349,6 +378,7 @@ public enum ErrorStatus {
 
 
 
+    /*
     public static Postexecute checkHandle(Activity activity,
                                           HashMap<ErrorStatus, Postexecute> errorMap,
                                           Postexecute continueHere){
@@ -376,11 +406,15 @@ public enum ErrorStatus {
         };
     }
 
+     */
 
+    /*
     public static Postexecute checkHandle(Activity activity, Postexecute continueHere){
         return checkHandle(activity,null,continueHere);
     }
 
+
+     */
     public static Postexecute errorHandle(Activity activity){
         return errorHandle(activity, null);
 

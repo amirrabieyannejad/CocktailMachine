@@ -142,7 +142,7 @@ public class GetDialog {
 
 
     //ERROR
-    public static void errorMessage(Activity activity){
+    public static void errorMessageDBSolution(Activity activity){
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("FEHLER");
         builder.setMessage("Es ist ein Fehler aufgetreten. Wir empfehlen die Daten zu aktualisieren.");
@@ -203,6 +203,65 @@ public class GetDialog {
         }, activity);
     }
 
+    public static void errorMessageReader(Activity activity){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("ErrorStatus");
+
+        builder.setMessage("Lädt...");
+
+        /*
+        Toast.makeText(activity,"Synchronisierung läuft!",Toast.LENGTH_SHORT).show();
+        Pump.sync(activity, new Postexecute(){
+            @Override
+            public void post() {
+                Recipe.syncRecipeDBWithCocktailmachine(activity);
+            }
+        });
+
+         */
+        AlertDialog dialog = builder.show();
+
+
+        ErrorStatus.getErrorMessage(new Postexecute() {
+            @Override
+            public void post() {
+                dialog.setMessage(ErrorStatus.getErrorStatus().toString() );
+                dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Reset & Handle",
+                        (dialog1, which) ->
+                                ErrorStatus.handleIfExistingError(activity));
+                dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Abbrechen",
+                        (dialog12, which) -> {
+
+                        });
+            }
+        }, activity);
+    }
+
+
+    private static void errorSendingTwice(Activity activity, String title, String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setMessage(message);
+        builder.setTitle(title);
+        builder.setPositiveButton("Hol Error!", (dialog, which) -> {
+            dialog.dismiss();
+            errorMessageReader(activity);
+        });
+        builder.setNegativeButton("Abbrechen", (dialog, which) -> dialog.dismiss());
+        builder.show();
+        return;
+    }
+
+    private static Postexecute sendTwice(Activity activity, String title, String message){
+        return new Postexecute() {
+            @Override
+            public void post() {
+                Log.i(TAG, "already send twice,  will not send again, do error");
+                //ErrorStatus.errorHandle(activity);
+                GetDialog.errorSendingTwice(activity, title, message);
+            }
+        };
+    }
+
 
 
 
@@ -221,31 +280,29 @@ public class GetDialog {
     //Recipe Send
     public static void sendRecipe(Activity activity, Recipe recipe){
 
-        /*Postexecute doAgain = new Postexecute() {
-            @Override
-            public void post() {
-                CocktailMachine.queueRecipe(recipe, activity);
-            }
-        };
 
-         */
+
+
         Postexecute continueHere = new Postexecute() {
             @Override
             public void post() {
                 GetDialog.countDown(activity, recipe);
             }
         };
+
+        Postexecute doAgain = new Postexecute() {
+            @Override
+            public void post() {
+                CocktailMachine.queueRecipe(recipe, activity, continueHere, GetDialog.sendTwice(activity,
+                        "Rezept", "Rezept konnte nicht verschickt werden."));
+
+            }
+        };
         Postexecute notFound = new Postexecute(){
 
             @Override
             public void post() {
-                recipe.sendSave(activity,
-                        new Postexecute(){
-                    @Override
-                    public void post() {
-                        CocktailMachine.queueRecipe(recipe, activity, continueHere, ErrorStatus.errorHandle(activity));
-                    }
-                });
+                recipe.sendSave(activity, doAgain);
             }
         };
 
@@ -254,11 +311,11 @@ public class GetDialog {
         errorHandle.put(ErrorStatus.cant_start_recipe_yet, doAgain);
 
         CocktailMachine.queueRecipe(recipe,
-                activity,
-            ErrorStatus.checkHandle(
                     activity,
-                     errorHandle,
-                    continueHere)
+                    continueHere,
+                    ErrorStatus.errorHandle(
+                            activity,
+                            errorHandle)
         );
 
         //ErrorStatus.handleSpecificErrorMethod(activity, doAgain, continueHere, errorHandle);
@@ -300,17 +357,27 @@ public class GetDialog {
             Postexecute doAgain = new Postexecute() {
                 @Override
                 public void post() {
-                    CocktailMachine.startMixing(activity);
+                    Log.i(TAG, "could not start , send again");
+                    CocktailMachine.startMixing(activity, ErrorStatus.errorHandle(activity),
+                            GetDialog.sendTwice(activity,"Start Fehlschlag",
+                                    "ESP-Message zum Starten des Cocktailmixvorgang konnte nicht versendet werde."));
                 }
             };
+
+
             Postexecute continueHere = new Postexecute() {
                 @Override
                 public void post() {
                     GetActivity.goToFill(activity, recipe);
                 }
             };
-            ErrorStatus.handleSpecificErrorRepeat(activity, dialog, ErrorStatus.cant_start_recipe_yet, doAgain, continueHere);
 
+            HashMap<ErrorStatus, Postexecute> errorMap = new HashMap<>();
+            errorMap.put( ErrorStatus.cant_start_recipe_yet, doAgain);
+            //ErrorStatus.errorHandle(activity, errorMap);
+            //ErrorStatus.handleSpecificErrorRepeat(activity, dialog, ErrorStatus.cant_start_recipe_yet, doAgain, continueHere);
+
+            CocktailMachine.startMixing(activity,ErrorStatus.errorHandle(activity, errorMap), continueHere);
         });
         alertDialog.show();   //
     }
@@ -333,7 +400,12 @@ public class GetDialog {
             Postexecute doAgain = new Postexecute() {
                 @Override
                 public void post() {
-                    CocktailMachine.takeCocktail(activity);
+                    CocktailMachine.takeCocktail(activity, ErrorStatus.errorHandle(activity),
+                            GetDialog.sendTwice(activity, "Fertig-Benachrichtung",
+                                    "Die Benachrichtung ans ESP, dass der Cocktail abgeholt wurde, konnte nicht zugestellt werden."));
+
+
+
                 }
             };
             Postexecute continueHere = new Postexecute() {
@@ -343,7 +415,13 @@ public class GetDialog {
                     CocktailMachine.setCurrentRecipe(null);
                 }
             };
-            ErrorStatus.handleSpecificErrorRepeat(activity, dialog, ErrorStatus.cant_take_cocktail_yet, doAgain, continueHere);
+
+            HashMap<ErrorStatus, Postexecute> errorMap = new HashMap<>();
+            errorMap.put(ErrorStatus.cant_take_cocktail_yet, doAgain);
+
+
+            CocktailMachine.takeCocktail(activity, ErrorStatus.errorHandle(activity, errorMap), continueHere);
+            //ErrorStatus.handleSpecificErrorRepeat(activity, dialog, ErrorStatus.cant_take_cocktail_yet, doAgain, continueHere);
         });
         alertDialog.show();   //
 
@@ -477,13 +555,7 @@ public class GetDialog {
                 "Bitte stelle sicher, dass an allen Pumpen nur Wassergefässe angeschlossen sind." +
                 "Die Wassermmenge je Pumpe sollte um die 150ml betragen.");
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
-            Postexecute doAgain = new Postexecute() {
-                @Override
-                public void post() {
-                    Log.v(TAG, "firstAutomaticDialog: automaticCalibration");
-                    CocktailMachine.automaticCalibration(activity);
-                }
-            };
+
             Postexecute continueHere = new Postexecute(){
 
                 @Override
@@ -492,7 +564,19 @@ public class GetDialog {
                     firstTaring(activity);
                 }
             };
-            ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
+            Postexecute doAgain = new Postexecute() {
+                @Override
+                public void post() {
+                    Log.v(TAG, "firstAutomaticDialog: automaticCalibration");
+                    CocktailMachine.automaticCalibration(activity, continueHere, ErrorStatus.errorHandle(activity));
+                }
+            };
+
+
+            HashMap<ErrorStatus, Postexecute> errorMap = new HashMap<>();
+            CocktailMachine.automaticCalibration(activity, continueHere, ErrorStatus.errorHandle(activity, errorMap ));
+
+            //ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
             //firstTaring(activity);
             //dialog.dismiss();
         });
@@ -541,19 +625,26 @@ public class GetDialog {
         builder.setTitle("Waagenkalibrierung");
         builder.setMessage("Bitte stelle ein Gefäss mit 100ml Flüssigkeit unter die Cocktailmaschine. ");
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
-            Postexecute doAgain = new Postexecute() {
-                @Override
-                public void post() {
-                    CocktailMachine.automaticWeight(activity);
-                }
-            };
             Postexecute continueHere = new Postexecute() {
                 @Override
                 public void post() {
                     emptyGlass(activity);
                 }
             };
-            ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
+            Postexecute doAgain = new Postexecute() {
+                @Override
+                public void post() {
+                    CocktailMachine.automaticWeight(activity, continueHere, GetDialog.sendTwice(activity,
+                            "Fehler Waagenkalibrierung",
+                            "Die Waagenkalibrierung ist gescheitert."));
+                }
+            };
+            HashMap<ErrorStatus, Postexecute> errorMap = new HashMap<>();
+            errorMap.put(ErrorStatus.calibration_command_invalid_at_this_time, doAgain);
+
+            CocktailMachine.automaticWeight(activity, continueHere, ErrorStatus.errorHandle(activity, errorMap) );
+
+            //ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
             //CocktailMachine.automaticCalibration(activity);
             //CocktailMachine.automaticWeight(activity);
             //waitingForPumps(activity);
@@ -567,20 +658,30 @@ public class GetDialog {
         builder.setTitle("Leere das Glass!");
         builder.setMessage("Leere das Glass und stell es wieder unter die Cocktailmaschine!");
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
-
-            Postexecute doAgain = new Postexecute() {
-                @Override
-                public void post() {
-                    CocktailMachine.automaticEmptyPumping(activity);
-                }
-            };
             Postexecute continueHere = new Postexecute() {
                 @Override
                 public void post() {
                     GetDialog.waitingForPumps(activity);
                 }
             };
-            ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
+            Postexecute doAgain = new Postexecute() {
+                @Override
+                public void post() {
+                    CocktailMachine.automaticEmptyPumping(activity,
+                            continueHere,
+                            GetDialog.sendTwice(activity,
+                            "Fehler Leere Pumpe",
+                            "Die Weitergabe der Information \"Leere Pumpe\" ist gescheitert."));
+                }
+            };
+
+
+            HashMap<ErrorStatus, Postexecute> errorMap = new HashMap<>();
+            errorMap.put(ErrorStatus.calibration_command_invalid_at_this_time, doAgain);
+
+            CocktailMachine.automaticEmptyPumping(activity, continueHere, ErrorStatus.errorHandle(activity, errorMap) );
+
+            //ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
 
             //GetDialog.waitingForPumps(activity);
             //CocktailMachine.automaticEmptyPumping(activity);
@@ -600,30 +701,56 @@ public class GetDialog {
 
         WaitingQueueCountDown waitingQueueCountDown = new WaitingQueueCountDown(5000) {
             boolean isDone = false;
+            boolean askAgain = true;
             @Override
             public void onTick() {
-                Log.v("GetDialog", "waitingQueueCountDown:  isAutomaticCalibrationDone false");
-                if(CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_calculation){
+                Log.v(TAG, "waitingForPumps: waitingQueueCountDown:  isAutomaticCalibrationDone false");
+
+                if(CalibrateStatus.getCurrent()==CalibrateStatus.calibration_calculation){
                     dialog.setMessage("Die Pumpeneinstellungen werden kalkuliert! Bitte warten!");
                 }
+                /*
+                CalibrateStatus.getCurrent(new Postexecute() {
+                    @Override
+                    public void post() {
+                        if(CalibrateStatus.getCurrent()==CalibrateStatus.calibration_calculation){
+                            dialog.setMessage("Die Pumpeneinstellungen werden kalkuliert! Bitte warten!");
+                        }
+                    }
+                }, activity);
+
+                 */
             }
 
             @Override
             public void reduceTick() {
+                Log.i(TAG, "waitingForPumps: waitingQueueCountDown:  reduceTick");
                 CocktailMachine.tickDummy(activity);
-                isDone = CocktailMachine.isAutomaticCalibrationDone(activity)||CocktailMachine.needsEmptyingGlass(activity);
-                /*
+                Postexecute continueHere = new Postexecute() {
+                    @Override
+                    public void post() {
+                        isDone = CocktailMachine.isAutomaticCalibrationDone()||CocktailMachine.needsEmptyingGlass();
+                        Log.v(TAG, "waitingForPumps: waitingQueueCountDown: reduceTick: isDone: " +isDone);
+                        if(isDone){
+                            setTick(0);
+                        }else {
+                            setTick(1);
+                        }
+                        askAgain = true;
+                    }
+                };
+
                 if(Dummy.isDummy){
-                    isDone = CocktailMachine.dummyCounter>=Pump.getPumps().size();
+                    Log.i(TAG, "waitingForPumps: waitingQueueCountDown:  isDummy");
+                    continueHere.post();
+                }else if(askAgain){
+                    Log.i(TAG, "waitingForPumps: waitingQueueCountDown:  askAgain: get calibrate Status");
+                    askAgain = false;
+                    CalibrateStatus.getCurrent(continueHere, activity);
+                }else{
+                    Log.i(TAG, "waitingForPumps: waitingQueueCountDown:  askAgain: waiting Status");
                 }
 
-                 */
-                Log.v("GetDialog", "waitingQueueCountDown:  isDone: " +isDone);
-                if(isDone){
-                    setTick(0);
-                }else {
-                    setTick(1);
-                }
             }
 
             @Override
@@ -641,31 +768,48 @@ public class GetDialog {
                 //toneGen1.startTone(ToneGenerator.TONE_PROP_BEEP,150);
                 //toneGen1.release();
                 dialog.dismiss();
-
                 Log.v("GetDialog", "waitingQueueCountDown: onFinish: dialog dimissed");
-                if(CocktailMachine.isAutomaticCalibrationDone(activity)) {
-                    Toast.makeText(activity, "Das Setup ist vollständig!", Toast.LENGTH_LONG).show();
-                    Postexecute doAgain = new Postexecute() {
-                        @Override
-                        public void post() {
-                            CocktailMachine.automaticEnd(activity);
 
-                        }
-                    };
-                    Postexecute continueHere = new Postexecute() {
-                        @Override
-                        public void post() {
-                            new DialogListOfPumps(activity);
+                CalibrateStatus.getCurrent(new Postexecute() {
+                    @Override
+                    public void post() {
+                        if(CocktailMachine.isAutomaticCalibrationDone()) {
+                            Toast.makeText(activity, "Das Setup ist vollständig!", Toast.LENGTH_LONG).show();
+                            Postexecute continueHere = new Postexecute() {
+                                @Override
+                                public void post() {
+                                    new DialogListOfPumps(activity);
+                                    //GetDialog.setIngredientsForPumps(activity);
+                                }
+                            };
+                            Postexecute doAgain = new Postexecute() {
+                                @Override
+                                public void post() {
+                                    CocktailMachine.automaticEnd(activity, continueHere,
+                                            GetDialog.sendTwice(activity,
+                                                    "",
+                                                    ""));
+
+                                }
+                            };
+
+                            HashMap<ErrorStatus, Postexecute> errorMap = new HashMap<>();
+                            errorMap.put(ErrorStatus.calibration_command_invalid_at_this_time, doAgain);
+
+                            CocktailMachine.automaticEnd(activity, continueHere,
+                                    ErrorStatus.errorHandle(activity, errorMap));
+
+                            //ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
+                            //CocktailMachine.automaticEnd(activity);
                             //GetDialog.setIngredientsForPumps(activity);
-                        }
-                    };
-                    ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
-                    //CocktailMachine.automaticEnd(activity);
-                    //GetDialog.setIngredientsForPumps(activity);
-                } else if (CocktailMachine.needsEmptyingGlass(activity)) {
+                        } else if (CocktailMachine.needsEmptyingGlass()) {
 
-                    GetDialog.emptyGlass(activity);
-                }
+                            GetDialog.emptyGlass(activity);
+                        }
+
+                    }
+                }, activity);
+
                 this.cancel();
             }
         };
@@ -777,6 +921,8 @@ public class GetDialog {
                         pump.sendSave(activity, new Postexecute() {
                             @Override
                             public void post() {
+
+                                Toast.makeText(activity, "Erfolgreich gespeichert!",Toast.LENGTH_SHORT).show();
                                 wait.dismiss();
                                 setFixedPumpVolume(activity, pumps, position);
                             }
@@ -796,7 +942,7 @@ public class GetDialog {
             builder.show();
         }else{
             Log.v(TAG, "setFixedPumpIngredient: pump is null");
-            errorMessage(activity);
+            errorMessageDBSolution(activity);
         }
     }
 
@@ -840,7 +986,7 @@ public class GetDialog {
             });
             builder.show();
         }else{
-            errorMessage(activity);
+            errorMessageDBSolution(activity);
         }
     }
 
@@ -880,7 +1026,7 @@ public class GetDialog {
             });
             builder.show();
         }else{
-            errorMessage(activity);
+            errorMessageDBSolution(activity);
         }
     }
 
@@ -1421,7 +1567,7 @@ public class GetDialog {
             });
             builder.show();
         }else{
-            errorMessage(activity);
+            errorMessageDBSolution(activity);
         }
     }
 
@@ -1551,7 +1697,7 @@ public class GetDialog {
             });
             builder.show();
         }else{
-            errorMessage(activity);
+            errorMessageDBSolution(activity);
         }
     }
 
@@ -1601,7 +1747,7 @@ public class GetDialog {
             });
             builder.show();
         }else{
-            errorMessage(activity);
+            errorMessageDBSolution(activity);
         }
     }
 
@@ -1796,7 +1942,7 @@ public class GetDialog {
             });
             builder.show();
         }else{
-            errorMessage(activity);
+            errorMessageDBSolution(activity);
         }
     }
 

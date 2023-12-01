@@ -35,8 +35,8 @@ public abstract class WaitingQueueCountDown {
     //private long previousTick;
 
      /**
-       * @param countDownInterval The interval along the way to receive
-       */
+      * * @param countDownInterval The interval along the way to receive
+      * */
      public WaitingQueueCountDown(long countDownInterval) {
           //mMillisInFuture = millisInFuture;
           mCountdownInterval = countDownInterval;
@@ -57,22 +57,22 @@ public abstract class WaitingQueueCountDown {
        */
      public synchronized final WaitingQueueCountDown start() {
          Log.v(TAG, "start");
-          mCancelled = false;
-          reduceTick();
+         mCancelled = false;
+         reduceTick();
          Log.v(TAG, "start: reduceTick");
 
-          if (tick <= 0) {
-              onFinish();
-              Log.v(TAG, "start: onFinish");
-              return this;
-          }
+         if (tick <= 0) {
+             onFinish();
+             Log.v(TAG, "start: onFinish");
+             return this;
+         }
          if (tick <= 1) {
              onNext();
              Log.v(TAG, "start: onNext");
          }
-          mHandler.sendMessage(mHandler.obtainMessage(MSG));
+         mHandler.sendMessage(mHandler.obtainMessage(MSG));
          Log.v(TAG, "start: sendMessage");
-          return this;
+         return this;
      }
 
 
@@ -114,8 +114,7 @@ public abstract class WaitingQueueCountDown {
 
     public boolean isUsersTurn(){
          Log.v(TAG, "isUsersTurn?");
-
-        return tick ==0;
+         return tick ==0;
     }
 
 
