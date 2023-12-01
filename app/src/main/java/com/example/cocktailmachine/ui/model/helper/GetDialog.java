@@ -20,6 +20,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
+import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.CocktailMachine;
@@ -40,6 +41,7 @@ import com.example.cocktailmachine.logic.BildgeneratorGlas;
 import com.example.cocktailmachine.ui.model.enums.ModelType;
 
 import org.apache.commons.collections4.Get;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -496,7 +498,19 @@ public class GetDialog {
     public static void startAutomaticCalibration(Activity activity){
         Log.v(TAG, "startAutomaticCalibration");
         //CocktailMachine.automaticCalibration();
-        enterNumberOfPumps(activity);
+        try {
+            BluetoothSingleton.getInstance().adminAutoCalibrateCancel(activity,new Postexecute(){
+                @Override
+                public void post() {
+                    enterNumberOfPumps(activity);
+                }
+            });
+        } catch (JSONException | InterruptedException e) {
+            Log.v(TAG, "Error: Restart of Calibration failed (GetDialog.startAutomaticCalibration: Z 413) ");
+            throw new RuntimeException(e);
+
+        }
+
         //ErrorStatus.handleAutoCalNotReadyStart(activity, dialog);
     }
 
