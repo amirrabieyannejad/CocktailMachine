@@ -21,7 +21,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.PortUnreachableException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -64,6 +63,10 @@ public class CocktailMachine {
         Log.i(TAG, "setCurrentRecipe");
         CocktailMachine.currentRecipe = currentRecipe;
         Log.i(TAG, "setCurrentRecipe: "+currentRecipe);
+    }
+
+    public static Recipe getCurrentRecipe(){
+        return CocktailMachine.currentRecipe;
     }
 
 
@@ -236,12 +239,12 @@ public class CocktailMachine {
 
     /**
      * weight on scale and do afterwards
-     * @author Johanna Reidt
+     *
      * @param activity
      * @param postexecute
-     * @return
+     * @author Johanna Reidt
      */
-    public static double getCurrentWeight(Activity activity, Postexecute postexecute){
+    public static void getCurrentWeight(Activity activity, Postexecute postexecute){
 
         Log.i(TAG, "getCurrentWeight");
         if(Dummy.isDummy){
@@ -267,7 +270,7 @@ public class CocktailMachine {
             }
             currentWeight = g;
             postexecute.post();
-            return currentWeight;
+            return;
         }
         try {
             BluetoothSingleton.getInstance().adminReadScaleStatus(activity, postexecute);
@@ -278,7 +281,6 @@ public class CocktailMachine {
             //Log.e(TAG, "error: "+e);
         }
         Log.i(TAG, "getCurrentWeight: "+currentWeight);
-        return currentWeight;
     }
 
 
@@ -286,14 +288,14 @@ public class CocktailMachine {
      * check if cocktailmachine is set,
      * if not set, do post notSet
      * if set, do post set
+     *
      * @param notSet task to do, if not set
-     * @param set task to do, if set
-     * @return if setted status
+     * @param set    task to do, if set
      * @author Johanna Reidt
      */
-    public static boolean isCocktailMachineSet(Postexecute notSet,
-                                               Postexecute set,
-                                               Activity activity){
+    public static void isCocktailMachineSet(Postexecute notSet,
+                                            Postexecute set,
+                                            Activity activity){
         Log.i(TAG, "isCocktailMachineSet");
 
         if(Dummy.isDummy){
@@ -301,11 +303,11 @@ public class CocktailMachine {
             if( CocktailMachineCalibration.isIsDone()){
                 Log.i(TAG, "isCocktailMachineSet: dummy. SET");
                 set.post();
-                return true;
+                return;
             }
             Log.i(TAG, "isCocktailMachineSet: dummy. NOT SET");
             notSet.post();
-            return false;
+            return;
         }
         //TO DO: add bluetooth /esp implementation
         try{
@@ -328,7 +330,7 @@ public class CocktailMachine {
             //Log.e(TAG, "error: "+e);
             Log.e(TAG, "error", e);
         }
-        return Pump.getPumps(activity).size()>0;
+        Pump.getPumps(activity).size();
         //return r.nextDouble() >= 0.5;
         //return false;
     }
@@ -919,6 +921,7 @@ public class CocktailMachine {
             Log.i(TAG,  "takeCocktail: error");
             //Log.e(TAG, "error: "+e);
             Log.e(TAG, "error", e);
+            Toast.makeText(activity, "FEHLER", Toast.LENGTH_SHORT).show();
         }
     }
 

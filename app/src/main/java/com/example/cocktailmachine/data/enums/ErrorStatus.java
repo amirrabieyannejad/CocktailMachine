@@ -8,6 +8,8 @@ import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
+import com.example.cocktailmachine.data.CocktailMachine;
+import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
@@ -289,8 +291,8 @@ public enum ErrorStatus {
         }
     }
 
-
-    public static void handleIfExistingError(Activity activity){
+    public static void handleIfExistingError(Activity activity, Postexecute continueHere){
+        //TODO: add continues
         reset(activity,
                 new Postexecute() {
                     @Override
@@ -300,7 +302,7 @@ public enum ErrorStatus {
                         } else if (!statusRequestWorked()) {
                             GetDialog.handleBluetoothFailed(activity);
                         } else if (isRecipeError()) {
-                            handleRecipeError(activity);
+                            handleRecipeError(activity, continueHere);
                         } else if (isCalibrationError()) {
                             if(status == invalid_calibration_data){
                                 GetDialog.handleInvalidCalibrationData(activity);
@@ -320,34 +322,264 @@ public enum ErrorStatus {
 
     }
 
+
+    public static void handleIfExistingError(Activity activity){
+        handleIfExistingError(activity, Postexecute.doNothing());
+    }
+
     private static void handleRecipeError(Activity activity){
+        //TO DO: handle all cases
+        Log.i(TAG, "handleRecipeError: "+ status.toString());
+        handleRecipeError(activity, Postexecute.doNothing());
+    }
+
+    private static void handleRecipeError(Activity activity, Postexecute continueHere){
         //TODO: handle all cases
         Log.i(TAG, "handleRecipeError: "+ status.toString());
+        AlertDialog wait = GetDialog.loadingBluetooth(activity);
 
         switch (status){
             case invalid_pump_slot:
-                Log.i(TAG, "handleRecipeError: "+ status.toString());
+                GetDialog.errorWrongPumpSlot(activity, continueHere);
                 //GetDialog.errorMessage();
             case invalid_volume:
-                Log.i(TAG, "handleRecipeError: invalid_pump_slot");
+                GetDialog.doBluetooth(activity,
+                        "Falsche Volumenangabe",
+                        "Empfehlung: Synchronisiere die Pumpenangaben mit der PCocktailmaschine.",
+                        "",
+                        wait,
+                        new Postexecute() {
+                            @Override
+                            public void post() {
+                                Toast.makeText(activity, "Die Synchronisation läuft.", Toast.LENGTH_SHORT).show();
+                                Pump.sync(activity, new Postexecute() {
+                                    @Override
+                                    public void post() {
+                                        wait.dismiss();
+                                        continueHere.post();
+                                    }
+                                });
+                            }
+                        }
+
+                );
+
+                return;
             case invalid_weight:
-                Log.i(TAG, "handleRecipeError: invalid_pump_slot");
-            case invalid_times:
-                Log.i(TAG, "handleRecipeError: invalid_pump_slot");
+                GetDialog.doBluetooth(activity,
+                    "Falsche Gewichtsangabe",
+                    "Empfehlung: Synchronisiere die Pumpenangaben mit der Cocktailmaschine.",
+                    "Synchronisation",
+                    wait,
+                    new Postexecute() {
+                        @Override
+                        public void post() {
+                            Toast.makeText(activity, "Die Synchronisation läuft.", Toast.LENGTH_SHORT).show();
+                            Pump.sync(activity, new Postexecute() {
+                                @Override
+                                public void post() {
+                                    wait.dismiss();
+                                    continueHere.post();
+                                }
+                            });
+                        }
+                    }
+
+                );
+                return;
+            case invalid_times:GetDialog.doBluetooth(activity,
+                    "Falsche Zeitangabe",
+                    "Empfehlung: Synchronisiere die Pumpenangaben mit der Cocktailmaschine.",
+                    "Synchronisation",
+                    wait,
+                    new Postexecute() {
+                        @Override
+                        public void post() {
+                            Toast.makeText(activity, "Die Synchronisation läuft.", Toast.LENGTH_SHORT).show();
+                            Pump.sync(activity, new Postexecute() {
+                                @Override
+                                public void post() {
+                                    wait.dismiss();
+                                    continueHere.post();
+                                }
+                            });
+                        }
+                    }
+
+                );
+                return;
             case insufficient_amounts_of_liquid_available:
-                Log.i(TAG, "handleRecipeError: invalid_pump_slot");
-            case liquid_unavailable:
-                Log.i(TAG, "handleRecipeError: invalid_pump_slot");
-            case recipe_not_found:
-                Log.i(TAG, "handleRecipeError: invalid_pump_slot");
-            case recipe_already_exists:
-                Log.i(TAG, "handleRecipeError: invalid_pump_slot");
-            case missing_ingredients:
-                Log.i(TAG, "handleRecipeError: invalid_pump_slot");
+                GetDialog.doBluetooth(activity,
+                    "Nicht genügend Flüssigkeit!",
+                    "Empfehlung: Synchronisiere die Pumpenangaben mit der Cocktailmaschine, " +
+                            "damit die Verfügbarkeitsdaten aktuell sind " +
+                            "und benachrichtige der/die Administrator*in die Flüssigkeiten aufzufüllen.",
+                    "Synchronisation",
+                    wait,
+                    new Postexecute() {
+                        @Override
+                        public void post() {
+                            Toast.makeText(activity, "Die Synchronisation läuft.", Toast.LENGTH_SHORT).show();
+                            Pump.sync(activity, new Postexecute() {
+                                @Override
+                                public void post() {
+                                    wait.dismiss();
+                                    continueHere.post();
+                                }
+                            });
+                        }
+                    }
+
+                );
+                return;
+            case liquid_unavailable:GetDialog.doBluetooth(activity,
+                    "Flüssigkeit nicht vorhanden!",
+                    "Empfehlung: Synchronisiere die Pumpenangaben mit der Cocktailmaschine, " +
+                            "damit die Verfügbarkeitsdaten aktuell sind " +
+                            "und benachrichtige der/die Administrator*in die Flüssigkeiten aufzufüllen.",
+                    "Synchronisation",
+                    wait,
+                    new Postexecute() {
+                        @Override
+                        public void post() {
+                            Toast.makeText(activity, "Die Synchronisation läuft.", Toast.LENGTH_SHORT).show();
+                            Pump.sync(activity, new Postexecute() {
+                                @Override
+                                public void post() {
+                                    wait.dismiss();
+                                    continueHere.post();
+                                }
+                            });
+                        }
+                    }
+
+                );
+                return;
+            case recipe_not_found:GetDialog.doBluetooth(activity,
+                    "Rezept nicht vorhanden!",
+                    "Empfehlung: Speichern Sie das neue Rezept in der Cocktailmachine.",
+                    "Synchronisation",
+                    wait,
+                    new Postexecute() {
+                        @Override
+                        public void post() {
+                            wait.dismiss();
+                            Toast.makeText(activity, "Die Synchronisation läuft.", Toast.LENGTH_SHORT).show();
+                            try {
+                                Objects.requireNonNull(CocktailMachine.getCurrentRecipe()).sendSave(activity,
+                                        new Postexecute() {
+                                            @Override
+                                            public void post() {
+                                                //Log.i(TAG, "");
+                                                wait.dismiss();
+                                                continueHere.post();
+                                            }
+                                        }
+                                );
+                            }catch (NullPointerException e){
+                                Log.e(TAG, "no current recipe", e);
+                                Log.i(TAG, "no current recipe");
+                                Toast.makeText(activity, "Speicher das Rezept manuell!", Toast.LENGTH_SHORT).show();
+                                wait.dismiss();
+                            }
+                        }
+                    }
+
+                );
+                return;
+            case recipe_already_exists:GetDialog.doBluetooth(activity,
+                    "Rezept bereits vorhanden!",
+                    "Empfehlung: :)",
+                    "Aller klar!",
+                    wait,
+                    new Postexecute() {
+                        @Override
+                        public void post() {
+                            wait.dismiss();
+                        }
+                    }
+
+                );
+                return;
+            case missing_ingredients:GetDialog.doBluetooth(activity,
+                    "Zutaten im Rezept fehlen!",
+                    "Empfehlung: Speichere das Rezept nochmal in der Cocktailmachine.",
+                    "Synchronisation",
+                    wait,
+                    new Postexecute() {
+                        @Override
+                        public void post() {
+                            Toast.makeText(activity, "Die Synchronisation läuft.", Toast.LENGTH_SHORT).show();
+                            try {
+                                Objects.requireNonNull(CocktailMachine.getCurrentRecipe()).sendSave(activity,
+                                        new Postexecute() {
+                                            @Override
+                                            public void post() {
+                                                //Log.i(TAG, "");
+                                                wait.dismiss();
+                                                continueHere.post();
+                                            }
+                                        }
+                                );
+                            }catch (NullPointerException e){
+                                Log.e(TAG, "no current recipe", e);
+                                Log.i(TAG, "no current recipe");
+                                Toast.makeText(activity, "Speicher das Rezept manuell!", Toast.LENGTH_SHORT).show();
+                                wait.dismiss();
+                            }
+                        }
+                    }
+
+                );
+                return;
             case cant_start_recipe_yet:
-                Log.i(TAG, "handleRecipeError: cant_start_recipe_yet");
+                GetDialog.doBluetooth(activity,
+                    "Mixenstartverzögerung!",
+                    "Empfehlung: Warte einen Augenblick und versuch es nochmal.",
+                    "Nochmal",
+                    wait,
+                    new Postexecute() {
+                        @Override
+                        public void post() {
+                            Toast.makeText(activity, "Mixbefehl wurde verschickt.", Toast.LENGTH_SHORT).show();
+                            CocktailMachine.startMixing(activity,
+                                    ErrorStatus.errorHandle(activity, continueHere),
+                                    new Postexecute() {
+                                            @Override
+                                            public void post() {
+                                                //Log.i(TAG, "");
+                                                wait.dismiss();
+                                                continueHere.post();
+                                            }
+                                        });
+                        }
+                    });
+                return;
+
             case cant_take_cocktail_yet:
-                Log.i(TAG, "handleRecipeError: cant_take_cocktail_yet");
+                GetDialog.doBluetooth(activity,
+                        "Freigabe fehlgeschlagen!",
+                        "Empfehlung: Warte einen Augenblick und versuch es nochmal.",
+                        "Nochmal",
+                        wait,
+                        new Postexecute() {
+                            @Override
+                            public void post() {
+                                Toast.makeText(activity, "Mixbefehl wurde verschickt.", Toast.LENGTH_SHORT).show();
+                                CocktailMachine.takeCocktail(
+                                        activity,
+                                        ErrorStatus.errorHandle(activity, continueHere),
+                                        new Postexecute() {
+                                            @Override
+                                            public void post() {
+                                                //Log.i(TAG, "");
+                                                wait.dismiss();
+                                                continueHere.post();
+                                            }
+                                        });
+                            }
+                        });
+                return;
         }
 
     }
@@ -416,11 +648,23 @@ public enum ErrorStatus {
 
      */
     public static Postexecute errorHandle(Activity activity){
-        return errorHandle(activity, null);
+        return errorHandle(activity, null, null);
+
+    }
+
+    public static Postexecute errorHandle(Activity activity, Postexecute continueHere){
+        return errorHandle(activity, null, continueHere);
 
     }
 
     public static Postexecute errorHandle(Activity activity, HashMap<ErrorStatus, Postexecute> errorMap){
+        return errorHandle(activity, errorMap, Postexecute.doNothing());
+
+    }
+
+    public static Postexecute errorHandle(Activity activity,
+                                          HashMap<ErrorStatus, Postexecute> errorMap,
+                                          Postexecute continueHere){
 
         return new Postexecute(){
             @Override
@@ -435,9 +679,10 @@ public enum ErrorStatus {
                 if(isError()){
                     Log.i(TAG, "errorHandle: different error");
                     Toast.makeText(activity, "Ein Fehler ist aufgetreten!", Toast.LENGTH_SHORT).show();
-                    handleIfExistingError(activity);
+                    handleIfExistingError(activity, continueHere);
                 }else{
                     Log.i(TAG, "errorHandle: no error");
+                    continueHere.post();
                 }
             }
         };
