@@ -893,8 +893,19 @@ calibration:
         if (pump == NULL) continue;
 
         err = pump->calibrate(CAL_TIME1, CAL_TIME2);
-        if (err != Retcode::success) update_error(err, USER_ADMIN);
-
+        if (err != Retcode::success) {
+          if (!scale_available) { // in a simulation run
+            const char *err_msg = retcode_str[static_cast<int>(err)];
+            debug("calibration error: %s", err_msg);
+            debug("however, this is a simulation without a scale, so we'll finish the calibration with default values");
+            pump->rate        	= 1.0;
+            pump->time_init   	= S(1);
+            pump->time_reverse	= S(1);
+            pump->calibrated  	= true;
+          } else {
+            update_error(err, USER_ADMIN);
+          }
+        }
       }
       cal_state = CalibrationState::done;
       update_state();
