@@ -1124,7 +1124,7 @@ public class GetDialog {
     public static void setFixedPumpVolume(Activity activity, Pump pump){
         Log.v(TAG, "setFixedPumpVolume");
         if (pump != null) {
-            pump.sendRefill(activity);
+            //pump.sendRefill(activity);
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setTitle("Setze das jetzt vorhandene Volumen für Pumpe "+pump.getSlot()+":");
 
@@ -1790,6 +1790,7 @@ public class GetDialog {
             } catch (MissingIngredientPumpException ex) {
                 Log.e(TAG,"no saving fill",ex);
             }
+            pump.save(activity);
             //pump.sendSave(activity, postexecute);
             pump.sendEdit(activity, postexecute);
         }
