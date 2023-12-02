@@ -845,13 +845,13 @@ calibration:
       }
 
       { // calibrate pump
-        debug("calibrating pump %d (#%d)", cal_pump, cal_pass);
-
         int slot = cal_pump;
         cal_pump += 1;
 
         Pump *pump = pumps[slot];
         if (pump == NULL) goto calibration; // skip missing pumps
+
+        debug("calibrating pump %d (#%d)", slot, cal_pass);
 
         time_t time = (cal_pass == 1) ? CAL_TIME1 : CAL_TIME2;
         if (!scale_available && time > S(1)) time /= S(1); // reduce the time for simulations
