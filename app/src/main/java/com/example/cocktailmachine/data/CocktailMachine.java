@@ -1122,6 +1122,31 @@ public class CocktailMachine {
         //CalibrateStatus.setStatus(CalibrateStatus.calibration_known_weight);
     }
 
+    /**
+     * empty glass is ready
+     * @author Johanna Reidt
+     */
+    public static void automaticEmptyGlass(Activity activity, Postexecute continueHere, Postexecute errorHandle){
+        Log.i(TAG, "automaticEmptyPumping");
+        if(Dummy.isDummy) {
+            Log.i(TAG, "automaticEmptyPumping: dummy");
+            continueHere.post();
+            return;
+        }
+
+        try {
+            BluetoothSingleton.getInstance().adminAutoCalibrateAddEmpty(activity, continueHere, errorHandle);
+            Log.e(TAG, "automaticEmptyPumping: done");
+        } catch (JSONException | InterruptedException | NullPointerException e) {
+
+            //throw new RuntimeException(e);
+            Log.e(TAG, "automaticEmptyPumping: failed");
+            //Log.e(TAG, "error: "+e);
+            Log.e(TAG, "error", e);
+        }
+    }
+
+
 
     /**
      * empty glass is ready

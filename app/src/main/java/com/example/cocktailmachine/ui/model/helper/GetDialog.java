@@ -658,7 +658,7 @@ public class GetDialog {
                 @Override
                 public void post() {
                     Log.v(TAG, "firstAutomaticDialog: firstTaring");
-                    getGlass(activity);
+                    getEmptyGlass(activity);
                 }
             };
             Postexecute doAgain = new Postexecute() {
@@ -717,13 +717,44 @@ public class GetDialog {
     }
 
 
+    private static void getEmptyGlass(Activity activity){
+        Log.v("GetDialog", "getGlass");
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Waagenkalibrierung");
+        builder.setMessage("Bitte stelle ein Gefäss ohne Flüssigkeit unter die Cocktailmaschine. ");
+        builder.setPositiveButton("Erledigt!", (dialog, which) -> {
+            Postexecute continueHere = new Postexecute() {
+                @Override
+                public void post() {
+                    getGlass(activity);
+                }
+            };
+            Postexecute doAgain = new Postexecute() {
+                @Override
+                public void post() {
+                    CocktailMachine.automaticEmptyGlass(activity, continueHere, GetDialog.sendTwice(activity,
+                            "Fehler Waagenkalibrierung",
+                            "Die Waagenkalibrierung ist gescheitert."));
+                }
+            };
+            HashMap<ErrorStatus, Postexecute> errorMap = new HashMap<>();
+            errorMap.put(ErrorStatus.calibration_command_invalid_at_this_time, doAgain);
 
+            CocktailMachine.automaticEmptyGlass(activity, continueHere, ErrorStatus.errorHandle(activity, errorMap, continueHere) );
+
+            //ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
+            //CocktailMachine.automaticCalibration(activity);
+            //CocktailMachine.automaticWeight(activity);
+            //waitingForPumps(activity);
+        });
+        builder.show();
+    }
 
     private static void getGlass(Activity activity){
         Log.v("GetDialog", "getGlass");
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Waagenkalibrierung");
-        builder.setMessage("Bitte stelle ein Gefäss mit 100ml Flüssigkeit unter die Cocktailmaschine. ");
+        builder.setMessage("Bitte stelle das gleiche Gefäss mit 100ml Flüssigkeit (Wasser) unter die Cocktailmaschine. ");
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
             Postexecute continueHere = new Postexecute() {
                 @Override
