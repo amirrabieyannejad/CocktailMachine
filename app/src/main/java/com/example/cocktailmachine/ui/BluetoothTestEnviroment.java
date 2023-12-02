@@ -164,7 +164,9 @@ CocktailMachine.getCurrentCocktailStatus(new Postexecute() {
         //singleton.adminDefinePumps(BluetoothTestEnviroment.this,"Water",100,2);
         //singleton.adminReadLiquidsStatus(BluetoothTestEnviroment.this);
 
-        singleton.userInitUser("amir",BluetoothTestEnviroment.this);
+        //singleton.userInitUser("amir",BluetoothTestEnviroment.this);
+        singleton.adminAutoCalibrateStart(this);
+
 
 
     }

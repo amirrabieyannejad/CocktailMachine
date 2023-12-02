@@ -848,7 +848,7 @@ public class BluetoothSingleton {
     public void userInitUser(String name, Activity activity) throws JSONException,
             InterruptedException {
 
-
+        Log.i(TAG, "BluetoothSingleton initUser start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         JSONObject jsonObject = new JSONObject();
@@ -861,6 +861,7 @@ public class BluetoothSingleton {
             public void toSave() {
                 Log.w(TAG, "To Save: " + this.getJsonResult());
                 AdminRights.setUser(this.getJsonResult());
+                Log.i(TAG, "BluetoothSingleton initUser end");
             }
         };
         wfb.execute();
@@ -882,7 +883,7 @@ public class BluetoothSingleton {
     public void userInitUser(String name, Activity activity, Postexecute postexecute) throws JSONException,
             InterruptedException {
 
-
+        Log.i(TAG, "BluetoothSingleton userInitUser(PE) start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         JSONObject jsonObject = new JSONObject();
@@ -895,6 +896,7 @@ public class BluetoothSingleton {
             public void toSave() {
                 Log.w(TAG, "To Save: " + this.getJsonResult());
                 AdminRights.setUser(this.getJsonResult());
+                Log.i(TAG, "BluetoothSingleton userInitUser(PE) end");
             }
         };
         wfb.execute();
@@ -962,6 +964,7 @@ public class BluetoothSingleton {
                                  Postexecute postexecute,
                                  String liquid, float volume, int quantity)
             throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton adminDefinePumps(PE) start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         // generate JSON Format
@@ -982,6 +985,7 @@ public class BluetoothSingleton {
                 }
 
                 Log.w(TAG, "To Save: " + this.getStringResult());
+                Log.i(TAG, "BluetoothSingleton adminDefinePumps(PE) end");
             }
         };
         wfb.execute();
@@ -1006,6 +1010,7 @@ public class BluetoothSingleton {
                                 String liquid,
                                 float volume)
             throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton adminDefinePump start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         // generate JSON Format
@@ -1025,50 +1030,7 @@ public class BluetoothSingleton {
                 }
 
                 Log.w(TAG, "To Save: " + this.getStringResult());
-            }
-        };
-        wfb.execute();
-        //
-        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
-    }
-
-
-    /**
-     * <<<  <<<< HEAD
-     * define_pump (ADMIN): add a new pump to ESP
-     * JSON-sample: {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
-     * like described in ProjektDokumente/esp/Befehle.md
-     * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
-     *
-     * @return
-     * @throws JSONException
-     */
-    @SuppressLint("MissingPermission")
-    public void adminDefinePump(Activity activity,
-                                int slot,
-                                String liquid,
-                                float volume,
-                                Postexecute postexecute)
-            throws JSONException, InterruptedException {
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        // generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "define_pump");
-        jsonObject.put("user", 0);
-        jsonObject.put("liquid", liquid);
-        jsonObject.put("volume", volume);
-        jsonObject.put("slot", slot);
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
-
-                Log.w(TAG, "To Save: " + this.getStringResult());
+                Log.i(TAG, "BluetoothSingleton adminDefinePump end");
             }
         };
         wfb.execute();
@@ -1087,8 +1049,48 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
+    public void adminEditPump(String liquid, float volume, int slot, Activity activity, Postexecute
+                              postexecute)
+            throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton adminEditPump(PE) start");
+        singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
+        // generate JSON Format
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cmd", "edit_pump");
+        jsonObject.put("user", 0);
+        jsonObject.put("liquid", liquid);
+        jsonObject.put("volume", volume);
+        jsonObject.put("slot", slot);
+        singleton.sendReadWrite(jsonObject, true, true);
+        singleton.waitForWriteNotification();
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
+            @Override
+            public void toSave() throws InterruptedException {
+                if (!check()) {
+                    throw new InterruptedException();
+                }
+
+                Log.w(TAG, "To Save: " + this.getStringResult());
+                Log.i(TAG, "BluetoothSingleton adminEditPump(PE) end");
+            }
+        };
+        wfb.execute();
+        //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+    }
+    /**
+     * edit_pump (ADMIN): Edits a pump
+     * JSON-sample: {"cmd": "edit_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
+     * like described in ProjektDokumente/esp/Befehle.md
+     * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
+     *
+     * @return
+     * @throws JSONException
+     */
+    @SuppressLint("MissingPermission")
     public void adminEditPump(String liquid, float volume, int slot, Activity activity)
             throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton adminEditPump start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         // generate JSON Format
@@ -1108,11 +1110,58 @@ public class BluetoothSingleton {
                 }
 
                 Log.w(TAG, "To Save: " + this.getStringResult());
+                Log.i(TAG, "BluetoothSingleton adminEditPump end");
             }
         };
         wfb.execute();
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
+
+    /**
+     * <<<  <<<< HEAD
+     * define_pump (ADMIN): add a new pump to ESP
+     * JSON-sample: {"cmd": "define_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
+     * like described in ProjektDokumente/esp/Befehle.md
+     * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
+     *
+     * @return
+     * @throws JSONException
+     */
+    @SuppressLint("MissingPermission")
+    public void adminDefinePump(Activity activity,
+                                int slot,
+                                String liquid,
+                                float volume,
+                                Postexecute postexecute)
+            throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton adminDefinePump(PE) start");
+        singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
+        // generate JSON Format
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cmd", "define_pump");
+        jsonObject.put("user", 0);
+        jsonObject.put("liquid", liquid);
+        jsonObject.put("volume", volume);
+        jsonObject.put("slot", slot);
+        singleton.sendReadWrite(jsonObject, true, true);
+        singleton.waitForWriteNotification();
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+            @Override
+            public void toSave() throws InterruptedException {
+                if (!check()) {
+                    throw new InterruptedException();
+                }
+
+                Log.w(TAG, "To Save: " + this.getStringResult());
+                Log.i(TAG, "BluetoothSingleton adminDefinePump(PE) end");
+            }
+        };
+        wfb.execute();
+        //
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+    }
+
 
 
     /**
@@ -1125,23 +1174,12 @@ public class BluetoothSingleton {
      * @return
      * @throws JSONException
      */
-    public void userDefineRecipe(long user, String name, JSONArray ingredients, Activity activity, Postexecute postexecute)
-    //public void defineRecipe(float user,String name, JSONArray liquids)
+    public void userDefineRecipe(long user, String name, JSONArray ingredients,
+                                 Activity activity, Postexecute postexecute)
             throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton userDefineRecipe(PE) start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
-        // generate JSON Format
-       /*JSONArray arrayLiquids = new JSONArray();
-        int i = 0;
-        for (Pair p : liquids) {
-            JSONArray arrayPair = new JSONArray();
-            arrayPair.put(i, p.first);
-            arrayPair.put(i + 1, p.second);
-            arrayLiquids.put(arrayPair);
-
-                }
-        */
-
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("cmd", "define_recipe");
@@ -1158,6 +1196,7 @@ public class BluetoothSingleton {
                     throw new InterruptedException();
                 }
                 Log.w(TAG, "To Save: " + this.getStringResult());
+                Log.i(TAG, "BluetoothSingleton userDefineRecipe(PE) end");
             }
         };
         wfb.execute();
@@ -1176,8 +1215,58 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void userEditRecipe(float user, String name, ArrayList<Pair<String, Float>> ingredients
+            , Activity activity,Postexecute postexecute)
+            throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton userEditRecipe(PE) start");
+        singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
+        // generate JSON Format
+        JSONArray arrayIngredients = new JSONArray();
+        int i = 0;
+        for (Pair p : ingredients) {
+            JSONArray arrayPair = new JSONArray();
+            arrayPair.put(i, p.first);
+            arrayPair.put(i + 1, p.second);
+            arrayIngredients.put(arrayPair);
+        }
+        // generate JSON Format
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cmd", "edit_recipe");
+        jsonObject.put("user", user);
+        jsonObject.put("name", name);
+        jsonObject.put("ingredients", arrayIngredients);
+
+        singleton.sendReadWrite(jsonObject, false, true);
+        singleton.waitForWriteNotification();
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
+            @Override
+            public void toSave() throws InterruptedException {
+                if (!check()) {
+                    throw new InterruptedException();
+                }
+
+                Log.w(TAG, "To Save: " + this.getStringResult());
+                Log.i(TAG, "BluetoothSingleton userEditRecipe(PE) end");
+            }
+        };
+        wfb.execute();
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+    }
+    /**
+     * edit_Recipe (USER): edit an existing recipe
+     * JSON-sample: {"cmd": "edit_recipe", "user": 0, "name": "radler",
+     * "ingredients": [["beer", 250], ["lemonade", 250]]}
+     * like described in ProjektDokumente/esp/Befehle.md
+     * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
+     *
+     * @return
+     * @throws JSONException
+     */
+    @SuppressLint("MissingPermission")
+    public void userEditRecipe(float user, String name, ArrayList<Pair<String, Float>> ingredients
             , Activity activity)
             throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton userEditRecipe start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         // generate JSON Format
@@ -1206,6 +1295,7 @@ public class BluetoothSingleton {
                 }
 
                 Log.w(TAG, "To Save: " + this.getStringResult());
+                Log.i(TAG, "BluetoothSingleton userEditRecipe end");
             }
         };
         wfb.execute();
@@ -1225,6 +1315,7 @@ public class BluetoothSingleton {
     public void userStartRecipe(long user, Activity activity, Postexecute errorHandle, Postexecute continueHere) throws
             JSONException, InterruptedException {
 
+        Log.i(TAG, "BluetoothSingleton userStartRecipe(PE) start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         //generate JSON Format
@@ -1241,6 +1332,7 @@ public class BluetoothSingleton {
                 }
 
                 Log.w(TAG, "returned result is now:" + this.getJsonResult());
+                Log.i(TAG, "BluetoothSingleton userStartRecipe(PE) end");
             }
         };
         wfb.execute();
@@ -1259,7 +1351,7 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void userCancelRecipe(long user, Activity activity) throws
             JSONException, InterruptedException {
-
+        Log.i(TAG, "BluetoothSingleton userCancelRecipe start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         //generate JSON Format
@@ -1276,12 +1368,47 @@ public class BluetoothSingleton {
                 }
 
                 Log.w(TAG, "returned result is now:" + this.getJsonResult());
+                Log.i(TAG, "BluetoothSingleton userCancelRecipe end");
             }
         };
         wfb.execute();
         //  Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
+    /**
+     * cancel_recipe (USER): Cancels the current recipe
+     * like described in ProjektDokumente/esp/Befehle.md
+     * JSON-sample: {"cmd": "cancel_recipe", "user": 483}
+     * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     *
+     * @return
+     * @throws JSONException
+     */
+    @SuppressLint("MissingPermission")
+    public void userCancelRecipe(long user, Activity activity, Postexecute postexecute) throws
+            JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton userCancelRecipe(PE) start");
+        singleton = BluetoothSingleton.getInstance();
+        singleton.connectGatt(activity);
+        //generate JSON Format
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cmd", "cancel_recipe");
+        jsonObject.put("user", user);
+        singleton.sendReadWrite(jsonObject, false, true);
+        singleton.waitForWriteNotification();
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
+            @Override
+            public void toSave() throws InterruptedException {
+                if (!check()) {
+                    throw new InterruptedException();
+                }
 
+                Log.w(TAG, "returned result is now:" + this.getJsonResult());
+                Log.i(TAG, "BluetoothSingleton userCancelRecipe(PE) end");
+            }
+        };
+        wfb.execute();
+        //  Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+    }
     /**
      * take_cocktail (USER): informs that the cocktail has been taken out
      * like described in ProjektDokumente/esp/Befehle.md
@@ -1295,6 +1422,7 @@ public class BluetoothSingleton {
     public void userTakeCocktail(long user, Activity activity, Postexecute continueHere, Postexecute errorHandle) throws
             JSONException, InterruptedException {
 
+        Log.i(TAG, "BluetoothSingleton userTakeCocktail(PE) start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         //generate JSON Format
@@ -1311,6 +1439,7 @@ public class BluetoothSingleton {
                 }
 
                 Log.w(TAG, "returned result is now:" + this.getStringResult());
+                Log.i(TAG, "BluetoothSingleton userTakeCocktail(PE) end");
             }
         };
         wfb.execute();
@@ -1330,7 +1459,7 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void userDeleteRecipe(long user, String name, Activity activity) throws
             JSONException, InterruptedException {
-
+        Log.i(TAG, "BluetoothSingleton userDeleteRecipe start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         //generate JSON Format
@@ -1348,6 +1477,7 @@ public class BluetoothSingleton {
                 }
 
                 Log.w(TAG, "returned result is now:" + this.getStringResult());
+                Log.i(TAG, "BluetoothSingleton userDeleteRecipe end");
             }
         };
         wfb.execute();
@@ -1366,7 +1496,7 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void userQueueRecipe(long user, String recipe, Activity activity, Postexecute postexecute, Postexecute errorHandle) throws
             JSONException, InterruptedException {
-
+        Log.i(TAG, "BluetoothSingleton userQueueRecipe(PE) start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         //generate JSON Format
@@ -1384,6 +1514,7 @@ public class BluetoothSingleton {
                 }
 
                 Log.w(TAG, "returned result is now:" + this.getStringResult());
+                Log.i(TAG, "BluetoothSingleton userQueueRecipe(PE) end");
             }
         };
         wfb.execute();
@@ -1401,6 +1532,7 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminReset(Activity activity) throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton adminReset start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         //generate JSON Format
@@ -1417,6 +1549,7 @@ public class BluetoothSingleton {
                 }
 
                 Log.w(TAG, "returned result is now:" + getStringResult());
+                Log.i(TAG, "BluetoothSingleton adminReset end");
             }
         };
         wfb.execute();
@@ -1435,6 +1568,7 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminReset(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton adminReset(PE) start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         //generate JSON Format
@@ -1451,6 +1585,7 @@ public class BluetoothSingleton {
                 }
 
                 Log.w(TAG, "returned result is now:" + getStringResult());
+                Log.i(TAG, "BluetoothSingleton adminReset(PE) end");
             }
         };
         wfb.execute();
@@ -1471,6 +1606,7 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminResetError(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton adminResetError(PE) start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         //generate JSON Format
@@ -1487,6 +1623,7 @@ public class BluetoothSingleton {
                 }
 
                 Log.w(TAG, "returned result is now:" + getStringResult());
+                Log.i(TAG, "BluetoothSingleton adminResetError(PE) end");
             }
         };
         wfb.execute();
