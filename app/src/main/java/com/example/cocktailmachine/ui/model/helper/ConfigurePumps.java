@@ -93,7 +93,8 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
         buttonConfirmChoice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                pump.setCurrentIngredient(ConfigurePumps.this.activity,chosenIngredient);
+                pump.setCurrentIngredient(ConfigurePumps.this.activity, chosenIngredient);
+                pump.save(ConfigurePumps.this.activity);
                 GetDialog.setFixedPumpVolume(ConfigurePumps.this.activity,pump);
             }
         });
