@@ -50,6 +50,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
 
 
+
     /**
      * get volume in pump
      * @author Johanna Reidt
@@ -914,6 +915,27 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     }
 
 
+
+    default void sendEdit(Activity activity, Postexecute postexecute){
+        if(Dummy.isDummy){
+            postexecute.post();
+            return;
+        }
+        try {
+            BluetoothSingleton.getInstance().adminEditPump(
+                    this.getIngredientName(),
+                    this.getVolume(activity),
+                    this.getSlot(),
+                    activity,
+                    postexecute);
+        } catch (JSONException | InterruptedException e) {
+            Log.i(TAG, "sendPumpTimes failed ");
+            Log.e(TAG, "error ",e);
+            Log.getStackTraceString(e);
+        }
+    }
+
+
     //FOR ALL PUMPS
 
     /**
@@ -1047,8 +1069,5 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     static Pump getPumpWithSlot(Context context, int slot) {
         return GetFromDB.getPumpWithSlot(context, slot);
     }
-
-
-
 
 }

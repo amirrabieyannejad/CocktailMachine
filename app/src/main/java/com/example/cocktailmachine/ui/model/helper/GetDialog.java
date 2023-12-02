@@ -1785,7 +1785,13 @@ public class GetDialog {
 
         public void send(){
             Log.v(TAG, "send");
-            pump.sendRefill(activity, getVolume(), postexecute);
+            try {
+                pump.fill(activity,getVolume());
+            } catch (MissingIngredientPumpException ex) {
+                Log.e(TAG,"no saving fill",ex);
+            }
+            //pump.sendSave(activity, postexecute);
+            pump.sendEdit(activity, postexecute);
         }
     }
 

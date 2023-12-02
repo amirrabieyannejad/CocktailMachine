@@ -211,7 +211,6 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
          */
     }
 
-
     @Override
     public int getVolume(Context context) {
         if(this.ingredientPump == null) {
