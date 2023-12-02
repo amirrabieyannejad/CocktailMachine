@@ -91,9 +91,7 @@ public class GetDialog {
             loadImage2.setImageBitmap(image);
             image = BildgeneratorGlas.bildgenerationGlas(activity,sublistRecipe.get(2),(float)1.0);
             loadImage3.setImageBitmap(image);
-        } catch (TooManyTimesSettedIngredientEcxception e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchIngredientSettedException e) {
+        } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
             throw new RuntimeException(e);
         }
 
@@ -660,7 +658,7 @@ public class GetDialog {
                 @Override
                 public void post() {
                     Log.v(TAG, "firstAutomaticDialog: firstTaring");
-                    firstTaring(activity);
+                    getGlass(activity);
                 }
             };
             Postexecute doAgain = new Postexecute() {
