@@ -2353,6 +2353,7 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminReadPumpsStatus(Activity activity) throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton adminReadPumpsStatus start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_PUMPS);
@@ -2366,6 +2367,7 @@ public class BluetoothSingleton {
                 }
                 Pump.updatePumpStatus(activity, this.getJsonResult());
                 Log.w(TAG, "To Save: " + this.getJsonResult());
+                Log.i(TAG, "BluetoothSingleton adminReadPumpsStatus end");
             }
         };
         wfb.execute();
@@ -2387,6 +2389,7 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void adminReadPumpsStatus(Activity activity, Postexecute postexecute)
             throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton adminReadPumpsStatus(PE) start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_PUMPS);
@@ -2400,6 +2403,7 @@ public class BluetoothSingleton {
                 }
                 Pump.updatePumpStatus(activity, this.getJsonResult());
                 Log.w(TAG, "To Save: " + this.getJsonResult());
+                Log.i(TAG, "BluetoothSingleton adminReadPumpsStatus(PE) end");
             }
         };
         wfb.execute();
@@ -2419,6 +2423,7 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminReadLastChange(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton adminReadLastChange(PE) start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_LAST_CHANGE);
@@ -2432,6 +2437,7 @@ public class BluetoothSingleton {
                 //Pump.updatePumpStatus(this.getResult());
                 CocktailMachine.setLastChange(this.getStringResult());
                 Log.w(TAG, "To Save: " + this.getStringResult());
+                Log.i(TAG, "BluetoothSingleton adminReadLastChange(PE) end");
             }
         };
         wfb.execute();
@@ -2449,6 +2455,7 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminReadLiquidsStatus(Activity activity) throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton adminReadLiquidsStatus start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_LIQUIDS);
@@ -2461,6 +2468,7 @@ public class BluetoothSingleton {
                 }
                 Log.w(TAG, "To Save: " + this.getJsonResult());
                 Pump.updateLiquidStatus(activity, this.getJsonResult());
+                Log.i(TAG, "BluetoothSingleton adminReadLiquidsStatus end");
 
             }
         };
@@ -2486,6 +2494,7 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void adminReadState(Activity activity, Postexecute postexecute)
             throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton adminReadState(PE) start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_STATE);
@@ -2498,6 +2507,7 @@ public class BluetoothSingleton {
                 }
                 Log.w(TAG, "returned result:" + getStringResult());
                 Log.w(TAG, "returned result: start saving");
+                Log.i(TAG, "BluetoothSingleton adminReadState(PE) end");
                 try {
                     CocktailStatus.setStatus(getStringResult());
                 }catch (Exception e){
@@ -2510,6 +2520,7 @@ public class BluetoothSingleton {
                     }
                 }
                 Log.w(TAG, "returned result finished");
+
             }
         };
         wfb.execute();
@@ -2528,6 +2539,7 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminReadRecipesStatus(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton adminReadRecipesStatus(PE) start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_RECIPES);
@@ -2541,6 +2553,7 @@ public class BluetoothSingleton {
                 }
                 Recipe.setRecipes(activity, this.getJSONArrayResult());
                 Log.w(TAG, "To Save: " + this.getJSONArrayResult());
+                Log.i(TAG, "BluetoothSingleton adminReadRecipesStatus(PE) end");
             }
         };
         wfb.execute();
@@ -2559,6 +2572,7 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void adminReadCurrentCocktail(Activity activity, Postexecute postexecute)
             throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton adminReadCurrentCocktail(PE) start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_COCKTAIL);
@@ -2571,6 +2585,7 @@ public class BluetoothSingleton {
                 }
                 CocktailMachine.setCurrentCocktail(activity, this.getJsonResult());
                 Log.w(TAG, "To Save: " + this.getJsonResult());
+                Log.i(TAG, "BluetoothSingleton adminReadCurrentCocktail(PE) end");
             }
         };
         wfb.execute();
@@ -2590,6 +2605,7 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminReadUserQueue(Activity activity) throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton adminReadUserQueue start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_USER_QUEUE);
@@ -2602,6 +2618,7 @@ public class BluetoothSingleton {
                 }
                 //CocktailMachine.setCurrentUser(getJSONArrayResult());
                 Log.w(TAG, "To Save: " + this.getJSONArrayResult());
+                Log.i(TAG, "BluetoothSingleton adminReadUserQueue end");
             }
         };
         wfb.execute();
@@ -2620,6 +2637,7 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminReadScaleStatus(Activity activity) throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton adminReadScaleStatus start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_SCALE);
@@ -2632,6 +2650,7 @@ public class BluetoothSingleton {
                 }
                 CocktailMachine.setCurrentWeight(this.getJsonResult());
                 Log.w(TAG, "To Save: " + this.getJsonResult());
+                Log.i(TAG, "BluetoothSingleton adminReadScaleStatus end");
             }
         };
         wfb.execute();
@@ -2651,6 +2670,7 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminReadScaleStatus(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton adminReadScaleStatus start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_SCALE);
@@ -2663,6 +2683,7 @@ public class BluetoothSingleton {
                 }
                 CocktailMachine.setCurrentWeight(this.getJsonResult());
                 Log.w(TAG, "To Save: " + this.getJsonResult());
+                Log.i(TAG, "BluetoothSingleton adminReadScaleStatus end");
             }
         };
         wfb.execute();
@@ -2681,6 +2702,7 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminReadErrorStatus(Activity activity) throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton adminReadErrorStatus start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_ERROR);
@@ -2693,6 +2715,7 @@ public class BluetoothSingleton {
                 }
                 ErrorStatus.setError(this.getStringResult());
                 Log.w(TAG, "To Save: " + this.getStringResult());
+                Log.i(TAG, "BluetoothSingleton adminReadErrorStatus end");
             }
         };
         wfb.execute();
@@ -2711,6 +2734,7 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminReadErrorStatus(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
+        Log.i(TAG, "BluetoothSingleton adminReadErrorStatus(PE) start");
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         singleton.sendStatus(CHARACTERISTIC_STATUS_ERROR);
@@ -2723,6 +2747,7 @@ public class BluetoothSingleton {
                 }
                 Log.w(TAG, "To Save: " + this.getStringResult());
                 ErrorStatus.setError(this.getStringResult());
+                Log.i(TAG, "BluetoothSingleton adminReadErrorStatus(PE) end");
 
             }
         };
