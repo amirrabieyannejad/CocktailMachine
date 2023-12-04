@@ -928,7 +928,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             postexecute.post();
             return;
         }
-        try {
+        try{
+            Log.i(TAG, "PUMP: "+this.toString());
             BluetoothSingleton.getInstance().adminEditPump(
                     this.getIngredientName(activity),
                     this.getVolume(activity),
