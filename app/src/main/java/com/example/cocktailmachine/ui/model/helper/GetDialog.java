@@ -579,17 +579,21 @@ public class GetDialog {
      * g.	Angabe von Zutaten
      */
     public static void startAutomaticCalibration(Activity activity){
+        Dialog wait = loadingBluetooth(activity);
         Log.v(TAG, "startAutomaticCalibration");
         //CocktailMachine.automaticCalibration();
+        wait.show();
         try {
             BluetoothSingleton.getInstance().adminAutoCalibrateCancel(activity,new Postexecute(){
                 @Override
                 public void post() {
+                    wait.dismiss();
                     enterNumberOfPumps(activity);
                 }
             });
         } catch (JSONException | InterruptedException e) {
             Log.v(TAG, "Error: Restart of Calibration failed (GetDialog.startAutomaticCalibration: Z 413) ");
+            wait.dismiss();
             throw new RuntimeException(e);
 
         }
