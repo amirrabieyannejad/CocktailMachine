@@ -6,10 +6,13 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
+import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Postexecute;
+
+import org.json.JSONException;
 
 import java.util.Random;
 
@@ -75,6 +78,24 @@ public class CocktailMachineCalibration {
     public static boolean isIsDone() {
         Log.v(TAG, "start: isIsDone");
         return isDone;
+    }
+
+
+    public static void askIsDone(Activity activity, Postexecute postexecute){
+        Dialog wait = GetDialog.loadingBluetooth(activity);
+        wait.show();
+
+        try {
+            BluetoothSingleton.getInstance().adminReadPumpsStatus(activity, new Postexecute() {
+                @Override
+                public void post() {
+                    wait.dismiss();
+                    postexecute.post();
+                }
+            });
+        } catch (JSONException | InterruptedException e) {
+            throw new RuntimeException(e);
+        };
     }
 
     public static void setIsDone(boolean isDone) {

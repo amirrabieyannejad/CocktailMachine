@@ -13,6 +13,7 @@ import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
+import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
 import com.example.cocktailmachine.ui.ListOfIngredience.ListIngredience;
@@ -83,10 +84,18 @@ public class Menue extends AppCompatActivity {
             CocktailMachineCalibration.setIsDone(true);
             Log.v(TAG, "onCreate: dummy:  not withSetCalibration ");
         }
-        if (!CocktailMachineCalibration.isIsDone()){
-            Log.w(TAG, "onCreate: start calibration ");
-            CocktailMachineCalibration.start(this);
-        }
+
+        CocktailMachineCalibration.askIsDone(this, new Postexecute() {
+            @Override
+            public void post() {
+                if (!CocktailMachineCalibration.isIsDone()){
+                    Log.w(TAG, "onCreate: start calibration ");
+                    CocktailMachineCalibration.start(Menue.this);
+                }
+            }
+        });
+
+
         if(!Dummy.withTestEnvs){
             Log.v(TAG, "onCreate: without test envs  ");
             binding.imageViewTestBlue.setVisibility(View.GONE);

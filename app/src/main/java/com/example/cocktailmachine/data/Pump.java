@@ -125,6 +125,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         if (
                 ingredient == null
         ) {
+            Log.i(TAG, "set ingredient null");
             return;
         }
 
@@ -367,6 +368,12 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                     Log.i(TAG, "updatePumpStatus: no calibrated" );
                 }
                  */
+
+                JSONArray cal = json.getJSONArray("cal");
+                if(cal.length()==0){
+                    CocktailMachineCalibration.setIsDone(false);
+                }
+
                 Pump pump = getPumpWithSlot(context,slot);
                 if(pump == null){
                     pump = new SQLPump();
