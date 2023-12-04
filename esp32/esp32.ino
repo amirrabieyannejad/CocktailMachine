@@ -1,7 +1,7 @@
 // general system settings
 #define BLE_NAME             	"Cocktail Machine ESP32"	// bluetooth server name
 #define CORE_DEBUG_LEVEL     	4                       	// 1 = error; 3 = info ; 4 = debug
-const unsigned int VERSION   	= 10;                   	// version number (used for configs etc)
+const unsigned int VERSION   	= 11;                   	// version number (used for configs etc)
                              	                        	
 const unsigned char MAX_PUMPS	= 1 + 4*8;              	// maximum number of supported pumps;
                              	                        	
@@ -664,6 +664,7 @@ void update_config_state(time_t ts);
 void update_user(void);
 void update_possible_recipes(void);
 void update_error(Retcode error, User user);
+void reset_calibration_data(void);
 
 // init
 
@@ -809,14 +810,9 @@ void loop() {
   }
 
   // next, process one of three situations, whichever applies first:
-  // - errors
   // - calibration
+  // - errors
   // - recipes
-
-  if (error_state != Retcode::success) {
-    // currently in an error state that needs acknowledgment
-    return;
-  }
 
   // advance calibration state
 calibration:
@@ -918,6 +914,11 @@ calibration:
     }
 
     return; // done processing
+  }
+
+  if (error_state != Retcode::success) {
+    // currently in an error state that needs acknowledgment
+    return;
   }
 
   // advance the recipe queue
@@ -1634,10 +1635,7 @@ Retcode CmdReset::execute() {
 };
 
 
-Retcode CmdCalibrationStart::execute() {
-  if (!is_admin(this->user)) return Retcode::unauthorized;
-  if (cal_state != CalibrationState::inactive) return Retcode::invalid_cal_state;
-
+void reset_calibration_data() {
   cal_pass = 0;
   cal_pump = 0;
   for (int i=0; i<MAX_PUMPS; i++) {
@@ -1648,6 +1646,14 @@ Retcode CmdCalibrationStart::execute() {
       pump->cal_volume[n] = 0;
     }
   }
+}
+
+Retcode CmdCalibrationStart::execute() {
+  if (!is_admin(this->user)) return Retcode::unauthorized;
+  if (cal_state != CalibrationState::inactive) return Retcode::invalid_cal_state;
+
+  reset_calibration_data();
+  update_error(Retcode::success, USER_UNKNOWN);
 
   cal_state = CalibrationState::empty;
   update_state();
@@ -1658,6 +1664,7 @@ Retcode CmdCalibrationStart::execute() {
 Retcode CmdCalibrationCancel::execute() {
   if (!is_admin(this->user)) return Retcode::unauthorized;
 
+  reset_calibration_data();
   scale_tare();
   cal_state = CalibrationState::inactive;
   update_state();
@@ -1667,6 +1674,7 @@ Retcode CmdCalibrationCancel::execute() {
 Retcode CmdCalibrationFinish::execute() {
   if (!is_admin(this->user)) return Retcode::unauthorized;
 
+  reset_calibration_data();
   scale_tare();
   cal_state = CalibrationState::inactive;
   update_state();
