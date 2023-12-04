@@ -649,6 +649,7 @@ public class GetDialog {
 
     public static void firstAutomaticDialog(Activity activity){
         //DatabaseConnection.initializeSingleton(activity);
+        Dialog wait = loadingBluetooth(activity);
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Automatische Kalibrierung");
         builder.setMessage("Bitte folge den Anweisungen schrittweise. " +
@@ -662,6 +663,7 @@ public class GetDialog {
                 @Override
                 public void post() {
                     Log.v(TAG, "firstAutomaticDialog: firstTaring");
+                    wait.dismiss();
                     getEmptyGlass(activity);
                 }
             };
@@ -669,11 +671,12 @@ public class GetDialog {
                 @Override
                 public void post() {
                     Log.v(TAG, "firstAutomaticDialog: automaticCalibration");
+                    wait.dismiss();
                     CocktailMachine.automaticCalibration(activity, continueHere, ErrorStatus.errorHandle(activity, continueHere));
                 }
             };
 
-
+            wait.show();
             HashMap<ErrorStatus, Postexecute> errorMap = new HashMap<>();
             errorMap.put(ErrorStatus.calibration_command_invalid_at_this_time, doAgain);
 
