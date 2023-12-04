@@ -579,17 +579,21 @@ public class GetDialog {
      * g.	Angabe von Zutaten
      */
     public static void startAutomaticCalibration(Activity activity){
+        Dialog wait = loadingBluetooth(activity);
         Log.v(TAG, "startAutomaticCalibration");
         //CocktailMachine.automaticCalibration();
+        wait.show();
         try {
             BluetoothSingleton.getInstance().adminAutoCalibrateCancel(activity,new Postexecute(){
                 @Override
                 public void post() {
+                    wait.dismiss();
                     enterNumberOfPumps(activity);
                 }
             });
         } catch (JSONException | InterruptedException e) {
             Log.v(TAG, "Error: Restart of Calibration failed (GetDialog.startAutomaticCalibration: Z 413) ");
+            wait.dismiss();
             throw new RuntimeException(e);
 
         }
@@ -2271,6 +2275,7 @@ public class GetDialog {
     //Alle Pumpenkalibrieren
 
     public static void setPumpNumber(Activity activity) {
+        Dialog wait = loadingBluetooth(activity);
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Setze die Anzahl der Pumpen:");
 
@@ -2282,6 +2287,7 @@ public class GetDialog {
                         new Postexecute() {
                             @Override
                             public void post() {
+                                wait.dismiss();
                                 GetDialog.startAutomaticCalibration(activity);
                             }
                         });
@@ -2289,6 +2295,7 @@ public class GetDialog {
         builder.setView(v);
 
         builder.setPositiveButton("Speichern", (dialog, which) -> {
+            wait.show();
             try {
                 pumpNumberChangeView.save();
                 //dialog.dismiss();
@@ -2297,6 +2304,7 @@ public class GetDialog {
             }catch (IllegalStateException e){
                 Log.e(TAG, "setPumpNumber pumpNumberChangeView save error");
                 Log.e(TAG, e.toString());
+                wait.dismiss();
                 e.printStackTrace();
             }
 
