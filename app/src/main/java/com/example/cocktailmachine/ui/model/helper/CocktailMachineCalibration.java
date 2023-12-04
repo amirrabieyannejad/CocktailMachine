@@ -1,6 +1,7 @@
 package com.example.cocktailmachine.ui.model.helper;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -23,8 +24,11 @@ public class CocktailMachineCalibration {
 
     public static void start(Activity activity) {
         Log.v(TAG, "start");
+        Dialog wait = GetDialog.loadingBluetooth(activity);
+        wait.show();
         ExtraHandlingDB.loadForSetUp(activity);
         Log.v(TAG, "start: loaded db");
+        wait.dismiss();
         AdminRights.login(activity, activity.getLayoutInflater(), dialog -> {
             Log.v(TAG, "start: login dismissing");
             AdminRights.initUser(activity, String.valueOf(new Random().nextInt()), new Postexecute() {
