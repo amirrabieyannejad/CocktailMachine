@@ -29,7 +29,6 @@ public class AdminRights {
     private int userId = -1;
 
     private AdminRights(){
-
     }
 
     public static AdminRights getSingleton(){
