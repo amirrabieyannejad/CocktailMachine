@@ -31,6 +31,9 @@ public class CocktailMachineCalibration {
         wait.dismiss();
         AdminRights.login(activity, activity.getLayoutInflater(), dialog -> {
             Log.v(TAG, "start: login dismissing");
+
+            Dialog wait_blue = GetDialog.loadingBluetooth(activity);
+            wait_blue.show();
             AdminRights.initUser(activity, String.valueOf(new Random().nextInt()), new Postexecute() {
                 @Override
                 public void post() {
@@ -44,9 +47,11 @@ public class CocktailMachineCalibration {
                     }
                     if(AdminRights.isAdmin()){
                         Log.v(TAG, "start: is admin");
+                        wait_blue.dismiss();
                         GetDialog.startAutomaticCalibration(activity);
                     }else{
                         Log.v(TAG, "start: is user");
+                        wait_blue.dismiss();
                         GetActivity.waitNotSet(activity);
                     }
                 }
