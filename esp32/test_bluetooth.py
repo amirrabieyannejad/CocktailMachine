@@ -137,7 +137,9 @@ async def test_run(client):
 
   await admin({"cmd": "define_pump", "user": 0, "liquid": "water",    "volume": 1000, "slot": 1})
   await admin({"cmd": "define_pump", "user": 0, "liquid": "beer",     "volume": 2000, "slot": 2})
-  await admin({"cmd": "define_pump", "user": 0, "liquid": "lemonade", "volume": 3000, "slot": 7})
+  await admin({"cmd": "define_pump", "user": 0, "liquid": "water"   , "volume": 0,    "slot": 7})
+  await admin({"cmd": "edit_pump",   "user": 0, "liquid": "lemonade", "volume": 3000, "slot": 7})
+  await read_status(client)
 
   # manually calibrate pumps
   await admin({"cmd": "run_pump", "user": 0, "slot": 1, "time": 10})
