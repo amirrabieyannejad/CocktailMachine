@@ -86,14 +86,14 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
 
     public List<SQLRecipeIngredient> getIngredientVolumes(SQLiteDatabase db, SQLRecipe recipe) {
         try {
-            return this.getElementsWith(db, COLUMN_TYPE_RECIPE_ID, Long.toString(recipe.getID()));
+            return this.getElementsWith(db, COLUMN_NAME_RECIPE_ID, Long.toString(recipe.getID()));
         } catch (NoSuchColumnException e) {
             Log.e(TAG, "error", e);
             return new ArrayList<>();
         }
     }
 
-    public  List<SQLRecipeIngredient>  getAvailable(SQLiteDatabase db,
+    public  List<SQLRecipeIngredient> getAvailable(SQLiteDatabase db,
                                                     List<? extends Recipe> recipes){
         if(recipes.size() == 1){
             return getIngredientVolumes(db, (SQLRecipe) recipes.get(0));
@@ -197,7 +197,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
 
     private List<Long> getRecipeIDs(SQLiteDatabase db){
         Cursor cursor = db.query(this.getName(),
-                new String[]{COLUMN_NAME_RECIPE_ID},
+                this.getColumns().toArray(new String[0]),
                 null,
                 null,
                 null,
@@ -270,7 +270,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
         }
         Cursor cursor = db.query(true,
                 this.getName(),
-                getColumns().toArray(new String[0]),
+                new String[]{_ID},
                 COLUMN_NAME_RECIPE_ID+" = "+recipe.getID()+" AND "+COLUMN_NAME_INGREDIENT_ID+" = "+ingredient.getID(),
                 null,
                 null,
@@ -305,10 +305,10 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
     }
 
     public int getVolume(SQLiteDatabase db, SQLRecipe recipe, Ingredient ingredient) throws TooManyTimesSettedIngredientEcxception {
-        //TODO: check this
+        //TO DO: check this
 
         Cursor cursor = db.query(this.getName(),
-                new String[]{COLUMN_TYPE_PUMP_TIME},
+                new String[]{COLUMN_NAME_PUMP_TIME},
                 COLUMN_NAME_RECIPE_ID+
                         " = "+
                         recipe.getID() +

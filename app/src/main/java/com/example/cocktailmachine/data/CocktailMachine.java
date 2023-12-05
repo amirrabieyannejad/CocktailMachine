@@ -2,6 +2,7 @@ package com.example.cocktailmachine.data;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
@@ -315,7 +316,7 @@ public class CocktailMachine {
                 @Override
                 public void post() {
                     Log.i(TAG, "isCocktailMachineSet: post");
-                    if(Pump.getPumps(activity).size()==0){
+                    if(CocktailMachineCalibration.isIsDone()){
                         Log.i(TAG, "isCocktailMachineSet: NOT SET");
                         notSet.post();
                     }else{
@@ -383,7 +384,8 @@ public class CocktailMachine {
      */
     public static void tareScale(Activity activity){
         Log.i(TAG, "tareScale");
-        AlertDialog wait = GetDialog.loadingBluetooth(activity);
+        Dialog wait = GetDialog.loadingBluetooth(activity);
+        wait.show();
         tareScale(activity, new Postexecute() {
             @Override
             public void post() {

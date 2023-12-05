@@ -255,6 +255,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             Log.i(TAG, "setOverrideEmptyPumps: made Pump "+i);
             Log.i(TAG, "setOverrideEmptyPumps: made Pump "+pump.toString());
             Log.i(TAG, "setOverrideEmptyPumps: control list len "+ getPumps(context).size() );
+
         }
 
         if(!Dummy.isDummy) {
@@ -276,6 +277,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 }
             }, context);
 
+        }else {
+            CocktailStatus.setStatus(CocktailStatus.ready);
+            postexecute.post();
         }
 
         Log.i(TAG, "setOverrideEmptyPumps: control given len "+ numberOfPumps);
@@ -924,6 +928,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
 
     default void sendEdit(Activity activity, Postexecute postexecute){
+        Log.i(TAG, "PUMP_NAME: "+this.getIngredientName(activity));
+        Log.i(TAG, "PUMP: "+this.toString());
         if(Dummy.isDummy){
             postexecute.post();
             return;
