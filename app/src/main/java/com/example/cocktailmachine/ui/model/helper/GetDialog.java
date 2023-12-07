@@ -1256,7 +1256,7 @@ public class GetDialog {
 
             builder.setPositiveButton("Speichern", (dialog, which) -> {
                 dialog.cancel();
-                volumeChangeView.save();
+                //volumeChangeView.save();
                 volumeChangeView.send();
                 //dialog.cancel();
                 //setFixedPumpMinVolume(activity, pump, next);
@@ -1300,7 +1300,7 @@ public class GetDialog {
 
             builder.setPositiveButton("Speichern", (dialog, which) -> {
                 dialog.cancel();
-                volumeChangeView.save();
+                //volumeChangeView.save();
                 volumeChangeView.send();
             });
             builder.show();
@@ -1921,14 +1921,8 @@ public class GetDialog {
             Toast.makeText(this.activity, "Gib eine positive Zahl an!", Toast.LENGTH_SHORT).show();
             return -1;
         }
-        public void save(){
+        public void save() {
             Log.v(TAG, "save");
-            try {
-                pump.fill(this.activity, getVolume());
-            } catch (MissingIngredientPumpException ex) {
-                ex.printStackTrace();
-            }
-            pump.save(activity);
         }
 
         public void send(){
