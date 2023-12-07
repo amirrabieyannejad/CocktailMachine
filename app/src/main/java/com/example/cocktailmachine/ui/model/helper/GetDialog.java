@@ -1325,6 +1325,7 @@ public class GetDialog {
                 @Override
                 public void afterTextChanged(Editable s) {
                     dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(volumeChangeView.check());
+                    Log.i(TAG, "vol : afterTextChanged " );
                 }
             };
             volumeChangeView.addTextWatcher(editListener);
@@ -1946,15 +1947,15 @@ public class GetDialog {
             return -1;
         }
         public void save() {
-            Log.v(TAG, "save");
+            Log.v(TAG, "VolumeChangeView: save");
         }
 
         public void send(){
-            Log.v(TAG, "send");
+            Log.v(TAG, "VolumeChangeView: send");
             try {
                 pump.fill(activity, getVolume());
             } catch (MissingIngredientPumpException ex) {
-                Log.e(TAG,"no saving fill",ex);
+                Log.e(TAG,"VolumeChangeView: no saving fill",ex);
             }
             pump.save(activity);
             //pump.sendSave(activity, postexecute);
@@ -1962,6 +1963,7 @@ public class GetDialog {
         }
 
         public boolean check() {
+            Log.i(TAG, "VolumeChangeView: check: "+ e.getText().toString());
             return getVolume()>0;
         }
 

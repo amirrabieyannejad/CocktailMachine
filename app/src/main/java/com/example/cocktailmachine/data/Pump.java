@@ -1061,7 +1061,11 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @return
      */
     static List<Pump> getPumps(Context context){
-        return (List<Pump>) GetFromDB.getPumps(context);
+        List<Pump> pumps =  (List<Pump>) GetFromDB.getPumps(context);
+        for(Pump p: pumps){
+            Log.w(TAG, "p name"+p.getIngredientName(context));
+        }
+        return pumps;
     }
 
 
