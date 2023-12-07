@@ -2,6 +2,7 @@ package com.example.cocktailmachine.ui.model.helper;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.util.DisplayMetrics;
 import android.view.View;
 
@@ -21,6 +22,8 @@ public class DialogListOfPumps implements RecyclerViewListenerListPumps {
     private List<Pump> listPumps;
 
     private RecyclerView recyclerView;
+
+    private AlertDialog dialog;
     public DialogListOfPumps(Activity activity){
         this.activity = activity;
         this.listPumps = Pump.getPumps(this.activity);
@@ -31,7 +34,7 @@ public class DialogListOfPumps implements RecyclerViewListenerListPumps {
 
         //Erzeuge Dialog und zeige diese an
         alertDialog.setView(v);
-        AlertDialog dialog = alertDialog.create();
+        this.dialog = alertDialog.create();
         dialog.setCancelable(false);
 
         //Einrichtung des RecyclerView
@@ -52,6 +55,7 @@ public class DialogListOfPumps implements RecyclerViewListenerListPumps {
 
     @Override
     public void selectedPump(Pump pump) {
+        this.dialog.cancel();
         new ConfigurePumps(this.activity, pump);
     }
 }

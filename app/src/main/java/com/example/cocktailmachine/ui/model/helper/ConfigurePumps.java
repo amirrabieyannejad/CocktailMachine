@@ -37,6 +37,7 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
     private Ingredient chosenIngredient;
     private String chosenIngredientString;
     private ConfigurePumps configurePumpsContext;
+    private AlertDialog dialog;
 
     //Konstruktor
     public ConfigurePumps(Activity activity, Pump pump) {
@@ -99,6 +100,7 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
                 pump.setCurrentIngredient(ConfigurePumps.this.activity, chosenIngredient);
                 pump.save(ConfigurePumps.this.activity);
                 Log.i(TAG, "Configure pumps: pump: "+pump);
+                dialog.cancel();
                 GetDialog.setFixedPumpVolume(ConfigurePumps.this.activity,pump);
             }
         });
@@ -107,7 +109,7 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
 
         //Erzeuge Dialog und zeige diese an
         alertDialog.setView(v);
-        AlertDialog dialog = alertDialog.create();
+        dialog = alertDialog.create();
         dialog.setCancelable(false);
         dialog.show();
 
