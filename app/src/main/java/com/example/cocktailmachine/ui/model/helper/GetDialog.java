@@ -8,8 +8,11 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.widget.ArrayAdapter;
@@ -1276,6 +1279,8 @@ public class GetDialog {
             builder.setTitle("Setze das jetzt vorhandene Volumen für Pumpe "+pump.getSlot()+":");
 
             View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
+
+
             GetDialog.VolumeChangeView volumeChangeView =
                     new GetDialog.VolumeChangeView(
                             activity,
@@ -1296,18 +1301,33 @@ public class GetDialog {
                             });
 
             builder.setView(v);
-
-            builder.setPositiveButton("Speichern", (dialog, which) -> {
-                if(volumeChangeView.check()) {
-                    dialog.cancel();
+            builder.setPositiveButton("Speichern", (d, which) -> {
+                if (volumeChangeView.check()) {
+                    d.cancel();
                     //volumeChangeView.save();
                     volumeChangeView.send();
-                }else{
-                    Toast.makeText(activity, "Gib eine gültige Volumenmenge an!", Toast.LENGTH_SHORT).show();
                 }
             });
 
-            builder.show();
+            AlertDialog dialog = builder.show();
+
+            TextWatcher editListener = new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(volumeChangeView.check());
+                }
+            };
+            volumeChangeView.addTextWatcher(editListener);
         }else{
             errorMessageDBSolution(activity);
         }
@@ -1943,6 +1963,10 @@ public class GetDialog {
 
         public boolean check() {
             return getVolume()>0;
+        }
+
+        public void addTextWatcher(TextWatcher watcher) {
+            this.e.addTextChangedListener(watcher);
         }
     }
 
