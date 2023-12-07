@@ -37,6 +37,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     String TAG = "Pump";
 
 
+
+
     /**
      * Get Id.
      *
@@ -330,7 +332,11 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
 
 
-
+    static void emptyAll(Context context) {
+        for(SQLIngredientPump ip: GetFromDB.getIngredientPumps(context)) {
+            DeleteFromDB.remove(context, ip);
+        }
+    }
 
 
     //JSON Object

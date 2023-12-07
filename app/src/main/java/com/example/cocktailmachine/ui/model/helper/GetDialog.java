@@ -1058,6 +1058,7 @@ public class GetDialog {
                             Postexecute continueHere = new Postexecute() {
                                 @Override
                                 public void post() {
+                                    Pump.emptyAll(activity);
                                     new DialogListOfPumps(activity);
                                     //GetDialog.setIngredientsForPumps(activity);
                                 }
