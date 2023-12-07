@@ -197,31 +197,32 @@ async def test_run(client):
 
   # automatically calibrate pumps
   if True:
-    # refill and reset pumps
-    await admin({"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1})
-    await admin({"cmd": "refill_pump", "user": 0, "volume": 2000, "slot": 2})
-    await admin({"cmd": "refill_pump", "user": 0, "volume": 3000, "slot": 7})
+    for n in range(1):
+      # refill and reset pumps
+      await admin({"cmd": "refill_pump", "user": 0, "volume": 1000, "slot": 1})
+      await admin({"cmd": "refill_pump", "user": 0, "volume": 2000, "slot": 2})
+      await admin({"cmd": "refill_pump", "user": 0, "volume": 3000, "slot": 7})
 
-    await admin({"cmd": "reset", "user": 0})
-    await read_status(client)
+      await admin({"cmd": "reset", "user": 0})
+      await read_status(client)
 
-    await admin({"cmd": "calibration_start",  "user": 0})
-    await admin({"cmd": "calibration_cancel", "user": 0}) # try cancelling immediately
+      await admin({"cmd": "calibration_start",  "user": 0})
+      await admin({"cmd": "calibration_cancel", "user": 0}) # try cancelling immediately
 
-    await admin({"cmd": "calibration_start",      "user": 0})
-    await admin({"cmd": "calibration_add_empty",  "user": 0},                 	cal_wait="calibration empty container")
-    await admin({"cmd": "calibration_add_weight", "user": 0, "weight": 100.0},	cal_wait="calibration known weight")
-    await admin({"cmd": "calibration_add_empty",  "user": 0},                 	cal_wait="calibration empty container")
+      await admin({"cmd": "calibration_start",      "user": 0})
+      await admin({"cmd": "calibration_add_empty",  "user": 0},                 	cal_wait="calibration empty container")
+      await admin({"cmd": "calibration_add_weight", "user": 0, "weight": 100.0},	cal_wait="calibration known weight")
+      await admin({"cmd": "calibration_add_empty",  "user": 0},                 	cal_wait="calibration empty container")
 
-    # reset the scale factor because this is just a basic test without any weights
-    await admin({"cmd": "set_scale_factor", "user": 0, "factor": 1.0})
+      # reset the scale factor because this is just a basic test without any weights
+      await admin({"cmd": "set_scale_factor", "user": 0, "factor": 1.0})
 
-    for cal_pass in range(2):
-      for pump in range(3):
-        await admin({"cmd": "calibration_add_empty", "user": 0}, cal_wait="calibration empty container")
+      for cal_pass in range(2):
+        for pump in range(3):
+          await admin({"cmd": "calibration_add_empty", "user": 0}, cal_wait="calibration empty container")
 
-    await admin({"cmd": "calibration_finish", "user": 0}, cal_wait="calibration done")
-    await read_status(client)
+      await admin({"cmd": "calibration_finish", "user": 0}, cal_wait="calibration done")
+      await read_status(client)
 
     await admin({"cmd": "reset", "user": 0})
     await admin({"cmd": "reset_error", "user": 0}) # assume calibration data is wrong
