@@ -234,8 +234,7 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
     }
 
     public List<? extends Ingredient> getElements(SQLiteDatabase readableDatabase, Recipe recipe) {
-        ArrayList<Object> os = new ArrayList<>();
-        os.addAll(Tables.TABLE_RECIPE_INGREDIENT.getIngredientIDs(readableDatabase, recipe));
+        ArrayList<Object> os = new ArrayList<>(Tables.TABLE_RECIPE_INGREDIENT.getIngredientIDs(readableDatabase, recipe));
         try {
             return this.getElementsIn(
                     readableDatabase,

@@ -105,6 +105,7 @@ public class RecipeTopicTable extends BasicColumn<SQLRecipeTopic> {
                     null,
                     null,
                     null);
+            db.close();
             return this.cursorToTopicIDs(cursor);
             //this.cursorToList()
         } catch (NoSuchColumnException e) {
@@ -154,6 +155,7 @@ public class RecipeTopicTable extends BasicColumn<SQLRecipeTopic> {
                 null,
                 null,
                 null);
+        db.close();
         return this.cursorToList(cursor);
     }
 }
