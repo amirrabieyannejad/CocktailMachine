@@ -241,7 +241,7 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
                     _ID,
                     os
             );
-        } catch (NoSuchColumnException e) {
+        } catch (NoSuchColumnException|RuntimeException e) {
             return new ArrayList<>();
         }
     }

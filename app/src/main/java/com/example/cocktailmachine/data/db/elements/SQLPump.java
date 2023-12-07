@@ -55,9 +55,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
      */
     @Override
     public String getIngredientName(Context context) {
-        if(this.ingredientPump == null){
-            loadIngredientPump(context);
-        }
+        loadIngredientPump(context);
         return this.loadedIngredientName;
 
         //return "Keine Zutat";

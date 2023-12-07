@@ -179,9 +179,9 @@ public class GetDialog {
             List<Recipe> sublistRecipe = getListOfRandomRecipe(3,activity);
 
             try {
-                Bitmap image = BildgeneratorGlas.bildgenerationGlas(activity,sublistRecipe.get(0),(float)1.0);
+                Bitmap image = BildgeneratorGlas.bildgenerationGlas(activity, sublistRecipe.get(0),(float)1.0);
                 loadImage1.setImageBitmap(image);
-                image = BildgeneratorGlas.bildgenerationGlas(activity,sublistRecipe.get(1),(float)1.0);
+                image = BildgeneratorGlas.bildgenerationGlas(activity, sublistRecipe.get(1),(float)1.0);
                 loadImage2.setImageBitmap(image);
                 image = BildgeneratorGlas.bildgenerationGlas(activity,sublistRecipe.get(2),(float)1.0);
                 loadImage3.setImageBitmap(image);

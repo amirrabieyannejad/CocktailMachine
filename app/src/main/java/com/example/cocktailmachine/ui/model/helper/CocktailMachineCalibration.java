@@ -100,7 +100,8 @@ public class CocktailMachineCalibration {
                 }
             });
         } catch (JSONException | InterruptedException e) {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
+            GetDialog.errorStatus(activity, e);
         };
     }
 

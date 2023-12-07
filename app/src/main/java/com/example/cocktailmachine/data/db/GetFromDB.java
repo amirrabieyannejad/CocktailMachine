@@ -340,7 +340,11 @@ public class GetFromDB {
     }
 
     public static List<Ingredient> getIngredients(Context context, Recipe recipe) {
-        return (List<Ingredient>) Tables.TABLE_INGREDIENT.getElements(getReadableDatabase(context), recipe);
+        SQLiteDatabase db = getReadableDatabase(context);
+        if(!db.isOpen()){
+            throw new RuntimeException("newly open not open");
+        }
+        return (List<Ingredient>) Tables.TABLE_INGREDIENT.getElements(db, recipe);
     }
 
     public static List<Long> getIngredientIDs(Context context) {
