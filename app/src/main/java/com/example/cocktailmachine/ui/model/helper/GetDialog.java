@@ -1285,7 +1285,6 @@ public class GetDialog {
                             new Postexecute() {
                                 @Override
                                 public void post() {
-
                                     if(allPumpsConfigured(activity)){
                                         GetActivity.goToMenu(activity);
 
@@ -1299,10 +1298,15 @@ public class GetDialog {
             builder.setView(v);
 
             builder.setPositiveButton("Speichern", (dialog, which) -> {
-                dialog.cancel();
-                //volumeChangeView.save();
-                volumeChangeView.send();
+                if(volumeChangeView.check()) {
+                    dialog.cancel();
+                    //volumeChangeView.save();
+                    volumeChangeView.send();
+                }else{
+                    Toast.makeText(activity, "Gib eine gültige Volumenmenge an!", Toast.LENGTH_SHORT).show();
+                }
             });
+
             builder.show();
         }else{
             errorMessageDBSolution(activity);
@@ -1935,6 +1939,10 @@ public class GetDialog {
             pump.save(activity);
             //pump.sendSave(activity, postexecute);
             pump.sendEdit(activity, postexecute);
+        }
+
+        public boolean check() {
+            return getVolume()>0;
         }
     }
 
