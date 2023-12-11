@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,6 +25,7 @@ import java.util.List;
 
 public class ConfigurePumps implements RecyclerViewListenerListIngredience {
 
+    private static final String TAG = "ConfigurePumps";
     //Variablen
     private List<Ingredient> listIngredients;
     private List<Ingredient> filteredListIngredients;
@@ -35,6 +37,7 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
     private Ingredient chosenIngredient;
     private String chosenIngredientString;
     private ConfigurePumps configurePumpsContext;
+    private AlertDialog dialog;
 
     //Konstruktor
     public ConfigurePumps(Activity activity, Pump pump) {
@@ -93,8 +96,11 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
         buttonConfirmChoice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.i(TAG, "Configure pumps: choosen ingredient: "+chosenIngredient);
                 pump.setCurrentIngredient(ConfigurePumps.this.activity, chosenIngredient);
                 pump.save(ConfigurePumps.this.activity);
+                Log.i(TAG, "Configure pumps: pump: "+pump);
+                dialog.cancel();
                 GetDialog.setFixedPumpVolume(ConfigurePumps.this.activity,pump);
             }
         });
@@ -103,7 +109,7 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
 
         //Erzeuge Dialog und zeige diese an
         alertDialog.setView(v);
-        AlertDialog dialog = alertDialog.create();
+        dialog = alertDialog.create();
         dialog.setCancelable(false);
         dialog.show();
 

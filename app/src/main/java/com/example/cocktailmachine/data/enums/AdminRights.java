@@ -128,6 +128,7 @@ public class AdminRights {
         if(Dummy.isDummy) {
             Log.i(TAG, "initUser dummy");
             getSingleton().userId = 3;
+            postexecute.post();
             return;
         }
         try{
@@ -135,7 +136,7 @@ public class AdminRights {
             Log.i(TAG, "initUser done");
         } catch (JSONException | InterruptedException e) {
             //throw new RuntimeException(e);
-            Log.i(TAG, "init User failed");
+            Log.i(TAG, "initUser failed");
             Log.e(TAG, "error",e);
             //Log.e(TAG, "error", e);
         }

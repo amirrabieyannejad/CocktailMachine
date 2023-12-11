@@ -37,6 +37,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     String TAG = "Pump";
 
 
+
+
     /**
      * Get Id.
      *
@@ -255,6 +257,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             Log.i(TAG, "setOverrideEmptyPumps: made Pump "+i);
             Log.i(TAG, "setOverrideEmptyPumps: made Pump "+pump.toString());
             Log.i(TAG, "setOverrideEmptyPumps: control list len "+ getPumps(context).size() );
+
         }
 
         if(!Dummy.isDummy) {
@@ -276,6 +279,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 }
             }, context);
 
+        }else {
+            CocktailStatus.setStatus(CocktailStatus.ready);
+            postexecute.post();
         }
 
         Log.i(TAG, "setOverrideEmptyPumps: control given len "+ numberOfPumps);
@@ -326,7 +332,11 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
 
 
-
+    static void emptyAll(Context context) {
+        for(SQLIngredientPump ip: GetFromDB.getIngredientPumps(context)) {
+            DeleteFromDB.remove(context, ip);
+        }
+    }
 
 
     //JSON Object
@@ -924,6 +934,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
 
     default void sendEdit(Activity activity, Postexecute postexecute){
+        Log.i(TAG, "PUMP_NAME: "+this.getIngredientName(activity));
+        Log.i(TAG, "PUMP: "+this.toString());
         if(Dummy.isDummy){
             postexecute.post();
             return;
@@ -1055,7 +1067,11 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @return
      */
     static List<Pump> getPumps(Context context){
-        return (List<Pump>) GetFromDB.getPumps(context);
+        List<Pump> pumps =  (List<Pump>) GetFromDB.getPumps(context);
+        for(Pump p: pumps){
+            Log.w(TAG, "p name"+p.getIngredientName(context));
+        }
+        return pumps;
     }
 
 

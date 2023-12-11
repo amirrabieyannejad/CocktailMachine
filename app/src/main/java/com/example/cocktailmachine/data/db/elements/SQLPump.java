@@ -1,6 +1,8 @@
 package com.example.cocktailmachine.data.db.elements;
 
 import android.content.Context;
+import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -55,9 +57,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
      */
     @Override
     public String getIngredientName(Context context) {
-        if(this.ingredientPump == null){
-            loadIngredientPump(context);
-        }
+        loadIngredientPump(context);
         return this.loadedIngredientName;
 
         //return "Keine Zutat";
@@ -136,14 +136,12 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     @Override
     public void setCurrentIngredient(Context context, long id) {
         this.setIngredientPumps(context);
-        if(ingredientPump != null) {
-            if (this.ingredientPump.getIngredientID() == id) {
-                return;
-            }
+        if(this.ingredientPump != null) {
             this.ingredientPump.delete(context);
         }
-        this.ingredientPump = new SQLIngredientPump(-1, this.getID(), id);
-        this.ingredientPump.save(context);
+        SQLIngredientPump ip = new SQLIngredientPump(10, this.getID(), id);
+        ip.save(context);
+        this.setIngredientPump(context, ip);
         this.wasChanged();
         this.save(context);
     }
@@ -166,16 +164,18 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
      */
     @Override
     public void setIngredientPump(Context context, SQLIngredientPump ingredientPump) {
-       // Log.v(TAG, "setIngredientPump");
+        Log.v(TAG, "setIngredientPump");
+        Log.v(TAG, "setIngredientPump: "+ingredientPump);
         //this.setIngredientPumps(context);
         if(this.ingredientPump != null){
-           // Log.v(TAG, "setIngredientPump: delete old: "+this.ingredientPump);
+            Log.v(TAG, "setIngredientPump: delete old: "+this.ingredientPump);
             this.ingredientPump.delete(context);
         }
         ExtraHandlingDB.deleteDoublePumpSettingsAndNulls(context);
         this.ingredientPump = ingredientPump;
+        this.ingredientPump.setPumpID(this.getID());
         this.ingredientPump.save(context);
-       // Log.v(TAG, "setIngredientPump: "+ingredientPump.toString());
+        Log.v(TAG, "setIngredientPump: after save "+this.ingredientPump);
         this.save(context);
     }
 
@@ -192,18 +192,18 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
      */
     private void setIngredientPumps(Context context) {
        // Log.v(TAG, "setIngredientPumps");
-        if(this.ingredientPump == null){
-           // Log.v(TAG, "setIngredientPumps: check ingredient pump");
-            List<SQLIngredientPump> ips = GetFromDB.getIngredientPumps(context);
-            for(SQLIngredientPump ip: ips){
-                if(ip.getPumpID()==this.getID()){
-                    this.setIngredientPump(context, ip);
-                   // Log.v(TAG, "setIngredientPumps: setted IngredientPump: "+ip);
-                    return;
-                }
+        //if(this.ingredientPump == null){
+        // Log.v(TAG, "setIngredientPumps: check ingredient pump");
+        List<SQLIngredientPump> ips = GetFromDB.getIngredientPumps(context);
+        for(SQLIngredientPump ip: ips){
+            if(ip.getPumpID()==this.getID()){
+                this.setIngredientPump(context, ip);
+                // Log.v(TAG, "setIngredientPumps: setted IngredientPump: "+ip);
+                return;
             }
-           // Log.v(TAG, "setIngredientPumps: none found");
         }
+           // Log.v(TAG, "setIngredientPumps: none found");
+        //}
         /*else {
            // Log.v(TAG, "checkIngredientPumps: already set: "+this.ingredientPump);
         }
@@ -249,14 +249,16 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
      */
     @Override
     public void fill(Context context, int volume) throws MissingIngredientPumpException {
-       // Log.v(TAG, "fill");
-        this.setIngredientPumps(context);
+        Log.v(TAG, "fill");
+        //this.setIngredientPumps(context);
+        if(this.ingredientPump == null){
+            this.setIngredientPumps(context);
+        }
         if(this.ingredientPump!=null) {
             this.ingredientPump.setVolume(volume);
-           // Log.v(TAG, "fill: setVolume");
+            Log.v(TAG, "fill: setVolume");
             this.ingredientPump.save(context);
-           // Log.v(TAG, "fill: save");
-
+            Log.v(TAG, "fill: save");
         }else{
             throw new MissingIngredientPumpException("There is no IngredientPump in Pump: "+this);
         }
@@ -308,14 +310,23 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
 
     @Override
     public void save(Context context) {
-       // Log.v(TAG, "save");
+
+       Log.v(TAG, "save: "+this);
+       Log.v(TAG, "save: "+this.ingredientPump);
         AddOrUpdateToDB.addOrUpdate(context,this);
-        this.setIngredientPumps(context);
+        //this.setIngredientPumps(context);
         if(this.ingredientPump != null) {
             this.ingredientPump.setPumpID(this.getID());
             this.ingredientPump.save(context);
         }else{
-           // Log.v(TAG, "save: no ingredient pump");
+           Log.v(TAG, "save: no ingredient pump");
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Log.w(TAG, "save: ListOfPumps: ");
+            Pump.getPumps(context).iterator().forEachRemaining(p->Log.w(TAG, "pump: "+p));
+            Log.w(TAG, "save: ingpumps: ");
+            GetFromDB.getIngredientPumps(context).iterator().forEachRemaining(p->Log.w(TAG, "ip: "+p));
         }
 
     }

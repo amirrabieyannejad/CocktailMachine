@@ -31,9 +31,9 @@ public class CocktailMachineCalibration {
         wait.show();
         ExtraHandlingDB.loadForSetUp(activity);
         Log.v(TAG, "start: loaded db");
-        wait.dismiss();
+        wait.cancel();
         AdminRights.login(activity, activity.getLayoutInflater(), dialog -> {
-            Log.v(TAG, "start: login dismissing");
+            Log.v(TAG, "start: login canceling");
 
             Dialog wait_blue = GetDialog.loadingBluetooth(activity);
             wait_blue.show();
@@ -50,11 +50,11 @@ public class CocktailMachineCalibration {
                     }
                     if(AdminRights.isAdmin()){
                         Log.v(TAG, "start: is admin");
-                        wait_blue.dismiss();
+                        wait_blue.cancel();
                         GetDialog.startAutomaticCalibration(activity);
                     }else{
                         Log.v(TAG, "start: is user");
-                        wait_blue.dismiss();
+                        wait_blue.cancel();
                         GetActivity.waitNotSet(activity);
                     }
                 }
@@ -85,16 +85,23 @@ public class CocktailMachineCalibration {
         Dialog wait = GetDialog.loadingBluetooth(activity);
         wait.show();
 
+        if(Dummy.isDummy){
+            wait.cancel();
+            postexecute.post();
+            return;
+        }
+
         try {
             BluetoothSingleton.getInstance().adminReadPumpsStatus(activity, new Postexecute() {
                 @Override
                 public void post() {
-                    wait.dismiss();
+                    wait.cancel();
                     postexecute.post();
                 }
             });
         } catch (JSONException | InterruptedException e) {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
+            GetDialog.errorStatus(activity, e);
         };
     }
 

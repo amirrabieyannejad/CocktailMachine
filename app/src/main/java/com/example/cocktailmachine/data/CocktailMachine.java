@@ -2,6 +2,7 @@ package com.example.cocktailmachine.data;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
@@ -315,7 +316,7 @@ public class CocktailMachine {
                 @Override
                 public void post() {
                     Log.i(TAG, "isCocktailMachineSet: post");
-                    if(Pump.getPumps(activity).size()==0){
+                    if(CocktailMachineCalibration.isIsDone()){
                         Log.i(TAG, "isCocktailMachineSet: NOT SET");
                         notSet.post();
                     }else{
@@ -383,7 +384,8 @@ public class CocktailMachine {
      */
     public static void tareScale(Activity activity){
         Log.i(TAG, "tareScale");
-        AlertDialog wait = GetDialog.loadingBluetooth(activity);
+        Dialog wait = GetDialog.loadingBluetooth(activity);
+        wait.show();
         tareScale(activity, new Postexecute() {
             @Override
             public void post() {
@@ -686,7 +688,7 @@ public class CocktailMachine {
             return queue.indexOf(AdminRights.getUserId());
         }
         Log.i(TAG, "getNumberOfUsersUntilThisUsersTurn: queue is still none");
-        return 1000;
+        return 10;
     }
 
     /**
@@ -1007,7 +1009,9 @@ public class CocktailMachine {
                 if(CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_pumps){
                     CalibrateStatus.setStatus(CalibrateStatus.calibration_empty_container);
                     Log.i(TAG, "tickDummy: Dummy: calibration_pumps -> calibration_empty_container");
-                    Log.i(TAG,"tickDummy: dummyCounter schon: "+dummyCounter);
+                    Log.i(TAG,"tickDummy: dummyCounter : "+dummyCounter);
+                    dummyCounter ++;
+                    Log.i(TAG,"tickDummy: dummyCounter +1: "+dummyCounter);
                 }else if(CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_empty_container){
                     CalibrateStatus.setStatus(CalibrateStatus.calibration_pumps);
                     Log.i(TAG, "tickDummy: Dummy: calibration_empty_container -> calibration_pumps");
@@ -1017,6 +1021,8 @@ public class CocktailMachine {
                     CalibrateStatus.setStatus(CalibrateStatus.calibration_pumps);
                     Log.i(TAG, "tickDummy: ??? -> calibration_pumps");
                 }
+                //dummyCounter++;
+                Log.i(TAG, "tickDummy added: "+dummyCounter);
                 return;
             }
             Log.i(TAG, "tickDummy: dummycounter = 0");
@@ -1155,8 +1161,8 @@ public class CocktailMachine {
     public static void automaticEmptyPumping(Activity activity, Postexecute continueHere, Postexecute errorHandle){
         Log.i(TAG, "automaticEmptyPumping");
         if(Dummy.isDummy) {
-            Log.i(TAG, "automaticEmptyPumping: dummy");
-            dummyCounter = dummyCounter + 1;
+            Log.i(TAG, "automaticEmptyPumping: dummy: "+dummyCounter);
+            dummyCounter += 1;
             Log.i(TAG, "automaticEmptyPumping: dummyCounter + 1: "+dummyCounter);
             tickDummy(activity);
             Log.i(TAG, "automaticEmptyPumping: tickDummy done ");
