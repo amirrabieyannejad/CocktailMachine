@@ -87,7 +87,7 @@ public class Tables {
         for(String cmd: getDeleteCmds()){
             db.execSQL(cmd);
         }
-        db.close();
+        //db.close();
     }
 
     /**
@@ -99,7 +99,7 @@ public class Tables {
         for(String cmd: getCreateCmds()){
             db.execSQL(cmd);
         }
-        db.close();
+        //db.close();
     }
 
 

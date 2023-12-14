@@ -109,7 +109,7 @@ public class TopicTable extends BasicColumn<SQLTopic>{
                 null,
                 null,
                 null);
-        db.close();
+        //db.close();
         return this.cursorToNames(cursor);
 
     }
@@ -129,7 +129,7 @@ public class TopicTable extends BasicColumn<SQLTopic>{
                 null,
                 null,
                 null);
-        db.close();
+        //db.close();
         return this.cursorToNames(cursor);
 
     }
