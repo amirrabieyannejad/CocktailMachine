@@ -493,11 +493,11 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     /**
      * Sends to CocktailMachine to get saved.
      * {"cmd": "define_recipe", "user": 0, "name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}
-     *
-     *
+     * <p>
+     * <p>
      * TODO: find what this is doing :     {"cmd": "add_liquid", "user": 0, "liquid": "water", "volume": 30}
      */
-    default boolean sendSave(Activity activity, Postexecute postexecute){
+    default void sendSave(Activity activity, Postexecute postexecute){
         //TO DO: USE THIS AMIR  * ich habe in adminDefinePump das gleiche. wollen wir vlt.
         // * hier das verwenden vlt. durch:
 
@@ -512,7 +512,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
              */
         save(activity);
         if(Dummy.isDummy){
-            return true;
+            return;
         }
         try {
             JSONArray array = new JSONArray();
@@ -531,11 +531,9 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
                     activity,
                     postexecute);
 
-            return true;
         } catch (JSONException| InterruptedException|NullPointerException e) {
             Log.e(TAG, "error", e);
         }
-        return false;
     }
 
     default boolean sendDelete(Activity activity){
