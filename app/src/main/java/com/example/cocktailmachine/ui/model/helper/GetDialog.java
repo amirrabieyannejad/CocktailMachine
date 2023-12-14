@@ -694,7 +694,9 @@ public class GetDialog {
     public static void startAutomaticCalibration(Activity activity){
 
         Log.v(TAG, "startAutomaticCalibration");
-        //CocktailMachine.automaticCalibration();
+        // CocktailMachine.automaticCalibration();
+
+        // GetActivity.waitNotSet(activity);
 
         if(Dummy.isDummy){
             enterNumberOfPumps(activity);
@@ -713,7 +715,7 @@ public class GetDialog {
         } catch (JSONException | InterruptedException e) {
             Log.v(TAG, "Error: Restart of Calibration failed (GetDialog.startAutomaticCalibration: Z 413) ");
             wait.cancel();
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
 
         }
 
@@ -2450,6 +2452,7 @@ public class GetDialog {
 
     //Alle Pumpenkalibrieren
 
+    /*
     public static void setPumpNumber(Activity activity) {
         Dialog wait = loadingBluetooth(activity);
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -2464,7 +2467,7 @@ public class GetDialog {
                             @Override
                             public void post() {
                                 wait.cancel();
-                                GetDialog.startAutomaticCalibration(activity);
+                                GetDialog.<startAutomaticCalibration>(activity);
                             }
                         });
 
@@ -2491,6 +2494,8 @@ public class GetDialog {
         });
         builder.show();
     }
+
+     */
 
     public static class PumpNumberChangeView extends FloatChangeView{
         private final Postexecute postexecute;

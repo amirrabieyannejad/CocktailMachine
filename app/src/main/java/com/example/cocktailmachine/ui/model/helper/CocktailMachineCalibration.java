@@ -48,6 +48,8 @@ public class CocktailMachineCalibration {
                         Toast.makeText(activity, "Cocktailmaschine ist bereit.", Toast.LENGTH_SHORT).show();
                         return;
                     }
+                    GetActivity.waitNotSet(activity);
+                    /*
                     if(AdminRights.isAdmin()){
                         Log.v(TAG, "start: is admin");
                         wait_blue.cancel();
@@ -55,8 +57,8 @@ public class CocktailMachineCalibration {
                     }else{
                         Log.v(TAG, "start: is user");
                         wait_blue.cancel();
-                        GetActivity.waitNotSet(activity);
                     }
+                     */
                 }
             });
             //Pump.calibratePumpsAndTimes(activity);

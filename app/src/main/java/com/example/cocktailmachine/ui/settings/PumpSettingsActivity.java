@@ -8,7 +8,9 @@ import android.view.View;
 
 import com.example.cocktailmachine.R;
 
+import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Pump;
+import com.example.cocktailmachine.ui.model.helper.GetActivity;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
 /**
@@ -86,7 +88,9 @@ public class PumpSettingsActivity extends AppCompatActivity {
         //open alert dialog pick pump
         //Pump pump = Pump.getPump(0);
         //pump.sendPumpTimes(this, 0,0,0);
-        GetDialog.startAutomaticCalibration(this);
+        //GetDialog.startAutomaticCalibration(this);
+
+        GetActivity.waitNotSet(this);
 
     }
 }
