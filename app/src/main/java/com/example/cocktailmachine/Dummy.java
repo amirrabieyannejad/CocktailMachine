@@ -16,4 +16,5 @@ public class Dummy {
     public final static boolean asAdmin = false;
     //true  -> direkt admin
     //false -> normaler User
+
 }

@@ -103,6 +103,7 @@ public class CocktailMachineCalibration {
             });
         } catch (JSONException | InterruptedException e) {
             //throw new RuntimeException(e);
+            Log.v(TAG, "Error is trigert in CocktailMachineCalibration.askIsDone ");
             GetDialog.errorStatus(activity, e);
         };
     }
