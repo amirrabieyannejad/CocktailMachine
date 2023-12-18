@@ -11,8 +11,8 @@ const float CONTAINER_WEIGHT 	= 50.0;                 	// what counts as a conta
                              	                        	
 const bool AUTOMATIC_SCALE   	= false;                	// progress automatically based on scale changes?
                              	                        	
-const int CAL_TIME1          	= 10 * 1000;            	// calibration times to use (in ms)
-const int CAL_TIME2          	= 20 * 1000;            	
+const int CAL_TIME1          	= 20 * 1000;            	// calibration times to use (in ms)
+const int CAL_TIME2          	= 30 * 1000;            	
 
 // general chip functionality
 #include <Arduino.h>
@@ -858,7 +858,7 @@ calibration:
         if (err != Retcode::success) update_error(err, USER_ADMIN);
 
         // reverse to clear the pump
-        err = pump->run(pump->time_reverse, true);
+        err = pump->run(CAL_TIME1, true);
         if (err != Retcode::success) update_error(err, USER_ADMIN);
 
         sleep_idle(S(1));
