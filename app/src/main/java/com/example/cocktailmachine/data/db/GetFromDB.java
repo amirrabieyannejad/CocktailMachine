@@ -218,7 +218,8 @@ public class GetFromDB {
          return Tables.TABLE_TOPIC.getAllElements(getReadableDatabase(context));
     }
     public static List<? extends Topic> getTopics(Context context, Recipe recipe){
-        return Tables.TABLE_TOPIC.getElements(getReadableDatabase(context), Tables.TABLE_RECIPE_TOPIC.getTopicIDs(getReadableDatabase(context), recipe));
+        List<Long> ids = Tables.TABLE_RECIPE_TOPIC.getTopicIDs(getReadableDatabase(context), recipe);
+        return Tables.TABLE_TOPIC.getElements(getReadableDatabase(context),ids );
     }
 
     public static List<? extends Topic> getTopics(Context context, List<Long> ids){

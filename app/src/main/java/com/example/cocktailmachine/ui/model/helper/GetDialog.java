@@ -1018,7 +1018,7 @@ public class GetDialog {
                 Postexecute continueHere = new Postexecute() {
                     @Override
                     public void post() {
-                        isDone = CocktailMachine.isAutomaticCalibrationDone()||CocktailMachine.needsEmptyingGlass();
+                        isDone = CalibrateStatus.isReady()||CocktailMachine.isAutomaticCalibrationDone()||CocktailMachine.needsEmptyingGlass();
                         Log.v(TAG, "waitingForPumps: waitingQueueCountDown: reduceTick: isDone: " +isDone);
                         if(isDone){
                             setTick(0);
@@ -1095,6 +1095,13 @@ public class GetDialog {
                         } else if (CocktailMachine.needsEmptyingGlass()) {
 
                             GetDialog.emptyGlass(activity);
+                        } else if(CalibrateStatus.isReady()){
+                            CocktailMachineCalibration.askIsDone(activity, new Postexecute() {
+                                @Override
+                                public void post() {
+                                    if(CocktailMachineCalibration.isIsDone()){}
+                                }
+                            });
                         }
 
                     }

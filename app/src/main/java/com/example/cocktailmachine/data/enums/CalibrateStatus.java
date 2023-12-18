@@ -119,4 +119,8 @@ public enum CalibrateStatus {
         }
         return status;
     }
+
+    public static boolean isReady(){
+        return status.compareTo(CalibrateStatus.ready)==0;
+    }
 }
