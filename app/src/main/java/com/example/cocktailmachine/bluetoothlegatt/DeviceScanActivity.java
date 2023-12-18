@@ -53,7 +53,7 @@ import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.ui.BluetoothNotFound;
 import com.example.cocktailmachine.ui.BluetoothTestEnviroment;
-import com.example.cocktailmachine.ui.Menue;
+//import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
 
 import java.util.ArrayList;
@@ -112,7 +112,7 @@ public class DeviceScanActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         getActionBar().setTitle(R.string.title_devices);
         if (Dummy.isDummy) {
-            GetActivity.goToMenu(this);
+            GetActivity.waitNotSet(this);
             return;
         } else {
 
@@ -235,11 +235,10 @@ public class DeviceScanActivity extends ListActivity {
         final BluetoothDevice device = mLeDeviceListAdapter.getDevice(position);
         if (device == null) return;
         Intent intent;
-        if (test) {
-             intent = new Intent(this, BluetoothTestEnviroment.class);
-        } else {
-             intent = new Intent(this, Menue.class);
-        }
+        //if (test) {
+        //} else {
+        //     intent = new Intent(this, Menue.class);
+        //}
 
         BluetoothSingleton settings = BluetoothSingleton.getInstance();
         settings.setEspDeviceName(device.getName());
@@ -249,7 +248,12 @@ public class DeviceScanActivity extends ListActivity {
             bluetoothLeScanner.stopScan(leScanCallback);
             scanning = false;
         }
-        startActivity(intent);
+        if(test) {
+            intent = new Intent(this, BluetoothTestEnviroment.class);
+            startActivity(intent);
+        }else{
+            GetActivity.waitNotSet(this);
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -260,12 +264,9 @@ public class DeviceScanActivity extends ListActivity {
                     Toast.LENGTH_SHORT).show();
             return;
         }
-        Intent intent;
-        if (test) {
-            intent = new Intent(this, BluetoothTestEnviroment.class);
-        } else {
-            intent = new Intent(this, Menue.class);
-        }
+        //Intent intent;
+        //intent = new Intent(this, Menue.class);
+
         BluetoothSingleton settings = BluetoothSingleton.getInstance();
         settings.setEspDeviceName(device.getName());
         settings.setEspDeviceAddress(device.getAddress());
@@ -276,7 +277,12 @@ public class DeviceScanActivity extends ListActivity {
             bluetoothLeScanner.stopScan(leScanCallback);
             scanning = false;
         }
-        startActivity(intent);
+        if (test) {
+            Intent intent = new Intent(this, BluetoothTestEnviroment.class);
+            startActivity(intent);
+        }else{
+            GetActivity.waitNotSet(this);
+        }
     }
 
     @SuppressLint("MissingPermission")

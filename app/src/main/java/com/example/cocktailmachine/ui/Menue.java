@@ -85,15 +85,18 @@ public class Menue extends AppCompatActivity {
             Log.v(TAG, "onCreate: dummy:  not withSetCalibration ");
         }
 
-        CocktailMachineCalibration.askIsDone(this, new Postexecute() {
-            @Override
-            public void post() {
-                if (!CocktailMachineCalibration.isIsDone()){
-                    Log.w(TAG, "onCreate: start calibration ");
-                    CocktailMachineCalibration.start(Menue.this);
+        if(!CocktailMachineCalibration.isIsDone()) {
+            CocktailMachineCalibration.askIsDone(this, new Postexecute() {
+                @Override
+                public void post() {
+                    if (!CocktailMachineCalibration.isIsDone()) {
+                        Log.w(TAG, "onCreate: start calibration ");
+                        CocktailMachineCalibration.start(Menue.this);
+                        Log.v(TAG, "onCreate: start done ");
+                    }
                 }
-            }
-        });
+            });
+        }
 
 
         if(!Dummy.withTestEnvs){

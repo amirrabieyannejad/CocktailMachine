@@ -84,14 +84,14 @@ public class CocktailMachineCalibration {
 
 
     public static void askIsDone(Activity activity, Postexecute postexecute){
-        Dialog wait = GetDialog.loadingBluetooth(activity);
-        wait.show();
+
 
         if(Dummy.isDummy){
-            wait.cancel();
             postexecute.post();
             return;
         }
+        Dialog wait = GetDialog.loadingBluetooth(activity);
+        wait.show();
 
         try {
             BluetoothSingleton.getInstance().adminReadPumpsStatus(activity, new Postexecute() {

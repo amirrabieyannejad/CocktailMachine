@@ -180,6 +180,8 @@ public class GetDialog {
 
 
             List<Recipe> sublistRecipe = getListOfRandomRecipe(3,activity);
+            Log.e(TAG, "Wait sublistRecipe: "+sublistRecipe);
+
 
             try {
                 Bitmap image = BildgeneratorGlas.bildgenerationGlas(activity, sublistRecipe.get(0),(float)1.0);
@@ -188,7 +190,9 @@ public class GetDialog {
                 loadImage2.setImageBitmap(image);
                 image = BildgeneratorGlas.bildgenerationGlas(activity,sublistRecipe.get(2),(float)1.0);
                 loadImage3.setImageBitmap(image);
+                Log.e(TAG, "Wait try done");
             } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
+                Log.e(TAG, "Wait", e);
                 throw new RuntimeException(e);
             }
 
