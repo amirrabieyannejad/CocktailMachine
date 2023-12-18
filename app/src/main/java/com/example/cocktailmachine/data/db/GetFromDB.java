@@ -218,10 +218,7 @@ public class GetFromDB {
          return Tables.TABLE_TOPIC.getAllElements(getReadableDatabase(context));
     }
     public static List<? extends Topic> getTopics(Context context, Recipe recipe){
-        SQLiteDatabase db = getReadableDatabase(context);
-        List<? extends Topic> res = Tables.TABLE_TOPIC.getElements(db, Tables.TABLE_RECIPE_TOPIC.getTopicIDs(db, recipe));
-        db.close();
-        return res;
+        return Tables.TABLE_TOPIC.getElements(getReadableDatabase(context), Tables.TABLE_RECIPE_TOPIC.getTopicIDs(getReadableDatabase(context), recipe));
     }
 
     public static List<? extends Topic> getTopics(Context context, List<Long> ids){
@@ -245,24 +242,22 @@ public class GetFromDB {
     }
 
     public static List<Long> getTopicIDs(Context context, Recipe recipe) {
-        SQLiteDatabase db = getReadableDatabase(context);
-        List<Long> res = Tables.TABLE_TOPIC.getIDs(db, Tables.TABLE_RECIPE_TOPIC.getTopicIDs(db, recipe));
-        db.close();
+        //SQLiteDatabase db = getReadableDatabase(context);
+        List<Long> res = Tables.TABLE_TOPIC.getIDs(getReadableDatabase(context), Tables.TABLE_RECIPE_TOPIC.getTopicIDs(getReadableDatabase(context), recipe));
         return res;
     }
 
 
     public static List<Long> getTopicIDs(Context context) {
-        SQLiteDatabase db = getReadableDatabase(context);
-        List<Long> res = Tables.TABLE_TOPIC.getIDs(db);
-        db.close();
+        //SQLiteDatabase db = getReadableDatabase(context);
+        List<Long> res = Tables.TABLE_TOPIC.getIDs(getReadableDatabase(context));
         return res;
     }
 
     public static List<String> loadTopicTitles(Context context) {
-        SQLiteDatabase db = getReadableDatabase(context);
-        List<String> res = Tables.TABLE_TOPIC.getNames(db);
-        db.close();
+        //SQLiteDatabase db = getReadableDatabase(context);
+        List<String> res = Tables.TABLE_TOPIC.getNames(getReadableDatabase(context));
+        //db.close();
         return res;
     }
 
