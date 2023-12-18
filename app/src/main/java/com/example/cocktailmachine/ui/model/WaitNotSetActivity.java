@@ -9,8 +9,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.CocktailMachine;
+import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
@@ -23,6 +25,12 @@ public class WaitNotSetActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wait_not_set);
+
+        ExtraHandlingDB.loadPrepedDB(this);
+        if(Dummy.isDummy){
+            ExtraHandlingDB.loadDummy(this);
+            Log.v(TAG, "onCreate: dummy: load Dummy");
+        }
 
         if(AdminRights.isAdmin()){
             GetDialog.startAutomaticCalibration(this);

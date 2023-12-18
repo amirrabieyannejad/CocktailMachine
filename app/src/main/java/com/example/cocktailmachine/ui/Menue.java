@@ -62,7 +62,7 @@ public class Menue extends AppCompatActivity {
         }
 
          */
-        ExtraHandlingDB.loadPrepedDB(this);
+        //ExtraHandlingDB.loadPrepedDB(this);
         if(Dummy.asAdmin){
             Log.v(TAG, "onCreate: dummy asadmin");
             AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.Admin);
@@ -75,10 +75,6 @@ public class Menue extends AppCompatActivity {
             Log.v(TAG, "onCreate: User Modus");
             binding.activityMenueLogout.setVisibility(View.GONE);
             binding.activityMenueLogin.setVisibility(View.VISIBLE);
-        }
-        if(Dummy.isDummy){
-            ExtraHandlingDB.loadDummy(this);
-            Log.v(TAG, "onCreate: dummy: load Dummy");
         }
         if(!Dummy.withSetCalibration){
             CocktailMachineCalibration.setIsDone(true);

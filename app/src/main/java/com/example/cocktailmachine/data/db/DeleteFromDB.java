@@ -34,27 +34,26 @@ public class DeleteFromDB {
     //REMOVE in DB and //buffer
     public static void remove(Context context, Ingredient ingredient) {
         //TO DO: delete from recipes
-       // Log.v(TAG, "remove");
-        SQLiteDatabase db = getWritableDatabase(context);
-        Tables.TABLE_INGREDIENT.deleteElement(db, ingredient.getID());
-        Tables.TABLE_INGREDIENT_URL.deleteWithOwnerId(db, ingredient.getID());
+        // Log.v(TAG, "remove");
+        //SQLiteDatabase db = getWritableDatabase(context);
+        Tables.TABLE_INGREDIENT.deleteElement(getWritableDatabase(context), ingredient.getID());
+        Tables.TABLE_INGREDIENT_URL.deleteWithOwnerId(getWritableDatabase(context), ingredient.getID());
         //Buffer.getSingleton(context).removeFrom//Buffer(ingredient);
     }
 
     public static void remove(Context context, Recipe recipe) {
-       // Log.v(TAG, "remove");
-        SQLiteDatabase db = getWritableDatabase(context);
-        Tables.TABLE_RECIPE.deleteElement(db, recipe.getID());
-        Tables.TABLE_RECIPE_URL.deleteWithOwnerId(db, recipe.getID());
+        // Log.v(TAG, "remove");
+        //SQLiteDatabase db = getWritableDatabase(context);
+        Tables.TABLE_RECIPE.deleteElement(getWritableDatabase(context), recipe.getID());
+        Tables.TABLE_RECIPE_URL.deleteWithOwnerId(getWritableDatabase(context), recipe.getID());
         //Buffer.getSingleton(context).removeFrom//Buffer(recipe);
     }
 
     public static void remove(Context context, Pump pump) {
         //TO DO: check available
        // Log.v(TAG, "remove");
-        SQLiteDatabase db = getWritableDatabase(context);
-        Tables.TABLE_PUMP.deleteElement(db, pump.getID());
-        Tables.TABLE_INGREDIENT_PUMP.deleteElement(db, GetFromDB.getIngredientPump(context, pump)); //Buffer.getSingleton().getIngredientPump(pump));
+        Tables.TABLE_PUMP.deleteElement(getWritableDatabase(context), pump.getID());
+        Tables.TABLE_INGREDIENT_PUMP.deleteElement(getWritableDatabase(context), GetFromDB.getIngredientPump(context, pump)); //Buffer.getSingleton().getIngredientPump(pump));
         //Buffer.getSingleton(context).removeFrom//Buffer(pump);
     }
 
