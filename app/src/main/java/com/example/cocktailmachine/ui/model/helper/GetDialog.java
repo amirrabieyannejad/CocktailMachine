@@ -1099,7 +1099,35 @@ public class GetDialog {
                             CocktailMachineCalibration.askIsDone(activity, new Postexecute() {
                                 @Override
                                 public void post() {
-                                    if(CocktailMachineCalibration.isIsDone()){}
+                                    if(CocktailMachineCalibration.isIsDone()){
+                                        Toast.makeText(activity, "Das Setup ist vollständig!", Toast.LENGTH_LONG).show();
+                                        Postexecute continueHere = new Postexecute() {
+                                            @Override
+                                            public void post() {
+                                                Pump.emptyAll(activity);
+                                                new DialogListOfPumps(activity);
+                                                //GetDialog.setIngredientsForPumps(activity);
+                                            }
+                                        };
+                                        Postexecute doAgain = new Postexecute() {
+                                            @Override
+                                            public void post() {
+                                                CocktailMachine.automaticEnd(activity, continueHere,
+                                                        GetDialog.sendTwice(activity,
+                                                                "",
+                                                                ""));
+
+                                            }
+                                        };
+
+                                        HashMap<ErrorStatus, Postexecute> errorMap = new HashMap<>();
+                                        errorMap.put(ErrorStatus.calibration_command_invalid_at_this_time, doAgain);
+
+                                        CocktailMachine.automaticEnd(activity, continueHere,
+                                                ErrorStatus.errorHandle(activity, errorMap, continueHere));
+                                    }else{
+                                        GetDialog.errorMessageReader(activity);
+                                    }
                                 }
                             });
                         }
