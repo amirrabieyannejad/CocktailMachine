@@ -379,7 +379,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 }
                  */
 
-                JSONArray cal = json.getJSONArray("cal");
+                JSONArray cal = jsonTemp.getJSONArray("cal");
                 if(cal.length()==0){
                     CocktailMachineCalibration.setIsDone(false);
                 }
