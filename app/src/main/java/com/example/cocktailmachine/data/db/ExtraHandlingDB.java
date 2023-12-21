@@ -133,4 +133,8 @@ public class ExtraHandlingDB {
     public static void loadPrepedDB(Context context) {
         DatabaseConnection.loadIfNotDoneDBFromAssets(context);
     }
+
+    public static boolean hasLoadedDB(Context context){
+        return DatabaseConnection.checkDataBaseFile(context);
+    }
 }

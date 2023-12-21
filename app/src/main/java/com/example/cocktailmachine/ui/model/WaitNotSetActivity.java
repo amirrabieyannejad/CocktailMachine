@@ -27,21 +27,23 @@ public class WaitNotSetActivity extends AppCompatActivity {
         setContentView(R.layout.activity_wait_not_set);
 
         ExtraHandlingDB.loadPrepedDB(this);
+        Log.i(TAG, "loaded");
+
         if(Dummy.isDummy){
             ExtraHandlingDB.loadDummy(this);
             Log.v(TAG, "onCreate: dummy: load Dummy");
         }
-
-        if(AdminRights.isAdmin()){
-            GetDialog.startAutomaticCalibration(this);
-        }
     }
 
     public void login(View view) {
-        Activity a = this;
+        if(ExtraHandlingDB.hasLoadedDB(this)){
+            Toast.makeText(this, "Bitte warte noch einen Moment!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if(AdminRights.isAdmin()) {
             Log.i(TAG, "login: is admin");
-            GetDialog.startAutomaticCalibration(a);
+            GetDialog.startAutomaticCalibration(this);
             return;
             //GetActivity.goToMenu(a);
         }
@@ -49,7 +51,7 @@ public class WaitNotSetActivity extends AppCompatActivity {
             Log.i(TAG, "login: is admin");
             dialog.dismiss();
             if(AdminRights.isAdmin()) {
-                GetDialog.startAutomaticCalibration(a);
+                GetDialog.startAutomaticCalibration(WaitNotSetActivity.this);
                 //GetActivity.goToMenu(a);
             }
         });

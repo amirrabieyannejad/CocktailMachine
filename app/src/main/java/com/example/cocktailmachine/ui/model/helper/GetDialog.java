@@ -5,8 +5,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.database.CursorWindowAllocationException;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -21,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import com.example.cocktailmachine.Dummy;
@@ -3172,7 +3175,13 @@ public class GetDialog {
         List<Recipe> output = new LinkedList<>();
         for (int i = 0; i < numberOfRecipes;i++){
             int recipeNr = random.nextInt(5000);
-            Recipe recipe = Recipe.getRecipe(activity,recipeNr);
+            Recipe recipe = null;
+            try {
+                 recipe = Recipe.getRecipe(activity, recipeNr);
+            }catch (Exception e){
+                Log.e(TAG,"getListOfRandomRecipe: error", e);
+                Log.e(TAG, "getListOfRandomRecipe: catched");
+            }
             if (recipe == null){
                 i--;
             }else{

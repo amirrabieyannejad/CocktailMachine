@@ -98,7 +98,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
         return  DatabaseConnection.singleton;
     }
 
-    private static boolean checkDataBaseFile(Context context) {
+    static boolean checkDataBaseFile(Context context) {
         String db_path;
         if(context!=null) {
             db_path = "/data/data/" + context.getPackageName() + "/databases/";
