@@ -36,7 +36,7 @@ public class WaitNotSetActivity extends AppCompatActivity {
     }
 
     public void login(View view) {
-        if(ExtraHandlingDB.hasLoadedDB(this)){
+        if(!ExtraHandlingDB.hasLoadedDB(this)){
             Toast.makeText(this, "Bitte warte noch einen Moment!", Toast.LENGTH_SHORT).show();
             return;
         }
