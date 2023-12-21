@@ -1634,7 +1634,6 @@ Retcode CmdReset::execute() {
   return Retcode::success;
 };
 
-
 void reset_calibration_data() {
   cal_pass = 0;
   cal_pump = 0;
