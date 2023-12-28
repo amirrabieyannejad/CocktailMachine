@@ -53,8 +53,32 @@ public class DeleteFromDB {
         //TO DO: check available
        // Log.v(TAG, "remove");
         Tables.TABLE_PUMP.deleteElement(getWritableDatabase(context), pump.getID());
-        Tables.TABLE_INGREDIENT_PUMP.deleteElement(getWritableDatabase(context), GetFromDB.getIngredientPump(context, pump)); //Buffer.getSingleton().getIngredientPump(pump));
+        SQLIngredientPump ip = GetFromDB.getIngredientPump(context, pump);
+        Tables.TABLE_INGREDIENT_PUMP.deleteElement(getWritableDatabase(context), ip ); //Buffer.getSingleton().getIngredientPump(pump));
         //Buffer.getSingleton(context).removeFrom//Buffer(pump);
+        /*
+        16:44:24.078 E FATAL EXCEPTION: main
+Process: com.example.cocktailmachine, PID: 29720
+java.lang.IllegalStateException: attempt to re-open an already-closed object: SQLiteDatabase: /data/user/0/com.example.cocktailmachine/databases/DB.db
+at android.database.sqlite.SQLiteClosable.acquireReference(SQLiteClosable.java:55)
+at android.database.sqlite.SQLiteDatabase.delete(SQLiteDatabase.java:1889)
+at com.example.cocktailmachine.data.db.tables.BasicColumn.deleteElement(BasicColumn.java:1026)
+at com.example.cocktailmachine.data.db.tables.BasicColumn.deleteElement(BasicColumn.java:1021)
+at com.example.cocktailmachine.data.db.DeleteFromDB.remove(DeleteFromDB.java:56)
+at com.example.cocktailmachine.data.Pump.updatePumpStatus(Pump.java:400)
+at com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton$53.toSave(BluetoothSingleton.java:2404)
+at com.example.cocktailmachine.bluetoothlegatt.WaitForBroadcastReceiver.onPostExecute(WaitForBroadcastReceiver.java:155)
+at com.example.cocktailmachine.bluetoothlegatt.WaitForBroadcastReceiver.onPostExecute(WaitForBroadcastReceiver.java:18)
+at android.os.AsyncTask.finish(AsyncTask.java:660)
+at android.os.AsyncTask.-wrap1(AsyncTask.java)
+at android.os.AsyncTask$InternalHandler.handleMessage(AsyncTask.java:677)
+at android.os.Handler.dispatchMessage(Handler.java:102)
+at android.os.Looper.loop(Looper.java:154)
+at android.app.ActivityThread.main(ActivityThread.java:6776)
+at java.lang.reflect.Method.invoke(Native Method)
+at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:1496)
+at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1386)
+         */
     }
 
 

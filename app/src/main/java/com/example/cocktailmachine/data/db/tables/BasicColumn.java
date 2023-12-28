@@ -1023,7 +1023,10 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
 
     public void deleteElement(SQLiteDatabase db,
                               long id){
-        db.delete(getName(), this._ID+" = ?", new String[]{Long.toString(id)});
+        if(!db.isOpen()){
+            Log.e(TAG, "db is closed");
+        }
+        db.delete(getName(), this._ID+" = "+id,new String[0]);
         db.close();
     }
 

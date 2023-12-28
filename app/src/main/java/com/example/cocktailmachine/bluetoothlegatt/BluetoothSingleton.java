@@ -47,42 +47,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 
-
-
 public class BluetoothSingleton {
 
-    private final static String TAG = BluetoothSingleton.class.getSimpleName();
-    private static final int PERMISSIONS_REQUEST_CODE = 191;
-    @SuppressLint("InlinedApi")
-    private static final String[] ANDROID_12_BLE_PERMISSIONS = new String[]{
-            Manifest.permission.BLUETOOTH_SCAN,
-            Manifest.permission.BLUETOOTH_CONNECT,
-            Manifest.permission.BLUETOOTH_ADVERTISE,
-            Manifest.permission.ACCESS_FINE_LOCATION
-    };
-    private static final String[] BLE_PERMISSIONS = new String[]{
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-    };
-    //Variable
-    private static BluetoothSingleton instance;
-    public String EspResponseValue;
-    public String EspDeviceName;
-    public String EspDeviceAddress;
-    public BluetoothLeService mBluetoothLeService;
-    private Boolean notificationFlag = false;
-    public Boolean asyncFlag = false;
-    public Boolean busy = false;
-    public String mBluetoothDeviceAddress;
-    private BluetoothSingleton singleton;
-
-    // Code to manage Service lifecycle.
-
-
-    ///////////////////// START TO GET RIDE OF SERVICE/////////////////////////////
-    private BluetoothManager mBluetoothManager;
-    private BluetoothAdapter mBluetoothAdapter;
-    public BluetoothGatt mBluetoothGatt;
     public final static String ACTION_GATT_CONNECTED =
             "com.example.bluetooth.le.ACTION_GATT_CONNECTED";
     public final static String ACTION_GATT_DISCONNECTED =
@@ -119,11 +85,12 @@ public class BluetoothSingleton {
     // Last Change Status UUID Wrappers
     public final static String CHARACTERISTIC_STATUS_LAST_CHANGE =
             "Status Last Change Characteristic";
+
+    // Code to manage Service lifecycle.
     public final static String CHARACTERISTIC_STATUS_SCALE =
             "Status Scale Characteristic";
     public final static String CHARACTERISTIC_STATUS_ERROR =
             "Status Error Characteristic";
-
     // Pumps Status UUID Wrappers
     public final static String CHARACTERISTIC_STATUS_PUMPS =
             "Status Pumps Characteristic";
@@ -160,21 +127,35 @@ public class BluetoothSingleton {
     public final static UUID UUID_STATUS_ERROR_CHARACTERISTIC =
             UUID.fromString(SampleGattAttributes.lookupUuid
                     ("Status Error Characteristic"));
-
-
-    private BluetoothGattCharacteristic mNotifyCharacteristic;
+    private final static String TAG = BluetoothSingleton.class.getSimpleName();
+    private static final int PERMISSIONS_REQUEST_CODE = 191;
+    @SuppressLint("InlinedApi")
+    private static final String[] ANDROID_12_BLE_PERMISSIONS = new String[]{
+            Manifest.permission.BLUETOOTH_SCAN,
+            Manifest.permission.BLUETOOTH_CONNECT,
+            Manifest.permission.BLUETOOTH_ADVERTISE,
+            Manifest.permission.ACCESS_FINE_LOCATION
+    };
+    private static final String[] BLE_PERMISSIONS = new String[]{
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+    };
+    //Variable
+    private static BluetoothSingleton instance;
+    public String EspResponseValue;
+    public String EspDeviceName;
+    public String EspDeviceAddress;
+    public BluetoothLeService mBluetoothLeService;
+    public Boolean asyncFlag = false;
+    public Boolean busy = false;
+    public String mBluetoothDeviceAddress;
+    public String queue = "";
+    public BluetoothGatt mBluetoothGatt;
     public String value;
     public String result;
-    private Thread threadWaitForWriteNotification;
-    private Thread threadWaitForReadNotification;
-    private Thread threadReadSecondValue;
-    private Thread threadConnection;
-    private Thread threadWriteCharacteristic;
-    private Thread threadReadCharacteristic;
-
-
     public boolean connect = false;
-    private boolean isReading;
+    private Boolean notificationFlag = false;
+    private BluetoothSingleton singleton;
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @SuppressLint("MissingPermission")
         @Override
@@ -252,8 +233,74 @@ public class BluetoothSingleton {
 
         }
     };
+    // Handles various events fired by the Service.
+    // ACTION_GATT_CONNECTED: connected to a GATT server.
+    // ACTION_GATT_DISCONNECTED: disconnected from a GATT server.
+    // ACTION_GATT_SERVICES_DISCOVERED: discovered GATT services.
+    // ACTION_DATA_AVAILABLE: received data from the device.  This can be a result of read
+    //                        or notification operations.
+    private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            singleton = BluetoothSingleton.getInstance();
+            boolean mConnected;
+            if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
+                mConnected = true;
+            } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
+                mConnected = false;
+            } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
+                // Show all the supported services and characteristics on the user interface.
+            } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
+                singleton.setEspResponseValue(null);
+                displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
+                Log.w(TAG, "Broadcast Receiver Action Data Available");
 
+            }
+        }
+    };
+    ///////////////////// START TO GET RIDE OF SERVICE/////////////////////////////
+    private BluetoothManager mBluetoothManager;
+    private BluetoothAdapter mBluetoothAdapter;
+    private BluetoothGattCharacteristic mNotifyCharacteristic;
+    private Thread threadWaitForWriteNotification;
+    private Thread threadWaitForReadNotification;
+    private Thread threadReadSecondValue;
+    private Thread threadConnection;
+    private Thread threadWriteCharacteristic;
+    private Thread threadReadCharacteristic;
+    private boolean isReading;
 
+    //Constructor
+    private BluetoothSingleton() {
+
+    }
+
+    public static BluetoothSingleton getInstance() {
+        if (instance == null) {
+            instance = new BluetoothSingleton();
+        }
+        return instance;
+
+    }
+
+    private static IntentFilter makeGattUpdateIntentFilter() {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECTED);
+        intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED);
+        intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
+        intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
+        return intentFilter;
+    }
+
+    /*
+             COMMAND METHODS TOTAL:19
+     */
+    static void checkIfNotEmpty(String queue) throws NotEmptyException {
+        if (!queue.isEmpty()) {
+            throw new NotEmptyException("Queue is not empty!");
+        }
+    }
 
     @SuppressLint("MissingPermission")
     private boolean connect(Activity activity, String address) {
@@ -369,6 +416,7 @@ public class BluetoothSingleton {
         singleton.connect(activity, singleton.getEspDeviceAddress());
         return true;
     }
+
     private boolean initialize(Activity activity) {
         singleton = BluetoothSingleton.getInstance();
         // For API level 18 and above, get a reference to BluetoothAdapter through
@@ -391,6 +439,9 @@ public class BluetoothSingleton {
         Log.w(TAG, "STAGE_0:Bluetooth Adapter has been specified!");
         return true;
     }
+
+
+    ///////////////////////////END TO GET RIDE OF SERVICE
 
     @SuppressLint("MissingPermission")
     public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
@@ -432,7 +483,6 @@ public class BluetoothSingleton {
                     BluetoothGattCharacteristic.PROPERTY_NOTIFY);
         }
     }
-
 
     @SuppressLint("MissingPermission")
     public String readCharacteristicValue(String server, String characteristic) throws
@@ -499,7 +549,6 @@ public class BluetoothSingleton {
 
     }
 
-
     @SuppressLint("MissingPermission")
     public Boolean writeCharacteristic(String value, Boolean admin) throws InterruptedException {
         singleton = BluetoothSingleton.getInstance();
@@ -552,7 +601,7 @@ public class BluetoothSingleton {
             }
         };
         threadWriteCharacteristic = new Thread(writeCharacteristic);
-            threadConnection.join();
+        threadConnection.join();
         threadWriteCharacteristic.start();
         return true;
 
@@ -566,12 +615,12 @@ public class BluetoothSingleton {
             Log.w(TAG, "STAGE_1:BluetoothAdapter not initialized");
             return null;
         }
-       // Log.w(TAG, "STAGE_1:getBluetoothGattCharacteristic: BluetoothAdapter" +
-         //       " and BluetoothGatt are still available!");
+        // Log.w(TAG, "STAGE_1:getBluetoothGattCharacteristic: BluetoothAdapter" +
+        //       " and BluetoothGatt are still available!");
         BluetoothGattService mCustomService = singleton.mBluetoothGatt.getService
                 (UUID.fromString(SampleGattAttributes.lookupUuid(service)));
         if (mCustomService == null) {
-             Log.w(TAG, "getBluetoothGattCharacteristic: Custom BLE Service not found");
+            Log.w(TAG, "getBluetoothGattCharacteristic: Custom BLE Service not found");
             return null;
         }
         /* get the characteristic from the service */
@@ -579,59 +628,6 @@ public class BluetoothSingleton {
         return (mCustomService.getCharacteristic(UUID.fromString
                 (SampleGattAttributes.lookupUuid(characteristic))));
 
-    }
-
-
-    ///////////////////////////END TO GET RIDE OF SERVICE
-
-
-    // Handles various events fired by the Service.
-    // ACTION_GATT_CONNECTED: connected to a GATT server.
-    // ACTION_GATT_DISCONNECTED: disconnected from a GATT server.
-    // ACTION_GATT_SERVICES_DISCOVERED: discovered GATT services.
-    // ACTION_DATA_AVAILABLE: received data from the device.  This can be a result of read
-    //                        or notification operations.
-    private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            singleton = BluetoothSingleton.getInstance();
-            boolean mConnected;
-            if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
-                mConnected = true;
-            } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
-                mConnected = false;
-            } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
-                // Show all the supported services and characteristics on the user interface.
-            } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-                singleton.setEspResponseValue(null);
-                displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
-                Log.w(TAG, "Broadcast Receiver Action Data Available");
-
-            }
-        }
-    };
-
-    //Constructor
-    private BluetoothSingleton() {
-
-    }
-
-    public static BluetoothSingleton getInstance() {
-        if (instance == null) {
-            instance = new BluetoothSingleton();
-        }
-        return instance;
-
-    }
-
-    private static IntentFilter makeGattUpdateIntentFilter() {
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECTED);
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED);
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
-        intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
-        return intentFilter;
     }
 
     public void setEspDeviceName(String espDeviceName) {
@@ -671,7 +667,6 @@ public class BluetoothSingleton {
         else
             ActivityCompat.requestPermissions(activity, BLE_PERMISSIONS, requestCode);
     }
-
 
     @SuppressLint("MissingPermission")
     private void waitForWriteNotification() throws InterruptedException {
@@ -744,7 +739,7 @@ public class BluetoothSingleton {
                 try {
                     while (!notificationFlag) {
                         try {
-                            Log.w(TAG, "STAGE_2:wait for target value...!") ;
+                            Log.w(TAG, "STAGE_2:wait for target value...!");
                             Thread.sleep(timeout);
                             timeoutMax = timeoutMax + 500;
                             if (timeoutMax == 7000) {
@@ -789,17 +784,17 @@ public class BluetoothSingleton {
             singleton.writeCharacteristic(jsonObject.toString(), admin);
             Log.w(TAG, "STAGE_2: wait for writing characteristic..!");
         }
-            Handler handler1 = new Handler();
-            handler1.postDelayed(() -> {
-                        try {
-                            singleton.readCharacteristicValue(service,
-                                    characteristic);
-                            Log.w(TAG, "send readCharacteristicValue Command..!");
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                    },
-                    2000);
+        Handler handler1 = new Handler();
+        handler1.postDelayed(() -> {
+                    try {
+                        singleton.readCharacteristicValue(service,
+                                characteristic);
+                        Log.w(TAG, "send readCharacteristicValue Command..!");
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                },
+                2000);
 
     }
 
@@ -818,6 +813,7 @@ public class BluetoothSingleton {
                 (admin) ? CHARACTERISTIC_MESSAGE_ADMIN : CHARACTERISTIC_MESSAGE_USER);
 
     }
+
     private void sleepThread() throws InterruptedException {
         int timeout = 1000;
         int timeoutMax = 0;
@@ -831,10 +827,6 @@ public class BluetoothSingleton {
         }
     }
 
-    /*
-             COMMAND METHODS TOTAL:19
-     */
-
     /**
      * initUser(USER): register as a new user and receive a user ID
      * JSON-sample: {"cmd": "init_user", "name": "Jane"}
@@ -847,24 +839,33 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void userInitUser(String name, Activity activity) throws JSONException,
             InterruptedException {
-
-        Log.i(TAG, "BluetoothSingleton initUser start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "init_user");
-        jsonObject.put("name", name);
-        singleton.sendReadWrite(jsonObject, false, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
-            @Override
-            public void toSave() {
-                Log.w(TAG, "To Save: " + this.getJsonResult());
-                AdminRights.setUser(this.getJsonResult());
-                Log.i(TAG, "BluetoothSingleton initUser end");
-            }
-        };
-        wfb.execute();
+        Log.w(TAG, "BluetoothSingleton initUser start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "userInitUser";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "init_user");
+            jsonObject.put("name", name);
+            singleton.sendReadWrite(jsonObject, false, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+                @Override
+                public void toSave() {
+                    Log.w(TAG, "To Save: " + this.getJsonResult());
+                    AdminRights.setUser(this.getJsonResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton initUser end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send userInitUser but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
 
 
     }
@@ -882,25 +883,33 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void userInitUser(String name, Activity activity, Postexecute postexecute) throws JSONException,
             InterruptedException {
-
-        Log.i(TAG, "BluetoothSingleton userInitUser(PE) start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "init_user");
-        jsonObject.put("name", name);
-        singleton.sendReadWrite(jsonObject, false, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( postexecute) {
-            @Override
-            public void toSave() {
-                Log.w(TAG, "To Save: " + this.getJsonResult());
-                AdminRights.setUser(this.getJsonResult());
-                Log.i(TAG, "BluetoothSingleton userInitUser(PE) end");
-            }
-        };
-        wfb.execute();
-
+        Log.w(TAG, "BluetoothSingleton userInitUser(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "userInitUser(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "init_user");
+            jsonObject.put("name", name);
+            singleton.sendReadWrite(jsonObject, false, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() {
+                    Log.w(TAG, "To Save: " + this.getJsonResult());
+                    AdminRights.setUser(this.getJsonResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton userInitUser(PE) end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send userInitUser(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
 
     }
 
@@ -919,29 +928,40 @@ public class BluetoothSingleton {
 
     public void adminDefinePumps(Activity activity, String liquid, float volume, int quantity)
             throws JSONException, InterruptedException {
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        // generate JSON Format
-        JSONObject jsonObject = new JSONObject();
+        Log.w(TAG, "BluetoothSingleton adminDefinePumps start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminDefinePumps";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            // generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "define_pumps");
+            jsonObject.put("user", 0);
+            jsonObject.put("liquid", liquid);
+            jsonObject.put("volume", volume);
+            jsonObject.put("quantity", quantity);
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
 
-        jsonObject.put("cmd", "define_pumps");
-        jsonObject.put("user", 0);
-        jsonObject.put("liquid", liquid);
-        jsonObject.put("volume", volume);
-        jsonObject.put("quantity", quantity);
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
+                    Log.w(TAG, "To Save: " + this.getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminDefinePumps end");
                 }
-
-                Log.w(TAG, "To Save: " + this.getStringResult());
-            }
-        };
-        wfb.execute();
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminDefinePumps but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
@@ -964,31 +984,42 @@ public class BluetoothSingleton {
                                  Postexecute postexecute,
                                  String liquid, float volume, int quantity)
             throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton adminDefinePumps(PE) start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        // generate JSON Format
-        JSONObject jsonObject = new JSONObject();
+        Log.w(TAG, "BluetoothSingleton adminDefinePumps(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminDefinePumps(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            // generate JSON Format
+            JSONObject jsonObject = new JSONObject();
 
-        jsonObject.put("cmd", "define_pumps");
-        jsonObject.put("user", 0);
-        jsonObject.put("liquid", liquid);
-        jsonObject.put("volume", volume);
-        jsonObject.put("quantity", quantity);
-        singleton.sendReadWrite(jsonObject, true, true);
+            jsonObject.put("cmd", "define_pumps");
+            jsonObject.put("user", 0);
+            jsonObject.put("liquid", liquid);
+            jsonObject.put("volume", volume);
+            jsonObject.put("quantity", quantity);
+            singleton.sendReadWrite(jsonObject, true, true);
 
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+
+                    Log.w(TAG, "To Save: " + this.getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminDefinePumps(PE) end");
                 }
+            };
+            wfb.execute();
 
-                Log.w(TAG, "To Save: " + this.getStringResult());
-                Log.i(TAG, "BluetoothSingleton adminDefinePumps(PE) end");
-            }
-        };
-        wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminDefinePumps(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
@@ -1010,30 +1041,42 @@ public class BluetoothSingleton {
                                 String liquid,
                                 float volume)
             throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton adminDefinePump start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        // generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "define_pump");
-        jsonObject.put("user", 0);
-        jsonObject.put("liquid", liquid);
-        jsonObject.put("volume", volume);
-        jsonObject.put("slot", slot);
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
+        Log.w(TAG, "BluetoothSingleton adminDefinePump start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminDefinePump";
 
-                Log.w(TAG, "To Save: " + this.getStringResult());
-                Log.i(TAG, "BluetoothSingleton adminDefinePump end");
-            }
-        };
-        wfb.execute();
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            // generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "define_pump");
+            jsonObject.put("user", 0);
+            jsonObject.put("liquid", liquid);
+            jsonObject.put("volume", volume);
+            jsonObject.put("slot", slot);
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+
+                    Log.w(TAG, "To Save: " + this.getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminDefinePump end");
+                }
+            };
+            wfb.execute();
+
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminDefinePump but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
@@ -1050,34 +1093,45 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminEditPump(String liquid, float volume, int slot, Activity activity, Postexecute
-                              postexecute)
+            postexecute)
             throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton adminEditPump(PE) start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        // generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "edit_pump");
-        jsonObject.put("user", 0);
-        jsonObject.put("liquid", liquid);
-        jsonObject.put("volume", volume);
-        jsonObject.put("slot", slot);
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
+        Log.w(TAG, "BluetoothSingleton adminEditPump(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminEditPump(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            // generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "edit_pump");
+            jsonObject.put("user", 0);
+            jsonObject.put("liquid", liquid);
+            jsonObject.put("volume", volume);
+            jsonObject.put("slot", slot);
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
 
-                Log.w(TAG, "To Save: " + this.getStringResult());
-                Log.i(TAG, "BluetoothSingleton adminEditPump(PE) end");
-            }
-        };
-        wfb.execute();
+                    Log.w(TAG, "To Save: " + this.getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminEditPump(PE) end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminEditPump(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
+
     /**
      * edit_pump (ADMIN): Edits a pump
      * JSON-sample: {"cmd": "edit_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1}
@@ -1090,30 +1144,41 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void adminEditPump(String liquid, float volume, int slot, Activity activity)
             throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton adminEditPump start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        // generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "edit_pump");
-        jsonObject.put("user", 0);
-        jsonObject.put("liquid", liquid);
-        jsonObject.put("volume", volume);
-        jsonObject.put("slot", slot);
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
+        Log.w(TAG, "BluetoothSingleton adminEditPump start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminEditPump";
 
-                Log.w(TAG, "To Save: " + this.getStringResult());
-                Log.i(TAG, "BluetoothSingleton adminEditPump end");
-            }
-        };
-        wfb.execute();
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            // generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "edit_pump");
+            jsonObject.put("user", 0);
+            jsonObject.put("liquid", liquid);
+            jsonObject.put("volume", volume);
+            jsonObject.put("slot", slot);
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+
+                    Log.w(TAG, "To Save: " + this.getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminEditPump end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminEditPump but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -1134,34 +1199,42 @@ public class BluetoothSingleton {
                                 float volume,
                                 Postexecute postexecute)
             throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton adminDefinePump(PE) start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        // generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "define_pump");
-        jsonObject.put("user", 0);
-        jsonObject.put("liquid", liquid);
-        jsonObject.put("volume", volume);
-        jsonObject.put("slot", slot);
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
+        Log.w(TAG, "BluetoothSingleton adminDefinePump(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminDefinePump(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            // generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "define_pump");
+            jsonObject.put("user", 0);
+            jsonObject.put("liquid", liquid);
+            jsonObject.put("volume", volume);
+            jsonObject.put("slot", slot);
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
 
-                Log.w(TAG, "To Save: " + this.getStringResult());
-                Log.i(TAG, "BluetoothSingleton adminDefinePump(PE) end");
-            }
-        };
-        wfb.execute();
-        //
+                    Log.w(TAG, "To Save: " + this.getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminDefinePump(PE) end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminDefinePump(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
-
 
 
     /**
@@ -1177,7 +1250,10 @@ public class BluetoothSingleton {
     public void userDefineRecipe(long user, String name, JSONArray ingredients,
                                  Activity activity, Postexecute postexecute)
             throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton userDefineRecipe(PE) start");
+        Log.w(TAG, "BluetoothSingleton userDefineRecipe(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue= "userDefineRecipe(PE)";
         singleton = BluetoothSingleton.getInstance();
         singleton.connectGatt(activity);
         //generate JSON Format
@@ -1189,17 +1265,25 @@ public class BluetoothSingleton {
 
         singleton.sendReadWrite(jsonObject, false, true);
         singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
+        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
             @Override
             public void toSave() throws InterruptedException {
                 if (!check()) {
                     throw new InterruptedException();
                 }
                 Log.w(TAG, "To Save: " + this.getStringResult());
-                Log.i(TAG, "BluetoothSingleton userDefineRecipe(PE) end");
+                Log.w(TAG, "Reset Queue!");
+                singleton.queue= "";
+                Log.w(TAG, "BluetoothSingleton userDefineRecipe(PE) end");
             }
         };
         wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send userDefineRecipe(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue+ "\"" +" is still running!"   );
+            e.printStackTrace();
+        }
+
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -1215,43 +1299,54 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void userEditRecipe(float user, String name, ArrayList<Pair<String, Float>> ingredients
-            , Activity activity,Postexecute postexecute)
+            , Activity activity, Postexecute postexecute)
             throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton userEditRecipe(PE) start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        // generate JSON Format
-        JSONArray arrayIngredients = new JSONArray();
-        int i = 0;
-        for (Pair p : ingredients) {
-            JSONArray arrayPair = new JSONArray();
-            arrayPair.put(i, p.first);
-            arrayPair.put(i + 1, p.second);
-            arrayIngredients.put(arrayPair);
-        }
-        // generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "edit_recipe");
-        jsonObject.put("user", user);
-        jsonObject.put("name", name);
-        jsonObject.put("ingredients", arrayIngredients);
-
-        singleton.sendReadWrite(jsonObject, false, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
-
-                Log.w(TAG, "To Save: " + this.getStringResult());
-                Log.i(TAG, "BluetoothSingleton userEditRecipe(PE) end");
+        Log.w(TAG, "BluetoothSingleton userEditRecipe(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "userEditRecipe(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            // generate JSON Format
+            JSONArray arrayIngredients = new JSONArray();
+            int i = 0;
+            for (Pair p : ingredients) {
+                JSONArray arrayPair = new JSONArray();
+                arrayPair.put(i, p.first);
+                arrayPair.put(i + 1, p.second);
+                arrayIngredients.put(arrayPair);
             }
-        };
-        wfb.execute();
+            // generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "edit_recipe");
+            jsonObject.put("user", user);
+            jsonObject.put("name", name);
+            jsonObject.put("ingredients", arrayIngredients);
+
+            singleton.sendReadWrite(jsonObject, false, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+
+                    Log.w(TAG, "To Save: " + this.getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton userEditRecipe(PE) end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send userEditRecipe(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
+
     /**
      * edit_Recipe (USER): edit an existing recipe
      * JSON-sample: {"cmd": "edit_recipe", "user": 0, "name": "radler",
@@ -1266,39 +1361,49 @@ public class BluetoothSingleton {
     public void userEditRecipe(float user, String name, ArrayList<Pair<String, Float>> ingredients
             , Activity activity)
             throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton userEditRecipe start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        // generate JSON Format
-        JSONArray arrayIngredients = new JSONArray();
-        int i = 0;
-        for (Pair p : ingredients) {
-            JSONArray arrayPair = new JSONArray();
-            arrayPair.put(i, p.first);
-            arrayPair.put(i + 1, p.second);
-            arrayIngredients.put(arrayPair);
-        }
-        // generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "edit_recipe");
-        jsonObject.put("user", user);
-        jsonObject.put("name", name);
-        jsonObject.put("ingredients", arrayIngredients);
-
-        singleton.sendReadWrite(jsonObject, false, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
-
-                Log.w(TAG, "To Save: " + this.getStringResult());
-                Log.i(TAG, "BluetoothSingleton userEditRecipe end");
+        Log.w(TAG, "BluetoothSingleton userEditRecipe start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "userEditRecipe";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            // generate JSON Format
+            JSONArray arrayIngredients = new JSONArray();
+            int i = 0;
+            for (Pair p : ingredients) {
+                JSONArray arrayPair = new JSONArray();
+                arrayPair.put(i, p.first);
+                arrayPair.put(i + 1, p.second);
+                arrayIngredients.put(arrayPair);
             }
-        };
-        wfb.execute();
+            // generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "edit_recipe");
+            jsonObject.put("user", user);
+            jsonObject.put("name", name);
+            jsonObject.put("ingredients", arrayIngredients);
+
+            singleton.sendReadWrite(jsonObject, false, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+
+                    Log.w(TAG, "To Save: " + this.getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton userEditRecipe end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send userEditRecipe but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -1312,30 +1417,41 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void userStartRecipe(long user, Activity activity, Postexecute errorHandle, Postexecute continueHere) throws
+    public void userStartRecipe(long user, Activity activity, Postexecute errorHandle,
+                                Postexecute continueHere) throws
             JSONException, InterruptedException {
 
-        Log.i(TAG, "BluetoothSingleton userStartRecipe(PE) start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "start_recipe");
-        jsonObject.put("user", user);
-        singleton.sendReadWrite(jsonObject, false, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(continueHere, errorHandle){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
+        Log.w(TAG, "BluetoothSingleton userStartRecipe(2xPE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "userStartRecipe(2xPE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "start_recipe");
+            jsonObject.put("user", user);
+            singleton.sendReadWrite(jsonObject, false, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(continueHere, errorHandle) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
 
-                Log.w(TAG, "returned result is now:" + this.getJsonResult());
-                Log.i(TAG, "BluetoothSingleton userStartRecipe(PE) end");
-            }
-        };
-        wfb.execute();
+                    Log.w(TAG, "returned result is now:" + this.getJsonResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton userStartRecipe(2xPE) end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send userStartRecipe(2xPE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -1351,29 +1467,40 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void userCancelRecipe(long user, Activity activity) throws
             JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton userCancelRecipe start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "cancel_recipe");
-        jsonObject.put("user", user);
-        singleton.sendReadWrite(jsonObject, false, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
+        Log.w(TAG, "BluetoothSingleton userCancelRecipe start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "userCancelRecipe";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "cancel_recipe");
+            jsonObject.put("user", user);
+            singleton.sendReadWrite(jsonObject, false, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
 
-                Log.w(TAG, "returned result is now:" + this.getJsonResult());
-                Log.i(TAG, "BluetoothSingleton userCancelRecipe end");
-            }
-        };
-        wfb.execute();
+                    Log.w(TAG, "returned result is now:" + this.getJsonResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton userCancelRecipe end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send userCancelRecipe but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //  Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
+
     /**
      * cancel_recipe (USER): Cancels the current recipe
      * like described in ProjektDokumente/esp/Befehle.md
@@ -1386,29 +1513,40 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void userCancelRecipe(long user, Activity activity, Postexecute postexecute) throws
             JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton userCancelRecipe(PE) start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "cancel_recipe");
-        jsonObject.put("user", user);
-        singleton.sendReadWrite(jsonObject, false, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
+        Log.w(TAG, "BluetoothSingleton userCancelRecipe(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "userCancelRecipe(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "cancel_recipe");
+            jsonObject.put("user", user);
+            singleton.sendReadWrite(jsonObject, false, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
 
-                Log.w(TAG, "returned result is now:" + this.getJsonResult());
-                Log.i(TAG, "BluetoothSingleton userCancelRecipe(PE) end");
-            }
-        };
-        wfb.execute();
+                    Log.w(TAG, "returned result is now:" + this.getJsonResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton userCancelRecipe(PE) end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send userCancelRecipe(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //  Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
+
     /**
      * take_cocktail (USER): informs that the cocktail has been taken out
      * like described in ProjektDokumente/esp/Befehle.md
@@ -1419,30 +1557,41 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void userTakeCocktail(long user, Activity activity, Postexecute continueHere, Postexecute errorHandle) throws
+    public void userTakeCocktail(long user, Activity activity, Postexecute continueHere,
+                                 Postexecute errorHandle) throws
             JSONException, InterruptedException {
+        Log.w(TAG, "BluetoothSingleton userTakeCocktail(2xPE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "userTakeCocktail(2xPE)";
 
-        Log.i(TAG, "BluetoothSingleton userTakeCocktail(PE) start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "take_cocktail");
-        jsonObject.put("user", user);
-        singleton.sendReadWrite(jsonObject, false, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(continueHere, errorHandle){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "take_cocktail");
+            jsonObject.put("user", user);
+            singleton.sendReadWrite(jsonObject, false, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(continueHere, errorHandle) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+
+                    Log.w(TAG, "returned result is now:" + this.getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton userTakeCocktail(2xPE) end");
                 }
-
-                Log.w(TAG, "returned result is now:" + this.getStringResult());
-                Log.i(TAG, "BluetoothSingleton userTakeCocktail(PE) end");
-            }
-        };
-        wfb.execute();
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send userTakeCocktail(2xPE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -1459,28 +1608,38 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void userDeleteRecipe(long user, String name, Activity activity) throws
             JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton userDeleteRecipe start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "delete_recipe");
-        jsonObject.put("user", user);
-        jsonObject.put("name", name);
-        singleton.sendReadWrite(jsonObject, false, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
+        Log.w(TAG, "BluetoothSingleton userDeleteRecipe start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "userDeleteRecipe";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "delete_recipe");
+            jsonObject.put("user", user);
+            jsonObject.put("name", name);
+            singleton.sendReadWrite(jsonObject, false, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
 
-                Log.w(TAG, "returned result is now:" + this.getStringResult());
-                Log.i(TAG, "BluetoothSingleton userDeleteRecipe end");
-            }
-        };
-        wfb.execute();
+                    Log.w(TAG, "returned result is now:" + this.getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton userDeleteRecipe end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send userDeleteRecipe but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -1496,28 +1655,38 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void userQueueRecipe(long user, String recipe, Activity activity, Postexecute postexecute, Postexecute errorHandle) throws
             JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton userQueueRecipe(PE) start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "queue_recipe");
-        jsonObject.put("user", user);
-        jsonObject.put("recipe", recipe);
-        singleton.sendReadWrite(jsonObject, false, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute, errorHandle){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
+        Log.w(TAG, "BluetoothSingleton userQueueRecipe(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "userQueueRecipe(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "queue_recipe");
+            jsonObject.put("user", user);
+            jsonObject.put("recipe", recipe);
+            singleton.sendReadWrite(jsonObject, false, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute, errorHandle) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
 
-                Log.w(TAG, "returned result is now:" + this.getStringResult());
-                Log.i(TAG, "BluetoothSingleton userQueueRecipe(PE) end");
-            }
-        };
-        wfb.execute();
+                    Log.w(TAG, "returned result is now:" + this.getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton userQueueRecipe(PE) end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send userQueueRecipe(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -1532,27 +1701,37 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminReset(Activity activity) throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton adminReset start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "reset");
-        jsonObject.put("user", 0);
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
+        Log.w(TAG, "BluetoothSingleton adminReset start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminReset";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "reset");
+            jsonObject.put("user", 0);
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
 
-                Log.w(TAG, "returned result is now:" + getStringResult());
-                Log.i(TAG, "BluetoothSingleton adminReset end");
-            }
-        };
-        wfb.execute();
+                    Log.w(TAG, "returned result is now:" + getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminReset end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminReset but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //  Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
 
     }
@@ -1568,27 +1747,37 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminReset(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton adminReset(PE) start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "reset");
-        jsonObject.put("user", 0);
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
+        Log.w(TAG, "BluetoothSingleton adminReset(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminReset(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "reset");
+            jsonObject.put("user", 0);
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
 
-                Log.w(TAG, "returned result is now:" + getStringResult());
-                Log.i(TAG, "BluetoothSingleton adminReset(PE) end");
-            }
-        };
-        wfb.execute();
+                    Log.w(TAG, "returned result is now:" + getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminReset(PE) end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminReset(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
 
     }
@@ -1606,27 +1795,37 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminResetError(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton adminResetError(PE) start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "reset_error");
-        jsonObject.put("user", 0);
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
+        Log.w(TAG, "BluetoothSingleton adminResetError(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminResetError(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "reset_error");
+            jsonObject.put("user", 0);
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
 
-                Log.w(TAG, "returned result is now:" + getStringResult());
-                Log.i(TAG, "BluetoothSingleton adminResetError(PE) end");
-            }
-        };
-        wfb.execute();
+                    Log.w(TAG, "returned result is now:" + getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminResetError(PE) end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminResetError(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //  Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
 
     }
@@ -1643,27 +1842,39 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void userAddLiquid(float user, String liquid, float volume, Activity activity)
             throws JSONException, InterruptedException {
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "add_liquid");
-        jsonObject.put("user", user);
-        jsonObject.put("liquid", liquid);
-        jsonObject.put("volume", volume);
-        singleton.sendReadWrite(jsonObject, false, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
+        Log.w(TAG, "BluetoothSingleton userAddLiquid start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "userAddLiquid";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "add_liquid");
+            jsonObject.put("user", user);
+            jsonObject.put("liquid", liquid);
+            jsonObject.put("volume", volume);
+            singleton.sendReadWrite(jsonObject, false, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
 
-                Log.w(TAG, "returned result is now:" + getStringResult());
-            }
-        };
-        wfb.execute();
+                    Log.w(TAG, "returned result is now:" + getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton userAddLiquid end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send userAddLiquid but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -1679,27 +1890,39 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void adminRefillPump(float volume, int slot, Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
 
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "refill_pump");
-        jsonObject.put("user", 0);
-        jsonObject.put("volume", volume);
-        jsonObject.put("slot", slot);
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
+        Log.w(TAG, "BluetoothSingleton adminRefillPump(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminRefillPump(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "refill_pump");
+            jsonObject.put("user", 0);
+            jsonObject.put("volume", volume);
+            jsonObject.put("slot", slot);
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
 
-                Log.w(TAG, "returned result is now:" + getStringResult());
-            }
-        };
-        wfb.execute();
+                    Log.w(TAG, "returned result is now:" + getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminRefillPump(PE) end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminRefillPump(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
 
     }
@@ -1718,27 +1941,39 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void adminManuelCalibrateRunPump(int slot, int time, Activity activity, Postexecute postexecute) throws JSONException,
             InterruptedException {
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "run_pump");
-        jsonObject.put("user", 0);
-        jsonObject.put("slot", slot);
-        jsonObject.put("time", time);
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
+        Log.w(TAG, "BluetoothSingleton adminManuelCalibrateRunPump(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminManuelCalibrateRunPump(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "run_pump");
+            jsonObject.put("user", 0);
+            jsonObject.put("slot", slot);
+            jsonObject.put("time", time);
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
 
-                Log.w(TAG, "returned result is now:" + getStringResult());
-            }
-        };
-        wfb.execute();
+                    Log.w(TAG, "returned result is now:" + getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminManuelCalibrateRunPump(PE) end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminManuelCalibrateRunPump(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -1756,27 +1991,40 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void adminAutoCalibrateStart(Activity activity, Postexecute postexecute) throws JSONException,
             InterruptedException {
-        singleton = BluetoothSingleton.getInstance();
-        //generate JSON Format
-        singleton.connectGatt(activity);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "calibration_start");
-        jsonObject.put("user", 0);
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
+        Log.w(TAG, "BluetoothSingleton adminAutoCalibrateStart(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminAutoCalibrateStart(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            //generate JSON Format
+            singleton.connectGatt(activity);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "calibration_start");
+            jsonObject.put("user", 0);
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
 
-                Log.w(TAG, "returned <String> result is now:" + this.getStringResult());
-            }
-        };
-        wfb.execute();
+                    Log.w(TAG, "returned <String> result is now:" + this.getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminAutoCalibrateStart(PE) end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminAutoCalibrateStart(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
+
     /**
      * Automatic Calibration
      * calibration_start (ADMIN): Start automated calibration
@@ -1791,27 +2039,39 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void adminAutoCalibrateStart(Activity activity, Postexecute continueHere, Postexecute errorHandle) throws JSONException,
             InterruptedException {
-        singleton = BluetoothSingleton.getInstance();
-        //generate JSON Format
-        singleton.connectGatt(activity);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "calibration_start");
-        jsonObject.put("user", 0);
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(continueHere, errorHandle){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
+        Log.w(TAG, "BluetoothSingleton adminAutoCalibrateStart(2xPE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminAutoCalibrateStart(2xPE)";
+            singleton = BluetoothSingleton.getInstance();
+            //generate JSON Format
+            singleton.connectGatt(activity);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "calibration_start");
+            jsonObject.put("user", 0);
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(continueHere, errorHandle) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+                    Log.w(TAG, "returned <String> result is now:" + this.getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminAutoCalibrateStart(2xPE) end");
                 }
-
-                Log.w(TAG, "returned <String> result is now:" + this.getStringResult());
-            }
-        };
-        wfb.execute();
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminAutoCalibrateStart(2xPE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
+
     /**
      * Automatic Calibration
      * calibration_start (ADMIN): Start automated calibration
@@ -1826,25 +2086,37 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void adminAutoCalibrateStart(Activity activity) throws JSONException,
             InterruptedException {
-        singleton = BluetoothSingleton.getInstance();
-        //generate JSON Format
-        singleton.connectGatt(activity);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "calibration_start");
-        jsonObject.put("user", 0);
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
+        Log.w(TAG, "BluetoothSingleton adminAutoCalibrateStart start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminAutoCalibrateStart";
+            singleton = BluetoothSingleton.getInstance();
+            //generate JSON Format
+            singleton.connectGatt(activity);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "calibration_start");
+            jsonObject.put("user", 0);
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
 
-                Log.w(TAG, "returned <String> result is now:" + this.getStringResult());
-            }
-        };
-        wfb.execute();
+                    Log.w(TAG, "returned <String> result is now:" + this.getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminAutoCalibrateStart end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminAutoCalibrateStart but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -1862,25 +2134,37 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void adminAutoCalibrateAddEmpty(Activity activity, Postexecute continueHere, Postexecute errorHandle) throws JSONException,
             InterruptedException {
-        singleton = BluetoothSingleton.getInstance();
-        //generate JSON Format
-        singleton.connectGatt(activity);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "calibration_add_empty");
-        jsonObject.put("user", 0);
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(continueHere, errorHandle){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
+        Log.w(TAG, "BluetoothSingleton adminAutoCalibrateAddEmpty(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminAutoCalibrateAddEmpty(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            //generate JSON Format
+            singleton.connectGatt(activity);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "calibration_add_empty");
+            jsonObject.put("user", 0);
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(continueHere, errorHandle) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
 
-                Log.w(TAG, "returned result is now:" + this.getStringResult());
-            }
-        };
-        wfb.execute();
+                    Log.w(TAG, "returned result is now:" + this.getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminAutoCalibrateAddEmpty(PE) end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminAutoCalibrateAddEmpty(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -1896,27 +2180,39 @@ public class BluetoothSingleton {
      */
 
     @SuppressLint("MissingPermission")
-    public void adminAutoCalibrateCancel(Activity activity,Postexecute postexecute) throws JSONException,
+    public void adminAutoCalibrateCancel(Activity activity, Postexecute postexecute) throws JSONException,
             InterruptedException {
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "calibration_cancel");
-        jsonObject.put("user", 0);
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
+        Log.w(TAG, "BluetoothSingleton adminAutoCalibrateCancel(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminAutoCalibrateCancel(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "calibration_cancel");
+            jsonObject.put("user", 0);
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
 
-                Log.w(TAG, "returned result is now:" + getStringResult());
-            }
-        };
-        wfb.execute();
+                    Log.w(TAG, "returned result is now:" + getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminAutoCalibrateCancel(PE) end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminAutoCalibrateCancel(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -1936,25 +2232,37 @@ public class BluetoothSingleton {
                                          Postexecute continueHere,
                                          Postexecute errorHandle) throws JSONException,
             InterruptedException {
-        singleton = BluetoothSingleton.getInstance();
-        //generate JSON Format
-        singleton.connectGatt(activity);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "calibration_finish");
-        jsonObject.put("user", 0);
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(continueHere, errorHandle){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
+        Log.w(TAG, "BluetoothSingleton adminAutoCalibrateFinish(2xPE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminAutoCalibrateFinish(2xPE)";
+            singleton = BluetoothSingleton.getInstance();
+            //generate JSON Format
+            singleton.connectGatt(activity);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "calibration_finish");
+            jsonObject.put("user", 0);
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(continueHere, errorHandle) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
 
-                Log.w(TAG, "returned result is now:" + this.getStringResult());
-            }
-        };
-        wfb.execute();
+                    Log.w(TAG, "returned result is now:" + this.getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminAutoCalibrateFinish(2xPE) start");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminAutoCalibrateFinish(2xPE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
     }
 
 
@@ -1973,26 +2281,38 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void adminAutoCalibrateAddWeight(float weight, Activity activity, Postexecute continueHere, Postexecute errorHandle) throws JSONException,
             InterruptedException {
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "calibration_add_weight");
-        jsonObject.put("user", 0);
-        jsonObject.put("weight", weight);
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(continueHere, errorHandle){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
+        Log.w(TAG, "BluetoothSingleton adminAutoCalibrateAddWeight(2xPE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminAutoCalibrateAddWeight(2xPE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "calibration_add_weight");
+            jsonObject.put("user", 0);
+            jsonObject.put("weight", weight);
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(continueHere, errorHandle) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
 
-                Log.w(TAG, "returned result is now:" + getStringResult());
-            }
-        };
-        wfb.execute();
+                    Log.w(TAG, "returned result is now:" + getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminAutoCalibrateAddWeight(2xPE) end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminAutoCalibrateAddWeight(2xPE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -2014,30 +2334,42 @@ public class BluetoothSingleton {
     public void adminManuelCalibratePump(int slot, int time1, int time2,
                                          double volume1, double volume2, Activity activity)
             throws JSONException, InterruptedException {
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "calibrate_pump");
-        jsonObject.put("user", 0);
-        jsonObject.put("slot", slot);
-        jsonObject.put("time1", time1);
-        jsonObject.put("time2", time2);
-        jsonObject.put("volume1", volume1);
-        jsonObject.put("volume2", volume2);
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
+        Log.w(TAG, "BluetoothSingleton adminManuelCalibratePump start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminManuelCalibratePump";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "calibrate_pump");
+            jsonObject.put("user", 0);
+            jsonObject.put("slot", slot);
+            jsonObject.put("time1", time1);
+            jsonObject.put("time2", time2);
+            jsonObject.put("volume1", volume1);
+            jsonObject.put("volume2", volume2);
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
 
-                Log.w(TAG, "returned result is now:" + getStringResult());
-            }
-        };
-        wfb.execute();
+                    Log.w(TAG, "returned result is now:" + getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminManuelCalibratePump end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminManuelCalibratePump but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -2058,31 +2390,42 @@ public class BluetoothSingleton {
     public void adminManuelCalibrateSetPumpTimes(int slot, int timeInit, int timeReverse,
                                                  double rate, Activity activity) throws
             JSONException, InterruptedException {
+        Log.w(TAG, "BluetoothSingleton adminManuelCalibrateSetPumpTimes(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminManuelCalibrateSetPumpTimes(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "set_pump_times");
+            jsonObject.put("user", 0);
+            jsonObject.put("slot", slot);
+            jsonObject.put("time_init", timeInit);
+            jsonObject.put("time_reverse", timeReverse);
+            jsonObject.put("rate", rate);
 
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "set_pump_times");
-        jsonObject.put("user", 0);
-        jsonObject.put("slot", slot);
-        jsonObject.put("time_init", timeInit);
-        jsonObject.put("time_reverse", timeReverse);
-        jsonObject.put("rate", rate);
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
 
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
+                    Log.w(TAG, "returned result is now:" + getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminManuelCalibrateSetPumpTimes(PE) end");
                 }
-
-                Log.w(TAG, "returned result is now:" + getStringResult());
-            }
-        };
-        wfb.execute();
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminManuelCalibrateSetPumpTimes(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -2099,26 +2442,38 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void adminManuelCalibrateTareScale(Activity activity, Postexecute postexecute) throws JSONException,
             InterruptedException {
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "tare_scale");
-        jsonObject.put("user", 0);
+        Log.w(TAG, "BluetoothSingleton adminManuelCalibrateTareScale(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminManuelCalibrateTareScale(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "tare_scale");
+            jsonObject.put("user", 0);
 
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+
+                    Log.w(TAG, "returned result is now:" + getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminManuelCalibrateTareScale(PE) end");
                 }
-
-                Log.w(TAG, "returned result is now:" + getStringResult());
-            }
-        };
-        wfb.execute();
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminManuelCalibrateTareScale(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //  Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -2134,27 +2489,40 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminManuelCalibrateScale(float weight, Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "calibrate_scale");
-        jsonObject.put("user", 0);
-        jsonObject.put("weight", weight);
+        Log.w(TAG, "BluetoothSingleton adminManuelCalibrateScale(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminManuelCalibrateScale(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "calibrate_scale");
+            jsonObject.put("user", 0);
+            jsonObject.put("weight", weight);
 
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+
+                    Log.w(TAG, "returned result is now:" + getStringResult());
+
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminManuelCalibrateScale(PE) end");
                 }
-
-                Log.w(TAG, "returned result is now:" + getStringResult());
-            }
-        };
-        wfb.execute();
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminManuelCalibrateScale(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -2170,28 +2538,41 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void adminManuelCalibrateSetScaleFactor(float factor, Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "set_scale_factor");
-        jsonObject.put("user", 0);
-        jsonObject.put("factor", factor);
+    public void adminManuelCalibrateSetScaleFactor(float factor, Activity activity,
+                                                   Postexecute postexecute) throws JSONException, InterruptedException {
+        Log.w(TAG, "BluetoothSingleton adminManuelCalibrateSetScaleFactor(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminManuelCalibrateSetScaleFactor(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "set_scale_factor");
+            jsonObject.put("user", 0);
+            jsonObject.put("factor", factor);
 
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+
+                    Log.w(TAG, "returned result is now:" + getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminManuelCalibrateSetScaleFactor(PE) end");
                 }
-
-                Log.w(TAG, "returned result is now:" + getStringResult());
-            }
-        };
-        wfb.execute();
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminManuelCalibrateSetScaleFactor(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -2206,27 +2587,39 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminRestart(Activity activity) throws JSONException, InterruptedException {
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
+        Log.w(TAG, "BluetoothSingleton adminRestart start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminRestart";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
 
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "restart");
-        jsonObject.put("user", 0);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "restart");
+            jsonObject.put("user", 0);
 
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+
+                    Log.w(TAG, "returned result is now:" + getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminRestart end");
                 }
-
-                Log.w(TAG, "returned result is now:" + getStringResult());
-            }
-        };
-        wfb.execute();
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminRestart but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -2241,27 +2634,39 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminFactoryReset(Activity activity) throws JSONException, InterruptedException {
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
+        Log.w(TAG, "BluetoothSingleton adminFactoryReset start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminFactoryReset";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
 
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "factory_reset");
-        jsonObject.put("user", 0);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "factory_reset");
+            jsonObject.put("user", 0);
 
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+
+                    Log.w(TAG, "returned result is now:" + getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminFactoryReset end");
                 }
-
-                Log.w(TAG, "returned result is now:" + getStringResult());
-            }
-        };
-        wfb.execute();
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminFactoryReset but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -2277,27 +2682,40 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminFactoryReset(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
+        Log.w(TAG, "BluetoothSingleton adminFactoryReset(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminFactoryReset(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
 
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "factory_reset");
-        jsonObject.put("user", 0);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "factory_reset");
+            jsonObject.put("user", 0);
 
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+
+                    Log.w(TAG, "returned result is now:" + getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminFactoryReset(PE) end");
+
                 }
-
-                Log.w(TAG, "returned result is now:" + getStringResult());
-            }
-        };
-        wfb.execute();
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminFactoryReset(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -2312,27 +2730,36 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminClean(Activity activity) throws JSONException, InterruptedException {
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        //generate JSON Format
-
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "clean");
-        jsonObject.put("user", 0);
-
-        singleton.sendReadWrite(jsonObject, true, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
+        Log.w(TAG, "BluetoothSingleton adminClean start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminClean";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            //generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "clean");
+            jsonObject.put("user", 0);
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+                    Log.w(TAG, "returned result is now:" + getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminClean end");
                 }
-
-                Log.w(TAG, "returned result is now:" + getStringResult());
-            }
-        };
-        wfb.execute();
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminClean but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -2353,24 +2780,34 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminReadPumpsStatus(Activity activity) throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton adminReadPumpsStatus start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        singleton.sendStatus(CHARACTERISTIC_STATUS_PUMPS);
-        singleton.waitForReadNotification();
+        Log.w(TAG, "BluetoothSingleton adminReadPumpsStatus start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminReadPumpsStatus";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            singleton.sendStatus(CHARACTERISTIC_STATUS_PUMPS);
+            singleton.waitForReadNotification();
 
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
-            @Override
-            public void toSave() throws InterruptedException, NotInitializedDBException, JSONException, MissingIngredientPumpException {
-                if (!check()) {
-                    throw new InterruptedException();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+                @Override
+                public void toSave() throws InterruptedException, NotInitializedDBException, JSONException, MissingIngredientPumpException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+                    Pump.updatePumpStatus(activity, this.getJsonResult());
+                    Log.w(TAG, "To Save: " + this.getJsonResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminReadPumpsStatus end");
                 }
-                Pump.updatePumpStatus(activity, this.getJsonResult());
-                Log.w(TAG, "To Save: " + this.getJsonResult());
-                Log.i(TAG, "BluetoothSingleton adminReadPumpsStatus end");
-            }
-        };
-        wfb.execute();
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminReadPumpsStatus but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
 
 
@@ -2389,24 +2826,34 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void adminReadPumpsStatus(Activity activity, Postexecute postexecute)
             throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton adminReadPumpsStatus(PE) start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        singleton.sendStatus(CHARACTERISTIC_STATUS_PUMPS);
-        singleton.waitForReadNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
-            @Override
-            public void toSave() throws InterruptedException, NotInitializedDBException
-                    , JSONException, MissingIngredientPumpException {
-                if (!check()) {
-                    throw new InterruptedException();
+        Log.w(TAG, "BluetoothSingleton adminReadPumpsStatus(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminReadPumpsStatus(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            singleton.sendStatus(CHARACTERISTIC_STATUS_PUMPS);
+            singleton.waitForReadNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException, NotInitializedDBException
+                        , JSONException, MissingIngredientPumpException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+                    Pump.updatePumpStatus(activity, this.getJsonResult());
+                    Log.w(TAG, "To Save: " + this.getJsonResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminReadPumpsStatus(PE) end");
                 }
-                Pump.updatePumpStatus(activity, this.getJsonResult());
-                Log.w(TAG, "To Save: " + this.getJsonResult());
-                Log.i(TAG, "BluetoothSingleton adminReadPumpsStatus(PE) end");
-            }
-        };
-        wfb.execute();
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminReadPumpsStatus(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -2423,24 +2870,34 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminReadLastChange(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton adminReadLastChange(PE) start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        singleton.sendStatus(CHARACTERISTIC_STATUS_LAST_CHANGE);
-        singleton.waitForReadNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
-            @Override
-            public void toSave() throws InterruptedException, NotInitializedDBException, JSONException, MissingIngredientPumpException {
-                if (!check()) {
-                    throw new InterruptedException();
+        Log.w(TAG, "BluetoothSingleton adminReadLastChange(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminReadLastChange(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            singleton.sendStatus(CHARACTERISTIC_STATUS_LAST_CHANGE);
+            singleton.waitForReadNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException, NotInitializedDBException, JSONException, MissingIngredientPumpException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+                    //Pump.updatePumpStatus(this.getResult());
+                    CocktailMachine.setLastChange(this.getStringResult());
+                    Log.w(TAG, "To Save: " + this.getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminReadLastChange(PE) end");
                 }
-                //Pump.updatePumpStatus(this.getResult());
-                CocktailMachine.setLastChange(this.getStringResult());
-                Log.w(TAG, "To Save: " + this.getStringResult());
-                Log.i(TAG, "BluetoothSingleton adminReadLastChange(PE) end");
-            }
-        };
-        wfb.execute();
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminReadLastChange(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //  Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -2455,24 +2912,34 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminReadLiquidsStatus(Activity activity) throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton adminReadLiquidsStatus start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        singleton.sendStatus(CHARACTERISTIC_STATUS_LIQUIDS);
-        singleton.waitForReadNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
-            @Override
-            public void toSave() throws InterruptedException, NotInitializedDBException, JSONException, MissingIngredientPumpException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
-                Log.w(TAG, "To Save: " + this.getJsonResult());
-                Pump.updateLiquidStatus(activity, this.getJsonResult());
-                Log.i(TAG, "BluetoothSingleton adminReadLiquidsStatus end");
+        Log.w(TAG, "BluetoothSingleton adminReadLiquidsStatus start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminReadLiquidsStatus";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            singleton.sendStatus(CHARACTERISTIC_STATUS_LIQUIDS);
+            singleton.waitForReadNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+                @Override
+                public void toSave() throws InterruptedException, NotInitializedDBException, JSONException, MissingIngredientPumpException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+                    Log.w(TAG, "To Save: " + this.getJsonResult());
+                    Pump.updateLiquidStatus(activity, this.getJsonResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminReadLiquidsStatus end");
 
-            }
-        };
-        wfb.execute();
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminReadLiquidsStatus but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -2494,36 +2961,47 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void adminReadState(Activity activity, Postexecute postexecute)
             throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton adminReadState(PE) start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        singleton.sendStatus(CHARACTERISTIC_STATUS_STATE);
-        singleton.waitForReadNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
-            @Override
-            public void toSave() throws InterruptedException, JSONException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
-                Log.w(TAG, "returned result:" + getStringResult());
-                Log.w(TAG, "returned result: start saving");
-                Log.i(TAG, "BluetoothSingleton adminReadState(PE) end");
-                try {
-                    CocktailStatus.setStatus(getStringResult());
-                }catch (Exception e){
-                    e.printStackTrace();
-                }finally {
-                    try{
-                        CalibrateStatus.setStatus(getStringResult());
-                    }catch (Exception e){
-                        e.printStackTrace();
+        Log.w(TAG, "BluetoothSingleton adminReadState(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminReadState(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            singleton.sendStatus(CHARACTERISTIC_STATUS_STATE);
+            singleton.waitForReadNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException, JSONException {
+                    if (!check()) {
+                        throw new InterruptedException();
                     }
-                }
-                Log.w(TAG, "returned result finished");
+                    Log.w(TAG, "returned result:" + getStringResult());
+                    Log.w(TAG, "returned result: start saving");
+                    try {
+                        CocktailStatus.setStatus(getStringResult());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        try {
+                            CalibrateStatus.setStatus(getStringResult());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    Log.w(TAG, "returned result finished");
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminReadState(PE) end");
 
-            }
-        };
-        wfb.execute();
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminReadState(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
+
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -2539,24 +3017,34 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminReadRecipesStatus(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton adminReadRecipesStatus(PE) start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        singleton.sendStatus(CHARACTERISTIC_STATUS_RECIPES);
-        singleton.waitForReadNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute){
-            @Override
-            public void toSave() throws InterruptedException, JSONException,
-                    NotInitializedDBException {
-                if (!check()) {
-                    throw new InterruptedException();
+        Log.w(TAG, "BluetoothSingleton adminReadRecipesStatus(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminReadRecipesStatus(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            singleton.sendStatus(CHARACTERISTIC_STATUS_RECIPES);
+            singleton.waitForReadNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException, JSONException,
+                        NotInitializedDBException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+                    Recipe.setRecipes(activity, this.getJSONArrayResult());
+                    Log.w(TAG, "To Save: " + this.getJSONArrayResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminReadRecipesStatus(PE) end");
                 }
-                Recipe.setRecipes(activity, this.getJSONArrayResult());
-                Log.w(TAG, "To Save: " + this.getJSONArrayResult());
-                Log.i(TAG, "BluetoothSingleton adminReadRecipesStatus(PE) end");
-            }
-        };
-        wfb.execute();
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminReadRecipesStatus(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -2572,23 +3060,33 @@ public class BluetoothSingleton {
     @SuppressLint("MissingPermission")
     public void adminReadCurrentCocktail(Activity activity, Postexecute postexecute)
             throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton adminReadCurrentCocktail(PE) start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        singleton.sendStatus(CHARACTERISTIC_STATUS_COCKTAIL);
-        singleton.waitForReadNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
+        Log.w(TAG, "BluetoothSingleton adminReadCurrentCocktail(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminReadCurrentCocktail(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            singleton.sendStatus(CHARACTERISTIC_STATUS_COCKTAIL);
+            singleton.waitForReadNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+                    CocktailMachine.setCurrentCocktail(activity, this.getJsonResult());
+                    Log.w(TAG, "To Save: " + this.getJsonResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminReadCurrentCocktail(PE) end");
                 }
-                CocktailMachine.setCurrentCocktail(activity, this.getJsonResult());
-                Log.w(TAG, "To Save: " + this.getJsonResult());
-                Log.i(TAG, "BluetoothSingleton adminReadCurrentCocktail(PE) end");
-            }
-        };
-        wfb.execute();
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminReadCurrentCocktail(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -2605,23 +3103,33 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminReadUserQueue(Activity activity) throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton adminReadUserQueue start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        singleton.sendStatus(CHARACTERISTIC_STATUS_USER_QUEUE);
-        singleton.waitForReadNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
-            @Override
-            public void toSave() throws InterruptedException, JSONException {
-                if (!check()) {
-                    throw new InterruptedException();
+        Log.w(TAG, "BluetoothSingleton adminReadUserQueue start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminReadUserQueue";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            singleton.sendStatus(CHARACTERISTIC_STATUS_USER_QUEUE);
+            singleton.waitForReadNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+                @Override
+                public void toSave() throws InterruptedException, JSONException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+                    //CocktailMachine.setCurrentUser(getJSONArrayResult());
+                    Log.w(TAG, "To Save: " + this.getJSONArrayResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminReadUserQueue end");
                 }
-                //CocktailMachine.setCurrentUser(getJSONArrayResult());
-                Log.w(TAG, "To Save: " + this.getJSONArrayResult());
-                Log.i(TAG, "BluetoothSingleton adminReadUserQueue end");
-            }
-        };
-        wfb.execute();
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminReadUserQueue but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //  Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -2637,23 +3145,33 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminReadScaleStatus(Activity activity) throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton adminReadScaleStatus start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        singleton.sendStatus(CHARACTERISTIC_STATUS_SCALE);
-        singleton.waitForReadNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
+        Log.w(TAG, "BluetoothSingleton adminReadScaleStatus start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminReadScaleStatus";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            singleton.sendStatus(CHARACTERISTIC_STATUS_SCALE);
+            singleton.waitForReadNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+                    CocktailMachine.setCurrentWeight(this.getJsonResult());
+                    Log.w(TAG, "To Save: " + this.getJsonResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminReadScaleStatus end");
                 }
-                CocktailMachine.setCurrentWeight(this.getJsonResult());
-                Log.w(TAG, "To Save: " + this.getJsonResult());
-                Log.i(TAG, "BluetoothSingleton adminReadScaleStatus end");
-            }
-        };
-        wfb.execute();
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminReadScaleStatus but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //   Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -2670,23 +3188,33 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminReadScaleStatus(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton adminReadScaleStatus start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        singleton.sendStatus(CHARACTERISTIC_STATUS_SCALE);
-        singleton.waitForReadNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
+        Log.w(TAG, "BluetoothSingleton adminReadScaleStatus(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminReadScaleStatus(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            singleton.sendStatus(CHARACTERISTIC_STATUS_SCALE);
+            singleton.waitForReadNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+                    CocktailMachine.setCurrentWeight(this.getJsonResult());
+                    Log.w(TAG, "To Save: " + this.getJsonResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminReadScaleStatus(PE) end");
                 }
-                CocktailMachine.setCurrentWeight(this.getJsonResult());
-                Log.w(TAG, "To Save: " + this.getJsonResult());
-                Log.i(TAG, "BluetoothSingleton adminReadScaleStatus end");
-            }
-        };
-        wfb.execute();
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminReadScaleStatus(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //   Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -2702,23 +3230,33 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminReadErrorStatus(Activity activity) throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton adminReadErrorStatus start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        singleton.sendStatus(CHARACTERISTIC_STATUS_ERROR);
-        singleton.waitForReadNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver( ){
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
+        Log.w(TAG, "BluetoothSingleton adminReadErrorStatus start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminReadErrorStatus";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            singleton.sendStatus(CHARACTERISTIC_STATUS_ERROR);
+            singleton.waitForReadNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver() {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+                    ErrorStatus.setError(this.getStringResult());
+                    Log.w(TAG, "To Save: " + this.getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminReadErrorStatus end");
                 }
-                ErrorStatus.setError(this.getStringResult());
-                Log.w(TAG, "To Save: " + this.getStringResult());
-                Log.i(TAG, "BluetoothSingleton adminReadErrorStatus end");
-            }
-        };
-        wfb.execute();
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminReadErrorStatus but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         //Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 
@@ -2734,24 +3272,34 @@ public class BluetoothSingleton {
      */
     @SuppressLint("MissingPermission")
     public void adminReadErrorStatus(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
-        Log.i(TAG, "BluetoothSingleton adminReadErrorStatus(PE) start");
-        singleton = BluetoothSingleton.getInstance();
-        singleton.connectGatt(activity);
-        singleton.sendStatus(CHARACTERISTIC_STATUS_ERROR);
-        singleton.waitForReadNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
-                }
-                Log.w(TAG, "To Save: " + this.getStringResult());
-                ErrorStatus.setError(this.getStringResult());
-                Log.i(TAG, "BluetoothSingleton adminReadErrorStatus(PE) end");
+        Log.w(TAG, "BluetoothSingleton adminReadErrorStatus(PE) start");
+        try {
+            checkIfNotEmpty(singleton.queue);
+            queue = "adminReadErrorStatus(PE)";
+            singleton = BluetoothSingleton.getInstance();
+            singleton.connectGatt(activity);
+            singleton.sendStatus(CHARACTERISTIC_STATUS_ERROR);
+            singleton.waitForReadNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+                    Log.w(TAG, "To Save: " + this.getStringResult());
+                    ErrorStatus.setError(this.getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminReadErrorStatus(PE) end");
 
-            }
-        };
-        wfb.execute();
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminReadErrorStatus(PE) but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
         // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
     }
 

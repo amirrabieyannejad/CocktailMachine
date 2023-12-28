@@ -5,8 +5,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.database.CursorWindowAllocationException;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -21,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import com.example.cocktailmachine.Dummy;
@@ -1018,7 +1021,7 @@ public class GetDialog {
                 Postexecute continueHere = new Postexecute() {
                     @Override
                     public void post() {
-                        isDone = CocktailMachine.isAutomaticCalibrationDone()||CocktailMachine.needsEmptyingGlass();
+                        isDone = CalibrateStatus.isReady()||CocktailMachine.isAutomaticCalibrationDone()||CocktailMachine.needsEmptyingGlass();
                         Log.v(TAG, "waitingForPumps: waitingQueueCountDown: reduceTick: isDone: " +isDone);
                         if(isDone){
                             setTick(0);
@@ -1095,6 +1098,41 @@ public class GetDialog {
                         } else if (CocktailMachine.needsEmptyingGlass()) {
 
                             GetDialog.emptyGlass(activity);
+                        } else if(CalibrateStatus.isReady()){
+                            CocktailMachineCalibration.askIsDone(activity, new Postexecute() {
+                                @Override
+                                public void post() {
+                                    if(CocktailMachineCalibration.isIsDone()){
+                                        Toast.makeText(activity, "Das Setup ist vollständig!", Toast.LENGTH_LONG).show();
+                                        Postexecute continueHere = new Postexecute() {
+                                            @Override
+                                            public void post() {
+                                                Pump.emptyAll(activity);
+                                                new DialogListOfPumps(activity);
+                                                //GetDialog.setIngredientsForPumps(activity);
+                                            }
+                                        };
+                                        Postexecute doAgain = new Postexecute() {
+                                            @Override
+                                            public void post() {
+                                                CocktailMachine.automaticEnd(activity, continueHere,
+                                                        GetDialog.sendTwice(activity,
+                                                                "",
+                                                                ""));
+
+                                            }
+                                        };
+
+                                        HashMap<ErrorStatus, Postexecute> errorMap = new HashMap<>();
+                                        errorMap.put(ErrorStatus.calibration_command_invalid_at_this_time, doAgain);
+
+                                        CocktailMachine.automaticEnd(activity, continueHere,
+                                                ErrorStatus.errorHandle(activity, errorMap, continueHere));
+                                    }else{
+                                        GetDialog.errorMessageReader(activity);
+                                    }
+                                }
+                            });
                         }
 
                     }
@@ -3137,7 +3175,13 @@ public class GetDialog {
         List<Recipe> output = new LinkedList<>();
         for (int i = 0; i < numberOfRecipes;i++){
             int recipeNr = random.nextInt(5000);
-            Recipe recipe = Recipe.getRecipe(activity,recipeNr);
+            Recipe recipe = null;
+            try {
+                 recipe = Recipe.getRecipe(activity, recipeNr);
+            }catch (Exception e){
+                Log.e(TAG,"getListOfRandomRecipe: error", e);
+                Log.e(TAG, "getListOfRandomRecipe: catched");
+            }
             if (recipe == null){
                 i--;
             }else{
