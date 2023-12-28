@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class BildgeneratorGlas {
 
@@ -77,6 +78,28 @@ public class BildgeneratorGlas {
         return (bm);
     }
 
+    public static Bitmap randomBildgenerationGlas(Context context) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
+
+        Bitmap bm = Bitmap.createBitmap(800,800,Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bm);
+
+
+        Resources res = context.getResources();
+
+        Drawable glasHintereDarstellung =  ResourcesCompat.getDrawable(res, R.drawable.glas_hintere_darstellung, null);
+        glasHintereDarstellung.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        glasHintereDarstellung.draw(canvas);
+
+        canvas = new BildgeneratorGlas().generateLiquidGlass(context,canvas);
+
+        Drawable glasFordereDarstellung =  ResourcesCompat.getDrawable(res, R.drawable.glas_fordere_darstellung, null);
+        glasFordereDarstellung.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        glasFordereDarstellung.draw(canvas);
+
+
+        return (bm);
+    }
+
     public static Bitmap bildgenerationGlas(Context context, Recipe recipe,Float filling) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
 
         Bitmap bm = Bitmap.createBitmap(800,800,Bitmap.Config.ARGB_8888);
@@ -124,6 +147,36 @@ public class BildgeneratorGlas {
         return (bm);
     }
 
+
+
+    private Canvas generateLiquidGlass(Context context, Canvas canvas) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
+
+
+        Resources res = context.getResources();
+        int numberOfSlots = listIdGlasFlüssigkeit.length;
+
+        Random random = new Random();
+        int position = 0;
+
+
+
+        while((position+1)< numberOfSlots){
+            int countOfFluit = random.nextInt(numberOfSlots-1)+1;
+
+            if((position + countOfFluit)>= numberOfSlots){
+                countOfFluit = numberOfSlots - position -1;
+            }
+            int color = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
+            for (int i = 0; i < countOfFluit; i++){
+                Drawable myImage =  ResourcesCompat.getDrawable(res, listIdGlasFlüssigkeit[i+position], null);
+                myImage.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+                myImage.setColorFilter(color, PorterDuff.Mode.MULTIPLY);//MULTIPLY,SRC_IN,SRC_ATOP
+                myImage.draw(canvas);
+            }
+            position += countOfFluit;
+        }
+        return canvas;
+    }
 
     private Canvas generateLiquidGlass(Context context, Canvas canvas, Recipe recipe, Float filling) throws TooManyTimesSettedIngredientEcxception, NoSuchIngredientSettedException {
 
