@@ -56,6 +56,9 @@
         android:theme="@style/Theme.CocktailMachine"
         tools:targetApi="21">
         <activity
+            android:name=".ui.SearcheForBluetoothMachine"
+            android:exported="false" />
+        <activity
             android:name=".ui.SceanUserWaitForCalibration"
             android:exported="false" />
         <activity
@@ -112,13 +115,6 @@
             android:label="@string/title_activity_settings" />
         <activity
             android:name=".ui.cocktail.cocktailList.CocktailList"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".bluetoothlegatt.DeviceControlActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
