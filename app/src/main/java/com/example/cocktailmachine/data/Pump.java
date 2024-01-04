@@ -395,7 +395,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 pump.save(context);
                 toSave.add(pump.getID());
                 Log.i(TAG, "updated Pump: "+pump.toString());
-                Log.i(TAG, "updated Pump loaded with slot: "+Pump.getPumpWithSlot(context,slot).toString());
+                Log.i(TAG, "updated Pump loaded with slot: "+Pump.getPumpWithSlot(context,slot));
             }
             List<Pump> allPumps = getPumps(context);
             if(allPumps.size() > toSave.size()) {

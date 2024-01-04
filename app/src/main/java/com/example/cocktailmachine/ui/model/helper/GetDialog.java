@@ -987,6 +987,87 @@ public class GetDialog {
         WaitingQueueCountDown waitingQueueCountDown = new WaitingQueueCountDown(5000) {
             boolean isDone = false;
             boolean askAgain = true;
+            boolean finishInSet = false;
+            private final Postexecute onFinish = new Postexecute() {
+                @Override
+                public void post() {
+                    CalibrateStatus.getCurrent(new Postexecute() {
+                        @Override
+                        public void post() {
+                            if (CocktailMachine.isAutomaticCalibrationDone()) {
+                                Toast.makeText(activity, "Das Setup ist vollständig!", Toast.LENGTH_LONG).show();
+                                Postexecute continueHere = new Postexecute() {
+                                    @Override
+                                    public void post() {
+                                        Pump.emptyAll(activity);
+                                        new DialogListOfPumps(activity);
+                                        //GetDialog.setIngredientsForPumps(activity);
+                                    }
+                                };
+                                Postexecute doAgain = new Postexecute() {
+                                    @Override
+                                    public void post() {
+                                        CocktailMachine.automaticEnd(activity, continueHere,
+                                                GetDialog.sendTwice(activity,
+                                                        "",
+                                                        ""));
+
+                                    }
+                                };
+
+                                HashMap<ErrorStatus, Postexecute> errorMap = new HashMap<>();
+                                errorMap.put(ErrorStatus.calibration_command_invalid_at_this_time, doAgain);
+
+                                CocktailMachine.automaticEnd(activity, continueHere,
+                                        ErrorStatus.errorHandle(activity, errorMap, continueHere));
+
+                                //ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
+                                //CocktailMachine.automaticEnd(activity);
+                                //GetDialog.setIngredientsForPumps(activity);
+                            } else if (CocktailMachine.needsEmptyingGlass()) {
+
+                                GetDialog.emptyGlass(activity);
+                            } else if (CalibrateStatus.isReady()) {
+                                CocktailMachineCalibration.askIsDone(activity, new Postexecute() {
+                                    @Override
+                                    public void post() {
+                                        if (CocktailMachineCalibration.isIsDone()) {
+                                            Toast.makeText(activity, "Das Setup ist vollständig!", Toast.LENGTH_LONG).show();
+                                            Postexecute continueHere = new Postexecute() {
+                                                @Override
+                                                public void post() {
+                                                    Pump.emptyAll(activity);
+                                                    new DialogListOfPumps(activity);
+                                                    //GetDialog.setIngredientsForPumps(activity);
+                                                }
+                                            };
+                                            Postexecute doAgain = new Postexecute() {
+                                                @Override
+                                                public void post() {
+                                                    CocktailMachine.automaticEnd(activity, continueHere,
+                                                            GetDialog.sendTwice(activity,
+                                                                    "",
+                                                                    ""));
+
+                                                }
+                                            };
+
+                                            HashMap<ErrorStatus, Postexecute> errorMap = new HashMap<>();
+                                            errorMap.put(ErrorStatus.calibration_command_invalid_at_this_time, doAgain);
+
+                                            CocktailMachine.automaticEnd(activity, continueHere,
+                                                    ErrorStatus.errorHandle(activity, errorMap, continueHere));
+                                        } else {
+                                            GetDialog.errorMessageReader(activity);
+                                        }
+                                    }
+                                });
+                            }
+
+                        }
+                    }, activity);
+                }
+            };
             @Override
             public void onTick() {
                 Log.v(TAG, "waitingForPumps: waitingQueueCountDown:  isAutomaticCalibrationDone false");
@@ -1044,6 +1125,14 @@ public class GetDialog {
             }
 
             @Override
+            public void setTick(int tick) {
+                super.setTick(tick);
+                if(finishInSet){
+                    onFinish.post();
+                }
+            }
+
+            @Override
             public void onFinish() {
                 Log.v("GetDialog", "waitingQueueCountDown: onFinish");
                 this.cancel();
@@ -1055,83 +1144,12 @@ public class GetDialog {
                 dialog.cancel();
                 Log.v("GetDialog", "waitingQueueCountDown: onFinish: dialog dimissed");
 
-                CalibrateStatus.getCurrent(new Postexecute() {
-                    @Override
-                    public void post() {
-                        if(CocktailMachine.isAutomaticCalibrationDone()) {
-                            Toast.makeText(activity, "Das Setup ist vollständig!", Toast.LENGTH_LONG).show();
-                            Postexecute continueHere = new Postexecute() {
-                                @Override
-                                public void post() {
-                                    Pump.emptyAll(activity);
-                                    new DialogListOfPumps(activity);
-                                    //GetDialog.setIngredientsForPumps(activity);
-                                }
-                            };
-                            Postexecute doAgain = new Postexecute() {
-                                @Override
-                                public void post() {
-                                    CocktailMachine.automaticEnd(activity, continueHere,
-                                            GetDialog.sendTwice(activity,
-                                                    "",
-                                                    ""));
-
-                                }
-                            };
-
-                            HashMap<ErrorStatus, Postexecute> errorMap = new HashMap<>();
-                            errorMap.put(ErrorStatus.calibration_command_invalid_at_this_time, doAgain);
-
-                            CocktailMachine.automaticEnd(activity, continueHere,
-                                    ErrorStatus.errorHandle(activity, errorMap, continueHere));
-
-                            //ErrorStatus.handleAutomaticCalibrationNotReady(activity, dialog, doAgain, continueHere);
-                            //CocktailMachine.automaticEnd(activity);
-                            //GetDialog.setIngredientsForPumps(activity);
-                        } else if (CocktailMachine.needsEmptyingGlass()) {
-
-                            GetDialog.emptyGlass(activity);
-                        } else if(CalibrateStatus.isReady()){
-                            CocktailMachineCalibration.askIsDone(activity, new Postexecute() {
-                                @Override
-                                public void post() {
-                                    if(CocktailMachineCalibration.isIsDone()){
-                                        Toast.makeText(activity, "Das Setup ist vollständig!", Toast.LENGTH_LONG).show();
-                                        Postexecute continueHere = new Postexecute() {
-                                            @Override
-                                            public void post() {
-                                                Pump.emptyAll(activity);
-                                                new DialogListOfPumps(activity);
-                                                //GetDialog.setIngredientsForPumps(activity);
-                                            }
-                                        };
-                                        Postexecute doAgain = new Postexecute() {
-                                            @Override
-                                            public void post() {
-                                                CocktailMachine.automaticEnd(activity, continueHere,
-                                                        GetDialog.sendTwice(activity,
-                                                                "",
-                                                                ""));
-
-                                            }
-                                        };
-
-                                        HashMap<ErrorStatus, Postexecute> errorMap = new HashMap<>();
-                                        errorMap.put(ErrorStatus.calibration_command_invalid_at_this_time, doAgain);
-
-                                        CocktailMachine.automaticEnd(activity, continueHere,
-                                                ErrorStatus.errorHandle(activity, errorMap, continueHere));
-                                    }else{
-                                        GetDialog.errorMessageReader(activity);
-                                    }
-                                }
-                            });
-                        }
-
-                    }
-                }, activity);
-
-                this.cancel();
+                if(askAgain) {
+                   onFinish.post();
+                   this.cancel();
+                }else{
+                    finishInSet = true;
+                }
             }
         };
         waitingQueueCountDown.start();
