@@ -19,6 +19,7 @@ import com.example.cocktailmachine.databinding.ActivityMenueBinding;
 import com.example.cocktailmachine.ui.ListOfIngredience.ListIngredience;
 import com.example.cocktailmachine.ui.calibration.scale.calibrationScale;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
+import com.example.cocktailmachine.ui.model.WaitNotSetActivity;
 import com.example.cocktailmachine.ui.model.enums.ModelType;
 import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.helper.DialogListOfPumps;
@@ -77,17 +78,18 @@ public class Menue extends AppCompatActivity {
             binding.activityMenueLogin.setVisibility(View.VISIBLE);
         }
         if(!Dummy.withSetCalibration){
-            CocktailMachineCalibration.setIsDone(true);
+            CocktailMachineCalibration.getSingleton().setIsDone(true);
             Log.v(TAG, "onCreate: dummy:  not withSetCalibration ");
         }
 
         if(!CocktailMachineCalibration.isIsDone()) {
-            CocktailMachineCalibration.askIsDone(this, new Postexecute() {
+            CocktailMachineCalibration.getSingleton().askIsDone(this, new Postexecute() {
                 @Override
                 public void post() {
                     if (!CocktailMachineCalibration.isIsDone()) {
                         Log.w(TAG, "onCreate: start calibration ");
-                        CocktailMachineCalibration.start(Menue.this);
+                        GetActivity.waitNotSet(Menue.this);
+                        ///CocktailMachineCalibration.start(Menue.this);
                         Log.v(TAG, "onCreate: start done ");
                     }
                 }

@@ -1028,7 +1028,7 @@ public class GetDialog {
 
                                 GetDialog.emptyGlass(activity);
                             } else if (CalibrateStatus.isReady()) {
-                                CocktailMachineCalibration.askIsDone(activity, new Postexecute() {
+                                CocktailMachineCalibration.getSingleton().askIsDone(activity, new Postexecute() {
                                     @Override
                                     public void post() {
                                         if (CocktailMachineCalibration.isIsDone()) {
@@ -1129,6 +1129,7 @@ public class GetDialog {
                 super.setTick(tick);
                 if(finishInSet){
                     onFinish.post();
+                    this.cancel();
                 }
             }
 

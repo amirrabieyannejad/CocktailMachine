@@ -258,7 +258,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public void newCalibration(View view){
-        CocktailMachineCalibration.start(this);
+        CocktailMachineCalibration.getSingleton().start(this);
     }
 
 
