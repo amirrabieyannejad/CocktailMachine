@@ -23,9 +23,19 @@ import java.util.Random;
  */
 public class CocktailMachineCalibration {
     private static final String TAG = "CocktailMachineCalibr" ;
+    private static CocktailMachineCalibration singleton = null;
     private static boolean isDone = false;
+    private CocktailMachineCalibration() {}
 
-    public static void start(Activity activity) {
+    public static CocktailMachineCalibration getSingleton() {
+        if(singleton == null){
+            singleton = new CocktailMachineCalibration();
+        }
+
+        return singleton;
+    }
+
+    public void start(Activity activity) {
         Log.v(TAG, "start");
         Dialog wait = GetDialog.loadingBluetooth(activity);
         wait.show();
@@ -83,7 +93,7 @@ public class CocktailMachineCalibration {
     }
 
 
-    public static void askIsDone(Activity activity, Postexecute postexecute){
+    public void askIsDone(Activity activity, Postexecute postexecute){
 
 
         if(Dummy.isDummy){
@@ -108,7 +118,7 @@ public class CocktailMachineCalibration {
         };
     }
 
-    public static void setIsDone(boolean isDone) {
+    public void setIsDone(boolean isDone) {
         Log.v(TAG, "start: setIsDone");
         CocktailMachineCalibration.isDone = isDone;
         if(isDone){
