@@ -108,4 +108,7 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
     static Iterator<List<SQLTopic>> getChunkIterator(Context context, int n){
         return GetFromDB.getTopicChunkIterator(context, n);
     }
+
+    @Override
+    int compareTo(Topic o);
 }

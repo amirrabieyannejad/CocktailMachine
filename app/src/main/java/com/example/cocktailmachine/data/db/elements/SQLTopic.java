@@ -129,6 +129,6 @@ public class SQLTopic extends SQLDataBaseElement implements Topic {
 
     @Override
     public int compareTo(Topic o) {
-        return Long.compare(this.getID(), o.getID());
+        return this.toString().compareTo(o.toString());
     }
 }

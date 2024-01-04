@@ -19,8 +19,8 @@ Aussehen und Verhalten
   - Listen von Objekten (Rezepte/Serviervorschläge/Zutaten/Pumpen)
     - Objekterstellung
     - Auswahl:
-      - kurz: Obj.darstellung
-      - lang: Obj.löschung -> Update Liste
+      - kurz: Obj.Darstellung
+      - lang: Obj.Löschung -> Update Liste
   - Objektdarstellung
     - Editierfunktion (bei entsprechender Berechtigung)
     - Löschfkt. -> Obj.liste
