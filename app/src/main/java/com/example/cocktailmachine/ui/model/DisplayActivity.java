@@ -259,10 +259,11 @@ public class DisplayActivity extends BasicActivity {
             binding.textViewDisplayDescription.setVisibility(View.VISIBLE);
             return;
         }
+        Log.i(TAG, "Pump: "+pump.toString());
         binding.textViewDisplayTitle.setText("Slot: "+ pump.getID());
         //TO DO: AlertDialog to change title if admin ----NOT BECAUSE PUMP NO NAME
         binding.includeDisplayPump.getRoot().setVisibility(View.VISIBLE);
-        binding.includeDisplayPump.textViewPumpIngredientName.setText(pump.getIngredientName());
+        binding.includeDisplayPump.textViewPumpIngredientName.setText(pump.getIngredientName(this));
         //TO DO: AlertDialog to change ingredient if admin
         //final Activity activity = this;
         binding.includeDisplayPump.textViewPumpIngredientName.setOnLongClickListener(new View.OnLongClickListener() {
