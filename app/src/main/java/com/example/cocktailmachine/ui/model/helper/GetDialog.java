@@ -91,7 +91,6 @@ public class GetDialog {
         loadImage2.setVisibility(View.GONE);
         loadImage3.setVisibility(View.GONE);
 
-        List<Recipe> sublistRecipe = getListOfRandomRecipe(3,activity);
 
         try {
             Bitmap image = BildgeneratorGlas.randomBildgenerationGlas(activity);
