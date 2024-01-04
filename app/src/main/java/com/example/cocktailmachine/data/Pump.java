@@ -408,6 +408,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 }
             }
             ExtraHandlingDB.localRefresh(context);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Log.i(TAG, Pump.getPumps(context).stream().map(Object::toString).reduce((p1, p2)->p1.toString()+p2.toString()).orElse("Fehler"));
+            }
         } catch (JSONException | MissingIngredientPumpException e) {
             Log.e(TAG, "updatePumpStatus: error");
             Log.e(TAG, "error ",e);
