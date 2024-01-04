@@ -841,9 +841,9 @@ public class BluetoothSingleton {
             InterruptedException {
         Log.w(TAG, "BluetoothSingleton initUser start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "userInitUser";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "userInitUser";
             singleton.connectGatt(activity);
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("cmd", "init_user");
@@ -885,9 +885,9 @@ public class BluetoothSingleton {
             InterruptedException {
         Log.w(TAG, "BluetoothSingleton userInitUser(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "userInitUser(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "userInitUser(PE)";
             singleton.connectGatt(activity);
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("cmd", "init_user");
@@ -930,9 +930,9 @@ public class BluetoothSingleton {
             throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminDefinePumps start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminDefinePumps";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminDefinePumps";
             singleton.connectGatt(activity);
             // generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -986,9 +986,9 @@ public class BluetoothSingleton {
             throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminDefinePumps(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminDefinePumps(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminDefinePumps(PE)";
             singleton.connectGatt(activity);
             // generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -1043,10 +1043,9 @@ public class BluetoothSingleton {
             throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminDefinePump start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminDefinePump";
-
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminDefinePump";
             singleton.connectGatt(activity);
             // generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -1097,9 +1096,9 @@ public class BluetoothSingleton {
             throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminEditPump(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminEditPump(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminEditPump(PE)";
             singleton.connectGatt(activity);
             // generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -1146,10 +1145,9 @@ public class BluetoothSingleton {
             throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminEditPump start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminEditPump";
-
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminEditPump";
             singleton.connectGatt(activity);
             // generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -1201,9 +1199,9 @@ public class BluetoothSingleton {
             throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminDefinePump(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminDefinePump(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminDefinePump(PE)";
             singleton.connectGatt(activity);
             // generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -1252,9 +1250,9 @@ public class BluetoothSingleton {
             throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton userDefineRecipe(PE) start");
         try {
+            singleton = BluetoothSingleton.getInstance();
             checkIfNotEmpty(singleton.queue);
-            queue= "userDefineRecipe(PE)";
-        singleton = BluetoothSingleton.getInstance();
+            singleton.queue= "userDefineRecipe(PE)";
         singleton.connectGatt(activity);
         //generate JSON Format
         JSONObject jsonObject = new JSONObject();
@@ -1303,9 +1301,9 @@ public class BluetoothSingleton {
             throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton userEditRecipe(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "userEditRecipe(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "userEditRecipe(PE)";
             singleton.connectGatt(activity);
             // generate JSON Format
             JSONArray arrayIngredients = new JSONArray();
@@ -1363,9 +1361,9 @@ public class BluetoothSingleton {
             throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton userEditRecipe start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "userEditRecipe";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "userEditRecipe";
             singleton.connectGatt(activity);
             // generate JSON Format
             JSONArray arrayIngredients = new JSONArray();
@@ -1423,9 +1421,9 @@ public class BluetoothSingleton {
 
         Log.w(TAG, "BluetoothSingleton userStartRecipe(2xPE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "userStartRecipe(2xPE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "userStartRecipe(2xPE)";
             singleton.connectGatt(activity);
             //generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -1469,9 +1467,9 @@ public class BluetoothSingleton {
             JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton userCancelRecipe start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "userCancelRecipe";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "userCancelRecipe";
             singleton.connectGatt(activity);
             //generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -1515,9 +1513,9 @@ public class BluetoothSingleton {
             JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton userCancelRecipe(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "userCancelRecipe(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "userCancelRecipe(PE)";
             singleton.connectGatt(activity);
             //generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -1562,10 +1560,9 @@ public class BluetoothSingleton {
             JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton userTakeCocktail(2xPE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "userTakeCocktail(2xPE)";
-
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "userTakeCocktail(2xPE)";
             singleton.connectGatt(activity);
             //generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -1610,9 +1607,9 @@ public class BluetoothSingleton {
             JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton userDeleteRecipe start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "userDeleteRecipe";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "userDeleteRecipe";
             singleton.connectGatt(activity);
             //generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -1657,9 +1654,9 @@ public class BluetoothSingleton {
             JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton userQueueRecipe(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "userQueueRecipe(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "userQueueRecipe(PE)";
             singleton.connectGatt(activity);
             //generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -1703,9 +1700,9 @@ public class BluetoothSingleton {
     public void adminReset(Activity activity) throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminReset start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminReset";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminReset";
             singleton.connectGatt(activity);
             //generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -1749,9 +1746,9 @@ public class BluetoothSingleton {
     public void adminReset(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminReset(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminReset(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminReset(PE)";
             singleton.connectGatt(activity);
             //generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -1797,9 +1794,9 @@ public class BluetoothSingleton {
     public void adminResetError(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminResetError(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminResetError(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminResetError(PE)";
             singleton.connectGatt(activity);
             //generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -1844,9 +1841,9 @@ public class BluetoothSingleton {
             throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton userAddLiquid start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "userAddLiquid";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "userAddLiquid";
             singleton.connectGatt(activity);
             //generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -1892,9 +1889,9 @@ public class BluetoothSingleton {
 
         Log.w(TAG, "BluetoothSingleton adminRefillPump(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminRefillPump(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminRefillPump(PE)";
             singleton.connectGatt(activity);
             //generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -1943,9 +1940,9 @@ public class BluetoothSingleton {
             InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminManuelCalibrateRunPump(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminManuelCalibrateRunPump(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminManuelCalibrateRunPump(PE)";
             singleton.connectGatt(activity);
             //generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -1993,9 +1990,9 @@ public class BluetoothSingleton {
             InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminAutoCalibrateStart(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminAutoCalibrateStart(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminAutoCalibrateStart(PE)";
             //generate JSON Format
             singleton.connectGatt(activity);
             JSONObject jsonObject = new JSONObject();
@@ -2041,9 +2038,9 @@ public class BluetoothSingleton {
             InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminAutoCalibrateStart(2xPE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminAutoCalibrateStart(2xPE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminAutoCalibrateStart(2xPE)";
             //generate JSON Format
             singleton.connectGatt(activity);
             JSONObject jsonObject = new JSONObject();
@@ -2088,9 +2085,9 @@ public class BluetoothSingleton {
             InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminAutoCalibrateStart start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminAutoCalibrateStart";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminAutoCalibrateStart";
             //generate JSON Format
             singleton.connectGatt(activity);
             JSONObject jsonObject = new JSONObject();
@@ -2136,9 +2133,9 @@ public class BluetoothSingleton {
             InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminAutoCalibrateAddEmpty(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminAutoCalibrateAddEmpty(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminAutoCalibrateAddEmpty(PE)";
             //generate JSON Format
             singleton.connectGatt(activity);
             JSONObject jsonObject = new JSONObject();
@@ -2184,9 +2181,9 @@ public class BluetoothSingleton {
             InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminAutoCalibrateCancel(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminAutoCalibrateCancel(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminAutoCalibrateCancel(PE)";
             singleton.connectGatt(activity);
             //generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -2234,9 +2231,9 @@ public class BluetoothSingleton {
             InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminAutoCalibrateFinish(2xPE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminAutoCalibrateFinish(2xPE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminAutoCalibrateFinish(2xPE)";
             //generate JSON Format
             singleton.connectGatt(activity);
             JSONObject jsonObject = new JSONObject();
@@ -2283,9 +2280,9 @@ public class BluetoothSingleton {
             InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminAutoCalibrateAddWeight(2xPE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminAutoCalibrateAddWeight(2xPE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminAutoCalibrateAddWeight(2xPE)";
             singleton.connectGatt(activity);
             //generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -2336,9 +2333,9 @@ public class BluetoothSingleton {
             throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminManuelCalibratePump start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminManuelCalibratePump";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminManuelCalibratePump";
             singleton.connectGatt(activity);
             //generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -2392,9 +2389,9 @@ public class BluetoothSingleton {
             JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminManuelCalibrateSetPumpTimes(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminManuelCalibrateSetPumpTimes(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminManuelCalibrateSetPumpTimes(PE)";
             singleton.connectGatt(activity);
             //generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -2444,9 +2441,9 @@ public class BluetoothSingleton {
             InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminManuelCalibrateTareScale(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminManuelCalibrateTareScale(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminManuelCalibrateTareScale(PE)";
             singleton.connectGatt(activity);
             //generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -2491,9 +2488,9 @@ public class BluetoothSingleton {
     public void adminManuelCalibrateScale(float weight, Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminManuelCalibrateScale(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminManuelCalibrateScale(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminManuelCalibrateScale(PE)";
             singleton.connectGatt(activity);
             //generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -2542,9 +2539,9 @@ public class BluetoothSingleton {
                                                    Postexecute postexecute) throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminManuelCalibrateSetScaleFactor(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminManuelCalibrateSetScaleFactor(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminManuelCalibrateSetScaleFactor(PE)";
             singleton.connectGatt(activity);
             //generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -2589,9 +2586,9 @@ public class BluetoothSingleton {
     public void adminRestart(Activity activity) throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminRestart start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminRestart";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminRestart";
             singleton.connectGatt(activity);
             //generate JSON Format
 
@@ -2636,9 +2633,9 @@ public class BluetoothSingleton {
     public void adminFactoryReset(Activity activity) throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminFactoryReset start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminFactoryReset";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminFactoryReset";
             singleton.connectGatt(activity);
             //generate JSON Format
 
@@ -2684,9 +2681,9 @@ public class BluetoothSingleton {
     public void adminFactoryReset(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminFactoryReset(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminFactoryReset(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminFactoryReset(PE)";
             singleton.connectGatt(activity);
             //generate JSON Format
 
@@ -2732,9 +2729,9 @@ public class BluetoothSingleton {
     public void adminClean(Activity activity) throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminClean start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminClean";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminClean";
             singleton.connectGatt(activity);
             //generate JSON Format
             JSONObject jsonObject = new JSONObject();
@@ -2782,9 +2779,9 @@ public class BluetoothSingleton {
     public void adminReadPumpsStatus(Activity activity) throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminReadPumpsStatus start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminReadPumpsStatus";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminReadPumpsStatus";
             singleton.connectGatt(activity);
             singleton.sendStatus(CHARACTERISTIC_STATUS_PUMPS);
             singleton.waitForReadNotification();
@@ -2828,9 +2825,9 @@ public class BluetoothSingleton {
             throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminReadPumpsStatus(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminReadPumpsStatus(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminReadPumpsStatus(PE)";
             singleton.connectGatt(activity);
             singleton.sendStatus(CHARACTERISTIC_STATUS_PUMPS);
             singleton.waitForReadNotification();
@@ -2872,9 +2869,9 @@ public class BluetoothSingleton {
     public void adminReadLastChange(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminReadLastChange(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminReadLastChange(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminReadLastChange(PE)";
             singleton.connectGatt(activity);
             singleton.sendStatus(CHARACTERISTIC_STATUS_LAST_CHANGE);
             singleton.waitForReadNotification();
@@ -2914,9 +2911,9 @@ public class BluetoothSingleton {
     public void adminReadLiquidsStatus(Activity activity) throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminReadLiquidsStatus start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminReadLiquidsStatus";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminReadLiquidsStatus";
             singleton.connectGatt(activity);
             singleton.sendStatus(CHARACTERISTIC_STATUS_LIQUIDS);
             singleton.waitForReadNotification();
@@ -2963,9 +2960,9 @@ public class BluetoothSingleton {
             throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminReadState(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminReadState(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminReadState(PE)";
             singleton.connectGatt(activity);
             singleton.sendStatus(CHARACTERISTIC_STATUS_STATE);
             singleton.waitForReadNotification();
@@ -3019,9 +3016,9 @@ public class BluetoothSingleton {
     public void adminReadRecipesStatus(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminReadRecipesStatus(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminReadRecipesStatus(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminReadRecipesStatus(PE)";
             singleton.connectGatt(activity);
             singleton.sendStatus(CHARACTERISTIC_STATUS_RECIPES);
             singleton.waitForReadNotification();
@@ -3062,9 +3059,9 @@ public class BluetoothSingleton {
             throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminReadCurrentCocktail(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminReadCurrentCocktail(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminReadCurrentCocktail(PE)";
             singleton.connectGatt(activity);
             singleton.sendStatus(CHARACTERISTIC_STATUS_COCKTAIL);
             singleton.waitForReadNotification();
@@ -3105,9 +3102,9 @@ public class BluetoothSingleton {
     public void adminReadUserQueue(Activity activity) throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminReadUserQueue start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminReadUserQueue";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminReadUserQueue";
             singleton.connectGatt(activity);
             singleton.sendStatus(CHARACTERISTIC_STATUS_USER_QUEUE);
             singleton.waitForReadNotification();
@@ -3147,9 +3144,9 @@ public class BluetoothSingleton {
     public void adminReadScaleStatus(Activity activity) throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminReadScaleStatus start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminReadScaleStatus";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminReadScaleStatus";
             singleton.connectGatt(activity);
             singleton.sendStatus(CHARACTERISTIC_STATUS_SCALE);
             singleton.waitForReadNotification();
@@ -3190,9 +3187,9 @@ public class BluetoothSingleton {
     public void adminReadScaleStatus(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminReadScaleStatus(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminReadScaleStatus(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminReadScaleStatus(PE)";
             singleton.connectGatt(activity);
             singleton.sendStatus(CHARACTERISTIC_STATUS_SCALE);
             singleton.waitForReadNotification();
@@ -3232,9 +3229,9 @@ public class BluetoothSingleton {
     public void adminReadErrorStatus(Activity activity) throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminReadErrorStatus start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminReadErrorStatus";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminReadErrorStatus";
             singleton.connectGatt(activity);
             singleton.sendStatus(CHARACTERISTIC_STATUS_ERROR);
             singleton.waitForReadNotification();
@@ -3274,9 +3271,9 @@ public class BluetoothSingleton {
     public void adminReadErrorStatus(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton adminReadErrorStatus(PE) start");
         try {
-            checkIfNotEmpty(singleton.queue);
-            queue = "adminReadErrorStatus(PE)";
             singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminReadErrorStatus(PE)";
             singleton.connectGatt(activity);
             singleton.sendStatus(CHARACTERISTIC_STATUS_ERROR);
             singleton.waitForReadNotification();
