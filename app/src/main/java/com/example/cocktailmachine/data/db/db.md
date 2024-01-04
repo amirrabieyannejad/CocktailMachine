@@ -16,3 +16,6 @@ nachdem zweite Pump konfiguriert wird(Flüssigkeit + Volume angegeben wird), wir
 ->nicht reproduzierbar????
 Es gibt beim updatePumpStatus in Pump Class eine Fehler, wo sich vlt. auf Nr. 2 bezieht (siehe Anhang)
 ???
+
+
+WitingQueue checj´ken nach on Finish bluetooth abfragen

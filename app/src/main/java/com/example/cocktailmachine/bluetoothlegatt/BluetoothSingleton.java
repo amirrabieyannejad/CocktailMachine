@@ -2792,8 +2792,8 @@ public class BluetoothSingleton {
                     if (!check()) {
                         throw new InterruptedException();
                     }
-                    Pump.updatePumpStatus(activity, this.getJsonResult());
                     Log.w(TAG, "To Save: " + this.getJsonResult());
+                    Pump.updatePumpStatus(activity, this.getJsonResult());
                     Log.w(TAG, "Reset Queue!");
                     singleton.queue = "";
                     Log.w(TAG, "BluetoothSingleton adminReadPumpsStatus end");
@@ -2838,8 +2838,8 @@ public class BluetoothSingleton {
                     if (!check()) {
                         throw new InterruptedException();
                     }
-                    Pump.updatePumpStatus(activity, this.getJsonResult());
                     Log.w(TAG, "To Save: " + this.getJsonResult());
+                    Pump.updatePumpStatus(activity, this.getJsonResult());
                     Log.w(TAG, "Reset Queue!");
                     singleton.queue = "";
                     Log.w(TAG, "BluetoothSingleton adminReadPumpsStatus(PE) end");
