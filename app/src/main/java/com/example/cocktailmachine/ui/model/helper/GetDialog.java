@@ -1129,6 +1129,7 @@ public class GetDialog {
                 super.setTick(tick);
                 if(finishInSet){
                     onFinish.post();
+                    this.cancel();
                 }
             }
 
