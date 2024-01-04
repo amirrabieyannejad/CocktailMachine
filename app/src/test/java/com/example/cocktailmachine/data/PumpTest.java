@@ -1,5 +1,7 @@
 package com.example.cocktailmachine.data;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -175,5 +177,21 @@ class PumpTest {
 
     @Test
     void testGetPumpWithSlot() {
+    }
+
+    @Before
+    public void setUp() throws Exception {
+    }
+
+    @After
+    public void tearDown() throws Exception {
+    }
+
+    @org.junit.Test
+    public void testUpdatePumpStatus() {
+    }
+
+    @org.junit.Test
+    public void testUpdateLiquidStatus() {
     }
 }

@@ -21,12 +21,13 @@ import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class TestDB {
+    Context appContext;
 
     @Before
     public void setUp(){
         //InstrumentationRegistry.registerInstance(new Instrumentation(), new Bundle());
 
-        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         assertNotNull("cant be", appContext);
         DatabaseConnection.init(appContext);
         try {
@@ -41,6 +42,8 @@ public class TestDB {
             if(DatabaseConnection.getSingleton().getReadableDatabase()==null){
                 System.out.println("no readable");
             }
+
+            
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
             System.out.println("no readable");
@@ -102,17 +105,13 @@ public class TestDB {
         Recipe recipe = Recipe.makeNew("Magarita");
         System.out.println(recipe);
         try {
-            recipe.save();
+            recipe.save(appContext);
             System.out.println(DatabaseConnection.getSingleton().toString());
         } catch (NotInitializedDBException e) {
             e.printStackTrace();
         }
         Recipe db_recipe = null;
-        try {
-            db_recipe = DatabaseConnection.getSingleton().getRecipe(recipe.getID());
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
+        db_recipe = Recipe.getRecipe(appContext, recipe.getID());
         if(db_recipe == null){
             System.out.println("db_recipe failed");
         }else {
@@ -126,7 +125,7 @@ public class TestDB {
         Topic topic = Topic.makeNew("Eis", "gefrorenes Wasser");
         System.out.println(topic);
         Topic db_topic = null;
-
+        db_topic= Topic.getTopic(appContext, "Eis");
         if(db_topic == null){
             System.out.println("db_topic failed");
         }else {
@@ -138,15 +137,11 @@ public class TestDB {
     @Test
     public void recipe_add_topics(){
         Recipe recipe = Recipe.makeNew("Magarita_topics");
-        recipe.addOrUpdate(Topic.makeNew("Eis2", "gefrorenes Wasser, 3 Würfel"));
+        recipe.add(appContext, Topic.makeNew("Eis2", "gefrorenes Wasser, 3 Würfel"));
         System.out.println(recipe);
         Recipe db_recipe = null;
-        try {
-            recipe.save();
-            db_recipe = DatabaseConnection.getSingleton().getRecipe(recipe.getID());
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
+        recipe.save(appContext);
+        db_recipe = Recipe.getRecipe(appContext, recipe.getID());
         if(db_recipe == null){
             System.out.println("db_recipe failed");
         }else {
@@ -162,7 +157,7 @@ public class TestDB {
         System.out.println(ingredient);
         Ingredient db_ingredient = null;
         ingredient.save(null);
-        db_ingredient = Ingredient.getIngredient(ingredient.getID());
+        db_ingredient = Ingredient.getIngredient(appContext, ingredient.getID());
 
         if(db_ingredient == null){
             System.out.println("db_ingredient failed");
@@ -180,7 +175,7 @@ public class TestDB {
         System.out.println(ingredient);
         Ingredient db_ingredient = null;
         ingredient.save(null);
-        db_ingredient = Ingredient.getIngredient(ingredient.getID());
+        db_ingredient = Ingredient.getIngredient(appContext, ingredient.getID());
 
         if(db_ingredient == null){
             System.out.println("db_ingredient failed");
@@ -198,18 +193,14 @@ public class TestDB {
     @Test
     public void recipe_add_ingredient(){
         Recipe recipe = Recipe.makeNew("Magarita_ingredient");
-        recipe.addOrUpdate(
+        recipe.add(appContext,
                 Ingredient.makeNew("Wodka", true, 123),
                 3);
 
         System.out.println(recipe);
         Recipe db_recipe = null;
-        try {
-            recipe.save();
-            db_recipe = DatabaseConnection.getSingleton().getRecipe(recipe.getID());
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
+        recipe.save(appContext);
+        db_recipe = Recipe.getRecipe(appContext, recipe.getID());
         if(db_recipe == null){
             System.out.println("db_recipe failed");
         }else {
@@ -221,18 +212,14 @@ public class TestDB {
     @Test
     public void recipe_add_ingredient_with_id(){
         Recipe recipe = Recipe.makeNew("Magarita_ingredient_id");
-        recipe.addOrUpdate(
-                Ingredient.makeNew("Grapefruit-Saft", false, 324).getID(),
+        recipe.add(appContext,
+                Ingredient.makeNew("Grapefruit-Saft", false, 324),
                 7);
 
         System.out.println(recipe);
         Recipe db_recipe = null;
-        try {
-            recipe.save();
-            db_recipe = DatabaseConnection.getSingleton().getRecipe(recipe.getID());
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
+        recipe.save(appContext);
+        db_recipe = Recipe.getRecipe(appContext, recipe.getID());
         if(db_recipe == null){
             System.out.println("db_recipe failed");
         }else {
@@ -244,16 +231,12 @@ public class TestDB {
     @Test
     public void recipe_add_imageUrl(){
         Recipe recipe = Recipe.makeNew("Magarita_url");
-        recipe.addOrUpdate("test.png");
+        //recipe.add("test.png");
 
         System.out.println(recipe);
         Recipe db_recipe = null;
-        try {
-            recipe.save();
-            db_recipe = DatabaseConnection.getSingleton().getRecipe(recipe.getID());
-        } catch (NotInitializedDBException e) {
-            e.printStackTrace();
-        }
+        recipe.save(appContext);
+        db_recipe = Recipe.getRecipe(appContext, recipe.getID());
         if(db_recipe == null){
             System.out.println("db_recipe failed");
         }else {
@@ -265,8 +248,8 @@ public class TestDB {
     @Test
     public void loadTestRecipes() {
         try {
-            BasicRecipes.loadMargarita();
-            Recipe magarita = Recipe.getRecipe("Margarita");
+            BasicRecipes.loadMargarita(appContext);
+            Recipe magarita = Recipe.getRecipe(appContext,"Margarita");
             assertNotNull(magarita);
         } catch (NotInitializedDBException e) {
             e.printStackTrace();

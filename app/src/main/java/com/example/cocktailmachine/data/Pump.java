@@ -394,10 +394,15 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 pump.fill(context,vol);
                 pump.save(context);
                 toSave.add(pump.getID());
+                Log.i(TAG, "updated Pump: "+pump.toString());
+                Log.i(TAG, "updated Pump loaded with slot: "+Pump.getPumpWithSlot(context,slot).toString());
             }
-            for (Pump p : getPumps(context)) {
-                if (!toSave.contains(p.getID())) {
-                    DeleteFromDB.remove(context, p);
+            List<Pump> allPumps = getPumps(context);
+            if(allPumps.size() > toSave.size()) {
+                for (Pump p : getPumps(context)) {
+                    if (!toSave.contains(p.getID())) {
+                        DeleteFromDB.remove(context, p);
+                    }
                 }
             }
             ExtraHandlingDB.localRefresh(context);
@@ -405,6 +410,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             Log.e(TAG, "updatePumpStatus: error");
             Log.e(TAG, "error ",e);
             Log.getStackTraceString(e);
+            Log.e(TAG, "error catched continue");
         }
     }
 

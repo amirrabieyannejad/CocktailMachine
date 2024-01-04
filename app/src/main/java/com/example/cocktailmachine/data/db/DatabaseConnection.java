@@ -50,6 +50,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseConnection";
     private static int version = 1;
     private static final SQLiteDatabase.CursorFactory factory = null;
+    private static boolean loaded = false;
 
 
     private DatabaseConnection(@Nullable Context context) {
