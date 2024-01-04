@@ -301,7 +301,7 @@ public class CocktailMachine {
 
         if(Dummy.isDummy){
             Log.i(TAG, "isCocktailMachineSet: dummy");
-            if( CocktailMachineCalibration.isIsDone()){
+            if( CocktailMachineCalibration.getSingleton().isIsDone()){
                 Log.i(TAG, "isCocktailMachineSet: dummy. SET");
                 set.post();
                 return;
@@ -316,7 +316,7 @@ public class CocktailMachine {
                 @Override
                 public void post() {
                     Log.i(TAG, "isCocktailMachineSet: post");
-                    if(CocktailMachineCalibration.isIsDone()){
+                    if(CocktailMachineCalibration.getSingleton().isIsDone()){
                         Log.i(TAG, "isCocktailMachineSet: NOT SET");
                         notSet.post();
                     }else{
@@ -345,7 +345,7 @@ public class CocktailMachine {
 
         if(Dummy.isDummy){
             Log.i(TAG, "isCocktailMachineSet: dummy");
-            return CocktailMachineCalibration.isIsDone();
+            return CocktailMachineCalibration.getSingleton().isIsDone();
         }else{
             try {
                 BluetoothSingleton.getInstance().adminReadPumpsStatus(activity);

@@ -82,11 +82,11 @@ public class Menue extends AppCompatActivity {
             Log.v(TAG, "onCreate: dummy:  not withSetCalibration ");
         }
 
-        if(!CocktailMachineCalibration.isIsDone()) {
+        if(!CocktailMachineCalibration.getSingleton().isIsDone()) {
             CocktailMachineCalibration.getSingleton().askIsDone(this, new Postexecute() {
                 @Override
                 public void post() {
-                    if (!CocktailMachineCalibration.isIsDone()) {
+                    if (!CocktailMachineCalibration.getSingleton().isIsDone()) {
                         Log.w(TAG, "onCreate: start calibration ");
                         GetActivity.waitNotSet(Menue.this);
                         ///CocktailMachineCalibration.start(Menue.this);

@@ -87,7 +87,7 @@ public class CocktailMachineCalibration {
      * @author Johanna Reidt
      * @return
      */
-    public static boolean isIsDone() {
+    public boolean isIsDone() {
         Log.v(TAG, "start: isIsDone");
         return isDone;
     }
