@@ -1031,7 +1031,7 @@ public class GetDialog {
                                 CocktailMachineCalibration.getSingleton().askIsDone(activity, new Postexecute() {
                                     @Override
                                     public void post() {
-                                        if (CocktailMachineCalibration.isIsDone()) {
+                                        if (CocktailMachineCalibration.getSingleton().isIsDone()) {
                                             Toast.makeText(activity, "Das Setup ist vollständig!", Toast.LENGTH_LONG).show();
                                             Postexecute continueHere = new Postexecute() {
                                                 @Override
