@@ -3,6 +3,7 @@ package com.example.cocktailmachine.data;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 import com.example.cocktailmachine.Dummy;
@@ -360,6 +361,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         Log.i(TAG, "updatePumpStatus");
         Log.i(TAG, "updatePumpStatus: "+json.toString());
         List<Long> toSave = new ArrayList<>();
+        CocktailMachineCalibration.getSingleton().setIsDone(true);
         try {
             Iterator<String> t_ids = json.keys();
             while (t_ids.hasNext()){
