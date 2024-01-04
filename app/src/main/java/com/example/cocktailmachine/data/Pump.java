@@ -381,7 +381,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
                 JSONArray cal = jsonTemp.getJSONArray("cal");
                 if(cal.length()==0){
-                    CocktailMachineCalibration.setIsDone(false);
+                    CocktailMachineCalibration.getSingleton().setIsDone(false);
                 }
 
                 Pump pump = getPumpWithSlot(context,slot);
