@@ -74,7 +74,6 @@ public class GetDialog {
 
     public static AlertDialog loadingBluetooth(Activity activity){
 
-        /*
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
         View v = activity.getLayoutInflater().inflate(R.layout.activity_load_data_animation, null);
@@ -95,11 +94,11 @@ public class GetDialog {
         List<Recipe> sublistRecipe = getListOfRandomRecipe(3,activity);
 
         try {
-            Bitmap image = BildgeneratorGlas.bildgenerationGlas(activity,sublistRecipe.get(0),(float)1.0);
+            Bitmap image = BildgeneratorGlas.randomBildgenerationGlas(activity);
             loadImage1.setImageBitmap(image);
-            image = BildgeneratorGlas.bildgenerationGlas(activity,sublistRecipe.get(1),(float)1.0);
+            image = BildgeneratorGlas.randomBildgenerationGlas(activity);
             loadImage2.setImageBitmap(image);
-            image = BildgeneratorGlas.bildgenerationGlas(activity,sublistRecipe.get(2),(float)1.0);
+            image = BildgeneratorGlas.randomBildgenerationGlas(activity);
             loadImage3.setImageBitmap(image);
         } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
             throw new RuntimeException(e);
@@ -145,12 +144,7 @@ public class GetDialog {
 
 
 
-        return builder;
-
-         */
-        AlertDialog dialog = new WaitDialog(activity);
-        dialog.create();
-        return dialog;
+        return alertDialog;
     }
 
     public static class WaitDialog extends AlertDialog{
