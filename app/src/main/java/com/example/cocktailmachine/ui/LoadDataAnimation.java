@@ -50,11 +50,11 @@ public class LoadDataAnimation extends AppCompatActivity {
         List<Recipe> sublistRecipe = getListOfRandomRecipe(3);
 
         try {
-            Bitmap image = BildgeneratorGlas.bildgenerationGlas(this,sublistRecipe.get(0),(float)1.0);
+            Bitmap image = BildgeneratorGlas.randomBildgenerationGlas(this);
             loadImage1.setImageBitmap(image);
-            image = BildgeneratorGlas.bildgenerationGlas(this,sublistRecipe.get(1),(float)1.0);
+            image = BildgeneratorGlas.randomBildgenerationGlas(this);
             loadImage2.setImageBitmap(image);
-            image = BildgeneratorGlas.bildgenerationGlas(this,sublistRecipe.get(2),(float)1.0);
+            image = BildgeneratorGlas.randomBildgenerationGlas(this);
             loadImage3.setImageBitmap(image);
         } catch (TooManyTimesSettedIngredientEcxception e) {
             throw new RuntimeException(e);
