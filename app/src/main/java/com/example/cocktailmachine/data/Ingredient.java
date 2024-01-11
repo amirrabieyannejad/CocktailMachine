@@ -2,7 +2,6 @@ package com.example.cocktailmachine.data;
 
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
@@ -173,7 +172,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @return List of ingredients.
      */
     static List<String> getAllIngredientNames(Context context) {
-        return GetFromDB.getIngredientNames(context);
+        return GetFromDB.loadIngredientNames(context);
     }
 
 
@@ -183,7 +182,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @return List of ingredients.
      */
     static List<Ingredient> getAvailableIngredients(Context context) {
-        return (List<Ingredient>) GetFromDB.getAvailableIngredients(context);
+        return (List<Ingredient>) GetFromDB.loadAvailableIngredients(context);
     }
 
     /**
@@ -208,7 +207,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @return List of ingredients.
      */
     static List<Ingredient> getAvailableIngredients(Context context,List<Long> ingredientsIds) {
-        return (List<Ingredient>) GetFromDB.getAvailableIngredients(context,ingredientsIds);
+        return (List<Ingredient>) GetFromDB.loadAvailableIngredients(context,ingredientsIds);
     }
 
 

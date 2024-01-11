@@ -1101,9 +1101,16 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @return
      */
     static Pump getPump(Context context, long id) {
-        return GetFromDB.getPump(context, id);
+        return GetFromDB.loadPump(context, id);
     }
 
+    /**
+     * static access to pumps get pump with slot number or null
+     * @author Johanna Reidt
+     * @param context
+     * @param slot
+     * @return
+     */
     static Pump getPumpWithSlot(Context context, int slot) {
         return GetFromDB.loadPumpWithSlot(context, slot);
     }

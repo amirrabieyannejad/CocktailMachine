@@ -132,7 +132,7 @@ public class BasicRecipes {
         Log.i(TAG,"loadMargarita finished");
     }
 
-    public static void loadTequila(Context context) throws NotInitializedDBException {
+    public static void loadTequila(Context context) {
         Log.i(TAG,"loadTequila");
         Recipe magarita = Recipe.searchOrNew(context,"Margarita 2.0");
         magarita.add(context, Ingredient.searchOrNew(context, "Tequila"), 8);
@@ -144,7 +144,7 @@ public class BasicRecipes {
         Log.i(TAG,"loadTequila finished");
     }
 
-    public static void loadLongIslandIceTea(Context context) throws NotInitializedDBException{
+    public static void loadLongIslandIceTea(Context context) {
         Log.i(TAG,"loadLongIslandIceTea");
         /**
          *

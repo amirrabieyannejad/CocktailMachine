@@ -23,7 +23,6 @@ import com.example.cocktailmachine.data.db.tables.RecipeTable;
 import com.example.cocktailmachine.data.db.tables.Tables;
 import com.example.cocktailmachine.data.db.tables.TopicTable;
 import com.example.cocktailmachine.ui.model.enums.ModelType;
-import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -116,7 +115,7 @@ public class GetFromDB {
         return Tables.TABLE_RECIPE.getChunkIterator(context ,n);
     }
 
-    static Topic loadTopic(Context context,long id){
+    public static Topic loadTopic(Context context, long id){
        // Log.v(TAG, "loadTopic");
         return Tables.TABLE_TOPIC.getElement(getReadableDatabase(context), id);
     }
@@ -136,7 +135,7 @@ public class GetFromDB {
         return res;
     }
 
-    static Topic loadTopic(Context context, String name){
+    public static Topic loadTopic(Context context, String name){
        // Log.v(TAG, "loadTopic");
         List<SQLTopic> ings = loadTopics(context, name);
         if(ings.isEmpty()){
@@ -156,7 +155,7 @@ public class GetFromDB {
     }
 
 
-    static Pump loadPump(Context context, long id){
+    public static Pump loadPump(Context context, long id){
        // Log.v(TAG, "loadPump");
         return Tables.TABLE_PUMP.getElement(getReadableDatabase(context), id);
     }
@@ -190,12 +189,12 @@ public class GetFromDB {
         return Tables.TABLE_INGREDIENT.getHashIngredientNameToID(getReadableDatabase(context));
     }
 
-    public static List<? extends Ingredient> getAvailableIngredients(Context context, List<Long> ids) {
+    public static List<? extends Ingredient> loadAvailableIngredients(Context context, List<Long> ids) {
         //List<Long> available = Tables.TABLE_INGREDIENT.getIDsIn(getReadableDatabase(context), Tables.TABLE_INGREDIENT)
         return Tables.TABLE_INGREDIENT.getAvailableElements(getReadableDatabase(context), ids);
     }
 
-    public static List<? extends Ingredient> getAvailableIngredients(Context context) {
+    public static List<? extends Ingredient> loadAvailableIngredients(Context context) {
         //List<Long> available = Tables.TABLE_INGREDIENT.getIDsIn(getReadableDatabase(context), Tables.TABLE_INGREDIENT)
         return Tables.TABLE_INGREDIENT.getAvailableElements(getReadableDatabase(context));
     }
@@ -214,15 +213,15 @@ public class GetFromDB {
         return Tables.TABLE_INGREDIENT.getIDs(getReadableDatabase(context));
     }
 
-    public static List<? extends Topic> getTopics(Context context){
+    public static List<? extends Topic> loadTopics(Context context){
          return Tables.TABLE_TOPIC.getAllElements(getReadableDatabase(context));
     }
-    public static List<? extends Topic> getTopics(Context context, Recipe recipe){
+    public static List<? extends Topic> loadTopics(Context context, Recipe recipe){
         List<Long> ids = Tables.TABLE_RECIPE_TOPIC.getTopicIDs(getReadableDatabase(context), recipe);
         return Tables.TABLE_TOPIC.getElements(getReadableDatabase(context),ids );
     }
 
-    public static List<? extends Topic> getTopics(Context context, List<Long> ids){
+    public static List<? extends Topic> loadTopics(Context context, List<Long> ids){
         try {
             List<Object> obj = new ArrayList<>(ids);
             return Tables.TABLE_TOPIC.getElementsIn(getReadableDatabase(context), TopicTable._ID,obj);
@@ -235,21 +234,14 @@ public class GetFromDB {
         return Tables.TABLE_RECIPE.getAvailable(getReadableDatabase(context));
     }
 
-    public static Topic getTopic(Context context, long id) {
-        return Tables.TABLE_TOPIC.getElement(getReadableDatabase(context), id);
-    }
-    public static Topic getTopic(Context context, String name) {
-        return (Topic) Tables.TABLE_TOPIC.getElement(getReadableDatabase(context), name);
-    }
-
-    public static List<Long> getTopicIDs(Context context, Recipe recipe) {
+    public static List<Long> loadTopicIDs(Context context, Recipe recipe) {
         //SQLiteDatabase db = getReadableDatabase(context);
         List<Long> res = Tables.TABLE_TOPIC.getIDs(getReadableDatabase(context), Tables.TABLE_RECIPE_TOPIC.getTopicIDs(getReadableDatabase(context), recipe));
         return res;
     }
 
 
-    public static List<Long> getTopicIDs(Context context) {
+    public static List<Long> loadTopicIDs(Context context) {
         //SQLiteDatabase db = getReadableDatabase(context);
         List<Long> res = Tables.TABLE_TOPIC.getIDs(getReadableDatabase(context));
         return res;
@@ -262,15 +254,11 @@ public class GetFromDB {
         return res;
     }
 
-    public static List<? extends Pump> getPumps(Context context) {
+    public static List<? extends Pump> loadPumps(Context context) {
         return Tables.TABLE_PUMP.getAllElements(getReadableDatabase(context));
     }
 
-    public static Pump getPump(Context context, long id) {
-        return Tables.TABLE_PUMP.getElement(getReadableDatabase(context), id);
-    }
-
-    public static Pump getPumpWithSlot(Context context, int slot) {
+    public static Pump loadPumpWithSlot(Context context, int slot) {
         List<? extends Pump> res =  Tables.TABLE_PUMP.getPumpWithSlot(getReadableDatabase(context), slot);
         if(res.isEmpty()){
             return null;
@@ -282,7 +270,7 @@ public class GetFromDB {
         return Tables.TABLE_INGREDIENT.getAllElements(getReadableDatabase(context));
     }
 
-    public static List<String> getIngredientNames(Context context) {
+    public static List<String> loadIngredientNames(Context context) {
         return  Tables.TABLE_INGREDIENT.getNames(getReadableDatabase(context));
     }
 

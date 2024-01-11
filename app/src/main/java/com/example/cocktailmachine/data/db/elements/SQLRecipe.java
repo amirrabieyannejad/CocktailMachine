@@ -120,7 +120,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
     @Override
     public List<Long> getTopicIDs(Context context) {
-        return GetFromDB.getTopicIDs(context);
+        return GetFromDB.loadTopicIDs(context);
     }
 
     @Override
@@ -146,7 +146,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
     @Override
     public List<String> getIngredientNames(Context context) {
-        return GetFromDB.getIngredientNames(context);
+        return GetFromDB.loadIngredientNames(context);
     }
 
     @Override
