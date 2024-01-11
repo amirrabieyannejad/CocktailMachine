@@ -17,7 +17,6 @@ import com.example.cocktailmachine.data.db.tables.BasicColumn;
 
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -156,6 +155,9 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
 
     static  BasicColumn<SQLIngredient>.DatabaseIterator getChunkIterator(Context context, int n) {
         return GetFromDB.getIngredientChunkIterator(context, n);
+    }
+    static  BasicColumn<SQLIngredient>.DatabaseIterator getChunkAvIterator(Context context, int n) {
+        return GetFromDB.loadIngredientChunkAvIterator(context, n);
     }
 
     /**

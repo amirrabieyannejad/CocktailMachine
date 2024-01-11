@@ -1,6 +1,5 @@
 package com.example.cocktailmachine.data.db;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -434,5 +433,9 @@ public class GetFromDB {
 
     public static BasicColumn<SQLRecipe>.DatabaseIterator loadChunkAvRecipeIterator(Context context, int n) {
         return Tables.TABLE_RECIPE.getChunkIterator(context, n, true);
+    }
+
+    public static BasicColumn<SQLIngredient>.DatabaseIterator loadIngredientChunkAvIterator(Context context, int n) {
+        return Tables.TABLE_INGREDIENT.getChunkIterator(context, n, true);
     }
 }

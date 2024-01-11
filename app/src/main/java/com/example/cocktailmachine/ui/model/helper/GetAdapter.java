@@ -1,6 +1,5 @@
 package com.example.cocktailmachine.ui.model.helper;
 
-import static android.view.View.SCROLL_INDICATOR_BOTTOM;
 import static android.view.View.SCROLL_INDICATOR_END;
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_SETTLING;
 
@@ -21,7 +20,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
@@ -34,9 +32,7 @@ import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
 import com.example.cocktailmachine.data.db.tables.BasicColumn;
-import com.example.cocktailmachine.data.db.tables.Tables;
 import com.example.cocktailmachine.data.enums.Postexecute;
-import com.example.cocktailmachine.ui.model.ListActivity;
 import com.example.cocktailmachine.ui.model.enums.ModelType;
 
 import java.util.ArrayList;
@@ -935,7 +931,7 @@ public class GetAdapter {
 
         @Override
         BasicColumn<SQLIngredient>.DatabaseIterator initIterator(int n) {
-            return Ingredient.getChunkIterator(this.getActivity(), n);
+            return Ingredient.getChunkAvIterator(this.getActivity(), n);
         }
     }
 
