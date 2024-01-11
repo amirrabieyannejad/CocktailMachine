@@ -87,11 +87,22 @@ class DatabaseConnection extends SQLiteOpenHelper {
     }
 
 
+    /**
+     * checks if singleton is not null
+     * @author Johanna Reidt
+     * @return
+     */
     static synchronized boolean isInitialized(){
        // Log.v(TAG, "is_initialized");
         return DatabaseConnection.singleton != null;
     }
 
+    /**
+     * init new DB singelton, close if old still running
+     * @author Johanna Reidt
+     * @param context
+     * @return
+     */
     static synchronized DatabaseConnection init(Context context){
        // Log.v(TAG, "init");
         if(DatabaseConnection.isInitialized()){
@@ -101,6 +112,12 @@ class DatabaseConnection extends SQLiteOpenHelper {
         return  DatabaseConnection.singleton;
     }
 
+    /**
+     * checks if db file exists
+     * @author Johanna Reidt
+     * @param context
+     * @return
+     */
     static boolean checkDataBaseFile(Context context) {
         String db_path;
         if(context!=null) {
@@ -113,6 +130,11 @@ class DatabaseConnection extends SQLiteOpenHelper {
         return dbFile.exists();
     }
 
+    /**
+     * copies prepared DB file from res
+     * @author Johanna Reidt
+     * @param context
+     */
     private static void copyFromAssets(Context context){
 
         //InputStream inputStream = context.getResources().openRawResource(R.raw.prepared);
@@ -165,6 +187,11 @@ class DatabaseConnection extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * checks if DB file exist, if not copy preped from res
+     * @author Johanna Reidt
+     * @param context
+     */
     public static void loadIfNotDoneDBFromAssets(Context context){
         //InputStream inputStream = context.getAssets().open(DBname);
 
@@ -433,6 +460,10 @@ class DatabaseConnection extends SQLiteOpenHelper {
         Tables.TABLE_INGREDIENT_PUMP.createTable(this.getWritableDatabase());
     }
 
+    /**
+     * completly delete ingeredient pump table and pump table and create empty
+     * @author Johanna Reidt
+     */
     void setUpEmptyPumps() {
        // Log.v(TAG, "setUpEmptyPumps");
         this.emptyUpPumps();
