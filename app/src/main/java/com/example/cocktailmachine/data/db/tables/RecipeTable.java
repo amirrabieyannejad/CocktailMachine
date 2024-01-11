@@ -24,6 +24,7 @@ import java.util.List;
  * @author Johanna Reidt
  */
 public class RecipeTable extends BasicColumn<SQLRecipe>{
+    public static final String TAG = "RecipeTable";
 
     public static final String TABLE_NAME = "Recipe";
     public static final String COLUMN_NAME_NAME = "Name";
@@ -105,7 +106,12 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
         }
     }
 
-    public void setEmptyPumps(SQLiteDatabase db){
+    /**
+     * all not available
+     * @author Johanna Reidt
+     * @param db
+     */
+    public void setAsAllNotAvailable(SQLiteDatabase db){
         Log.i(TAG, "setEmptyPumps: set all recipes as not available");
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_NAME_AVAILABLE, false);
@@ -117,6 +123,12 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
         Log.i(TAG, "setEmptyPumps: done");
     }
 
+    /**
+     * set given ids as available
+     * @author Johanna Reidt
+     * @param db
+     * @param maybeAvailableRecipeIDs
+     */
     public void setAvailable(SQLiteDatabase db, List<Long> maybeAvailableRecipeIDs) {
         Log.i(TAG, "setAvailable: set all maybe recipes as available");
         ContentValues cv = new ContentValues();
@@ -130,6 +142,12 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
 
     }
 
+    /**
+     * set given IDs as not Available
+     * @author Johanna Reidt
+     * @param db
+     * @param notAvailableRecipeIDs
+     */
     public void setNotAvailable(SQLiteDatabase db, List<Long> notAvailableRecipeIDs) {
         Log.i(TAG, "setNotAvailable: set all definitely not available recipes as not available");
         ContentValues cv = new ContentValues();

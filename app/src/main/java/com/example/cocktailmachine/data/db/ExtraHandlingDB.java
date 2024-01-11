@@ -3,7 +3,6 @@ package com.example.cocktailmachine.data.db;
 import static com.example.cocktailmachine.data.db.AddOrUpdateToDB.getWritableDatabase;
 import static com.example.cocktailmachine.data.db.GetFromDB.getReadableDatabase;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
@@ -13,8 +12,6 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.tables.Tables;
-import com.example.cocktailmachine.ui.Menue;
-import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,7 +42,7 @@ public class ExtraHandlingDB {
     public static void loadForSetUp(Context context) {
 
         DatabaseConnection.init(context).setUpEmptyPumps(); //delete all pump Tables to be sure
-        Tables.TABLE_RECIPE.setEmptyPumps(getWritableDatabase(context));
+        Tables.TABLE_RECIPE.setAsAllNotAvailable(getWritableDatabase(context));
     }
 
     public static void loadDummy(Context context) {
@@ -107,14 +104,24 @@ public class ExtraHandlingDB {
 
 
     public static void loadAvailabilityForAll(Context context){
+
+        Log.i(TAG, "loadAvailabilityForAll: start");
         //TO DO:set available in all recipes
         List<Long> availableIngredients = Tables.TABLE_INGREDIENT_PUMP.getIngredientIDs(getReadableDatabase(context));
         List<Long> maybeRecipes = Tables.TABLE_RECIPE_INGREDIENT.getRecipeIDsWithIngs(getReadableDatabase(context), availableIngredients);
         List<Long> notRecipes = Tables.TABLE_RECIPE_INGREDIENT.getRecipeIDsWithoutIngs(getReadableDatabase(context), availableIngredients);
 
-        Tables.TABLE_RECIPE.setEmptyPumps(getWritableDatabase(context));
+
+        Log.i(TAG, "loadAvailabilityForAll: available Ingr: "+availableIngredients.size());
+        Log.i(TAG, "loadAvailabilityForAll: maybeRecipes: "+maybeRecipes.size());
+        Log.i(TAG, "loadAvailabilityForAll: notRecipes: "+notRecipes.size());
+
+
+        Tables.TABLE_RECIPE.setAsAllNotAvailable(getWritableDatabase(context));
         Tables.TABLE_RECIPE.setAvailable(getWritableDatabase(context), maybeRecipes);
         Tables.TABLE_RECIPE.setNotAvailable(getWritableDatabase(context), notRecipes);
+
+        Log.i(TAG, "loadAvailabilityForAll: done");
     }
 
     public static boolean loadAvailability(Context context, SQLRecipeTopic recipeTopic) {

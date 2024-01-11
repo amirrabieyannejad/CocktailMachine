@@ -101,6 +101,9 @@ public class BasicRecipes {
         c_p.fill(context, 1000);
         c_p.save(context);
 
+        ExtraHandlingDB.loadAvailabilityForAll(context);
+
+
         //DatabaseConnection.localRefresh();
     }
 
