@@ -1143,6 +1143,8 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                                     ContentValues cv,
                                     List<Long> IDs) throws NoSuchColumnException {
 
+        Log.i(TAG, "updateColumnsValues: start");
+
         List<Object> where = new ArrayList<>(IDs);
 
         for(String key: cv.keySet()) {
@@ -1155,6 +1157,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 this._ID+" IN "+ makeSelectionList(this._ID, where),
                 null);
         db.close();
+        Log.i(TAG, "updateColumnsValues: done");
     }
 
     public void updateColumnsValues(SQLiteDatabase db,

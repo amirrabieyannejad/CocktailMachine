@@ -106,6 +106,7 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
     }
 
     public void setEmptyPumps(SQLiteDatabase db){
+        Log.i(TAG, "setEmptyPumps: set all recipes as not available");
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_NAME_AVAILABLE, false);
         try {
@@ -113,9 +114,11 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
         } catch (NoSuchColumnException e) {
             Log.e(TAG, "error", e);
         }
+        Log.i(TAG, "setEmptyPumps: done");
     }
 
     public void setAvailable(SQLiteDatabase db, List<Long> maybeAvailableRecipeIDs) {
+        Log.i(TAG, "setAvailable: set all maybe recipes as available");
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_NAME_AVAILABLE, true);
         try {
@@ -123,10 +126,12 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
         } catch (NoSuchColumnException e) {
             Log.e(TAG, "error", e);
         }
+        Log.i(TAG, "setAvailable: done");
 
     }
 
     public void setNotAvailable(SQLiteDatabase db, List<Long> notAvailableRecipeIDs) {
+        Log.i(TAG, "setNotAvailable: set all definitely not available recipes as not available");
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_NAME_AVAILABLE, false);
         try {
@@ -134,6 +139,7 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
         } catch (NoSuchColumnException e) {
             Log.e(TAG, "error", e);
         }
+        Log.i(TAG, "setNotAvailable: done");
     }
 
     @Override
