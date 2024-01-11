@@ -5,8 +5,10 @@ import android.graphics.Color;
 import android.util.Log;
 
 
+import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
+import com.example.cocktailmachine.data.enums.Postexecute;
 
 public class BasicRecipes {
     private static final String TAG = "BasicRecipes";
@@ -43,6 +45,7 @@ public class BasicRecipes {
          */
         Ingredient wodka = Ingredient.searchOrNew(context,"Wodka", true, Color.BLUE);
 
+
         Ingredient rum = Ingredient.searchOrNew(context,"Rum", true, Color.GRAY);
 
         Ingredient cola = Ingredient.searchOrNew(context,"Cola", false, Color.BLACK);
@@ -53,28 +56,48 @@ public class BasicRecipes {
 
     public static void loadPumps(Context context) throws  MissingIngredientPumpException {
 
+        ExtraHandlingDB.loadForSetUp(context);
+
         Pump t_p = Pump.makeNew();
-        t_p.setCurrentIngredient(context, Ingredient.getIngredient(context,"Tequila"));
+        t_p.setSlot(3);
+        //Pump t_p  = Pump.getPumpWithSlot(context,1);
+        Log.i(TAG, String.valueOf(t_p));
+        t_p.setCurrentIngredient(context, Ingredient.searchOrNew(context,"Tequila"));
         t_p.fill(context, 1000);
         t_p.save(context);
         Pump o_p = Pump.makeNew();
-        o_p.setCurrentIngredient(context, Ingredient.getIngredient(context, "Orangenlikör"));//orangenlikör);
+        o_p.setSlot(3);
+        //Pump o_p  = Pump.getPumpWithSlot(context,2);
+        Log.i(TAG, String.valueOf(o_p));
+        o_p.setCurrentIngredient(context, Ingredient.searchOrNew(context, "Orangenlikör"));//orangenlikör);
         o_p.fill(context, 1000);
         o_p.save(context);
         Pump l_p = Pump.makeNew();
-        l_p.setCurrentIngredient(context, Ingredient.getIngredient(context, "Limettensaft"));//limettensaft);
+        l_p.setSlot(3);
+        //Pump l_p  = Pump.getPumpWithSlot(context,3);
+        Log.i(TAG, String.valueOf(l_p));
+        l_p.setCurrentIngredient(context, Ingredient.searchOrNew(context, "Limettensaft"));//limettensaft);
         l_p.fill(context, 1000);
         l_p.save(context);
         Pump w_p = Pump.makeNew();
-        w_p.setCurrentIngredient(context, Ingredient.getIngredient(context, "Wodka"));//wodka);
+        w_p.setSlot(4);
+        //Pump w_p  = Pump.getPumpWithSlot(context,4);
+        Log.i(TAG, String.valueOf(w_p));
+        w_p.setCurrentIngredient(context, Ingredient.searchOrNew(context, "Wodka"));//wodka);
         w_p.fill(context, 1000);
         w_p.save(context);
         Pump r_p = Pump.makeNew();
-        r_p.setCurrentIngredient(context, Ingredient.getIngredient(context, "Rum"));//rum);
+        r_p.setSlot(5);
+        //Pump r_p  = Pump.getPumpWithSlot(context,5);
+        Log.i(TAG, String.valueOf(r_p));
+        r_p.setCurrentIngredient(context, Ingredient.searchOrNew(context, "Rum"));//rum);
         r_p.fill(context, 1000);
         r_p.save(context);
         Pump c_p = Pump.makeNew();
-        c_p.setCurrentIngredient(context, Ingredient.getIngredient(context, "Cola"));//cola);
+        c_p.setSlot(6);
+        //Pump c_p  = Pump.getPumpWithSlot(context,6);
+        Log.i(TAG, String.valueOf(c_p));
+        c_p.setCurrentIngredient(context, Ingredient.searchOrNew(context, "Cola"));//cola);
         c_p.fill(context, 1000);
         c_p.save(context);
 
@@ -96,10 +119,10 @@ public class BasicRecipes {
 
         
         Recipe magarita = Recipe.searchOrNew(context,"Margarita");
-        magarita.add(context, Ingredient.getIngredient(context, "Tequila"), 8);
-        magarita.add(context, Ingredient.getIngredient(context, "Orangenlikör"), 4);
-        magarita.add(context, Ingredient.getIngredient(context, "Limettensaft"), 4);
-        magarita.add(context, Topic.getTopic(context, "Eis"));
+        magarita.add(context, Ingredient.searchOrNew(context, "Tequila"), 8);
+        magarita.add(context, Ingredient.searchOrNew(context, "Orangenlikör"), 4);
+        magarita.add(context, Ingredient.searchOrNew(context, "Limettensaft"), 4);
+        magarita.add(context, Topic.searchOrNew(context, "Eis", "gefrorenes Wasser"));
         magarita.save(context);
 
 
@@ -112,9 +135,9 @@ public class BasicRecipes {
     public static void loadTequila(Context context) throws NotInitializedDBException {
         Log.i(TAG,"loadTequila");
         Recipe magarita = Recipe.searchOrNew(context,"Margarita 2.0");
-        magarita.add(context, Ingredient.getIngredient(context, "Tequila"), 8);
-        magarita.add(context, Ingredient.getIngredient(context, "Orangenlikör"), 4);
-        magarita.add(context, Ingredient.getIngredient(context, "Limettensaft"), 4);
+        magarita.add(context, Ingredient.searchOrNew(context, "Tequila"), 8);
+        magarita.add(context, Ingredient.searchOrNew(context, "Orangenlikör"), 4);
+        magarita.add(context, Ingredient.searchOrNew(context, "Limettensaft"), 4);
         magarita.save(context);
 
         //DatabaseConnection.localRefresh();

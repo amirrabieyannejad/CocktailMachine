@@ -76,11 +76,13 @@ class DatabaseConnection extends SQLiteOpenHelper {
             //DatabaseConnection.singleton.emptyAll();
             BasicRecipes.loadTopics(context);
             BasicRecipes.loadIngredients(context);
+
+            BasicRecipes.loadMargarita(context);
+            BasicRecipes.loadLongIslandIceTea(context);
+
             if(!Dummy.withSetCalibration) {
                 BasicRecipes.loadPumps(context);
             }
-            BasicRecipes.loadMargarita(context);
-            BasicRecipes.loadLongIslandIceTea(context);
         }
     }
 
