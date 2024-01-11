@@ -711,7 +711,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 null,
                 null);
         List<T> res = this.cursorToList(cursor);
-        //db.close();
+        db.close();
         return res;
     }
 
@@ -1038,7 +1038,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         db.delete(this.getName(),
                 column_name+" "+selectionOperator+" ?",
                 new String[]{makeSelectionList(column_name, ll)});
-        //db.close();
+        db.close();
     }
 
     public void deleteElements(SQLiteDatabase db, List<Long> ids) throws NoSuchColumnException {
@@ -1069,7 +1069,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         db.delete(this.getName(),
                 column_name+" = "+equalsThis,
                 null);
-        //db.close();
+        db.close();
     }
 
     //ADD
@@ -1176,7 +1176,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         }
         db.update(getName(),
                 cv, null, null);
-        //db.close();
+        db.close();
     }
 
 
