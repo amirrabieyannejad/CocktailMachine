@@ -28,10 +28,12 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
+import com.example.cocktailmachine.data.db.elements.SQLDataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
+import com.example.cocktailmachine.data.db.tables.BasicColumn;
 import com.example.cocktailmachine.data.db.tables.Tables;
 import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.ui.model.ListActivity;
@@ -676,12 +678,12 @@ public class GetAdapter {
     }
 
 
-    private static abstract class ScrollAdapter<K extends DataBaseElement> extends NameAdapter<K>{
+    private static abstract class ScrollAdapter<K extends SQLDataBaseElement> extends NameAdapter<K>{
         private final static String TAG = "ScrollAdapter";
         private boolean isLoading = false;
         private double percentToLoadMore = 0.8;
 
-        private final Iterator<List<K>> iterator;
+        private final BasicColumn<K>.DatabaseIterator iterator;
 
         private final Handler h;
         private Runnable r;
@@ -764,7 +766,7 @@ public class GetAdapter {
 
         }
 
-        abstract Iterator<List<K>> initIterator(int n);
+        abstract BasicColumn<K>.DatabaseIterator initIterator(int n);
 
 
         private void initData() {
@@ -900,7 +902,7 @@ public class GetAdapter {
         }
 
         @Override
-        Iterator<List<SQLRecipe>> initIterator(int n) {
+        BasicColumn<SQLRecipe>.DatabaseIterator initIterator(int n) {
             return Recipe.getChunkIterator(this.getActivity(), n);
         }
     }
@@ -916,7 +918,7 @@ public class GetAdapter {
         }
 
         @Override
-        Iterator<List<SQLIngredient>> initIterator(int n) {
+        BasicColumn<SQLIngredient>.DatabaseIterator initIterator(int n) {
             return Ingredient.getChunkIterator(this.getActivity(), n);
         }
     }
@@ -932,7 +934,7 @@ public class GetAdapter {
         }
 
         @Override
-        Iterator<List<SQLTopic>> initIterator(int n) {
+        BasicColumn<SQLTopic>.DatabaseIterator initIterator(int n) {
             return Topic.getChunkIterator(this.getActivity(), n);
         }
     }
@@ -948,7 +950,7 @@ public class GetAdapter {
         }
 
         @Override
-        Iterator<List<SQLPump>> initIterator(int n) {
+        BasicColumn<SQLPump>.DatabaseIterator initIterator(int n) {
             return Pump.getChunkIterator(this.getActivity(), n);
         }
     }

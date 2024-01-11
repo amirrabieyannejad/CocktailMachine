@@ -17,6 +17,7 @@ import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
+import com.example.cocktailmachine.data.db.tables.BasicColumn;
 import com.example.cocktailmachine.data.enums.CocktailStatus;
 import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
@@ -1088,7 +1089,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     }
 
 
-    static Iterator<List<SQLPump>> getChunkIterator(Context context, int n) {
+    static BasicColumn<SQLPump>.DatabaseIterator getChunkIterator(Context context, int n) {
         return GetFromDB.getPumpChunkIterator(context, n);
     }
 

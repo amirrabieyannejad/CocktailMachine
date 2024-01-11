@@ -415,19 +415,19 @@ public class GetFromDB {
         return Tables.TABLE_RECIPE_INGREDIENT.getIDs(getReadableDatabase(context));
     }
 
-    public static Iterator<List<SQLRecipe>> getRecipeChunkIterator(Context context, int n) {
+    public static BasicColumn<SQLRecipe>.DatabaseIterator getRecipeChunkIterator(Context context, int n) {
         return Tables.TABLE_RECIPE.getChunkIterator(context, n, RecipeTable.COLUMN_NAME_NAME);
     }
 
-    public static Iterator<List<SQLIngredient>> getIngredientChunkIterator(Context context, int n) {
+    public static  BasicColumn<SQLIngredient>.DatabaseIterator getIngredientChunkIterator(Context context, int n) {
         return Tables.TABLE_INGREDIENT.getChunkIterator(context, n, IngredientTable.COLUMN_NAME_NAME);
     }
 
-    public static Iterator<List<SQLTopic>> getTopicChunkIterator(Context context, int n) {
+    public static BasicColumn<SQLTopic>.DatabaseIterator getTopicChunkIterator(Context context, int n) {
         return Tables.TABLE_TOPIC.getChunkIterator(context, n, TopicTable.COLUMN_NAME_NAME);
     }
 
-    public static Iterator<List<SQLPump>> getPumpChunkIterator(Context context, int n) {
+    public static BasicColumn<SQLPump>.DatabaseIterator getPumpChunkIterator(Context context, int n) {
         return Tables.TABLE_PUMP.getChunkIterator(context, n, PumpTable.COLUMN_TYPE_SLOT_ID);
     }
 }

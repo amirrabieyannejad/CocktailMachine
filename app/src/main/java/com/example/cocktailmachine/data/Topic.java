@@ -6,6 +6,7 @@ import android.util.Log;
 import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
+import com.example.cocktailmachine.data.db.tables.BasicColumn;
 
 import java.util.Iterator;
 import java.util.List;
@@ -103,7 +104,7 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
     }
 
 
-    static Iterator<List<SQLTopic>> getChunkIterator(Context context, int n){
+    static BasicColumn<SQLTopic>.DatabaseIterator getChunkIterator(Context context, int n){
         return GetFromDB.getTopicChunkIterator(context, n);
     }
 

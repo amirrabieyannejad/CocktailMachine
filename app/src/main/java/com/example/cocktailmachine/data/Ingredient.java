@@ -13,6 +13,7 @@ import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
+import com.example.cocktailmachine.data.db.tables.BasicColumn;
 
 
 import java.util.ArrayList;
@@ -153,7 +154,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
     //general
 
 
-    static Iterator<List<SQLIngredient>> getChunkIterator(Context context, int n) {
+    static  BasicColumn<SQLIngredient>.DatabaseIterator getChunkIterator(Context context, int n) {
         return GetFromDB.getIngredientChunkIterator(context, n);
     }
 

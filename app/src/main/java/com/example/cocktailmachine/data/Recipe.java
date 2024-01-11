@@ -17,6 +17,7 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
+import com.example.cocktailmachine.data.db.tables.BasicColumn;
 import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
 import com.example.cocktailmachine.ui.model.helper.WaitingQueueCountDown;
@@ -733,7 +734,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
 
 
-    static Iterator<List<SQLRecipe>> getChunkIterator(Context context, int n){
+    static BasicColumn<SQLRecipe>.DatabaseIterator getChunkIterator(Context context, int n){
         return GetFromDB.getRecipeChunkIterator(context, n);
     }
 
