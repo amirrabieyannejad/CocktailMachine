@@ -14,6 +14,7 @@ import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
+import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
@@ -40,6 +41,7 @@ public class WaitNotSetActivity extends AppCompatActivity {
                 GetActivity.goToMenu(this);
             }
         }
+        reload();
     }
 
     public void login(View view) {
@@ -69,12 +71,27 @@ public class WaitNotSetActivity extends AppCompatActivity {
     }
 
     public void reload(View view) {
-        if(CocktailMachine.isCocktailMachineSet(this)){
-            Log.v(TAG, "is set");
-            Toast.makeText(this, "Cocktailmaschine ist bereit.", Toast.LENGTH_SHORT).show();
-            GetActivity.goToMenu(this);
-        }else {
-            Toast.makeText(this, "Cocktailmaschine ist nicht bereit.", Toast.LENGTH_SHORT).show();
-        }
+        reload();
+
+    }
+
+    private void reload(){
+        Postexecute success = new Postexecute() {
+            @Override
+            public void post() {
+
+                Log.v(TAG, "is set");
+                Toast.makeText(WaitNotSetActivity.this, "Cocktailmaschine ist bereit.", Toast.LENGTH_SHORT).show();
+                GetActivity.goToMenu(WaitNotSetActivity.this);
+            }
+        };
+        Postexecute noSuccess = new Postexecute() {
+            @Override
+            public void post() {
+                Toast.makeText(WaitNotSetActivity.this, "Cocktailmaschine ist nicht bereit.", Toast.LENGTH_SHORT).show();
+            }
+        };
+        CocktailMachine.isCocktailMachineSet(noSuccess,success,this);
     }
 }
+
