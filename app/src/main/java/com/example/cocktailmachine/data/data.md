@@ -1,6 +1,7 @@
 # Übersicht
 
 ## AdminRights
+
 - ist ein Singleton, weil es Daten für die ganze App speichert
 - bietet 
   + User oder Admin
@@ -14,9 +15,11 @@
     * gibt Auskunft ob user initiiert ist
 
 ## Orientation
+
     - ???
 
 ## Status
+
 - bündelt Bluetooth Status wie in Zustände.md beschrieben als Enum
   + `init`: Maschine wird initialisiert 
   + `ready`: Maschine ist bereit einen Befehl auszuführen und wartet
@@ -25,17 +28,19 @@
   + `cocktail done`: Cocktail ist fertig zubereitet und kann entnommen werden. Danach sollte `reset` ausgeführt werden.
 - enthält eine Funktion die mit Bluetooth den derzeitig Status abfragen soll
 
-
 ## DataBase
+
 - Connection
 
 - für alle Datenbanklelemente (DataBaseElement)
+  
   + ID (LONG) get/set
   + Save (saving status/ needs update/delete)
   + isAvailable
   + makeNew um Neue zuerstellen als statische Funktion
-  
+
 - Pumpe (Pump)
+  
   + minimales Pumpvolumen
   + Zutat
   + Volumen
@@ -59,8 +64,9 @@
     * set Zutat mit Klasse oder id
     * set volume mit zusätzlicher Funktion "empty" um sie gleich auf 0 zu setzen
     * asMessage JSONObject {"beer": 200}
-   
+
 - Zutat (Ingredient)
+  
   + Name
   + Fotos Urls
   + alkoholisch
@@ -76,6 +82,7 @@
     * Pumpen funktionen (fill, empty)
 
 - Serviervorschlag (Topic)
+  
   + Name
   + Beschreibung
   + Statics
@@ -87,6 +94,7 @@
     * get/set für Name, Beschreibung
 
 - Rezept (Recipe)
+  
   + Name
   + Zutaten(Ingredients)
   + Serviervorschläge(Topics)
@@ -105,4 +113,3 @@
     * get/set/remove/add für Name, Fotos, Zutaten, Serviervorschläge, alkoholisch
     * asMessage JSONObject {"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}
     * reloadAvailability from db
-  

@@ -7,8 +7,6 @@ Flüssigkeit hinzufügen funktioniert noch nicht
 
 Flüssgkeit kann nicht hinzugefügt werden außer in Kalibrierung
 
-
-
 Passwortfeld in Login wird nicht ausgeblendet
 -> ????
 
@@ -17,5 +15,18 @@ nachdem zweite Pump konfiguriert wird(Flüssigkeit + Volume angegeben wird), wir
 Es gibt beim updatePumpStatus in Pump Class eine Fehler, wo sich vlt. auf Nr. 2 bezieht (siehe Anhang)
 ???
 
+WritingQueue checken nach on Finish bluetooth abfragen
 
-WitingQueue checj´ken nach on Finish bluetooth abfragen
+
+
+Verfügbaren Switch erneuern
+
+-> gehe in die DB und füge mehr availabilty hinzu
+
+
+
+-> teste mix cocktail
+
+
+
+-> GetAvailability in DisplayThing -> PumpStauts was wenn timeout
