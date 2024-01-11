@@ -77,10 +77,7 @@ public class Menue extends AppCompatActivity {
             binding.activityMenueLogout.setVisibility(View.GONE);
             binding.activityMenueLogin.setVisibility(View.VISIBLE);
         }
-        if(!Dummy.withSetCalibration){
-            CocktailMachineCalibration.getSingleton().setIsDone(true);
-            Log.v(TAG, "onCreate: dummy:  not withSetCalibration ");
-        }
+
 
         if(!CocktailMachineCalibration.getSingleton().isIsDone()) {
             CocktailMachineCalibration.getSingleton().askIsDone(this, new Postexecute() {

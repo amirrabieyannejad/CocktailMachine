@@ -14,6 +14,7 @@ import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
+import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
@@ -32,6 +33,12 @@ public class WaitNotSetActivity extends AppCompatActivity {
         if(Dummy.isDummy){
             ExtraHandlingDB.loadDummy(this);
             Log.v(TAG, "onCreate: dummy: load Dummy");
+
+            if(!Dummy.withSetCalibration){
+                CocktailMachineCalibration.getSingleton().setIsDone(true);
+                Log.v(TAG, "onCreate: dummy:  not withSetCalibration ");
+                GetActivity.goToMenu(this);
+            }
         }
     }
 
