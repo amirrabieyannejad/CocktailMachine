@@ -76,6 +76,7 @@ public class WaitNotSetActivity extends AppCompatActivity {
     }
 
     private void reload(){
+        Toast.makeText(this, "Checkt den Cocktailmaschinenstatus!", Toast.LENGTH_SHORT).show();
         Postexecute success = new Postexecute() {
             @Override
             public void post() {
