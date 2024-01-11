@@ -6,6 +6,7 @@ import static com.example.cocktailmachine.data.db.GetFromDB.getReadableDatabase;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
@@ -122,6 +123,9 @@ public class ExtraHandlingDB {
         Tables.TABLE_RECIPE.setNotAvailable(getWritableDatabase(context), notRecipes);
 
         Log.i(TAG, "loadAvailabilityForAll: done");
+        Log.i(TAG, "loadAvailabilityForAll: All Recipe"+ Recipe.getAllRecipes(context).size());
+        Log.i(TAG, "loadAvailabilityForAll: Available Recipe"+ Recipe.getAvailableRecipes(context).size());
+
     }
 
     public static boolean loadAvailability(Context context, SQLRecipeTopic recipeTopic) {

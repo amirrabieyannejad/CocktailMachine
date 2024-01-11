@@ -702,12 +702,21 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
 
     /**
-     * Static access to recipes. if neccesary from db
+     * Static access to recipes.
      * Get all saved recipes.
      * @return list of recipes
      */
     static List<Recipe> getAllRecipes(Context context) {
         return (List<Recipe>) GetFromDB.loadRecipes(context);//Buffer.getSingleton().getRecipes(context);
+    }
+
+    /**
+     * Static access to  availablerecipes.
+     * Get all saved recipes.
+     * @return list of recipes
+     */
+    static List<Recipe> getAvailableRecipes(Context context) {
+        return (List<Recipe>) GetFromDB.loadAvailableRecipes(context);//Buffer.getSingleton().getRecipes(context);
     }
 
 
