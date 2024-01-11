@@ -151,14 +151,12 @@ public class GetActivity {
         bundle.putLong(ID, recipe.getID());
         intent.putExtras(bundle);
         activity.startActivity(intent);
-        //activity.finish();
     }
 
     public static void goToMenu(Activity activity) {
         Log.v(TAG, "goToMenu");
         Intent intent = new Intent(activity, Menue.class);
         activity.startActivity(intent);
-        //activity.finish();
     }
 
     public static void goToMenu(Activity activity, boolean clearCompleteStack) {
@@ -168,7 +166,6 @@ public class GetActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_CLEAR_TOP);
         }
         activity.startActivity(intent);
-        activity.finish();
     }
     public static void goToMenu(Context context) {
         Log.v(TAG, "goToMenu");

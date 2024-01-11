@@ -73,6 +73,12 @@ public class TopicTable extends BasicColumn<SQLTopic>{
     }
 
     @Override
+    protected List<Long> getAvailableID(SQLiteDatabase db) {
+
+        return this.getIDs(db);
+    }
+
+    @Override
     public SQLTopic makeElement(Cursor cursor) {
         long id = cursor.getLong(cursor.getColumnIndexOrThrow(_ID));
         String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME_NAME));

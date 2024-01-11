@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
+import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
@@ -76,6 +77,12 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
             columns.add(COLUMN_TYPE_COLOR);
             return columns;
     }
+
+    @Override
+    protected List<Long> getAvailableID(SQLiteDatabase db) {
+        return Tables.TABLE_INGREDIENT_PUMP.getAvailableID(db);
+    }
+
     @Override
     public SQLIngredient makeElement(Cursor cursor) {
             long id = cursor.getLong(cursor.getColumnIndexOrThrow(_ID));

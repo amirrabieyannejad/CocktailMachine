@@ -78,6 +78,15 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
     }
 
     @Override
+    protected List<Long> getAvailableID(SQLiteDatabase db) {
+        try {
+            return this.getIDsWith(db, COLUMN_NAME_AVAILABLE, "true");
+        } catch (NoSuchColumnException e) {
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
     public SQLRecipe makeElement(Cursor cursor) {
         long id = cursor.getLong(cursor.getColumnIndexOrThrow(_ID));
         String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME_NAME));
@@ -164,4 +173,6 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
     public BasicColumn<SQLRecipe>.DatabaseIterator getChunkIterator(Context db, int n) {
         return super.getChunkIterator(db, n, COLUMN_NAME_NAME);
     }
+
+
 }

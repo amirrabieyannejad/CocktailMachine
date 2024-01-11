@@ -62,6 +62,12 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
     }
 
     @Override
+    protected List<Long> getAvailableID(SQLiteDatabase db) {
+
+        return new ArrayList<>();
+    }
+
+    @Override
     public SQLIngredientPump makeElement(Cursor cursor) {
         long this_id = cursor.getLong(cursor.getColumnIndexOrThrow(this._ID));
         long i_id = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_NAME_INGREDIENT_ID));

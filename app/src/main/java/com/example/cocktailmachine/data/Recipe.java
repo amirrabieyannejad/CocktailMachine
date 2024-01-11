@@ -34,6 +34,10 @@ import java.util.List;
 public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     final String TAG="Recipe";
 
+    static BasicColumn<SQLRecipe>.DatabaseIterator getChunkAvIterator(Activity activity, int n){
+        return GetFromDB.loadChunkAvRecipeIterator(activity, n);
+    }
+
     WaitingQueueCountDown getWaitingQueueCountDown();
     void setWaitingQueueCountDown(Activity activity);
 

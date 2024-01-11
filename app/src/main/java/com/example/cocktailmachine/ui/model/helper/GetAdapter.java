@@ -42,6 +42,7 @@ import com.example.cocktailmachine.ui.model.enums.ModelType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -550,7 +551,7 @@ public class GetAdapter {
 
         private boolean availability = false;
 
-        private final List<K> unavailable = new ArrayList<>();
+        private final List<K> unavailable = new LinkedList<>();
         public NameAdapter(Activity activity, ModelType type) {
             this.activity = activity;
             this.data = initList();
@@ -664,8 +665,9 @@ public class GetAdapter {
                         Log.i(TAG, "NameAdapter: setAvailability: available: "+elm);
                     }else{
                         NameAdapter.this.unavailable.add(elm);
+                        int index = NameAdapter.this.getList().indexOf(elm);
                         NameAdapter.this.getList().remove(elm);
-                        NameAdapter.this.notifyItemRemoved(i);
+                        NameAdapter.this.notifyItemRemoved(index);
                     }
                 }
             }else {
@@ -873,8 +875,9 @@ public class GetAdapter {
                         K elm = this.getList().get(i);
                         if(!elm.isAvailable()){//elm.loadAvailable(ScrollAdapter.this.getActivity())){
                             ScrollAdapter.this.getUnavailable().add(elm);
+                            int index = ScrollAdapter.this.getList().indexOf(elm);
                             ScrollAdapter.this.getList().remove(elm);
-                            ScrollAdapter.this.notifyItemRemoved(i);
+                            ScrollAdapter.this.notifyItemRemoved(index);
                         }else{
                             Log.i(TAG, "setAvailability: available elm: "+elm);
                         }
@@ -915,7 +918,8 @@ public class GetAdapter {
 
         @Override
         BasicColumn<SQLRecipe>.DatabaseIterator initIterator(int n) {
-            return Recipe.getChunkIterator(this.getActivity(), n);
+            //return Recipe.getChunkIterator(this.getActivity(), n);
+            return Recipe.getChunkAvIterator(this.getActivity(), n);
         }
     }
 

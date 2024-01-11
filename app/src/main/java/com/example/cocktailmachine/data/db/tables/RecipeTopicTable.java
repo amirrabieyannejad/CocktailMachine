@@ -57,6 +57,12 @@ public class RecipeTopicTable extends BasicColumn<SQLRecipeTopic> {
     }
 
     @Override
+    protected List<Long> getAvailableID(SQLiteDatabase db) {
+
+        return new ArrayList<>();
+    }
+
+    @Override
     public SQLRecipeTopic makeElement(Cursor cursor) {
         long id = cursor.getLong(cursor.getColumnIndexOrThrow(_ID));
         long rid = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_NAME_RECIPE_ID));

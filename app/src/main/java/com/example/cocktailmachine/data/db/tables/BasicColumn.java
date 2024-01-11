@@ -475,8 +475,13 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         public DatabaseIterator(Context context,
                                 int chunkSize,
                                 String orderBy,
-                                boolean available){
-            this.ids = BasicColumn.this.getIDs(getReadableDatabase(context),  orderBy);
+                                boolean available) {
+            if(available) {
+                this.ids =  getAvailableID(getReadableDatabase(context));
+            }
+            else {
+                this.ids = BasicColumn.this.getIDs(getReadableDatabase(context), orderBy);
+            }
             this.chunkSize = chunkSize;
             this.context = context;
             //this.table = loadTable();
@@ -487,7 +492,12 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         public DatabaseIterator(Context context,
                                 int chunkSize,
                                 boolean available){
-            this.ids = BasicColumn.this.getIDs(getReadableDatabase(context), false);
+            if(available) {
+                    this.ids =  getAvailableID(getReadableDatabase(context));
+                }
+                else {
+                    this.ids = BasicColumn.this.getIDs(getReadableDatabase(context));
+                }
             this.chunkSize = chunkSize;
             this.context = context;
             //this.table = loadTable();
@@ -577,6 +587,8 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
             }
         }
     }
+
+    protected abstract List<Long> getAvailableID(SQLiteDatabase db);
 
 
     public DatabaseIterator getChunkIterator(Context db, int n){

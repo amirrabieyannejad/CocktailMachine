@@ -57,7 +57,13 @@ public class PumpTable extends BasicColumn<SQLPump> {
             return types;
         }
 
-        @Override
+    @Override
+    protected List<Long> getAvailableID(SQLiteDatabase db) {
+
+        return this.getIDs(db);
+    }
+
+    @Override
         public SQLPump makeElement(Cursor cursor) {
             long i_id = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_NAME_INGREDIENT_ID));
             int slot_id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NAME_SLOT_ID));
