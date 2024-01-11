@@ -5,9 +5,7 @@ import android.util.Log;
 
 import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
-import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
-import com.example.cocktailmachine.data.db.tables.Tables;
 
 import java.util.Iterator;
 import java.util.List;
@@ -75,29 +73,29 @@ public interface Topic extends Comparable<Topic>, DataBaseElement {
 
     static Topic getTopic(Context context, long id)  {
         Log.i(TAG, "getTopic");
-        return GetFromDB.getTopic(context, id);
+        return GetFromDB.loadTopic(context, id);
     }
 
     static Topic getTopic(Context context, String name)  {
         Log.i(TAG, "getTopic");
-        return GetFromDB.getTopic(context, name);
+        return GetFromDB.loadTopic(context, name);
     }
 
     public static List<Topic> getTopics(Context context,Recipe recipe)  {
         Log.i(TAG, "getTopics");
-        return (List<Topic>) GetFromDB.getTopics(context, recipe);
+        return (List<Topic>) GetFromDB.loadTopics(context, recipe);
     }
 
     static List<Long> getTopicIDs(Context context,Recipe recipe)  {
         Log.i(TAG, "getTopics");
-        return GetFromDB.getTopicIDs(context, recipe);
+        return GetFromDB.loadTopicIDs(context, recipe);
     }
 
 
 
     static List<Topic> getTopics(Context context){
         Log.i(TAG, "getTopics");
-        return (List<Topic>) GetFromDB.getTopics(context);
+        return (List<Topic>) GetFromDB.loadTopics(context);
     }
 
     static List<String> getTopicTitles(Context context){

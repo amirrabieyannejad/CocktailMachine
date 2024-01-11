@@ -3,18 +3,14 @@ package com.example.cocktailmachine.ui.model.helper;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.database.CursorWindowAllocationException;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.widget.ArrayAdapter;
@@ -22,9 +18,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.RequiresApi;
-import androidx.core.app.NotificationCompat;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
@@ -41,14 +34,12 @@ import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedExce
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.CalibrateStatus;
-import com.example.cocktailmachine.data.enums.CocktailStatus;
 import com.example.cocktailmachine.data.enums.ErrorStatus;
 import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.logic.Animation.CircularAnimation;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
 import com.example.cocktailmachine.ui.model.enums.ModelType;
 
-import org.apache.commons.collections4.Get;
 import org.json.JSONException;
 
 import java.util.ArrayList;
@@ -2964,7 +2955,7 @@ public class GetDialog {
         b.append(" aus dem Rezept "+recipe.getName()+" entfernen?");
         builder.setTitle(b.toString());
         builder.setPositiveButton("Bitte löschen!", (dialog, which) -> {
-            DeleteFromDB.deleteElementFromRecipe(activity,
+            DeleteFromDB.removeElementFromRecipe(activity,
                     recipe,
                     modelType,
                     ID);
@@ -3007,7 +2998,7 @@ public class GetDialog {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(getDeleteTitle(modelType, title));
         builder.setPositiveButton("Bitte löschen!", (dialog, which) -> {
-            DeleteFromDB.delete(activity,modelType, ID);
+            DeleteFromDB.remove(activity,modelType, ID);
 
         });
         builder.setNeutralButton("Nein.", (dialog, which) -> {

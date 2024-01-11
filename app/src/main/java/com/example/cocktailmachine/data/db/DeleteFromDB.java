@@ -19,6 +19,7 @@ import com.example.cocktailmachine.ui.model.enums.ModelType;
 import java.util.Objects;
 
 /**
+ * delete object from DB
  * @author Johanna Reidt
  * @created Mo. 18.Sep 2023 - 15:59
  * @project CocktailMachine
@@ -139,7 +140,7 @@ at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1386)
         Tables.TABLE_INGREDIENT_PUMP.deleteElement(getWritableDatabase(context), id);
     }
 
-    public static void delete(Context context, ModelType modelType, Long id) {
+    public static void remove(Context context, ModelType modelType, Long id) {
         switch (modelType){
             case TOPIC: Topic.getTopic(context,id).delete(context);return;
             case RECIPE:Recipe.getRecipe(context,id).delete(context);return;
@@ -149,7 +150,7 @@ at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1386)
         return;
     }
 
-    public static void deleteElementFromRecipe(Context context, Recipe recipe, ModelType modelType, Long id) {
+    public static void removeElementFromRecipe(Context context, Recipe recipe, ModelType modelType, Long id) {
         if(modelType == ModelType.INGREDIENT){
             Objects.requireNonNull(GetFromDB.getRecipeIngredient(context, recipe, Ingredient.getIngredient(context, id))).delete(context);
             return;

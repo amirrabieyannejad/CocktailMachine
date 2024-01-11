@@ -16,6 +16,7 @@ import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.tables.Tables;
 
 /**
+ * Add or update object to DB
  * @author Johanna Reidt
  * @created Mo. 18.Sep 2023 - 15:43
  * @project CocktailMachine

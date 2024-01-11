@@ -22,8 +22,6 @@ import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
-import org.apache.commons.collections.ArrayStack;
-import org.apache.commons.collections.list.AbstractLinkedList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -1082,7 +1080,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @return
      */
     static List<Pump> getPumps(Context context){
-        List<Pump> pumps =  (List<Pump>) GetFromDB.getPumps(context);
+        List<Pump> pumps =  (List<Pump>) GetFromDB.loadPumps(context);
         for(Pump p: pumps){
             Log.w(TAG, "p name"+p.getIngredientName(context));
         }
@@ -1107,7 +1105,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     }
 
     static Pump getPumpWithSlot(Context context, int slot) {
-        return GetFromDB.getPumpWithSlot(context, slot);
+        return GetFromDB.loadPumpWithSlot(context, slot);
     }
 
 }
