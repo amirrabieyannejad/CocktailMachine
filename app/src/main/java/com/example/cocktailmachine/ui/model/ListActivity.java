@@ -183,8 +183,9 @@ public class ListActivity extends BasicActivity {
         binding.switchAvailable.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                adapter.setAvailability(isChecked);
                 Log.i(TAG, "onCheckedChanged: switchAvailable: ischecked: "+isChecked);
+                adapter.setAvailability(isChecked);
+                Log.i(TAG, "onCheckedChanged: switchAvailable: done");
             }
         });
     }

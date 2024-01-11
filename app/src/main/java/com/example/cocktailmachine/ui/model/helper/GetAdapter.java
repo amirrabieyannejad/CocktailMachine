@@ -652,15 +652,17 @@ public class GetAdapter {
             data = getList();
             notifyDataSetChanged();
             setAvailability(this.availability);
-
         }
 
         public void setAvailability(boolean availability) {
+            Log.i(TAG, "NameAdapter: setAvailability");
             this.setParamAvailability(availability);
             if(availability){
                 for(int i = 0; i<NameAdapter.this.getItemCount(); i++) {
                     K elm = this.getList().get(i);
-                    if(!elm.isAvailable()){
+                    if(elm.isAvailable()){
+                        Log.i(TAG, "NameAdapter: setAvailability: available: "+elm);
+                    }else{
                         NameAdapter.this.unavailable.add(elm);
                         NameAdapter.this.getList().remove(elm);
                         NameAdapter.this.notifyItemRemoved(i);
@@ -674,7 +676,11 @@ public class GetAdapter {
                 }
                 this.unavailable.clear();
             }
+
+
+            Log.i(TAG, "NameAdapter: setAvailability: done");
         }
+
     }
 
 
@@ -858,6 +864,8 @@ public class GetAdapter {
         @Override
         public void setAvailability(boolean availability){
             this.setParamAvailability(availability);
+
+
             ScrollAdapter.this.isLoading = true;
             this.r = () -> {
                 if(this.getAvailability()){
@@ -867,6 +875,8 @@ public class GetAdapter {
                             ScrollAdapter.this.getUnavailable().add(elm);
                             ScrollAdapter.this.getList().remove(elm);
                             ScrollAdapter.this.notifyItemRemoved(i);
+                        }else{
+                            Log.i(TAG, "setAvailability: available elm: "+elm);
                         }
                     }
                 }else {
@@ -877,7 +887,9 @@ public class GetAdapter {
                     }
                     this.getUnavailable().clear();
                 }
-
+                if(this.getList().isEmpty()){
+                    Log.i(TAG, "setAvailability: empty");
+                }
 
                 ScrollAdapter.this.isLoading = false;
                 //recyclerView.scrollToPosition(scrollPosition);

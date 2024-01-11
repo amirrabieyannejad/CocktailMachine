@@ -510,7 +510,11 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
             List<Long> temp = this.ids.subList(
                     oldPosition,
                     this.position);
-            return BasicColumn.this.getElements(getReadableDatabase(context), temp);
+            List<T> res =  BasicColumn.this.getElements(getReadableDatabase(context), temp);
+            for(T elm: res){
+                elm.loadAvailable(context);
+            }
+            return res;
         }
 
         public void exclude(String columnName,
