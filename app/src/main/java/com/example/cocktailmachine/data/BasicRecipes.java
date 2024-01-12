@@ -59,14 +59,14 @@ public class BasicRecipes {
         ExtraHandlingDB.loadForSetUp(context);
 
         Pump t_p = Pump.makeNew();
-        t_p.setSlot(3);
+        t_p.setSlot(1);
         //Pump t_p  = Pump.getPumpWithSlot(context,1);
         Log.i(TAG, String.valueOf(t_p));
         t_p.setCurrentIngredient(context, Ingredient.searchOrNew(context,"Tequila"));
         t_p.fill(context, 1000);
         t_p.save(context);
         Pump o_p = Pump.makeNew();
-        o_p.setSlot(3);
+        o_p.setSlot(2);
         //Pump o_p  = Pump.getPumpWithSlot(context,2);
         Log.i(TAG, String.valueOf(o_p));
         o_p.setCurrentIngredient(context, Ingredient.searchOrNew(context, "Orangenlikör"));//orangenlikör);
