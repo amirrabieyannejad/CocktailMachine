@@ -105,7 +105,13 @@ public class ListActivity extends BasicActivity {
 
          */
 
-        adapter = new GetAdapter.TopicScrollAdapter(this, 100, 0.8).initScrollListener(binding.recyclerViewListAc);
+        adapter = new GetAdapter.
+                TopicScrollAdapter(
+                        this,
+                        100,
+                        0.8)
+                .initScrollListener(
+                        binding.recyclerViewListAc);
     }
 
     @Override
@@ -133,7 +139,14 @@ public class ListActivity extends BasicActivity {
 
          */
 
-        adapter = new GetAdapter.IngredientScrollAdapter(this, 100, 0.8).initScrollListener(binding.recyclerViewListAc);
+        adapter = new GetAdapter.
+                IngredientScrollAdapter(
+                        this,
+                        100,
+                        0.8,
+                        this.getShowAll()).
+                initScrollListener(
+                        binding.recyclerViewListAc);
     }
 
     @Override
@@ -161,7 +174,14 @@ public class ListActivity extends BasicActivity {
         };
 
          */
-        adapter = new GetAdapter.RecipeScrollAdapter(this, 100 , 0.8).initScrollListener(binding.recyclerViewListAc);
+        adapter = new GetAdapter.
+                RecipeScrollAdapter(
+                        this,
+                        100 ,
+                        0.8,
+                        this.getShowAll()).
+                initScrollListener(
+                        binding.recyclerViewListAc);
 
     }
 
@@ -175,19 +195,25 @@ public class ListActivity extends BasicActivity {
 
 
         Activity activity = this;
-        binding.floatingActionButtonList.setOnClickListener(v -> GetActivity.goToAdd(activity, getModelType()));
-        binding.imageButtonListReload.setOnClickListener(v -> ListActivity.this.reload());
-        binding.imageButtonListToHome.setOnClickListener(v -> GetActivity.goToMenu(activity));
+        binding.floatingActionButtonList.setOnClickListener(
+                v -> GetActivity.goToAdd(activity, getModelType()));
+        binding.imageButtonListReload.setOnClickListener(
+                v -> ListActivity.this.reload());
+        binding.imageButtonListToHome.setOnClickListener(
+                v -> GetActivity.goToMenu(activity));
 
-        binding.switchAvailable.setChecked(false);
-        binding.switchAvailable.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.i(TAG, "onCheckedChanged: switchAvailable: ischecked: "+isChecked);
-                adapter.setAvailability(isChecked);
-                Log.i(TAG, "onCheckedChanged: switchAvailable: done");
-            }
-        });
+        binding.switchAvailable.setChecked(getShowAll());
+        binding.switchAvailable.setClickable(false);
+        binding.switchAvailable.setEnabled(false);
+        /*
+        binding.switchAvailable.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> {
+                    Log.i(TAG, "onCheckedChanged: switchAvailable: ischecked: "+isChecked);
+                    adapter.setAvailability(isChecked);
+                    Log.i(TAG, "onCheckedChanged: switchAvailable: done");
+                });
+
+         */
     }
 
     @Override

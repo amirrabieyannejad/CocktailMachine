@@ -23,6 +23,8 @@ public abstract class BasicActivity extends AppCompatActivity {
     private FragmentType fragmentType;
     private ModelType modelType;
 
+    private boolean showAll = false;
+
 
     FragmentType getFragmentType(){
         return fragmentType;
@@ -33,6 +35,10 @@ public abstract class BasicActivity extends AppCompatActivity {
 
     Long getID(){
         return id;
+    }
+
+    boolean getShowAll(){
+        return this.showAll;
     }
 
     abstract void preSetUp();
@@ -88,9 +94,12 @@ public abstract class BasicActivity extends AppCompatActivity {
                 bundle.getString(
                         GetActivity.FRAGMENTTYPE,
                         FragmentType.List.toString()));
+        showAll = bundle.getBoolean(
+                        GetActivity.DISPLAYALL);
         Log.v(TAG, "readIntent: id "+id );
         Log.v(TAG, "readIntent: modelType "+modelType );
         Log.v(TAG, "readIntent: fragmentType "+fragmentType );
+        Log.v(TAG, "readIntent: showAll "+showAll );
     }
 
 

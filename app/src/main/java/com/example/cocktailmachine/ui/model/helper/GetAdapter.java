@@ -903,8 +903,10 @@ public class GetAdapter {
     }
 
     public static class RecipeScrollAdapter extends ScrollAdapter<SQLRecipe>{
-        public RecipeScrollAdapter(Activity activity,  int n, double percentToLoadMore) {
+        private final boolean showAll;
+        public RecipeScrollAdapter(Activity activity,  int n, double percentToLoadMore, boolean showAll) {
             super(activity, ModelType.RECIPE, n, percentToLoadMore);
+            this.showAll = showAll;
         }
 
         @Override
@@ -915,13 +917,19 @@ public class GetAdapter {
         @Override
         BasicColumn<SQLRecipe>.DatabaseIterator initIterator(int n) {
             //return Recipe.getChunkIterator(this.getActivity(), n);
-            return Recipe.getChunkAvIterator(this.getActivity(), n);
+            if(showAll) {
+                return Recipe.getChunkIterator(this.getActivity(), n);
+            }else{
+                return Recipe.getChunkAvIterator(this.getActivity(), n);
+            }
         }
     }
 
     public static class IngredientScrollAdapter extends ScrollAdapter<SQLIngredient>{
-        public IngredientScrollAdapter(Activity activity,  int n, double percentToLoadMore) {
+        private final boolean showAll;
+        public IngredientScrollAdapter(Activity activity,  int n, double percentToLoadMore, boolean showAll) {
             super(activity, ModelType.INGREDIENT, n, percentToLoadMore);
+            this.showAll = showAll;
         }
 
         @Override
@@ -931,7 +939,11 @@ public class GetAdapter {
 
         @Override
         BasicColumn<SQLIngredient>.DatabaseIterator initIterator(int n) {
-            return Ingredient.getChunkAvIterator(this.getActivity(), n);
+            if(showAll) {
+                return Ingredient.getChunkIterator(this.getActivity(), n);
+            }else{
+                return Ingredient.getChunkAvIterator(this.getActivity(), n);
+            }
         }
     }
 

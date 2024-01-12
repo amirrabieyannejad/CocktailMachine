@@ -27,6 +27,7 @@ public class GetActivity {
     public static final String ID = "ID";
     public static final String MODELTYPE = "MODELTYPE";
     public static final String FRAGMENTTYPE = "FRAGMENTTYPE";
+    public static final String DISPLAYALL = "DISPLAYALL";
     private static final String TAG = "GetActivity";
 
     /*
@@ -112,6 +113,17 @@ public class GetActivity {
         intent = new Intent(activity, ListActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString(MODELTYPE, modelType.toString());
+        bundle.putBoolean(DISPLAYALL, false);
+        intent.putExtras(bundle);
+        activity.startActivity(intent);
+    }
+
+    public static void goToAllList(Activity activity, ModelType modelType){
+        Intent intent;
+        intent = new Intent(activity, ListActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString(MODELTYPE, modelType.toString());
+        bundle.putBoolean(DISPLAYALL, true);
         intent.putExtras(bundle);
         activity.startActivity(intent);
     }
