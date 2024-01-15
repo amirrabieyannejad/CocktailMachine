@@ -79,6 +79,17 @@
                 android:textSize="20sp" />
 
             <TextView
+                android:id="@+id/textViewSettingsIngredientAll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="ingredientsAll"
+                android:padding="8dp"
+                android:paddingStart="16dp"
+                android:text="Zutaten (Alle)"
+                android:textSize="20sp" />
+
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="48dp"
@@ -86,6 +97,18 @@
                 android:padding="8dp"
                 android:paddingStart="16dp"
                 android:text="Rezepte"
+                android:textSize="20sp" />
+
+
+            <TextView
+                android:id="@+id/textViewSettingsRecipeAll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:onClick="recipesAll"
+                android:padding="8dp"
+                android:paddingStart="16dp"
+                android:text="Rezepte (Alle)"
                 android:textSize="20sp" />
 
             <TextView

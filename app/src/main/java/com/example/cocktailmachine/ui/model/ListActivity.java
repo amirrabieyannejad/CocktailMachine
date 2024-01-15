@@ -202,19 +202,22 @@ public class ListActivity extends BasicActivity {
         binding.imageButtonListToHome.setOnClickListener(
                 v -> GetActivity.goToMenu(activity));
 
-        binding.switchAvailable.setChecked(getShowAll());
-        binding.switchAvailable.setClickable(false);
-        binding.switchAvailable.setEnabled(false);
-        /*
-        binding.switchAvailable.setOnCheckedChangeListener(
-                (buttonView, isChecked) -> {
-                    Log.i(TAG, "onCheckedChanged: switchAvailable: ischecked: "+isChecked);
-                    adapter.setAvailability(isChecked);
-                    Log.i(TAG, "onCheckedChanged: switchAvailable: done");
-                });
+        if(getShowAll()) {
+            binding.switchAvailable.setChecked(!getShowAll());
+            binding.switchAvailable.setVisibility(View.VISIBLE);
+            //binding.switchAvailable.setEnabled(false);
+            binding.switchAvailable.setOnCheckedChangeListener(
+                    (buttonView, isChecked) -> {
+                        Log.i(TAG, "onCheckedChanged: switchAvailable: ischecked: " + isChecked);
+                        adapter.setAvailability(isChecked);
+                        Log.i(TAG, "onCheckedChanged: switchAvailable: done");
+                    });
 
-         */
+        }else{
+            binding.switchAvailable.setVisibility(View.GONE);
+        }
     }
+
 
     @Override
     public void reload() {

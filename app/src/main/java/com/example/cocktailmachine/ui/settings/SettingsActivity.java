@@ -84,6 +84,8 @@ public class SettingsActivity extends AppCompatActivity {
             binding.textViewSettingsPumps.setVisibility(View.VISIBLE);
             binding.textViewMachine.setVisibility(View.VISIBLE);
             binding.textViewMachineClick.setVisibility(View.VISIBLE);
+            binding.textViewSettingsIngredientAll.setVisibility(View.VISIBLE);
+            binding.textViewSettingsRecipeAll.setVisibility(View.VISIBLE);
 
             binding.textViewSettingsLogin.setVisibility(View.GONE);
             binding.textViewSettingsLogout.setVisibility(View.VISIBLE);
@@ -94,6 +96,8 @@ public class SettingsActivity extends AppCompatActivity {
             binding.textViewSettingsPumps.setVisibility(View.GONE);
             binding.textViewMachine.setVisibility(View.GONE);
             binding.textViewMachineClick.setVisibility(View.GONE);
+            binding.textViewSettingsIngredientAll.setVisibility(View.GONE);
+            binding.textViewSettingsRecipeAll.setVisibility(View.GONE);
 
             binding.textViewSettingsLogin.setVisibility(View.VISIBLE);
             binding.textViewSettingsLogout.setVisibility(View.GONE);
@@ -320,4 +324,13 @@ public class SettingsActivity extends AppCompatActivity {
         setVisibility();
     }
 
+    public void ingredientsAll(View view) {
+        Log.i(TAG, "ingredientsAll");
+        GetActivity.goToAllList(this, ModelType.INGREDIENT);
+    }
+
+    public void recipesAll(View view) {
+        Log.i(TAG, "recipesAll");
+        GetActivity.goToAllList(this, ModelType.RECIPE);
+    }
 }
