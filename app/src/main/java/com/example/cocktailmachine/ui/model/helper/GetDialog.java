@@ -827,7 +827,7 @@ public class GetDialog {
 
 
             //CocktailMachine.automaticEmpty();
-            //TODO: TARIERUNG pflicht????
+            //TO DO: TARIERUNG pflicht????
 
             //CocktailMachine.automaticEmpty(activity);
             //enterNumberOfPumps(activity);
@@ -1702,7 +1702,7 @@ public class GetDialog {
         private void setSearchItems(){
             Log.v(TAG, "IngredientVolumeView: setSearchItems ");
             //this.search.setAutofillHints(this.ingredientNames);
-            //TODO: set autotfill hints
+            //TO DO: set autotfill hints
         }
 
     }

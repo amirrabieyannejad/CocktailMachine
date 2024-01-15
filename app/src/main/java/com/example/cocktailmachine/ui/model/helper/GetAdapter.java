@@ -830,7 +830,7 @@ public class GetAdapter {
                             //loadMore();
                         }else{
                             Log.i(GetAdapter.TAG, "loadMore: available: no added repeat loadmore");
-                            //TODO: loadMore();
+                            //TO DO: loadMore(); -> does automatically does not meet criteria of loaded enough
                         }
 
 

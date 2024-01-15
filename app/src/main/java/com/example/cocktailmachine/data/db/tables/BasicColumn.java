@@ -485,7 +485,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
             this.chunkSize = chunkSize;
             this.context = context;
             //this.table = loadTable();
-            //TODO: get available if in column names
+            //TO DO: get available if in column names
         }
 
 
@@ -501,7 +501,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
             this.chunkSize = chunkSize;
             this.context = context;
             //this.table = loadTable();
-            //TODO: get available if in column names
+            //TO DO: get available if in column names
         }
 
         @Override

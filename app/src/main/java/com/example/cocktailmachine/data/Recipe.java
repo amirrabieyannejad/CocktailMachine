@@ -19,6 +19,7 @@ import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.tables.BasicColumn;
 import com.example.cocktailmachine.data.enums.Postexecute;
+import com.example.cocktailmachine.ui.model.enums.ModelType;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
 import com.example.cocktailmachine.ui.model.helper.WaitingQueueCountDown;
 
@@ -320,6 +321,22 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     default void removeIngredients(Context context, List<Ingredient> ingredients){
         for(Ingredient e: ingredients){
             this.remove(context, e);
+        }
+        this.loadAvailable(context);
+        this.loadAlcoholic(context);
+        this.save(context);
+
+    }
+
+    /**
+     * remove topics
+     * @author Johanna Reidt
+     * @param context
+     * @param ingredients
+     */
+    default void removeIngredientIDs(Context context, List<Long> ingredients){
+        for(Long id: ingredients){
+            DeleteFromDB.removeElementFromRecipe(context, this, ModelType.INGREDIENT, id);
         }
         this.loadAvailable(context);
         this.loadAlcoholic(context);
@@ -651,6 +668,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
             JSONObject j = json.optJSONObject(i);
             Recipe temp = Recipe.searchOrNew(context, j.optString("name", "Default"));
             JSONArray a = j.optJSONArray("liquids");
+            List<Long> toRemove = temp.getIngredientIDs(context);
             if(a != null){
                 for(int l=0; l<a.length(); l++){
                     JSONArray liq = a.optJSONArray(l);
@@ -658,10 +676,14 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
                         String name = a.getString(0);
                         int volume = a.getInt(1);
                         Ingredient ig = Ingredient.searchOrNew(context,name);
+                        ig.save(context);
                         temp.add(context, ig, volume);
+                        toRemove.remove(ig.getID());
                     }
                 }
             }
+            temp.removeIngredientIDs(context, toRemove);
+
             //TODO: what happens if ingredient removed
             temp.save(context);
         }

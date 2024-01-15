@@ -91,7 +91,7 @@ public class AddOrUpdateToDB {
     }
 
     public static void addOrUpdate(Context context, SQLPump pump) {
-        //TODO: check available
+        //TO DO: check available
        // Log.v(TAG, "addOrUpdate: "+pump.toString());
         if(pump.getID() != -1){
            // Log.v(TAG, "was saved and needs update");
@@ -104,6 +104,7 @@ public class AddOrUpdateToDB {
             pump.wasSaved();
             //Buffer.getSingleton(context).addToBuffer(pump);
         }
+        pump.loadAvailable(context);
     }
 
     public static void addOrUpdate(Context context, SQLRecipeTopic recipeTopic) {

@@ -338,8 +338,8 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
             @Override
             public void onNext() {
                // Log.v("WaitingQueueCountDown","onNext");
-                //TODO: Notification
-                //TODO: ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+                //TO DO: Notification
+                //TO DO: ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
                 //toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,150);
                 //toneGen1.startTone(ToneGenerator.TONE_PROP_BEEP2,150);
                 Toast.makeText(activity, "Der nächste Cocktail ist deiner!", Toast.LENGTH_LONG).show();
@@ -349,7 +349,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
             public void onFinish() {
                // Log.v("WaitingQueueCountDown","onFinish");
 
-                //TODO: ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+                //TO DO: ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
                 //toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,150);
                 //toneGen1.startTone(ToneGenerator.TONE_PROP_BEEP,300);
                 GetDialog.isUsersTurn(activity, recipe);
@@ -390,9 +390,9 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
             @Override
             public void onNext() {
                // Log.v("WaitingQueueCountDown","Dialog  onNext");
-                //TODO: Notification
+                //TO DO: Notification
                 Toast.makeText(activity, "Der nächste Cocktail ist deiner!", Toast.LENGTH_LONG).show();
-                //TODO: ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+                //TO DO: ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
                 //toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,150);
                 //toneGen1.startTone(ToneGenerator.TONE_PROP_BEEP2,150);
                 //Toast.makeText(activity, "Der nächste Cocktail ist deiner!", Toast.LENGTH_LONG).show();
@@ -401,7 +401,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
             @Override
             public void onFinish() {
                // Log.v("WaitingQueueCountDown","Dialog  onFinish");
-                //TODO: ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+                //TO DO: ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
                 //toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,150);
                 //toneGen1.startTone(ToneGenerator.TONE_PROP_BEEP,300);
 

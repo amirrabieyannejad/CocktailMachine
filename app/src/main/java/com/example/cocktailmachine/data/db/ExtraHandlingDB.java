@@ -133,7 +133,7 @@ public class ExtraHandlingDB {
     }
 
     public static boolean loadAvailability(Context context, SQLRecipeIngredient recipeIngredient) {
-        return Tables.TABLE_INGREDIENT_PUMP.hasIngredient(getReadableDatabase(context), recipeIngredient.getIngredientID()); //TODO
+        return Tables.TABLE_INGREDIENT_PUMP.hasIngredient(getReadableDatabase(context), recipeIngredient.getIngredientID()); //TO DO
     }
 
     public static boolean loadAvailability(Context context, SQLIngredientPump sqlIngredientPump) {
