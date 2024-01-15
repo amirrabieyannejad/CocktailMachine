@@ -11,22 +11,18 @@ import android.widget.Toast;
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
-import com.example.cocktailmachine.databinding.ActivityMenueBinding;
-import com.example.cocktailmachine.ui.ListOfIngredience.ListIngredience;
+import com.example.cocktailmachine.ui.ListOfIngredients.ListIngredients;
 import com.example.cocktailmachine.ui.calibration.scale.calibrationScale;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
-import com.example.cocktailmachine.ui.model.WaitNotSetActivity;
 import com.example.cocktailmachine.ui.model.enums.ModelType;
 import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.helper.DialogListOfPumps;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
 import com.example.cocktailmachine.ui.settings.SettingsActivity;
-import com.example.cocktailmachine.ui.settings.SinglePumpSetting;
 import com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice;
 
 /**
@@ -293,7 +289,7 @@ public class Menue extends AppCompatActivity {
 
     public void listIngedients(View view){
         Log.v(TAG, "listIngedients");
-        Intent success = new Intent(this, ListIngredience.class);
+        Intent success = new Intent(this, ListIngredients.class);
         startActivity(success);
 
     }
@@ -314,7 +310,7 @@ public class Menue extends AppCompatActivity {
 
     public void pumpSetting(View view){
         Log.i(TAG, " activity Pump Setting");
-        Intent success = new Intent(this, LoadScrean.class);
+        Intent success = new Intent(this, LoadScreen.class);
         startActivity(success);
 
     }

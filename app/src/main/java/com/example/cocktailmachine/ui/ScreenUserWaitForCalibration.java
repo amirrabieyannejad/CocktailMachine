@@ -3,12 +3,8 @@ package com.example.cocktailmachine.ui;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.view.View;
-import android.widget.LinearLayout;
 
-import com.example.cocktailmachine.R;
-
-public class SceanUserWaitForCalibration extends AppCompatActivity {
+public class ScreenUserWaitForCalibration extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.ListOfIngredience;
+package com.example.cocktailmachine.ui.ListOfIngredients;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -16,26 +16,26 @@ import com.example.cocktailmachine.data.Ingredient;
 
 import java.util.List;
 
-public class RecyclerAdapterListIngredience extends RecyclerView.Adapter<RecyclerAdapterListIngredience.IngtedienceViewHolder> {
+public class RecyclerAdapterListIngredient extends RecyclerView.Adapter<RecyclerAdapterListIngredient.IngtedienceViewHolder> {
 
     Context context;
     List<Ingredient> ingredients;
 
     Ingredient chosenIngredient;
 
-    RecyclerViewListenerListIngredience selectionListener;
+    RecyclerViewListenerListIngredient selectionListener;
 
-    public RecyclerAdapterListIngredience(List<Ingredient> ingredients, Context context) {
+    public RecyclerAdapterListIngredient(List<Ingredient> ingredients, Context context) {
         this.ingredients = ingredients;
         this.context = context;
-        this.selectionListener=(ListIngredience)context;
+        this.selectionListener=(ListIngredients)context;
 
     }
 
-    public RecyclerAdapterListIngredience(Ingredient chosenIngredient, List<Ingredient> ingredients, Context context) {
+    public RecyclerAdapterListIngredient(Ingredient chosenIngredient, List<Ingredient> ingredients, Context context) {
         this.ingredients = ingredients;
         this.context = context;
-        this.selectionListener=(ListIngredience)context;
+        this.selectionListener=(ListIngredients)context;
         this.chosenIngredient = chosenIngredient;
 
     }

@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.logic.Animation.DirectAnimation;
 
-public class LoadScrean extends AppCompatActivity {
+public class LoadScreen extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

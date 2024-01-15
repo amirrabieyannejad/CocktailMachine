@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.ListOfIngredience;
+package com.example.cocktailmachine.ui.ListOfIngredients;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,10 +16,9 @@ import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Ingredient;
 
 import java.util.LinkedList;
-import java.util.LinkedList;
 import java.util.List;
 
-public class ListIngredience extends AppCompatActivity implements RecyclerViewListenerListIngredience{
+public class ListIngredients extends AppCompatActivity implements RecyclerViewListenerListIngredient {
 
 
     private List<Ingredient> listIngredients;
@@ -55,7 +54,7 @@ public class ListIngredience extends AppCompatActivity implements RecyclerViewLi
         //Einrichtung des RecyclerView
         recyclerView = findViewById(R.id.recyclerViewListIngredience);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,listIngredients,this);
+        RecyclerAdapterListIngredient adapterComments = new RecyclerAdapterListIngredient(chosenIngredient,listIngredients,this);
         recyclerView.setAdapter(adapterComments);
 
 
@@ -77,7 +76,7 @@ public class ListIngredience extends AppCompatActivity implements RecyclerViewLi
                 String searchterm = searchFild.getText().toString();
                 filteredListIngredients = ingredientListFilter(listIngredients,searchterm);
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,filteredListIngredients,context);
+                RecyclerAdapterListIngredient adapterComments = new RecyclerAdapterListIngredient(chosenIngredient,filteredListIngredients,context);
                 recyclerView.setAdapter(adapterComments);
 
             }
@@ -96,7 +95,7 @@ public class ListIngredience extends AppCompatActivity implements RecyclerViewLi
         Toast.makeText(this, "Es wurde eine Auswahl getroffen",Toast.LENGTH_LONG).show();
         //Todo Philipp hier musst du noch den Wert zurück geben
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,filteredListIngredients,context);
+        RecyclerAdapterListIngredient adapterComments = new RecyclerAdapterListIngredient(chosenIngredient,filteredListIngredients,context);
         recyclerView.setAdapter(adapterComments);
     }
 

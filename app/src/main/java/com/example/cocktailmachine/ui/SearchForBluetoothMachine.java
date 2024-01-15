@@ -7,12 +7,10 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -25,15 +23,11 @@ import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
-import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 import com.example.cocktailmachine.bluetoothlegatt.SampleGattAttributes;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
-import com.example.cocktailmachine.data.enums.CocktailStatus;
-import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.logic.Animation.CircularAnimation;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
@@ -43,7 +37,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-public class SearcheForBluetoothMachine extends AppCompatActivity {
+public class SearchForBluetoothMachine extends AppCompatActivity {
 
 
     // Animationsdarstellung
