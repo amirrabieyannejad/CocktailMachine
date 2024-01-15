@@ -24,7 +24,7 @@ import java.util.Random;
 public class CocktailMachineCalibration {
     private static final String TAG = "CocktailMachineCalibr" ;
     private static CocktailMachineCalibration singleton = null;
-    private static boolean isDone = false;
+    private boolean isDone = false;
     private CocktailMachineCalibration() {}
 
     public static CocktailMachineCalibration getSingleton() {
@@ -54,7 +54,7 @@ public class CocktailMachineCalibration {
                     if(CocktailMachine.isCocktailMachineSet(activity)){
                         Log.v(TAG, "start: login isCocktailMachineSet");
                         isDone = true;
-                        Log.v(CocktailMachineCalibration.TAG, "is set");
+                        Log.v(CocktailMachineCalibration.TAG, "start: is set");
                         Toast.makeText(activity, "Cocktailmaschine ist bereit.", Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -88,7 +88,7 @@ public class CocktailMachineCalibration {
      * @return
      */
     public boolean isIsDone() {
-        Log.v(TAG, "start: isIsDone");
+        Log.v(TAG, "isIsDone: "+isDone);
         return isDone;
     }
 
@@ -120,7 +120,7 @@ public class CocktailMachineCalibration {
 
     public void setIsDone(boolean isDone) {
         Log.v(TAG, "start: setIsDone");
-        CocktailMachineCalibration.isDone = isDone;
+        this.isDone = isDone;
         if(isDone){
             Dummy.withSetCalibration = true;
         }
