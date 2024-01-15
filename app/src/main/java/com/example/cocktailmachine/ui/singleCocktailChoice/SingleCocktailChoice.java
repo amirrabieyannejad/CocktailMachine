@@ -19,7 +19,7 @@ import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredie
 import com.example.cocktailmachine.data.enums.Orientation;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
-import com.example.cocktailmachine.logic.FlingAnalysis;
+import com.example.cocktailmachine.logic.FillingAnalysis;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -167,21 +167,21 @@ public class SingleCocktailChoice extends AppCompatActivity {
             Log.d("TAG", "onFling: ");
             Log.d("TAG", "onFling: "+velocityX);
             Log.d("TAG", "onFling: "+velocityY);
-            Log.d("TAG", "onFling: "+ FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY));
+            Log.d("TAG", "onFling: "+ FillingAnalysis.getOrientationFromVelocity(velocityX,velocityY));
 
-            Orientation flingOrientation = FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY);
+            Orientation flingOrientation = FillingAnalysis.getOrientationFromVelocity(velocityX,velocityY);
 
             String oldText = testData.get(counter).getName();
             fragment1 oldFragment = fragment1.newInstance(oldText);
             setSlideOutAnimationFragment(oldFragment,flingOrientation);
 
-            if(FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY)==(Orientation.RIGHT)){
+            if(FillingAnalysis.getOrientationFromVelocity(velocityX,velocityY)==(Orientation.RIGHT)){
                 //TODO Entfernung dieser Testzeilen
                 if(++counter >= testData.size()){
                     counter = 0;
                 }
             }
-            if(FlingAnalysis.getOrientationFromVelocity(velocityX,velocityY)==(Orientation.LEFT)) {
+            if(FillingAnalysis.getOrientationFromVelocity(velocityX,velocityY)==(Orientation.LEFT)) {
                 //TODO Entfernung dieser Testzeilen
                 if (--counter < 0) {
                     counter = testData.size() - 1;

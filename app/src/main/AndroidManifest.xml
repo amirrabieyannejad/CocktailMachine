@@ -56,10 +56,10 @@
         android:theme="@style/Theme.CocktailMachine"
         tools:targetApi="21">
         <activity
-            android:name=".ui.SearcheForBluetoothMachine"
+            android:name=".ui.SearchForBluetoothMachine"
             android:exported="false" />
         <activity
-            android:name=".ui.SceanUserWaitForCalibration"
+            android:name=".ui.ScreenUserWaitForCalibration"
             android:exported="false" />
         <activity
             android:name=".ui.LoadDataAnimation"
@@ -67,7 +67,7 @@
             android:label="@string/title_activity_load_data_animation"
             android:theme="@style/Theme.CocktailMachine" />
         <activity
-            android:name=".ui.LoadScrean"
+            android:name=".ui.LoadScreen"
             android:exported="false" />
         <activity
             android:name=".ui.settings.SinglePumpSetting"
@@ -87,7 +87,7 @@
             android:name=".ui.calibration.scale.calibrationScale"
             android:exported="false" />
         <activity
-            android:name=".ui.ListOfIngredience.ListIngredience"
+            android:name=".ui.ListOfIngredients.ListIngredients"
             android:exported="true" />
         <activity
             android:name=".ui.BluetoothTestEnviroment"
