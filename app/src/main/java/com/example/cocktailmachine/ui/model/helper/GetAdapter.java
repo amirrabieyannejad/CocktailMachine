@@ -927,8 +927,14 @@ public class GetAdapter {
 
     public static class IngredientScrollAdapter extends ScrollAdapter<SQLIngredient>{
         private final boolean showAll;
-        public IngredientScrollAdapter(Activity activity,  int n, double percentToLoadMore, boolean showAll) {
-            super(activity, ModelType.INGREDIENT, n, percentToLoadMore);
+        public IngredientScrollAdapter(Activity activity,
+                                       int n,
+                                       double percentToLoadMore,
+                                       boolean showAll) {
+            super(activity,
+                    ModelType.INGREDIENT,
+                    n,
+                    percentToLoadMore);
             this.showAll = showAll;
         }
 
