@@ -37,7 +37,7 @@ public class IngredientImageUrlTable extends ImageUrlTable {
     }
 
     @Override
-    protected List<Long> getAvailableID(SQLiteDatabase db) {
+    protected List<Long> getAvailableIDs(SQLiteDatabase db) {
 
         return new ArrayList<>();
     }

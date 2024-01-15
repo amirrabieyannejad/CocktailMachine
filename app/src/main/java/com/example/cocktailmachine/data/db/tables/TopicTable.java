@@ -73,7 +73,7 @@ public class TopicTable extends BasicColumn<SQLTopic>{
     }
 
     @Override
-    protected List<Long> getAvailableID(SQLiteDatabase db) {
+    protected List<Long> getAvailableIDs(SQLiteDatabase db) {
 
         return this.getIDs(db);
     }

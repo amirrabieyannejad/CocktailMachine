@@ -79,8 +79,8 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
     }
 
     @Override
-    protected List<Long> getAvailableID(SQLiteDatabase db) {
-        return Tables.TABLE_INGREDIENT_PUMP.getAvailableID(db);
+    protected List<Long> getAvailableIDs(SQLiteDatabase db) {
+        return Tables.TABLE_INGREDIENT_PUMP.getIngredientIDs(db);
     }
 
     @Override

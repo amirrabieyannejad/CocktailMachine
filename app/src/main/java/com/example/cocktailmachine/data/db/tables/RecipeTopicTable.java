@@ -57,7 +57,7 @@ public class RecipeTopicTable extends BasicColumn<SQLRecipeTopic> {
     }
 
     @Override
-    protected List<Long> getAvailableID(SQLiteDatabase db) {
+    protected List<Long> getAvailableIDs(SQLiteDatabase db) {
 
         return new ArrayList<>();
     }

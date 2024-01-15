@@ -78,7 +78,7 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
     }
 
     @Override
-    protected List<Long> getAvailableID(SQLiteDatabase db) {
+    protected List<Long> getAvailableIDs(SQLiteDatabase db) {
         try {
             return this.getIDsWith(db, COLUMN_NAME_AVAILABLE, "true");
         } catch (NoSuchColumnException e) {

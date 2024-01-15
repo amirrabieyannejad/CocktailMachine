@@ -62,7 +62,7 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
     }
 
     @Override
-    protected List<Long> getAvailableID(SQLiteDatabase db) {
+    protected List<Long> getAvailableIDs(SQLiteDatabase db) {
 
         return new ArrayList<>();
     }
