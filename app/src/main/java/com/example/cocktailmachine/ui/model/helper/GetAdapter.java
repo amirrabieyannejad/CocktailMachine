@@ -35,7 +35,7 @@ import com.example.cocktailmachine.data.db.tables.BasicColumn;
 import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.ui.model.enums.ModelType;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -110,7 +110,7 @@ public class GetAdapter {
             this.recipe = recipe;
             this.withDelete = withDelete;
             this.withDisplay = withDisplay;
-            this.topics = new ArrayList<>(this.recipe.getTopics(activity));
+            this.topics = new LinkedList<>(this.recipe.getTopics(activity));
         }
 
         @NonNull
@@ -221,7 +221,7 @@ public class GetAdapter {
             this.activity = activity;
             this.recipe = recipe;
             this.ingredientVol = recipe.getIngredientToVolume(activity);
-            this.ingredients = new ArrayList<>(this.ingredientVol.keySet());
+            this.ingredients = new LinkedList<>(this.ingredientVol.keySet());
             
             this.withDelete = withDelete;
             this.withDisplay = withDisplay;
@@ -427,7 +427,7 @@ public class GetAdapter {
         //private final Recipe recipe;
         private final boolean withDelete;
         private final boolean withDisplay;
-        private final List<T> elements;// = new ArrayList<>();
+        private final List<T> elements;// = new LinkedList<>();
         protected ElementListAdapter(@NonNull Activity activity,
                                      //@NonNull Recipe recipe,
                                      @NonNull List<T> elements,
@@ -715,7 +715,7 @@ public class GetAdapter {
 
         @Override
         public List<K> initList() {
-            return new ArrayList<>();
+            return new LinkedList<>();
         }
 
         public ScrollAdapter<K> initScrollListener(RecyclerView recyclerView) {

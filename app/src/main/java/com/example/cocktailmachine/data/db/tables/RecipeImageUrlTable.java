@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.example.cocktailmachine.data.db.elements.SQLImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -38,6 +38,6 @@ public class RecipeImageUrlTable extends ImageUrlTable{
     @Override
     protected List<Long> getAvailableIDs(SQLiteDatabase db) {
 
-        return new ArrayList<>();
+        return new LinkedList<>();
     }
 }

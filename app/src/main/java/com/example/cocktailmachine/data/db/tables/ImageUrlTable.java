@@ -15,7 +15,7 @@ import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.elements.SQLImageUrlElement;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,7 +46,7 @@ public abstract class ImageUrlTable extends BasicColumn<SQLImageUrlElement>{
 
     @Override
     public List<String> getColumns() {
-        List<String> columns = new ArrayList<>();
+        List<String> columns = new LinkedList<>();
         columns.add(this._ID);
         columns.add(COLUMN_NAME_URL);
         columns.add(COLUMN_NAME_OWNER_ID);
@@ -55,7 +55,7 @@ public abstract class ImageUrlTable extends BasicColumn<SQLImageUrlElement>{
 
     @Override
     public List<String> getColumnTypes() {
-        List<String> columns = new ArrayList<>();
+        List<String> columns = new LinkedList<>();
         columns.add(COLUMN_TYPE_ID);
         columns.add(COLUMN_TYPE_URL);
         columns.add(COLUMN_TYPE_OWNER_ID);
@@ -111,7 +111,7 @@ public abstract class ImageUrlTable extends BasicColumn<SQLImageUrlElement>{
         } catch (NoSuchColumnException e) {
             Log.e(TAG, "error", e);
         }
-        return new ArrayList<>();
+        return new LinkedList<>();
     }
 
     public List<? extends SQLImageUrlElement> getElements(SQLiteDatabase db, long id) {
@@ -121,7 +121,7 @@ public abstract class ImageUrlTable extends BasicColumn<SQLImageUrlElement>{
         } catch (NoSuchColumnException e) {
             Log.e(TAG, "error", e);
         }
-        return new ArrayList<>();
+        return new LinkedList<>();
     }
 
     public void addElement(SQLiteDatabase db, Long owner_id, String url){

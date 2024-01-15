@@ -43,7 +43,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.UUID;
 
 
@@ -1296,7 +1296,7 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void userEditRecipe(float user, String name, ArrayList<Pair<String, Float>> ingredients
+    public void userEditRecipe(float user, String name, LinkedList<Pair<String, Float>> ingredients
             , Activity activity, Postexecute postexecute)
             throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton userEditRecipe(PE) start");
@@ -1356,7 +1356,7 @@ public class BluetoothSingleton {
      * @throws JSONException
      */
     @SuppressLint("MissingPermission")
-    public void userEditRecipe(float user, String name, ArrayList<Pair<String, Float>> ingredients
+    public void userEditRecipe(float user, String name, LinkedList<Pair<String, Float>> ingredients
             , Activity activity)
             throws JSONException, InterruptedException {
         Log.w(TAG, "BluetoothSingleton userEditRecipe start");

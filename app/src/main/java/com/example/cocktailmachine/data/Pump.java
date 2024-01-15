@@ -28,7 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -193,7 +193,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 /*
 
             final Postexecute doAfterWait = postexecute;
-            final List<Boolean> count = new ArrayList<>();
+            final List<Boolean> count = new LinkedList<>();
             //final int count = 0;
             final int timesToTry= 3;
 
@@ -363,7 +363,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     static void updatePumpStatus(Context context, JSONObject json){
         Log.i(TAG, "updatePumpStatus");
         Log.i(TAG, "updatePumpStatus: "+json.toString());
-        List<Long> toSave = new ArrayList<>();
+        List<Long> toSave = new LinkedList<>();
         CocktailMachineCalibration.getSingleton().setIsDone(true);
         try {
             Iterator<String> t_ids = json.keys();
@@ -436,7 +436,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     static void updatePumpStatus(Context context, JSONObject json) {
         Log.i(TAG, "updatePumpStatus");
         Log.i(TAG, "updatePumpStatus: "+json.toString());
-        List<Long> toSave = new ArrayList<>();
+        List<Long> toSave = new LinkedList<>();
         try {
             Iterator<String> t_ids = json.keys();
             while (t_ids.hasNext()){
@@ -498,7 +498,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             throw new JSONException("Ingredient Names not readable.");
         }
         /*
-        List<String> names = new ArrayList<>();
+        List<String> names = new LinkedList<>();
         for(int i=0; i<t_names.length();i++){
             names.add(t_names.getString(i));
         }

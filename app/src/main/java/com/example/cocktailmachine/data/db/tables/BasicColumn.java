@@ -16,7 +16,7 @@ import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.elements.SQLDataBaseElement;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -117,7 +117,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
      */
     List<T> cursorToList(Cursor cursor){
        // Log.v(TAG, "cursorToList");
-        List<T> res = new ArrayList<>();
+        List<T> res = new LinkedList<>();
         if(cursor.moveToFirst()) {
             res.add(makeElement(cursor));
             while (cursor.moveToNext()) {
@@ -137,7 +137,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
      */
     private List<Long> cursorToIDList(Cursor cursor){
        // Log.v(TAG, "cursorToList");
-        List<Long> res = new ArrayList<>();
+        List<Long> res = new LinkedList<>();
         int id_index = cursor.getColumnIndexOrThrow(_ID);
         if(cursor.moveToFirst()) {
             res.add(cursor.getLong(id_index));
@@ -246,9 +246,9 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
 
     public List<Long> getIDs(SQLiteDatabase db, List<Long> ids){
         try {
-            return getIDsIn(db, _ID, new ArrayList<>(ids));
+            return getIDsIn(db, _ID, new LinkedList<>(ids));
         } catch (NoSuchColumnException e) {
-            return new ArrayList<>();
+            return new LinkedList<>();
         }
         /*
         Cursor cursor = db.query(true,
@@ -262,7 +262,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 null,
                 null);
         /*
-        List<Long> ids = new ArrayList<>();
+        List<Long> ids = new LinkedList<>();
         try {
             if (cursor.moveToFirst()) {
                 ids.add(cursor.getLong(cursor.getColumnIndexOrThrow(_ID)));
@@ -296,7 +296,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 null,
                 null);
         /*
-        List<Long> ids = new ArrayList<>();
+        List<Long> ids = new LinkedList<>();
         try {
             if (cursor.moveToFirst()) {
                 ids.add(cursor.getLong(cursor.getColumnIndexOrThrow(_ID)));
@@ -328,7 +328,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 null,
                 null);
         /*
-        List<Long> ids = new ArrayList<>();
+        List<Long> ids = new LinkedList<>();
         try {
             if (cursor.moveToFirst()) {
                 ids.add(cursor.getLong(cursor.getColumnIndexOrThrow(_ID)));
@@ -362,7 +362,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 null,
                 null);
         /*
-        List<Long> ids = new ArrayList<>();
+        List<Long> ids = new LinkedList<>();
         try {
             if (cursor.moveToFirst()) {
                 ids.add(cursor.getLong(cursor.getColumnIndexOrThrow(_ID)));
@@ -394,7 +394,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 null,
                 null);
         /*
-        List<Long> ids = new ArrayList<>();
+        List<Long> ids = new LinkedList<>();
         try {
             if (cursor.moveToFirst()) {
                 ids.add(cursor.getLong(cursor.getColumnIndexOrThrow(_ID)));
@@ -861,7 +861,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
 
         if(ll.isEmpty()){
            // Log.v(TAG, "getElementsSelectionOperator ll is empty");
-            return new ArrayList<>();
+            return new LinkedList<>();
         }
 
 
@@ -899,7 +899,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
 
         if(ll.isEmpty()){
            // Log.v(TAG, "getElementsSelectionOperator ll is empty");
-            return new ArrayList<>();
+            return new LinkedList<>();
         }
 
 
@@ -1099,7 +1099,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
 
     public List<Long> addElements(SQLiteDatabase db,
                                   List<T> elements){
-        List<Long> ids = new ArrayList<>();
+        List<Long> ids = new LinkedList<>();
         for(T element: elements) {
             ids.add(db.insertOrThrow(getName(), null, makeContentValues(element)));
             element.setID(ids.get(ids.size()-1));
@@ -1161,7 +1161,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
 
         Log.i(TAG, "updateColumnsValues: start");
 
-        List<Object> where = new ArrayList<>(IDs);
+        List<Object> where = new LinkedList<>(IDs);
 
         for(String key: cv.keySet()) {
             if (!getColumns().contains(key)) {

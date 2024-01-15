@@ -14,7 +14,7 @@ import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpExcep
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.tables.Tables;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -58,8 +58,8 @@ public class ExtraHandlingDB {
     }
 
     public static void deleteDoublePumpSettingsAndNulls(Context context) {
-        List<Long> pump_ids = new ArrayList<Long>();
-        //List<Long> toDelete = new ArrayList<>();
+        List<Long> pump_ids = new LinkedList<Long>();
+        //List<Long> toDelete = new LinkedList<>();
         Iterator<SQLIngredientPump> it = GetFromDB.getIngredientPumps(context).iterator();
         List<Long> toDelete = GetFromDB.getIngredientPumpsIDs(context);
         while (it.hasNext()) {
@@ -80,7 +80,7 @@ public class ExtraHandlingDB {
     public static void deleteDoubleRecipeIngredientSettingsAndNulls(Context context) {
         //TODO♦
         HashMap<Long, List<Long>> set = new HashMap<>();
-        //List<Long> toDelete = new ArrayList<>();
+        //List<Long> toDelete = new LinkedList<>();
         Iterator<SQLRecipeIngredient> it = GetFromDB.getRecipeIngredientIterator(context);
         List<Long> toDelete = GetFromDB.getRecipeIngredientIDs(context);
         while (it.hasNext()) {
@@ -88,7 +88,7 @@ public class ExtraHandlingDB {
             if (ip == null) {
                 it.remove();
             }else if(!set.containsKey(ip.getRecipeID())){
-                List<Long> n = new ArrayList<>();
+                List<Long> n = new LinkedList<>();
                 n.add(ip.getIngredientID());
                 set.put(ip.getRecipeID(), n);
                 toDelete.remove(ip.getID());

@@ -23,8 +23,8 @@ public class ListActivity extends BasicActivity {
     private static final String TAG = "ListActivity" ;
     private ActivityListBinding binding;
     private GetAdapter.NameAdapter adapter;
-    //private final ArrayList<Long> IDs = new ArrayList<>();
-    //private final ArrayList<String> names = new ArrayList<>();
+    //private final LinkedList<Long> IDs = new LinkedList<>();
+    //private final LinkedList<String> names = new LinkedList<>();
 
 
     @Override

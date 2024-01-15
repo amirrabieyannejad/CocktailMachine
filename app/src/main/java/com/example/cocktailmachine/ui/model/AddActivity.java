@@ -326,7 +326,7 @@ public class AddActivity extends BasicActivity {
             this.recipe = Recipe.makeNew();
             this.recipe.clean(this);
             //this.ingredientVolumeHashMap = new HashMap<>();
-            //this.topics = new ArrayList<>();
+            //this.topics = new LinkedList<>();
         } else {
             binding.editTextAddTitle.setText(this.recipe.getName());
             //this.ingredientVolumeHashMap = this.recipe.getIngredientToVolume();

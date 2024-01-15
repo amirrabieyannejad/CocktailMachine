@@ -16,7 +16,7 @@ import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.tables.BasicColumn;
 
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -195,7 +195,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      */
     static List<String> getAvailableIngredientNames(Context context) {
         List<Ingredient> res = getAvailableIngredients(context);
-        List<String> name = new ArrayList<>();
+        List<String> name = new LinkedList<>();
         for(Ingredient i: res){
             name.add(i.getName());
         }

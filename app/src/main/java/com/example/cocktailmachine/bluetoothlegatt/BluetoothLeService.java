@@ -43,7 +43,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 
 import java.util.UUID;
@@ -682,7 +682,7 @@ public class BluetoothLeService extends Service {
       */
 
     @SuppressLint("MissingPermission")
-    public void defineRecipe(float user,String name, ArrayList<Pair<String, Float>> liquids)
+    public void defineRecipe(float user,String name, LinkedList<Pair<String, Float>> liquids)
             throws JSONException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
@@ -714,7 +714,7 @@ public class BluetoothLeService extends Service {
      * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
       */
     @SuppressLint("MissingPermission")
-    public void editRecipe(float user,String name, ArrayList<Pair<String, Float>> liquids)
+    public void editRecipe(float user,String name, LinkedList<Pair<String, Float>> liquids)
             throws JSONException {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");

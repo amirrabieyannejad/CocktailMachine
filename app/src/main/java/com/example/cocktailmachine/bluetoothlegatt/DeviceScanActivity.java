@@ -56,7 +56,7 @@ import com.example.cocktailmachine.ui.BluetoothTestEnviroment;
 //import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.UUID;
 
 /**
@@ -304,7 +304,7 @@ public class DeviceScanActivity extends ListActivity {
 
             // filter only CocktailMachine
 
-            ArrayList<ScanFilter> filters = new ArrayList<>();
+            LinkedList<ScanFilter> filters = new LinkedList<>();
             ScanFilter.Builder builder = new ScanFilter.Builder();
             //String serviceUuidMaskString = "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF";
             //ParcelUuid parcelUuidMask = ParcelUuid.fromString(serviceUuidMaskString);
@@ -328,12 +328,12 @@ public class DeviceScanActivity extends ListActivity {
 
     // Adapter for holding devices found through scanning.
     private class LeDeviceListAdapter extends BaseAdapter {
-        private final ArrayList<BluetoothDevice> mLeDevices;
+        private final LinkedList<BluetoothDevice> mLeDevices;
         private final LayoutInflater mInflator;
 
         public LeDeviceListAdapter() {
             super();
-            mLeDevices = new ArrayList<>();
+            mLeDevices = new LinkedList<>();
             mInflator = DeviceScanActivity.this.getLayoutInflater();
         }
 

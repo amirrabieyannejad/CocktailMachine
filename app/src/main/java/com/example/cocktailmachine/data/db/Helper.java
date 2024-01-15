@@ -5,7 +5,7 @@ import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +17,7 @@ public class Helper<T extends DataBaseElement> {
 
 
     public List<Object> getIdsExtend(List<? extends T> elements) {
-        List<Object> res = new ArrayList<>();
+        List<Object> res = new LinkedList<>();
         for(int i=0; i<elements.size(); i++){
             res.add(elements.get(i).getID());
         }
@@ -31,7 +31,7 @@ public class Helper<T extends DataBaseElement> {
     //Statics
 
     public static List<String> getUrls(List<? extends SQLImageUrlElement> urls){
-        List<String> res = new ArrayList<>();
+        List<String> res = new LinkedList<>();
         for(SQLImageUrlElement u: urls){
             res.add(u.getUrl());
         }

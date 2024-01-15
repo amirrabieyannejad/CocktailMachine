@@ -16,7 +16,7 @@ import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -55,7 +55,7 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
     }
     @Override
     public List<String> getColumns() {
-            List<String> columns = new ArrayList<>();
+            List<String> columns = new LinkedList<>();
             columns.add(this._ID);
             columns.add(COLUMN_NAME_NAME);
             columns.add(COLUMN_NAME_ALCOHOLIC);
@@ -67,7 +67,7 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
     }
     @Override
     public List<String> getColumnTypes() {
-            List<String> columns = new ArrayList<>();
+            List<String> columns = new LinkedList<>();
             columns.add(COLUMN_TYPE_ID);
             columns.add(COLUMN_TYPE_NAME);
             columns.add(COLUMN_TYPE_ALCOHOLIC);
@@ -117,7 +117,7 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
                 Log.e(TAG, "error", e);
                 Log.getStackTraceString(e);
             }
-            return new ArrayList<>();
+            return new LinkedList<>();
     }
 
     public HashMap<String, Long> getHashIngredientNameToID(SQLiteDatabase db) {
@@ -203,7 +203,7 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
             return res;
         } catch (NoSuchColumnException e) {
             Log.e(TAG, "getAvailableElements", e);
-            return new ArrayList<>();
+            return new LinkedList<>();
         }
     }
 
@@ -228,7 +228,7 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
     }
 
     private List<String> cursorToNames(Cursor cursor){
-        ArrayList<String> res = new ArrayList<>();
+        LinkedList<String> res = new LinkedList<>();
         if(cursor.moveToFirst()) {
             res.add(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME_NAME)));
             while (cursor.moveToNext()) {
@@ -241,7 +241,7 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
     }
 
     public List<? extends Ingredient> getElements(SQLiteDatabase readableDatabase, Recipe recipe) {
-        ArrayList<Object> os = new ArrayList<>(Tables.TABLE_RECIPE_INGREDIENT.getIngredientIDs(readableDatabase, recipe));
+        LinkedList<Object> os = new LinkedList<>(Tables.TABLE_RECIPE_INGREDIENT.getIngredientIDs(readableDatabase, recipe));
         try {
             return this.getElementsIn(
                     readableDatabase,
@@ -249,7 +249,7 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
                     os
             );
         } catch (NoSuchColumnException|RuntimeException e) {
-            return new ArrayList<>();
+            return new LinkedList<>();
         }
     }
 }

@@ -17,7 +17,7 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,7 +48,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
 
     @Override
     public List<String> getColumns() {
-        List<String> columns = new ArrayList<>();
+        List<String> columns = new LinkedList<>();
         columns.add(this._ID);
         columns.add(COLUMN_NAME_RECIPE_ID);
         columns.add(COLUMN_NAME_INGREDIENT_ID);
@@ -58,7 +58,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
 
     @Override
     public List<String> getColumnTypes() {
-        List<String> columns = new ArrayList<>();
+        List<String> columns = new LinkedList<>();
         columns.add(COLUMN_TYPE_ID);
         columns.add(COLUMN_TYPE_RECIPE_ID);
         columns.add(COLUMN_TYPE_INGREDIENT_ID);
@@ -69,7 +69,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
     @Override
     protected List<Long> getAvailableIDs(SQLiteDatabase db) {
 
-        return new ArrayList<>();
+        return new LinkedList<>();
     }
 
     @Override
@@ -95,7 +95,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
             return this.getElementsWith(db, COLUMN_NAME_RECIPE_ID, Long.toString(recipe.getID()));
         } catch (NoSuchColumnException e) {
             Log.e(TAG, "error", e);
-            return new ArrayList<>();
+            return new LinkedList<>();
         }
     }
 
@@ -121,14 +121,14 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
                     ids);
         } catch (NoSuchColumnException e) {
             Log.e(TAG, "error", e);
-            return new ArrayList<>();
+            return new LinkedList<>();
         }
     }
 
 
     public List<SQLRecipeIngredient> getWithRecipes(SQLiteDatabase db,
                                                    List<Long> recipeIDs){
-        List<Object> resIDs = new ArrayList<>();
+        List<Object> resIDs = new LinkedList<>();
         for(Long i: recipeIDs){
             resIDs.add((Object) i);
         }
@@ -137,23 +137,23 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
         } catch (NoSuchColumnException e) {
             Log.e(TAG, "getWithRecipe" );
         }
-        return new ArrayList<>();
+        return new LinkedList<>();
     }
 
 
     public List<Long> getRecipeIDsWithIngs(SQLiteDatabase db, List<Long> ingIDs){
-        List<Object> resIDs = new ArrayList<>();
+        List<Object> resIDs = new LinkedList<>();
         for(Long i: ingIDs){
             resIDs.add((Object) i);
         }
-        List<SQLRecipeIngredient> temp = new ArrayList<>();
+        List<SQLRecipeIngredient> temp = new LinkedList<>();
         try {
             temp = this.getElementsIn(db, COLUMN_NAME_INGREDIENT_ID, resIDs);
 
         } catch (NoSuchColumnException e) {
             Log.e(TAG, "getWithIngredients" );
         }
-        List<Long> res = new ArrayList<>();
+        List<Long> res = new LinkedList<>();
         for(SQLRecipeIngredient ri: temp){
             res.add(ri.getRecipeID());
         }
@@ -162,18 +162,18 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
     }
 
     public List<Long> getRecipeIDsWithoutIngs(SQLiteDatabase db, List<Long> ingIDs){
-        List<Object> resIDs = new ArrayList<>();
+        List<Object> resIDs = new LinkedList<>();
         for(Long i: ingIDs){
             resIDs.add((Object) i);
         }
-        List<SQLRecipeIngredient> temp = new ArrayList<>();
+        List<SQLRecipeIngredient> temp = new LinkedList<>();
         try {
             temp = this.getElementsNotIn(db, COLUMN_NAME_INGREDIENT_ID, resIDs);
 
         } catch (NoSuchColumnException e) {
            Log.e(TAG, "getWithIngredients" );
         }
-        List<Long> res = new ArrayList<>();
+        List<Long> res = new LinkedList<>();
         for(SQLRecipeIngredient ri: temp){
             res.add(ri.getRecipeID());
         }
@@ -186,11 +186,11 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
 
     public List<SQLRecipeIngredient> getWithIngredients(SQLiteDatabase db,
                                                         List<Long> recipeIDs){
-        List<Object> resIDs = new ArrayList<>();
+        List<Object> resIDs = new LinkedList<>();
         for(Long i: recipeIDs){
             resIDs.add((Object) i);
         }
-        List<SQLRecipeIngredient> res = new ArrayList<>();
+        List<SQLRecipeIngredient> res = new LinkedList<>();
         try {
             res = this.getElementsIn(db, COLUMN_NAME_INGREDIENT_ID, resIDs);
 
@@ -210,7 +210,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
                 null,
                 null);
 
-        List<Long> ids = new ArrayList<>();
+        List<Long> ids = new LinkedList<>();
         int id_index = cursor.getColumnIndexOrThrow(COLUMN_NAME_RECIPE_ID);
         if(cursor.moveToFirst()) {
             ids.add(cursor.getLong(id_index));
@@ -234,7 +234,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
                 null,
                 null);
 
-        List<Long> ids = new ArrayList<>();
+        List<Long> ids = new LinkedList<>();
         int id_index = cursor.getColumnIndexOrThrow(COLUMN_NAME_INGREDIENT_ID);
         if(cursor.moveToFirst()) {
             ids.add(cursor.getLong(id_index));
@@ -252,11 +252,11 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
 
     public List<SQLRecipeIngredient> getWithIngredientsOnlyFullRecipe(SQLiteDatabase db,
                                                         List<Long> ingIDs){
-        List<Object> resIDs = new ArrayList<>();
+        List<Object> resIDs = new LinkedList<>();
         for(Long i: ingIDs){
             resIDs.add((Object) i);
         }
-        List<SQLRecipeIngredient> res = new ArrayList<>();
+        List<SQLRecipeIngredient> res = new LinkedList<>();
         List<Long> recipeIDs = this.getRecipeIDsWithoutIngs(db, ingIDs);
         try {
             res = this.getElementsNotIn(db, COLUMN_NAME_RECIPE_ID, resIDs);
@@ -298,7 +298,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
                 null,
                 null);
 
-        List<Long> ids = new ArrayList<>();
+        List<Long> ids = new LinkedList<>();
         int id_index = cursor.getColumnIndexOrThrow(COLUMN_NAME_INGREDIENT_ID);
         if(cursor.moveToFirst()) {
             ids.add(cursor.getLong(id_index));
@@ -330,7 +330,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
                 null,
                 null);
 
-        List<Integer> ids = new ArrayList<>();
+        List<Integer> ids = new LinkedList<>();
         int id_index = cursor.getColumnIndexOrThrow(COLUMN_NAME_PUMP_TIME);
         if(cursor.moveToFirst()) {
             ids.add(cursor.getInt(id_index));
@@ -354,7 +354,7 @@ public class RecipeIngredientTable extends BasicColumn<SQLRecipeIngredient> {
         try {
             return this.getElementsWith(db,COLUMN_NAME_RECIPE_ID, String.valueOf(sqlRecipe.getID()));
         } catch (NoSuchColumnException e) {
-            return new ArrayList<>();
+            return new LinkedList<>();
         }
     }
 }

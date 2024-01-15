@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -41,7 +41,7 @@ public class PumpTable extends BasicColumn<SQLPump> {
 
         @Override
         public List<String> getColumns() {
-            List<String> columns = new ArrayList<>();
+            List<String> columns = new LinkedList<>();
             columns.add(this._ID);
             columns.add(COLUMN_NAME_INGREDIENT_ID);
             columns.add(COLUMN_NAME_SLOT_ID);
@@ -50,7 +50,7 @@ public class PumpTable extends BasicColumn<SQLPump> {
 
         @Override
         public List<String> getColumnTypes() {
-            List<String> types = new ArrayList<>();
+            List<String> types = new LinkedList<>();
             types.add(COLUMN_TYPE_ID);
             types.add(COLUMN_TYPE_INGREDIENT_ID);
             types.add(COLUMN_TYPE_SLOT_ID);
@@ -84,9 +84,9 @@ public class PumpTable extends BasicColumn<SQLPump> {
 
     public List<? extends SQLPump> getPumpWithSlot(SQLiteDatabase readableDatabase, int slot) {
         try {
-            return this.getElementsIn(readableDatabase, COLUMN_NAME_SLOT_ID, new ArrayList<Object>(slot));
+            return this.getElementsIn(readableDatabase, COLUMN_NAME_SLOT_ID, new LinkedList<Object>());
         } catch (NoSuchColumnException e) {
-            return new ArrayList<>();
+            return new LinkedList<>();
         }
 
     }

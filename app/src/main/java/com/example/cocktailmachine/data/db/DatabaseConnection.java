@@ -441,12 +441,12 @@ class DatabaseConnection extends SQLiteOpenHelper {
     /*
     private void resetAll(){
        // Log.v(TAG, "resetAll");
-        this.ingredients = new ArrayList<>();
-        this.ingredientPumps = new ArrayList<>();
-        this.topics = new ArrayList<>();
-        this.pumps = new ArrayList<>();
-        this.recipeIngredients = new ArrayList<>();
-        this.recipes = new ArrayList<>();
+        this.ingredients = new LinkedList<>();
+        this.ingredientPumps = new LinkedList<>();
+        this.topics = new LinkedList<>();
+        this.pumps = new LinkedList<>();
+        this.recipeIngredients = new LinkedList<>();
+        this.recipes = new LinkedList<>();
     }
 
 

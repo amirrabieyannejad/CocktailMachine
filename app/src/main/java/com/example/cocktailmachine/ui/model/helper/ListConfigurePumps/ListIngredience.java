@@ -15,7 +15,7 @@ import android.widget.Toast;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Ingredient;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,7 +38,7 @@ public class ListIngredience extends AppCompatActivity implements RecyclerViewLi
         this.context = this;
 
         listIngredients = Ingredient.getAllIngredients(this);
-        filteredListIngredients = new ArrayList<>(listIngredients);
+        filteredListIngredients = new LinkedList<>(listIngredients);
 
 
 

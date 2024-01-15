@@ -24,7 +24,7 @@ import com.example.cocktailmachine.data.db.tables.Tables;
 import com.example.cocktailmachine.data.db.tables.TopicTable;
 import com.example.cocktailmachine.ui.model.enums.ModelType;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -128,7 +128,7 @@ public class GetFromDB {
     static List<SQLRecipeTopic> loadRecipeTopics(Context context, List<Recipe> recipes) {
        // Log.v(TAG, "loadTopics");
         //return Tables.TABLE_TOPIC.getElement(getReadableDatabase(context), needle);
-        List<SQLRecipeTopic> res = new ArrayList<>();
+        List<SQLRecipeTopic> res = new LinkedList<>();
         for(Recipe r: recipes) {
             res.addAll(Tables.TABLE_RECIPE_TOPIC.getTopics(getReadableDatabase(context), r));
         }
@@ -204,7 +204,7 @@ public class GetFromDB {
     }
 
     public static List<SQLRecipeIngredient> loadRecipeIngredientFromRecipe(Context context, Recipe recipe) {
-        List<Long> ids = new ArrayList<>();
+        List<Long> ids = new LinkedList<>();
         ids.add(recipe.getID());
         return Tables.TABLE_RECIPE_INGREDIENT.getWithRecipes(getReadableDatabase(context), ids);
     }
@@ -223,10 +223,10 @@ public class GetFromDB {
 
     public static List<? extends Topic> loadTopics(Context context, List<Long> ids){
         try {
-            List<Object> obj = new ArrayList<>(ids);
+            List<Object> obj = new LinkedList<>(ids);
             return Tables.TABLE_TOPIC.getElementsIn(getReadableDatabase(context), TopicTable._ID,obj);
         } catch (NoSuchColumnException e) {
-            return new ArrayList<>();
+            return new LinkedList<>();
         }
     }
 
@@ -358,7 +358,7 @@ public class GetFromDB {
 
     public static List<String> getIngredientNameNVolumes(Context context, SQLRecipe sqlRecipe) {
         List<SQLRecipeIngredient> q = getRecipeIngredients(context, sqlRecipe);
-        List<String> res = new ArrayList<>();
+        List<String> res = new LinkedList<>();
         for(SQLRecipeIngredient ri: q){
             res.add(ri.getIngredient(context).getName()+": "+ri.getVolume());
         }

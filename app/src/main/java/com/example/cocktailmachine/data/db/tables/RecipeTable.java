@@ -14,7 +14,7 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -54,12 +54,12 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
             Log.e("RecipeTable", "getElement", e);
             Log.getStackTraceString(e);
         }
-        return new ArrayList<>();
+        return new LinkedList<>();
     }
 
     @Override
     public List<String> getColumns() {
-        List<String> columns = new ArrayList<>();
+        List<String> columns = new LinkedList<>();
         columns.add(this._ID);
         columns.add(COLUMN_NAME_NAME);
         columns.add(COLUMN_NAME_ALCOHOLIC);
@@ -69,7 +69,7 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
 
     @Override
     public List<String> getColumnTypes() {
-        List<String> columns = new ArrayList<>();
+        List<String> columns = new LinkedList<>();
         columns.add(COLUMN_TYPE_ID);
         columns.add(COLUMN_TYPE_NAME);
         columns.add(COLUMN_TYPE_ALCOHOLIC);
@@ -82,7 +82,7 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
         try {
             return this.getIDsWith(db, COLUMN_NAME_AVAILABLE, "true");
         } catch (NoSuchColumnException e) {
-            return new ArrayList<>();
+            return new LinkedList<>();
         }
     }
 
@@ -111,7 +111,7 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
             return this.getElementsWith(db, COLUMN_NAME_AVAILABLE, String.valueOf(1));
         } catch (NoSuchColumnException e) {
             Log.e(TAG, "error", e);
-            return new ArrayList<>();
+            return new LinkedList<>();
         }
     }
 

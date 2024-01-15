@@ -42,7 +42,7 @@ import com.example.cocktailmachine.ui.model.enums.ModelType;
 
 import org.json.JSONException;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -638,7 +638,7 @@ public class GetDialog {
             GetActivity.goToMenu(activity);
             return;
         }
-        ArrayList<String> topicsName = new ArrayList<>();
+        LinkedList<String> topicsName = new LinkedList<>();
         for(Topic t: topics){
             topicsName.add(t.getName());
         }
@@ -1232,7 +1232,7 @@ public class GetDialog {
             builder.setTitle("Setze die Zutat für Slot "+pump.getSlot()+":");
 
             List<Ingredient> ingredients = Ingredient.getAllIngredients(activity);
-            ArrayList<String> names = new ArrayList<>();
+            LinkedList<String> names = new LinkedList<>();
             for(Ingredient ingredient: ingredients){
                 names.add(ingredient.getName());
             }
@@ -2032,7 +2032,7 @@ public class GetDialog {
             builder.setTitle("Setze die Zutat für Slot"+pump.getSlot()+":");
 
             List<Ingredient> ingredients = Ingredient.getAllIngredients(activity);
-            ArrayList<String> names = new ArrayList<>();
+            LinkedList<String> names = new LinkedList<>();
             for(Ingredient ingredient: ingredients){
                 names.add(ingredient.getName());
             }
@@ -2879,7 +2879,7 @@ public class GetDialog {
 
         builder.setMessage("Wähle eine Zutat!");
 
-        ArrayList<String> displayValues=new ArrayList<>();
+        LinkedList<String> displayValues=new LinkedList<>();
         for (Ingredient entity : ingredients) {
             displayValues.add(entity.getName());
         }

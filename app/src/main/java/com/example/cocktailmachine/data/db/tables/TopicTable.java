@@ -12,7 +12,7 @@ import com.example.cocktailmachine.data.db.Helper;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,7 +44,7 @@ public class TopicTable extends BasicColumn<SQLTopic>{
             Log.e(TAG, "getElement needle ", e);
             Log.getStackTraceString(e);
         }
-        return new ArrayList<>();
+        return new LinkedList<>();
     }
     public SQLTopic getElement(SQLiteDatabase db, String needle){
         List<SQLTopic> t = getElements(db, needle);
@@ -56,7 +56,7 @@ public class TopicTable extends BasicColumn<SQLTopic>{
 
     @Override
     public List<String> getColumns() {
-        List<String> columns = new ArrayList<>();
+        List<String> columns = new LinkedList<>();
         columns.add(this._ID);
         columns.add(COLUMN_NAME_NAME);
         columns.add(COLUMN_NAME_DESCRIPTION);
@@ -65,7 +65,7 @@ public class TopicTable extends BasicColumn<SQLTopic>{
 
     @Override
     public List<String> getColumnTypes() {
-        List<String> columns = new ArrayList<>();
+        List<String> columns = new LinkedList<>();
         columns.add(COLUMN_TYPE_ID);
         columns.add(COLUMN_TYPE_NAME);
         columns.add(COLUMN_TYPE_DESCRIPTION);
@@ -141,7 +141,7 @@ public class TopicTable extends BasicColumn<SQLTopic>{
     }
 
     private List<String> cursorToNames(Cursor cursor){
-        ArrayList<String> res = new ArrayList<>();
+        LinkedList<String> res = new LinkedList<>();
         if(cursor.moveToFirst()) {
             res.add(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME_NAME)));
             while (cursor.moveToNext()) {

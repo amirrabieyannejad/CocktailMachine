@@ -23,7 +23,7 @@ import com.example.cocktailmachine.ui.model.helper.WaitingQueueCountDown;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,9 +34,9 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
     //private HashMap<Long, Integer> ingredientVolume;
     private boolean alcoholic = false;
     private boolean available = true;
-    private List<SQLRecipeImageUrlElement> imageUrls = new ArrayList<>();
-    //private List<Long> topics = new ArrayList<>();
-    //private List<SQLRecipeIngredient> ingredientVolumes = new ArrayList<>();
+    private List<SQLRecipeImageUrlElement> imageUrls = new LinkedList<>();
+    //private List<Long> topics = new LinkedList<>();
+    //private List<SQLRecipeIngredient> ingredientVolumes = new LinkedList<>();
 
 
 

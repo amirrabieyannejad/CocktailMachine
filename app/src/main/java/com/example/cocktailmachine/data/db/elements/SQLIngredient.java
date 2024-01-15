@@ -18,12 +18,12 @@ import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpExcep
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
     private String name = "";
-    private List<String> imageUrls = new ArrayList<>();
+    private List<String> imageUrls = new LinkedList<>();
     private final boolean urlsLoaded = false;
     private boolean alcoholic;
     private boolean available = false;
@@ -138,7 +138,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         //TODO: add urls
         //this.imageUrls = DatabaseConnection.getDataBase().getUrls(this);
         //if(this.imageUrls == null){
-        this.imageUrls = new ArrayList<>();
+        this.imageUrls = new LinkedList<>();
         //}
     }
 

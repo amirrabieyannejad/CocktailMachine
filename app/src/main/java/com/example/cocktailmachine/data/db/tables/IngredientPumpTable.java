@@ -13,7 +13,7 @@ import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -43,7 +43,7 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
 
     @Override
     public List<String> getColumns() {
-        List<String> columns = new ArrayList<>();
+        List<String> columns = new LinkedList<>();
         columns.add(this._ID);
         columns.add(COLUMN_NAME_PUMP_ID);
         columns.add(COLUMN_NAME_INGREDIENT_ID);
@@ -54,7 +54,7 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
 
     @Override
     public List<String> getColumnTypes() {
-        List<String> columns = new ArrayList<>();
+        List<String> columns = new LinkedList<>();
         columns.add(COLUMN_TYPE_ID);
         columns.add(COLUMN_TYPE_INGREDIENT_ID);
         columns.add(COLUMN_TYPE_PUMP_ID);
@@ -65,7 +65,7 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
     @Override
     protected List<Long> getAvailableIDs(SQLiteDatabase db) {
 
-        return new ArrayList<>();
+        return new LinkedList<>();
     }
 
     @Override
@@ -91,7 +91,7 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
         try {
             return this.getElementsWith(db, COLUMN_NAME_PUMP_ID, String.valueOf(pump.getID()));
         } catch (NoSuchColumnException e) {
-            return new ArrayList<>();
+            return new LinkedList<>();
         }
     }
 
@@ -99,7 +99,7 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
         try {
             return this.getElementsWith(db, COLUMN_NAME_INGREDIENT_ID, String.valueOf(ingredient.getID()));
         } catch (NoSuchColumnException e) {
-            return new ArrayList<>();
+            return new LinkedList<>();
         }
     }
 
@@ -137,7 +137,7 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
      */
     private List<Long> cursorToIngredientIDList(Cursor cursor){
         // Log.v(TAG, "cursorToList");
-        List<Long> res = new ArrayList<>();
+        List<Long> res = new LinkedList<>();
         int id_index = cursor.getColumnIndexOrThrow(COLUMN_NAME_INGREDIENT_ID);
         if(cursor.moveToFirst()) {
             res.add(cursor.getLong(id_index));

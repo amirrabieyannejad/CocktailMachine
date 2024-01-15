@@ -13,7 +13,7 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -40,7 +40,7 @@ public class RecipeTopicTable extends BasicColumn<SQLRecipeTopic> {
 
     @Override
     public List<String> getColumns() {
-        List<String> columns = new ArrayList<>();
+        List<String> columns = new LinkedList<>();
         columns.add(this._ID);
         columns.add(COLUMN_NAME_RECIPE_ID);
         columns.add(COLUMN_NAME_TOPIC_ID);
@@ -49,7 +49,7 @@ public class RecipeTopicTable extends BasicColumn<SQLRecipeTopic> {
 
     @Override
     public List<String> getColumnTypes() {
-        List<String> columns = new ArrayList<>();
+        List<String> columns = new LinkedList<>();
         columns.add(COLUMN_TYPE_ID);
         columns.add(COLUMN_TYPE_RECIPE_ID);
         columns.add(COLUMN_TYPE_TOPIC_ID);
@@ -59,7 +59,7 @@ public class RecipeTopicTable extends BasicColumn<SQLRecipeTopic> {
     @Override
     protected List<Long> getAvailableIDs(SQLiteDatabase db) {
 
-        return new ArrayList<>();
+        return new LinkedList<>();
     }
 
     @Override
@@ -80,7 +80,7 @@ public class RecipeTopicTable extends BasicColumn<SQLRecipeTopic> {
 
     public List<SQLRecipeTopic> getElements(SQLiteDatabase db, Recipe recipe) {
         if(recipe == null){
-            return new ArrayList<>();
+            return new LinkedList<>();
         }
         try {
             return this.getElementsWith(db, COLUMN_NAME_RECIPE_ID, Long.toString(recipe.getID()));
@@ -88,13 +88,13 @@ public class RecipeTopicTable extends BasicColumn<SQLRecipeTopic> {
             //Log.v(TAG, "getTopics error");
             Log.e(TAG, "getTopics", e);
             Log.getStackTraceString(e);
-            return new ArrayList<>();
+            return new LinkedList<>();
         }
     }
 
     public List<Long> getTopicIDs(SQLiteDatabase db, Recipe recipe) {
         if(recipe == null){
-            return new ArrayList<>();
+            return new LinkedList<>();
         }
         try {
             //return this.getElementsWith(db, COLUMN_NAME_RECIPE_ID, Long.toString(recipe.getID()));
@@ -118,11 +118,11 @@ public class RecipeTopicTable extends BasicColumn<SQLRecipeTopic> {
             //Log.v(TAG, "getTopics error");
             Log.e(TAG, "getTopics", e);
             Log.getStackTraceString(e);
-            return new ArrayList<>();
+            return new LinkedList<>();
         }
     }
     private List<Long> cursorToTopicIDs(Cursor cursor) {
-        List<Long> res = new ArrayList<>();
+        List<Long> res = new LinkedList<>();
         if(cursor.moveToFirst()) {
             res.add(cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_NAME_TOPIC_ID)));
             while (cursor.moveToNext()) {
@@ -140,7 +140,7 @@ public class RecipeTopicTable extends BasicColumn<SQLRecipeTopic> {
             return this.getElementsWith(readableDatabase,
                     COLUMN_NAME_RECIPE_ID, Long.toString(recipe.getID()));
         } catch (NoSuchColumnException e) {
-            return new ArrayList<>();
+            return new LinkedList<>();
         }
     }
 

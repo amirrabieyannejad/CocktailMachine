@@ -18,7 +18,7 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.ui.model.helper.ListConfigurePumps.RecyclerViewListenerListIngredience;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -52,7 +52,7 @@ public class ConfigurePumps implements RecyclerViewListenerListIngredience {
         //mapIngredients = Ingredient.getPumpSet(activity);
 
 
-        filteredListIngredients = new ArrayList<>(listIngredients);
+        filteredListIngredients = new LinkedList<>(listIngredients);
         //filteredMapIngredients = new HashMap<>(mapIngredients);
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);

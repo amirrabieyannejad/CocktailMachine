@@ -22,7 +22,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -142,11 +142,11 @@ public class CocktailMachine {
         res = res.replace("[","");
         res = res.replace("]","");
         if(res.length()==0){
-            queue = new ArrayList<>();
+            queue = new LinkedList<>();
             currentUser = -1;
         }
         String[] users = res.split(",");
-        queue = new ArrayList<Integer>();
+        queue = new LinkedList<Integer>();
         for (String number : users) {
             queue.add(Integer.parseInt(number.trim()));
         }

@@ -2,7 +2,7 @@ package com.example.cocktailmachine.data.db.tables;
 
 import android.database.sqlite.SQLiteDatabase;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -46,7 +46,7 @@ public class Tables {
      * @author Johanna Reidt
      */
     private static List<String> getCreateCmds(){
-        List<String> res = new ArrayList<>();
+        List<String> res = new LinkedList<>();
         res.add(TABLE_RECIPE.createTableCmd());
         res.add(TABLE_INGREDIENT.createTableCmd());
         res.add(TABLE_RECIPE_URL.createTableCmd());
@@ -65,7 +65,7 @@ public class Tables {
      * @return list of sql cmds as strings, that delete each a table
      */
     private static List<String> getDeleteCmds(){
-        List<String> res = new ArrayList<>();
+        List<String> res = new LinkedList<>();
         res.add(TABLE_RECIPE.deleteTableCmd());
         res.add(TABLE_INGREDIENT.deleteTableCmd());
         res.add(TABLE_RECIPE_URL.deleteTableCmd());
