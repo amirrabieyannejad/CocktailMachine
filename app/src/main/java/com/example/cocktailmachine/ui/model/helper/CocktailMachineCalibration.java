@@ -36,17 +36,18 @@ public class CocktailMachineCalibration {
     }
 
     public void start(Activity activity) {
+        //TODO: force of automation -> ???
         Log.v(TAG, "start");
-        Dialog wait = GetDialog.loadingBluetooth(activity);
-        wait.show();
+        //Dialog wait = GetDialog.loadingBluetooth(activity);
+        //wait.show();
         ExtraHandlingDB.loadForSetUp(activity);
         Log.v(TAG, "start: loaded db");
-        wait.cancel();
+        //wait.cancel();
         AdminRights.login(activity, activity.getLayoutInflater(), dialog -> {
             Log.v(TAG, "start: login canceling");
 
-            Dialog wait_blue = GetDialog.loadingBluetooth(activity);
-            wait_blue.show();
+            //Dialog wait_blue = GetDialog.loadingBluetooth(activity);
+            //wait_blue.show();
             AdminRights.initUser(activity, String.valueOf(new Random().nextInt()), new Postexecute() {
                 @Override
                 public void post() {
