@@ -166,7 +166,7 @@ public class Menue extends AppCompatActivity {
 
     /**
      * open single cocktail choice
-     * TODO: put in respective place and delete here
+     * TO DO: put in respective place and delete here
      * @author Wieber
      * @param view
      */
@@ -179,7 +179,7 @@ public class Menue extends AppCompatActivity {
 
     /**
      * opens GlassFillAnimation
-     * TODO: put in respective place and delete here
+     * TO DO: put in respective place and delete here
      * @author  Wieber
      * @param view
      */
@@ -193,7 +193,7 @@ public class Menue extends AppCompatActivity {
 
     /**
      * opens Grafik
-     * TODO: put in respective place and delete here
+     * TO DO: put in respective place and delete here
      * @author Wieber
      * @param view
      */
@@ -259,7 +259,7 @@ public class Menue extends AppCompatActivity {
 
     /**
      *  ????????
-     * TODO: dont know the use
+     * TO DO: dont know the use
      * @author Wieber
      * @param view
      */
@@ -272,7 +272,7 @@ public class Menue extends AppCompatActivity {
 
     /**
      * opens BluetoothTestEnviroment
-     * TODO: put in respective place and delete here
+     * TO DO: put in respective place and delete here
      * @author Wieber
      * @param view
      */
