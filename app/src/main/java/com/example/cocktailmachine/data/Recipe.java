@@ -608,6 +608,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
                     @Override
                     public void post() {
                         ExtraHandlingDB.localRefresh(activity);
+                        Log.i(TAG, "syncRecipeDBWithCocktailmachine: done");
                     }
                 });
             }

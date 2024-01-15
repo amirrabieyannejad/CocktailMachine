@@ -983,7 +983,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         readPumpStatus(activity, new Postexecute() {
             @Override
             public void post() {
-                ExtraHandlingDB.localRefresh(activity);
+                //ExtraHandlingDB.localRefresh(activity);
+                Log.i(TAG, "sync: done" );
             }
         });
     }
