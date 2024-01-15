@@ -154,6 +154,7 @@ public class DisplayActivity extends BasicActivity {
             binding.textViewDisplayDescription.setVisibility(View.VISIBLE);
             return;
         }
+        ingredient.loadAvailable(this);
         binding.textViewDisplayTitle.setText(ingredient.getName());
         binding.textViewDisplayTitle.setVisibility(View.VISIBLE);
         //TO DO: AlertDialog to change title if admin

@@ -283,6 +283,14 @@ public class GetFromDB {
         return res.get(0);
     }
 
+    public static SQLIngredientPump getIngredientPump(Context context,SQLIngredient ingredient) {
+        List<SQLIngredientPump> res = Tables.TABLE_INGREDIENT_PUMP.getElements(getReadableDatabase(context), ingredient);
+        if(res.isEmpty()){
+            return null;
+        }
+        return res.get(0);
+    }
+
     public static SQLRecipeTopic getRecipeTopic(Context context, Recipe recipe, Topic topic) {
         try {
             List<SQLRecipeTopic> res = Tables.TABLE_RECIPE_TOPIC.getElements(getReadableDatabase(context), recipe, topic);

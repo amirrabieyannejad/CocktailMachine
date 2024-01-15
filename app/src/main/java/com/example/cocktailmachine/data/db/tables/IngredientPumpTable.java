@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.cocktailmachine.data.Pump;
+import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
@@ -89,6 +90,14 @@ public class IngredientPumpTable extends BasicColumn<SQLIngredientPump> {
     public List<SQLIngredientPump> getElements(SQLiteDatabase db, Pump pump){
         try {
             return this.getElementsWith(db, COLUMN_NAME_PUMP_ID, String.valueOf(pump.getID()));
+        } catch (NoSuchColumnException e) {
+            return new ArrayList<>();
+        }
+    }
+
+    public List<SQLIngredientPump> getElements(SQLiteDatabase db, SQLIngredient ingredient){
+        try {
+            return this.getElementsWith(db, COLUMN_NAME_INGREDIENT_ID, String.valueOf(ingredient.getID()));
         } catch (NoSuchColumnException e) {
             return new ArrayList<>();
         }

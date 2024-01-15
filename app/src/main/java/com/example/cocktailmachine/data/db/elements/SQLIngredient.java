@@ -187,21 +187,25 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
 
     @Override
     public boolean loadAvailable(Context context) {
+        loadSQLIngredientPump(context);
         loadAvailable();
         this.save(context);
         return isAvailable();
     }
 
+    private void loadSQLIngredientPump(Context context){
+        this.ingredientPump = GetFromDB.getIngredientPump(context, this);
+    }
+
     /**
-     * true, if ingredient pump connection exists and pump filled with conntent
-     * @return
+     * true, if ingredient pump connection exists and pump filled with content
      */
-    public boolean loadAvailable() {
-        //TODO
-       // Log.v(TAG, "loadAvailable");
+    private void loadAvailable() {
+        //TO DO
+        // Log.v(TAG, "loadAvailable");
         //this.checkIngredientPumps();
         boolean res = false;
-       // Log.v(TAG,"loadAvailable: check all ingredientpumps for availability");
+        // Log.v(TAG,"loadAvailable: check all ingredientpumps for availability");
         if(this.ingredientPump != null){
             res = this.ingredientPump.isAvailable();
         }
@@ -211,7 +215,6 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
             //Buffer.getSingleton().available(this, this.available);
             this.wasChanged();
         }
-        return isAvailable();
     }
 
     @Override
