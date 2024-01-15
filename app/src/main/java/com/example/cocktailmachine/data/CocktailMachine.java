@@ -317,11 +317,11 @@ public class CocktailMachine {
                 public void post() {
                     Log.i(TAG, "isCocktailMachineSet: post");
                     if(CocktailMachineCalibration.getSingleton().isIsDone()){
-                        Log.i(TAG, "isCocktailMachineSet: NOT SET");
-                        notSet.post();
-                    }else{
                         Log.i(TAG, "isCocktailMachineSet: SET");
                         set.post();
+                    }else{
+                        Log.i(TAG, "isCocktailMachineSet: NOT SET");
+                        notSet.post();
                     }
                 }
             });
