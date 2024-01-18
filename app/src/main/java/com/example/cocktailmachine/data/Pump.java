@@ -1121,7 +1121,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     static Pump getPumpWithSlot(Context context, int slot) {
         Pump p =  GetFromDB.loadPumpWithSlot(context, slot);
-        p.loadAvailable(context);
+        if(p!=null) {
+            p.loadAvailable(context);
+        }
         return p;
     }
 

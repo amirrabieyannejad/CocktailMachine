@@ -1005,6 +1005,26 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
     }
 
     public List<Long> getIDsWith(SQLiteDatabase db,
+                                 String column_name)
+            throws NoSuchColumnException {
+        if(!getColumns().contains(column_name)){
+            throw new NoSuchColumnException(getName(), column_name);
+        }
+        Cursor cursor = db.query(true,
+                this.getName(),
+                getColumns().toArray(new String[0]),
+                column_name,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+        List<Long> res =  this.cursorToIDList(cursor);
+        db.close();
+        return res;
+    }
+    public List<Long> getIDsWith(SQLiteDatabase db,
                                    String column_name,
                                    String equalsThis)
             throws NoSuchColumnException {
