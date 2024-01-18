@@ -214,6 +214,7 @@ public class DisplayActivity extends BasicActivity {
             binding.textViewDisplayDescription.setVisibility(View.VISIBLE);
             return;
         }
+        topic.loadAvailable(this);
         binding.textViewDisplayTitle.setText(topic.getName());
         binding.textViewDisplayTitle.setVisibility(View.VISIBLE);
 
@@ -260,6 +261,7 @@ public class DisplayActivity extends BasicActivity {
             binding.textViewDisplayDescription.setVisibility(View.VISIBLE);
             return;
         }
+        pump.loadAvailable(this);
         Log.i(TAG, "Pump: "+pump.toString());
         binding.textViewDisplayTitle.setText("Slot: "+ pump.getID());
         //TO DO: AlertDialog to change title if admin ----NOT BECAUSE PUMP NO NAME
