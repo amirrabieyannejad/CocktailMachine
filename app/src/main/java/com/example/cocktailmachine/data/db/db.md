@@ -2,6 +2,13 @@
 
 TODO:#
 
+
+TODO: 
+- registrierung pumpen -> schlägt fehl
+- Pumpen überarbeiten
+
+
+
 WritingQueue checken nach on Finish bluetooth abfragen
 Passwortfeld in Login wird nicht ausgeblendet
 -> ????

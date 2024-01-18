@@ -1087,6 +1087,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     static List<Pump> getPumps(Context context){
         List<Pump> pumps =  (List<Pump>) GetFromDB.loadPumps(context);
         for(Pump p: pumps){
+            p.loadAvailable(context);
             Log.w(TAG, "p name"+p.getIngredientName(context));
         }
         return pumps;
@@ -1119,7 +1120,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @return
      */
     static Pump getPumpWithSlot(Context context, int slot) {
-        return GetFromDB.loadPumpWithSlot(context, slot);
+        Pump p =  GetFromDB.loadPumpWithSlot(context, slot);
+        p.loadAvailable(context);
+        return p;
     }
 
 }
