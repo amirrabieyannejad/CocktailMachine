@@ -40,7 +40,7 @@ public class MachineSettingsActivity extends AppCompatActivity {
 
     public void newCalibration(View view){
 
-        //TODO: do this in Machine Settings
+        //TO DO: do this in Machine Settings
         CocktailMachine.factoryReset(this);
         //CocktailMachineCalibration.getSingleton().start(this);
     }

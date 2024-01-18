@@ -36,7 +36,7 @@ public class CocktailMachineCalibration {
     }
 
     public void start(Activity activity) {
-        //TODO: force of automation -> ???
+        //TO DO: force of automation -> ???
         //TODO: wait dialog ??? besonderes neu Kalibrierung
         Log.v(TAG, "start");
         //Dialog wait = GetDialog.loadingBluetooth(activity);
