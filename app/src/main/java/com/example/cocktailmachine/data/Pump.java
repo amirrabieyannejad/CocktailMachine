@@ -367,6 +367,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         CocktailMachineCalibration.getSingleton().setIsDone(true);
         try {
             Iterator<String> t_ids = json.keys();
+            if(!t_ids.hasNext()){
+                CocktailMachineCalibration.getSingleton().setIsDone(false);
+            }
             while (t_ids.hasNext()){
                 String key = t_ids.next();
                 JSONObject jsonTemp = json.getJSONObject(key);
@@ -1103,7 +1106,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @return
      */
     static Pump getPump(Context context, long id) {
-        return GetFromDB.loadPump(context, id);
+        Pump p = GetFromDB.loadPump(context, id);
+        p.loadAvailable(context);
+        return p;
     }
 
     /**
