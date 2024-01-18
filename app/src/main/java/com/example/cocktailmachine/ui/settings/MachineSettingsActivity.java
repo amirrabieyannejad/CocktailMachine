@@ -15,7 +15,6 @@ import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.data.enums.CocktailStatus;
 import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
-import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
 
 /**
@@ -42,7 +41,7 @@ public class MachineSettingsActivity extends AppCompatActivity {
     public void newCalibration(View view){
 
         //TODO: do this in Machine Settings
-        GetActivity.waitNotSet(this);
+        CocktailMachine.factoryReset(this);
         //CocktailMachineCalibration.getSingleton().start(this);
     }
 

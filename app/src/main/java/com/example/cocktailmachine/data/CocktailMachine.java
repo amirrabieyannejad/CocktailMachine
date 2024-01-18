@@ -1310,6 +1310,7 @@ public class CocktailMachine {
      */
     /**
      * factory Reset for the cocktailmachine
+     *
      * @param activity
      * @author Johanna Reidt
      */
@@ -1319,14 +1320,14 @@ public class CocktailMachine {
         Toast.makeText(activity,
                 "Die Cocktailmachine wird auf Werkseinstellungen zurückgesetzt.",
                 Toast.LENGTH_SHORT).show();
-        DeleteFromDB.removeAll(activity);
-        Log.i(TAG, "factoryReset: db complete delete");
+        //DeleteFromDB.removeAll(activity);
+        //Log.i(TAG, "factoryReset: db complete delete");
         if(Dummy.isDummy){
             Log.i(TAG, "factoryReset: dummy");
             Toast.makeText(activity,"Erfolgreich zurückgesetzt!", Toast.LENGTH_SHORT).show();
             CocktailMachineCalibration.getSingleton().setIsDone(false);
             Log.i(TAG, "factoryReset: dummy: CocktailMachineCalibration.setIsDone(false)");
-            GetActivity.goToMenu(activity, true);
+            GetActivity.waitNotSet(activity);
             Log.i(TAG, "factoryReset: dummy: clear stack, go to menu, all pumps empty, all recipes deleted");
         }
 
@@ -1339,7 +1340,7 @@ public class CocktailMachine {
                             Toast.makeText(activity,"Erfolgreich zurückgesetzt!", Toast.LENGTH_SHORT).show();
                             CocktailMachineCalibration.getSingleton().setIsDone(false);
                             Log.i(TAG, "factoryReset: CocktailMachineCalibration.setIsDone(false)");
-                            GetActivity.goToMenu(activity, true);
+                            GetActivity.waitNotSet(activity);
                             Log.i(TAG, "factoryReset: clear stack, go to menu, all pumps empty, all recipes deleted");
                         }
                     });
