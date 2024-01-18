@@ -263,12 +263,6 @@ public class SettingsActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void newCalibration(View view){
-
-        //TODO: do this in Machine Settings
-        //GetActivity.waitNotSet(this);
-        CocktailMachineCalibration.getSingleton().start(this);
-    }
 
 
 
