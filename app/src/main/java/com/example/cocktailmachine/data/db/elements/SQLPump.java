@@ -13,6 +13,7 @@ import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
+import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
 
 import java.util.List;
 
@@ -57,13 +58,14 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
      */
     @Override
     public String getIngredientName(Context context) {
-        loadIngredientPump(context);
+        //loadIngredientPump(context);
         return this.loadedIngredientName;
 
         //return "Keine Zutat";
     }
 
-    private void loadIngredientPump(Context context){
+    /*
+    private void //loadIngredientPump(Context context){
         this.ingredientPump = GetFromDB.getIngredientPump(context, this);//Buffer.getSingleton(context).getIngredientPump(this);
         if(this.ingredientPump!=null) {
             Ingredient temp = this.ingredientPump.getIngredient(context);
@@ -75,13 +77,17 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         }
     }
 
+     */
+
     /**
      * get current volume
      * or -1
      * @author Johanna Reidt
      * @return
      */
-    private int getVolume() {
+
+    @Override
+    public int getVolume() {
         //this.setIngredientPumps();
 
         if(this.ingredientPump!=null) {
@@ -89,6 +95,21 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         }
        // Log.v(TAG, "getVolume: no ingredient pump");
         return -1;
+    }
+
+    @Override
+    public void deleteCurrentIngredient(Context context) {
+        this.ingredientPump.delete(context);
+        this.ingredientID = -1L;
+        this.loadedIngredientVolume = -1;
+        this.loadedIngredientName = "Keine Zutat";
+        this.save(context);
+
+    }
+
+    @Override
+    public void pump(int volume) throws NewlyEmptyIngredientException, MissingIngredientPumpException {
+
     }
 
     @Override
@@ -214,7 +235,7 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     @Override
     public int getVolume(Context context) {
         if(this.ingredientPump == null) {
-            loadIngredientPump(context);
+            //loadIngredientPump(context);
             return this.loadedIngredientVolume;
         }
         return this.ingredientPump.getVolume();
