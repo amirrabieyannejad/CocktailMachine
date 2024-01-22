@@ -81,7 +81,11 @@ public class NewPumpTable extends BasicColumn<SQLNewPump>{
 
     @Override
     public ContentValues makeContentValues(SQLNewPump element) {
-        return null;
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_NAME_INGREDIENT_ID, element.getID());
+        cv.put(COLUMN_NAME_VOLUME, element.getVolume());
+        cv.put(COLUMN_NAME_SLOT_ID, element.getSlot());
+        return cv;
     }
 
     public List<? extends Pump> getPumpWithSlot(SQLiteDatabase db, int slot) {
