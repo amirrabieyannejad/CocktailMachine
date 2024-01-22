@@ -27,6 +27,9 @@ public class SQLNewPump extends SQLDataBaseElement implements Pump {
     private String loadedIngredientName = "Keine Zutat";
     private Ingredient loadedIngredient = null;
 
+    public SQLNewPump() {
+        super(-1L);
+    }
     public SQLNewPump(long id, int slotID, long ingID, int volume) {
         super(id);
         this.slot = slotID;

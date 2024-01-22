@@ -16,8 +16,8 @@ import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientExcept
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
-import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
-import com.example.cocktailmachine.data.db.elements.SQLPump;
+//import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
+//import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.tables.BasicColumn;
 import com.example.cocktailmachine.data.enums.CocktailStatus;
 import com.example.cocktailmachine.data.enums.Postexecute;
@@ -303,7 +303,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     static Pump makeNew() {
         Log.i(TAG, "makeNew");
-        return new SQLPump();
+        return new SQLNewPump();
     }
 
     /**
@@ -399,7 +399,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
                 Pump pump = getPumpWithSlot(context,slot);
                 if(pump == null){
-                    pump = new SQLPump();
+                    pump = new SQLNewPump();
                 }
                 pump.setSlot(slot);
                 //pump.setMinimumPumpVolume();
