@@ -333,9 +333,9 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     @Override
     public void save(Context context) {
 
-       Log.v(TAG, "save: "+this);
-       Log.v(TAG, "save: "+this.ingredientPump);
-        AddOrUpdateToDB.addOrUpdate(context,this);
+        Log.v(TAG, "save: "+this);
+        Log.v(TAG, "save: "+this.ingredientPump);
+        //AddOrUpdateToDB.addOrUpdate(context,this);
         //this.setIngredientPumps(context);
         if(this.ingredientPump != null) {
             this.ingredientPump.setPumpID(this.getID());
