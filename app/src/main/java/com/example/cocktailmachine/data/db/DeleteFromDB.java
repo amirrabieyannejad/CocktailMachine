@@ -53,9 +53,18 @@ public class DeleteFromDB {
     public static void remove(Context context, Pump pump) {
         //TO DO: check available
        // Log.v(TAG, "remove");
-        Tables.TABLE_PUMP.deleteElement(getWritableDatabase(context), pump.getID());
-        SQLIngredientPump ip = GetFromDB.getIngredientPump(context, pump);
-        Tables.TABLE_INGREDIENT_PUMP.deleteElement(getWritableDatabase(context), ip ); //Buffer.getSingleton().getIngredientPump(pump));
+
+
+        //Tables.TABLE_PUMP.deleteElement(getWritableDatabase(context), pump.getID());
+        //SQLIngredientPump ip = GetFromDB.getIngredientPump(context, pump);
+        //Tables.TABLE_INGREDIENT_PUMP.deleteElement(getWritableDatabase(context), ip ); //Buffer.getSingleton().getIngredientPump(pump));
+        Tables.TABLE_NEW_PUMP.deleteElement(getWritableDatabase(context), pump.getID());
+
+
+
+
+
+
         //Buffer.getSingleton(context).removeFrom//Buffer(pump);
         /*
         16:44:24.078 E FATAL EXCEPTION: main

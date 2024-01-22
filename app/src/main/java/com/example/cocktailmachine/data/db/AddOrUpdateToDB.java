@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
+import com.example.cocktailmachine.data.db.elements.SQLNewPump;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
@@ -185,4 +186,20 @@ public class AddOrUpdateToDB {
     }
 
 
+    public static void addOrUpdate(Context context, SQLNewPump sqlNewPump) {
+        // Log.v(TAG, "addOrUpdate: "+ingredientImageUrlElement);
+        if(sqlNewPump.getID() != -1){
+            // Log.v(TAG, "was saved and needs update");
+            Tables.TABLE_NEW_PUMP.updateElement(getWritableDatabase(context), sqlNewPump);
+            sqlNewPump.wasSaved();
+        }else{
+            // Log.v(TAG, "first time saving");
+            sqlNewPump.setID(
+                    Tables.TABLE_NEW_PUMP.addElement(
+                            getWritableDatabase(context),
+                            sqlNewPump));
+            sqlNewPump.wasSaved();
+        }
+        //TO DO: //Buffer.getSingleton(context).addToBuffer(ingredientImageUrlElement);
+    }
 }

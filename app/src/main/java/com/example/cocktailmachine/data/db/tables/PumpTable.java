@@ -26,7 +26,7 @@ public class PumpTable extends BasicColumn<SQLPump> {
     public static final String COLUMN_NAME_INGREDIENT_ID = "IngredientID";
     public static final String COLUMN_NAME_SLOT_ID = "SlotID";
 
-        public static final String COLUMN_TYPE_ID = TYPE_ID;
+    public static final String COLUMN_TYPE_ID = TYPE_ID;
     public static final String COLUMN_TYPE_INGREDIENT_ID = TYPE_LONG;
     public static final String COLUMN_TYPE_SLOT_ID = TYPE_INTEGER;
 

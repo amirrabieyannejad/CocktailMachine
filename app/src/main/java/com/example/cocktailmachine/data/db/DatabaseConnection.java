@@ -48,7 +48,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
     private static DatabaseConnection singleton = null;
     private static final String DBname = "DB.db";
     private static final String TAG = "DatabaseConnection";
-    private static int version = 1;
+    private static int version = 2;
     private static final SQLiteDatabase.CursorFactory factory = null;
     private static boolean loaded = false;
 
