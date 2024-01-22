@@ -12,6 +12,7 @@ import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class SQLIngredientPump extends SQLDataBaseElement {
@@ -132,7 +133,8 @@ public class SQLIngredientPump extends SQLDataBaseElement {
 
     private static List<SQLIngredientPump> getAvailableInstances(Context context){
         //TO DO
-        return GetFromDB.getIngredientPumps(context);
+        //return GetFromDB.getIngredientPumps(context);
+        return new LinkedList<>();
     }
 
 

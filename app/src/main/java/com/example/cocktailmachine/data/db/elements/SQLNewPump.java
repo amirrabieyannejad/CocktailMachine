@@ -10,6 +10,7 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
+import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
 
 /**
  * @author Johanna Reidt
@@ -90,7 +91,7 @@ public class SQLNewPump extends SQLDataBaseElement implements Pump {
         this.ingredientID = id;
     }
 
-    @Override
+/*
     public void setIngredientPump(Context context, SQLIngredientPump ingredientPump) {
         if(ingredientPump == null){
             return;
@@ -101,9 +102,28 @@ public class SQLNewPump extends SQLDataBaseElement implements Pump {
         return;
     }
 
+ */
+
     @Override
     public void setSlot(int i) {
         this.slot = i;
+    }
+
+    @Override
+    public int getVolume() {
+        return this.volume;
+    }
+
+    @Override
+    public void deleteCurrentIngredient(Context context) {
+        this.ingredientID = -1L;
+        this.wasChanged();
+        this.save(context);
+    }
+
+    @Override
+    public void pump(int volume) throws NewlyEmptyIngredientException, MissingIngredientPumpException {
+
     }
 
     @Override
