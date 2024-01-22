@@ -101,7 +101,7 @@ public class SQLIngredientPump extends SQLDataBaseElement {
 
     @Override
     public boolean loadAvailable(Context context) {
-        boolean available = ExtraHandlingDB.loadAvailability(context, this);
+        boolean available = false;//ExtraHandlingDB.loadAvailability(context, this);
         return available &&this.isAvailable();
     }
 
@@ -109,15 +109,15 @@ public class SQLIngredientPump extends SQLDataBaseElement {
 
     @Override
     public void save(Context context) {
-        AddOrUpdateToDB.addOrUpdate(context,this);
+        //AddOrUpdateToDB.addOrUpdate(context,this);
     }
 
     @Override
     public void delete(Context context) {
-       // Log.v(TAG, "delete");
-        DeleteFromDB.remove(context, this);
-        //DatabaseConnection.getDataBase().remove(this);
-       // Log.v(TAG, "delete: success");
+        // Log.v(TAG, "delete");
+        //DeleteFromDB.remove(context, this);
+        //DatabaseCon   nection.getDataBase().remove(this);
+        // Log.v(TAG, "delete: success");
 
     }
 
