@@ -155,7 +155,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      *
      * @param ingredientPump
      */
-    void setIngredientPump(Context context,SQLIngredientPump ingredientPump);
+    //void setIngredientPump(Context context,SQLIngredientPump ingredientPump);
 
 
 
@@ -338,9 +338,13 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
 
     static void emptyAll(Context context) {
+        /*
         for(SQLIngredientPump ip: GetFromDB.getIngredientPumps(context)) {
             DeleteFromDB.remove(context, ip);
         }
+
+         */
+        DeleteFromDB.removeAllIngredientsFromPumps(context);
     }
 
 
@@ -1128,4 +1132,14 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         return p;
     }
 
+    int getVolume();
+
+    void deleteCurrentIngredient(Context context);
+
+    /**
+     * subtract given volume from set volume
+     * @author Johanna Reidt
+     * @param volume
+     */
+    void pump(int volume) throws NewlyEmptyIngredientException, MissingIngredientPumpException;
 }

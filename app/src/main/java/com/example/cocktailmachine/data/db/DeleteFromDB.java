@@ -1,7 +1,9 @@
 package com.example.cocktailmachine.data.db;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
@@ -13,6 +15,7 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 import com.example.cocktailmachine.data.db.tables.Tables;
 import com.example.cocktailmachine.ui.model.enums.ModelType;
 
@@ -166,6 +169,14 @@ at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1386)
         }
         if(modelType == ModelType.TOPIC){
             Objects.requireNonNull(GetFromDB.getRecipeTopic(context, recipe, Topic.getTopic(context, id))).delete(context);
+        }
+    }
+
+    public static void removeAllIngredientsFromPumps(Context context) {
+        try {
+            Tables.TABLE_NEW_PUMP.removeAllIngredientsFromPumps(getWritableDatabase(context));
+        } catch (NoSuchColumnException e) {
+            Log.e(TAG, "removeAllIngredientsFromPumps",e);
         }
     }
 }

@@ -124,9 +124,9 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
 
     /**
      * use only for connecting pump and ingredient after loading
-     * @param ingredientPump
+     * @pa ram ingredientPump
      */
-    void setIngredientPump(SQLIngredientPump ingredientPump);
+    //void setIngredientPump(SQLIngredientPump ingredientPump);
 
     void setPump(Context context,Long pump, int volume);
 
@@ -249,6 +249,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @param color color in Integer representation
      * @return new Ingredient instance
      */
+    /*
     static Ingredient makeNew(String name,
                               boolean alcoholic,
                               boolean available,
@@ -257,6 +258,8 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
                               int color){
         return new SQLIngredient(name, alcoholic, available, volume, pump, color);
     }
+
+     */
 
     /**
      * Static access to ingredients.

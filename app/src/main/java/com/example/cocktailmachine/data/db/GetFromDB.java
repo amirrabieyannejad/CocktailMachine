@@ -454,4 +454,8 @@ public class GetFromDB {
     public static BasicColumn<SQLIngredient>.DatabaseIterator loadIngredientChunkAvIterator(Context context, int n) {
         return Tables.TABLE_INGREDIENT.getChunkIterator(context, n, true);
     }
+
+    public static Pump getNewPump(Context context, SQLIngredient ingredient) {
+        return Tables.TABLE_NEW_PUMP.getPumpWithIngredientID(getReadableDatabase(context), ingredient.getID());
+    }
 }

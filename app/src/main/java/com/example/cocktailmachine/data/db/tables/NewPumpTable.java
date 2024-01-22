@@ -84,13 +84,28 @@ public class NewPumpTable extends BasicColumn<SQLNewPump>{
         return null;
     }
 
-    public List<? extends Pump> getPumpWithSlot(SQLiteDatabase readableDatabase, int slot) {
+    public List<? extends Pump> getPumpWithSlot(SQLiteDatabase db, int slot) {
         try {
             List<Object> l =  new LinkedList<Object>();
             l.add(slot);
-            return this.getElementsIn(readableDatabase, COLUMN_NAME_SLOT_ID, l);
+            return this.getElementsIn(db, COLUMN_NAME_SLOT_ID, l);
         } catch (NoSuchColumnException e) {
             return new LinkedList<>();
         }
+    }
+
+    public void removeAllIngredientsFromPumps(SQLiteDatabase db) throws NoSuchColumnException {
+
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_NAME_INGREDIENT_ID, -1L);
+        Tables.TABLE_NEW_PUMP.updateColumnToConstant(db,cv );
+    }
+
+    public Pump getPumpWithIngredientID(SQLiteDatabase db, long id) {
+        List<SQLNewPump> res = this.getElementsWith(db, COLUMN_NAME_INGREDIENT_ID+" = "+String.valueOf(id) );
+        if(res.isEmpty()){
+            return null;
+        }
+        return res.get(0);
     }
 }
