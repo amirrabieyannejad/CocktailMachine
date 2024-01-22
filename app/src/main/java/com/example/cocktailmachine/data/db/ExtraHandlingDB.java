@@ -7,7 +7,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
+//import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
@@ -111,7 +111,7 @@ public class ExtraHandlingDB {
 
         Log.i(TAG, "loadAvailabilityForAll: start");
         //TO DO:set available in all recipes
-        List<Long> availableIngredients = Tables.TABLE_INGREDIENT_PUMP.getIngredientIDs(getReadableDatabase(context));
+        List<Long> availableIngredients = Tables.TABLE_NEW_PUMP.getIngredientIDs(getReadableDatabase(context));
         List<Long> maybeRecipes = Tables.TABLE_RECIPE_INGREDIENT.getRecipeIDsWithIngs(getReadableDatabase(context), availableIngredients);
         List<Long> notRecipes = Tables.TABLE_RECIPE_INGREDIENT.getRecipeIDsWithoutIngs(getReadableDatabase(context), availableIngredients);
 
@@ -136,13 +136,16 @@ public class ExtraHandlingDB {
     }
 
     public static boolean loadAvailability(Context context, SQLRecipeIngredient recipeIngredient) {
-        return Tables.TABLE_INGREDIENT_PUMP.hasIngredient(getReadableDatabase(context), recipeIngredient.getIngredientID()); //TO DO
+        return Tables.TABLE_NEW_PUMP.hasIngredient(getReadableDatabase(context), recipeIngredient.getIngredientID()); //TO DO
     }
 
+    /*
     public static boolean loadAvailability(Context context, SQLIngredientPump sqlIngredientPump) {
         return Tables.TABLE_INGREDIENT_PUMP.hasIngredient(getReadableDatabase(context), sqlIngredientPump.getIngredientID());
         //return true; //TO DO
     }
+
+     */
 
     public static void loadPrepedDB(Context context) {
         DatabaseConnection.loadIfNotDoneDBFromAssets(context);
