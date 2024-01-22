@@ -10,7 +10,7 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientImageUrlElement;
-import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
+//import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
@@ -58,9 +58,9 @@ public class DeleteFromDB {
        // Log.v(TAG, "remove");
 
 
-        //Tables.TABLE_PUMP.deleteElement(getWritableDatabase(context), pump.getID());
+        //Tables.TABLE_ PUMP.deleteElement(getWritableDatabase(context), pump.getID());
         //SQLIngredientPump ip = GetFromDB.getIngredientPump(context, pump);
-        //Tables.TABLE_INGREDIENT_PUMP.deleteElement(getWritableDatabase(context), ip ); //Buffer.getSingleton().getIngredientPump(pump));
+        //Tables.TABLE_ INGREDIENT_PUMP.deleteElement(getWritableDatabase(context), ip ); //Buffer.getSingleton().getIngredientPump(pump));
         Tables.TABLE_NEW_PUMP.deleteElement(getWritableDatabase(context), pump.getID());
 
 
@@ -126,11 +126,14 @@ at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1386)
         ////Buffer.getSingleton(context).removeFrom//Buffer(recipe, ingredient);
     }
 
+    /*
     public static void remove(Context context, SQLIngredientPump ingredientPump) {
        // Log.v(TAG, "remove");
-        Tables.TABLE_INGREDIENT_PUMP.deleteElement(getWritableDatabase(context), ingredientPump);
+        Tables.TABLE_ INGREDIENT_PUMP.deleteElement(getWritableDatabase(context), ingredientPump);
         //Buffer.getSingleton(context).removeFrom//Buffer(ingredientPump);
     }
+
+     */
 
     public static void remove(Context context, SQLRecipeImageUrlElement recipeImageUrlElement) {
        // Log.v(TAG, "remove");
@@ -148,9 +151,12 @@ at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1386)
         //Buffer.getSingleton(context).noMemory();
     }
 
+    /*
     public static void removeIngredientPump(Context context, long id) {
-        Tables.TABLE_INGREDIENT_PUMP.deleteElement(getWritableDatabase(context), id);
+        Tables.TABLE_ INGREDIENT_PUMP.deleteElement(getWritableDatabase(context), id);
     }
+
+     */
 
     public static void remove(Context context, ModelType modelType, Long id) {
         switch (modelType){

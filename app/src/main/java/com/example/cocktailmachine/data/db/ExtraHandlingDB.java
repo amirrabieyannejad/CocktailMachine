@@ -141,7 +141,7 @@ public class ExtraHandlingDB {
 
     /*
     public static boolean loadAvailability(Context context, SQLIngredientPump sqlIngredientPump) {
-        return Tables.TABLE_INGREDIENT_PUMP.hasIngredient(getReadableDatabase(context), sqlIngredientPump.getIngredientID());
+        return Tables.TABLE_ INGREDIENT_PUMP.hasIngredient(getReadableDatabase(context), sqlIngredientPump.getIngredientID());
         //return true; //TO DO
     }
 
