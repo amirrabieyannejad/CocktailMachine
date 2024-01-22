@@ -52,13 +52,13 @@ public class Tables {
         res.add(TABLE_RECIPE.createTableCmd());
         res.add(TABLE_INGREDIENT.createTableCmd());
         res.add(TABLE_RECIPE_URL.createTableCmd());
-        res.add(TABLE_PUMP.createTableCmd());
+        //res.add(TABLE_PUMP.createTableCmd());
         res.add(TABLE_NEW_PUMP.createTableCmd());
         res.add(TABLE_INGREDIENT_URL.createTableCmd());
         res.add(TABLE_TOPIC.createTableCmd());
         res.add(TABLE_RECIPE_INGREDIENT.createTableCmd());
         res.add(TABLE_RECIPE_TOPIC.createTableCmd());
-        res.add(TABLE_INGREDIENT_PUMP.createTableCmd());
+        //res.add(TABLE_INGREDIENT_PUMP.createTableCmd());
         return res;
     }
 

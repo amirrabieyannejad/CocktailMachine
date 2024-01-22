@@ -11,6 +11,7 @@ import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.db.GetFromDB;
+import com.example.cocktailmachine.data.db.elements.SQLNewPump;
 import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
@@ -1094,7 +1095,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     }
 
 
-    static BasicColumn<SQLPump>.DatabaseIterator getChunkIterator(Context context, int n) {
+    static BasicColumn<SQLNewPump>.DatabaseIterator getChunkIterator(Context context, int n) {
         return GetFromDB.getPumpChunkIterator(context, n);
     }
 

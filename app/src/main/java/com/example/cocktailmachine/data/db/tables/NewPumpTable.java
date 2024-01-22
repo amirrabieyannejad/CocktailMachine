@@ -9,7 +9,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.cocktailmachine.data.Ingredient;
+import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.elements.SQLNewPump;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -80,5 +82,15 @@ public class NewPumpTable extends BasicColumn<SQLNewPump>{
     @Override
     public ContentValues makeContentValues(SQLNewPump element) {
         return null;
+    }
+
+    public List<? extends Pump> getPumpWithSlot(SQLiteDatabase readableDatabase, int slot) {
+        try {
+            List<Object> l =  new LinkedList<Object>();
+            l.add(slot);
+            return this.getElementsIn(readableDatabase, COLUMN_NAME_SLOT_ID, l);
+        } catch (NoSuchColumnException e) {
+            return new LinkedList<>();
+        }
     }
 }

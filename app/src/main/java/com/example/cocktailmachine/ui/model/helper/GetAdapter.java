@@ -28,6 +28,7 @@ import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLDataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
+import com.example.cocktailmachine.data.db.elements.SQLNewPump;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
@@ -969,18 +970,18 @@ public class GetAdapter {
         }
     }
 
-    public static class PumpScrollAdapter extends ScrollAdapter<SQLPump>{
+    public static class PumpScrollAdapter extends ScrollAdapter<SQLNewPump>{
         public PumpScrollAdapter(Activity activity,  int n, double percentToLoadMore) {
             super(activity, ModelType.PUMP, n, percentToLoadMore);
         }
 
         @Override
-        public String getTitle(SQLPump i) {
+        public String getTitle(SQLNewPump i) {
             return "Slot: "+i.getSlot();
         }
 
         @Override
-        BasicColumn<SQLPump>.DatabaseIterator initIterator(int n) {
+        BasicColumn<SQLNewPump>.DatabaseIterator initIterator(int n) {
             return Pump.getChunkIterator(this.getActivity(), n);
         }
     }

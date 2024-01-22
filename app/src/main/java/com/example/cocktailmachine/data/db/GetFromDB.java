@@ -9,6 +9,7 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
+import com.example.cocktailmachine.data.db.elements.SQLNewPump;
 import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
@@ -157,17 +158,17 @@ public class GetFromDB {
 
     public static Pump loadPump(Context context, long id){
        // Log.v(TAG, "loadPump");
-        return Tables.TABLE_PUMP.getElement(getReadableDatabase(context), id);
+        return Tables.TABLE_NEW_PUMP.getElement(getReadableDatabase(context), id);
     }
 
-    static Iterator<SQLPump> loadPumpIterator(Context context){
+    static Iterator<SQLNewPump> loadPumpIterator(Context context){
        // Log.v(TAG, "loadPumpIterator");
-        return Tables.TABLE_PUMP.getIterator(getReadableDatabase(context));
+        return Tables.TABLE_NEW_PUMP.getIterator(getReadableDatabase(context));
     }
 
-    static Iterator<List<SQLPump>> loadPumpChunkIterator(Context context, int n){
+    static Iterator<List<SQLNewPump>> loadPumpChunkIterator(Context context, int n){
        // Log.v(TAG, "loadPumpChunkIterator");
-        return Tables.TABLE_PUMP.getChunkIterator(context, n);
+        return Tables.TABLE_NEW_PUMP.getChunkIterator(context, n);
     }
 
 
@@ -255,11 +256,12 @@ public class GetFromDB {
     }
 
     public static List<? extends Pump> loadPumps(Context context) {
-        return Tables.TABLE_PUMP.getAllElements(getReadableDatabase(context));
+        return Tables.TABLE_NEW_PUMP.getAllElements(getReadableDatabase(context));
     }
 
     public static Pump loadPumpWithSlot(Context context, int slot) {
-        List<? extends Pump> res =  Tables.TABLE_PUMP.getPumpWithSlot(getReadableDatabase(context), slot);
+        //List<? extends Pump> res =  Tables.TABLE_NEW_PUMP.getPumpWithSlot(getReadableDatabase(context), slot);
+        List<? extends Pump> res = Tables.TABLE_NEW_PUMP.getPumpWithSlot(getReadableDatabase(context), slot);
         if(res.isEmpty()){
             return null;
         }
@@ -435,8 +437,8 @@ public class GetFromDB {
         return Tables.TABLE_TOPIC.getChunkIterator(context, n, TopicTable.COLUMN_NAME_NAME);
     }
 
-    public static BasicColumn<SQLPump>.DatabaseIterator getPumpChunkIterator(Context context, int n) {
-        return Tables.TABLE_PUMP.getChunkIterator(context, n, PumpTable.COLUMN_TYPE_SLOT_ID);
+    public static BasicColumn<SQLNewPump>.DatabaseIterator getPumpChunkIterator(Context context, int n) {
+        return Tables.TABLE_NEW_PUMP.getChunkIterator(context, n, PumpTable.COLUMN_TYPE_SLOT_ID);
     }
 
     public static BasicColumn<SQLRecipe>.DatabaseIterator loadChunkAvRecipeIterator(Context context, int n) {
