@@ -98,11 +98,11 @@ public class AddOrUpdateToDB {
        // Log.v(TAG, "addOrUpdate: "+pump.toString());
         if(pump.getID() != -1){
            // Log.v(TAG, "was saved and needs update");
-            Tables.TABLE_PUMP.updateElement(getWritableDatabase(context), pump);
+            Tables.TABLE _PUMP.updateElement(getWritableDatabase(context), pump);
             pump.wasSaved();
         }else{
            // Log.v(TAG, "first time saving");
-            pump.setID(Tables.TABLE_PUMP.addElement(getWritableDatabase(context), pump));
+            pump.setID(Tables.TABLE _PUMP.addElement(getWritableDatabase(context), pump));
             ////Buffer.getSingleton(context).addToBuffer(pump);
             pump.wasSaved();
             //Buffer.getSingleton(context).addToBuffer(pump);
@@ -131,12 +131,12 @@ public class AddOrUpdateToDB {
        // Log.v(TAG, "addOrUpdate: "+ingredientPump);
         if(ingredientPump.getID() != -1){
            // Log.v(TAG, "was saved and needs update");
-            Tables.TABLE_INGREDIENT_PUMP.updateElement(getWritableDatabase(context), ingredientPump);
+            Tables.TABLE _INGREDIENT_PUMP.updateElement(getWritableDatabase(context), ingredientPump);
             ingredientPump.wasSaved();
             //ingredientPumps.remove(ingredientPump);
         }else{
            // Log.v(TAG, "first time saving");
-            ingredientPump.setID(Tables.TABLE_INGREDIENT_PUMP.addElement(getWritableDatabase(context), ingredientPump));
+            ingredientPump.setID(Tables.TABLE _INGREDIENT_PUMP.addElement(getWritableDatabase(context), ingredientPump));
             ingredientPump.wasSaved();
             //Buffer.getSingleton(context).addToBuffer(ingredientPump);
         }
