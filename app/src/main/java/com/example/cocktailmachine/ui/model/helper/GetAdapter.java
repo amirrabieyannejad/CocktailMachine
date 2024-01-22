@@ -29,7 +29,7 @@ import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLDataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLNewPump;
-import com.example.cocktailmachine.data.db.elements.SQLPump;
+//import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
 import com.example.cocktailmachine.data.db.tables.BasicColumn;
