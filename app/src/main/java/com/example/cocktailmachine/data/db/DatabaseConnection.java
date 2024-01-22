@@ -537,7 +537,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
         // return IngredientTable.
         return Tables.TABLE_INGREDIENT_PUMP.getAllElements(this.getReadableDatabase());
     }
-    
+
      */
 
     /**
@@ -662,8 +662,9 @@ class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-       // Log.v(TAG, "onUpgrade");
+        // Log.v(TAG, "onUpgrade");
         //db.enableWriteAheadLoggvng();
+        Log.i(TAG, "onUpgrade");
         if(oldVersion == DatabaseConnection.version) {
             /*
             for (String deleteCmd : Tables.getDeleteCmds()) {
@@ -674,6 +675,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
             Tables.deleteAll(db);
             onCreate(db);
             DatabaseConnection.version = newVersion;
+            //DatabaseConnection.copyFromAssets(db);
         }
     }
 

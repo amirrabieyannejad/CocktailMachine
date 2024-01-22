@@ -185,4 +185,8 @@ at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1386)
             Log.e(TAG, "removeAllIngredientsFromPumps",e);
         }
     }
+
+    public static void removeRecipeIngredient(Context context, Long id) {
+        Tables.TABLE_RECIPE_INGREDIENT.deleteElement(getWritableDatabase(context), id);
+    }
 }

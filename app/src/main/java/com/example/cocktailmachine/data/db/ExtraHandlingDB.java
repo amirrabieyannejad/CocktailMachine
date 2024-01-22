@@ -102,7 +102,7 @@ public class ExtraHandlingDB {
 
         }
         for (Long id : toDelete) {
-            DeleteFromDB.removeIngredientPump(context, id);
+            DeleteFromDB.removeRecipeIngredient(context, id);
         }
     }
 
