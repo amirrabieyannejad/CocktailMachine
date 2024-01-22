@@ -8,9 +8,9 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
-import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
+//import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLNewPump;
-import com.example.cocktailmachine.data.db.elements.SQLPump;
+//import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
@@ -279,7 +279,7 @@ public class GetFromDB {
     /*
 
     public static SQLIngredientPump getIngredientPump(Context context, Pump pump) {
-        List<SQLIngredientPump> res = Tables.TABLE_INGREDIENT_PUMP.getElements(getReadableDatabase(context), pump);
+        List<SQLIngredientPump> res = Tables.TABLE_ INGREDIENT_PUMP.getElements(getReadableDatabase(context), pump);
         if(res.isEmpty()){
             return null;
         }
@@ -287,7 +287,7 @@ public class GetFromDB {
     }
 
     public static SQLIngredientPump getIngredientPump(Context context,SQLIngredient ingredient) {
-        List<SQLIngredientPump> res = Tables.TABLE_INGREDIENT_PUMP.getElements(getReadableDatabase(context), ingredient);
+        List<SQLIngredientPump> res = Tables.TABLE_ INGREDIENT_PUMP.getElements(getReadableDatabase(context), ingredient);
         if(res.isEmpty()){
             return null;
         }
@@ -322,11 +322,11 @@ public class GetFromDB {
 
     /*
     public static List<SQLIngredientPump> getIngredientPumps(Context context) {
-        return Tables.TABLE_INGREDIENT_PUMP.getAllElements(getReadableDatabase(context));
+        return Tables.TABLE_INGREDIENT_ PUMP.getAllElements(getReadableDatabase(context));
     }
 
     public static List<Long> getIngredientPumpsIDs(Context context) {
-        return Tables.TABLE_INGREDIENT_PUMP.getIDs(getReadableDatabase(context));
+        return Tables.TABLE_INGREDIENT_ PUMP.getIDs(getReadableDatabase(context));
     }
 
      */
