@@ -276,6 +276,7 @@ public class GetFromDB {
         return  Tables.TABLE_INGREDIENT.getNames(getReadableDatabase(context));
     }
 
+    /*
 
     public static SQLIngredientPump getIngredientPump(Context context, Pump pump) {
         List<SQLIngredientPump> res = Tables.TABLE_INGREDIENT_PUMP.getElements(getReadableDatabase(context), pump);
@@ -292,6 +293,8 @@ public class GetFromDB {
         }
         return res.get(0);
     }
+
+     */
 
     public static SQLRecipeTopic getRecipeTopic(Context context, Recipe recipe, Topic topic) {
         try {
@@ -317,6 +320,7 @@ public class GetFromDB {
         }
     }
 
+    /*
     public static List<SQLIngredientPump> getIngredientPumps(Context context) {
         return Tables.TABLE_INGREDIENT_PUMP.getAllElements(getReadableDatabase(context));
     }
@@ -324,6 +328,8 @@ public class GetFromDB {
     public static List<Long> getIngredientPumpsIDs(Context context) {
         return Tables.TABLE_INGREDIENT_PUMP.getIDs(getReadableDatabase(context));
     }
+
+     */
 
     public static List<String> getTopicNames(Context context) {
         return Tables.TABLE_TOPIC.getNames(getReadableDatabase(context));
