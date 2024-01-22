@@ -208,10 +208,6 @@ public class SingeltonTestdata {
 
                     }
 
-                    @Override
-                    public void setIngredientPump(SQLIngredientPump ingredientPump) {
-
-                    }
 
                     @Override
                     public void setPump(Context context, Long pump, int volume) {
@@ -356,10 +352,7 @@ public class SingeltonTestdata {
 
                     }
 
-                    @Override
-                    public void setIngredientPump(SQLIngredientPump ingredientPump) {
 
-                    }
 
                     @Override
                     public void setPump(Context context, Long pump, int volume) {
@@ -729,10 +722,7 @@ public class SingeltonTestdata {
 
                     }
 
-                    @Override
-                    public void setIngredientPump(SQLIngredientPump ingredientPump) {
 
-                    }
 
                     @Override
                     public void setPump(Context context, Long pump, int volume) {
@@ -875,10 +865,7 @@ public class SingeltonTestdata {
 
                     }
 
-                    @Override
-                    public void setIngredientPump(SQLIngredientPump ingredientPump) {
 
-                    }
 
                     @Override
                     public void setPump(Context context, Long pump, int volume) {

@@ -5,9 +5,9 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientImageUrlElement;
-import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
+//import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLNewPump;
-import com.example.cocktailmachine.data.db.elements.SQLPump;
+//import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
@@ -92,6 +92,7 @@ public class AddOrUpdateToDB {
     }
 
 
+    /*
     public static void addOrUpdate(Context context, SQLPump pump) {
         //TO DO: check available
        // Log.v(TAG, "addOrUpdate: "+pump.toString());
@@ -109,6 +110,8 @@ public class AddOrUpdateToDB {
         pump.loadAvailable(context);
     }
 
+     */
+
     public static void addOrUpdate(Context context, SQLRecipeTopic recipeTopic) {
        // Log.v(TAG, "addOrUpdate: "+recipeTopic.toString());
         if(recipeTopic.getID() != -1){
@@ -123,6 +126,7 @@ public class AddOrUpdateToDB {
         }
     }
 
+    /*
     public static void addOrUpdate(Context context, SQLIngredientPump ingredientPump) {
        // Log.v(TAG, "addOrUpdate: "+ingredientPump);
         if(ingredientPump.getID() != -1){
@@ -138,6 +142,8 @@ public class AddOrUpdateToDB {
         }
        // Log.v(TAG, "addOrUpdate: issaved???? "+ DatabaseConnection.init(context).loadIngredientPumps());
     }
+
+     */
 
     public static void addOrUpdate(Context context, SQLRecipeIngredient recipeIngredient) {
        // Log.v(TAG, "addOrUpdate: "+recipeIngredient.toString());

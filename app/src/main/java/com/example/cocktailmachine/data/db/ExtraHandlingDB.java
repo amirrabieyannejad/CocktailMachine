@@ -57,6 +57,7 @@ public class ExtraHandlingDB {
         }
     }
 
+    /*
     public static void deleteDoublePumpSettingsAndNulls(Context context) {
         List<Long> pump_ids = new LinkedList<Long>();
         //List<Long> toDelete = new LinkedList<>();
@@ -76,6 +77,8 @@ public class ExtraHandlingDB {
             DeleteFromDB.removeIngredientPump(context, id);
         }
     }
+
+     */
 
     public static void deleteDoubleRecipeIngredientSettingsAndNulls(Context context) {
         //TODO♦
