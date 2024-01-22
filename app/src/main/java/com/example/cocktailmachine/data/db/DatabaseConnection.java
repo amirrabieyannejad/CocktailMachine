@@ -17,7 +17,7 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
-import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
+//import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
@@ -531,11 +531,14 @@ class DatabaseConnection extends SQLiteOpenHelper {
      * @author Johanna Reidt
      * @return
      */
+    /*
     List<SQLIngredientPump> loadIngredientPumps() {
        // Log.v(TAG, "loadIngredientPumps");
         // return IngredientTable.
         return Tables.TABLE_INGREDIENT_PUMP.getAllElements(this.getReadableDatabase());
     }
+    
+     */
 
     /**
      * loads pumps from db
