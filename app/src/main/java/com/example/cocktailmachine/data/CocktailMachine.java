@@ -916,6 +916,7 @@ public class CocktailMachine {
             CocktailStatus.setStatus(CocktailStatus.ready);
             continueHere.post();
             Log.i(TAG,  "takeCocktail: status to ready");
+            return;
         }
         try {
             BluetoothSingleton.getInstance().userTakeCocktail(AdminRights.getUserId(),activity, continueHere, errorHandle);
