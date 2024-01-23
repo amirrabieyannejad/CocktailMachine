@@ -253,6 +253,7 @@ public class DisplayActivity extends BasicActivity {
 
     @Override
     void setUpPump(){
+        Log.i(TAG, "setUpPump: ");
         Pump pump = Pump.getPump(this,getID());
         if(pump == null){
             binding.textViewDisplayTitle.setText("Fehler");
@@ -262,7 +263,7 @@ public class DisplayActivity extends BasicActivity {
             return;
         }
         pump.loadAvailable(this);
-        Log.i(TAG, "Pump: "+pump.toString());
+        Log.i(TAG, "setUpPump: Pump: "+pump.toString());
         binding.textViewDisplayTitle.setText("Slot: "+ pump.getID());
         //TO DO: AlertDialog to change title if admin ----NOT BECAUSE PUMP NO NAME
         binding.includeDisplayPump.getRoot().setVisibility(View.VISIBLE);
@@ -276,7 +277,7 @@ public class DisplayActivity extends BasicActivity {
                 return true;
             }
         });
-        String vol = pump.getVolume(this) +" ml";
+        String vol = pump.getVolume() +" ml";
         binding.includeDisplayPump.textViewPumpVolume.setText(vol);
         binding.includeDisplayPump.buttonRunPump.setOnClickListener(new View.OnClickListener() {
             @Override

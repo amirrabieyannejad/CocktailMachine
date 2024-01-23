@@ -151,6 +151,7 @@ public class SQLNewPump extends SQLDataBaseElement implements Pump {
 
     @Override
     public boolean loadAvailable(Context context) {
+        this.load(context);
         return true;
     }
 
