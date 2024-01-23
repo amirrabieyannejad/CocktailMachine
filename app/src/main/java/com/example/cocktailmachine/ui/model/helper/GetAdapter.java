@@ -550,9 +550,11 @@ public class GetAdapter {
 
         private final List<K> unavailable = new LinkedList<>();
         public NameAdapter(Activity activity, ModelType type) {
+            Log.i(TAG, "NameAdapter");
             this.activity = activity;
             this.data = initList();
             this.type = type;
+            Log.i(TAG, "NameAdapter: "+this);
 
         }
 
@@ -680,6 +682,17 @@ public class GetAdapter {
             Log.i(TAG, "NameAdapter: setAvailability: done");
         }
 
+        @NonNull
+        @Override
+        public String toString() {
+            return "NameAdapter{" +
+                    "activity=" + activity +
+                    ", type=" + type +
+                    //", data=" + data +
+                    ", availability=" + availability +
+                    //", unavailable=" + unavailable +
+                    '}';
+        }
     }
 
 
@@ -696,14 +709,17 @@ public class GetAdapter {
 
 
 
-        public ScrollAdapter(Activity activity, ModelType type, int n, double percentToLoadMore) {
+        public ScrollAdapter(Activity activity, ModelType type, int n, double percentToLoadMore, boolean availability) {
             super(activity, type);
+            Log.i(TAG, "ScrollAdapter");
+            this.setParamAvailability(availability);
             this.h = new Handler(Looper.myLooper());
             this.iterator = initIterator(n);
             if((percentToLoadMore >= 0.4) && (percentToLoadMore <= 1)) {
                 this.percentToLoadMore = percentToLoadMore;
             }
             initData();
+            Log.i(TAG, "ScrollAdapter: "+this);
         }
 
         @Override
@@ -720,6 +736,7 @@ public class GetAdapter {
         }
 
         public ScrollAdapter<K> initScrollListener(RecyclerView recyclerView) {
+            Log.i(TAG, "ScrollAdapter: initScrollListener");
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -862,6 +879,7 @@ public class GetAdapter {
 
         @Override
         public void setAvailability(boolean availability){
+            Log.i(TAG, "ScrollAdapter: setAvailability");
             this.setParamAvailability(availability);
 
 
@@ -900,14 +918,25 @@ public class GetAdapter {
             //loadMore();
         }
 
-
+        @NonNull
+        @Override
+        public String toString() {
+            return "ScrollAdapter{" +
+                    "isLoading=" + isLoading +
+                    ", percentToLoadMore=" + percentToLoadMore +
+                    ", iterator=" + iterator +
+                    ", h=" + h +
+                    ", r=" + r +
+                    ", super="+super.toString()+
+                    '}';
+        }
     }
 
     public static class RecipeScrollAdapter extends ScrollAdapter<SQLRecipe>{
-        private final boolean showAll;
+        //private final boolean showAll;
         public RecipeScrollAdapter(Activity activity,  int n, double percentToLoadMore, boolean showAll) {
-            super(activity, ModelType.RECIPE, n, percentToLoadMore);
-            this.showAll = showAll;
+            super(activity, ModelType.RECIPE, n, percentToLoadMore, !showAll);
+            //this.showAll = showAll;
         }
 
         @Override
@@ -918,7 +947,7 @@ public class GetAdapter {
         @Override
         BasicColumn<SQLRecipe>.DatabaseIterator initIterator(int n) {
             //return Recipe.getChunkIterator(this.getActivity(), n);
-            if(showAll) {
+            if(!getAvailability()) {
                 return Recipe.getChunkIterator(this.getActivity(), n);
             }else{
                 return Recipe.getChunkAvIterator(this.getActivity(), n);
@@ -927,7 +956,7 @@ public class GetAdapter {
     }
 
     public static class IngredientScrollAdapter extends ScrollAdapter<SQLIngredient>{
-        private final boolean showAll;
+        //private final boolean showAll;
         public IngredientScrollAdapter(Activity activity,
                                        int n,
                                        double percentToLoadMore,
@@ -935,8 +964,12 @@ public class GetAdapter {
             super(activity,
                     ModelType.INGREDIENT,
                     n,
-                    percentToLoadMore);
-            this.showAll = showAll;
+                    percentToLoadMore,
+                    !showAll);
+            Log.i(TAG, "ScrollAdapter: IngredientScrollAdapter");
+            //this.showAll = showAll;
+            //this.setParamAvailability(!showAll);
+            Log.i(TAG, "IngredientScrollAdapter: "+this);
         }
 
         @Override
@@ -946,17 +979,28 @@ public class GetAdapter {
 
         @Override
         BasicColumn<SQLIngredient>.DatabaseIterator initIterator(int n) {
-            if(showAll) {
+            Log.i(TAG, "IngredientScrollAdapter: initIterator");
+            if(!getAvailability()) {
+                Log.i(TAG, "IngredientScrollAdapter: initIterator: showAll: getChunkIterator");
                 return Ingredient.getChunkIterator(this.getActivity(), n);
             }else{
+                Log.i(TAG, "IngredientScrollAdapter: initIterator: NOT showAll: getChunkAvIterator");
                 return Ingredient.getChunkAvIterator(this.getActivity(), n);
             }
+        }
+
+
+        @NonNull
+        @Override
+        public String toString() {
+            return "IngredientScrollAdapter{" +
+                    "super=" + super.toString() +"}";
         }
     }
 
     public static class TopicScrollAdapter extends ScrollAdapter<SQLTopic>{
         public TopicScrollAdapter(Activity activity,  int n, double percentToLoadMore) {
-            super(activity, ModelType.TOPIC, n, percentToLoadMore);
+            super(activity, ModelType.TOPIC, n, percentToLoadMore, true);
         }
 
         @Override
@@ -972,7 +1016,7 @@ public class GetAdapter {
 
     public static class PumpScrollAdapter extends ScrollAdapter<SQLNewPump>{
         public PumpScrollAdapter(Activity activity,  int n, double percentToLoadMore) {
-            super(activity, ModelType.PUMP, n, percentToLoadMore);
+            super(activity, ModelType.PUMP, n, percentToLoadMore, true);
         }
 
         @Override

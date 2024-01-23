@@ -119,6 +119,7 @@ public class ListActivity extends BasicActivity {
 
     @Override
     void setUpIngredient() {
+        Log.i(TAG, "setUpIngredient");
         binding.textViewListAcTitle.setText("Zutaten");
         //List<Ingredient> elms = Ingredient.getAllIngredients(this);
         /*
@@ -142,13 +143,13 @@ public class ListActivity extends BasicActivity {
 
          */
 
-        adapter = new GetAdapter.
+        Log.i(TAG, "setUpIngredient: getShowAll: "+ this.getShowAll());
+        adapter = (new GetAdapter.
                 IngredientScrollAdapter(
                         this,
                         100,
                         0.8,
-                        this.getShowAll()).
-                initScrollListener(
+                        this.getShowAll())).initScrollListener(
                         binding.recyclerViewListAc);
     }
 
@@ -205,20 +206,10 @@ public class ListActivity extends BasicActivity {
         binding.imageButtonListToHome.setOnClickListener(
                 v -> GetActivity.goToMenu(activity));
 
-        if(getShowAll()) {
-            binding.switchAvailable.setChecked(!getShowAll());
-            binding.switchAvailable.setVisibility(View.VISIBLE);
-            //binding.switchAvailable.setEnabled(false);
-            binding.switchAvailable.setOnCheckedChangeListener(
-                    (buttonView, isChecked) -> {
-                        Log.i(TAG, "onCheckedChanged: switchAvailable: ischecked: " + isChecked);
-                        adapter.setAvailability(isChecked);
-                        Log.i(TAG, "onCheckedChanged: switchAvailable: done");
-                    });
 
-        }else{
-            binding.switchAvailable.setVisibility(View.GONE);
-        }
+
+        binding.switchAvailable.setVisibility(View.GONE);
+
     }
 
 
