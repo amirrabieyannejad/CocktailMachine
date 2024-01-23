@@ -12,6 +12,7 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityDisplayBinding;
+import com.example.cocktailmachine.ui.model.enums.ModelType;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
 import com.example.cocktailmachine.ui.model.helper.GetAdapter;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
@@ -56,6 +57,14 @@ public class DisplayActivity extends BasicActivity {
 
     @Override
     public void reload() {
+        Log.i(TAG, "reload");
+        if(getModelType()== ModelType.PUMP){
+            Pump pump = Pump.getPump(this,getID());
+            pump.loadAvailable(this);
+            String vol = pump.getVolume() +" ml";
+            binding.includeDisplayPump.textViewPumpVolume.setText(vol);
+            binding.includeDisplayPump.textViewPumpIngredientName.setText(pump.getIngredientName(this));
+        }
 
     }
 

@@ -13,7 +13,7 @@ public class Dummy {
     //false -> keine Test Activities
     //true -> Test Activities zugänglich
 
-    public final static boolean asAdmin = false;
+    public final static boolean asAdmin = true;
     //true  -> direkt admin
     //false -> normaler User
 

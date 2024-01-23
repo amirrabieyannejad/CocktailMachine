@@ -2455,7 +2455,7 @@ public class GetDialog {
             try {
                 timePumpingView.send();
                 dialog.cancel();
-                GetActivity.goToLook(activity, ModelType.PUMP, pump.getID());
+                //GetActivity.goToLook(activity, ModelType.PUMP, pump.getID());
             }catch (IllegalStateException e){
                 Log.e(TAG, "setPumpNumber timePumpingView save error");
                 Log.e(TAG, "error"+e);
