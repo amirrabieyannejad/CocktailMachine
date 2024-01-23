@@ -9,6 +9,7 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.AddOrUpdateToDB;
 import com.example.cocktailmachine.data.db.DeleteFromDB;
+import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
 
@@ -148,13 +149,13 @@ public class SQLNewPump extends SQLDataBaseElement implements Pump {
     public void save(Context context) {
         Log.v(TAG, "save: "+this);
         AddOrUpdateToDB.addOrUpdate(context, this);
+        Log.i(TAG, "save: from DB: "+GetFromDB.getNewPump(context, this.getID()).toString());
     }
 
     @Override
     public void delete(Context context) {
         Log.v(TAG, "delete: "+this);
         DeleteFromDB.remove(context, this);
-
     }
 
     @Override

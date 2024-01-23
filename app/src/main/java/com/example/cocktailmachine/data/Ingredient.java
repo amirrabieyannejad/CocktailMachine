@@ -123,14 +123,6 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
 
 
     /**
-     * use only for connecting pump and ingredient after loading
-     * @pa ram ingredientPump
-     */
-    //void setIngredientPump(SQLIngredientPump ingredientPump);
-
-    void setPump(Context context,Long pump, int volume);
-
-    /**
      * emptys pump if exist
      */
     void empty(Context context);

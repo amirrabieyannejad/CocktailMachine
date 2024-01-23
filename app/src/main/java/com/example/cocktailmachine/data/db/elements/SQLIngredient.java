@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.cocktailmachine.data.Ingredient;
@@ -294,11 +295,11 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
     public Pump getPump(Context context) {
         //this.checkIngredientPumps();
 
-        if(this.newPump!=null) {
+        if(this.newPump==null) {
             loadSQLNewPump(context);
             return this.newPump;
         }
-        return null;
+        return this.newPump;
     }
 
     /**
@@ -321,26 +322,6 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
     }
 
     //Setter / Changer
-
-    /**
-     * make pump ingredient connection with new volume
-     * @param pump
-     * @param volume
-     */
-    @Override
-    public void setPump(Context context, Long pump, int volume) {
-        this.available = true;
-        //this.pump = pump;
-        //this.volume = volume;
-
-        Pump pp = Pump.getPump(context,pump);
-        if(pp != null) {
-            pp.setCurrentIngredient(context,this);
-            //this.ingredientPump = new SQLIngredientPump(volume, pump, this.getID());
-        }
-        this.wasChanged();
-        this.save(context);
-    }
 
     /**
      * delete ingredient pump connection if exists, and set to null
@@ -487,6 +468,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         return false;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "SQLIngredient{" +

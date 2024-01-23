@@ -458,4 +458,8 @@ public class GetFromDB {
     public static Pump getNewPump(Context context, SQLIngredient ingredient) {
         return Tables.TABLE_NEW_PUMP.getPumpWithIngredientID(getReadableDatabase(context), ingredient.getID());
     }
+
+    public static Pump getNewPump(Context context, long id) {
+        return Tables.TABLE_NEW_PUMP.getElement(getReadableDatabase(context), id);
+    }
 }
