@@ -167,8 +167,7 @@ public class GetActivity {
 
     public static void goToMenu(Activity activity) {
         Log.v(TAG, "goToMenu");
-        Intent intent = new Intent(activity, Menue.class);
-        activity.startActivity(intent);
+        goToMenu(activity, true);
     }
 
     public static void goToMenu(Activity activity, boolean clearCompleteStack) {

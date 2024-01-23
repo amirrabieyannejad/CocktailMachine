@@ -221,4 +221,17 @@ public class ListActivity extends BasicActivity {
     }
 
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i(TAG, "onPause");
+        this.adapter.stop();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.i(TAG, "onStop");
+        this.adapter.stop();
+    }
 }

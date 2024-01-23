@@ -42,6 +42,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class GetAdapter {
     private static final String TAG = "GetAdapter";
@@ -601,7 +605,9 @@ public class GetAdapter {
             holder.setTxt(txt,goTo, delete);
         }
 
-        public void stop(){}
+        public void stop(){
+            Log.i(TAG, "stop");
+        }
 
         public abstract String getTitle(K i);
 
@@ -693,6 +699,12 @@ public class GetAdapter {
                     //", unavailable=" + unavailable +
                     '}';
         }
+
+        public void onResume() {
+            Log.i(TAG, "NameAdapter: onResume");
+        }
+
+
     }
 
 
@@ -703,8 +715,10 @@ public class GetAdapter {
 
         private final BasicColumn<K>.DatabaseIterator iterator;
 
-        private final Handler h;
-        private Runnable r;
+        private final ExecutorService pool;
+        //private Runnable r;
+
+        private Future current;
 
 
 
@@ -713,7 +727,7 @@ public class GetAdapter {
             super(activity, type);
             Log.i(TAG, "ScrollAdapter");
             this.setParamAvailability(availability);
-            this.h = new Handler(Looper.myLooper());
+            this.pool = Executors.newFixedThreadPool(1);//new Handler(Looper.myLooper());
             this.iterator = initIterator(n);
             if((percentToLoadMore >= 0.4) && (percentToLoadMore <= 1)) {
                 this.percentToLoadMore = percentToLoadMore;
@@ -725,9 +739,12 @@ public class GetAdapter {
         @Override
         public void stop() {
             super.stop();
-            if(isLoading) {
-                this.h.removeCallbacks(this.r);
-            }
+            Log.i(TAG, "stop");
+            this.current.cancel(true);
+            this.pool.shutdownNow();
+            isLoading = false;
+            //this.h.getLooper().quitSafely();
+            Log.i(TAG, "stop: stopped");
         }
 
         @Override
@@ -802,7 +819,7 @@ public class GetAdapter {
                 ScrollAdapter.this.notifyItemInserted(i);
             }
             ScrollAdapter.this.isLoading = false;
-            this.r = null;
+            //this.r = null;
             //recyclerView.scrollToPosition(scrollPosition);
 
         }
@@ -812,7 +829,7 @@ public class GetAdapter {
             Log.i(TAG, "loadMore");
             isLoading = true;
             //ScrollAdapter.this.getList().remove(ScrollAdapter.this.getItemCount() - 1);
-            this.r = () -> {
+            Runnable r = () -> {
                 try {
                     List<K> temp = ScrollAdapter.this.iterator.next();
                     if(temp.size() == 0){
@@ -822,7 +839,7 @@ public class GetAdapter {
                         Log.i(GetAdapter.TAG, "loadMore: finished: set false");
                         ScrollAdapter.this.isLoading = false;
                         //recyclerView.scrollToPosition(scrollPosition);
-                        this.r = null;
+                        //this.r = null;
                         Log.i(GetAdapter.TAG, "loadMore: finished: ");
                         return;
                     }
@@ -868,13 +885,15 @@ public class GetAdapter {
                     Log.i(GetAdapter.TAG, "loadMore: finished: set false");
                     ScrollAdapter.this.isLoading = false;
                     //recyclerView.scrollToPosition(scrollPosition);
-                    this.r = null;
+                    //this.r = null;
                     Log.i(GetAdapter.TAG, "loadMore: finished: ");
                 }
 
             };
 
-            this.h.postDelayed(this.r, 100);
+            this.current = this.pool.submit(r);
+            //this.pool.
+            //this.current.
         }
 
         @Override
@@ -884,7 +903,7 @@ public class GetAdapter {
 
 
             ScrollAdapter.this.isLoading = true;
-            this.r = () -> {
+            Runnable r = () -> {
                 if(this.getAvailability()){
                     for(int i = 0; i<ScrollAdapter.this.getItemCount(); i++) {
                         K elm = this.getList().get(i);
@@ -911,10 +930,12 @@ public class GetAdapter {
 
                 ScrollAdapter.this.isLoading = false;
                 //recyclerView.scrollToPosition(scrollPosition);
-                this.r = null;
+                //this.r = null;
             };
 
-            this.h.postDelayed(this.r, 100);
+            //this.h.submit(r);
+            this.current = this.pool.submit(r);
+            //this.h.postDelayed(this.r, 100);
             //loadMore();
         }
 
@@ -925,8 +946,8 @@ public class GetAdapter {
                     "isLoading=" + isLoading +
                     ", percentToLoadMore=" + percentToLoadMore +
                     ", iterator=" + iterator +
-                    ", h=" + h +
-                    ", r=" + r +
+                    ", pool=" + pool +
+                    ", current=" + current +
                     ", super="+super.toString()+
                     '}';
         }
