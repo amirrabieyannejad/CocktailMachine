@@ -5,8 +5,8 @@ import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_SETTLING;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
+//import android.os.Handler;
+//import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
