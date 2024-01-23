@@ -47,6 +47,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     long getID();
 
+    long getIngredientID();
+
 
 
     //Volume

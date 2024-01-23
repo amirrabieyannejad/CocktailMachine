@@ -7,12 +7,14 @@ import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_LONG;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.db.elements.SQLNewPump;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -72,10 +74,16 @@ public class NewPumpTable extends BasicColumn<SQLNewPump>{
 
     @Override
     public SQLNewPump makeElement(Cursor cursor) {
+        // Log.i(TABLE_NAME, "makeElement: "+ Arrays.toString(cursor.getColumnNames()));
         long ID = cursor.getLong(cursor.getColumnIndexOrThrow(this._ID));
         int slotID = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NAME_SLOT_ID));
         long ingID = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_NAME_INGREDIENT_ID));
         int volume = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_NAME_VOLUME));
+
+        // Log.i(TABLE_NAME, "makeElement: ID"+ID);
+        // Log.i(TABLE_NAME, "makeElement: slotID"+slotID);
+        // Log.i(TABLE_NAME, "makeElement: ingID"+ingID);
+        // Log.i(TABLE_NAME, "makeElement: volume"+volume);
         return new SQLNewPump(ID, slotID, ingID, volume);
     }
 
@@ -83,8 +91,9 @@ public class NewPumpTable extends BasicColumn<SQLNewPump>{
     public ContentValues makeContentValues(SQLNewPump element) {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_NAME_SLOT_ID, element.getSlot());
-        cv.put(COLUMN_NAME_INGREDIENT_ID, element.getID());
+        cv.put(COLUMN_NAME_INGREDIENT_ID, element.getIngredientID());
         cv.put(COLUMN_NAME_VOLUME, element.getVolume());
+        // Log.i(TABLE_NAME, "makeContentValues: "+cv.toString());
         return cv;
     }
 

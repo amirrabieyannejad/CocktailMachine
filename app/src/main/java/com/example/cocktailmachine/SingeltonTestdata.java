@@ -209,10 +209,6 @@ public class SingeltonTestdata {
                     }
 
 
-                    @Override
-                    public void setPump(Context context, Long pump, int volume) {
-
-                    }
 
                     @Override
                     public void empty(Context context) {
@@ -352,12 +348,6 @@ public class SingeltonTestdata {
 
                     }
 
-
-
-                    @Override
-                    public void setPump(Context context, Long pump, int volume) {
-
-                    }
 
                     @Override
                     public void empty(Context context) {
@@ -723,12 +713,6 @@ public class SingeltonTestdata {
                     }
 
 
-
-                    @Override
-                    public void setPump(Context context, Long pump, int volume) {
-
-                    }
-
                     @Override
                     public void empty(Context context) {
 
@@ -866,11 +850,6 @@ public class SingeltonTestdata {
                     }
 
 
-
-                    @Override
-                    public void setPump(Context context, Long pump, int volume) {
-
-                    }
 
                     @Override
                     public void empty(Context context) {

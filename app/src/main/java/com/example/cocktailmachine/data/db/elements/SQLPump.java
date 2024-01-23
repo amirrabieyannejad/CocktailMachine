@@ -234,6 +234,11 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
     }
 
     @Override
+    public long getIngredientID() {
+        return this.ingredientID;
+    }
+
+    @Override
     public int getVolume(Context context) {
         if(this.ingredientPump == null) {
             //loadIngredientPump(context);

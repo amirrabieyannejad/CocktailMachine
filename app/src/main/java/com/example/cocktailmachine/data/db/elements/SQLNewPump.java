@@ -36,6 +36,7 @@ public class SQLNewPump extends SQLDataBaseElement implements Pump {
         this.slot = slotID;
         this.volume=volume;
         this.ingredientID = ingID;
+        Log.i(TAG,"SQLNewPump: "+this);
     }
 
     private void load(Context context){
@@ -43,6 +44,11 @@ public class SQLNewPump extends SQLDataBaseElement implements Pump {
         this.loadedIngredientName = this.loadedIngredient.getName();
     }
 
+
+    @Override
+    public long getIngredientID() {
+        return this.ingredientID;
+    }
 
     @Override
     public int getVolume(Context context) {
@@ -85,8 +91,11 @@ public class SQLNewPump extends SQLDataBaseElement implements Pump {
 
     @Override
     public void setCurrentIngredient(Context context, long id) {
+        Log.i(TAG, "setCurrentIngredient: ");
         this.ingredientID = id;
+        Log.i(TAG, "setCurrentIngredient: "+this);
         this.load(context);
+        Log.i(TAG, "setCurrentIngredient: "+this);
         this.save(context);
     }
 
@@ -164,6 +173,7 @@ public class SQLNewPump extends SQLDataBaseElement implements Pump {
     }
 
 
+    @NonNull
     @Override
     public String toString() {
         return "SQLNewPump{" +
