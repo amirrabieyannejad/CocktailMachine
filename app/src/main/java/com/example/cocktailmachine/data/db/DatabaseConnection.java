@@ -72,7 +72,12 @@ class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public void loadDummy(Context context) throws NotInitializedDBException, MissingIngredientPumpException {
+
         if(Dummy.isDummy) {
+            if(!Dummy.withSetCalibration) {
+                this.loadForSetUp();
+                BasicRecipes.loadPumps(context);
+            }
             //DatabaseConnection.singleton.emptyAll();
             BasicRecipes.loadTopics(context);
             BasicRecipes.loadIngredients(context);
@@ -80,9 +85,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
             BasicRecipes.loadMargarita(context);
             BasicRecipes.loadLongIslandIceTea(context);
 
-            if(!Dummy.withSetCalibration) {
-                BasicRecipes.loadPumps(context);
-            }
+
         }
     }
 
