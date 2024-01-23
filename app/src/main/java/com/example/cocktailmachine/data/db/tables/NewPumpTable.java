@@ -111,6 +111,7 @@ public class NewPumpTable extends BasicColumn<SQLNewPump>{
 
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_NAME_INGREDIENT_ID, -1L);
+        cv.put(COLUMN_NAME_VOLUME, 0);
         Tables.TABLE_NEW_PUMP.updateColumnToConstant(db,cv );
     }
 

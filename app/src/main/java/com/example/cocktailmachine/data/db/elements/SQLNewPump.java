@@ -41,7 +41,9 @@ public class SQLNewPump extends SQLDataBaseElement implements Pump {
 
     private void load(Context context){
         this.loadedIngredient = Ingredient.getIngredient(context, this.ingredientID);
-        this.loadedIngredientName = this.loadedIngredient.getName();
+        if(this.loadedIngredient != null) {
+            this.loadedIngredientName = this.loadedIngredient.getName();
+        }
     }
 
 
