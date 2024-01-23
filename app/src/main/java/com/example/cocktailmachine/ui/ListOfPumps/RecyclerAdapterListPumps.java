@@ -48,7 +48,7 @@ public class RecyclerAdapterListPumps extends RecyclerView.Adapter<RecyclerAdapt
         int icon = 0;
         int color = 0;
 
-        if(pump.getIngredientName()=="" || pump.getVolume(this.context)<=0){
+        if(pump.getIngredientName()=="" || pump.getVolume()<=0){
             color = ResourcesCompat.getColor(context.getResources(), R.color.color_warning, null);
             icon = R.drawable.ic_attention;
         }else{

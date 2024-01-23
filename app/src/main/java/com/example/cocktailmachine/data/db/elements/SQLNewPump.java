@@ -50,10 +50,6 @@ public class SQLNewPump extends SQLDataBaseElement implements Pump {
         return this.ingredientID;
     }
 
-    @Override
-    public int getVolume(Context context) {
-        return 0;
-    }
 
     @Override
     public void empty(Context context) {

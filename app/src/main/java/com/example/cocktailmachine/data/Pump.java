@@ -51,18 +51,23 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
 
 
+    void deleteCurrentIngredient(Context context);
+
     //Volume
 
-
-
-
     /**
-     * get volume in pump
+     * get current volume as in this instance
      * @author Johanna Reidt
      * @return
      */
-    int getVolume(Context context);
+    int getVolume();
 
+    /**
+     * subtract given volume from set volume
+     * @author Johanna Reidt
+     * @param volume
+     */
+    void pump(int volume) throws NewlyEmptyIngredientException, MissingIngredientPumpException;
 
 
     /**
@@ -636,7 +641,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                     activity,
                     this.getSlot(),
                     this.getIngredientName(activity),
-                    this.getVolume(activity));
+                    this.getVolume());
         } catch (JSONException | InterruptedException e) {
             Log.i(TAG, "sendSave failed");
             Log.e(TAG, "error ",e);
@@ -685,7 +690,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                     activity,
                     this.getSlot(),
                     this.getIngredientName(activity),
-                    this.getVolume(activity),
+                    this.getVolume(),
                     postexecute);
         } catch (JSONException | InterruptedException e) {
             Log.i(TAG, "sendSave failed");
@@ -820,7 +825,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
         if(!Dummy.isDummy) {
             try {
-                BluetoothSingleton.getInstance().adminRefillPump(this.getVolume(activity),
+                BluetoothSingleton.getInstance().adminRefillPump(this.getVolume(),
                         this.getSlot(), activity, postexecute);
             } catch (JSONException | InterruptedException e) {
                 Log.i(TAG, "sendRefill failed");
@@ -840,7 +845,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     default void run(Activity activity, int time) {
         if(Dummy.isDummy){
             try {
-                this.fill(activity, this.getVolume(activity)-time);
+                this.fill(activity, this.getVolume()-time);
             } catch (MissingIngredientPumpException e) {
                 Log.i(TAG, "run failed: MissingIngredientPumpException");
                 Log.e(TAG, "error ",e);
@@ -969,7 +974,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             Log.i(TAG, "PUMP: "+this.toString());
             BluetoothSingleton.getInstance().adminEditPump(
                     this.getIngredientName(activity),
-                    this.getVolume(activity),
+                    this.getVolume(),
                     this.getSlot(),
                     activity,
                     postexecute);
@@ -1134,14 +1139,4 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         return p;
     }
 
-    int getVolume();
-
-    void deleteCurrentIngredient(Context context);
-
-    /**
-     * subtract given volume from set volume
-     * @author Johanna Reidt
-     * @param volume
-     */
-    void pump(int volume) throws NewlyEmptyIngredientException, MissingIngredientPumpException;
 }

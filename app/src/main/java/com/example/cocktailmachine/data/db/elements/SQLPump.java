@@ -238,15 +238,6 @@ public class SQLPump extends SQLDataBaseElement implements Pump {
         return this.ingredientID;
     }
 
-    @Override
-    public int getVolume(Context context) {
-        if(this.ingredientPump == null) {
-            //loadIngredientPump(context);
-            return this.loadedIngredientVolume;
-        }
-        return this.ingredientPump.getVolume();
-    }
-
     /**
      * no pump, check for one
      * delete if connection exists

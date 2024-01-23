@@ -1386,7 +1386,7 @@ public class GetDialog {
     private static boolean allPumpsConfigured(Activity activity){
         List<Pump> pumps = Pump.getPumps(activity);
         for (Pump pump : pumps){
-            if(pump.getVolume(activity)<=0 || Objects.equals(pump.getIngredientName(), "Keine Zutat")){
+            if(pump.getVolume()<=0 || Objects.equals(pump.getIngredientName(), "Keine Zutat")){
                 return false;
             }
         }
@@ -1981,7 +1981,7 @@ public class GetDialog {
         }
 
         private String getVolumeFromDB(){
-            return String.valueOf(this.pump.getVolume(this.activity));
+            return String.valueOf(this.pump.getVolume());
         }
         private int getVolume(){
             try {
@@ -2455,6 +2455,7 @@ public class GetDialog {
             try {
                 timePumpingView.send();
                 dialog.cancel();
+                GetActivity.goToLook(activity, ModelType.PUMP, pump.getID());
             }catch (IllegalStateException e){
                 Log.e(TAG, "setPumpNumber timePumpingView save error");
                 Log.e(TAG, "error"+e);
