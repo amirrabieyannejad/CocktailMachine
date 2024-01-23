@@ -40,7 +40,10 @@ public class DialogListOfPumps implements RecyclerViewListenerListPumps {
         //Einrichtung des RecyclerView
         recyclerView = v.findViewById(R.id.recyclerViewActivityListOfPumps);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.activity));
-        RecyclerAdapterListPumps adapterComments = new RecyclerAdapterListPumps(this.listPumps,this.activity,this);
+        RecyclerAdapterListPumps adapterComments = new RecyclerAdapterListPumps(
+                this.listPumps,
+                this.activity,
+                this);
         recyclerView.setAdapter(adapterComments);
 
 

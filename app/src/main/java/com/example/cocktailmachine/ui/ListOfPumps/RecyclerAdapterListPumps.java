@@ -19,6 +19,7 @@ import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Pump;
 
 import java.util.List;
+import java.util.Objects;
 
 public class RecyclerAdapterListPumps extends RecyclerView.Adapter<RecyclerAdapterListPumps.IngtedienceViewHolder> {
 
@@ -45,10 +46,14 @@ public class RecyclerAdapterListPumps extends RecyclerView.Adapter<RecyclerAdapt
     @Override
     public void onBindViewHolder(@NonNull IngtedienceViewHolder holder, int position) {
         Pump pump = this.listPumps.get(position);
+
+        pump.loadAvailable(context);
         int icon = 0;
         int color = 0;
 
-        if(pump.getIngredientName()=="" || pump.getVolume()<=0){
+        if(Objects.equals(pump.getIngredientName(), "Keine Zutat")
+                || Objects.equals(pump.getIngredientName(), "")
+                || pump.getVolume()<=0){
             color = ResourcesCompat.getColor(context.getResources(), R.color.color_warning, null);
             icon = R.drawable.ic_attention;
         }else{

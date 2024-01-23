@@ -1386,6 +1386,7 @@ public class GetDialog {
     private static boolean allPumpsConfigured(Activity activity){
         List<Pump> pumps = Pump.getPumps(activity);
         for (Pump pump : pumps){
+            pump.loadAvailable(activity);
             if(pump.getVolume()<=0 || Objects.equals(pump.getIngredientName(), "Keine Zutat")){
                 return false;
             }
