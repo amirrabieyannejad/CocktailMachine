@@ -685,9 +685,6 @@ public class GetDialog {
     public static void startAutomaticCalibration(Activity activity){
 
         Log.v(TAG, "startAutomaticCalibration");
-        // CocktailMachine.automaticCalibration();
-
-        // GetActivity.waitNotSet(activity);
 
         if(Dummy.isDummy){
             enterNumberOfPumps(activity);
@@ -705,6 +702,7 @@ public class GetDialog {
             });
         } catch (JSONException | InterruptedException e) {
             Log.v(TAG, "Error: Restart of Calibration failed (GetDialog.startAutomaticCalibration: Z 413) ");
+            Toast.makeText(activity, "FEHLER", Toast.LENGTH_LONG).show();
             wait.cancel();
             //throw new RuntimeException(e);
 

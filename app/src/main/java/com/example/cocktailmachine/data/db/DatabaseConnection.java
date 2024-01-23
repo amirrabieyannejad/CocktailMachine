@@ -456,8 +456,12 @@ class DatabaseConnection extends SQLiteOpenHelper {
      */
     void emptyUpPumps() {
        // Log.v(TAG, "emptyUpPumps");
-        Tables.TABLE_INGREDIENT_PUMP.deleteTable(this.getWritableDatabase());
-        Tables.TABLE_INGREDIENT_PUMP.createTable(this.getWritableDatabase());
+        try {
+            Tables.TABLE_INGREDIENT_PUMP.deleteTable(this.getWritableDatabase());
+        }catch (Exception e){
+            Log.e(TAG,"emptyUpPumps", e);
+        }
+        //Tables.TABLE_INGREDIENT_PUMP.createTable(this.getWritableDatabase());
     }
 
     /**
@@ -467,8 +471,18 @@ class DatabaseConnection extends SQLiteOpenHelper {
     void setUpEmptyPumps() {
        // Log.v(TAG, "setUpEmptyPumps");
         this.emptyUpPumps();
-        Tables.TABLE_PUMP.deleteTable(this.getWritableDatabase());
-        Tables.TABLE_PUMP.createTable(this.getWritableDatabase());
+        try {
+            Tables.TABLE_PUMP.deleteTable(this.getWritableDatabase());
+        }catch (Exception e){
+            Log.e(TAG,"setUpEmptyPumps", e);
+        }
+        //Tables.TABLE_PUMP.createTable(this.getWritableDatabase());
+        try {
+            Tables.TABLE_NEW_PUMP.deleteTable(this.getWritableDatabase());
+        }catch (Exception e){
+            Log.e(TAG,"setUpEmptyPumps", e);
+        }
+        Tables.TABLE_NEW_PUMP.createTable(this.getWritableDatabase());
     }
 
 
