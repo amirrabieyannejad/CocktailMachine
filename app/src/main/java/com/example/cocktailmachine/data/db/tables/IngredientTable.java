@@ -80,7 +80,7 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
 
     @Override
     protected List<Long> getAvailableIDs(SQLiteDatabase db) {
-        return Tables.TABLE_INGREDIENT_PUMP.getIngredientIDs(db);
+        return Tables.TABLE_NEW_PUMP.getIngredientIDs(db);
     }
 
     @Override

@@ -731,6 +731,7 @@ public class CocktailMachine {
         if(Dummy.isDummy){
             Log.i(TAG,  "startMixing: Dummy");
             continueHere.post();
+            return;
         }
         try {
             BluetoothSingleton.getInstance().userStartRecipe(AdminRights.getUserId(),activity, errorHandle, continueHere);
@@ -915,6 +916,7 @@ public class CocktailMachine {
             CocktailStatus.setStatus(CocktailStatus.ready);
             continueHere.post();
             Log.i(TAG,  "takeCocktail: status to ready");
+            return;
         }
         try {
             BluetoothSingleton.getInstance().userTakeCocktail(AdminRights.getUserId(),activity, continueHere, errorHandle);

@@ -12,6 +12,7 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityDisplayBinding;
+import com.example.cocktailmachine.ui.model.enums.ModelType;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
 import com.example.cocktailmachine.ui.model.helper.GetAdapter;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
@@ -56,6 +57,14 @@ public class DisplayActivity extends BasicActivity {
 
     @Override
     public void reload() {
+        Log.i(TAG, "reload");
+        if(getModelType()== ModelType.PUMP){
+            Pump pump = Pump.getPump(this,getID());
+            pump.loadAvailable(this);
+            String vol = pump.getVolume() +" ml";
+            binding.includeDisplayPump.textViewPumpVolume.setText(vol);
+            binding.includeDisplayPump.textViewPumpIngredientName.setText(pump.getIngredientName(this));
+        }
 
     }
 
@@ -253,6 +262,7 @@ public class DisplayActivity extends BasicActivity {
 
     @Override
     void setUpPump(){
+        Log.i(TAG, "setUpPump: ");
         Pump pump = Pump.getPump(this,getID());
         if(pump == null){
             binding.textViewDisplayTitle.setText("Fehler");
@@ -262,7 +272,7 @@ public class DisplayActivity extends BasicActivity {
             return;
         }
         pump.loadAvailable(this);
-        Log.i(TAG, "Pump: "+pump.toString());
+        Log.i(TAG, "setUpPump: Pump: "+pump.toString());
         binding.textViewDisplayTitle.setText("Slot: "+ pump.getID());
         //TO DO: AlertDialog to change title if admin ----NOT BECAUSE PUMP NO NAME
         binding.includeDisplayPump.getRoot().setVisibility(View.VISIBLE);
@@ -276,7 +286,7 @@ public class DisplayActivity extends BasicActivity {
                 return true;
             }
         });
-        String vol = pump.getVolume(this) +" ml";
+        String vol = pump.getVolume() +" ml";
         binding.includeDisplayPump.textViewPumpVolume.setText(vol);
         binding.includeDisplayPump.buttonRunPump.setOnClickListener(new View.OnClickListener() {
             @Override

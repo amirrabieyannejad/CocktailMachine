@@ -17,7 +17,7 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
-import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
+//import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
@@ -48,7 +48,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
     private static DatabaseConnection singleton = null;
     private static final String DBname = "DB.db";
     private static final String TAG = "DatabaseConnection";
-    private static int version = 1;
+    private static int version = 2;
     private static final SQLiteDatabase.CursorFactory factory = null;
     private static boolean loaded = false;
 
@@ -72,7 +72,12 @@ class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public void loadDummy(Context context) throws NotInitializedDBException, MissingIngredientPumpException {
+
         if(Dummy.isDummy) {
+            if(!Dummy.withSetCalibration) {
+                this.loadForSetUp();
+                BasicRecipes.loadPumps(context);
+            }
             //DatabaseConnection.singleton.emptyAll();
             BasicRecipes.loadTopics(context);
             BasicRecipes.loadIngredients(context);
@@ -80,9 +85,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
             BasicRecipes.loadMargarita(context);
             BasicRecipes.loadLongIslandIceTea(context);
 
-            if(!Dummy.withSetCalibration) {
-                BasicRecipes.loadPumps(context);
-            }
+
         }
     }
 
@@ -456,8 +459,12 @@ class DatabaseConnection extends SQLiteOpenHelper {
      */
     void emptyUpPumps() {
        // Log.v(TAG, "emptyUpPumps");
-        Tables.TABLE_INGREDIENT_PUMP.deleteTable(this.getWritableDatabase());
-        Tables.TABLE_INGREDIENT_PUMP.createTable(this.getWritableDatabase());
+        try {
+            Tables.TABLE_INGREDIENT_PUMP.deleteTable(this.getWritableDatabase());
+        }catch (Exception e){
+            Log.e(TAG,"emptyUpPumps", e);
+        }
+        //Tables.TABLE_INGREDIENT_PUMP.createTable(this.getWritableDatabase());
     }
 
     /**
@@ -467,8 +474,18 @@ class DatabaseConnection extends SQLiteOpenHelper {
     void setUpEmptyPumps() {
        // Log.v(TAG, "setUpEmptyPumps");
         this.emptyUpPumps();
-        Tables.TABLE_PUMP.deleteTable(this.getWritableDatabase());
-        Tables.TABLE_PUMP.createTable(this.getWritableDatabase());
+        try {
+            Tables.TABLE_PUMP.deleteTable(this.getWritableDatabase());
+        }catch (Exception e){
+            Log.e(TAG,"setUpEmptyPumps", e);
+        }
+        //Tables.TABLE_PUMP.createTable(this.getWritableDatabase());
+        try {
+            Tables.TABLE_NEW_PUMP.deleteTable(this.getWritableDatabase());
+        }catch (Exception e){
+            Log.e(TAG,"setUpEmptyPumps", e);
+        }
+        Tables.TABLE_NEW_PUMP.createTable(this.getWritableDatabase());
     }
 
 
@@ -531,11 +548,14 @@ class DatabaseConnection extends SQLiteOpenHelper {
      * @author Johanna Reidt
      * @return
      */
+    /*
     List<SQLIngredientPump> loadIngredientPumps() {
        // Log.v(TAG, "loadIngredientPumps");
         // return IngredientTable.
         return Tables.TABLE_INGREDIENT_PUMP.getAllElements(this.getReadableDatabase());
     }
+
+     */
 
     /**
      * loads pumps from db
@@ -659,8 +679,9 @@ class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-       // Log.v(TAG, "onUpgrade");
+        // Log.v(TAG, "onUpgrade");
         //db.enableWriteAheadLoggvng();
+        Log.i(TAG, "onUpgrade");
         if(oldVersion == DatabaseConnection.version) {
             /*
             for (String deleteCmd : Tables.getDeleteCmds()) {
@@ -671,6 +692,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
             Tables.deleteAll(db);
             onCreate(db);
             DatabaseConnection.version = newVersion;
+            //DatabaseConnection.copyFromAssets(db);
         }
     }
 

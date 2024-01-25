@@ -12,7 +12,7 @@ import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientExcept
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
-import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
+//import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.tables.BasicColumn;
 
 
@@ -121,14 +121,6 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      */
     int getVolume();
 
-
-    /**
-     * use only for connecting pump and ingredient after loading
-     * @param ingredientPump
-     */
-    void setIngredientPump(SQLIngredientPump ingredientPump);
-
-    void setPump(Context context,Long pump, int volume);
 
     /**
      * emptys pump if exist
@@ -249,6 +241,7 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
      * @param color color in Integer representation
      * @return new Ingredient instance
      */
+    /*
     static Ingredient makeNew(String name,
                               boolean alcoholic,
                               boolean available,
@@ -257,6 +250,8 @@ public interface Ingredient extends Comparable<Ingredient>, DataBaseElement {
                               int color){
         return new SQLIngredient(name, alcoholic, available, volume, pump, color);
     }
+
+     */
 
     /**
      * Static access to ingredients.

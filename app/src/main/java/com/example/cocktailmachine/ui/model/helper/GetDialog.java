@@ -685,9 +685,6 @@ public class GetDialog {
     public static void startAutomaticCalibration(Activity activity){
 
         Log.v(TAG, "startAutomaticCalibration");
-        // CocktailMachine.automaticCalibration();
-
-        // GetActivity.waitNotSet(activity);
 
         if(Dummy.isDummy){
             enterNumberOfPumps(activity);
@@ -705,6 +702,7 @@ public class GetDialog {
             });
         } catch (JSONException | InterruptedException e) {
             Log.v(TAG, "Error: Restart of Calibration failed (GetDialog.startAutomaticCalibration: Z 413) ");
+            Toast.makeText(activity, "FEHLER", Toast.LENGTH_LONG).show();
             wait.cancel();
             //throw new RuntimeException(e);
 
@@ -1388,7 +1386,8 @@ public class GetDialog {
     private static boolean allPumpsConfigured(Activity activity){
         List<Pump> pumps = Pump.getPumps(activity);
         for (Pump pump : pumps){
-            if(pump.getVolume(activity)<=0 || Objects.equals(pump.getIngredientName(), "Keine Zutat")){
+            pump.loadAvailable(activity);
+            if(pump.getVolume()<=0 || Objects.equals(pump.getIngredientName(), "Keine Zutat")){
                 return false;
             }
         }
@@ -1983,7 +1982,7 @@ public class GetDialog {
         }
 
         private String getVolumeFromDB(){
-            return String.valueOf(this.pump.getVolume(this.activity));
+            return String.valueOf(this.pump.getVolume());
         }
         private int getVolume(){
             try {
@@ -2457,6 +2456,7 @@ public class GetDialog {
             try {
                 timePumpingView.send();
                 dialog.cancel();
+                //GetActivity.goToLook(activity, ModelType.PUMP, pump.getID());
             }catch (IllegalStateException e){
                 Log.e(TAG, "setPumpNumber timePumpingView save error");
                 Log.e(TAG, "error"+e);

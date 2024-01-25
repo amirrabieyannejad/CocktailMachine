@@ -1,18 +1,21 @@
 package com.example.cocktailmachine.data.db;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientImageUrlElement;
-import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
+//import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
+import com.example.cocktailmachine.data.db.exceptions.NoSuchColumnException;
 import com.example.cocktailmachine.data.db.tables.Tables;
 import com.example.cocktailmachine.ui.model.enums.ModelType;
 
@@ -53,9 +56,18 @@ public class DeleteFromDB {
     public static void remove(Context context, Pump pump) {
         //TO DO: check available
        // Log.v(TAG, "remove");
-        Tables.TABLE_PUMP.deleteElement(getWritableDatabase(context), pump.getID());
-        SQLIngredientPump ip = GetFromDB.getIngredientPump(context, pump);
-        Tables.TABLE_INGREDIENT_PUMP.deleteElement(getWritableDatabase(context), ip ); //Buffer.getSingleton().getIngredientPump(pump));
+
+
+        //Tables.TABLE_ PUMP.deleteElement(getWritableDatabase(context), pump.getID());
+        //SQLIngredientPump ip = GetFromDB.getIngredientPump(context, pump);
+        //Tables.TABLE_ INGREDIENT_PUMP.deleteElement(getWritableDatabase(context), ip ); //Buffer.getSingleton().getIngredientPump(pump));
+        Tables.TABLE_NEW_PUMP.deleteElement(getWritableDatabase(context), pump.getID());
+
+
+
+
+
+
         //Buffer.getSingleton(context).removeFrom//Buffer(pump);
         /*
         16:44:24.078 E FATAL EXCEPTION: main
@@ -114,11 +126,14 @@ at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1386)
         ////Buffer.getSingleton(context).removeFrom//Buffer(recipe, ingredient);
     }
 
+    /*
     public static void remove(Context context, SQLIngredientPump ingredientPump) {
        // Log.v(TAG, "remove");
-        Tables.TABLE_INGREDIENT_PUMP.deleteElement(getWritableDatabase(context), ingredientPump);
+        Tables.TABLE_ INGREDIENT_PUMP.deleteElement(getWritableDatabase(context), ingredientPump);
         //Buffer.getSingleton(context).removeFrom//Buffer(ingredientPump);
     }
+
+     */
 
     public static void remove(Context context, SQLRecipeImageUrlElement recipeImageUrlElement) {
        // Log.v(TAG, "remove");
@@ -136,9 +151,12 @@ at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1386)
         //Buffer.getSingleton(context).noMemory();
     }
 
+    /*
     public static void removeIngredientPump(Context context, long id) {
-        Tables.TABLE_INGREDIENT_PUMP.deleteElement(getWritableDatabase(context), id);
+        Tables.TABLE_ INGREDIENT_PUMP.deleteElement(getWritableDatabase(context), id);
     }
+
+     */
 
     public static void remove(Context context, ModelType modelType, Long id) {
         switch (modelType){
@@ -158,5 +176,17 @@ at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1386)
         if(modelType == ModelType.TOPIC){
             Objects.requireNonNull(GetFromDB.getRecipeTopic(context, recipe, Topic.getTopic(context, id))).delete(context);
         }
+    }
+
+    public static void removeAllIngredientsFromPumps(Context context) {
+        try {
+            Tables.TABLE_NEW_PUMP.removeAllIngredientsFromPumps(getWritableDatabase(context));
+        } catch (NoSuchColumnException e) {
+            Log.e(TAG, "removeAllIngredientsFromPumps",e);
+        }
+    }
+
+    public static void removeRecipeIngredient(Context context, Long id) {
+        Tables.TABLE_RECIPE_INGREDIENT.deleteElement(getWritableDatabase(context), id);
     }
 }

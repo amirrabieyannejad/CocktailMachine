@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.cocktailmachine.data.Ingredient;
@@ -31,15 +32,17 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
     //private long pump;
     private int color = Color.GREEN;
 
-    private SQLIngredientPump ingredientPump;
+    //private SQLIngredientPump ingredientPump;
+    private Pump newPump;
 
     public SQLIngredient(String name) {
         this.name = name;
         this.available = false;
         //this.fluidInMillimeters = -1;
         //this.pump = -1L;
-        this.ingredientPump = null;
+        //this.ingredientPump = null;
         //this.loadUrls();
+        this.newPump = null;
     }
 
     public SQLIngredient(String name, boolean alcoholic) {
@@ -47,9 +50,11 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         this.available = false;
         //this.fluidInMillimeters = -1;
         //this.pump = -1L;
-        this.ingredientPump = null;
+        //this.ingredientPump = null;
         this.alcoholic = alcoholic;
-        //this.loadUrls();
+        //this.loadUrls(); = null;
+        //        //this.loadUrls();
+        //        this.newPump = null;
     }
 
     public SQLIngredient(String name, boolean alcoholic, int color) {
@@ -59,9 +64,13 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         this.available = false;
         //this.fluidInMillimeters = -1;
         //this.pump = -1L;
-        this.ingredientPump = null;
-        //this.loadUrls();
+        //this.ingredientPump = null;
+        //this.loadUrls(); = null;
+        //        //this.loadUrls();
+        this.newPump = null;
     }
+
+    /*
 
     public SQLIngredient(String name,
                          boolean alcoholic,
@@ -77,8 +86,10 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         //this.pump = pump;
         this.color = color;
         //this.loadUrls();
-        this.ingredientPump = new SQLIngredientPump(volume, pump, this.getID());
+        //this.ingredientPump = new SQLIngredientPump(volume, pump, this.getID());
     }
+
+     */
 
     public SQLIngredient(long ID,
                          String name,
@@ -92,6 +103,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         //this.checkIngredientPumps();
     }
 
+    /*
     public SQLIngredient(long ID,
                          String name,
                          boolean alcoholic,
@@ -108,9 +120,12 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         this.color = color;
         //this.loadUrls();
 
-        this.ingredientPump = new SQLIngredientPump(volume, pump, this.getID());
+        //this.ingredientPump = new SQLIngredientPump(volume, pump, this.getID());
     }
 
+     */
+
+    /*
     public SQLIngredient(long ID,
                          String name,
                          List<String> imageUrls,
@@ -131,6 +146,8 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         //this.loadUrls();
         this.ingredientPump = new SQLIngredientPump(volume, pump, this.getID());
     }
+
+     */
 
 
     //Loading
@@ -187,14 +204,21 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
 
     @Override
     public boolean loadAvailable(Context context) {
-        loadSQLIngredientPump(context);
+        loadSQLNewPump(context);
         loadAvailable();
         this.save(context);
         return isAvailable();
     }
 
+    /*
     private void loadSQLIngredientPump(Context context){
         this.ingredientPump = GetFromDB.getIngredientPump(context, this);
+    }
+
+     */
+    private void loadSQLNewPump(Context context){
+        //this.ingredientPump = GetFromDB.getIngredientPump(context, this);
+        this.newPump = GetFromDB.getNewPump(context, this);
     }
 
     /**
@@ -206,8 +230,8 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         //this.checkIngredientPumps();
         boolean res = false;
         // Log.v(TAG,"loadAvailable: check all ingredientpumps for availability");
-        if(this.ingredientPump != null){
-            res = this.ingredientPump.isAvailable();
+        if(this.newPump != null){
+            res = this.newPump.isAvailable();
         }
         if(res != this.available){
            // Log.v(TAG, "loadAvailable: available changed");
@@ -254,9 +278,9 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         //return this.fluidInMillimeters;
        // Log.v(TAG,"getVolume");
         //this.checkIngredientPumps();
-        if(this.ingredientPump!=null) {
+        if(this.newPump!=null) {
            // Log.v(TAG, "getVolume: Ingredientpump is not null for ingredient "+this.getID()+this.name);
-            return this.ingredientPump.getVolume();
+            return this.newPump.getVolume();
         }
        // Log.v(TAG, "getVolume: Ingredientpump is null for ingredient "+this.getID()+this.name);
         return -1;
@@ -271,10 +295,11 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
     public Pump getPump(Context context) {
         //this.checkIngredientPumps();
 
-        if(this.ingredientPump!=null) {
-            return this.ingredientPump.getPump(context);
+        if(this.newPump==null) {
+            loadSQLNewPump(context);
+            return this.newPump;
         }
-        return null;
+        return this.newPump;
     }
 
     /**
@@ -285,8 +310,8 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
     @Override
     public Long getPumpId() {
         //this.checkIngredientPumps();
-        if(this.ingredientPump != null) {
-            return this.ingredientPump.getPumpID();
+        if(this.newPump != null) {
+            return this.newPump.getID();
         }
         return -1L;
     }
@@ -299,35 +324,16 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
     //Setter / Changer
 
     /**
-     * make pump ingredient connection with new volume
-     * @param pump
-     * @param volume
-     */
-    @Override
-    public void setPump(Context context, Long pump, int volume) {
-        this.available = true;
-        //this.pump = pump;
-        //this.volume = volume;
-
-        Pump pp = Pump.getPump(context,pump);
-        if(pp != null) {
-            pp.setCurrentIngredient(context,this);
-            this.ingredientPump = new SQLIngredientPump(volume, pump, this.getID());
-        }
-        this.wasChanged();
-        this.save(context);
-    }
-
-    /**
      * delete ingredient pump connection if exists, and set to null
      */
     @Override
     public void empty(Context context) {
-        this.checkIngredientPumps(context);
-        if(ingredientPump != null){
-            this.ingredientPump.delete(context);
+        this.loadSQLNewPump(context);
+        if(this.newPump != null){
+            this.newPump.deleteCurrentIngredient(context);
         }
-        this.ingredientPump = null;
+        this.newPump = null;
+
         this.loadAvailable();
         this.wasChanged();
     }
@@ -337,6 +343,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
      * set ingredient pump connection
      * @param ingredientPump
      */
+    /*
     @Override
     public void setIngredientPump(SQLIngredientPump ingredientPump) {
         this.ingredientPump = ingredientPump;
@@ -346,10 +353,13 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         this.wasChanged();
     }
 
+     */
+
     /**
      * check for existing ingredient pump connection
      * @throws NotInitializedDBException
      */
+    /*
     private void checkIngredientPumps(Context context) {
        // Log.v(TAG, "checkIngredientPumps");
         if(this.ingredientPump==null){
@@ -365,6 +375,8 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         }
     }
 
+
+     */
     @Override
     public void setColor(int color) {
         this.color = color;
@@ -398,9 +410,9 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
 
        // Log.v(TAG,"pump");
         //this.checkIngredientPumps();
-        if(this.ingredientPump != null) {
+        if(this.newPump != null) {
             try {
-                this.ingredientPump.pump(volume);
+                this.newPump.pump(volume);
                 return;
             } catch (NewlyEmptyIngredientException | NullPointerException e) {
                 Log.e(TAG, "error", e);
@@ -437,7 +449,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
             json.put("available", this.available);
             json.put("imageUrls", this.imageUrls.toString());
             if(this.available) {
-                json.put("pumpID", this.ingredientPump.getPumpID());
+                json.put("pumpID", this.newPump.getID());
             }
             return json;
         }catch (JSONException e){
@@ -456,6 +468,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
         return false;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "SQLIngredient{" +
@@ -466,7 +479,7 @@ public class SQLIngredient extends SQLDataBaseElement implements Ingredient {
                 ", alcoholic=" + alcoholic +
                 ", available=" + available +
                 ", color=" + color +
-                ", ingredientPump=" + ingredientPump +
+                ", pump=" + newPump +
                 '}';
     }
 

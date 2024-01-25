@@ -5,8 +5,9 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLIngredientImageUrlElement;
-import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
-import com.example.cocktailmachine.data.db.elements.SQLPump;
+//import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
+import com.example.cocktailmachine.data.db.elements.SQLNewPump;
+//import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeImageUrlElement;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
@@ -90,22 +91,26 @@ public class AddOrUpdateToDB {
         }
     }
 
+
+    /*
     public static void addOrUpdate(Context context, SQLPump pump) {
         //TO DO: check available
        // Log.v(TAG, "addOrUpdate: "+pump.toString());
         if(pump.getID() != -1){
            // Log.v(TAG, "was saved and needs update");
-            Tables.TABLE_PUMP.updateElement(getWritableDatabase(context), pump);
+            Tables.TABLE _PUMP.updateElement(getWritableDatabase(context), pump);
             pump.wasSaved();
         }else{
            // Log.v(TAG, "first time saving");
-            pump.setID(Tables.TABLE_PUMP.addElement(getWritableDatabase(context), pump));
+            pump.setID(Tables.TABLE _PUMP.addElement(getWritableDatabase(context), pump));
             ////Buffer.getSingleton(context).addToBuffer(pump);
             pump.wasSaved();
             //Buffer.getSingleton(context).addToBuffer(pump);
         }
         pump.loadAvailable(context);
     }
+
+     */
 
     public static void addOrUpdate(Context context, SQLRecipeTopic recipeTopic) {
        // Log.v(TAG, "addOrUpdate: "+recipeTopic.toString());
@@ -121,21 +126,24 @@ public class AddOrUpdateToDB {
         }
     }
 
+    /*
     public static void addOrUpdate(Context context, SQLIngredientPump ingredientPump) {
        // Log.v(TAG, "addOrUpdate: "+ingredientPump);
         if(ingredientPump.getID() != -1){
            // Log.v(TAG, "was saved and needs update");
-            Tables.TABLE_INGREDIENT_PUMP.updateElement(getWritableDatabase(context), ingredientPump);
+            Tables.TABLE _INGREDIENT_PUMP.updateElement(getWritableDatabase(context), ingredientPump);
             ingredientPump.wasSaved();
             //ingredientPumps.remove(ingredientPump);
         }else{
            // Log.v(TAG, "first time saving");
-            ingredientPump.setID(Tables.TABLE_INGREDIENT_PUMP.addElement(getWritableDatabase(context), ingredientPump));
+            ingredientPump.setID(Tables.TABLE _INGREDIENT_PUMP.addElement(getWritableDatabase(context), ingredientPump));
             ingredientPump.wasSaved();
             //Buffer.getSingleton(context).addToBuffer(ingredientPump);
         }
        // Log.v(TAG, "addOrUpdate: issaved???? "+ DatabaseConnection.init(context).loadIngredientPumps());
     }
+
+     */
 
     public static void addOrUpdate(Context context, SQLRecipeIngredient recipeIngredient) {
        // Log.v(TAG, "addOrUpdate: "+recipeIngredient.toString());
@@ -185,4 +193,20 @@ public class AddOrUpdateToDB {
     }
 
 
+    public static void addOrUpdate(Context context, SQLNewPump sqlNewPump) {
+        // Log.v(TAG, "addOrUpdate: "+ingredientImageUrlElement);
+        if(sqlNewPump.getID() != -1){
+            // Log.v(TAG, "was saved and needs update");
+            Tables.TABLE_NEW_PUMP.updateElement(getWritableDatabase(context), sqlNewPump);
+            sqlNewPump.wasSaved();
+        }else{
+            // Log.v(TAG, "first time saving");
+            sqlNewPump.setID(
+                    Tables.TABLE_NEW_PUMP.addElement(
+                            getWritableDatabase(context),
+                            sqlNewPump));
+            sqlNewPump.wasSaved();
+        }
+        //TO DO: //Buffer.getSingleton(context).addToBuffer(ingredientImageUrlElement);
+    }
 }

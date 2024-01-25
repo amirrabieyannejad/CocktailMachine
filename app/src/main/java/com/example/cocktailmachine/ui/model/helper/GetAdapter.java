@@ -5,8 +5,8 @@ import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_SETTLING;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
+//import android.os.Handler;
+//import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +28,8 @@ import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.db.elements.DataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLDataBaseElement;
 import com.example.cocktailmachine.data.db.elements.SQLIngredient;
-import com.example.cocktailmachine.data.db.elements.SQLPump;
+import com.example.cocktailmachine.data.db.elements.SQLNewPump;
+//import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipe;
 import com.example.cocktailmachine.data.db.elements.SQLTopic;
 import com.example.cocktailmachine.data.db.tables.BasicColumn;
@@ -41,6 +42,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class GetAdapter {
     private static final String TAG = "GetAdapter";
@@ -549,9 +554,11 @@ public class GetAdapter {
 
         private final List<K> unavailable = new LinkedList<>();
         public NameAdapter(Activity activity, ModelType type) {
+            Log.i(TAG, "NameAdapter");
             this.activity = activity;
             this.data = initList();
             this.type = type;
+            Log.i(TAG, "NameAdapter: "+this);
 
         }
 
@@ -598,7 +605,9 @@ public class GetAdapter {
             holder.setTxt(txt,goTo, delete);
         }
 
-        public void stop(){}
+        public void stop(){
+            Log.i(TAG, "stop");
+        }
 
         public abstract String getTitle(K i);
 
@@ -679,6 +688,23 @@ public class GetAdapter {
             Log.i(TAG, "NameAdapter: setAvailability: done");
         }
 
+        @NonNull
+        @Override
+        public String toString() {
+            return "NameAdapter{" +
+                    "activity=" + activity +
+                    ", type=" + type +
+                    //", data=" + data +
+                    ", availability=" + availability +
+                    //", unavailable=" + unavailable +
+                    '}';
+        }
+
+        public void onResume() {
+            Log.i(TAG, "NameAdapter: onResume");
+        }
+
+
     }
 
 
@@ -689,28 +715,36 @@ public class GetAdapter {
 
         private final BasicColumn<K>.DatabaseIterator iterator;
 
-        private final Handler h;
-        private Runnable r;
+        private final ExecutorService pool;
+        //private Runnable r;
+
+        private Future current;
 
 
 
 
-        public ScrollAdapter(Activity activity, ModelType type, int n, double percentToLoadMore) {
+        public ScrollAdapter(Activity activity, ModelType type, int n, double percentToLoadMore, boolean availability) {
             super(activity, type);
-            this.h = new Handler(Looper.myLooper());
+            Log.i(TAG, "ScrollAdapter");
+            this.setParamAvailability(availability);
+            this.pool = Executors.newFixedThreadPool(1);//new Handler(Looper.myLooper());
             this.iterator = initIterator(n);
             if((percentToLoadMore >= 0.4) && (percentToLoadMore <= 1)) {
                 this.percentToLoadMore = percentToLoadMore;
             }
             initData();
+            Log.i(TAG, "ScrollAdapter: "+this);
         }
 
         @Override
         public void stop() {
             super.stop();
-            if(isLoading) {
-                this.h.removeCallbacks(this.r);
-            }
+            Log.i(TAG, "stop");
+            this.current.cancel(true);
+            this.pool.shutdownNow();
+            isLoading = false;
+            //this.h.getLooper().quitSafely();
+            Log.i(TAG, "stop: stopped");
         }
 
         @Override
@@ -719,6 +753,7 @@ public class GetAdapter {
         }
 
         public ScrollAdapter<K> initScrollListener(RecyclerView recyclerView) {
+            Log.i(TAG, "ScrollAdapter: initScrollListener");
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -784,7 +819,7 @@ public class GetAdapter {
                 ScrollAdapter.this.notifyItemInserted(i);
             }
             ScrollAdapter.this.isLoading = false;
-            this.r = null;
+            //this.r = null;
             //recyclerView.scrollToPosition(scrollPosition);
 
         }
@@ -794,7 +829,7 @@ public class GetAdapter {
             Log.i(TAG, "loadMore");
             isLoading = true;
             //ScrollAdapter.this.getList().remove(ScrollAdapter.this.getItemCount() - 1);
-            this.r = () -> {
+            Runnable r = () -> {
                 try {
                     List<K> temp = ScrollAdapter.this.iterator.next();
                     if(temp.size() == 0){
@@ -804,7 +839,7 @@ public class GetAdapter {
                         Log.i(GetAdapter.TAG, "loadMore: finished: set false");
                         ScrollAdapter.this.isLoading = false;
                         //recyclerView.scrollToPosition(scrollPosition);
-                        this.r = null;
+                        //this.r = null;
                         Log.i(GetAdapter.TAG, "loadMore: finished: ");
                         return;
                     }
@@ -850,22 +885,25 @@ public class GetAdapter {
                     Log.i(GetAdapter.TAG, "loadMore: finished: set false");
                     ScrollAdapter.this.isLoading = false;
                     //recyclerView.scrollToPosition(scrollPosition);
-                    this.r = null;
+                    //this.r = null;
                     Log.i(GetAdapter.TAG, "loadMore: finished: ");
                 }
 
             };
 
-            this.h.postDelayed(this.r, 100);
+            this.current = this.pool.submit(r);
+            //this.pool.
+            //this.current.
         }
 
         @Override
         public void setAvailability(boolean availability){
+            Log.i(TAG, "ScrollAdapter: setAvailability");
             this.setParamAvailability(availability);
 
 
             ScrollAdapter.this.isLoading = true;
-            this.r = () -> {
+            Runnable r = () -> {
                 if(this.getAvailability()){
                     for(int i = 0; i<ScrollAdapter.this.getItemCount(); i++) {
                         K elm = this.getList().get(i);
@@ -892,21 +930,34 @@ public class GetAdapter {
 
                 ScrollAdapter.this.isLoading = false;
                 //recyclerView.scrollToPosition(scrollPosition);
-                this.r = null;
+                //this.r = null;
             };
 
-            this.h.postDelayed(this.r, 100);
+            //this.h.submit(r);
+            this.current = this.pool.submit(r);
+            //this.h.postDelayed(this.r, 100);
             //loadMore();
         }
 
-
+        @NonNull
+        @Override
+        public String toString() {
+            return "ScrollAdapter{" +
+                    "isLoading=" + isLoading +
+                    ", percentToLoadMore=" + percentToLoadMore +
+                    ", iterator=" + iterator +
+                    ", pool=" + pool +
+                    ", current=" + current +
+                    ", super="+super.toString()+
+                    '}';
+        }
     }
 
     public static class RecipeScrollAdapter extends ScrollAdapter<SQLRecipe>{
-        private final boolean showAll;
+        //private final boolean showAll;
         public RecipeScrollAdapter(Activity activity,  int n, double percentToLoadMore, boolean showAll) {
-            super(activity, ModelType.RECIPE, n, percentToLoadMore);
-            this.showAll = showAll;
+            super(activity, ModelType.RECIPE, n, percentToLoadMore, !showAll);
+            //this.showAll = showAll;
         }
 
         @Override
@@ -917,7 +968,7 @@ public class GetAdapter {
         @Override
         BasicColumn<SQLRecipe>.DatabaseIterator initIterator(int n) {
             //return Recipe.getChunkIterator(this.getActivity(), n);
-            if(showAll) {
+            if(!getAvailability()) {
                 return Recipe.getChunkIterator(this.getActivity(), n);
             }else{
                 return Recipe.getChunkAvIterator(this.getActivity(), n);
@@ -926,7 +977,7 @@ public class GetAdapter {
     }
 
     public static class IngredientScrollAdapter extends ScrollAdapter<SQLIngredient>{
-        private final boolean showAll;
+        //private final boolean showAll;
         public IngredientScrollAdapter(Activity activity,
                                        int n,
                                        double percentToLoadMore,
@@ -934,8 +985,12 @@ public class GetAdapter {
             super(activity,
                     ModelType.INGREDIENT,
                     n,
-                    percentToLoadMore);
-            this.showAll = showAll;
+                    percentToLoadMore,
+                    !showAll);
+            Log.i(TAG, "ScrollAdapter: IngredientScrollAdapter");
+            //this.showAll = showAll;
+            //this.setParamAvailability(!showAll);
+            Log.i(TAG, "IngredientScrollAdapter: "+this);
         }
 
         @Override
@@ -945,17 +1000,28 @@ public class GetAdapter {
 
         @Override
         BasicColumn<SQLIngredient>.DatabaseIterator initIterator(int n) {
-            if(showAll) {
+            Log.i(TAG, "IngredientScrollAdapter: initIterator");
+            if(!getAvailability()) {
+                Log.i(TAG, "IngredientScrollAdapter: initIterator: showAll: getChunkIterator");
                 return Ingredient.getChunkIterator(this.getActivity(), n);
             }else{
+                Log.i(TAG, "IngredientScrollAdapter: initIterator: NOT showAll: getChunkAvIterator");
                 return Ingredient.getChunkAvIterator(this.getActivity(), n);
             }
+        }
+
+
+        @NonNull
+        @Override
+        public String toString() {
+            return "IngredientScrollAdapter{" +
+                    "super=" + super.toString() +"}";
         }
     }
 
     public static class TopicScrollAdapter extends ScrollAdapter<SQLTopic>{
         public TopicScrollAdapter(Activity activity,  int n, double percentToLoadMore) {
-            super(activity, ModelType.TOPIC, n, percentToLoadMore);
+            super(activity, ModelType.TOPIC, n, percentToLoadMore, true);
         }
 
         @Override
@@ -969,18 +1035,18 @@ public class GetAdapter {
         }
     }
 
-    public static class PumpScrollAdapter extends ScrollAdapter<SQLPump>{
+    public static class PumpScrollAdapter extends ScrollAdapter<SQLNewPump>{
         public PumpScrollAdapter(Activity activity,  int n, double percentToLoadMore) {
-            super(activity, ModelType.PUMP, n, percentToLoadMore);
+            super(activity, ModelType.PUMP, n, percentToLoadMore, true);
         }
 
         @Override
-        public String getTitle(SQLPump i) {
+        public String getTitle(SQLNewPump i) {
             return "Slot: "+i.getSlot();
         }
 
         @Override
-        BasicColumn<SQLPump>.DatabaseIterator initIterator(int n) {
+        BasicColumn<SQLNewPump>.DatabaseIterator initIterator(int n) {
             return Pump.getChunkIterator(this.getActivity(), n);
         }
     }

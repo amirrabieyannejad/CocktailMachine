@@ -77,6 +77,7 @@ public class Grafik extends AppCompatActivity {
 
         Integer idRecipe = 0;
 
+        //TODO: change to Ingrdient.makeNew();
         Ingredient tequila = new SQLIngredient(1,"Tequila", true, Color.RED);
         Ingredient orangenlikör = new SQLIngredient(2,"Orangenlikör", true, Color.YELLOW);
         Ingredient limettensaft = new SQLIngredient(3,"Limettensaft", false, Color.WHITE);

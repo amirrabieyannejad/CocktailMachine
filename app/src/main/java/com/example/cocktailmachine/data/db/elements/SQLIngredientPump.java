@@ -12,6 +12,7 @@ import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.db.GetFromDB;
 import com.example.cocktailmachine.data.db.exceptions.NewlyEmptyIngredientException;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class SQLIngredientPump extends SQLDataBaseElement {
@@ -100,7 +101,7 @@ public class SQLIngredientPump extends SQLDataBaseElement {
 
     @Override
     public boolean loadAvailable(Context context) {
-        boolean available = ExtraHandlingDB.loadAvailability(context, this);
+        boolean available = false;//ExtraHandlingDB.loadAvailability(context, this);
         return available &&this.isAvailable();
     }
 
@@ -108,15 +109,15 @@ public class SQLIngredientPump extends SQLDataBaseElement {
 
     @Override
     public void save(Context context) {
-        AddOrUpdateToDB.addOrUpdate(context,this);
+        //AddOrUpdateToDB.addOrUpdate(context,this);
     }
 
     @Override
     public void delete(Context context) {
-       // Log.v(TAG, "delete");
-        DeleteFromDB.remove(context, this);
-        //DatabaseConnection.getDataBase().remove(this);
-       // Log.v(TAG, "delete: success");
+        // Log.v(TAG, "delete");
+        //DeleteFromDB.remove(context, this);
+        //DatabaseCon   nection.getDataBase().remove(this);
+        // Log.v(TAG, "delete: success");
 
     }
 
@@ -132,7 +133,8 @@ public class SQLIngredientPump extends SQLDataBaseElement {
 
     private static List<SQLIngredientPump> getAvailableInstances(Context context){
         //TO DO
-        return GetFromDB.getIngredientPumps(context);
+        //return GetFromDB.getIngredientPumps(context);
+        return new LinkedList<>();
     }
 
 

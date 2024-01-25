@@ -35,6 +35,8 @@ public class Tables {
     public static final RecipeImageUrlTable TABLE_RECIPE_URL =  new RecipeImageUrlTable();
     public static final IngredientImageUrlTable TABLE_INGREDIENT_URL =  new IngredientImageUrlTable();
     public static final PumpTable TABLE_PUMP = new PumpTable();
+
+    public static final NewPumpTable TABLE_NEW_PUMP = new NewPumpTable();
     public static final TopicTable TABLE_TOPIC = new TopicTable();
     public static final RecipeIngredientTable TABLE_RECIPE_INGREDIENT = new RecipeIngredientTable();
     public static final RecipeTopicTable TABLE_RECIPE_TOPIC = new RecipeTopicTable();
@@ -50,12 +52,13 @@ public class Tables {
         res.add(TABLE_RECIPE.createTableCmd());
         res.add(TABLE_INGREDIENT.createTableCmd());
         res.add(TABLE_RECIPE_URL.createTableCmd());
-        res.add(TABLE_PUMP.createTableCmd());
+        //res.add(TABLE_PUMP.createTableCmd());
+        res.add(TABLE_NEW_PUMP.createTableCmd());
         res.add(TABLE_INGREDIENT_URL.createTableCmd());
         res.add(TABLE_TOPIC.createTableCmd());
         res.add(TABLE_RECIPE_INGREDIENT.createTableCmd());
         res.add(TABLE_RECIPE_TOPIC.createTableCmd());
-        res.add(TABLE_INGREDIENT_PUMP.createTableCmd());
+        //res.add(TABLE_INGREDIENT_PUMP.createTableCmd());
         return res;
     }
 
@@ -70,6 +73,7 @@ public class Tables {
         res.add(TABLE_INGREDIENT.deleteTableCmd());
         res.add(TABLE_RECIPE_URL.deleteTableCmd());
         res.add(TABLE_PUMP.deleteTableCmd());
+        res.add(TABLE_NEW_PUMP.deleteTableCmd());
         res.add(TABLE_INGREDIENT_URL.deleteTableCmd());
         res.add(TABLE_TOPIC.deleteTableCmd());
         res.add(TABLE_RECIPE_INGREDIENT.deleteTableCmd());
