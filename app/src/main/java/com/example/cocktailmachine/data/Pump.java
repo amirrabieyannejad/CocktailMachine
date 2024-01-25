@@ -3,6 +3,7 @@ package com.example.cocktailmachine.data;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.sqlite.SQLiteException;
 import android.os.Build;
 import android.util.Log;
 
@@ -429,7 +430,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Log.i(TAG, Pump.getPumps(context).stream().map(Object::toString).reduce((p1, p2)->p1.toString()+p2.toString()).orElse("Fehler"));
             }
-        } catch (JSONException | MissingIngredientPumpException e) {
+        } catch (JSONException | SQLiteException | MissingIngredientPumpException e) {
             Log.e(TAG, "updatePumpStatus: error");
             Log.e(TAG, "error ",e);
             Log.getStackTraceString(e);

@@ -76,6 +76,11 @@ public class WaitNotSetActivity extends AppCompatActivity {
     }
 
     private void reload(){
+        if(!ExtraHandlingDB.hasLoadedDB(this)){
+            Toast.makeText(this, "Bitte warte noch einen Moment!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Toast.makeText(this, "Checkt den Cocktailmaschinenstatus!", Toast.LENGTH_SHORT).show();
         Postexecute success = new Postexecute() {
             @Override

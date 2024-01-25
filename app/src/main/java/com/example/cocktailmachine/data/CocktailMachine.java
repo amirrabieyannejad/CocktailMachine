@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.database.sqlite.SQLiteException;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -311,6 +312,7 @@ public class CocktailMachine {
             return;
         }
         //TO DO: add bluetooth /esp implementation
+
         try{
             BluetoothSingleton.getInstance().adminReadPumpsStatus(activity, new Postexecute(){
                 @Override
@@ -326,7 +328,7 @@ public class CocktailMachine {
                 }
             });
             Log.i(TAG, "isCocktailMachineSet: done");
-        } catch (JSONException | InterruptedException|NullPointerException e) {
+        } catch (JSONException | SQLiteException | InterruptedException | NullPointerException e) {
             Log.i(TAG, "isCocktailMachineSet: failed");
             //Log.e(TAG, "error: "+e);
             Log.e(TAG, "error", e);
