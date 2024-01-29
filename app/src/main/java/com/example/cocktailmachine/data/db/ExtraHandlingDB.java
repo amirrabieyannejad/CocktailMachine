@@ -277,6 +277,9 @@ public class ExtraHandlingDB {
      * @param context
      */
     public static void loadPrepedDB(Context context) {
+        if(!DatabaseConnection.isInitialized()) {
+            DatabaseConnection.init(context);
+        }
         DatabaseConnection.loadIfNotDoneDBFromAssets(context);
     }
     /**
@@ -295,6 +298,9 @@ public class ExtraHandlingDB {
      * @return
      */
     public static boolean hasLoadedDB(Context context){
+        if(!DatabaseConnection.isInitialized()) {
+            DatabaseConnection.init(context);
+        }
         return DatabaseConnection.isDBFileExistentAndNotLoading(context);
     }
 
