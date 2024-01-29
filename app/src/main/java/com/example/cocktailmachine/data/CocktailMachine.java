@@ -333,7 +333,7 @@ public class CocktailMachine {
             //Log.e(TAG, "error: "+e);
             Log.e(TAG, "error", e);
         }
-        Pump.getPumps(activity).size();
+        //Pump.getPumps(activity).size();
         //return r.nextDouble() >= 0.5;
         //return false;
     }

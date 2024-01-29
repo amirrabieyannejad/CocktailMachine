@@ -742,7 +742,9 @@ public class GetAdapter {
         public void stop() {
             super.stop();
             Log.i(TAG, "stop");
-            this.current.cancel(true);
+            if(this.current != null) {
+                this.current.cancel(true);
+            }
             this.pool.shutdownNow();
             isLoading = false;
             //this.h.getLooper().quitSafely();
@@ -943,10 +945,12 @@ public class GetAdapter {
                 //this.r = null;
             };
 
-            //this.h.submit(r);
-            this.current = this.pool.submit(r);
-            //this.h.postDelayed(this.r, 100);
-            //loadMore();
+            if(!this.pool.isShutdown()) {
+                //this.h.submit(r);
+                this.current = this.pool.submit(r);
+                //this.h.postDelayed(this.r, 100);
+                //loadMore();
+            }
         }
 
         @NonNull
@@ -961,6 +965,7 @@ public class GetAdapter {
                     ", super="+super.toString()+
                     '}';
         }
+
     }
 
     public static class RecipeScrollAdapter extends ScrollAdapter<SQLRecipe>{
