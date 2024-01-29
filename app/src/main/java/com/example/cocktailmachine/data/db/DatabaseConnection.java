@@ -77,7 +77,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
     }
 
     public static boolean isDBFileExistentAndNotLoading(Context context) {
-        return checkDataBaseFile(context) && loading;
+        return checkDataBaseFile(context) && !loading;
     }
 
 
@@ -197,8 +197,12 @@ class DatabaseConnection extends SQLiteOpenHelper {
     public static void loadIfNotDoneDBFromAssets(Context context){
         //InputStream inputStream = context.getAssets().open(DBname);
         if(!checkDataBaseFile(context)){
+            Log.i(TAG, "loadIfNotDoneDBFromAssets: has NO DB");
+            Log.i(TAG, "loadIfNotDoneDBFromAssets: start copy");
             copyFromAssets(context);
+            return;
         }
+        Log.i(TAG, "loadIfNotDoneDBFromAssets: has DB");
     }
 
 
