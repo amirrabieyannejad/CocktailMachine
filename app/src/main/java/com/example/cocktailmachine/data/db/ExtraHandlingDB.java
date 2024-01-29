@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ExtraHandlingDB {
     private static final String TAG = "ExtraHandlingDB";
@@ -41,8 +43,9 @@ public class ExtraHandlingDB {
      */
     public static void loadPreped(Context context) {
        // Log.v(TAG, "loadPreped" );
-        DatabaseConnection.loadLiquid(context);
-        DatabaseConnection.loadPrepedRecipes(context);
+
+        Log.i(TAG,"loadPreped" );
+        DatabaseConnection.loadFromCSVFiles(context);
     }
 
     /**
@@ -205,6 +208,6 @@ public class ExtraHandlingDB {
      * @return
      */
     public static boolean hasLoadedDB(Context context){
-        return DatabaseConnection.checkDataBaseFile(context);
+        return DatabaseConnection.isDBFileExistentAndNotLoading(context);
     }
 }
