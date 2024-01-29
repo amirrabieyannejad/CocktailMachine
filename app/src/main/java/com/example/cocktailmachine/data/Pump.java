@@ -378,9 +378,11 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         Log.i(TAG, "updatePumpStatus: "+json.toString());
         //List<Long> toSave = new LinkedList<>();
         CocktailMachineCalibration.getSingleton().setIsDone(true);
-        ExtraHandlingDB.loadPrepedDB(context); //check if no db, copy db
-        ExtraHandlingDB.loadForSetUp(context); //delete and create pum table
-        try {
+        List<Runnable> runnables = new LinkedList<>();
+        runnables.add(ExtraHandlingDB.toLoadPrepedDB(context)); //check if no db, copy db
+        runnables.add(() -> ExtraHandlingDB.loadForSetUp(context));//delete and create pump table
+        runnables.add(() -> {
+            try {
             Iterator<String> t_ids = json.keys();
             if(!t_ids.hasNext()){
                 CocktailMachineCalibration.getSingleton().setIsDone(false);
@@ -430,7 +432,6 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 }
             }
              */
-            ExtraHandlingDB.localRefresh(context);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Log.i(TAG, Pump.getPumps(context).stream().map(Object::toString).reduce((p1, p2)->p1.toString()+p2.toString()).orElse("Fehler"));
             }
@@ -440,6 +441,9 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             Log.getStackTraceString(e);
             Log.e(TAG, "error catched continue");
         }
+        });
+        runnables.add(()-> ExtraHandlingDB.localRefresh(context));
+        ExtraHandlingDB.doOnDB(context, runnables);
     }
 
     /**

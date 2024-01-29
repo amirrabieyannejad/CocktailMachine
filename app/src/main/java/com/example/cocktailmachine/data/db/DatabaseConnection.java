@@ -131,6 +131,25 @@ class DatabaseConnection extends SQLiteOpenHelper {
      * @param context
      */
     private static void copyFromAssets(Context context){
+        Log.i(TAG, "copyFromAssets");
+        Log.i(TAG, "copyFromAssets: do runnables");
+        Runnable r = () -> {
+            copyFromAssetsDirect(context);
+        };
+        try {
+            getSingleton().doOnDB(context,r);
+        } catch (NotInitializedDBException e) {
+            Log.e(TAG, "copyFromAssets: error: ", e);
+        }
+    }
+
+
+    /**
+     * copies prepared DB file from res
+     * @author Johanna Reidt
+     * @param context
+     */
+    private static void copyFromAssetsDirect(Context context){
 
         //InputStream inputStream = context.getResources().openRawResource(R.raw.prepared);
         /*
@@ -148,8 +167,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
                 mInput.close();
          */
 
-        Log.i(TAG, "copyFromAssets");
-        Runnable r = () -> {
+        Log.i(TAG, "copyFromAssetsDirect");
 
             String db_path;
             //db_path = context.getFilesDir().getPath()+DBname;//"/databases/";
@@ -173,20 +191,14 @@ class DatabaseConnection extends SQLiteOpenHelper {
                 myoutput.close();
                 myinput.close();
                 loading = false;
-                Log.i(TAG, "copyFromAssets: copying done");
+                Log.i(TAG, "copyFromAssetsDirect: copying done");
             } catch (IOException e) {
                 // Log.v(TAG, "copyFromAssets: copying interrrupted Error");
-                Log.e(TAG, "copyFromAssets: error", e);
+                Log.e(TAG, "copyFromAssetsDirect: error", e);
                 loading = false;
                 // Log.getStackTraceString(e);
                 //throw new RuntimeException(e);
             }
-        };
-        try {
-            getSingleton().doOnDB(context,r);
-        } catch (NotInitializedDBException e) {
-            Log.e(TAG, "copyFromAssets: error: ", e);
-        }
     }
 
     /**
@@ -205,6 +217,18 @@ class DatabaseConnection extends SQLiteOpenHelper {
         Log.i(TAG, "loadIfNotDoneDBFromAssets: has DB");
     }
 
+    public static Runnable toLoadIfNotDoneDBFromAssets(Context context) {
+        return () ->
+        {
+            if (!checkDataBaseFile(context)) {
+                Log.i(TAG, "loadIfNotDoneDBFromAssets: has NO DB");
+                Log.i(TAG, "loadIfNotDoneDBFromAssets: start copy");
+                copyFromAssetsDirect(context);
+                return;
+            }
+            Log.i(TAG, "loadIfNotDoneDBFromAssets: has DB");
+        };
+    }
 
     /**
      * load liquid csv
@@ -453,15 +477,6 @@ class DatabaseConnection extends SQLiteOpenHelper {
 
 
     }
-
-
-
-
-
-
-
-
-
 
 
 

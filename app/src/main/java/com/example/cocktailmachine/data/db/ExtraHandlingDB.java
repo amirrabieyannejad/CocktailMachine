@@ -29,6 +29,23 @@ import java.util.concurrent.Executors;
 public class ExtraHandlingDB {
     private static final String TAG = "ExtraHandlingDB";
 
+
+    public static void doOnDB(Context context, List<Runnable>  runnables){
+        try{
+            DatabaseConnection.getSingleton().doOnDB(context, runnables);
+        } catch (NotInitializedDBException e) {
+            Log.e(TAG, "doOnDB", e);
+        }
+    }
+    public static void doOnDB(Context context, Runnable r){
+        try {
+            DatabaseConnection.getSingleton().doOnDB(context, r);
+        } catch (NotInitializedDBException e) {
+            Log.e(TAG, "doOnDB", e);
+        }
+    }
+
+
     /**
      * reload availability of recipes
      * @author Johanna Reidt
@@ -37,6 +54,36 @@ public class ExtraHandlingDB {
     public static void localRefresh(Context context) {
         //TO DO: DatabaseConnection.init(context).refreshAvailable(context);
         loadAvailabilityForAll(context);
+    }
+
+    /**
+     * reload availability of recipes
+     * @author Johanna Reidt
+     * @param context
+     * @param asBackground
+     *
+     */
+    public static void localRefresh(Context context, boolean asBackground) {
+        //TO DO: DatabaseConnection.init(context).refreshAvailable(context);
+        if(!asBackground) {
+            Log.e(TAG, "localRefresh: NOT asBackground ");
+            loadAvailabilityForAll(context);
+            return;
+        }else {
+            Log.e(TAG, "localRefresh: asBackground ");
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    loadAvailabilityForAll(context);
+                    Log.e(TAG, "localRefresh: asBackground: done ");
+                }
+            };
+            try {
+                DatabaseConnection.getSingleton().doOnDB(context, r);
+            } catch (NotInitializedDBException e) {
+                Log.e(TAG, "localRefresh: asBackground ");
+            }
+        }
     }
 
 
@@ -231,6 +278,14 @@ public class ExtraHandlingDB {
      */
     public static void loadPrepedDB(Context context) {
         DatabaseConnection.loadIfNotDoneDBFromAssets(context);
+    }
+    /**
+     * copies preped db if no db exists
+     * @author Johanna Reidt
+     * @param context
+     */
+    public static Runnable toLoadPrepedDB(Context context) {
+        return DatabaseConnection.toLoadIfNotDoneDBFromAssets(context);
     }
 
     /**
