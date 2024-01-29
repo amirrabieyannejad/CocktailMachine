@@ -33,13 +33,33 @@ import org.json.JSONObject;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 public interface Pump extends Comparable<Pump>, DataBaseElement {
     //300ml/min
     String TAG = "Pump";
 
+    static JSONObject toRandomJson(Context context) {
 
-
+        //{"1":{"liquid":"water","volume":1000.0,"cal":[0.0,1000,1000]}
+        List<Pump> pumps = getPumps(context);
+        JSONObject jsonObject = new JSONObject();
+        Random random = new Random();
+        try {
+            for(Pump p: pumps){
+                JSONObject jsonPump = new JSONObject();
+                jsonPump.put("liquid", p.getIngredientName(context));
+                jsonPump.put("volume", random.nextInt(p.getVolume() + 1));
+                JSONArray cal = new JSONArray();
+                cal.put(0);
+                jsonPump.put("cal",cal );
+                jsonObject.put(String.valueOf(p.getSlot()), jsonPump);
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "toRandomJson: error", e);
+        }
+        return jsonObject;
+    }
 
     /**
      * Get Id.
@@ -48,11 +68,6 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     long getID();
 
-    long getIngredientID();
-
-
-
-    void deleteCurrentIngredient(Context context);
 
     //Volume
 
@@ -89,9 +104,6 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     void fill(Context context, int volume) throws MissingIngredientPumpException;
 
-
-
-
     //Slot
 
     /**
@@ -100,6 +112,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      * @return
      */
     int getSlot();
+
+
 
 
 
@@ -151,6 +165,10 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     void setCurrentIngredient(Context context,long id);
 
     void preSetIngredient(long id);
+
+    long getIngredientID();
+
+    void deleteCurrentIngredient(Context context);
 
 
 
@@ -372,6 +390,13 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
     /*
     {"1":{"liquid":"water","volume":1000.0,"cal":[0.0,1000,1000]}
+     */
+
+    /**
+     * translate json to pump objects and update in DB
+     * @author Johanna Reidt
+     * @param context
+     * @param json
      */
     static void updatePumpStatus(Context context, JSONObject json){
         Log.i(TAG, "updatePumpStatus");
@@ -969,8 +994,6 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         }
     }
 
-
-
     default void sendEdit(Activity activity, Postexecute postexecute){
         Log.i(TAG, "PUMP_NAME: "+this.getIngredientName(activity));
         Log.i(TAG, "PUMP: "+this.toString());
@@ -1056,6 +1079,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 Log.e(TAG, "error ",e);
                 Log.getStackTraceString(e);
             }
+        }else{
+            postexecute.post();
         }
     }
     /**
