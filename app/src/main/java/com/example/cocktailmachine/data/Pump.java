@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteException;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
@@ -402,11 +403,11 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         Log.i(TAG, "updatePumpStatus");
         Log.i(TAG, "updatePumpStatus: "+json.toString());
         //List<Long> toSave = new LinkedList<>();
-        CocktailMachineCalibration.getSingleton().setIsDone(true);
         List<Runnable> runnables = new LinkedList<>();
         runnables.add(ExtraHandlingDB.toLoadPrepedDB(context)); //check if no db, copy db
         runnables.add(() -> ExtraHandlingDB.loadForSetUp(context));//delete and create pump table
         runnables.add(() -> {
+            boolean setIsDone = true;
             try {
             Iterator<String> t_ids = json.keys();
             if(!t_ids.hasNext()){
@@ -431,7 +432,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
 
                 JSONArray cal = jsonTemp.getJSONArray("cal");
                 if(cal.length()==0){
-                    CocktailMachineCalibration.getSingleton().setIsDone(false);
+                    setIsDone = false;
                 }
 
                 //Pump pump = Pump.getPumpWithSlot(context,slot);
@@ -447,6 +448,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 Log.i(TAG, "updated Pump: "+pump.toString());
                 Log.i(TAG, "updated Pump loaded with slot: "+Pump.getPumpWithSlot(context,slot));
             }
+            CocktailMachineCalibration.getSingleton().setIsDone(setIsDone);
             /*
             List<Pump> allPumps = getPumps(context);
             if(allPumps.size() > toSave.size()) {
