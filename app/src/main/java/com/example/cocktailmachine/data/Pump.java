@@ -378,7 +378,8 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         Log.i(TAG, "updatePumpStatus: "+json.toString());
         List<Long> toSave = new LinkedList<>();
         CocktailMachineCalibration.getSingleton().setIsDone(true);
-        ExtraHandlingDB.loadPrepedDB(context);
+        ExtraHandlingDB.loadPrepedDB(context); //check if no db, copy db
+        ExtraHandlingDB.loadForSetUp(context); //delete and create pum table
         try {
             Iterator<String> t_ids = json.keys();
             if(!t_ids.hasNext()){
@@ -406,10 +407,10 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                     CocktailMachineCalibration.getSingleton().setIsDone(false);
                 }
 
-                Pump pump = getPumpWithSlot(context,slot);
-                if(pump == null){
-                    pump = new SQLNewPump();
-                }
+                //Pump pump = Pump.getPumpWithSlot(context,slot);
+                //if(pump == null){
+                Pump pump = new SQLNewPump();
+                //}
                 pump.setSlot(slot);
                 //pump.setMinimumPumpVolume();
                 pump.setCurrentIngredient(context, ingredient);
@@ -419,6 +420,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 Log.i(TAG, "updated Pump: "+pump.toString());
                 Log.i(TAG, "updated Pump loaded with slot: "+Pump.getPumpWithSlot(context,slot));
             }
+            /*
             List<Pump> allPumps = getPumps(context);
             if(allPumps.size() > toSave.size()) {
                 for (Pump p : getPumps(context)) {
@@ -427,6 +429,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                     }
                 }
             }
+             */
             ExtraHandlingDB.localRefresh(context);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Log.i(TAG, Pump.getPumps(context).stream().map(Object::toString).reduce((p1, p2)->p1.toString()+p2.toString()).orElse("Fehler"));

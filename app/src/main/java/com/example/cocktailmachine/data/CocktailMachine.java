@@ -302,7 +302,7 @@ public class CocktailMachine {
 
         if(Dummy.isDummy){
             Log.i(TAG, "isCocktailMachineSet: dummy");
-            if( CocktailMachineCalibration.getSingleton().isIsDone()){
+            if(CocktailMachineCalibration.getSingleton().isIsDone()){
                 Log.i(TAG, "isCocktailMachineSet: dummy. SET");
                 set.post();
                 return;
