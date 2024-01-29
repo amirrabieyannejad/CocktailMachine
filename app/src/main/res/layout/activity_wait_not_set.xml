@@ -7,12 +7,12 @@
     tools:context=".ui.model.WaitNotSetActivity">
 
     <ImageButton
+        android:id="@+id/imageButton_reload"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:background="@color/white"
         android:contentDescription="reload"
-        android:onClick="reload"
         android:padding="16dp"
         android:src="@drawable/baseline_replay_24"
         app:layout_constraintEnd_toEndOf="parent"
@@ -40,7 +40,6 @@
         android:layout_height="wrap_content"
         android:minHeight="48dp"
         android:layout_marginTop="8dp"
-        android:onClick="login"
         android:padding="8dp"
         android:text="Login"
         app:layout_constraintEnd_toEndOf="parent"
@@ -53,7 +52,6 @@
         android:layout_height="wrap_content"
         android:minHeight="48dp"
         android:layout_marginTop="8dp"
-        android:onClick="nextCocktailmachine"
         android:padding="8dp"
         android:text="Wähle andere Cocktailmachine!"
         app:layout_constraintEnd_toEndOf="parent"
