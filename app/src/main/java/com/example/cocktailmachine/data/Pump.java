@@ -378,6 +378,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         Log.i(TAG, "updatePumpStatus: "+json.toString());
         List<Long> toSave = new LinkedList<>();
         CocktailMachineCalibration.getSingleton().setIsDone(true);
+        ExtraHandlingDB.loadPrepedDB(context);
         try {
             Iterator<String> t_ids = json.keys();
             if(!t_ids.hasNext()){

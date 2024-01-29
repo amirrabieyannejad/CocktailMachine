@@ -23,6 +23,11 @@ import java.util.Objects;
 public class ExtraHandlingDB {
     private static final String TAG = "ExtraHandlingDB";
 
+    /**
+     * reload availability of recipes
+     * @author Johanna Reidt
+     * @param context
+     */
     public static void localRefresh(Context context) {
         //TO DO: DatabaseConnection.init(context).refreshAvailable(context);
         loadAvailabilityForAll(context);
@@ -40,12 +45,25 @@ public class ExtraHandlingDB {
         DatabaseConnection.loadPrepedRecipes(context);
     }
 
+    /**
+     * delete pump table
+     * create new pump table
+     * set all recipes as unavailable
+     * @author Johanna Reidt
+     * @param context
+     */
     public static void loadForSetUp(Context context) {
 
         DatabaseConnection.init(context).setUpEmptyPumps(); //delete all pump Tables to be sure
         Tables.TABLE_RECIPE.setAsAllNotAvailable(getWritableDatabase(context));
     }
 
+    /**
+     * load dummy recipes
+     * load preset dummy pumps for testing without automatic calibration
+     * @author Johanna Reidt
+     * @param context
+     */
     public static void loadDummy(Context context) {
         // Log.v(TAG, "loadDummy");
         try {
@@ -80,8 +98,13 @@ public class ExtraHandlingDB {
 
      */
 
+    /**
+     * delete all double setted ingredients in recipes
+     * @author Johanna Reidt
+     * @param context
+     */
     public static void deleteDoubleRecipeIngredientSettingsAndNulls(Context context) {
-        //TODO♦
+        //TODO: ????
         HashMap<Long, List<Long>> set = new HashMap<>();
         //List<Long> toDelete = new LinkedList<>();
         Iterator<SQLRecipeIngredient> it = GetFromDB.getRecipeIngredientIterator(context);
@@ -107,6 +130,11 @@ public class ExtraHandlingDB {
     }
 
 
+    /**
+     * load all availabilities from pumps to recipes
+     * @author Johanna Reidt
+     * @param context
+     */
     public static void loadAvailabilityForAll(Context context){
 
         Log.i(TAG, "loadAvailabilityForAll: start");
@@ -131,10 +159,24 @@ public class ExtraHandlingDB {
 
     }
 
+    /**
+     * load if recipe topic is available (always true)
+     * @author Johanna Reidt
+     * @param context
+     * @param recipeTopic
+     * @return
+     */
     public static boolean loadAvailability(Context context, SQLRecipeTopic recipeTopic) {
         return true; //TO DO
     }
 
+    /**
+     * load if ingredient in recipe is available
+     * @author Johanna Reidt
+     * @param context
+     * @param recipeIngredient
+     * @return
+     */
     public static boolean loadAvailability(Context context, SQLRecipeIngredient recipeIngredient) {
         return Tables.TABLE_NEW_PUMP.hasIngredient(getReadableDatabase(context), recipeIngredient.getIngredientID()); //TO DO
     }
@@ -147,10 +189,21 @@ public class ExtraHandlingDB {
 
      */
 
+    /**
+     * copies preped db if no db exists
+     * @author Johanna Reidt
+     * @param context
+     */
     public static void loadPrepedDB(Context context) {
         DatabaseConnection.loadIfNotDoneDBFromAssets(context);
     }
 
+    /**
+     * checks if db files exists
+     * @author Johanna Reidt
+     * @param context
+     * @return
+     */
     public static boolean hasLoadedDB(Context context){
         return DatabaseConnection.checkDataBaseFile(context);
     }

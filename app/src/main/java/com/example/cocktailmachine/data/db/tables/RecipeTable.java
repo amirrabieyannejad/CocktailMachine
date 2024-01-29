@@ -148,7 +148,6 @@ public class RecipeTable extends BasicColumn<SQLRecipe>{
             Log.e(TAG, "error", e);
         }
         Log.i(TAG, "setAvailable: done");
-
     }
 
     /**

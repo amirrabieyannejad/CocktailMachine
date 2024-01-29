@@ -7,6 +7,7 @@ import static com.example.cocktailmachine.data.db.tables.Tables.TYPE_LONG;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
 import com.example.cocktailmachine.data.Ingredient;
@@ -102,7 +103,7 @@ public class NewPumpTable extends BasicColumn<SQLNewPump>{
             List<Object> l =  new LinkedList<Object>();
             l.add(slot);
             return this.getElementsIn(db, COLUMN_NAME_SLOT_ID, l);
-        } catch (NoSuchColumnException e) {
+        } catch (NoSuchColumnException | SQLiteException e) {
             return new LinkedList<>();
         }
     }

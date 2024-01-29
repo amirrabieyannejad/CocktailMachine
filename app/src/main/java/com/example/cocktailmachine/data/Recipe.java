@@ -601,9 +601,10 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     //Use Bluetooth
 
     /**
-     * get pump status
-     * check last cange
+     * check last change
      * get recipes
+     * get pump status
+     * reload availbilities
      * @author Johanna Reidt
      * @param activity
      */
@@ -618,13 +619,14 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         }
 
          */
-        Pump.readPumpStatus(activity, new Postexecute() {
+
+        CocktailMachine.updateRecipeListIfChanged(activity, new Postexecute(){
             @Override
             public void post() {
-                CocktailMachine.updateRecipeListIfChanged(activity, new Postexecute(){
+                Pump.readPumpStatus(activity, new Postexecute() {
                     @Override
                     public void post() {
-                        ExtraHandlingDB.localRefresh(activity);
+                        //ExtraHandlingDB.localRefresh(activity);
                         Log.i(TAG, "syncRecipeDBWithCocktailmachine: done");
                     }
                 });
