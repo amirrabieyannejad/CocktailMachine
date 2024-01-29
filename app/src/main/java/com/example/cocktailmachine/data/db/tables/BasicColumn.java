@@ -440,13 +440,14 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
      * @created Fr. 06.Okt 2023 - 15:39
      * @project CocktailMachine
      */
-    public class DatabaseIterator implements Iterator<List<T>> {
+    public class DatabaseIterator implements Iterator<List<T>>, AutoCloseable {
         private static final String TAG = "DatabaseIterator";
         //private final BasicColumn<T> table;
         private final List<Long> ids;
         private int position = 0;
         private final int chunkSize;
         private final Context context;
+        private boolean closed = false;
 
 
         public DatabaseIterator(Context context){
@@ -506,12 +507,17 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
 
         @Override
         public boolean hasNext() {
-
+            if(closed){
+                return false;
+            }
             return this.position < this.ids.size();
         }
 
         @Override
         public List<T> next() {
+            if(closed){
+                return new LinkedList<>();
+            }
             int oldPosition = this.position;
             this.position = this.position + this.chunkSize;
             if(this.position > this.ids.size()){
@@ -584,6 +590,20 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                 this.position = this.ids.indexOf(oldID);
             } catch (NoSuchColumnException e) {
                 Log.e(TAG, "include", e);
+            }
+        }
+
+        @Override
+        public void close() throws Exception {
+            closed = true;
+            Log.i(TAG, "iterator closed");
+        }
+
+        public void closeNow() {
+            try {
+                this.close();
+            } catch (Exception e) {
+                Log.e(TAG, "closeNow", e);
             }
         }
     }

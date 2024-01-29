@@ -2878,6 +2878,7 @@ public class GetDialog {
         builder.setTitle("Änderung");
 
         builder.setMessage("Wähle eine Zutat!");
+        Ingredient previousIngr = pump.getCurrentIngredient(activity);
 
         LinkedList<String> displayValues=new LinkedList<>();
         for (Ingredient entity : ingredients) {
@@ -2903,7 +2904,8 @@ public class GetDialog {
             pump.sendSave(activity);
             Toast.makeText(activity,"Cocktailmaschine wird informiert.",Toast.LENGTH_SHORT).show();
             //DatabaseConnection.localRefresh();
-            ExtraHandlingDB.localRefresh(activity);
+            //ExtraHandlingDB.localRefresh(activity);
+            ExtraHandlingDB.localRefreshForPump(activity, pump, previousIngr);
             Toast.makeText(activity,"DB-Synchronisation läuft!",Toast.LENGTH_SHORT).show();
 
         });

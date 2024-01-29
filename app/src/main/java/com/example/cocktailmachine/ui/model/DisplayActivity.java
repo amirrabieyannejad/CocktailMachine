@@ -341,7 +341,7 @@ public class DisplayActivity extends BasicActivity {
     }
 
     public void reload(View view) {
-        ExtraHandlingDB.localRefresh(this);
+        //ExtraHandlingDB.localRefresh(this);
         DisplayActivity.this.reload();
         setUp();
     }

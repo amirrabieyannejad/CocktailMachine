@@ -3,9 +3,12 @@ package com.example.cocktailmachine.data.db;
 import static com.example.cocktailmachine.data.db.AddOrUpdateToDB.getWritableDatabase;
 import static com.example.cocktailmachine.data.db.GetFromDB.getReadableDatabase;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.cocktailmachine.data.Ingredient;
+import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 //import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
@@ -13,6 +16,7 @@ import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.tables.Tables;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.LinkedList;
 import java.util.HashMap;
@@ -33,6 +37,34 @@ public class ExtraHandlingDB {
     public static void localRefresh(Context context) {
         //TO DO: DatabaseConnection.init(context).refreshAvailable(context);
         loadAvailabilityForAll(context);
+    }
+
+
+    public static void localRefreshForPump(Context context, Pump pump, Ingredient previousIngr) {
+        //TOD O:
+        Ingredient newIngr = null;
+        if(pump != null){
+            newIngr = pump.getCurrentIngredient(context);
+            if(newIngr != null){
+                if(newIngr.equals(previousIngr)){
+                    return; // no change -> do nothing
+                }
+            }
+        }
+        if(pump  != null) {
+            if(newIngr != null){
+                ExtraHandlingDB.localRefresh(context); // real change
+                return;
+            }
+        }
+        if(previousIngr != null){ // no new Ingredient -> make unavailable
+            List<Long> ingrs = new LinkedList<>();
+            ingrs.add(previousIngr.getID());
+            List<Long> toUnavailable =Tables.TABLE_RECIPE_INGREDIENT.getRecipeIDsWithIngs(getReadableDatabase(context), ingrs);
+            Tables.TABLE_RECIPE.setNotAvailable(getWritableDatabase(context), toUnavailable);
+        }
+
+
     }
 
 
@@ -210,4 +242,5 @@ public class ExtraHandlingDB {
     public static boolean hasLoadedDB(Context context){
         return DatabaseConnection.isDBFileExistentAndNotLoading(context);
     }
+
 }

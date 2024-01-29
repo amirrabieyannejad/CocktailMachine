@@ -654,8 +654,8 @@ public class GetAdapter {
 
 
         public void reload(Context context) {
-            ExtraHandlingDB.localRefresh(context);
-            data = getList();
+            //ExtraHandlingDB.localRefresh(context);
+            this.data = initList();
             notifyDataSetChanged();
             setAvailability(this.availability);
         }
@@ -713,7 +713,8 @@ public class GetAdapter {
         private boolean isLoading = false;
         private double percentToLoadMore = 0.8;
 
-        private final BasicColumn<K>.DatabaseIterator iterator;
+        private BasicColumn<K>.DatabaseIterator iterator;
+        private final int size;
 
         private final ExecutorService pool;
         //private Runnable r;
@@ -729,6 +730,7 @@ public class GetAdapter {
             this.setParamAvailability(availability);
             this.pool = Executors.newFixedThreadPool(1);//new Handler(Looper.myLooper());
             this.iterator = initIterator(n);
+            this.size = n;
             if((percentToLoadMore >= 0.4) && (percentToLoadMore <= 1)) {
                 this.percentToLoadMore = percentToLoadMore;
             }
@@ -807,6 +809,14 @@ public class GetAdapter {
 
         abstract BasicColumn<K>.DatabaseIterator initIterator(int n);
 
+
+        @Override
+        public void reload(Context context) {
+            super.reload(context);
+            this.iterator.closeNow();
+            this.iterator = initIterator(this.size);
+            initData();
+        }
 
         private void initData() {
             Log.i(TAG, "initData");

@@ -376,7 +376,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     static void updatePumpStatus(Context context, JSONObject json){
         Log.i(TAG, "updatePumpStatus");
         Log.i(TAG, "updatePumpStatus: "+json.toString());
-        List<Long> toSave = new LinkedList<>();
+        //List<Long> toSave = new LinkedList<>();
         CocktailMachineCalibration.getSingleton().setIsDone(true);
         ExtraHandlingDB.loadPrepedDB(context); //check if no db, copy db
         ExtraHandlingDB.loadForSetUp(context); //delete and create pum table
@@ -416,7 +416,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 pump.setCurrentIngredient(context, ingredient);
                 pump.fill(context,vol);
                 pump.save(context);
-                toSave.add(pump.getID());
+                //toSave.add(pump.getID());
                 Log.i(TAG, "updated Pump: "+pump.toString());
                 Log.i(TAG, "updated Pump loaded with slot: "+Pump.getPumpWithSlot(context,slot));
             }
@@ -1016,13 +1016,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
      */
     static void sync(Activity activity, Postexecute postexecute) {
         //TO DO sync
-        readPumpStatus(activity, new Postexecute() {
-            @Override
-            public void post() {
-                ExtraHandlingDB.localRefresh(activity);
-                postexecute.post();
-            }
-        });
+        readPumpStatus(activity, postexecute);
     }
 
     /**
