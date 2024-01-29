@@ -33,6 +33,10 @@ public class PumpSettingsActivity extends AppCompatActivity {
 
     }
 
+    public void testPumpStatusUpdate(View view){
+        Pump.updatePumpStatus(this, Pump.toRandomJson(this));
+    }
+
 
     /**
      * ### calibrate_pump: kalibriert die Pumpe mit vorhandenen Messwerten

@@ -104,7 +104,11 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
      * @param db
      */
     public void deleteTable(SQLiteDatabase db){
-        db.execSQL(deleteTableCmd());
+        try {
+            db.execSQL(deleteTableCmd());
+        }catch (IllegalStateException e){
+            Log.e(TAG, "deleteTable: error: to print",e);
+        }
     }
 
     //HELPER

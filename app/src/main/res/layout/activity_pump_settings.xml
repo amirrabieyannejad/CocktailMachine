@@ -50,6 +50,16 @@
         android:text="Setze Pumpzeiten"
         android:textSize="20sp" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:onClick="testPumpStatusUpdate"
+        android:padding="8dp"
+        android:paddingStart="16dp"
+        android:text="Teste PumpStatusUpdate"
+        android:textSize="20sp" />
+
 
 
 </LinearLayout>

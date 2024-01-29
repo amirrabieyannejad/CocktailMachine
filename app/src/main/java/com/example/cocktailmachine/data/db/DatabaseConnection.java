@@ -614,6 +614,7 @@ class DatabaseConnection extends SQLiteOpenHelper {
         };
         pool.submit(wait);
         Runnable done = () -> {
+            loading = false;
             Log.i(TAG, "doOnDB: done:");
             pool.shutdown();
             Log.i(TAG, "doOnDB: pool shutted done:");
