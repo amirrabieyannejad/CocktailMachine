@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -335,7 +336,9 @@ public class BluetoothSingleton {
                                 break;
                             }
                         } catch (InterruptedException e) {
+                            Toast.makeText(activity, "Verbindung zu ESP nicht möglich! Bitte überprüfen Sie den Verbindungsstatus", Toast.LENGTH_SHORT).show();
                             throw new RuntimeException(e);
+
                         }
 
                     }
@@ -377,6 +380,8 @@ public class BluetoothSingleton {
                             break;
                         }
                     } catch (InterruptedException e) {
+                        Toast.makeText(activity, "Verbindung zu ESP nicht möglich! " +
+                                "Bitte überprüfen Sie den Verbindungsstatus", Toast.LENGTH_SHORT).show();
                         throw new RuntimeException(e);
                     }
 
@@ -569,35 +574,43 @@ public class BluetoothSingleton {
         Runnable writeCharacteristic = new Runnable() {
             @Override
             public void run() {
-                singleton = BluetoothSingleton.getInstance();
-                BluetoothGattService mCustomService = singleton.mBluetoothGatt.getService
-                        (UUID.fromString(SampleGattAttributes.lookupUuid(SERVICE_READ_WRITE)));
-                if (mCustomService == null) {
-                    Log.w(TAG, "STAGE_2:write Characteristic: Custom BLE Service not found");
+                try {
+                    singleton = BluetoothSingleton.getInstance();
+                    BluetoothGattService mCustomService = singleton.mBluetoothGatt.getService
+                            (UUID.fromString(SampleGattAttributes.lookupUuid(SERVICE_READ_WRITE)));
+                    if (mCustomService == null) {
+                        Log.w(TAG, "STAGE_2:write Characteristic: Custom BLE Service not found");
 
+                    }
+                    BluetoothGattCharacteristic mWriteCharacteristic;
+                    // get the characteristic from the service
+                    if (admin) {
+                        mWriteCharacteristic = mCustomService.getCharacteristic
+                                (UUID.fromString(SampleGattAttributes.lookupUuid(CHARACTERISTIC_MESSAGE_ADMIN)));
+                    } else {
+                        mWriteCharacteristic = mCustomService.getCharacteristic
+                                (UUID.fromString(SampleGattAttributes.lookupUuid(CHARACTERISTIC_MESSAGE_USER)));
+                    }
+                    mWriteCharacteristic.setValue(value);
+                    mWriteCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
+                    mCustomService.addCharacteristic(mWriteCharacteristic);
+                    Log.w(TAG, "STAGE_2:Characteristic has been written. The value is now: " +
+                            mWriteCharacteristic.getStringValue(0));
+                    if (!singleton.mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
+                        Log.w(TAG, "STAGE_2:Failed to write characteristic");
+
+                    }
+
+                    //Log.w(TAG, "STAGE_2:writeCharacteristic LOOP END");
+
+                    handle.sendEmptyMessage(0);
+
+
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                    Log.w(TAG, "Unable to Connect ESP! Please Check the Connection");
                 }
-                BluetoothGattCharacteristic mWriteCharacteristic;
-                // get the characteristic from the service
-                if (admin) {
-                    mWriteCharacteristic = mCustomService.getCharacteristic
-                            (UUID.fromString(SampleGattAttributes.lookupUuid(CHARACTERISTIC_MESSAGE_ADMIN)));
-                } else {
-                    mWriteCharacteristic = mCustomService.getCharacteristic
-                            (UUID.fromString(SampleGattAttributes.lookupUuid(CHARACTERISTIC_MESSAGE_USER)));
-                }
-                mWriteCharacteristic.setValue(value);
-                mWriteCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
-                mCustomService.addCharacteristic(mWriteCharacteristic);
-                Log.w(TAG, "STAGE_2:Characteristic has been written. The value is now: " +
-                        mWriteCharacteristic.getStringValue(0));
-                if (!singleton.mBluetoothGatt.writeCharacteristic(mWriteCharacteristic)) {
-                    Log.w(TAG, "STAGE_2:Failed to write characteristic");
 
-                }
-
-                //Log.w(TAG, "STAGE_2:writeCharacteristic LOOP END");
-
-                handle.sendEmptyMessage(0);
             }
         };
         threadWriteCharacteristic = new Thread(writeCharacteristic);
@@ -1252,33 +1265,33 @@ public class BluetoothSingleton {
         try {
             singleton = BluetoothSingleton.getInstance();
             checkIfNotEmpty(singleton.queue);
-            singleton.queue= "userDefineRecipe(PE)";
-        singleton.connectGatt(activity);
-        //generate JSON Format
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cmd", "define_recipe");
-        jsonObject.put("user", user);
-        jsonObject.put("name", name);
-        jsonObject.put("ingredients", ingredients);
+            singleton.queue = "userDefineRecipe(PE)";
+            singleton.connectGatt(activity);
+            //generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "define_recipe");
+            jsonObject.put("user", user);
+            jsonObject.put("name", name);
+            jsonObject.put("ingredients", ingredients);
 
-        singleton.sendReadWrite(jsonObject, false, true);
-        singleton.waitForWriteNotification();
-        WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
-            @Override
-            public void toSave() throws InterruptedException {
-                if (!check()) {
-                    throw new InterruptedException();
+            singleton.sendReadWrite(jsonObject, false, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+                    Log.w(TAG, "To Save: " + this.getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton userDefineRecipe(PE) end");
                 }
-                Log.w(TAG, "To Save: " + this.getStringResult());
-                Log.w(TAG, "Reset Queue!");
-                singleton.queue= "";
-                Log.w(TAG, "BluetoothSingleton userDefineRecipe(PE) end");
-            }
-        };
-        wfb.execute();
+            };
+            wfb.execute();
         } catch (NotEmptyException e) {
             System.err.println("[Error: Incomplete task] Try to send userDefineRecipe(PE) but the queue is not " +
-                    "empty. " + "\"" + singleton.queue+ "\"" +" is still running!"   );
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
             e.printStackTrace();
         }
 
