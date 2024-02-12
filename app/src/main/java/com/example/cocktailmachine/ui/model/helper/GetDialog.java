@@ -1714,8 +1714,23 @@ public class GetDialog {
         //TODOsetTitle
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Bitte wähle die Zutat!");
+        /*
+        * AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Wähle einen Serviervorschlag!");
+        String[] names = Topic.getTopicTitles(activity).toArray(new String[0]);
+        builder.setItems(names, (dialog, which) -> {
+            Log.v(TAG, "addTopic: picked "+names[which]);
 
-        View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
+            //recipe.addOrUpdate(Topic.getTopic(names[which]));
+            topicSaver.save(Topic.getTopic(activity,names[which]), dialog);
+        });
+        builder.setNegativeButton("Abbrechen", (dialog, which) -> {
+            Log.v(TAG, "addTopic: stop, none picked");
+            dialog.cancel();});
+        builder.show();
+        * */
+
+        /*View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
         GetDialog.GetIngView getIngView =
                 new GetDialog.GetIngView(
                         activity,
@@ -1723,11 +1738,26 @@ public class GetDialog {
                         available,
                         saver);
 
-        builder.setView(v);
+
+         */
+        //builder.setView(v);
+
+        String[] names = Ingredient.getAvailableIngredientNames(activity).toArray(new String[0]);
+        builder.setItems(names, (dialog, which) -> {
+            Log.v(TAG, "addIngredient: picked "+names[which]);
+
+            //recipe.addOrUpdate(Topic.getTopic(names[which]));
+            saver.save(Ingredient.getIngredient(activity, names[which]), names[which]);
+            Log.v(TAG, "getIngVol : save" );
+            //getIngView.save();
+            //getIngView.send();
+            getIngVolVol(activity, saver);
+            dialog.cancel();
+        });
 
         builder.setPositiveButton("Speichern", (dialog, which) -> {
             Log.v(TAG, "getIngVol : save" );
-            getIngView.save();
+            //getIngView.save();
             //getIngView.send();
             getIngVolVol(activity, saver);
             dialog.cancel();
