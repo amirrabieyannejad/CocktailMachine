@@ -1,7 +1,7 @@
 // general system settings
 #define BLE_NAME             	"Cocktail Machine ESP32"	// bluetooth server name
 #define CORE_DEBUG_LEVEL     	4                       	// 1 = error; 3 = info ; 4 = debug
-const unsigned int VERSION   	= 11;                   	// version number (used for configs etc)
+const unsigned int VERSION   	= 12;                   	// version number (used for configs etc)
                              	                        	
 const unsigned char MAX_PUMPS	= 1 + 4*8;              	// maximum number of supported pumps;
                              	                        	
@@ -584,6 +584,7 @@ Preferences preferences;
 
 bool scale_available  = false;
 bool scale_calibrated = false;
+bool scale_inverted   = false;
 HX711 scale;
 
 PumpSlot* pump_slots[MAX_PUMPS];
@@ -720,8 +721,13 @@ void setup() {
 
     if (scale.wait_ready_timeout(1000, 1)) {
       // sanity check in case nothing is connected
-      if (scale.read() == 0.0) {
+      float v = scale.read();
+      if (v == 0.0) {
         error("scale returned implausible value, assuming it's disconnected");
+      } else if (v < 0) {
+        scale_inverted = true;
+        scale_available = true;
+        info("scale initialized (but it's inverted)");
       } else {
         scale_available = true;
         info("scale initialized");
@@ -2811,7 +2817,12 @@ float scale_weigh() {
 
   if (scale_available) {
     // TODO maybe use a different read command or times value?
-    weight = std::max(scale.read_median(), 0.0f);
+
+    // invert the value if we get negative results
+    float v = scale.read_median();
+    if (scale_inverted && v < 0.0f) v *= -1;
+
+    weight = std::max(v, 0.0f);
   } else {
     for (auto const ing : cocktail) {
       weight += ing.amount;
