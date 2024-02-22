@@ -246,22 +246,17 @@ public class GetDialog {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(title);
         builder.setMessage(message);
-        builder.setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Log.i(TAG, "doBluetooth: cancel");
-                dialog.cancel();
-            }
+        builder.setNegativeButton("Abbrechen", (dialog, which) -> {
+            Log.i(TAG, "doBluetooth: cancel");
+            wait.cancel();
+            dialog.cancel();
         });
 
-        builder.setPositiveButton(doBluetoothButton, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-                wait.show();
-                Log.i(TAG, "doBluetooth: do it");
-                bluetooth.post();
-            }
+        builder.setPositiveButton(doBluetoothButton, (dialog, which) -> {
+            dialog.cancel();
+            wait.show();
+            Log.i(TAG, "doBluetooth: do it");
+            bluetooth.post();
         });
         builder.show();
     }
@@ -2624,6 +2619,7 @@ public class GetDialog {
      * @param activity
      */
     public static void calibrateScale(Activity activity) {
+        Log.i(TAG, "calibrateScale");
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Setze jetzt das jetzige Gewicht auf der Waage:");
 
@@ -2637,7 +2633,7 @@ public class GetDialog {
                             @Override
                             public void post() {
                                 wait.cancel();
-                                wait.closeOptionsMenu();
+                                Log.i(TAG, "calibrateScale: wait cancel");
                             }
                         });
 
@@ -2645,11 +2641,15 @@ public class GetDialog {
 
         builder.setPositiveButton("Speichern", (dialog, which) -> {
             wait.show();
+            Log.i(TAG, "calibrateScale: wait show");
+            Log.i(TAG, "calibrateScale: weight sending");
             scaleChangeView.send();
+            Log.i(TAG, "calibrateScale: weight sended");
 
         });
         builder.setNeutralButton("Abbrechen", (dialog, which) -> {
-
+            wait.cancel();
+            Log.i(TAG, "calibrateScale: wait cancel");
         });
         builder.show();
     }
