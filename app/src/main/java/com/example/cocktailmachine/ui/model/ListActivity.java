@@ -83,7 +83,7 @@ public class ListActivity extends BasicActivity {
 
     @Override
     void setUpTopic() {
-        binding.textViewListAcTitle.setText("Topics");
+        binding.textViewListAcTitle.setText("Serviervorschläge");
         /*
         List<Topic> elms = Topic.getTopics(this);
         for(Topic e: elms){

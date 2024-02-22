@@ -518,6 +518,7 @@ public class CocktailMachine {
             Log.e(TAG, "error", e);
             Toast.makeText(activity, "ERROR",Toast.LENGTH_SHORT).show();
             GetDialog.errorStatus(activity, e);
+            postexecute.post();
         }
     }
 
