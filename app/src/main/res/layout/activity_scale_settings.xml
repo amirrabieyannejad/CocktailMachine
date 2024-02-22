@@ -61,7 +61,7 @@
             android:onClick="getWeight"
             android:padding="8dp"
             android:paddingStart="16dp"
-            android:text="derzeitige Gewicht auf der Waage"
+            android:text="derzeitiges Gewicht auf der Waage"
             android:textSize="20sp" />
 
 
