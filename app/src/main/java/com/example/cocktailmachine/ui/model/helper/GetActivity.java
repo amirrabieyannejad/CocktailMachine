@@ -141,6 +141,7 @@ public class GetActivity {
     public static void startAgain(Activity activity) {
         Log.v(TAG, "startAgain");
         //TO DO: go back to device scan
+        /*
         if(Dummy.isDummy) {
             Log.v(TAG, "startAgain: dummy->menu");
             goToMenu(activity);
@@ -148,6 +149,10 @@ public class GetActivity {
             Log.v(TAG, "startAgain: real->scan");
             goToScan(activity);
         }
+
+         */
+        Log.v(TAG, "startAgain: real->scan");
+        goToScan(activity);
     }
 
     public static void goToScan(Activity activity){

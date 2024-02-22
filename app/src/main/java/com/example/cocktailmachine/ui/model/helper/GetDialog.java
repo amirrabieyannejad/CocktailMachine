@@ -693,7 +693,7 @@ public class GetDialog {
         Dialog wait = loadingBluetooth(activity);
         wait.show();
         try {
-            BluetoothSingleton.getInstance().adminAutoCalibrateCancel(activity,new Postexecute(){
+            BluetoothSingleton.getInstance().adminAutoCalibrateCancel(activity, new Postexecute(){
                 @Override
                 public void post() {
                     wait.cancel();
@@ -768,9 +768,6 @@ public class GetDialog {
                 "Die Wassermmenge je Pumpe sollte um die 150ml betragen.");
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
             dialog.cancel();
-
-
-
 
             Postexecute continueHere = new Postexecute(){
 
@@ -2472,7 +2469,7 @@ public class GetDialog {
 
     public static void runPump(Activity activity, Pump pump) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle("Für wie lange soll die Pumpe laufen?");
+        builder.setTitle("Wie viele Milliliter soll die Pumpe pumpen?");
 
         View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
         GetDialog.TimePumpingView timePumpingView =
@@ -2482,7 +2479,7 @@ public class GetDialog {
 
         builder.setView(v);
 
-        builder.setPositiveButton("Speichern", (dialog, which) -> {
+        builder.setPositiveButton("Pumpen", (dialog, which) -> {
             try {
                 timePumpingView.send();
                 dialog.cancel();
@@ -2503,7 +2500,7 @@ public class GetDialog {
     private static class TimePumpingView extends FloatChangeView{
         private final Pump pump;
         private TimePumpingView(Activity activity, View v, Pump pump) {
-            super(activity, v, "Zeit");
+            super(activity, v, "Volumen");
             this.pump = pump;
         }
 
