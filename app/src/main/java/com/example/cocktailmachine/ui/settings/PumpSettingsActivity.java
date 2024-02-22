@@ -53,12 +53,14 @@ public class PumpSettingsActivity extends AppCompatActivity {
      * @author Johanna Reidt
      * @param view
      */
-    public void calibratePump(View view){
+    /*public void calibratePump(View view){
         Log.v(TAG, "calibratePump");
 
         //TO DO: CocktailMachine.calibratePump(this);
         Pump.calibratePumpsAndTimes(this);
     }
+
+     */
 
 
     /**
