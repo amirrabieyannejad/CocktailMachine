@@ -10,7 +10,7 @@ import android.widget.Toast;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.ui.Menue;
-import com.example.cocktailmachine.ui.model.helper.fillAnimation.FillAnimation;
+import com.example.cocktailmachine.ui.model.FillAnimation;
 import com.example.cocktailmachine.ui.model.AddActivity;
 import com.example.cocktailmachine.ui.model.DisplayActivity;
 import com.example.cocktailmachine.ui.model.ListActivity;

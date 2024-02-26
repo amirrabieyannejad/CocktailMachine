@@ -13,7 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.SingeltonTestdata;
+import com.example.cocktailmachine.ui.manualtestingsuit.SingeltonTestdata;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.data.enums.Orientation;

@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.model.helper.fillAnimation;
+package com.example.cocktailmachine.ui.model;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,6 +14,7 @@ import com.example.cocktailmachine.logic.BildgeneratorGlas;
 import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
+import com.example.cocktailmachine.ui.model.helper.fillAnimation.GlassFillFragment;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;

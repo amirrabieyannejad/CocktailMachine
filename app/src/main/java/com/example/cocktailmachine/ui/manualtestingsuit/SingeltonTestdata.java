@@ -1,4 +1,4 @@
-package com.example.cocktailmachine;
+package com.example.cocktailmachine.ui.manualtestingsuit;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -9,7 +9,6 @@ import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.elements.SQLIngredientPump;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeIngredient;
 import com.example.cocktailmachine.data.db.elements.SQLRecipeTopic;
 import com.example.cocktailmachine.ui.model.helper.WaitingQueueCountDown;
