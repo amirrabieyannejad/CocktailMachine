@@ -2198,12 +2198,6 @@ void update_user() {
   String out = String('[');
   bool prev = false;
 
-  if (!recipe_queue.empty()) {
-    prev = true;
-    ActiveRecipe *active = recipe_queue.front();
-    out.concat(String(active->user));
-  }
-
   for(auto const &r : recipe_queue) {
     if (prev) out.concat(',');
     out.concat(String(r->user));
