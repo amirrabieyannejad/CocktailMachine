@@ -642,7 +642,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
     }
 
 
-    public DatabaseIterator getChunkIterator(Context db, int n, String sortBy){
+    public DatabaseIterator getChunkIterator(Context context, int n, String sortBy){
         /*
         return new Iterator<List<T>>() {
             private final List<Long> ids = BasicColumn.this.getIDs(db);
@@ -665,7 +665,7 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
         };
 
          */
-        return new DatabaseIterator(db, n, sortBy);
+        return new DatabaseIterator(context, n, sortBy);
     }
 
 
@@ -738,6 +738,10 @@ public abstract class BasicColumn<T extends SQLDataBaseElement> implements BaseC
                     .collect(Collectors.joining(", ", "(", ")"));
         }else {
             selection = _ID+" in "+Helper.objToString(ids, "(", ", ", ")");
+        }
+
+        if(!db.isOpen()){
+            return new LinkedList<>();
         }
 
         Cursor cursor = db.query(true,
