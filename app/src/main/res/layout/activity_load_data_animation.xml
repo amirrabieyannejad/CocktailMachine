@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:minWidth="400dp"
     android:minHeight="400dp"
-    tools:context=".ui.LoadDataAnimation">
+    tools:context=".ui.manualtestingsuit.LoadDataAnimation">
 
 
     <TextView

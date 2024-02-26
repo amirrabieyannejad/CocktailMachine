@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui;
+package com.example.cocktailmachine.ui.manualtestingsuit;
 
 import androidx.appcompat.app.AppCompatActivity;
 
