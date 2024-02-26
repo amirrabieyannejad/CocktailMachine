@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.2.26)  26 FEB 2024 19:31
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.2.26)  26 FEB 2024 20:23
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -930,15 +930,15 @@ See the caption package documentation for explanation.
 Underfull \vbox (badness 3302) has occurred while \output is active []
 
  [11]
-[12 <./Menu.png>]
 
 LaTeX Warning: No positions in optional float specifier.
-               Default added (so using `tbp') on input line 189.
+               Default added (so using `tbp') on input line 188.
 
-) [13] [14] [15] [16] [17] [18]
+) [12 <./Menu.png>] [13] [14] [15] [16] [17]
 \openout2 = `chapters/04_Qualitätssicherung.aux'.
 
- (chapters/04_Qualitätssicherung.tex) [19
+
+(chapters/04_Qualitätssicherung.tex) [18
 
 
 
@@ -947,14 +947,14 @@ LaTeX Warning: No positions in optional float specifier.
 ]
 \openout2 = `chapters/05_Abschlussbericht.aux'.
 
-
-(chapters/05_Abschlussbericht.tex) [20
-
-
+ (chapters/05_Abschlussbericht.tex)
+[19
 
 
 
-] [21
+
+
+] [20
 
 
 ] (main.bbl [4]
@@ -1175,8 +1175,8 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: EBD7698770BCD14B08650597D36BFEE9;6412.
  ) 
 Here is how much of TeX's memory you used:
- 18251 strings out of 474462
- 313331 string characters out of 5742883
+ 18250 strings out of 474462
+ 313324 string characters out of 5742883
  1951998 words of memory out of 5000000
  40031 multiletter control sequences out of 15000+600000
  586242 words of font info for 83 fonts, out of 8000000 for 9000
@@ -1188,9 +1188,9 @@ r8a.pfb><C:/Users/johan/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utm
 b8a.pfb><C:/Users/johan/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utm
 r8a.pfb><C:/Users/johan/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utm
 ri8a.pfb>
-Output written on main.pdf (33 pages, 246345 bytes).
+Output written on main.pdf (32 pages, 245906 bytes).
 PDF statistics:
- 498 PDF objects out of 1000 (max. 8388607)
- 135 named destinations out of 1000 (max. 500000)
+ 494 PDF objects out of 1000 (max. 8388607)
+ 134 named destinations out of 1000 (max. 500000)
  373 words of extra memory for PDF output out of 10000 (max. 10000000)
 
