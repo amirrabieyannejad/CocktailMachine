@@ -24,6 +24,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 
 public class FillAnimation extends AppCompatActivity {
@@ -107,14 +108,18 @@ public class FillAnimation extends AppCompatActivity {
      * @author Johanna Reidt
      */
     private void onFinish(){
+        Log.i(TAG, "onFinish");
 
         CocktailStatus.getCurrentStatus(new Postexecute() {
             @Override
             public void post() {
                 if(CocktailStatus.getCurrentStatus() == CocktailStatus.cocktail_done) {
+                    Log.i(TAG, "onFinish: cocktail_done");
                     GetDialog.isDone(FillAnimation.this, recipe);
                 }else{
+                    Log.i(TAG, "onFinish: animation start");
                     animation.start();
+                    Toast.makeText(FillAnimation.this, "Bitte warten!", Toast.LENGTH_SHORT).show();
                 }
             }
         }, this);
