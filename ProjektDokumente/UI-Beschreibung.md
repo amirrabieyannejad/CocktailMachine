@@ -16,7 +16,7 @@ Drei mögliche Aktionen:
   
   - und einleiten der automatischen Kalibrierung: Dialog: Kalibrierung
 
-- wähle eine andere Cocktailmachine aus: Cocktailmachinewahlactivity  öffnet.
+- wähle eine andere Cocktailmachine aus: Cocktailmachinewahlactivity öffnet.
 
 - laden (Übreprüfen, ob ein Admin die Kalibrierung vorgenommen hat)
   
@@ -24,17 +24,19 @@ Drei mögliche Aktionen:
   
   - Bei Misserfolg: Toast "Cocktailmaschine ist noch nicht bereit."
 
+Nach der Auswahl eines der Möglichkeiten werden die Button auf nicht verfügbar gestellt, damit die Button beim Laden zwischen den Dialogen nicht angeklickt werden können. 
+
 ## Dialog: Anmelden
 
 Dialogfenster: 
 
-Passwort angeben ("admin"). Gelange in den angemeldeten Zustand
+Passwort angeben ("admin"). Gelange in den angemeldeten Zustand.
 
 ## Dialog: Automatische Kalibrierung
 
 1. Gebe die Anzahl (k) der Pumpen an.
    
-   1. Toast "Es lädt
+   1. Toast "Es lädt"
 
 2. Ok-Fenster: Schließe Wasser an die Pumpen.
 
@@ -52,11 +54,11 @@ Passwort angeben ("admin"). Gelange in den angemeldeten Zustand
 
 7. Dialog mit Liste von k 
    
-   Pumpen pumpen sind mit slot nummer markiert und orange hinterlegt, wenn noch keine Flüssigkeit hinterlegt ist, und grün wenn eine Flüssigkeit hinterlegt ist
+   Pumpen sind mit einer Slotnummer markiert und orange hinterlegt, wenn noch keine Flüssigkeit hinterlegt ist, und grün wenn eine Flüssigkeit hinterlegt ist.
 
-8. Wähle orangene Pumpe
+8. Wähle orangene Pumpe.
 
-9. Wähle Flüssigkeit
+9. Wähle Flüssigkeit.
 
 10. Gibt Volumen an: 
     
@@ -75,10 +77,6 @@ Passwort angeben ("admin"). Gelange in den angemeldeten Zustand
 | Pfeil in eine Tür    | -                     | Adminstratorenanmeldung         | Nur im **ab**gemeldeten Zustand | Zeigen eines Anmeldedialogs, Wechsel in den angemeldeten Zustand |
 | Pfeil aus einer Tür  | -                     | Adminstratorenabmeldung         | Nur im **an**gemeldeten Zustand | Wechsel in den abgemeldeten Zustand                              |
 
-# 
-
-# 
-
 ## Liste von Elementen
 
 Titel: Rezept, Zutaten, Serviervorschläge, Pumpen
@@ -89,11 +87,13 @@ Haus: Gehe zum Hauptmenü.
 
 drehender Pfeil: Lade die Datenbank neu!
 
-verfügbar Switch: zeige nur verfügbare Elemente 
-
-#### Pumpen
+### Pumpen
 
 Statt dem Namen der Pumpen sind die Namen der zugeordneten Zutaten sichtbar.
+
+### Rezepte
+
+Plus Zeichen: Gehe zur Erstellung eines Rezeptes.
 
 ## Anzeigen einzelner Elemente
 
@@ -113,17 +113,53 @@ Als Titel steht der Name des Serviervorschlags. Darunter ist die Menüzeile und 
 
 Als Titel steht Slot und die Slotnummer. 
 
-# Änder oder Hinzufügen
+## Einzeldarstellung
+
+Der Titel ist der Name des Rezeptes, bzw. der Zutat, des Serviervorschlages oder die Slotnummer.
+
+Stift: Gehe zur Änderungsseite
+
+drehender Pfeil: Reload
+
+Haus: gehe zum Hauptmenü
+
+Liste: gehe zur dazugehörigen Liste
+
+### Rezepte
+
+Die Verfügbarkeitsanzeige ist ein grüner Punkt, wenn es verfügbar ist und rot, wenn es nicht verfügbar ist. Die Alkoholgehaltsanzeige ist ein Dreieck mit weißem Ausrufzeichen. Wenn das Dreieck rot ist, hat das Rezept alkoholische Zutaten. Wenn es grau ist, ist es nicht alkoholisch. Außerdem werden die Zutaten mit Milliliterangabe gelistet. Jede Zutat führt zur jeweiligen Zutatendarstellung. Die Serviervorschläge werden genauso gelistet. Zu letzt ist ein großer Button "Mix den Cocktail" fürt zu, Dialog: Mixen.
+
+#### Dialog: Mixen/Activity:Simulation des Befüllens
+
+Beginnt mit einem CountDown mit der Anzahl der noch zu mixenden Cocktails bis zum eigenen Cocktail. Wenn der Nutzende dann dran ist, kommt die Aufforderung das eigene Glas runterzustellen, was bestätigt werden muss. Gehe zur Darstellung (Activity): Simulation des Befüllens, wenn das Mixen abgeschlossen ist, wird mit einem Dialog aufgefordert, den Cocktail abzuholen. Nach der Bestätigung des Abholens eird das Hauptmenü geöffnet.
+
+### Zutat
+
+Die Verfügbarkeitsanzeige ist ein grüner Punkt, wenn es verfügbar ist und rot, wenn es nicht verfügbar ist. Die Alkoholgehaltsanzeige ist ein Dreieck mit weißem Ausrufzeichen. Wenn das Dreieck rot ist, ist die Zutat alkoholisch. Wenn es grau ist, ist es nicht alkoholisch. Die Volumenanzeige gibt die Milliliterangabe an. 
+
+### Pumpe
+
+Die zugehörige Zutat wird angezeigt und das Volumen in Milliliter. Ein großer Button "Lass die Pumpe laufen". 
+
+#### Dialog: Pumpe laufen lassen
+
+Hier steht eine Aufforderung zur Milliliterangabe, um die Pumpe laufen zu lassen. Bei Bestätigung wird die Pumpe solange laufen gelassen.
+
+### Serviervorschlag
+
+Hier steht nur die Beschreibung!
+
+## Änder oder Hinzufügen
 
 Für alle Elemente gilt:
 
-Möchte man ein neues Element hinzufügen. Geht man in die entsprechende List und wählt den Floatingbutton inder rechten unteren Ecke mit dem Plussymbol aus.
+Möchte man ein neues Element hinzufügen. Geht man in die entsprechende Liste und wählt den Floatingbutton in der rechten unteren Ecke mit dem Plussymbol aus.
 
-Soll ein Element geändert werden, so wählt man in der Detailansich des zu ändernden Element in der Menüzeile den Stift, also das Symbol ganz rechts.
-
-Jedes Element braucht einen Namen. Unter dem Titel gibt es ein Eingabefeld. Als Aufforderung steht in dem Feld in grauer Schrift "Füge einen Namen ein!". Wählt man das Feld aus, öffnet sich die Tastatur. Jetzt kann der Name eingegeben werden. Der eingegebene Name ist in schwarzer Schrift und nachdem ersten Einfügen eines Buchstabens ist die graue Aufforderung nicht mehr sichtbar. Handelt es sich hierbei allerdings um eine Änderung an einer bestehenden Element, dann ist zunächst die nich die Aufforderung zu sehen, sonder direkt der Name in schwarzer Schrift. Entfernt man alle Buchstaben in dem Feld, egal ob es sich um eine Änderung oder eine Neuerstellung handelt. Dann erscheint wieder dier graue Aufforderung.
+Jedes Element braucht einen Namen. Unter dem Titel gibt es ein Eingabefeld. Als Aufforderung steht in dem Feld in grauer Schrift "Füge einen Namen ein!". Wählt man das Feld aus, öffnet sich die Tastatur. Jetzt kann der Name eingegeben werden. Der eingegebene Name ist in schwarzer Schrift und nachdem ersten Einfügen eines Buchstabens ist die graue Aufforderung nicht mehr sichtbar. Handelt es sich hierbei allerdings um eine Änderung an einer bestehenden Element, dann ist zunächst die nich die Aufforderung zu sehen, sonder direkt der Name in schwarzer Schrift. Entfernt man alle Buchstaben in dem Feld, egal ob es sich um eine Änderung oder eine Neuerstellung handelt. Dann erscheint wieder die graue Aufforderung.
 
 Unter all den Eingabefeldern. Stehen zwei Button "Abbruch" und "Speichern". Wählt man den Abbruch gelangt man in die Liste der Elementen. Wählt man den Speichervorgang. So wird die Detailansicht der neuerstellten Zutat sichtbar.
+
+Der Speichervorgang wird abgebrochen, sollte beim Auslösen das Namensfeld leer sein.
 
 ## Zutat
 
@@ -135,6 +171,62 @@ Unter der Alkoholgehaltabfrage steht eine weitere Aufforderung "Ändere die Farb
 
 ### Serviervorschlag
 
-Als Titel steht "Serviervorschlag". Unter dem Namesfeld steht ein großes editierbares Textfeld. Dort steht in schwarz entweder die vorhandene Beschreibung bei einer Änderung oder in schwarz die eingegebene Beschreibung. Ist es eine Neuerstellung oder die gesamte Textfeldeingabe wurde entfernt (also die schwarzen Buchstaben), dann ist in grauen Buchstaben der Text "Füge eine Beschreibung ein." zu lesen, der so gleich wieder nicht sichtbar wird, sollte auch nur ein Buchstabe in diesem Feld eingegeben werden.
+Als Titel steht "Serviervorschlag". Unter dem Namesfeld steht ein großes editierbares Textfeld. Dort steht in schwarz entweder die vorhandene Beschreibung bei einer Änderung oder in schwarz die eingegebene Beschreibung. Ist es eine Neuerstellung oder die gesamte Textfeldeingabe wurde entfernt (also die schwarzen Buchstaben), dann ist in grauen Buchstaben der Text "Füge eine Beschreibung ein." zu lesen, der so gleich wieder nicht sichtbar wird, sollte auch nur ein Buchstabe in diesem Feld eingegeben werden. Sind die Titelangabe oder die Beschreibungsangabe leer, dann wird das Speichern abgebrochen und eine Toastaufforderung zur Ergänzung angezeigt.
 
-# Tests
+#### Rezepte
+
+Unter dem Namensfeld steht für die Zutaten und die Serviervorschläge je eine Aufforderung des Einfügens mit einem grünen Plus daneben. Das Plus löst als Button einen Dialog aus, indem je entweder die Namen der verfügbaren Zutaten oder die der Serviervorschläge gelistet sind. Nach der Wahl einer Zutat wird in einem Dialog die Millilieterangabe gemacht und die Zutat mit Volumenangabe unter der Aufforderung hinzugelistet. Genauso sammeln sich die Namen der gewählten Serviervorschläge.
+
+#### Pumpe
+
+Es gibt kein Namensfeld. Es gibt zwei verpflichtende Felder: Ein Textfeld zur Angabe des Zutatennamens und der des Volumens. Beide müssen mit gültigen Werten ausgefüllt sein, um gespeichert zu werden.
+
+## Einstellung
+
+Die Haupteinstellung:
+
+| Element                                                                  | Nächste Activity        | Funktion                                                                                  | Sichtbar                        | ausgelöste Reaktion |
+|:------------------------------------------------------------------------ |:----------------------- |:----------------------------------------------------------------------------------------- | ------------------------------- | ------------------- |
+| Anmelden                                                                 | -                       | Adminstratorenanmeldung: Zeigen eines Anmeldedialogs, Wechsel in den angemeldeten Zustand | Nur im **ab**gemeldeten Zustand | Funktion            |
+| Zeigen eines Anmeldedialogs, Wechsel in den angemeldeten ZustandAbmelden | -                       | Adminstratorenabmeldung: Wechsel in den abgemeldeten Zustand                              | Nur im **an**gemeldeten Zustand | Funktion            |
+| Pumpe                                                                    | ListActivity            | Liste der Pumpen                                                                          | Nur im **an**gemeldeten Zustand | Aktivitätenwechsel  |
+| Zutaten                                                                  | ListActivity            | Liste der verfügbaren Zutaten                                                             | immer                           | Aktivitätenwechsel  |
+| Zutaten(Alle)                                                            | ListActivity            | Liste der Zutaten                                                                         | Nur im **an**gemeldeten Zustand | Aktivitätenwechsel  |
+| Rezepte                                                                  | ListActivity            | Liste der verfügbaren Rezepte                                                             | immer                           | Aktivitätenwechsel  |
+| Rezepte(Alle)                                                            | ListActivity            | Liste der Rezepte                                                                         | Nur im **an**gemeldeten Zustand | Aktivitätenwechsel  |
+| Serviervorschläge                                                        | ListActivity            | Liste der Serviervorschläge                                                               | immer                           | Aktivitätenwechsel  |
+| Synchronisieren (Bluetooth)                                              | -                       | Synchronisiere Rezpte und die Pumpen.                                                     | immer                           | Funktion            |
+| Scannen (Bluetooth)                                                      | ScanActivity            | Scanne nach der Cocktailmaschine                                                          | immer                           | Aktivitätenwechsel  |
+| Cocktailmaschinen-einstellung                                            | MachineSettingsActivity | weitere Einstellungen                                                                     | Nur im **an**gemeldeten Zustand | Aktivitätenwechsel  |
+| Komplett neuladen (Datenbank)                                            | -                       | Synchronisiere Pumpenstand und damit die Verfügbarkeit.                                   | immer                           | Funktion            |
+| Füge vorbereitete Rezepte hinzu (Datenbank)                              | -                       | Lade Rezepte aus Json und CSV-Dateien.                                                    | immer                           | Funktion            |
+
+Cocktailmaschineneinstellungen:
+
+(Erreichbar nur im **an**gemeldeten Zustand)
+
+| Element                           | Nächste Activity      | Funktion                                                                                  | ausgelöste Reaktion |
+|:--------------------------------- |:--------------------- |:----------------------------------------------------------------------------------------- | ------------------- |
+| Neukalibrierung (Kalibrierung)    | WaitNotSet            | Setze die Kalibrierung zurück und kalibriere die Cocktailmaschine neu. Geh zu WaitNotSet. | Aktivitätenwechsel  |
+| Waagenkalibrierung (Kalibrierung) | ScaleSettingsActivity | weitere Einstellungen                                                                     | Aktivitätenwechsel  |
+| Pumpenkalibrierung (Kalibrierung) | PumpSettingsActivity  | weitere Einstellungen                                                                     | Aktivitätenwechsel  |
+| Statusabfrage (Zustand)           | -                     | Zeige in einem Dialog den derzeitigen Zustand an, wie von Feya beschrieben.               | Funktion            |
+| Reinigung (Zustand)               | -                     | Schickt Reinigungsbefehl                                                                  | Funktion            |
+| Neustart (Neustart)               | -                     | Schickt Neustartbefehl. (Kein Zurücksetzen!)                                              | Funktion            |
+| Werkseinstellungen (Neustart)     | WaitNotSet            | Setze die Kalibrierung zurück. Geh zu WaitNotSet.                                         | Aktivitätenwechsel  |
+
+Waagenkalibrierung:
+
+| Element            | Nächste Activity | Funktion                                                           | ausgelöste Reaktion |
+|:------------------ |:---------------- |:------------------------------------------------------------------ | ------------------- |
+| Kalibriere         | -                | Setze das Gewicht mit Hilfe eines Dialogs. Schicke Gewichtsangabe. | Funktion            |
+| Tariere            | -                | Schicke Tarierungsbefehl.                                          | Funktion            |
+| Skaliere           | -                | Setze Saklierungsfaktor mit des Dialogs.                           | Funktion            |
+| derzeitges Gewicht | -                | Zeige in einem Dialog den derzeitiges Gewicht an.                  | Funktion            |
+
+Pumpenkalibrierung:
+
+| Element                         | Nächste Activity | Funktion                                                                                                                                  | ausgelöste Reaktion |
+|:------------------------------- |:---------------- |:----------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| Automatische Kalibrierung       | WaitNotSet       | Setze die Kalibrierung zurück und kalibriere die Cocktailmaschine neu. Geh zu WaitNotSet.                                                 | Aktivitätenwechsel  |
+| Setze Pumpzeiten (Kalibrierung) | -                | Dialog mit vier Eingabefeldern: Zeit1, Zeit2, Volumen1, Volumen2, wie von Freya beschrieben. Wird für alle Pumpen gleichzeitig verwendet. | Funktion            |

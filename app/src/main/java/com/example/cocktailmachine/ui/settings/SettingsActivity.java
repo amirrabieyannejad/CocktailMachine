@@ -225,7 +225,7 @@ public class SettingsActivity extends AppCompatActivity {
         if(Dummy.isDummy){
             Toast.makeText(this,
                     "Öffnet eigentlich BluetoothScan, " +
-                            "aber wird sind in der VM-freundlichen Version.",
+                            "aber wir sind in der VM-freundlichen Version.",
                     Toast.LENGTH_SHORT).show();
             GetActivity.goToMenu(this);
             return;

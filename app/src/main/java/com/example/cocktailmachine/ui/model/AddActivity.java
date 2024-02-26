@@ -189,8 +189,19 @@ public class AddActivity extends BasicActivity {
         if(topic == null){
             Log.v(TAG, "setUpPump: new topic");
             binding.buttonSave.setOnClickListener(v -> {
+                String title = binding.editTextAddTitle.getText().toString();
+                String txt = binding.editTextDescription.getText().toString();
+                if(title.length() == 0){
+                    Toast.makeText(activity,"Bitte gib dem Serviervorschlag einen Titel!!!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(txt.length() == 0){
+                    Toast.makeText(activity,"Bitte gib dem Serviervorschlag eine Beschreibung!!!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Log.v(TAG, "setUpPump: buttonSave: clicked");
-                topic = Topic.makeNew(binding.editTextAddTitle.getText().toString(), binding.editTextDescription.getText().toString());
+                topic = Topic.makeNew(title, txt);
                 topic.save(activity);
                 GetActivity.goToLook(activity, ModelType.TOPIC, topic.getID());
                 Log.v(TAG, "setUpPump: done");
@@ -288,6 +299,11 @@ public class AddActivity extends BasicActivity {
             //binding.imageViewColorShow.setColorFilter(set_color[0]);
             binding.buttonSave.setOnClickListener(v -> {
                 Log.v(TAG, "setUpIngredient:buttonSave: clicked");
+                String title = binding.editTextAddTitle.getText().toString();
+                if(title.length() == 0){
+                    Toast.makeText(activity,"Bitte gib der Zutat einen Namen!!!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 ingredient = Ingredient.makeNew(
                         binding.editTextAddTitle.getText().toString(),
                         binding.switchAlcohol.isChecked(),
@@ -306,6 +322,11 @@ public class AddActivity extends BasicActivity {
 
             binding.buttonSave.setOnClickListener(v -> {
                 Log.v(TAG, "setUpIngredient:buttonSave: clicked");
+                String title = binding.editTextAddTitle.getText().toString();
+                if(title.length() == 0){
+                    Toast.makeText(activity,"Bitte gib der Zutat einen Namen!!!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 ingredient.setName(binding.editTextAddTitle.getText().toString());
                 ingredient.setAlcoholic(binding.switchAlcohol.isChecked());
                 ingredient.setColor(set_color[0]);
@@ -447,9 +468,14 @@ public class AddActivity extends BasicActivity {
         //save
         binding.buttonSave.setOnClickListener(v -> {
             Log.v(TAG, "buttonSave: clicked");
+            String title = binding.editTextAddTitle.getText().toString();
+            if(title.length() == 0){
+                Toast.makeText(activity,"Bitte gib dem Rezept einen Namen!!!", Toast.LENGTH_SHORT).show();
+                return;
+            }
             //Log.i(TAG, "ingvol "+AddActivity.this.ingredientVolumeHashMap.toString());
             Log.v(TAG, "topics "+AddActivity.this.topicAdapter.toString());
-            AddActivity.this.recipe.setName(activity, binding.editTextAddTitle.getText().toString());
+            AddActivity.this.recipe.setName(activity,title);
             AddActivity.this.recipe.save(activity);
             //AddActivity.this.recipe.replaceIngredients(activity,
              //       AddActivity.this.ingredientVolumeHashMap);
@@ -505,19 +531,6 @@ public class AddActivity extends BasicActivity {
 
 
 
-
-    //no Name Twice Policie
-
-    /*
-     *
-     * @author Johanna Reidt
-     * @return
-     */
-    private boolean checkName(){
-        //TODO: ????
-
-        return true;
-    }
 
 
 

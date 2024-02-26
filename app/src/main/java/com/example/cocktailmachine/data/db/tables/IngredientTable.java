@@ -185,8 +185,8 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
         return this.cursorToList(
                 db.query(true, this.getName(), this.getColumns().toArray(new String[]{}),
                 this._ID+" IN (SELECT "+ //ingredientpumptable getingredient ids
-                        IngredientPumpTable.COLUMN_NAME_INGREDIENT_ID+
-                        " FROM "+Tables.TABLE_INGREDIENT_PUMP.getName()+")"
+                        NewPumpTable.COLUMN_NAME_INGREDIENT_ID+
+                        " FROM "+Tables.TABLE_NEW_PUMP.getName()+")"
                         , null, null,null, null, null));
     }
 
@@ -195,8 +195,8 @@ public class IngredientTable extends BasicColumn<SQLIngredient> {
             List<SQLIngredient> res= this.cursorToList(
                     db.query(true, this.getName(), this.getColumns().toArray(new String[]{}),
                             "("+this._ID+" IN (SELECT "+
-                                    IngredientPumpTable.COLUMN_NAME_INGREDIENT_ID+
-                                    " FROM "+Tables.TABLE_INGREDIENT_PUMP.getName()+"))"+
+                                    NewPumpTable.COLUMN_NAME_INGREDIENT_ID+
+                                    " FROM "+Tables.TABLE_NEW_PUMP.getName()+"))"+
                                     " AND "+this._ID +" IN "+makeSelectionList(this._ID, ids)
                             , null, null,null, null, null));
             db.close();

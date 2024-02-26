@@ -388,10 +388,13 @@ public class CocktailMachine {
         Log.i(TAG, "tareScale");
         Dialog wait = GetDialog.loadingBluetooth(activity);
         wait.show();
+
+        Log.i(TAG, "tareScale: tare");
         tareScale(activity, new Postexecute() {
             @Override
             public void post() {
                 wait.dismiss();
+                Log.i(TAG, "tareScale: wait done");
             }
         });
     }
@@ -409,6 +412,7 @@ public class CocktailMachine {
         //TO DO: tareScale
         if(Dummy.isDummy){
             postexecute.post();
+            Log.i(TAG, "tareScale: post done");
             return;
         }
         try {
@@ -419,6 +423,7 @@ public class CocktailMachine {
             Log.i(TAG, "tareScale failed");
             Toast.makeText(activity, "Die Tarierung ist fehlgeschlagen!",Toast.LENGTH_SHORT).show();
             postexecute.post();
+            Log.i(TAG, "tareScale: post done");
         }
     }
 
@@ -440,6 +445,7 @@ public class CocktailMachine {
         //TO DO: calibrateScale
         if(Dummy.isDummy){
             Log.i(TAG, "sendCalibrateScale: dummy");
+            postexecute.post();
             return;
         }
         try {
@@ -450,6 +456,7 @@ public class CocktailMachine {
             Log.e(TAG, "error"+ e);
             Log.e(TAG, "error", e);
             Toast.makeText(activity, "Die Kalibrierung ist fehlgeschlagen!",Toast.LENGTH_SHORT).show();
+            postexecute.post();
         }
     }
 
@@ -511,6 +518,7 @@ public class CocktailMachine {
             Log.e(TAG, "error", e);
             Toast.makeText(activity, "ERROR",Toast.LENGTH_SHORT).show();
             GetDialog.errorStatus(activity, e);
+            postexecute.post();
         }
     }
 

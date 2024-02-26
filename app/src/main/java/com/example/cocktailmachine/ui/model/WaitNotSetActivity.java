@@ -1,10 +1,12 @@
 package com.example.cocktailmachine.ui.model;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -65,6 +67,13 @@ public class WaitNotSetActivity extends AppCompatActivity {
             return;
         }
 
+        DialogInterface.OnCancelListener ocl = new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                unlock();
+            }
+        };
+
         if(AdminRights.isAdmin()) {
             Log.i(TAG, "login: is admin");
             GetDialog.startAutomaticCalibration(this);
@@ -74,6 +83,7 @@ public class WaitNotSetActivity extends AppCompatActivity {
         AdminRights.login(this, this.getLayoutInflater(), dialog -> {
             Log.i(TAG, "login: is admin");
             dialog.dismiss();
+            unlock();
             if(AdminRights.isAdmin()) {
                 GetDialog.startAutomaticCalibration(WaitNotSetActivity.this);
                 //GetActivity.goToMenu(a);
@@ -104,7 +114,6 @@ public class WaitNotSetActivity extends AppCompatActivity {
         Postexecute success = new Postexecute() {
             @Override
             public void post() {
-
                 Log.v(TAG, "reload: is set");
                 Toast.makeText(WaitNotSetActivity.this, "Cocktailmaschine ist bereit.", Toast.LENGTH_SHORT).show();
                 GetActivity.goToMenu(WaitNotSetActivity.this);

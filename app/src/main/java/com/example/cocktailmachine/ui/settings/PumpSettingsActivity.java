@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
 
 import com.example.cocktailmachine.data.CocktailMachine;
@@ -27,6 +29,11 @@ public class PumpSettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pump_settings);
+
+        if(!Dummy.isDummy){
+            TextView tv = this.findViewById(R.id.ramdomPumpUpdate);
+            tv.setVisibility(View.GONE);
+        }
 
 
         //TODO: bind bluetooth
@@ -53,12 +60,14 @@ public class PumpSettingsActivity extends AppCompatActivity {
      * @author Johanna Reidt
      * @param view
      */
-    public void calibratePump(View view){
+    /*public void calibratePump(View view){
         Log.v(TAG, "calibratePump");
 
         //TO DO: CocktailMachine.calibratePump(this);
         Pump.calibratePumpsAndTimes(this);
     }
+
+     */
 
 
     /**

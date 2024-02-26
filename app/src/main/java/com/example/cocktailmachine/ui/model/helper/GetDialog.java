@@ -246,22 +246,17 @@ public class GetDialog {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(title);
         builder.setMessage(message);
-        builder.setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Log.i(TAG, "doBluetooth: cancel");
-                dialog.cancel();
-            }
+        builder.setNegativeButton("Abbrechen", (dialog, which) -> {
+            Log.i(TAG, "doBluetooth: cancel");
+            wait.cancel();
+            dialog.cancel();
         });
 
-        builder.setPositiveButton(doBluetoothButton, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-                wait.show();
-                Log.i(TAG, "doBluetooth: do it");
-                bluetooth.post();
-            }
+        builder.setPositiveButton(doBluetoothButton, (dialog, which) -> {
+            dialog.cancel();
+            wait.show();
+            Log.i(TAG, "doBluetooth: do it");
+            bluetooth.post();
         });
         builder.show();
     }
@@ -693,7 +688,7 @@ public class GetDialog {
         Dialog wait = loadingBluetooth(activity);
         wait.show();
         try {
-            BluetoothSingleton.getInstance().adminAutoCalibrateCancel(activity,new Postexecute(){
+            BluetoothSingleton.getInstance().adminAutoCalibrateCancel(activity, new Postexecute(){
                 @Override
                 public void post() {
                     wait.cancel();
@@ -768,9 +763,6 @@ public class GetDialog {
                 "Die Wassermmenge je Pumpe sollte um die 150ml betragen.");
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
             dialog.cancel();
-
-
-
 
             Postexecute continueHere = new Postexecute(){
 
@@ -1714,8 +1706,23 @@ public class GetDialog {
         //TODOsetTitle
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Bitte wähle die Zutat!");
+        /*
+        * AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Wähle einen Serviervorschlag!");
+        String[] names = Topic.getTopicTitles(activity).toArray(new String[0]);
+        builder.setItems(names, (dialog, which) -> {
+            Log.v(TAG, "addTopic: picked "+names[which]);
 
-        View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
+            //recipe.addOrUpdate(Topic.getTopic(names[which]));
+            topicSaver.save(Topic.getTopic(activity,names[which]), dialog);
+        });
+        builder.setNegativeButton("Abbrechen", (dialog, which) -> {
+            Log.v(TAG, "addTopic: stop, none picked");
+            dialog.cancel();});
+        builder.show();
+        * */
+
+        /*View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
         GetDialog.GetIngView getIngView =
                 new GetDialog.GetIngView(
                         activity,
@@ -1723,11 +1730,26 @@ public class GetDialog {
                         available,
                         saver);
 
-        builder.setView(v);
+
+         */
+        //builder.setView(v);
+
+        String[] names = Ingredient.getAvailableIngredientNames(activity).toArray(new String[0]);
+        builder.setItems(names, (dialog, which) -> {
+            Log.v(TAG, "addIngredient: picked "+names[which]);
+
+            //recipe.addOrUpdate(Topic.getTopic(names[which]));
+            saver.save(Ingredient.getIngredient(activity, names[which]), names[which]);
+            Log.v(TAG, "getIngVol : save" );
+            //getIngView.save();
+            //getIngView.send();
+            getIngVolVol(activity, saver);
+            dialog.cancel();
+        });
 
         builder.setPositiveButton("Speichern", (dialog, which) -> {
             Log.v(TAG, "getIngVol : save" );
-            getIngView.save();
+            //getIngView.save();
             //getIngView.send();
             getIngVolVol(activity, saver);
             dialog.cancel();
@@ -2442,7 +2464,7 @@ public class GetDialog {
 
     public static void runPump(Activity activity, Pump pump) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle("Für wie lange soll die Pumpe laufen?");
+        builder.setTitle("Wie viele Milliliter soll die Pumpe pumpen?");
 
         View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
         GetDialog.TimePumpingView timePumpingView =
@@ -2452,7 +2474,7 @@ public class GetDialog {
 
         builder.setView(v);
 
-        builder.setPositiveButton("Speichern", (dialog, which) -> {
+        builder.setPositiveButton("Pumpen", (dialog, which) -> {
             try {
                 timePumpingView.send();
                 dialog.cancel();
@@ -2473,7 +2495,7 @@ public class GetDialog {
     private static class TimePumpingView extends FloatChangeView{
         private final Pump pump;
         private TimePumpingView(Activity activity, View v, Pump pump) {
-            super(activity, v, "Zeit");
+            super(activity, v, "Volumen");
             this.pump = pump;
         }
 
@@ -2597,6 +2619,7 @@ public class GetDialog {
      * @param activity
      */
     public static void calibrateScale(Activity activity) {
+        Log.i(TAG, "calibrateScale");
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Setze jetzt das jetzige Gewicht auf der Waage:");
 
@@ -2610,7 +2633,7 @@ public class GetDialog {
                             @Override
                             public void post() {
                                 wait.cancel();
-                                wait.closeOptionsMenu();
+                                Log.i(TAG, "calibrateScale: wait cancel");
                             }
                         });
 
@@ -2618,11 +2641,15 @@ public class GetDialog {
 
         builder.setPositiveButton("Speichern", (dialog, which) -> {
             wait.show();
+            Log.i(TAG, "calibrateScale: wait show");
+            Log.i(TAG, "calibrateScale: weight sending");
             scaleChangeView.send();
+            Log.i(TAG, "calibrateScale: weight sended");
 
         });
         builder.setNeutralButton("Abbrechen", (dialog, which) -> {
-
+            wait.cancel();
+            Log.i(TAG, "calibrateScale: wait cancel");
         });
         builder.show();
     }
