@@ -156,7 +156,7 @@ public enum ErrorStatus {
             Log.i(TAG, "getErrorMessage: errored");
             Log.e(TAG, "error", e);
             Log.e(TAG, e.getMessage());
-            setError("not");
+            setError("invalid_json");
         }
     }
 
@@ -580,6 +580,8 @@ public enum ErrorStatus {
                             }
                         });
                 return;
+
+
         }
 
     }
