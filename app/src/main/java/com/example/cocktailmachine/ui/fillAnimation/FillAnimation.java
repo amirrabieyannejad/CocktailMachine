@@ -6,6 +6,8 @@ import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
+import com.example.cocktailmachine.data.enums.CocktailStatus;
+import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
 import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
@@ -30,6 +32,7 @@ public class FillAnimation extends AppCompatActivity {
 
     FragmentManager fragmentManager;
     Recipe recipe;
+    private ValueAnimator animation;
 
 
     @Override
@@ -51,7 +54,7 @@ public class FillAnimation extends AppCompatActivity {
         recipe = Recipe.getRecipe(this,id);//Recipe.getRecipe(id);//SingeltonTestdata.getSingelton().getRecipe();
         Bitmap image = null;
 
-        ValueAnimator animation = ValueAnimator.ofFloat(0f, 1f);
+        animation = ValueAnimator.ofFloat(0f, 1f);
         //animation.setStartDelay(5000);
         animation.setDuration(10000);
 
@@ -105,7 +108,16 @@ public class FillAnimation extends AppCompatActivity {
      */
     private void onFinish(){
 
-        GetDialog.isDone(this, recipe);
+        CocktailStatus.getCurrentStatus(new Postexecute() {
+            @Override
+            public void post() {
+                if(CocktailStatus.getCurrentStatus() == CocktailStatus.cocktail_done) {
+                    GetDialog.isDone(FillAnimation.this, recipe);
+                }else{
+                    animation.start();
+                }
+            }
+        }, this);
     }
 
 
