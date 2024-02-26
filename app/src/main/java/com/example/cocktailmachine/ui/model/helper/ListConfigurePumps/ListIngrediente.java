@@ -44,7 +44,7 @@ public class ListIngrediente extends AppCompatActivity implements RecyclerViewLi
         //Einrichtung des RecyclerView
         recyclerView = findViewById(R.id.recyclerViewDialogPumpconfigure);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,listIngredients,this);
+        RecyclerAdapterListIngrediente adapterComments = new RecyclerAdapterListIngrediente(chosenIngredient,listIngredients,this);
         recyclerView.setAdapter(adapterComments);
 
 
@@ -66,7 +66,7 @@ public class ListIngrediente extends AppCompatActivity implements RecyclerViewLi
                 String searchterm = searchFild.getText().toString();
                 filteredListIngredients = ingredientListFilter(listIngredients,searchterm);
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,filteredListIngredients,context);
+                RecyclerAdapterListIngrediente adapterComments = new RecyclerAdapterListIngrediente(chosenIngredient,filteredListIngredients,context);
                 recyclerView.setAdapter(adapterComments);
 
             }
@@ -85,7 +85,7 @@ public class ListIngrediente extends AppCompatActivity implements RecyclerViewLi
         Toast.makeText(this, "Es wurde eine Auswahl getroffen",Toast.LENGTH_LONG).show();
         //Todo Philipp hier musst du noch den Wert zurück geben
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        RecyclerAdapterListIngredience adapterComments = new RecyclerAdapterListIngredience(chosenIngredient,filteredListIngredients,context);
+        RecyclerAdapterListIngrediente adapterComments = new RecyclerAdapterListIngrediente(chosenIngredient,filteredListIngredients,context);
         recyclerView.setAdapter(adapterComments);
     }
 

@@ -85,7 +85,7 @@ public class ListIngredients extends AppCompatActivity implements RecyclerViewLi
     }
 
     @Override
-    public void selectIngredience(Ingredient ingredient) {
+    public void selectIngrediente(Ingredient ingredient) {
         if(ingredient.equals(chosenIngredient)){
             chosenIngredient = null;
         }else{
