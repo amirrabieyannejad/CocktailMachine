@@ -183,28 +183,28 @@ Im Menü werden die wichtigsten Funktionen dem Nutzer angezeigt.
 \includegraphics[scale=0.65]{Menu.png}
 \captionof{figure}{Menü}
 \newpage
-\begin{sidewaystable}[]
+\begin{table}[]
 	\centering
-	\caption{Menü}
+	\caption{Menü sidewaystable}
 	
 	\begin{tabular}{|l|l|l|l|l|l|}
 		\hline
 		Symbol  & Nächste Activity  & Funktion  & Sichtbar  & ausgelöste Reaktion \\ \hline
 		Liste  & ListActivity  & Liste der Rezepte  & immer  & Aktivitätenwechsel \\ \hline
 		Liste mit Plussymbol  & AddActivity  & Erstellung eines neuen Rezepts  & immer  & Aktivitätenwechsel \\ \hline
-		Bluetooth mit Lupe  & BluetoothScanActivity  & Suche eine neue Cocktailmachine  & immer  & Aktivitätenwechsel \\ \hline
+		Bluetooth\newline mit Lupe  & BluetoothScanActivity  & Suche eine neue Cocktailmachine  & immer  & Aktivitätenwechsel \\ \hline
 		Zahnrad  & Settingsactivity  & Einstellungsoptionen  & immer  & Aktivitätenwechsel \\ \hline
-		Pfeil in eine Tür  & -  & Adminstratorenanmeldung  & Nur im abgemeldeten Zustand  & Zeigen eines Anmeldedialogs, Wechsel in den angemeldeten Zustand \\ \hline
+		Pfeil in eine Tür  & -  & Adminstratorenanmeldung  & Nur im abgemeldeten Zustand  & Zeigen eines Anmeldedialogs,\newline Wechsel in den angemeldeten Zustand \\ \hline
 		Pfeil aus einer Tür  & -  & Adminstratorenabmeldung  & Nur im angemeldeten Zustand  & Wechsel in den abgemeldeten Zustand \\ \hline
 	\end{tabular}
 	
-\end{sidewaystable}
-
+\end{table}
+\newpage
 
 \subsection{GUI: Einstellung}
 
 \subsubsection{Die Haupteinstellung:}
-\begin{sidewaystable}[!ht]
+\begin{table}[!ht]
 	\centering
 	\caption{Haupteinstellung}
 	\begin{tabular}{|l|l|l|l|l|}
@@ -224,12 +224,12 @@ Im Menü werden die wichtigsten Funktionen dem Nutzer angezeigt.
 		Komplett neuladen (Datenbank)  & -  & Synchronisiere Pumpenstand und damit die Verfügbarkeit.  & immer  & Funktion \\ \hline
 		Füge vorbereitete Rezepte hinzu (Datenbank)  & -  & Lade Rezepte aus Json und CSV-Dateien.  & immer  & Funktion \\ \hline
 	\end{tabular}
-\end{sidewaystable}
+\end{table}
 
 \subsubsection{Die Cocktailmaschineneinstellungen:}
 (Erreichbar nur im \textbf{an}gemeldeten Zustand)
 
-\begin{sidewaystable}[!ht]
+\begin{table}[!ht]
 	\centering
 	\caption{Cocktailmaschineneinstellungen}
 	\begin{tabular}{|l|l|l|l|}
@@ -243,13 +243,13 @@ Im Menü werden die wichtigsten Funktionen dem Nutzer angezeigt.
 		Neustart (Neustart)  & -  & Schickt Neustartbefehl. (Kein Zurücksetzen!)  & Funktion \\ \hline
 		Werkseinstellungen (Neustart)  & WaitNotSet  & Setze die Kalibrierung zurück. Geh zu WaitNotSet.  & Aktivitätenwechsel \\ \hline
 	\end{tabular}
-\end{sidewaystable}
+\end{table}
 
 
 
 \subsubsection{Die Waagenkalibrierung:}
 (Erreichbar nur im \textbf{an}gemeldeten Zustand)
-\begin{sidewaystable}[!ht]
+\begin{table}[!ht]
 	\centering
 	\begin{tabular}{|l|l|l|l|}
 		\hline
@@ -259,11 +259,11 @@ Im Menü werden die wichtigsten Funktionen dem Nutzer angezeigt.
 		Skaliere  & -  & Setze Saklierungsfaktor mit des Dialogs.  & Funktion \\ \hline
 		derzeitges Gewicht  & -  & Zeige in einem Dialog den derzeitiges Gewicht an.  & Funktion \\ \hline
 	\end{tabular}
-\end{sidewaystable}
+\end{table}
 
 \subsubsection{Die Pumpenkalibrierung:}
 (Erreichbar nur im \textbf{an}gemeldeten Zustand)
-\begin{sidewaystable}[!ht]
+\begin{table}[!ht]
 	\centering
 	\begin{tabular}{|l|l|l|l|}
 		\hline
@@ -271,7 +271,7 @@ Im Menü werden die wichtigsten Funktionen dem Nutzer angezeigt.
 		Automatische Kalibrierung  & WaitNotSet  & Setze die Kalibrierung zurück und kalibriere die Cocktailmaschine neu. Geh zu WaitNotSet.  & Aktivitätenwechsel \\ \hline
 		Setze Pumpzeiten (Kalibrierung)  & -  & Dialog mit vier Eingabefeldern: Zeit1, Zeit2, Volumen1, Volumen2, wie von Freya beschrieben. Wird für alle Pumpen gleichzeitig verwendet.  & Funktion \\ \hline
 	\end{tabular}
-\end{sidewaystable}
+\end{table}
 
 
 
