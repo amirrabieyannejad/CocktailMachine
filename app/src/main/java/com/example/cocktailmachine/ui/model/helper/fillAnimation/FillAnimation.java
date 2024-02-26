@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.fillAnimation;
+package com.example.cocktailmachine.ui.model.helper.fillAnimation;
 
 import androidx.appcompat.app.AppCompatActivity;
 

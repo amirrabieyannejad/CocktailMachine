@@ -5,7 +5,7 @@
     android:id="@+id/activity_fill_animation_button_stop"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fillAnimation.FillAnimation">
+    tools:context=".ui.model.helper.fillAnimation.FillAnimation">
 
     <FrameLayout
         android:id="@+id/frameLayout"

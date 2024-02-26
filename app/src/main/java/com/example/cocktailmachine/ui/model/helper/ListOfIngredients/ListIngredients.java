@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.ListOfIngredients;
+package com.example.cocktailmachine.ui.model.helper.ListOfIngredients;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;

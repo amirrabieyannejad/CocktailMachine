@@ -16,9 +16,9 @@ import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
-import com.example.cocktailmachine.ui.ListOfIngredients.ListIngredients;
+import com.example.cocktailmachine.ui.model.helper.ListOfIngredients.ListIngredients;
 import com.example.cocktailmachine.ui.manualtestingsuit.calibration.scale.calibrationScale;
-import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
+import com.example.cocktailmachine.ui.model.helper.fillAnimation.FillAnimation;
 import com.example.cocktailmachine.ui.manualtestingsuit.BluetoothNotFound;
 import com.example.cocktailmachine.ui.manualtestingsuit.BluetoothTestEnviroment;
 import com.example.cocktailmachine.ui.manualtestingsuit.Grafik;
@@ -28,7 +28,7 @@ import com.example.cocktailmachine.ui.model.helper.DialogListOfPumps;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
 import com.example.cocktailmachine.ui.settings.SettingsActivity;
-import com.example.cocktailmachine.ui.singleCocktailChoice.SingleCocktailChoice;
+import com.example.cocktailmachine.ui.manualtestingsuit.singleCocktailChoice.SingleCocktailChoice;
 
 /**
  * Menu class

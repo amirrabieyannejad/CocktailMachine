@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.singleCocktailChoice;
+package com.example.cocktailmachine.ui.manualtestingsuit.singleCocktailChoice;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;

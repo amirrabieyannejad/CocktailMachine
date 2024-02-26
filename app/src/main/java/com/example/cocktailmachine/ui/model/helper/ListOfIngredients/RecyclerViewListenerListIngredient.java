@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.ListOfIngredients;
+package com.example.cocktailmachine.ui.model.helper.ListOfIngredients;
 
 import com.example.cocktailmachine.data.Ingredient;
 

@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.singleCocktailChoice;
+package com.example.cocktailmachine.ui.manualtestingsuit.singleCocktailChoice;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -26,6 +26,7 @@ import java.util.List;
 
 public class SingleCocktailChoice extends AppCompatActivity {
 
+    //TODO: wahrscheinlich löschbar
     private GestureDetector mDetector;
     private int counter = 0;
     private final int fragmentCounter = 0;

@@ -2,7 +2,6 @@ package com.example.cocktailmachine.ui.model.helper;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.util.DisplayMetrics;
 import android.view.View;
 
@@ -11,8 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Pump;
-import com.example.cocktailmachine.ui.ListOfPumps.RecyclerAdapterListPumps;
-import com.example.cocktailmachine.ui.ListOfPumps.RecyclerViewListenerListPumps;
+import com.example.cocktailmachine.ui.model.helper.ListOfPumps.RecyclerAdapterListPumps;
+import com.example.cocktailmachine.ui.model.helper.ListOfPumps.RecyclerViewListenerListPumps;
 
 import java.util.List;
 

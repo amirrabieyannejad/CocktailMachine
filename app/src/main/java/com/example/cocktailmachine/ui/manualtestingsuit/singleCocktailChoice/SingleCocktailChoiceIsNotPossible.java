@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.singleCocktailChoice;
+package com.example.cocktailmachine.ui.manualtestingsuit.singleCocktailChoice;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,6 +9,8 @@ import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.ui.Menue;
 
 public class SingleCocktailChoiceIsNotPossible extends AppCompatActivity {
+
+    //TODO: wahrscheinlich löschbar
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
