@@ -140,8 +140,10 @@ public class CocktailMachine {
      */
     public static void setCurrentUser(String res) {
         Log.i(TAG, "setCurrentUser");
+        Log.i(TAG, "setCurrentUser: res: "+res);
         res = res.replace("[","");
         res = res.replace("]","");
+        Log.i(TAG, "setCurrentUser: res(filtered) : "+res);
         if(res.length()==0){
             queue = new LinkedList<>();
             currentUser = -1;
@@ -149,9 +151,17 @@ public class CocktailMachine {
         String[] users = res.split(",");
         queue = new LinkedList<Integer>();
         for (String number : users) {
-            queue.add(Integer.parseInt(number.trim()));
+            try {
+                queue.add(Integer.parseInt(number.trim()));
+            }catch (NumberFormatException e){
+                Log.e(TAG, "setCurrentUser error for "+number, e);
+            }
         }
-        currentUser = queue.get(0);
+        if(!queue.isEmpty()) {
+            currentUser = queue.get(0);
+        }else {
+            currentUser = -1;
+        }
         Log.i(TAG, "setCurrentUser: queue: "+queue);
         Log.i(TAG, "setCurrentUser: currentUser: "+currentUser);
     }

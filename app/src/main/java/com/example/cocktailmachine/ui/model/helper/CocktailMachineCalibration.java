@@ -97,6 +97,16 @@ public class CocktailMachineCalibration {
 
     public void askIsDone(Activity activity, Postexecute postexecute){
 
+        Postexecute postexe = new Postexecute() {
+            @Override
+            public void post() {
+                if(CocktailMachineCalibration.getSingleton().isDone){
+                    postexecute.post();
+                }else {
+                    GetActivity.waitNotSet(activity);
+                }
+            }
+        };
 
         if(Dummy.isDummy){
             postexecute.post();
