@@ -179,38 +179,17 @@ Es gibt kein Namensfeld. Es gibt zwei verpflichtende Felder: Ein Textfeld zur An
 \subsection{GUI: Menü}
 
 Im Menü werden die wichtigsten Funktionen dem Nutzer angezeigt.
+\hyperref[table:menu]{Übersicht}
 
 \includegraphics[scale=0.65]{Menu.png}
 \captionof{figure}{Menü}
 \newpage
-\begin{table}[]
-	\centering
-	\caption{Menü sidewaystable}
-	
-	\begin{tabular}{|l|l|l|l|l|l|}
-		\hline
-		Symbol  & Nächste   & Funktion  & Sichtbar  & ausgelöste  \\
-		   &  Activity  &   &   &  Reaktion \\ \hline
-		Liste  & ListActivity  & Liste der    & immer  & Aktivitäten- \\ 
-		   &    &   Rezepte  &    & wechsel  \\ \hline
-		Liste mit   & AddActivity  & Erstellung eines  & immer  & Aktivitäten- \\ 
-		Plussymbol  & AddActivity  &  neuen Rezepts  &   & wechsel \\ \hline
-		Bluetooth   & BluetoothScan  & Suche eine neue   & immer  & Aktivitäten- \\
-		 mit Lupe  &   &  Cocktailmachine  &    &  wechsel \\ \hline
-		Zahnrad  & Settingsactivity  & Einstellungs-  & immer  & Aktivitätenwechsel \\   &    & optionen   &    &   \\ \hline
-		Pfeil in   & -  & Adminstratoren-  & Nur im   & Zeigen eines Anmeldedialogs, \\
-		eine   &  &anmeldung   & abgemeldeten   & Wechsel in den  \\ 
-		Tür   &  &    &  Zustand  & angemeldeten Zustand \\ \hline
-		Pfeil aus   & -  & Adminstratoren-  & Nur im  & Wechsel in den \\  
-		einer   &   &abmeldung    &  angemeldeten   & abgemeldeten  \\
-		 Tür  &   &    &   Zustand  &  Zustand \\ \hline
-	\end{tabular}
-	
-\end{table}
+
 
 \begin{sidewaystable}[]
 	\centering
-	\caption{Menü sidewaystable}
+	\caption{Menü}
+	\label{table:menu}
 	
 	\begin{tabular}{|l|l|l|l|l|l|}
 		\hline
@@ -237,74 +216,115 @@ Im Menü werden die wichtigsten Funktionen dem Nutzer angezeigt.
 \subsection{GUI: Einstellung}
 
 \subsubsection{Die Haupteinstellung:}
-\begin{table}[!ht]
+
+\hyperref[table:main]{Übersicht}
+\begin{sidewaystable}[!ht]
 	\centering
 	\caption{Haupteinstellung}
+	\label{table:main}
 	\begin{tabular}{|l|l|l|l|l|}
 		\hline
 		\textbf{Element } & \textbf{Nächste Activity } & \textbf{Funktion } & \textbf{Sichtbar } & \textbf{ausgelöste Reaktion} \\ \hline
-		Anmelden  & -  & Adminstratorenanmeldung: Zeigen eines Anmeldedialogs, Wechsel in den angemeldeten Zustand  & Nur im abgemeldeten Zustand  & Funktion \\ \hline
-		Abmelden  & -  & Adminstratorenabmeldung: Wechsel in den abgemeldeten Zustand  & Nur im angemeldeten Zustand  & Funktion \\ \hline
-		Pumpe  & ListActivity  & Liste der Pumpen  & Nur im angemeldeten Zustand  & Aktivitätenwechsel \\ \hline
+		Anmelden  & -  & Adminstratorenanmeldung:   & Nur im   & Funktion \\
+		
+		  & -  &  Zeigen eines Anmeldedialogs,   & abgemeldeten   &  \\ 
+		  & -  &   Wechsel in den angemeldeten Zustand  & Zustand  &  \\ 
+		 \hline
+		Abmelden  & -  & Adminstratorenabmeldung:  & Nur im    & Funktion \\ 
+		  & -  &  Wechsel in den abgemeldeten Zustand  & angemeldeten Zustand  &  \\ 
+		  \hline
+		Pumpe  & ListActivity  & Liste der Pumpen  & Nur im   & Aktivitätenwechsel \\   &   &  &  angemeldeten Zustand  &  \\ \hline
 		Zutaten  & ListActivity  & Liste der verfügbaren Zutaten  & immer  & Aktivitätenwechsel \\ \hline
-		Zutaten(Alle)  & ListActivity  & Liste der Zutaten  & Nur im angemeldeten Zustand  & Aktivitätenwechsel \\ \hline
+		Zutaten(Alle)  & ListActivity  & Liste der Zutaten  & Nur im  & Aktivitätenwechsel \\
+		   &   &  &  angemeldeten Zustand  &  \\  \hline
 		Rezepte  & ListActivity  & Liste der verfügbaren Rezepte  & immer  & Aktivitätenwechsel \\ \hline
-		Rezepte(Alle)  & ListActivity  & Liste der Rezepte  & Nur im angemeldeten Zustand  & Aktivitätenwechsel \\ \hline
+		Rezepte(Alle)  & ListActivity  & Liste der Rezepte  & Nur im  & Aktivitätenwechsel \\ 
+		   &   &  &  angemeldeten Zustand  &  \\ \hline
 		Serviervorschläge  & ListActivity  & Liste der Serviervorschläge  & immer  & Aktivitätenwechsel \\ \hline
-		Synchronisieren (Bluetooth)  & -  & Synchronisiere Rezpte und die Pumpen.  & immer  & Funktion \\ \hline
-		Scannen (Bluetooth)  & ScanActivity  & Scanne nach der Cocktailmaschine  & immer  & Aktivitätenwechsel \\ \hline
-		Cocktailmaschinen-einstellung  & MachineSettingsActivity  & weitere Einstellungen  & Nur im angemeldeten Zustand  & Aktivitätenwechsel \\ \hline
-		Komplett neuladen (Datenbank)  & -  & Synchronisiere Pumpenstand und damit die Verfügbarkeit.  & immer  & Funktion \\ \hline
-		Füge vorbereitete Rezepte hinzu (Datenbank)  & -  & Lade Rezepte aus Json und CSV-Dateien.  & immer  & Funktion \\ \hline
+		Synchronisieren   & -  & Synchronisiere Rezepte  & immer  & Funktion \\ 
+		 (Bluetooth)  & -  & und die Pumpen.  &   &  \\ \hline
+		Scannen   & ScanActivity  & Scanne nach der   & immer  & Aktivitätenwechsel \\
+		 (Bluetooth)  &   & Cocktailmaschine  &    &   \\ \hline
+		Cocktailmaschinen-  & MachineSettings  & weitere   &  Nur im  & Aktivitätenwechsel \\
+		-einstellung  &   &  Einstellungen  &   angemeldeten Zustand  &  \\
+		 \hline
+		Komplett neuladen  & -  & Synchronisiere Pumpenstand  & immer  & Funktion \\
+		 (Datenbank)  &   &  und damit die Verfügbarkeit.  &    &  \\  \hline
+		Füge vorbereitete  & -  & Lade Rezepte aus   & immer  & Funktion \\
+		Rezepte hinzu   &   &Json und CSV-Dateien.  &    &   \\ 
+		(Datenbank)  &   &   &    &   \\  \hline
 	\end{tabular}
-\end{table}
+\end{sidewaystable}
 
 \subsubsection{Die Cocktailmaschineneinstellungen:}
 (Erreichbar nur im \textbf{an}gemeldeten Zustand)
+\hyperref[table:mach]{Übersicht}
 
-\begin{table}[!ht]
+\begin{sidewaystable}[!ht]
 	\centering
+	\label{table:mach}
 	\caption{Cocktailmaschineneinstellungen}
 	\begin{tabular}{|l|l|l|l|}
 		\hline
 		\textbf{Element } & \textbf{Nächste Activity } & \textbf{Funktion } & \textbf{ausgelöste Reaktion} \\ \hline
-		Neukalibrierung (Kalibrierung)  & WaitNotSet  & Setze die Kalibrierung zurück und kalibriere die Cocktailmaschine neu. Geh zu WaitNotSet.  & Aktivitätenwechsel \\ \hline
-		Waagenkalibrierung (Kalibrierung)  & ScaleSettingsActivity  & weitere Einstellungen  & Aktivitätenwechsel \\ \hline
-		Pumpenkalibrierung (Kalibrierung)  & PumpSettingsActivity  & weitere Einstellungen  & Aktivitätenwechsel \\ \hline
-		Statusabfrage (Zustand)  & -  & Zeige in einem Dialog den derzeitigen Zustand an, wie von Feya beschrieben.  & Funktion \\ \hline
+		Neukalibrierung   & WaitNotSet  & Setze die Kalibrierung zurück   & Aktivitätenwechsel \\
+		 (Kalibrierung)  &   &  und kalibriere die Cocktailmaschine neu.  &  \\
+		   &   &  Geh zu WaitNotSet.  &  \\ \hline
+		Waagenkalibrierung   & ScaleSettingsActivity  & weitere   & Aktivitätenwechsel \\ 
+		 (Kalibrierung)  &   &  Einstellungen  &  \\ \hline
+		Pumpenkalibrierung   & PumpSettingsActivity  & weitere   & Aktivitätenwechsel \\
+		(Kalibrierung)  &   &  Einstellungen  &  \\ \hline
+		Statusabfrage   & -  & Zeige in einem Dialog  & Funktion \\
+		 (Zustand)  &   &den derzeitigen Zustand an,   &  \\ 
+		   &   &  wie von Freya beschrieben.  &  \\ \hline
 		Reinigung (Zustand)  & -  & Schickt Reinigungsbefehl  & Funktion \\ \hline
-		Neustart (Neustart)  & -  & Schickt Neustartbefehl. (Kein Zurücksetzen!)  & Funktion \\ \hline
-		Werkseinstellungen (Neustart)  & WaitNotSet  & Setze die Kalibrierung zurück. Geh zu WaitNotSet.  & Aktivitätenwechsel \\ \hline
+		Neustart & -  & Schickt Neustartbefehl.  & Funktion \\ 
+		(Neustart)     &  & (Kein Zurücksetzen!)  &  \\ \hline
+		Werkseinstellungen   & WaitNotSet  & Setze die Kalibrierung zurück.  & Aktivitätenwechsel \\
+		 (Neustart)  &    &  Geh zu WaitNotSet.  &   \\ \hline
 	\end{tabular}
-\end{table}
+\end{sidewaystable}
 
 
 
 \subsubsection{Die Waagenkalibrierung:}
 (Erreichbar nur im \textbf{an}gemeldeten Zustand)
-\begin{table}[!ht]
+\hyperref[table:weight]{Übersicht}
+\begin{sidewaystable}[!ht]
 	\centering
+	\label{table:weight}
+	\caption{Waagenkalibrierung}
 	\begin{tabular}{|l|l|l|l|}
 		\hline
 		\textbf{Element } & \textbf{Nächste Activity } & \textbf{Funktion } & \textbf{ausgelöste Reaktion} \\ \hline
-		Kalibriere  & -  & Setze das Gewicht mit Hilfe eines Dialogs. Schicke Gewichtsangabe.  & Funktion \\ \hline
+		Kalibriere  & -  & Setze das Gewicht mit Hilfe eines  & Funktion \\
+		   &    & Dialogs. Schicke Gewichtsangabe.  &   \\ \hline
 		Tariere  & -  & Schicke Tarierungsbefehl.  & Funktion \\ \hline
 		Skaliere  & -  & Setze Saklierungsfaktor mit des Dialogs.  & Funktion \\ \hline
-		derzeitges Gewicht  & -  & Zeige in einem Dialog den derzeitiges Gewicht an.  & Funktion \\ \hline
+		derzeitges    & -  & Zeige in einem Dialog   & Funktion \\
+		 Gewicht  &    & das derzeitiges Gewicht an.  &   \\ \hline
 	\end{tabular}
-\end{table}
+\end{sidewaystable}
 
 \subsubsection{Die Pumpenkalibrierung:}
 (Erreichbar nur im \textbf{an}gemeldeten Zustand)
-\begin{table}[!ht]
+\hyperref[table:pump]{Übersicht}
+\begin{sidewaystable}[!ht]
 	\centering
+	\label{table:pump}
+	\caption{Pumpenkalibrierung}
 	\begin{tabular}{|l|l|l|l|}
 		\hline
 		\textbf{Element } & \textbf{Nächste Activity } & \textbf{Funktion } & \textbf{ausgelöste Reaktion} \\ \hline
-		Automatische Kalibrierung  & WaitNotSet  & Setze die Kalibrierung zurück und kalibriere die Cocktailmaschine neu. Geh zu WaitNotSet.  & Aktivitätenwechsel \\ \hline
-		Setze Pumpzeiten (Kalibrierung)  & -  & Dialog mit vier Eingabefeldern: Zeit1, Zeit2, Volumen1, Volumen2, wie von Freya beschrieben. Wird für alle Pumpen gleichzeitig verwendet.  & Funktion \\ \hline
+		Automatische   & WaitNotSet  & Setze die Kalibrierung zurück und  & Aktivitätenwechsel \\
+		 Kalibrierung  &   & kalibriere die Cocktailmaschine neu.   &  \\ 
+		   &   & Geh zu WaitNotSet.  &  \\ \hline
+		Setze Pumpzeiten  & -  & Dialog mit vier Eingabefeldern:   &  \\	
+		 (Kalibrierung)  & -  &  Zeit1, Zeit2, Volumen1, Volumen2,   &  \\
+		   & -  &  wie von Freya beschrieben.  &  \\
+		   & -  &  Wird für alle Pumpen gleichzeitig verwendet.  &  \\ \hline
 	\end{tabular}
-\end{table}
+\end{sidewaystable}
 
 
 

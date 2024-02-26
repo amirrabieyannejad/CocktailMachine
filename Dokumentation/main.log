@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.2.26)  26 FEB 2024 19:00
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.2.26)  26 FEB 2024 19:31
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -910,20 +910,20 @@ Overfull \vbox (1.86572pt too high) has occurred while \output is active []
 
 
 [7 <./calibrate.png>] [8] [9] [10]
-<Menu.png, id=318, 396.48125pt x 583.17876pt>
+<Menu.png, id=319, 396.48125pt x 583.17876pt>
 File: Menu.png Graphic file (type png)
 <use Menu.png>
-Package pdftex.def Info: Menu.png  used on input line 183.
+Package pdftex.def Info: Menu.png  used on input line 184.
 (pdftex.def)             Requested size: 257.70975pt x 379.0617pt.
 
 
 Package caption Warning: \setcaptiontype
-(caption)                outside box or environment on input line 184.
+(caption)                outside box or environment on input line 185.
 See the caption package documentation for explanation.
 
 
 Package caption Warning: The option `hypcap=true' will be ignored for this
-(caption)                particular \caption on input line 184.
+(caption)                particular \caption on input line 185.
 See the caption package documentation for explanation.
 
 
@@ -933,41 +933,12 @@ Underfull \vbox (badness 3302) has occurred while \output is active []
 [12 <./Menu.png>]
 
 LaTeX Warning: No positions in optional float specifier.
-               Default added (so using `tbp') on input line 186.
+               Default added (so using `tbp') on input line 189.
 
-
-Overfull \hbox (107.87024pt too wide) in paragraph at lines 190--208
- [][] 
- []
-
-
-LaTeX Warning: No positions in optional float specifier.
-               Default added (so using `tbp') on input line 211.
-
-
-Overfull \hbox (682.12607pt too wide) in paragraph at lines 243--260
- [][] 
- []
-
-
-Overfull \hbox (457.09033pt too wide) in paragraph at lines 268--279
- [][] 
- []
-
-
-Overfull \hbox (267.63516pt too wide) in paragraph at lines 287--295
- [][] 
- []
-
-
-Overfull \hbox (647.34529pt too wide) in paragraph at lines 301--307
- [][] 
- []
-
-) [13] [14] [15]
+) [13] [14] [15] [16] [17] [18]
 \openout2 = `chapters/04_Qualitätssicherung.aux'.
 
- (chapters/04_Qualitätssicherung.tex) [16
+ (chapters/04_Qualitätssicherung.tex) [19
 
 
 
@@ -977,13 +948,13 @@ Overfull \hbox (647.34529pt too wide) in paragraph at lines 301--307
 \openout2 = `chapters/05_Abschlussbericht.aux'.
 
 
-(chapters/05_Abschlussbericht.tex) [17
+(chapters/05_Abschlussbericht.tex) [20
 
 
 
 
 
-] [18
+] [21
 
 
 ] (main.bbl [4]
@@ -1201,26 +1172,25 @@ L3 programming layer <2024-02-13>
 LaTeX Warning: There were undefined references.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 6DBE8AB0ADA37FB76AC376722CA45CFB;6413.
+(rerunfilecheck)             Checksum: EBD7698770BCD14B08650597D36BFEE9;6412.
  ) 
 Here is how much of TeX's memory you used:
- 18245 strings out of 474462
- 313296 string characters out of 5742883
+ 18251 strings out of 474462
+ 313331 string characters out of 5742883
  1951998 words of memory out of 5000000
- 40024 multiletter control sequences out of 15000+600000
- 588657 words of font info for 86 fonts, out of 8000000 for 9000
+ 40031 multiletter control sequences out of 15000+600000
+ 586242 words of font info for 83 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,11n,79p,867b,668s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,12n,79p,867b,668s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/johan/AppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvb8a
 .pfb><C:/Users/johan/AppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhv
-r8a.pfb><C:/Users/johan/AppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/
-uhvro8a.pfb><C:/Users/johan/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times
-/utmb8a.pfb><C:/Users/johan/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times
-/utmr8a.pfb><C:/Users/johan/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times
-/utmri8a.pfb>
-Output written on main.pdf (30 pages, 250765 bytes).
+r8a.pfb><C:/Users/johan/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utm
+b8a.pfb><C:/Users/johan/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utm
+r8a.pfb><C:/Users/johan/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utm
+ri8a.pfb>
+Output written on main.pdf (33 pages, 246345 bytes).
 PDF statistics:
- 485 PDF objects out of 1000 (max. 8388607)
- 133 named destinations out of 1000 (max. 500000)
+ 498 PDF objects out of 1000 (max. 8388607)
+ 135 named destinations out of 1000 (max. 500000)
  373 words of extra memory for PDF output out of 10000 (max. 10000000)
 
