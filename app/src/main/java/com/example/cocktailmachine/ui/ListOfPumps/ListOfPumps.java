@@ -15,6 +15,8 @@ import java.util.List;
 
 public class ListOfPumps extends AppCompatActivity implements RecyclerViewListenerListPumps {
 
+    //TODO: wahrscheinlich löschbar
+
     private List<Pump> listPumps;
     private RecyclerView recyclerView;
     private Context context;
