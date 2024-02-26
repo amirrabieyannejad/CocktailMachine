@@ -1837,6 +1837,9 @@ Retcode add_to_recipe_queue(Recipe *recipe, User user) {
 
   recipe_queue.push_back(r);
 
+  update_state();
+  update_user();
+
   return Retcode::success;
 }
 
