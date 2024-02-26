@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.2.26)  26 FEB 2024 18:37
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.2.26)  26 FEB 2024 19:00
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -936,34 +936,38 @@ LaTeX Warning: No positions in optional float specifier.
                Default added (so using `tbp') on input line 186.
 
 
-Overfull \hbox (496.26256pt too wide) in paragraph at lines 190--200
+Overfull \hbox (107.87024pt too wide) in paragraph at lines 190--208
  [][] 
  []
 
 
-Overfull \hbox (682.12607pt too wide) in paragraph at lines 210--227
+LaTeX Warning: No positions in optional float specifier.
+               Default added (so using `tbp') on input line 211.
+
+
+Overfull \hbox (682.12607pt too wide) in paragraph at lines 243--260
  [][] 
  []
 
 
-Overfull \hbox (457.09033pt too wide) in paragraph at lines 235--246
+Overfull \hbox (457.09033pt too wide) in paragraph at lines 268--279
  [][] 
  []
 
 
-Overfull \hbox (267.63516pt too wide) in paragraph at lines 254--262
+Overfull \hbox (267.63516pt too wide) in paragraph at lines 287--295
  [][] 
  []
 
 
-Overfull \hbox (647.34529pt too wide) in paragraph at lines 268--274
+Overfull \hbox (647.34529pt too wide) in paragraph at lines 301--307
  [][] 
  []
 
-[13]) [14]
+) [13] [14] [15]
 \openout2 = `chapters/04_Qualitätssicherung.aux'.
 
- (chapters/04_Qualitätssicherung.tex) [15
+ (chapters/04_Qualitätssicherung.tex) [16
 
 
 
@@ -973,13 +977,13 @@ Overfull \hbox (647.34529pt too wide) in paragraph at lines 268--274
 \openout2 = `chapters/05_Abschlussbericht.aux'.
 
 
-(chapters/05_Abschlussbericht.tex) [16
+(chapters/05_Abschlussbericht.tex) [17
 
 
 
 
 
-] [17
+] [18
 
 
 ] (main.bbl [4]
@@ -1197,13 +1201,13 @@ L3 programming layer <2024-02-13>
 LaTeX Warning: There were undefined references.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: EBD7698770BCD14B08650597D36BFEE9;6412.
+(rerunfilecheck)             Checksum: 6DBE8AB0ADA37FB76AC376722CA45CFB;6413.
  ) 
 Here is how much of TeX's memory you used:
- 18236 strings out of 474462
- 313083 string characters out of 5742883
- 1950998 words of memory out of 5000000
- 40017 multiletter control sequences out of 15000+600000
+ 18245 strings out of 474462
+ 313296 string characters out of 5742883
+ 1951998 words of memory out of 5000000
+ 40024 multiletter control sequences out of 15000+600000
  588657 words of font info for 86 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,11n,79p,867b,668s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1214,9 +1218,9 @@ uhvro8a.pfb><C:/Users/johan/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times
 /utmb8a.pfb><C:/Users/johan/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times
 /utmr8a.pfb><C:/Users/johan/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times
 /utmri8a.pfb>
-Output written on main.pdf (29 pages, 248084 bytes).
+Output written on main.pdf (30 pages, 250765 bytes).
 PDF statistics:
- 478 PDF objects out of 1000 (max. 8388607)
- 131 named destinations out of 1000 (max. 500000)
+ 485 PDF objects out of 1000 (max. 8388607)
+ 133 named destinations out of 1000 (max. 500000)
  373 words of extra memory for PDF output out of 10000 (max. 10000000)
 
