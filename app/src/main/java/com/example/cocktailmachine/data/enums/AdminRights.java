@@ -68,10 +68,10 @@ public class AdminRights {
         try {
             setUserId(jsonObject.getInt("user"));
             Log.i(TAG, "setUser: done");
-        } catch (JSONException e) {
+        }catch (NumberFormatException | JSONException e){
             Log.i(TAG, "setUser: failed");
             Log.e(TAG, "error: ",e);
-            ////Log.e(TAG, "error", e);
+            setUserId(-1);
         }
     }
 
