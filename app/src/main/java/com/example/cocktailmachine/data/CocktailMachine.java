@@ -695,6 +695,9 @@ public class CocktailMachine {
         readUserQueue(activity);
         Log.i(TAG, "getNumberOfUsersUntilThisUsersTurn: readUserQueue done");
         if(queue != null) {
+            if(queue.isEmpty()){
+                return 0;
+            }
             return queue.indexOf(AdminRights.getUserId());
         }
         Log.i(TAG, "getNumberOfUsersUntilThisUsersTurn: queue is still none");
