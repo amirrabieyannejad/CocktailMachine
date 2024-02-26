@@ -2789,13 +2789,13 @@ Retcode Pump::calibrate(dur_t time1, dur_t time2, float volume1, float volume2) 
 
   float vol_diff  = volume1 - volume2;
   float time_diff = (float) time1 - (float) time2;
-  float rate      = vol_diff / time_diff;
+  float rate      = time_diff / vol_diff;
   debug("calibration raw data: %0.1f, %0.1f, %f", vol_diff, time_diff, rate);
 
   if (rate <= 0.0) return Retcode::invalid_calibration;
 
-  float init1 = std::round((float) time1 - (volume1 / rate));
-  float init2 = std::round((float) time2 - (volume2 / rate));
+  float init1 = std::round((float) time1 - (volume1 * rate));
+  float init2 = std::round((float) time2 - (volume2 * rate));
   dur_t init  = std::round((init1 + init2) / 2.0);
 
   // check for implausible results
