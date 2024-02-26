@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.calibration.scale;
+package com.example.cocktailmachine.ui.manualtestingsuit.calibration.scale;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,6 +12,8 @@ import com.example.cocktailmachine.data.enums.Postexecute;
 import org.json.JSONException;
 
 public class calibrationScale extends AppCompatActivity {
+
+    //TODO: wahrscheinlich löschbar
     private final BluetoothSingleton blSingelton = BluetoothSingleton.getInstance();
     @Override
     protected void onCreate(Bundle savedInstanceState) {

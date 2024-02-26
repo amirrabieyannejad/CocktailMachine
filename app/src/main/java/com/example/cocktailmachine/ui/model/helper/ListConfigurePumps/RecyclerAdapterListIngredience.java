@@ -18,7 +18,7 @@ import com.example.cocktailmachine.ui.model.helper.ConfigurePumps;
 import java.util.HashMap;
 import java.util.List;
 
-public class RecyclerAdapterListIngredience extends RecyclerView.Adapter<RecyclerAdapterListIngredience.IngtedienceViewHolder> {
+public class RecyclerAdapterListIngrediente extends RecyclerView.Adapter<RecyclerAdapterListIngrediente.IngtedienceViewHolder> {
 
     Context context;
     List<Ingredient> ingredients;
@@ -28,16 +28,16 @@ public class RecyclerAdapterListIngredience extends RecyclerView.Adapter<Recycle
     Ingredient chosenIngredient;
     String chosenIngredientString;
 
-    RecyclerViewListenerListIngredience selectionListener;
+    RecyclerViewListenerListIngrediente selectionListener;
 
-    public RecyclerAdapterListIngredience(List<Ingredient> ingredients, Context context) {
+    public RecyclerAdapterListIngrediente(List<Ingredient> ingredients, Context context) {
         this.ingredients = ingredients;
         this.context = context;
-        this.selectionListener=(ListIngredience)context;
+        this.selectionListener=(ListIngrediente)context;
 
     }
 
-    public RecyclerAdapterListIngredience(Ingredient chosenIngredient, List<Ingredient> ingredients, Context context) {
+    public RecyclerAdapterListIngrediente(Ingredient chosenIngredient, List<Ingredient> ingredients, Context context) {
         this.ingredients = ingredients;
         this.context = context;
 
@@ -49,7 +49,7 @@ public class RecyclerAdapterListIngredience extends RecyclerView.Adapter<Recycle
 
 
 
-    public RecyclerAdapterListIngredience(String chosenIngredient, HashMap<String, Long> ingredients, Context context) {
+    public RecyclerAdapterListIngrediente(String chosenIngredient, HashMap<String, Long> ingredients, Context context) {
         this.ingredientsMap = ingredients;
         this.context = context;
 
@@ -59,7 +59,7 @@ public class RecyclerAdapterListIngredience extends RecyclerView.Adapter<Recycle
 
     }
 
-    public RecyclerAdapterListIngredience(Ingredient chosenIngredient, List<Ingredient> ingredients, ConfigurePumps configurePumps) {
+    public RecyclerAdapterListIngrediente(Ingredient chosenIngredient, List<Ingredient> ingredients, ConfigurePumps configurePumps) {
         this.ingredients = ingredients;
 
         //Todo Philipp des Listener muss wieder eingerichtet werden

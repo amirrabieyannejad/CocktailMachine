@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.cocktail.cocktailList;
+package com.example.cocktailmachine.ui.manualtestingsuit.cocktailList;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,6 +7,8 @@ import android.os.Bundle;
 import com.example.cocktailmachine.R;
 
 public class CocktailList extends AppCompatActivity {
+
+    //TODO: wahrscheinlich löschbar
     private static final String TAG = "CocktailList";
 
     @Override

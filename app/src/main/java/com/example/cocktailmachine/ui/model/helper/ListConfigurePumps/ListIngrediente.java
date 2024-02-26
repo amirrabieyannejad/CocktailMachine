@@ -16,10 +16,9 @@ import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.Ingredient;
 
 import java.util.LinkedList;
-import java.util.LinkedList;
 import java.util.List;
 
-public class ListIngredience extends AppCompatActivity implements RecyclerViewListenerListIngredience{
+public class ListIngrediente extends AppCompatActivity implements RecyclerViewListenerListIngrediente {
 
 
     private List<Ingredient> listIngredients;

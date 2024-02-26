@@ -16,14 +16,13 @@ import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.ui.model.helper.ListConfigurePumps.RecyclerAdapterListIngredience;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
-import com.example.cocktailmachine.ui.model.helper.ListConfigurePumps.RecyclerViewListenerListIngredience;
+import com.example.cocktailmachine.ui.model.helper.ListConfigurePumps.RecyclerViewListenerListIngrediente;
 
 import java.util.LinkedList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
-public class ConfigurePumps implements RecyclerViewListenerListIngredience {
+public class ConfigurePumps implements RecyclerViewListenerListIngrediente {
 
     private static final String TAG = "ConfigurePumps";
     //Variablen

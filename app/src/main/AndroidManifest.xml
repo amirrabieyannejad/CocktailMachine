@@ -84,7 +84,7 @@
             android:label="@string/title_activity_add"
             android:theme="@style/Theme.CocktailMachine" />
         <activity
-            android:name=".ui.calibration.scale.calibrationScale"
+            android:name=".ui.manualtestingsuit.calibration.scale.calibrationScale"
             android:exported="false" />
         <activity
             android:name=".ui.ListOfIngredients.ListIngredients"
@@ -114,7 +114,7 @@
             android:exported="false"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name=".ui.cocktail.cocktailList.CocktailList"
+            android:name=".ui.manualtestingsuit.cocktailList.CocktailList"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

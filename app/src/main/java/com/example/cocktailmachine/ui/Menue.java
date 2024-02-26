@@ -17,7 +17,7 @@ import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
 import com.example.cocktailmachine.ui.ListOfIngredients.ListIngredients;
-import com.example.cocktailmachine.ui.calibration.scale.calibrationScale;
+import com.example.cocktailmachine.ui.manualtestingsuit.calibration.scale.calibrationScale;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
 import com.example.cocktailmachine.ui.manualtestingsuit.BluetoothNotFound;
 import com.example.cocktailmachine.ui.manualtestingsuit.BluetoothTestEnviroment;
