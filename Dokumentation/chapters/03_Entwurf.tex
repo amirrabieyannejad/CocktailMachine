@@ -14,13 +14,18 @@
 \section{Detaillierter Entwurf}
 \label{sec:detaillierter_entwurf}
 
-\subsection{GUI: Plan}
+\subsection{GUI: Öffnung der App}
+Die Öffnung der App resultiert erstmal darin die verfügbaren Cocktailmaschinen zu listen und den Nutzer wählen zu lassen. Ist die gewählte Cocktailmaschine kalibriert, wird der Nutzer sofort in das Menü versetzt. Ist die Maschine nicht kalibriert, wird der Nutzer in einen \hyperref[subsec:nocal]{Wartebereich} geschoben. Dort hat der Nutzer die Wahl:
+\begin{itemize}
+	\item den Kalibrierungstatus erneut abzufragen und bei positiver Bestätigung in dem Menü zu landen, 
+	\item die Cocktailmachine zu wechseln
+	\item oder die Cocktailmaschine zu kalibrieren.
+\end{itemize}
+\includegraphics[scale=0.40]{Appstart.png}
 
-\includegraphics[scale=0.30]{Appstart.png}
-
-\includegraphics[scale=0.65]{Menu.png}
 
 \subsection{GUI: Keine Kalibrierung}
+\label{subsec:nocal}
 
 Drei mögliche Aktionen:
 
@@ -49,6 +54,8 @@ Dialogfenster:
 Passwort angeben (''admin"). Gelange in den angemeldeten Zustand.
 
 \subsection{GUI: Dialog: Automatische Kalibrierung}
+
+\includegraphics[scale=0.65]{calibrate.png}
 
 \begin{enumerate}
 \item Gebe die Anzahl (k) der Pumpen an.
@@ -170,6 +177,11 @@ Es gibt kein Namensfeld. Es gibt zwei verpflichtende Felder: Ein Textfeld zur An
 
 
 \subsection{GUI: Menü}
+
+Im Menü werden die wichtigsten Funktionen dem Nutzer angezeigt.
+
+\includegraphics[scale=0.65]{Menu.png}
+
 Menüübersicht:
 \begin{table}[]
 	\centering

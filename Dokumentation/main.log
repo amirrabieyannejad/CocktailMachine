@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.2.26)  26 FEB 2024 14:40
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.2.26)  26 FEB 2024 15:07
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -860,16 +860,11 @@ l.139 \include{chapters/01_Planung}
 \openout2 = `chapters/03_Entwurf.aux'.
 
  (chapters/03_Entwurf.tex
-<Appstart.png, id=259, 793.96625pt x 503.8825pt>
+<Appstart.png, id=260, 764.8575pt x 503.8825pt>
 File: Appstart.png Graphic file (type png)
 <use Appstart.png>
-Package pdftex.def Info: Appstart.png  used on input line 19.
-(pdftex.def)             Requested size: 238.19171pt x 151.16591pt.
-<Menu.png, id=261, 396.48125pt x 583.17876pt>
-File: Menu.png Graphic file (type png)
-<use Menu.png>
-Package pdftex.def Info: Menu.png  used on input line 21.
-(pdftex.def)             Requested size: 257.70975pt x 379.0617pt.
+Package pdftex.def Info: Appstart.png  used on input line 24.
+(pdftex.def)             Requested size: 305.93758pt x 201.54942pt.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
@@ -879,46 +874,78 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
 
- <./Appstart.png>]
-Overfull \hbox (11.30806pt too wide) in paragraph at lines 43--44
+]
+Overfull \hbox (11.30806pt too wide) in paragraph at lines 48--49
 []\OT1/ptm/m/n/10.95 Nach der Aus-wahl ei-nes der M[]oglichkeiten wer-den die B
 ut-ton auf nicht verf[]ugbar
  []
 
-[5 <./Menu.png>] [6] [7] [8]
+<calibrate.png, id=266, 525.965pt x 1071.00125pt>
+File: calibrate.png Graphic file (type png)
+<use calibrate.png>
+Package pdftex.def Info: calibrate.png  used on input line 58.
+(pdftex.def)             Requested size: 341.87318pt x 696.14258pt.
+
+Overfull \hbox (0.44142pt too wide) in paragraph at lines 58--59
+[] 
+ []
+
+
+Underfull \vbox (badness 1609) has occurred while \output is active []
+
+ [5 <./Appstart.png>]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [6]
+Overfull \vbox (1.86572pt too high) has occurred while \output is active []
+
+
+[7 <./calibrate.png>] [8] [9] [10]
+<Menu.png, id=318, 396.48125pt x 583.17876pt>
+File: Menu.png Graphic file (type png)
+<use Menu.png>
+Package pdftex.def Info: Menu.png  used on input line 183.
+(pdftex.def)             Requested size: 257.70975pt x 379.0617pt.
+
+Underfull \vbox (badness 3302) has occurred while \output is active []
+
+ [11]
 
 LaTeX Warning: No positions in optional float specifier.
-               Default added (so using `tbp') on input line 174.
+               Default added (so using `tbp') on input line 186.
 
 
-Overfull \hbox (499.00005pt too wide) in paragraph at lines 177--187
+Overfull \hbox (499.00005pt too wide) in paragraph at lines 189--199
  [][] 
  []
 
 
-Overfull \hbox (682.12607pt too wide) in paragraph at lines 196--213
- [][] 
- []
-
-[9]
-Overfull \hbox (457.09033pt too wide) in paragraph at lines 221--232
+Overfull \hbox (682.12607pt too wide) in paragraph at lines 208--225
  [][] 
  []
 
 
-Overfull \hbox (267.63516pt too wide) in paragraph at lines 240--248
+Overfull \hbox (457.09033pt too wide) in paragraph at lines 233--244
  [][] 
  []
 
 
-Overfull \hbox (647.34529pt too wide) in paragraph at lines 254--260
+Overfull \hbox (267.63516pt too wide) in paragraph at lines 252--260
  [][] 
  []
 
-[10]) [11]
+
+Overfull \hbox (647.34529pt too wide) in paragraph at lines 266--272
+ [][] 
+ []
+
+
+Underfull \vbox (badness 1248) has occurred while \output is active []
+
+ [12 <./Menu.png>]) [13]
 \openout2 = `chapters/04_Qualitätssicherung.aux'.
 
- (chapters/04_Qualitätssicherung.tex) [12
+ (chapters/04_Qualitätssicherung.tex) [14
 
 
 
@@ -928,13 +955,13 @@ Overfull \hbox (647.34529pt too wide) in paragraph at lines 254--260
 \openout2 = `chapters/05_Abschlussbericht.aux'.
 
 
-(chapters/05_Abschlussbericht.tex) [13
+(chapters/05_Abschlussbericht.tex) [15
 
 
 
 
 
-] [14
+] [16
 
 
 ] (main.bbl [4]
@@ -1146,13 +1173,13 @@ L3 programming layer <2024-02-13>
 LaTeX Warning: There were undefined references.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 951C0344DEF7B40EDA27D13E788C2FF9;6348.
+(rerunfilecheck)             Checksum: EBD7698770BCD14B08650597D36BFEE9;6412.
  ) 
 Here is how much of TeX's memory you used:
- 18147 strings out of 474462
- 311588 string characters out of 5742883
- 1950998 words of memory out of 5000000
- 39935 multiletter control sequences out of 15000+600000
+ 18157 strings out of 474462
+ 311755 string characters out of 5742883
+ 1945998 words of memory out of 5000000
+ 39943 multiletter control sequences out of 15000+600000
  588657 words of font info for 86 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,11n,79p,867b,668s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1163,9 +1190,9 @@ uhvro8a.pfb><C:/Users/johan/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times
 /utmb8a.pfb><C:/Users/johan/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times
 /utmr8a.pfb><C:/Users/johan/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times
 /utmri8a.pfb>
-Output written on main.pdf (26 pages, 220496 bytes).
+Output written on main.pdf (28 pages, 246783 bytes).
 PDF statistics:
- 461 PDF objects out of 1000 (max. 8388607)
- 127 named destinations out of 1000 (max. 500000)
- 368 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 472 PDF objects out of 1000 (max. 8388607)
+ 129 named destinations out of 1000 (max. 500000)
+ 373 words of extra memory for PDF output out of 10000 (max. 10000000)
 
