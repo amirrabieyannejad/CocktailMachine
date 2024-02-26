@@ -558,6 +558,53 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
         }
     }
 
+
+    /**
+     * Sends to CocktailMachine to get saved.
+     * {"cmd": "define_recipe", "user": 0, "name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}
+     * <p>
+     * <p>
+     * TODO: find what this is doing :     {"cmd": "add_liquid", "user": 0, "liquid": "water", "volume": 30}
+     */
+    default void sendSave(Activity activity, Postexecute postexecute, Postexecute error){
+        //TO DO: USE THIS AMIR  * ich habe in adminDefinePump das gleiche. wollen wir vlt.
+        // * hier das verwenden vlt. durch:
+
+
+        //JSONObject jsonObject = new JSONObject();
+
+
+            /* jsonObject.put("cmd", "define_recipe");
+            jsonObject.put("user", AdminRights.getUserId());
+            jsonObject.put("recipe", this.getName());
+
+             */
+        save(activity);
+        if(Dummy.isDummy){
+            return;
+        }
+        try {
+            JSONArray array = new JSONArray();
+            List<Ingredient> is = this.getIngredients(activity);
+            for(Ingredient i: is){
+                JSONArray temp = new JSONArray();
+                temp.put(i.getName());
+                temp.put(this.getVolume(activity,i));
+                array.put(temp);
+            }
+            //jsonObject.put("liquids", array);
+            BluetoothSingleton.getInstance().userDefineRecipe(
+                    this.getID(),
+                    this.getName(),
+                    array,
+                    activity,
+                    postexecute);
+
+        } catch (JSONException| InterruptedException|NullPointerException e) {
+            Log.e(TAG, "error", e);
+            error.post();
+        }
+    }
     default boolean sendDelete(Activity activity){
         try {
             BluetoothSingleton.getInstance().userDeleteRecipe(this.getID(),
