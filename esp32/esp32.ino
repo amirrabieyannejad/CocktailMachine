@@ -1129,13 +1129,13 @@ Parsed parse_command(const String json) {
   } else if (match_name(CmdDefineRecipe)) {
     parse_user();
     parse_str(name);
-    parse_ingredients(liquids);
+    parse_ingredients(ingredients);
     cmd = new CmdDefineRecipe(user, name, ingredients);
 
   } else if (match_name(CmdEditRecipe)) {
     parse_user();
     parse_str(name);
-    parse_ingredients(liquids);
+    parse_ingredients(ingredients);
     cmd = new CmdEditRecipe(user, name, ingredients);
 
   } else if (match_name(CmdDeleteRecipe)) {
