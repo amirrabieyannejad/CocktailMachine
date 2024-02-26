@@ -3130,6 +3130,7 @@ public class BluetoothSingleton {
                     //CocktailMachine.setCurrentUser(getJSONArrayResult());
                     Log.w(TAG, "To Save: " + this.getJSONArrayResult());
                     Log.w(TAG, "Reset Queue!");
+                    CocktailMachine.setCurrentUser(this.getStringResult());
                     singleton.queue = "";
                     Log.w(TAG, "BluetoothSingleton adminReadUserQueue end");
                 }

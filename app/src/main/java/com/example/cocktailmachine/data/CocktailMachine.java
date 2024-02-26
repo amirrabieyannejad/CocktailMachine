@@ -697,7 +697,6 @@ public class CocktailMachine {
         if(queue != null) {
             if(queue.isEmpty()){
                 Toast.makeText(activity, "Anfrage hat den ESP nicht erreicht!", Toast.LENGTH_SHORT).show();
-                
                 return 0;
             }
             return queue.indexOf(AdminRights.getUserId());
