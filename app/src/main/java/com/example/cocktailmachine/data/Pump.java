@@ -22,8 +22,10 @@ import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpExcep
 //import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.tables.BasicColumn;
 import com.example.cocktailmachine.data.enums.CocktailStatus;
+import com.example.cocktailmachine.data.enums.ErrorStatus;
 import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
+import com.example.cocktailmachine.ui.model.helper.GetActivity;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
 import org.json.JSONArray;
@@ -402,6 +404,13 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
     static void updatePumpStatus(Context context, JSONObject json){
         Log.i(TAG, "updatePumpStatus");
         Log.i(TAG, "updatePumpStatus: "+json.toString());
+        if(!json.keys().hasNext()){
+            Toast.makeText(context, "Fehler bei der Übertragung!", Toast.LENGTH_SHORT).show();
+            CocktailMachineCalibration.getSingleton().setIsDone(false);
+            GetActivity.waitNotSet(context);
+            return;
+        }
+
         //List<Long> toSave = new LinkedList<>();
         List<Runnable> runnables = new LinkedList<>();
         runnables.add(ExtraHandlingDB.toLoadPrepedDB(context)); //check if no db, copy db

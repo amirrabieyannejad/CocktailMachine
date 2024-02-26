@@ -15,6 +15,8 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
+import org.json.JSONObject;
+
 /**
  * Pumpenkalibrierung und Pumpenzeit
  * @created Fr. 23.Jun 2023 - 16:16
@@ -33,6 +35,8 @@ public class PumpSettingsActivity extends AppCompatActivity {
         if(!Dummy.isDummy){
             TextView tv = this.findViewById(R.id.ramdomPumpUpdate);
             tv.setVisibility(View.GONE);
+            TextView tv2 = this.findViewById(R.id.emptyPumpUpdate);
+            tv2.setVisibility(View.GONE);
         }
 
 
@@ -42,6 +46,10 @@ public class PumpSettingsActivity extends AppCompatActivity {
 
     public void testPumpStatusUpdate(View view){
         Pump.updatePumpStatus(this, Pump.toRandomJson(this));
+    }
+
+    public void testEmptyPumpStatusUpdate(View view){
+        Pump.updatePumpStatus(this, new JSONObject());
     }
 
 

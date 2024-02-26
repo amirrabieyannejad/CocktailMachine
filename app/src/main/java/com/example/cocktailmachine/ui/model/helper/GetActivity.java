@@ -190,11 +190,11 @@ public class GetActivity {
         //activity.finish();
     }
 
-    public static void waitNotSet(Activity activity) {
+    public static void waitNotSet(Context context) {
         Log.v(TAG, "waitNotSet");
-        Intent intent = new Intent(activity, WaitNotSetActivity.class);
+        Intent intent = new Intent(context, WaitNotSetActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        activity.startActivity(intent);
+        context.startActivity(intent);
     }
 
     public static void goBack(Activity activity) {
