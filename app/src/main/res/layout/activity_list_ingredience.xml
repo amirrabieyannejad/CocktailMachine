@@ -12,7 +12,7 @@
     android:layout_marginRight="24dp"
     android:textAlignment="center"
     android:visibility="visible"
-    tools:context=".ui.ListOfIngredients.ListIngredients">
+    tools:context=".ui.model.helper.ListOfIngredients.ListIngredients">
 
     <TextView
         android:id="@+id/textViewHeaderListIngredience"

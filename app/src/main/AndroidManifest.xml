@@ -76,7 +76,7 @@
             android:name=".ui.manualtestingsuit.BluetoothNotFound"
             android:exported="false" />
         <activity
-            android:name=".ui.ListOfPumps.ListOfPumps"
+            android:name=".ui.model.helper.ListOfPumps.ListOfPumps"
             android:exported="false" />
         <activity
             android:name=".ui.model.AddActivity"
@@ -87,7 +87,7 @@
             android:name=".ui.manualtestingsuit.calibration.scale.calibrationScale"
             android:exported="false" />
         <activity
-            android:name=".ui.ListOfIngredients.ListIngredients"
+            android:name=".ui.model.helper.ListOfIngredients.ListIngredients"
             android:exported="true" />
         <activity
             android:name=".ui.manualtestingsuit.BluetoothTestEnviroment"
@@ -135,14 +135,14 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".ui.singleCocktailChoice.SingleCocktailChoice"
+            android:name=".ui.manualtestingsuit.singleCocktailChoice.SingleCocktailChoice"
             android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".ui.fillAnimation.FillAnimation"
+            android:name=".ui.model.helper.fillAnimation.FillAnimation"
             android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
