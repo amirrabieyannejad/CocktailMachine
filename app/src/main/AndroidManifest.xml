@@ -70,7 +70,7 @@
             android:name=".ui.manualtestingsuit.LoadScreen"
             android:exported="false" />
         <activity
-            android:name=".ui.settings.SinglePumpSetting"
+            android:name=".ui.manualtestingsuit.SinglePumpSetting"
             android:exported="false" />
         <activity
             android:name=".ui.manualtestingsuit.BluetoothNotFound"

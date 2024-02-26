@@ -12,6 +12,8 @@ import com.example.cocktailmachine.logic.Animation.DirectAnimation;
 
 public class LoadScreen extends AppCompatActivity {
 
+    //TODO: wahrscheinlich löschbar
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

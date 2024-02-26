@@ -32,6 +32,7 @@ import java.util.List;
 
 public class Grafik extends AppCompatActivity {
 
+    //TODO: wahrscheinlich löschbar
     private static final String TAG = "Grafik";
 
 

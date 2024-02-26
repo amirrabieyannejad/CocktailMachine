@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.settings;
+package com.example.cocktailmachine.ui.manualtestingsuit;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,6 +11,8 @@ import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.Pump;
 
 public class SinglePumpSetting extends AppCompatActivity {
+
+    //TODO: wahrscheinlich löschbar
 
     private Pump pump;
     TextView textViewHeader;

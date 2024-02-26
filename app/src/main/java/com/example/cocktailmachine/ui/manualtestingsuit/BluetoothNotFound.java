@@ -23,6 +23,8 @@ import java.util.Random;
 
 public class BluetoothNotFound extends AppCompatActivity {
 
+    //TODO: wahrscheinlich löschbar
+
     Bitmap image = null;
     ImageView backgroundImage = null;
     ImageView loopImage = null;

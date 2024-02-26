@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Random;
 
 public class LoadDataAnimation extends AppCompatActivity {
+
+    //TODO: wahrscheinlich löschbar
     ImageView loadImage1,loadImage2,loadImage3;
 
     @Override

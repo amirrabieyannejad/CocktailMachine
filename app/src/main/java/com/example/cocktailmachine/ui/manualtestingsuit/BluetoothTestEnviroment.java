@@ -17,6 +17,7 @@ import com.example.cocktailmachine.data.enums.Postexecute;
 import org.json.JSONException;
 
 public class BluetoothTestEnviroment extends AppCompatActivity {
+    //Useful
 
     EditText editText;
     TextView textView;

@@ -6,6 +6,8 @@ import android.os.Bundle;
 
 public class ScreenUserWaitForCalibration extends AppCompatActivity {
 
+    //TODO: wahrscheinlich löschbar
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

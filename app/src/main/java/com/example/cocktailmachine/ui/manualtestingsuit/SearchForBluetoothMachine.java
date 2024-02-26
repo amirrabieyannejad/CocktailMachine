@@ -39,6 +39,8 @@ import java.util.UUID;
 
 public class SearchForBluetoothMachine extends AppCompatActivity {
 
+    //TODO: wahrscheinlich löschbar
+
 
     // Animationsdarstellung
     Bitmap image = null;
