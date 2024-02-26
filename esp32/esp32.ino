@@ -2198,12 +2198,6 @@ void update_user() {
   String out = String('[');
   bool prev = false;
 
-  if (!recipe_queue.empty()) {
-    prev = true;
-    ActiveRecipe *active = recipe_queue.front();
-    out.concat(String(active->user));
-  }
-
   for(auto const &r : recipe_queue) {
     if (prev) out.concat(',');
     out.concat(String(r->user));
@@ -2772,8 +2766,12 @@ void Pump::pump(float amount) {
     debug("pump would add: %.1f", amount);
 
   } else { // run real pump
+    time_t dur = std::round(amount * this->rate);
+
+    debug("running pump for %f ml / %d ms at rate %f", amount, dur, this->rate);
+
     this->run(this->time_init);
-    this->run(std::round(amount * this->rate));
+    this->run(dur);
     this->run(this->time_reverse, true);
   }
 }
