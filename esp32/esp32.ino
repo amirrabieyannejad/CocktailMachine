@@ -1050,8 +1050,8 @@ Parsed parse_command(const String json) {
   JsonArray field = doc[#field];                                \
   if (field.isNull()) return Parsed{NULL, Retcode::incomplete};
 
-#define parse_ingredients(array)                                        \
-  std::deque<Ingredient> ingredients = {};                              \
+#define parse_ingredients(array, into)                                  \
+  std::deque<Ingredient> into = {};                              \
   parse_array(array);                                                   \
   for (JsonVariant _v : array) {                                        \
     JsonArray _tuple = _v.as<JsonArray>();                              \
@@ -1062,7 +1062,7 @@ Parsed parse_command(const String json) {
     float _amount  	= _tuple[1].as<float>();                           \
     Ingredient _ing	= Ingredient{_name, _amount};                      \
                                                                         \
-    ingredients.push_back(_ing);                                        \
+    into.push_back(_ing);                                        \
   }
 
 #define parse_str(field)                                    \
@@ -1129,14 +1129,14 @@ Parsed parse_command(const String json) {
   } else if (match_name(CmdDefineRecipe)) {
     parse_user();
     parse_str(name);
-    parse_ingredients(ingredients);
-    cmd = new CmdDefineRecipe(user, name, ingredients);
+    parse_ingredients(ingredients, ing_parsed);
+    cmd = new CmdDefineRecipe(user, name, ing_parsed);
 
   } else if (match_name(CmdEditRecipe)) {
     parse_user();
     parse_str(name);
-    parse_ingredients(ingredients);
-    cmd = new CmdEditRecipe(user, name, ingredients);
+    parse_ingredients(ingredients, ing_parsed);
+    cmd = new CmdEditRecipe(user, name, ing_parsed);
 
   } else if (match_name(CmdDeleteRecipe)) {
     parse_user();
