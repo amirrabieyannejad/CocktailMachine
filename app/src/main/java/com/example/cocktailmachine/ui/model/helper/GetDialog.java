@@ -526,6 +526,7 @@ public class GetDialog {
         //countDown(activity, recipe, countDownThread);
         AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
         alertDialog.setTitle("Du bist dran!");
+        alertDialog.setCancelable(false);
         alertDialog.setMessage("Bitte, geh zur Cocktailmaschine und stelle dein Glas unter die Maschine. ");
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Los!", (dialog, which) -> {
             dialog.cancel();
@@ -572,6 +573,7 @@ public class GetDialog {
         AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
         alertDialog.setTitle("Fertig!");
         alertDialog.setMessage("Hole deinen Cocktail ab! ");
+        alertDialog.setCancelable(false);
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Abgeholt!", (dialog, which) -> {
             dialog.cancel();
             //BluetoothSingleton.getInstance().adminReset();
