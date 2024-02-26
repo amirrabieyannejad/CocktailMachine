@@ -26,7 +26,7 @@ public class AdminRights {
     private static AdminRights singleton = null;
 
     private UserPrivilegeLevel privilege = UserPrivilegeLevel.User;
-    private int userId = -1;
+    private int userId = 2;
 
     private AdminRights(){
     }
@@ -104,7 +104,7 @@ public class AdminRights {
         Log.i(TAG, "initUser");
         if(Dummy.isDummy) {
             Log.i(TAG, "initUser dummy");
-            getSingleton().userId = 3;
+            getSingleton().userId = -1;
             return;
         }
         try{
