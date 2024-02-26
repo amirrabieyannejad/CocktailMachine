@@ -89,6 +89,9 @@ public abstract class WaitForBroadcastReceiver extends AsyncTask<Void, Void, JSO
     }
 
     public JSONArray getJSONArrayResult() throws JSONException {
+        if(this.result == null){
+            return new JSONArray();
+        }
         return new JSONArray(this.result);
         //return jsonObject.getJSONArray("");
     }
