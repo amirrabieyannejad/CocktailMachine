@@ -507,7 +507,6 @@ public class GetDialog {
         //countDown(activity, recipe, countDownThread);
         AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
         alertDialog.setTitle("Warteschlangen-Countdown");
-        alertDialog.setCancelable(false);
         alertDialog.setMessage("...");
         alertDialog.show();
 
