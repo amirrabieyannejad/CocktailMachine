@@ -288,12 +288,9 @@ public class DisplayActivity extends BasicActivity {
         });
         String vol = pump.getVolume() +" ml";
         binding.includeDisplayPump.textViewPumpVolume.setText(vol);
-        binding.includeDisplayPump.buttonRunPump.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.v(TAG, "run pump clicked");
-                GetDialog.runPump(DisplayActivity.this, pump);
-            }
+        binding.includeDisplayPump.buttonRunPump.setOnClickListener(v -> {
+            Log.v(TAG, "run pump clicked");
+            GetDialog.runPump(DisplayActivity.this, pump);
         });
         //final Activity activity = this;
 

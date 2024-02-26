@@ -38,6 +38,7 @@ import com.example.cocktailmachine.data.enums.ErrorStatus;
 import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.logic.Animation.CircularAnimation;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
+import com.example.cocktailmachine.ui.model.BasicActivity;
 import com.example.cocktailmachine.ui.model.enums.ModelType;
 
 import org.json.JSONException;
@@ -506,6 +507,7 @@ public class GetDialog {
         //countDown(activity, recipe, countDownThread);
         AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
         alertDialog.setTitle("Warteschlangen-Countdown");
+        alertDialog.setCancelable(false);
         alertDialog.setMessage("...");
         alertDialog.show();
 
@@ -716,6 +718,7 @@ public class GetDialog {
 
         Log.v(TAG, "enterNumberOfPumps");
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setCancelable(false);
         builder.setTitle("Setze die Anzahl der Pumpen:");
 
         View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
@@ -758,6 +761,7 @@ public class GetDialog {
         //DatabaseConnection.initializeSingleton(activity);
         Dialog wait = loadingBluetooth(activity);
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setCancelable(false);
         builder.setTitle("Automatische Kalibrierung");
         builder.setMessage("Bitte folge den Anweisungen schrittweise. " +
                 "Zur Kalibrierung der Pumpen darf zunächst nur Wasser angeschlossen sein. " +
@@ -843,6 +847,7 @@ public class GetDialog {
         Log.v("GetDialog", "getGlass");
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Waagenkalibrierung");
+        builder.setCancelable(false);
         builder.setMessage("Bitte stelle ein Gefäss ohne Flüssigkeit unter die Cocktailmaschine. ");
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
             dialog.cancel();
@@ -881,6 +886,7 @@ public class GetDialog {
         Log.v("GetDialog", "getGlass");
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Waagenkalibrierung");
+        builder.setCancelable(false);
         builder.setMessage("Bitte stelle das gleiche Gefäss mit 100ml Flüssigkeit (Wasser) unter die Cocktailmaschine. ");
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
             dialog.cancel();
@@ -919,6 +925,7 @@ public class GetDialog {
         Log.v("GetDialog", "emptyGlass");
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Leere das Glass!");
+        builder.setCancelable(false);
         builder.setMessage("Leere das Glass und stell es wieder unter die Cocktailmaschine!");
         builder.setPositiveButton("Erledigt!", (dialog, which) -> {
             dialog.cancel();
@@ -962,6 +969,7 @@ public class GetDialog {
         //setIngredientsForPumps(activity);
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Bitte Warten!");
+        builder.setCancelable(false);
         builder.setMessage("Die automatische Kalibration der Pumpen läuft!");
         AlertDialog dialog = builder.create();
         dialog.show();
@@ -1222,6 +1230,7 @@ public class GetDialog {
             Log.v(TAG, "setFixedPumpIngredient Slot "+pump.getSlot());
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setTitle("Setze die Zutat für Slot "+pump.getSlot()+":");
+            builder.setCancelable(false);
 
             List<Ingredient> ingredients = Ingredient.getAllIngredients(activity);
             LinkedList<String> names = new LinkedList<>();
@@ -1275,6 +1284,7 @@ public class GetDialog {
         if (pump != null) {
             pump.sendRefill(activity);
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setCancelable(false);
             builder.setTitle("Setze das jetzt vorhandene Volumen für Slot "+pump.getSlot()+":");
 
             View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
@@ -1321,6 +1331,7 @@ public class GetDialog {
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setTitle("Setze das jetzt vorhandene Volumen für Pumpe "+pump.getSlot()+":");
 
+            builder.setCancelable(false);
             View v = activity.getLayoutInflater().inflate(R.layout.layout_login, null);
 
 
@@ -2464,7 +2475,7 @@ public class GetDialog {
 
 
 
-    public static void runPump(Activity activity, Pump pump) {
+    public static void runPump(BasicActivity activity, Pump pump) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Wie viele Milliliter soll die Pumpe pumpen?");
 
@@ -2479,6 +2490,7 @@ public class GetDialog {
         builder.setPositiveButton("Pumpen", (dialog, which) -> {
             try {
                 timePumpingView.send();
+                activity.reload();
                 dialog.cancel();
                 //GetActivity.goToLook(activity, ModelType.PUMP, pump.getID());
             }catch (IllegalStateException e){
