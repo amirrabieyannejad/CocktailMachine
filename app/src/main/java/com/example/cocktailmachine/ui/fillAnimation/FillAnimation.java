@@ -1,6 +1,8 @@
 package com.example.cocktailmachine.ui.fillAnimation;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Recipe;
@@ -109,6 +111,9 @@ public class FillAnimation extends AppCompatActivity {
      */
     private void onFinish(){
         Log.i(TAG, "onFinish");
+        if(Dummy.isDummy){
+            GetDialog.isDone(FillAnimation.this, recipe);
+        }
 
         CocktailStatus.getCurrentStatus(new Postexecute() {
             @Override
