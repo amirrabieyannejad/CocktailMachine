@@ -1,34 +1,23 @@
-package com.example.cocktailmachine.ui;
+package com.example.cocktailmachine.ui.manualtestingsuit;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.bluetoothlegatt.WaitForBroadcastReceiver;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.db.elements.SQLIngredient;
-import com.example.cocktailmachine.data.db.elements.SQLRecipe;
-import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
-import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
 import com.example.cocktailmachine.data.enums.CocktailStatus;
 import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.logic.Animation.CircularAnimation;
 import com.example.cocktailmachine.logic.BildgeneratorGlas;
-import com.example.cocktailmachine.ui.model.helper.GetActivity;
-
-import org.apache.commons.lang3.ObjectUtils;
-import org.json.JSONException;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -52,9 +41,7 @@ public class BluetoothNotFound extends AppCompatActivity {
 
         try {
             image = BildgeneratorGlas.bildgenerationGlas(this,this.getRandomRecipe(),(float)1.0);
-        } catch (TooManyTimesSettedIngredientEcxception e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchIngredientSettedException e) {
+        } catch (TooManyTimesSettedIngredientEcxception | NoSuchIngredientSettedException e) {
             throw new RuntimeException(e);
         }
 

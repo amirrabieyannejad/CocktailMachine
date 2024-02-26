@@ -19,6 +19,7 @@ import com.example.cocktailmachine.databinding.ActivityMenueBinding;
 import com.example.cocktailmachine.ui.ListOfIngredients.ListIngredients;
 import com.example.cocktailmachine.ui.calibration.scale.calibrationScale;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
+import com.example.cocktailmachine.ui.manualtestingsuit.BluetoothNotFound;
 import com.example.cocktailmachine.ui.manualtestingsuit.BluetoothTestEnviroment;
 import com.example.cocktailmachine.ui.manualtestingsuit.Grafik;
 import com.example.cocktailmachine.ui.manualtestingsuit.LoadScreen;

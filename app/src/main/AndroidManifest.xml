@@ -56,7 +56,7 @@
         android:theme="@style/Theme.CocktailMachine"
         tools:targetApi="21">
         <activity
-            android:name=".ui.SearchForBluetoothMachine"
+            android:name=".ui.manualtestingsuit.SearchForBluetoothMachine"
             android:exported="false" />
         <activity
             android:name=".ui.manualtestingsuit.ScreenUserWaitForCalibration"
@@ -73,7 +73,7 @@
             android:name=".ui.settings.SinglePumpSetting"
             android:exported="false" />
         <activity
-            android:name=".ui.BluetoothNotFound"
+            android:name=".ui.manualtestingsuit.BluetoothNotFound"
             android:exported="false" />
         <activity
             android:name=".ui.ListOfPumps.ListOfPumps"
