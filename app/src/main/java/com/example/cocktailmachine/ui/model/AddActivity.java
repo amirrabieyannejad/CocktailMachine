@@ -64,8 +64,8 @@ public class AddActivity extends BasicActivity {
 
         binding.subLayoutAlcohol.setVisibility(View.GONE);
         binding.switchAlcohol.setVisibility(View.GONE);
-        //TODO: add binding.includeAlcoholicadd.getRoot().setVisibility(View.GONE);
-        //TODO: add binding.includeNotAlcoholicadd.getRoot().setVisibility(View.GONE);
+        binding.includeAlcoholicadd.getRoot().setVisibility(View.GONE);
+        binding.includeNotAlcoholicadd.getRoot().setVisibility(View.GONE);
         //binding.includeNotAlcoholic
 
 
@@ -241,18 +241,18 @@ public class AddActivity extends BasicActivity {
         binding.buttonChangeColor.setVisibility(View.VISIBLE);
 
         //maybe needed
-        //TODO: add binding.includeAlcoholicadd.getRoot().setVisibility(View.GONE);
-        //TODO: add binding.includeNotAlcoholicadd.getRoot().setVisibility(View.GONE);
+        binding.includeAlcoholicadd.getRoot().setVisibility(View.GONE);
+        binding.includeNotAlcoholicadd.getRoot().setVisibility(View.GONE);
 
 
         binding.textViewAddTitle.setText("Zutat");
         binding.switchAlcohol.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked){
-                //TODO: add binding.includeAlcoholicadd.getRoot().setVisibility(View.VISIBLE);
-                //TODO: add binding.includeNotAlcoholicadd.getRoot().setVisibility(View.GONE);
+                binding.includeAlcoholicadd.getRoot().setVisibility(View.VISIBLE);
+                binding.includeNotAlcoholicadd.getRoot().setVisibility(View.GONE);
             }else{
-                //TODO: add binding.includeAlcoholicadd.getRoot().setVisibility(View.GONE);
-                //TODO: add binding.includeNotAlcoholicadd.getRoot().setVisibility(View.VISIBLE);
+                binding.includeAlcoholicadd.getRoot().setVisibility(View.GONE);
+                binding.includeNotAlcoholicadd.getRoot().setVisibility(View.VISIBLE);
             }
         });
 
