@@ -22,9 +22,7 @@ import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpExcep
 //import com.example.cocktailmachine.data.db.elements.SQLPump;
 import com.example.cocktailmachine.data.db.tables.BasicColumn;
 import com.example.cocktailmachine.data.enums.CocktailStatus;
-import com.example.cocktailmachine.data.enums.ErrorStatus;
 import com.example.cocktailmachine.data.enums.Postexecute;
-import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
@@ -406,7 +404,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         Log.i(TAG, "updatePumpStatus: "+json.toString());
         if(!json.keys().hasNext()){
             Toast.makeText(context, "Fehler bei der Übertragung!", Toast.LENGTH_SHORT).show();
-            CocktailMachineCalibration.getSingleton().setIsDone(false);
+            CocktailMachine.getSingleton().setIsDone(false);
             GetActivity.waitNotSet(context);
             return;
         }
@@ -420,7 +418,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             try {
             Iterator<String> t_ids = json.keys();
             if(!t_ids.hasNext()){
-                CocktailMachineCalibration.getSingleton().setIsDone(false);
+                CocktailMachine.getSingleton().setIsDone(false);
             }
             while (t_ids.hasNext()){
                 String key = t_ids.next();
@@ -457,7 +455,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
                 Log.i(TAG, "updated Pump: "+pump.toString());
                 Log.i(TAG, "updated Pump loaded with slot: "+Pump.getPumpWithSlot(context,slot));
             }
-            CocktailMachineCalibration.getSingleton().setIsDone(setIsDone);
+                CocktailMachine.getSingleton().setIsDone(setIsDone);
             /*
             List<Pump> allPumps = getPumps(context);
             if(allPumps.size() > toSave.size()) {

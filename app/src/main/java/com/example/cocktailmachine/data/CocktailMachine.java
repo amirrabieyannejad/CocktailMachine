@@ -10,13 +10,11 @@ import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
-import com.example.cocktailmachine.data.db.DeleteFromDB;
 import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.CalibrateStatus;
 import com.example.cocktailmachine.data.enums.CocktailStatus;
 import com.example.cocktailmachine.data.enums.Postexecute;
-import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
@@ -430,7 +428,7 @@ public class CocktailMachine {
 
         if(Dummy.isDummy){
             Log.i(TAG, "isCocktailMachineSet: dummy");
-            if(CocktailMachineCalibration.getSingleton().isIsDone()){
+            if(CocktailMachine.getSingleton().isIsDone()){
                 Log.i(TAG, "isCocktailMachineSet: dummy. SET");
                 set.post();
                 return;
@@ -446,7 +444,7 @@ public class CocktailMachine {
                 @Override
                 public void post() {
                     Log.i(TAG, "isCocktailMachineSet: post");
-                    if(CocktailMachineCalibration.getSingleton().isIsDone()){
+                    if(CocktailMachine.getSingleton().isIsDone()){
                         Log.i(TAG, "isCocktailMachineSet: SET");
                         set.post();
                     }else{
@@ -475,7 +473,7 @@ public class CocktailMachine {
 
         if(Dummy.isDummy){
             Log.i(TAG, "isCocktailMachineSet: dummy");
-            return CocktailMachineCalibration.getSingleton().isIsDone();
+            return CocktailMachine.getSingleton().isIsDone();
         }else{
             try {
                 BluetoothSingleton.getInstance().adminReadPumpsStatus(activity);
@@ -485,7 +483,7 @@ public class CocktailMachine {
                 //Log.e(TAG, "error: "+e);
                 Log.e(TAG, "error", e);
             }
-            return CocktailMachineCalibration.getSingleton().isIsDone();
+            return CocktailMachine.getSingleton().isIsDone();
         }
         //return r.nextDouble() >= 0.5;
         //return false;
@@ -1137,7 +1135,7 @@ public class CocktailMachine {
             //return new Random(42).nextBoolean();
             if( dummyCounter==Pump.getPumps(activity).size()){
                 if(CalibrateStatus.getCurrent(activity)==CalibrateStatus.calibration_calculation){
-                    CocktailMachineCalibration.getSingleton().setIsDone(true);
+                    CocktailMachine.getSingleton().setIsDone(true);
                     Log.i(TAG, "tickDummy: CocktailMachineCalibration.setIsDone(true)");
                     CalibrateStatus.setStatus(CalibrateStatus.calibration_done);
                     Log.i(TAG, "tickDummy: Dummy: calibration_calculation->calibration_done => fertig done ");
@@ -1469,7 +1467,7 @@ public class CocktailMachine {
         if(Dummy.isDummy){
             Log.i(TAG, "factoryReset: dummy");
             Toast.makeText(activity,"Erfolgreich zurückgesetzt!", Toast.LENGTH_SHORT).show();
-            CocktailMachineCalibration.getSingleton().setIsDone(false);
+            CocktailMachine.getSingleton().setIsDone(false);
             Log.i(TAG, "factoryReset: dummy: CocktailMachineCalibration.setIsDone(false)");
             GetActivity.waitNotSet(activity);
             Log.i(TAG, "factoryReset: dummy: clear stack, go to menu, all pumps empty, all recipes deleted");
@@ -1482,7 +1480,7 @@ public class CocktailMachine {
                         @Override
                         public void post() {
                             Toast.makeText(activity,"Erfolgreich zurückgesetzt!", Toast.LENGTH_SHORT).show();
-                            CocktailMachineCalibration.getSingleton().setIsDone(false);
+                            CocktailMachine.getSingleton().setIsDone(false);
                             Log.i(TAG, "factoryReset: CocktailMachineCalibration.setIsDone(false)");
                             GetActivity.waitNotSet(activity);
                             Log.i(TAG, "factoryReset: clear stack, go to menu, all pumps empty, all recipes deleted");

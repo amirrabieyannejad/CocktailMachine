@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
+import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Postexecute;
@@ -19,7 +20,6 @@ import com.example.cocktailmachine.ui.ListOfIngredients.ListIngredients;
 import com.example.cocktailmachine.ui.calibration.scale.calibrationScale;
 import com.example.cocktailmachine.ui.fillAnimation.FillAnimation;
 import com.example.cocktailmachine.ui.model.enums.ModelType;
-import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.helper.DialogListOfPumps;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
@@ -76,11 +76,11 @@ public class Menue extends AppCompatActivity {
         }
 
 
-        if(!CocktailMachineCalibration.getSingleton().isIsDone()) {
-            CocktailMachineCalibration.getSingleton().askIsDone(this, new Postexecute() {
+        if(!CocktailMachine.getSingleton().isIsDone()) {
+            CocktailMachine.getSingleton().askIsDone(this, new Postexecute() {
                 @Override
                 public void post() {
-                    if (!CocktailMachineCalibration.getSingleton().isIsDone()) {
+                    if (!CocktailMachine.getSingleton().isIsDone()) {
                         Log.w(TAG, "onCreate: start calibration ");
                         GetActivity.waitNotSet(Menue.this);
                         ///CocktailMachineCalibration.start(Menue.this);

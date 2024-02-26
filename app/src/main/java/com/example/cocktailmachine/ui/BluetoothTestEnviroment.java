@@ -1,6 +1,5 @@
 package com.example.cocktailmachine.ui;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -9,17 +8,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
-import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
-import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Postexecute;
-import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
-import com.example.cocktailmachine.ui.model.helper.GetActivity;
-import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
 import org.json.JSONException;
 

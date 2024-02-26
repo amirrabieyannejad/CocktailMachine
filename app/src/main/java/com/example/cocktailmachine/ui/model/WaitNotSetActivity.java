@@ -1,25 +1,19 @@
 package com.example.cocktailmachine.ui.model;
 
-import android.app.Activity;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cocktailmachine.Dummy;
-import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Postexecute;
-import com.example.cocktailmachine.databinding.ActivityListBinding;
 import com.example.cocktailmachine.databinding.ActivityWaitNotSetBinding;
-import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
 import com.example.cocktailmachine.ui.model.helper.GetDialog;
 
@@ -44,7 +38,7 @@ public class WaitNotSetActivity extends AppCompatActivity {
             Log.v(TAG, "onCreate: dummy: load Dummy");
 
             if(!Dummy.withSetCalibration){
-                CocktailMachineCalibration.getSingleton().setIsDone(true);
+                CocktailMachine.getSingleton().setIsDone(true);
                 Log.v(TAG, "onCreate: dummy:  not withSetCalibration ");
                 GetActivity.goToMenu(this);
             }
