@@ -32,7 +32,19 @@ public enum CalibrateStatus {
 
 
     public static void setStatus(String result) {
+        Log.i(TAG,"setStatus: res: "+result );
+
+        if(result == null){
+            status = CalibrateStatus.not;
+            Log.i(TAG,"setStatus: status: "+status );
+            return;
+        }
+        //TO DO: figure out if only string or JSON Object and put in currentStatus
+        result = result.replace("\"", "");
+        result = result.replace("'", "");
+        result = result.replace(" ", "_");
         status = valueStringOf(result);
+        Log.i(TAG,"setStatus: status: "+status );
     }
 
     public static void setStatus(CalibrateStatus result) {

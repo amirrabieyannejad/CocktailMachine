@@ -136,19 +136,24 @@ public enum CocktailStatus {
 
     public  static void setStatus(String status) {
 
+        Log.i(TAG,"setStatus: res: "+status );
+
         if(status == null){
             currentState = CocktailStatus.not;
+            Log.i(TAG,"setStatus: status: "+status );
             return;
         }
         //TO DO: figure out if only string or JSON Object and put in currentStatus
         status = status.replace("\"", "");
         status = status.replace("'", "");
-        status = status.replace("_", " ");
+        status = status.replace(" ", "_");
+        Log.i(TAG,"setStatus: res (filtered): "+status );
         try {
             currentState = CocktailStatus.valueOf(status);
         }catch (IllegalArgumentException e){
             currentState = CocktailStatus.not;
         }
+        Log.i(TAG, "setStatus: "+currentState);
 
     }
 
