@@ -5,6 +5,7 @@
     android:id="@+id/activity_fill_animation_button_stop"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:visibility="invisible"
     tools:context=".ui.fillAnimation.FillAnimation">
 
     <FrameLayout
@@ -25,6 +26,7 @@
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="24dp"
         android:text="@string/stop_action"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.1"
