@@ -43,7 +43,7 @@
             android:text="@string/large_text" />
 
         <include
-            android:id="@+id/includePump"
+            android:id="@+id/includePump2"
             layout="@layout/layout_pump"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

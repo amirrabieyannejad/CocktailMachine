@@ -4,9 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clickable="false"
-    android:focusable="false"
-    android:longClickable="false"
+    android:orientation="vertical"
     tools:context=".ui.model.AddActivity">
 
 
@@ -101,7 +99,7 @@
                 android:textAlignment="gravity"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textIsSelectable="true"
-                android:visibility="gone" />
+                android:visibility="visible" />
 
             <LinearLayout
                 android:id="@+id/subLayoutAlcohol"
@@ -111,7 +109,7 @@
                 android:focusable="false"
                 android:longClickable="false"
                 android:orientation="vertical"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <Switch
                     android:id="@+id/switchAlcohol"
@@ -130,14 +128,14 @@
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 <include
-                    android:id="@+id/includeAlcoholic"
+                    android:id="@+id/includeAlcoholicadd"
                     layout="@layout/layout_alcoholic"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp" />
 
                 <include
-                    android:id="@+id/includeNotAlcoholic"
+                    android:id="@+id/includeNotAlcoholicadd"
                     layout="@layout/layout_not_alcoholic"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -155,7 +153,7 @@
                 android:layout_weight="0"
                 android:text="@string/change_color"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:visibility="gone" />
+                android:visibility="visible" />
 
 
 
@@ -289,7 +287,7 @@
 
 
             <include
-                android:id="@+id/includePump"
+                android:id="@+id/includePumpadd"
                 layout="@layout/layout_search_ingredient"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

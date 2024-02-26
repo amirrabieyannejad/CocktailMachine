@@ -15,7 +15,6 @@ import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.data.enums.CocktailStatus;
 import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
-import com.example.cocktailmachine.ui.model.helper.GetActivity;
 
 /**
  *

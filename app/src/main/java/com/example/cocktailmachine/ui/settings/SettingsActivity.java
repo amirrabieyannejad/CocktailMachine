@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cocktailmachine.Dummy;
 
-import com.example.cocktailmachine.bluetoothlegatt.BluetoothSingleton;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.ExtraHandlingDB;
 import com.example.cocktailmachine.data.enums.AdminRights;
@@ -19,9 +18,7 @@ import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivitySettingsBinding;
 
 
-import com.example.cocktailmachine.ui.model.WaitNotSetActivity;
 import com.example.cocktailmachine.ui.model.enums.ModelType;
-import com.example.cocktailmachine.ui.model.helper.CocktailMachineCalibration;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
 
 /**

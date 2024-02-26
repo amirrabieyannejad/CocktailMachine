@@ -13,11 +13,11 @@
         android:contentDescription="@string/nicht_alkoholisch"
         android:minWidth="32dp"
         android:minHeight="32dp"
+        android:src="@android:drawable/ic_dialog_alert"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:src="@android:drawable/ic_dialog_alert"
-        app:tint="@color/material_dynamic_neutral70" />
+        app:tint="#aaabae" />
 
     <TextView
         android:layout_width="wrap_content"

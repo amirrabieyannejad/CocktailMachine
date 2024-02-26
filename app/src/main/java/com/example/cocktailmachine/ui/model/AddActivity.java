@@ -46,6 +46,7 @@ public class AddActivity extends BasicActivity {
         Log.v(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_add);
+        // TODO: Fehler ImageView???
         binding = ActivityAddBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -63,8 +64,8 @@ public class AddActivity extends BasicActivity {
 
         binding.subLayoutAlcohol.setVisibility(View.GONE);
         binding.switchAlcohol.setVisibility(View.GONE);
-        binding.includeAlcoholic.getRoot().setVisibility(View.GONE);
-        binding.includeNotAlcoholic.getRoot().setVisibility(View.GONE);
+        //TODO: add binding.includeAlcoholicadd.getRoot().setVisibility(View.GONE);
+        //TODO: add binding.includeNotAlcoholicadd.getRoot().setVisibility(View.GONE);
         //binding.includeNotAlcoholic
 
 
@@ -74,9 +75,9 @@ public class AddActivity extends BasicActivity {
         binding.subLayoutAddIngredient.setVisibility(View.GONE);
         binding.subLayoutAddTopic.setVisibility(View.GONE);
 
-        //binding.includePump;//.getRoot().setVisibility(View.GONE);
+        //binding.includePumpadd;//.getRoot().setVisibility(View.GONE);
 
-        binding.includePump.getRoot().setVisibility(View.GONE);
+        binding.includePumpadd.getRoot().setVisibility(View.GONE);
 
 
 
@@ -97,16 +98,16 @@ public class AddActivity extends BasicActivity {
             return;
         }
 
-        binding.includePump.textViewSearchIngredientIng.setText(pump.getIngredientName(this));
-        binding.includePump.editTextSearchIngredientIng.setText(pump.getIngredientName(this));
-        binding.includePump.editTextNumberSearchIngredientVol.setText(String.valueOf(pump.getVolume()));
-        binding.includePump.getRoot().setVisibility(View.VISIBLE);
-        //binding.includePump.editTextNumberSearchIngredientVol.setVisibility(View.VISIBLE);
+        binding.includePumpadd.textViewSearchIngredientIng.setText(pump.getIngredientName(this));
+        binding.includePumpadd.editTextSearchIngredientIng.setText(pump.getIngredientName(this));
+        binding.includePumpadd.editTextNumberSearchIngredientVol.setText(String.valueOf(pump.getVolume()));
+        binding.includePumpadd.getRoot().setVisibility(View.VISIBLE);
+        //binding.includePumpadd.editTextNumberSearchIngredientVol.setVisibility(View.VISIBLE);
         search();
 
         binding.buttonSave.setOnClickListener(v -> {
             Log.v(TAG, "setUpPump: buttonSave clicked");
-            if(binding.includePump.editTextSearchIngredientIng.getText().toString().length()>0) {
+            if(binding.includePumpadd.editTextSearchIngredientIng.getText().toString().length()>0) {
                 Log.v(TAG, "setUpPump: buttonSave has title");
                 getIngredient();
             }else{
@@ -116,7 +117,7 @@ public class AddActivity extends BasicActivity {
             }
             AddActivity.this.pump.setCurrentIngredient(this.activity, AddActivity.this.ingredient);
             //set volume
-            String vol = binding.includePump.editTextNumberSearchIngredientVol.getText().toString();
+            String vol = binding.includePumpadd.editTextNumberSearchIngredientVol.getText().toString();
             if(vol.length()==0){
                 Log.v(TAG, "setUpPump: buttonSave has no vol -> toast & stop");
                 Toast.makeText(AddActivity.this, "Gib das Volumen an!", Toast.LENGTH_SHORT).show();
@@ -143,7 +144,7 @@ public class AddActivity extends BasicActivity {
 
             /*
             //set min volume
-            vol = binding.includePump.editTextNumberSearchIngredientMinVol.getText().toString();
+            vol = binding.includePumpadd.editTextNumberSearchIngredientMinVol.getText().toString();
             if(vol.length()==0){
                 Log.v(TAG, "setUpPump: buttonSave has no min vol -> toast & stop");
                 //Toast.makeText(AddActivity.this, "Gib das minimal Volumen an!", Toast.LENGTH_SHORT).show();
@@ -240,18 +241,18 @@ public class AddActivity extends BasicActivity {
         binding.buttonChangeColor.setVisibility(View.VISIBLE);
 
         //maybe needed
-        binding.includeAlcoholic.getRoot().setVisibility(View.GONE);
-        binding.includeNotAlcoholic.getRoot().setVisibility(View.GONE);
+        //TODO: add binding.includeAlcoholicadd.getRoot().setVisibility(View.GONE);
+        //TODO: add binding.includeNotAlcoholicadd.getRoot().setVisibility(View.GONE);
 
 
         binding.textViewAddTitle.setText("Zutat");
         binding.switchAlcohol.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked){
-                binding.includeAlcoholic.getRoot().setVisibility(View.VISIBLE);
-                binding.includeNotAlcoholic.getRoot().setVisibility(View.GONE);
+                //TODO: add binding.includeAlcoholicadd.getRoot().setVisibility(View.VISIBLE);
+                //TODO: add binding.includeNotAlcoholicadd.getRoot().setVisibility(View.GONE);
             }else{
-                binding.includeAlcoholic.getRoot().setVisibility(View.GONE);
-                binding.includeNotAlcoholic.getRoot().setVisibility(View.VISIBLE);
+                //TODO: add binding.includeAlcoholicadd.getRoot().setVisibility(View.GONE);
+                //TODO: add binding.includeNotAlcoholicadd.getRoot().setVisibility(View.VISIBLE);
             }
         });
 
@@ -549,14 +550,14 @@ public class AddActivity extends BasicActivity {
 
     private void search(){
         Log.v(TAG, "search");
-        binding.includePump.editTextSearchIngredientIng.setVisibility(View.VISIBLE);
-        binding.includePump.imageButtonSearchIngredientDone.setVisibility(View.VISIBLE);
-        binding.includePump.textViewSearchIngredientIng.setVisibility(View.GONE);
+        binding.includePumpadd.editTextSearchIngredientIng.setVisibility(View.VISIBLE);
+        binding.includePumpadd.imageButtonSearchIngredientDone.setVisibility(View.VISIBLE);
+        binding.includePumpadd.textViewSearchIngredientIng.setVisibility(View.GONE);
 
-        binding.includePump.imageButtonSearchIngredientDone.setOnClickListener(new View.OnClickListener() {
+        binding.includePumpadd.imageButtonSearchIngredientDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(binding.includePump.editTextSearchIngredientIng.getText().toString().length()>0) {
+                if(binding.includePumpadd.editTextSearchIngredientIng.getText().toString().length()>0) {
                     searchDone();
                 }else{
                     Toast.makeText(AddActivity.this, "Nenne die Zutat!", Toast.LENGTH_SHORT).show();
@@ -571,16 +572,16 @@ public class AddActivity extends BasicActivity {
     private void getIngredient(){
         Log.v(TAG, "getIngredient");
         this.ingredient = Ingredient.searchOrNew(activity,
-                binding.includePump.editTextSearchIngredientIng.getText().toString());
+                binding.includePumpadd.editTextSearchIngredientIng.getText().toString());
     }
     private void searchDone(){
         Log.v(TAG, "searchDone");
         getIngredient();
-        binding.includePump.editTextSearchIngredientIng.setVisibility(View.GONE);
-        binding.includePump.imageButtonSearchIngredientDone.setVisibility(View.GONE);
-        binding.includePump.textViewSearchIngredientIng.setVisibility(View.VISIBLE);
-        binding.includePump.textViewSearchIngredientIng.setText(this.ingredient.getName());
-        binding.includePump.textViewSearchIngredientIng.setOnClickListener(v -> search());
+        binding.includePumpadd.editTextSearchIngredientIng.setVisibility(View.GONE);
+        binding.includePumpadd.imageButtonSearchIngredientDone.setVisibility(View.GONE);
+        binding.includePumpadd.textViewSearchIngredientIng.setVisibility(View.VISIBLE);
+        binding.includePumpadd.textViewSearchIngredientIng.setText(this.ingredient.getName());
+        binding.includePumpadd.textViewSearchIngredientIng.setOnClickListener(v -> search());
 
 
     }
