@@ -59,15 +59,15 @@
             android:name=".ui.SearchForBluetoothMachine"
             android:exported="false" />
         <activity
-            android:name=".ui.ScreenUserWaitForCalibration"
+            android:name=".ui.manualtestingsuit.ScreenUserWaitForCalibration"
             android:exported="false" />
         <activity
-            android:name=".ui.LoadDataAnimation"
+            android:name=".ui.manualtestingsuit.LoadDataAnimation"
             android:exported="false"
             android:label="@string/title_activity_load_data_animation"
             android:theme="@style/Theme.CocktailMachine" />
         <activity
-            android:name=".ui.LoadScreen"
+            android:name=".ui.manualtestingsuit.LoadScreen"
             android:exported="false" />
         <activity
             android:name=".ui.settings.SinglePumpSetting"
@@ -90,7 +90,7 @@
             android:name=".ui.ListOfIngredients.ListIngredients"
             android:exported="true" />
         <activity
-            android:name=".ui.BluetoothTestEnviroment"
+            android:name=".ui.manualtestingsuit.BluetoothTestEnviroment"
             android:exported="true" />
         <activity
             android:name=".ui.model.ListActivity"
@@ -149,7 +149,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".ui.Grafik"
+            android:name=".ui.manualtestingsuit.Grafik"
             android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"

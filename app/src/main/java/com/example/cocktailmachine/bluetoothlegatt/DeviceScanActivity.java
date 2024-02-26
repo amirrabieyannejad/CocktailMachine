@@ -34,13 +34,11 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.ParcelUuid;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,8 +49,7 @@ import androidx.core.app.ActivityCompat;
 
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.R;
-import com.example.cocktailmachine.ui.BluetoothNotFound;
-import com.example.cocktailmachine.ui.BluetoothTestEnviroment;
+import com.example.cocktailmachine.ui.manualtestingsuit.BluetoothTestEnviroment;
 //import com.example.cocktailmachine.ui.Menue;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
 
