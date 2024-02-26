@@ -1,0 +1,61 @@
+\babel@toc {ngerman}{}\relax 
+\contentsline {chapter}{Abstract}{I}{section*.1}%
+\contentsline {chapter}{Inhaltsverzeichnis}{I}{section*.2}%
+\contentsline {chapter}{\numberline {1}Planung}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Kurzbeschreibung}{1}{section.1.1}%
+\contentsline {subsection}{\numberline {1.1.1}Cocktailmaschine}{1}{subsection.1.1.1}%
+\contentsline {subsection}{\numberline {1.1.2}Funktion der App}{1}{subsection.1.1.2}%
+\contentsline {section}{\numberline {1.2}Entwicklungsprozess}{2}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Team}{2}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Risikomanagement}{2}{section.1.4}%
+\contentsline {section}{\numberline {1.5}Zeitplan}{2}{section.1.5}%
+\contentsline {chapter}{\numberline {2}Anforderungsanalyse}{3}{chapter.2}%
+\contentsline {section}{\numberline {2.1} Definition des Zielsystems}{3}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Funktionale Anforderungen}{3}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Nicht-funktionale Anforderungen}{3}{section.2.3}%
+\contentsline {chapter}{\numberline {3}Entwurf}{4}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Grober Entwurf (Architektur)}{4}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Technologien}{4}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Detaillierter Entwurf}{4}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}GUI: Plan}{4}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}GUI: Keine Kalibrierung}{5}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}GUI: Dialog: Anmelden}{6}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}GUI: Dialog: Automatische Kalibrierung}{6}{subsection.3.3.4}%
+\contentsline {subsection}{\numberline {3.3.5}GUI: Darstellung Liste}{6}{subsection.3.3.5}%
+\contentsline {subsubsection}{\numberline {3.3.5.1}Pumpen}{6}{subsubsection.3.3.5.1}%
+\contentsline {subsubsection}{\numberline {3.3.5.2}Rezepte}{7}{subsubsection.3.3.5.2}%
+\contentsline {subsection}{\numberline {3.3.6}GUI: Anzeigen einzelner Elemente}{7}{subsection.3.3.6}%
+\contentsline {subsubsection}{\numberline {3.3.6.1} Zutat}{7}{subsubsection.3.3.6.1}%
+\contentsline {subsubsection}{\numberline {3.3.6.2} Serviervorschlag}{7}{subsubsection.3.3.6.2}%
+\contentsline {subsubsection}{\numberline {3.3.6.3} Pumpe}{7}{subsubsection.3.3.6.3}%
+\contentsline {paragraph}{\numberline {3.3.6.3.1} Dialog: Pumpe laufen lassen}{7}{paragraph.3.3.6.3.1}%
+\contentsline {subsubsection}{\numberline {3.3.6.4} Rezepte}{7}{subsubsection.3.3.6.4}%
+\contentsline {paragraph}{\numberline {3.3.6.4.1} Dialog: Mixen/Activity:Simulation des Befüllens}{8}{paragraph.3.3.6.4.1}%
+\contentsline {subsection}{\numberline {3.3.7}GUI: Ändern oder Hinzufügen}{8}{subsection.3.3.7}%
+\contentsline {subsubsection}{\numberline {3.3.7.1} Zutat}{8}{subsubsection.3.3.7.1}%
+\contentsline {subsubsection}{\numberline {3.3.7.2} Serviervorschlag}{9}{subsubsection.3.3.7.2}%
+\contentsline {subsubsection}{\numberline {3.3.7.3} Rezepte}{9}{subsubsection.3.3.7.3}%
+\contentsline {subsubsection}{\numberline {3.3.7.4} Pumpe}{9}{subsubsection.3.3.7.4}%
+\contentsline {subsection}{\numberline {3.3.8}GUI: Menü}{9}{subsection.3.3.8}%
+\contentsline {subsection}{\numberline {3.3.9}GUI: Einstellung}{10}{subsection.3.3.9}%
+\contentsline {subsubsection}{\numberline {3.3.9.1}Die Haupteinstellung:}{10}{subsubsection.3.3.9.1}%
+\contentsline {subsubsection}{\numberline {3.3.9.2}Die Cocktailmaschineneinstellungen:}{10}{subsubsection.3.3.9.2}%
+\contentsline {subsubsection}{\numberline {3.3.9.3}Die Waagenkalibrierung:}{10}{subsubsection.3.3.9.3}%
+\contentsline {subsubsection}{\numberline {3.3.9.4}Die Pumpenkalibrierung:}{11}{subsubsection.3.3.9.4}%
+\contentsline {subsection}{\numberline {3.3.10}Datenbank}{11}{subsection.3.3.10}%
+\contentsline {chapter}{\numberline {4}Qualitätssicherung}{12}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Testplan}{12}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Testprotokoll}{12}{section.4.2}%
+\contentsline {chapter}{\numberline {5}Abschlussbericht}{13}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Zusammenfassung}{13}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Beispielanwendungen}{13}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Benutzerdokumentation}{13}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Entwicklerdokumentation}{13}{section.5.4}%
+\contentsline {section}{\numberline {5.5}Erfahrungsbericht}{13}{section.5.5}%
+\contentsline {chapter}{Literaturverzeichnis}{IV}{section*.9}%
+\contentsline {chapter}{Tabellenverzeichnis}{VI}{section*.11}%
+\contentsline {chapter}{Abbildungsverzeichnis}{VII}{section*.13}%
+\contentsline {chapter}{Abkürzungsverzeichnis}{VIII}{section*.15}%
+\contentsline {chapter}{Listings}{IX}{section*.17}%
+\contentsline {chapter}{Appendix}{X}{section*.19}%
+\contentsline {chapter}{Eidesstattliche Erklärung}{XI}{section*.21}%
