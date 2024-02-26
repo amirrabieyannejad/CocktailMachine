@@ -2819,7 +2819,7 @@ float scale_weigh() {
     // TODO maybe use a different read command or times value?
 
     // invert the value if we get negative results
-    float v = scale.get_units();
+    float v = scale.get_units(5);
     if (scale_inverted && v < 0.0f) v *= -1;
 
     weight = std::max(v, 0.0f);
