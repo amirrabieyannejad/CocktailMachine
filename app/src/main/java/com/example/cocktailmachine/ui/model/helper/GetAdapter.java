@@ -46,6 +46,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 
 public class GetAdapter {
     private static final String TAG = "GetAdapter";
@@ -903,7 +904,9 @@ public class GetAdapter {
 
             };
 
-            this.current = this.pool.submit(r);
+            try{this.current = this.pool.submit(r);}catch (RejectedExecutionException e){
+                Log.e(TAG, "error", e);
+            }
             //this.pool.
             //this.current.
         }
@@ -947,7 +950,9 @@ public class GetAdapter {
 
             if(!this.pool.isShutdown()) {
                 //this.h.submit(r);
-                this.current = this.pool.submit(r);
+                try{this.current = this.pool.submit(r);}catch (RejectedExecutionException e){
+                    Log.e(TAG, "error", e);
+                }
                 //this.h.postDelayed(this.r, 100);
                 //loadMore();
             }

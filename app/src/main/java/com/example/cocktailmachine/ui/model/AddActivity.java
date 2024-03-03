@@ -12,6 +12,7 @@ import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.enums.AdminRights;
+import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.databinding.ActivityAddBinding;
 import com.example.cocktailmachine.ui.model.enums.ModelType;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
@@ -468,6 +469,7 @@ public class AddActivity extends BasicActivity {
 
         //save
         binding.buttonSave.setOnClickListener(v -> {
+            Toast.makeText(activity, "Speicher start!", Toast.LENGTH_SHORT).show();
             Log.v(TAG, "buttonSave: clicked");
             String title = binding.editTextAddTitle.getText().toString();
             if(title.length() == 0){
@@ -482,18 +484,30 @@ public class AddActivity extends BasicActivity {
              //       AddActivity.this.ingredientVolumeHashMap);
             AddActivity.this.ingVolAdapter.save();
             AddActivity.this.topicAdapter.save();
-            if(AddActivity.this.recipe.sendSave(
-                    activity)){
-                Log.v(TAG, "buttonSave: show recipe");
-                GetActivity.goToLook(
-                        activity,
-                        ModelType.RECIPE,
-                        AddActivity.this.recipe.getID());
-            }else {
-                Log.v(TAG, "buttonSave: saving or sending failed -> toast \"nochmal\"");
-                Toast.makeText(activity, "Speicher nochmal!", Toast.LENGTH_SHORT).show();
-            }
-            Log.v(TAG, "buttonSave: done");
+            AddActivity.this.recipe.sendSave(activity,
+                    new Postexecute() {
+                        @Override
+                        public void post() {
+
+                            Log.v(TAG, "buttonSave: show recipe");
+                            GetActivity.goToLook(
+                                    activity,
+                                    ModelType.RECIPE,
+                                    AddActivity.this.recipe.getID());
+                            Log.v(TAG, "buttonSave: done");
+
+                        }
+                    }, new Postexecute() {
+                        @Override
+                        public void post() {
+
+                            Log.v(TAG, "buttonSave: saving or sending failed -> toast \"nochmal\"");
+                            Toast.makeText(activity, "Speicher nochmal!", Toast.LENGTH_SHORT).show();
+                            Log.v(TAG, "buttonSave: done");
+                        }
+                    });
+            Log.v(TAG, "buttonSave: nearly done bluetooth still running");
+
         });
     }
 

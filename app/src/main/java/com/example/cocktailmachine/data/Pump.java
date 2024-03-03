@@ -406,6 +406,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             Toast.makeText(context, "Fehler bei der Übertragung!", Toast.LENGTH_SHORT).show();
             CocktailMachine.getSingleton().setIsDone(false);
             GetActivity.waitNotSet(context);
+
             return;
         }
 

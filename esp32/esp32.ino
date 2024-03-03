@@ -1337,7 +1337,7 @@ Retcode CmdDefinePump::execute() {
 
   // save new pump
   PumpSlot *pump_slot = pump_slots[slot];
-  Pump *p = new Pump(pump_slot, this->liquid, volume, S(1), S(1), 1.0, false);
+  Pump *p = new Pump(pump_slot, this->liquid, volume, S(15), S(15), 200.0, false);
   pumps[slot] = p;
 
   // update machine state
@@ -1369,7 +1369,7 @@ Retcode CmdDefinePumps::execute() {
 
     // save new pump
     PumpSlot *pump_slot = pump_slots[slot];
-    Pump *p = new Pump(pump_slot, liquid, volume, S(1), S(1), 1.0, false);
+    Pump *p = new Pump(pump_slot, liquid, volume, S(15), S(15), 200.0, false);
     pumps[slot] = p;
   }
 

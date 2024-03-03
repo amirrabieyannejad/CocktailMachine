@@ -542,7 +542,7 @@ public class GetDialog {
                 @Override
                 public void post() {
                     Log.i(TAG, "could not start , send again");
-                    Toast.makeText(activity, "Erste Verbingdung fehlgeschlagen. Nochmal!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "Erste Verbindung fehlgeschlagen. Nochmal!", Toast.LENGTH_SHORT).show();
                     CocktailMachine.startMixing(activity,
                             ErrorStatus.errorHandle(activity, continueHere),
                             continueHere);
