@@ -118,12 +118,7 @@ public class DisplayActivity extends BasicActivity {
                         false,
                         true));
         binding.buttonSendRecipe.setVisibility(View.VISIBLE);
-        binding.buttonSendRecipe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                GetDialog.sendRecipe(DisplayActivity.this, recipe);
-            }
-        });
+        binding.buttonSendRecipe.setOnClickListener(v -> GetDialog.sendRecipe(DisplayActivity.this, recipe));
         /*
         if(topics.size()>0) {
             Log.v(TAG, "setTopics size> 0");
