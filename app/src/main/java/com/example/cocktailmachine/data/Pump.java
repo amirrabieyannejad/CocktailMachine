@@ -409,7 +409,7 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
             GetActivity.waitNotSet(context);
 
 		//=======
-            CocktailMachineCalibration.getSingleton().setIsDone(false);
+            //CocktailMachineCalibration.getSingleton().setIsDone(false);
             //GetActivity.waitNotSet(context);
 		//>>>>>>> main
             return;
