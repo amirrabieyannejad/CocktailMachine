@@ -1,4 +1,4 @@
-package com.example.cocktailmachine.ui.model;
+package com.example.cocktailmachine.ui;
 
 import android.content.DialogInterface;
 import android.os.Bundle;

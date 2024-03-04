@@ -111,7 +111,8 @@ public class PumpSettingsActivity extends AppCompatActivity {
         //pump.sendPumpTimes(this, 0,0,0);
         //GetDialog.startAutomaticCalibration(this);
 
-        GetActivity.waitNotSet(this);
+        //GetActivity.waitNotSet(this);
+        CocktailMachine.factoryReset(this);
 
     }
 }

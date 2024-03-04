@@ -163,7 +163,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".ui.model.WaitNotSetActivity"
+            android:name=".ui.WaitNotSetActivity"
             android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"

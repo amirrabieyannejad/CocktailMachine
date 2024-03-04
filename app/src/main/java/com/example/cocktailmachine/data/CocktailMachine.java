@@ -650,7 +650,6 @@ public class CocktailMachine {
             Log.i(TAG, "sendScaleFactor done");
         } catch (JSONException | InterruptedException |NullPointerException e) {
             Log.i(TAG, "sendScaleFactor failed");
-            Log.e(TAG, "error"+ e);
             Log.e(TAG, "error", e);
             Toast.makeText(activity, "ERROR",Toast.LENGTH_SHORT).show();
             GetDialog.errorStatus(activity, e);
@@ -1395,13 +1394,19 @@ public class CocktailMachine {
         Log.i(TAG, "clean");
         if(Dummy.isDummy){
             Log.i(TAG, "clean: dummy");
-            Toast.makeText(activity,"Reinigung wurde gestartet!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity,"Die Reinigung wurde gestartet!", Toast.LENGTH_SHORT).show();
             return;
         }
         //CocktailMachine.clean(activity);
         try {
-            BluetoothSingleton.getInstance().adminClean(activity);
-            Toast.makeText(activity, "Reinigung wurde gestartet!", Toast.LENGTH_SHORT).show();
+            BluetoothSingleton.getInstance().adminClean(activity, new Postexecute() {
+                @Override
+                public void post() {
+                    Toast.makeText(activity,"Die Reinigung wurde beendet!", Toast.LENGTH_SHORT).show();
+
+                }
+            });
+            Toast.makeText(activity, "Die Reinigung wurde gestartet!", Toast.LENGTH_SHORT).show();
             Log.i(TAG, "clean: done");
         } catch (JSONException | InterruptedException|NullPointerException e) {
             Log.i(TAG, "clean: failed");

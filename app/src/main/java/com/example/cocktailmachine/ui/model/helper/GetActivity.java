@@ -14,7 +14,7 @@ import com.example.cocktailmachine.ui.model.FillAnimation;
 import com.example.cocktailmachine.ui.model.AddActivity;
 import com.example.cocktailmachine.ui.model.DisplayActivity;
 import com.example.cocktailmachine.ui.model.ListActivity;
-import com.example.cocktailmachine.ui.model.WaitNotSetActivity;
+import com.example.cocktailmachine.ui.WaitNotSetActivity;
 import com.example.cocktailmachine.ui.model.enums.ModelType;
 
 /**

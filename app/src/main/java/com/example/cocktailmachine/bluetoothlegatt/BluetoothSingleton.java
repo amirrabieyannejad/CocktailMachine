@@ -2774,6 +2774,51 @@ public class BluetoothSingleton {
     }
 
 
+    /**
+     * clean (ADMIN): clean the machine
+     * JSON-Sample: {"cmd": "clean", "user": 0}
+     * like described in ProjektDokumente/esp/Befehle.md
+     * sends a message along with write on {@code BluetoothGattCharacteristic} on to the Device.
+     *
+     * @return
+     * @throws JSONException
+     */
+    @SuppressLint("MissingPermission")
+    public void adminClean(Activity activity, Postexecute postexecute) throws JSONException, InterruptedException {
+        Log.w(TAG, "BluetoothSingleton adminClean start");
+        try {
+            singleton = BluetoothSingleton.getInstance();
+            checkIfNotEmpty(singleton.queue);
+            singleton.queue = "adminClean";
+            singleton.connectGatt(activity);
+            //generate JSON Format
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cmd", "clean");
+            jsonObject.put("user", 0);
+            singleton.sendReadWrite(jsonObject, true, true);
+            singleton.waitForWriteNotification();
+            WaitForBroadcastReceiver wfb = new WaitForBroadcastReceiver(postexecute) {
+                @Override
+                public void toSave() throws InterruptedException {
+                    if (!check()) {
+                        throw new InterruptedException();
+                    }
+                    Log.w(TAG, "returned result is now:" + getStringResult());
+                    Log.w(TAG, "Reset Queue!");
+                    singleton.queue = "";
+                    Log.w(TAG, "BluetoothSingleton adminClean end");
+                }
+            };
+            wfb.execute();
+        } catch (NotEmptyException e) {
+            System.err.println("[Error: Incomplete task] Try to send adminClean but the queue is not " +
+                    "empty. " + "\"" + singleton.queue + "\"" + " is still running!");
+            e.printStackTrace();
+        }
+        // Log.w(TAG, "returned value is now: " + singleton.getEspResponseValue());
+    }
+
+
     /*
             STATUS METHODS TOTAL:7
      */
