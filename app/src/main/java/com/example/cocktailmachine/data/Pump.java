@@ -404,9 +404,14 @@ public interface Pump extends Comparable<Pump>, DataBaseElement {
         Log.i(TAG, "updatePumpStatus: "+json.toString());
         if(!json.keys().hasNext()){
             Toast.makeText(context, "Fehler bei der Übertragung!", Toast.LENGTH_SHORT).show();
+		//<<<<<<< HEAD
             CocktailMachine.getSingleton().setIsDone(false);
             GetActivity.waitNotSet(context);
 
+		//=======
+            CocktailMachineCalibration.getSingleton().setIsDone(false);
+            //GetActivity.waitNotSet(context);
+		//>>>>>>> main
             return;
         }
 
