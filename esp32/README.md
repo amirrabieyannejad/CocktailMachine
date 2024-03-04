@@ -16,7 +16,7 @@
 
 ## Bluetooth Server starten
 
-TODO, siehe requirements.txt für die Abhängigkeiten
+siehe requirements.txt für die Abhängigkeiten
 
     ./simulation.py --bluetooth
 
@@ -32,4 +32,3 @@ z.B.:
 
 ## Simulator testen
     mypy simulation.py
-    pytest
