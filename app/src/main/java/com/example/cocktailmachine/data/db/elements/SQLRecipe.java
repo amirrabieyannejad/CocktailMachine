@@ -318,9 +318,10 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
     @Override
     public void setWaitingQueueCountDown(Activity activity) {
+        Log.i(TAG, "setWaitingQueueCountDown");
         final Recipe recipe = this;
-        if(this.waitingQueueCountDown != null){
-            this.waitingQueueCountDown.cancel();
+        if(this.getWaitingQueueCountDown() != null){
+            this.getWaitingQueueCountDown().cancel();
             this.waitingQueueCountDown = null;
         }
         this.waitingQueueCountDown = new WaitingQueueCountDown(5000) {
@@ -337,6 +338,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
             @Override
             public void onNext() {
+                Log.i(TAG, "setWaitingQueueCountDown: WaitingQueueCountDown: "+"onNext");
                // Log.v("WaitingQueueCountDown","onNext");
                 //TO DO: Notification
                 //TO DO: ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
@@ -347,7 +349,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
             @Override
             public void onFinish() {
-               // Log.v("WaitingQueueCountDown","onFinish");
+                Log.i(TAG, "setWaitingQueueCountDown: WaitingQueueCountDown: "+"onFinish");
 
                 //TO DO: ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
                 //toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,150);
@@ -355,12 +357,13 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
                 GetDialog.isUsersTurn(activity, recipe);
             }
         };
-        this.waitingQueueCountDown.start();
+        this.getWaitingQueueCountDown().start();
 
     }
 
     @Override
     public void addDialogWaitingQueueCountDown(Activity activity, AlertDialog alertDialog) {
+        Log.i(TAG, "addDialogWaitingQueueCountDown");
         final Recipe recipe = this;
 
         if(this.waitingQueueCountDown != null){
@@ -369,6 +372,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         }
 
         alertDialog.setOnDismissListener(dialog -> {
+            Log.i(TAG, "addDialogWaitingQueueCountDown: alertDialog: "+"setOnDismissListener");
             setWaitingQueueCountDown(activity);
             dialog.cancel();
         });
@@ -376,6 +380,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
         this.waitingQueueCountDown = new WaitingQueueCountDown(5000) {
             @Override
             public void onTick() {
+                Log.i(TAG, "addDialogWaitingQueueCountDown: WaitingQueueCountDown: "+"onTick");
                // Log.v("WaitingQueueCountDown","Dialog  onTick"+getTick());
                 alertDialog.setMessage("noch: "+getTick());
                // Log.v("WaitingQueueCountDown","Dialog  onTick"+getTick());
@@ -383,12 +388,14 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
             @Override
             public void reduceTick() {
+                Log.i(TAG, "addDialogWaitingQueueCountDown: WaitingQueueCountDown: "+"reduceTick");
                // Log.v("WaitingQueueCountDown","Dialog  reduceTick");
                 setTick(CocktailMachine.getNumberOfUsersUntilThisUsersTurn(activity,getTick()));
             }
 
             @Override
             public void onNext() {
+                Log.i(TAG, "addDialogWaitingQueueCountDown: WaitingQueueCountDown: "+"onNext");
                // Log.v("WaitingQueueCountDown","Dialog  onNext");
                 //TO DO: Notification
                 Toast.makeText(activity, "Der nächste Cocktail ist deiner!", Toast.LENGTH_LONG).show();
@@ -400,6 +407,7 @@ public class SQLRecipe extends SQLDataBaseElement implements Recipe {
 
             @Override
             public void onFinish() {
+                Log.i(TAG, "addDialogWaitingQueueCountDown: WaitingQueueCountDown: "+"onFinish");
                // Log.v("WaitingQueueCountDown","Dialog  onFinish");
                 //TO DO: ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
                 //toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,150);

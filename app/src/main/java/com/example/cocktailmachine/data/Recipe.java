@@ -44,10 +44,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
 
     void addDialogWaitingQueueCountDown(Activity activity, AlertDialog alertDialog);
 
-    /**
-     * Get id.
-     * @return id
-     */
+
 
 
 
@@ -435,6 +432,9 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * send to be mixed
      *   {"cmd": "make_recipe", "user": 8858, "recipe": "radler"}
      * TO DO:show topics to user!
+     *
+     * @author Johanna Reidt
+     * @param activity
      */
     default void send(Activity activity) {
         //service.
@@ -463,6 +463,10 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      *
      *
      * TODO: find what this is doing :     {"cmd": "add_liquid", "user": 0, "liquid": "water", "volume": 30}
+     *
+     * @author Johanna Reidt
+     * @param activity
+     * @return
      */
     default boolean sendSave(Activity activity){
         //TO DO: USE THIS AMIR  * ich habe in adminDefinePump das gleiche. wollen wir vlt.
@@ -518,6 +522,10 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * <p>
      * <p>
      * TODO: find what this is doing :     {"cmd": "add_liquid", "user": 0, "liquid": "water", "volume": 30}
+     *
+     * @author Johanna Reidt
+     * @param activity
+     * @param postexecute
      */
     default void sendSave(Activity activity, Postexecute postexecute){
         //TO DO: USE THIS AMIR  * ich habe in adminDefinePump das gleiche. wollen wir vlt.
@@ -565,6 +573,11 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * <p>
      * <p>
      * TODO: find what this is doing :     {"cmd": "add_liquid", "user": 0, "liquid": "water", "volume": 30}
+     *
+     * @author Johanna Reidt
+     * @param activity
+     * @param postexecute
+     * @param error
      */
     default void sendSave(Activity activity, Postexecute postexecute, Postexecute error){
         //TO DO: USE THIS AMIR  * ich habe in adminDefinePump das gleiche. wollen wir vlt.
@@ -605,6 +618,13 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
             error.post();
         }
     }
+
+    /**
+     * delete recipe on esp
+     * @author Johanna Reidt
+     * @param activity
+     * @return
+     */
     default boolean sendDelete(Activity activity){
         try {
             BluetoothSingleton.getInstance().userDeleteRecipe(this.getID(),
@@ -631,9 +651,13 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * produces JSON Array with all recipes from db
      * exmaple  [{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}, {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
      * like described in Services.md
+     *
+     * @author Johanna Reidt
+     * @param context
      * @return
      * @throws NotInitializedDBException
      * @throws JSONException
+     * @throws InterruptedException
      */
     static JSONArray getRecipesAsMessage(Context context) throws NotInitializedDBException, JSONException, InterruptedException {
         //TO DO: USE THIS AMIR * Ich glaube ist für mich setRecipe interessant? *
@@ -652,6 +676,7 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * get recipes
      * get pump status
      * reload availbilities
+     *
      * @author Johanna Reidt
      * @param activity
      */
@@ -707,8 +732,11 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
      * add Recipes to db from json array gotten from cocktail machine
      * [{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]},
      * {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
+     *
+     * @author Johanna Reidt
+     * @param context
      * @param json
-     * @throws NotInitializedDBException
+     * @throws JSONException
      */
     static void setRecipes(Context context,JSONArray json) throws JSONException{
         //TO DO: USE THIS AMIR **DONE**
@@ -746,8 +774,11 @@ public interface Recipe extends Comparable<Recipe>, DataBaseElement {
     /**
      * Static access to recipes.
      * Get Recipe with id k.
-     * @param id id k
-     * @return Recipe
+     *
+     * @author Johanna Reidt
+     * @param context
+     * @param id
+     * @return
      */
     static Recipe getRecipe(Context context,long id) {
         return GetFromDB.loadRecipe(context, id);
