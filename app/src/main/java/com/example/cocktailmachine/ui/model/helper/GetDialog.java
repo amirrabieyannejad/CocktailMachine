@@ -456,9 +456,6 @@ public class GetDialog {
     //Recipe Send
     public static void sendRecipe(Activity activity, Recipe recipe){
 
-
-
-
         Postexecute continueHere = new Postexecute() {
             @Override
             public void post() {

@@ -12,10 +12,10 @@ import android.util.Log;
 public abstract class WaitingQueueCountDown {
     private static final String TAG = "WaitingQueueCountDown";
 
-    /**
+     /**
      * Millis since epoch when alarm should stop.
      */
-    //private final long mMillisInFuture;
+     //private final long mMillisInFuture;
      /**
       * The interval in millis that the user receives callbacks
       */
@@ -27,12 +27,12 @@ public abstract class WaitingQueueCountDown {
        */
      private boolean mCancelled = false;
 
-    /**
+     /**
      * number of next users
      */
-    private int tick = 5;
+     private int tick = 5;
 
-    //private long previousTick;
+     //private long previousTick;
 
      /**
       * * @param countDownInterval The interval along the way to receive
@@ -47,9 +47,10 @@ public abstract class WaitingQueueCountDown {
        * Cancel the countdown.
        */
      public synchronized final void cancel() {
-         Log.v(TAG, "cancel");
+          Log.i(TAG, "cancel");
           mCancelled = true;
           mHandler.removeMessages(MSG);
+          //mHandler.removeCallbacksAndMessages(MSG);
      }
 
      /**
@@ -88,15 +89,15 @@ public abstract class WaitingQueueCountDown {
          this.tick = tick;
      }
 
-    public int getTick(){
+     public int getTick(){
         return this.tick;
     }
 
 
-    /**
+     /**
      * Callback fired when the time is up.
      */
-    public abstract void onNext();
+     public abstract void onNext();
      /**
        * Callback fired when the time is up.
        */
@@ -107,12 +108,12 @@ public abstract class WaitingQueueCountDown {
          return tick >0;
      }
 
-    public boolean isNext(){
+     public boolean isNext(){
         Log.v(TAG, "isNext?");
         return tick ==1;
     }
 
-    public boolean isUsersTurn(){
+     public boolean isUsersTurn(){
          Log.v(TAG, "isUsersTurn?");
          return tick ==0;
     }
