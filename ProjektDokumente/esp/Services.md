@@ -48,6 +48,7 @@ Die ID ist also 100 und kann dann in anderen Befehlen mit angegeben werden.
 - UUID des Service: 0f7742d4-ea2d-43c1-9b98-bb4186be905d
 
 ### Pumpen
+
 - UUID Characteristic: 1a9a598a-17ce-3fcd-be03-40a48587d04e
 
 Wert: Map aller verfügbaren Pumpen und deren Füllstand und Kalibrierung. `"cal"` ist dabei ein Array aus [Rate, Zeit davor, Zeit danach], wenn die Pumpe kalibriert ist, und sonst ein leeres Array.
@@ -57,6 +58,7 @@ Beispiel:
     {"1":{"liquid":"water","volume":1000.0,"cal":[0.0,1000,1000]}
 
 ### Flüssigkeiten
+
 - UUID Characteristic: fc60afb0-2b00-3af2-877a-69ae6815ca2f
 
 Wert: Map aller verfügbaren Flüssigkeiten und deren Menge
@@ -66,6 +68,7 @@ Beispiel:
     {"beer": 200, "lemonade": 2000, "orange juice": 2000}
 
 ### Zustand
+
 - UUID Characteristic: e9e4b3f2-fd3f-3b76-8688-088a0671843a
 
 Wert: Der aktuelle Zustand der Cocktail-Maschine und was sie macht.
@@ -75,6 +78,7 @@ Beispiel:
     "ready"
 
 ### Rezepte
+
 - UUID Characteristic: 9ede6e03-f89b-3e52-bb15-5c6c72605f6c
 
 Wert: alle gespeicherten Rezepte und deren Namen
@@ -83,8 +87,8 @@ Beispiel:
 
     [{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}, {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
 
-
 ### Cocktail
+
 - UUID Characteristic: 7344136f-c552-3efc-b04f-a43793f16d43
 
 Wert: Der Inhalt des aktuellen Cocktails, der gemischt wird.
@@ -94,6 +98,7 @@ Beispiel:
     {"weight": 500.0, "content": [["beer", 250], ["lemonade", 250]]}
 
 ### Benutzer in der Warteschlange
+
 - UUID Characteristic: 2ce478ea-8d6f-30ba-9ac6-2389c8d5b172
 
 Wert: alle Benutzer in der Warteschlange, für die ein Cocktail gemacht wird
@@ -103,8 +108,9 @@ Wenn kein Benutzer aktiv ist, ist der Wert `[]`.
 Beispiel:
 
     [1, 4, 2]
-    
+
 ### Letzte Ändererung
+
 - UUID Characteristic: 586b5706-5856-34e1-ad17-94f840298816
 
 Wert: Timestamp der letzten Änderung 
@@ -118,6 +124,7 @@ Beispiel:
     275492
 
 ### Waage
+
 - UUID Characteristic: ff18f0ac-f039-4cd0-bee3-b546e3de5551
 
 Wert: Zustand der Waage
@@ -127,6 +134,7 @@ Beispiel:
     {"weight":0.0,"calibrated":true}
 
 ### Fehler
+
 - UUID Characteristic: 2e03aa0c-b25f-456a-a327-bd175771111a
 
 Wert: aktueller Fehler (falls vorhanden)
