@@ -1025,16 +1025,20 @@ Im Menü werden die wichtigsten Funktionen dem Nutzer angezeigt.
 \subsection{Datenbank}
 
 Die Datenbank verwendet die von Android zur Verfügung stehende Standardimplementierung. 
+ 
+Die Datenbank ist über ein paar simplen Designentscheidungen implementiert. 
 
 
 \subsection{DB: Zustände}
+\label{sec:dbstatus}
 
-Es gibt mehrere \hyperref[sec:status]{Zustände}, die die Cocktailmaschine ein nehmen kann. Programmtechnisch ist es sinnvoll diese in Enums zu verpacken, wobei es mehrere Enum-Pakete gibt. Die \hyperref[sec:statusrez]{Standardzustände}, wie das Mixen eines Cocktails und die \hyperref[sec:statuscal]{Zustände während bzw. kurz vor der Kalibrierung} und die auftretenden \hyperref[sec:statuserror]{Fehler}
+Es gibt mehrere \hyperref[sec:status]{Zustände}, die die Cocktailmaschine ein nehmen kann. Programmtechnisch ist es sinnvoll diese in Enums zu verpacken, wobei es mehrere Enum-Pakete gibt. Die \hyperref[sec:statusrez]{Standardzustände}, wie das Mixen eines Cocktails und die \hyperref[sec:statuscal]{Zustände während bzw. kurz vor der Kalibrierung} und die auftretenden \hyperref[sec:statuserror]{Fehler}. In den Enums werden alle Zustände gelistet und die Bluetoothabfrage und die Anzeige via eines Dialogs ermöglicht.
 
+\subsection{DB: Administrator}
 
+Es gibt neben den \hyperref[sec:dbstatus]{ESP-Zustände} noch einen weiteren App internen Zustand und zwar den des Nutzers. Dieser kann ein "User" oder ein "Admin" sein, wobei "Admin" die Abkürzung für Administrator ist. Innerhalb der App wird nach der Anmeldung des Nutzers die erweiterten Funktionen freigeschaltet, wie die Kalibrierung der Maschine. 
 
 \subsection{Schnittstellen}
 
-
 Es gibt 5 Hauptschnittstellen, eine für Pumpen, für die Rezepte, die Zutaten, die Serviervorschläge und die Cochtailmaschine selbst. 
-Die ersten vier Komponenten von Pumpen, Rezepten, Zutaten und Seviervorschläge ähneln sich. Die Schnittstelle dient als Dateiformat für ein einzelnes Objekt wie ein Rezept mit Namen, Zutaten und ID oder in statischen Funktionen zur Abfrage der Datenbank. Finde zum Beispiel alle Zutaten, die "Wod" im Namen tragen. Die Schnittstelle der Cocktailmaschine diente zunächst als Dummy für die Bluetoothverbindung, weil diese noch nicht implementiert war und trotzdem aufgerufen werden sollte, um die GUI die Cocktailmaschienenfunktionen simulieren zu lassen und diente im Anschluss als Oberfläche die Bluetoothverbindung einzelner \hyperref[sec:espbefehle]{Cocktailmaschinenfunktionen} zu erstellen, sowie die \hyperref[sec:dioautokal]{automatische Kalibrierung} zu starten.
+Die ersten vier Komponenten von Pumpen, Rezepten, Zutaten und Seviervorschläge ähneln sich. Die Schnittstelle dient als Dateiformat für ein einzelnes Objekt wie ein Rezept mit Namen, Zutaten und ID oder in statischen Funktionen zur Abfrage der Datenbank. Finde zum Beispiel alle Zutaten, die "Wod" im Namen tragen. Die Schnittstelle der Cocktailmaschine diente zunächst als Dummy für die Bluetoothverbindung, weil diese noch nicht implementiert war und trotzdem aufgerufen werden sollte, um die GUI die Cocktailmaschienenfunktionen simulieren zu lassen und diente im Anschluss als Oberfläche die Bluetoothverbindung einzelner \hyperref[sec:espbefehle]{Cocktailmaschinenfunktionen} zu erstellen, sowie die \hyperref[sec:dioautokal]{automatische Kalibrierung} zu starten. Dabei ist zum Beispiel die Anmeldung oder der Start des Reinigungsprogramms eine Variante.

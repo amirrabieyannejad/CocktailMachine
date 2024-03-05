@@ -1563,7 +1563,7 @@ public class CocktailMachine {
      * receives a message along with Read on {@code BluetoothGattCharacteristic} from the Device.
 
      * @author Johanna Reidt
-     * @param activity
+     * @param acti vity
      */
     /*
     public static void reset(Activity activity){
