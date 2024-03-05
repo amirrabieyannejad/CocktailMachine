@@ -11,9 +11,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cocktailmachine.Dummy;
 
+import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.ExtraHandlingDB;
-import com.example.cocktailmachine.data.enums.AdminRights;
 
 import com.example.cocktailmachine.databinding.ActivitySettingsBinding;
 
@@ -78,7 +78,7 @@ public class SettingsActivity extends AppCompatActivity {
      */
     private void setVisibility(){
         Log.v(TAG, "setVisibility");
-        if(AdminRights.isAdmin()){
+        if(CocktailMachine.AdminRights.isAdmin()){
             Log.v(TAG, "setVisibility: isAdmin");
             binding.textViewSettingsPumps.setVisibility(View.VISIBLE);
             binding.textViewMachine.setVisibility(View.VISIBLE);
@@ -306,7 +306,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     public void login(View view) {
         Log.v(TAG, "login");
-        AdminRights.login(this, getLayoutInflater(), new DialogInterface.OnDismissListener() {
+        CocktailMachine.AdminRights.login(this, getLayoutInflater(), new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
                 SettingsActivity.this.setVisibility();
@@ -316,7 +316,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     public void logout(View view) {
         Log.v(TAG, "logout");
-        AdminRights.logout();
+        CocktailMachine.AdminRights.logout();
         setVisibility();
     }
 

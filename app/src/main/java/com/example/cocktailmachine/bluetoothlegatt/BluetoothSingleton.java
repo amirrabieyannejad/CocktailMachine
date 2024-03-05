@@ -33,7 +33,6 @@ import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NotInitializedDBException;
-import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.CalibrateStatus;
 import com.example.cocktailmachine.data.enums.CocktailStatus;
 import com.example.cocktailmachine.data.enums.ErrorStatus;
@@ -867,7 +866,7 @@ public class BluetoothSingleton {
                 @Override
                 public void toSave() {
                     Log.w(TAG, "To Save: " + this.getJsonResult());
-                    AdminRights.setUser(this.getJsonResult());
+                    CocktailMachine.AdminRights.setUser(this.getJsonResult());
                     Log.w(TAG, "Reset Queue!");
                     singleton.queue = "";
                     Log.w(TAG, "BluetoothSingleton initUser end");
@@ -911,7 +910,7 @@ public class BluetoothSingleton {
                 @Override
                 public void toSave() {
                     Log.w(TAG, "To Save: " + this.getJsonResult());
-                    AdminRights.setUser(this.getJsonResult());
+                    CocktailMachine.AdminRights.setUser(this.getJsonResult());
                     Log.w(TAG, "Reset Queue!");
                     singleton.queue = "";
                     Log.w(TAG, "BluetoothSingleton userInitUser(PE) end");

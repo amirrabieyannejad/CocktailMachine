@@ -32,7 +32,6 @@ import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
 import com.example.cocktailmachine.data.db.exceptions.NoSuchIngredientSettedException;
 import com.example.cocktailmachine.data.db.exceptions.TooManyTimesSettedIngredientEcxception;
-import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.CalibrateStatus;
 import com.example.cocktailmachine.data.enums.ErrorStatus;
 import com.example.cocktailmachine.data.enums.Postexecute;
@@ -46,7 +45,6 @@ import org.json.JSONException;
 import java.util.LinkedList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -3202,7 +3200,7 @@ public class GetDialog {
         builder.setPositiveButton("Login!", (dialog, which) -> {
             dialog.cancel();
             Log.v(TAG, "handleUnauthorized: user choosed to login");
-            AdminRights.login(activity, activity.getLayoutInflater(), dialog1 -> {        });
+            CocktailMachine.AdminRights.login(activity, activity.getLayoutInflater(), dialog1 -> {        });
             });
         builder.setNegativeButton("Abbrechen!", (dialog, which) -> {
             dialog.cancel();

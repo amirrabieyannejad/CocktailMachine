@@ -12,7 +12,6 @@ import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.bluetoothlegatt.DeviceScanActivity;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Recipe;
-import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
 import com.example.cocktailmachine.databinding.ActivityMenueBinding;
@@ -67,9 +66,9 @@ public class Menue extends AppCompatActivity {
         //ExtraHandlingDB.loadPrepedDB(this);
         if(Dummy.asAdmin){
             Log.v(TAG, "onCreate: dummy asadmin");
-            AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.Admin);
+            CocktailMachine.AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.Admin);
         }
-        if(AdminRights.isAdmin()){
+        if(CocktailMachine.AdminRights.isAdmin()){
             Log.v(TAG, "onCreate: Admin Modus");
             binding.activityMenueLogout.setVisibility(View.VISIBLE);
             binding.activityMenueLogin.setVisibility(View.GONE);
@@ -227,7 +226,7 @@ public class Menue extends AppCompatActivity {
      */
     public void login(View view){
         Log.v(TAG, "login");
-        AdminRights.login(this,
+        CocktailMachine.AdminRights.login(this,
                 getLayoutInflater(),
                 dialog -> successfulLogin());
         Log.v(TAG, "finished login");
@@ -239,7 +238,7 @@ public class Menue extends AppCompatActivity {
      */
     public void successfulLogin(){
         Log.v(TAG, "successfulLogin");
-        if(AdminRights.isAdmin()) {
+        if(CocktailMachine.AdminRights.isAdmin()) {
             Log.v(TAG, "successful login: admin");
             binding.activityMenueLogout.setVisibility(View.VISIBLE);
             binding.activityMenueLogin.setVisibility(View.GONE);
@@ -253,7 +252,7 @@ public class Menue extends AppCompatActivity {
      */
     public void logout(View view){
         Log.v(TAG, "logout");
-        AdminRights.logout();
+        CocktailMachine.AdminRights.logout();
         binding.activityMenueLogout.setVisibility(View.GONE);
         binding.activityMenueLogin.setVisibility(View.VISIBLE);
         Toast.makeText(this,"Ausgeloggt!",Toast.LENGTH_SHORT).show();

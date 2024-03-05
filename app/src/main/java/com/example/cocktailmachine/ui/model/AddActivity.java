@@ -6,12 +6,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
 import com.example.cocktailmachine.data.db.exceptions.MissingIngredientPumpException;
-import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.databinding.ActivityAddBinding;
 import com.example.cocktailmachine.ui.model.enums.ModelType;
@@ -380,7 +380,7 @@ public class AddActivity extends BasicActivity {
         View.OnClickListener ingAdd = v ->{
             Log.v(TAG, "subLayoutAddIngredient: clicked");
             GetDialog.getIngVol(activity,
-                    !AdminRights.isAdmin(),
+                    !CocktailMachine.AdminRights.isAdmin(),
                     new GetDialog.IngredientVolumeSaver() {
                         private Ingredient ing;
                         private int vol;

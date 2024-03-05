@@ -5,12 +5,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.Ingredient;
 import com.example.cocktailmachine.data.Pump;
 import com.example.cocktailmachine.data.Recipe;
 import com.example.cocktailmachine.data.Topic;
-import com.example.cocktailmachine.data.db.ExtraHandlingDB;
-import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.databinding.ActivityDisplayBinding;
 import com.example.cocktailmachine.ui.model.enums.ModelType;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
@@ -190,7 +189,7 @@ public class DisplayActivity extends BasicActivity {
         }
 
 
-        if(AdminRights.isAdmin()){
+        if(CocktailMachine.AdminRights.isAdmin()){
             binding.includeDisplayIngredientAdmin.getRoot().setVisibility(View.VISIBLE);
             String vol = ingredient.getVolume()+" ml";
             binding.includeDisplayIngredientAdmin.textViewIngredientVolume.setText(vol);
@@ -227,7 +226,7 @@ public class DisplayActivity extends BasicActivity {
         binding.textViewDisplayDescription.setText(topic.getDescription());
         binding.textViewDisplayDescription.setVisibility(View.VISIBLE);
         //TO DO: AlertDialog to change description if admin
-        if(AdminRights.isAdmin()) {
+        if(CocktailMachine.AdminRights.isAdmin()) {
             binding.textViewDisplayDescription.setOnLongClickListener(v -> {
                 GetDialog.setDescribtion(DisplayActivity.this, topic);
                 return true;

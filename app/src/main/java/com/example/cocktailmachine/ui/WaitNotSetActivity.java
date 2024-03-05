@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.cocktailmachine.Dummy;
 import com.example.cocktailmachine.data.CocktailMachine;
 import com.example.cocktailmachine.data.db.ExtraHandlingDB;
-import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.databinding.ActivityWaitNotSetBinding;
 import com.example.cocktailmachine.ui.model.helper.GetActivity;
@@ -68,17 +67,17 @@ public class WaitNotSetActivity extends AppCompatActivity {
             }
         };
 
-        if(AdminRights.isAdmin()) {
+        if(CocktailMachine.AdminRights.isAdmin()) {
             Log.i(TAG, "login: is admin");
             GetDialog.startAutomaticCalibration(this);
             return;
             //GetActivity.goToMenu(a);
         }
-        AdminRights.login(this, this.getLayoutInflater(), dialog -> {
+        CocktailMachine.AdminRights.login(this, this.getLayoutInflater(), dialog -> {
             Log.i(TAG, "login: is admin");
             dialog.dismiss();
             unlock();
-            if(AdminRights.isAdmin()) {
+            if(CocktailMachine.AdminRights.isAdmin()) {
                 GetDialog.startAutomaticCalibration(WaitNotSetActivity.this);
                 //GetActivity.goToMenu(a);
             }

@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import com.example.cocktailmachine.R;
 import com.example.cocktailmachine.data.CocktailMachine;
-import com.example.cocktailmachine.data.enums.AdminRights;
 import com.example.cocktailmachine.data.enums.Postexecute;
 import com.example.cocktailmachine.data.enums.CocktailStatus;
 import com.example.cocktailmachine.data.enums.UserPrivilegeLevel;
@@ -141,7 +140,7 @@ public class MachineSettingsActivity extends AppCompatActivity {
     public void factoryReset(View view) {
         Log.v(TAG, "factoryReset");
         CocktailMachine.factoryReset(this);
-        AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.User);
+        CocktailMachine.AdminRights.setUserPrivilegeLevel(UserPrivilegeLevel.User);
         Toast.makeText(this,"Die Cocktailmaschine wurde geresettet!",Toast.LENGTH_SHORT).show();
     }
 
