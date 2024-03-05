@@ -9,44 +9,75 @@
 \@writefile{toc}{\contentsline {section}{\numberline {3.3}Detaillierter Entwurf}{4}{section.3.3}\protected@file@percent }
 \newlabel{sec:detaillierterentwurf}{{3.3}{4}{Detaillierter Entwurf}{section.3.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3.1}ESP: Befehle}{4}{subsection.3.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.1.1} Unterstützte Befehle}{4}{subsubsection.3.3.1.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.1.1} Allgemeine Befehle}{5}{paragraph.3.3.1.1.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.1.2} Rezepte definieren}{6}{paragraph.3.3.1.1.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.1.3} Rezepte machen}{6}{paragraph.3.3.1.1.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.1.4} Pumpen}{7}{paragraph.3.3.1.1.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.1.5} automatische Kalibrierung}{7}{paragraph.3.3.1.1.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.1.6} manuelle Kalibrierung}{8}{paragraph.3.3.1.1.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.2}ESP: Fehler}{9}{subsection.3.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.2.1} Fehler-Rückgaben der Cocktail-Maschine}{9}{subsubsection.3.3.2.1}\protected@file@percent }
+\newlabel{sec:espbefehle}{{3.3.1}{4}{ESP: Befehle}{subsection.3.3.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.1.1} Allgemeine Befehle}{5}{subsubsection.3.3.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.1.1} test (USER): Dummy-Befehl, der nichts macht}{5}{paragraph.3.3.1.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.1.2} init\_user (USER): als neuer Benutzer registrieren und eine User-ID erhalten}{5}{paragraph.3.3.1.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.1.3} reset (ADMIN): die Maschine zurücksetzen}{5}{paragraph.3.3.1.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.1.4} reset\_error (ADMIN): gespeicherten Fehler zurücksetzen}{5}{paragraph.3.3.1.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.1.5} clean (ADMIN): reinigt die Maschine}{5}{paragraph.3.3.1.1.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.1.6} restart (ADMIN): startet die Maschine neu}{5}{paragraph.3.3.1.1.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.1.7} factory\_reset (ADMIN): setzt alle Einstellungen zurück}{6}{paragraph.3.3.1.1.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.1.2} Rezepte definieren}{6}{subsubsection.3.3.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.2.1} edit\_recipe (USER): editiert ein Rezept}{6}{paragraph.3.3.1.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.2.2} delete\_recipe (USER): löscht ein Rezept}{6}{paragraph.3.3.1.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.1.3} Rezepte machen}{6}{subsubsection.3.3.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.3.1} queue\_recipe (USER): gibt ein Rezept in Auftrag}{6}{paragraph.3.3.1.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.3.2} start\_recipe (USER): fängt das Rezept an, wenn die Maschine bereit ist}{7}{paragraph.3.3.1.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.3.3} cancel\_recipe (USER): bricht das aktuelle Rezept ab}{7}{paragraph.3.3.1.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.3.4} take\_cocktail (USER): gibt Bescheid, dass der Cocktail entnommen wurde}{7}{paragraph.3.3.1.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.3.5} add\_liquid (USER): fügt Flüssigkeit zum aktuellen Rezept hinzu}{7}{paragraph.3.3.1.3.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.1.4} Pumpen}{7}{subsubsection.3.3.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.4.1} define\_pump (ADMIN): fügt Pumpe zu ESP hinzu}{7}{paragraph.3.3.1.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.4.2} define\_pumps (ADMIN): fügt mehrere Pumpe zu ESP hinzu}{7}{paragraph.3.3.1.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.4.3} edit\_pump (ADMIN): editiert eine Pumpe}{7}{paragraph.3.3.1.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.4.4} refill\_pump (ADMIN): füllt Pumpe auf}{8}{paragraph.3.3.1.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.1.5}automatische Kalibrierung}{8}{subsubsection.3.3.1.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.5.1}calibration\_start (ADMIN): Kalibrierung anfangen}{8}{paragraph.3.3.1.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.5.2}calibration\_cancel (ADMIN): Kalibrierung abbrechen}{8}{paragraph.3.3.1.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.5.3} calibration\_finish (ADMIN): Kalibrierung fertig}{8}{paragraph.3.3.1.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.5.4} calibration\_add\_empty (ADMIN): leeres Gefäß ist bereit}{8}{paragraph.3.3.1.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.5.5} calibration\_add\_weight (ADMIN): Gefäß ist mit einer Menge Wasser gefüllt}{8}{paragraph.3.3.1.5.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.1.6}manuelle Kalibrierung}{9}{subsubsection.3.3.1.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.6.1}calibrate\_pump (ADMIN): kalibriert die Pumpe mit vorhandenen Messwerten}{9}{paragraph.3.3.1.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.6.2}set\_pump\_times (ADMIN): setzt die Kalibrierungswerte für eine Pumpe}{9}{paragraph.3.3.1.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.6.3}tare\_scale (ADMIN): tariert die Waage}{9}{paragraph.3.3.1.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.6.4}calibrate\_scale (ADMIN): kalibriert die Waage}{9}{paragraph.3.3.1.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.1.6.5}set\_scale\_factor (ADMIN): setzt den Kalibrierungswert für die Waage}{10}{paragraph.3.3.1.6.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.2}ESP: Fehler}{10}{subsection.3.3.2}\protected@file@percent }
+\newlabel{sec:statuserror}{{3.3.2}{10}{ESP: Fehler}{subsection.3.3.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3.3}Fehler: Kalibrierung}{10}{subsection.3.3.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.3.1} automatische Kalibrierung}{10}{subsubsection.3.3.3.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.3.2} manuelle Kalibrierung}{11}{subsubsection.3.3.3.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.3.2.1} Ablauf der Kalibrierung für eine Pumpe}{11}{paragraph.3.3.3.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.3.2.2} Ablauf der Kalibrierung für die Waage}{11}{paragraph.3.3.3.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.4}ESP: Services}{11}{subsection.3.3.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.4.1} Unterstützte Services}{11}{subsubsection.3.3.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.1} Allgemein}{11}{paragraph.3.3.4.1.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.2} ID-Service}{12}{paragraph.3.3.4.1.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.3} Kommunikations-Service}{12}{paragraph.3.3.4.1.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.4} Status-Services}{12}{paragraph.3.3.4.1.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.5} Pumpen}{12}{paragraph.3.3.4.1.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.6} Flüssigkeiten}{13}{paragraph.3.3.4.1.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.7} Zustand}{13}{paragraph.3.3.4.1.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.8} Rezepte}{13}{paragraph.3.3.4.1.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.9} Cocktail}{13}{paragraph.3.3.4.1.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.10} Benutzer in der Warteschlange}{13}{paragraph.3.3.4.1.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.11} Letzte Ändererung}{13}{paragraph.3.3.4.1.11}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.12} Waage}{14}{paragraph.3.3.4.1.12}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.13} Fehler}{14}{paragraph.3.3.4.1.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.3.2.2} Ablauf der Kalibrierung für die Waage}{12}{paragraph.3.3.3.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.4}ESP: Services}{12}{subsection.3.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.4.1} Unterstützte Services}{12}{subsubsection.3.3.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.1}Allgemein}{12}{paragraph.3.3.4.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.2}ID-Service}{13}{paragraph.3.3.4.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.3}Kommunikations-Service}{13}{paragraph.3.3.4.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.4}Status-Services}{13}{paragraph.3.3.4.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.5}Pumpen}{13}{paragraph.3.3.4.1.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.6}Flüssigkeiten}{13}{paragraph.3.3.4.1.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.7}Zustand}{13}{paragraph.3.3.4.1.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.8}Rezepte}{13}{paragraph.3.3.4.1.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.9}Cocktail}{14}{paragraph.3.3.4.1.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.10}Benutzer in der Warteschlange}{14}{paragraph.3.3.4.1.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.11}Letzte Änderung}{14}{paragraph.3.3.4.1.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.12}Waage}{14}{paragraph.3.3.4.1.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.4.1.13}Fehler}{14}{paragraph.3.3.4.1.13}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3.5}ESP: Zustände}{14}{subsection.3.3.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.5.1} Zustände der Cocktail-Maschine}{14}{subsubsection.3.3.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.5.1.1} Rezepte}{14}{paragraph.3.3.5.1.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\numberline {3.3.5.1.2} Kalibrierung}{14}{paragraph.3.3.5.1.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.6}GUI: Öffnung der App}{14}{subsection.3.3.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.7}GUI: Keine Kalibrierung}{15}{subsection.3.3.7}\protected@file@percent }
-\newlabel{subsec:nocal}{{3.3.7}{15}{GUI: Keine Kalibrierung}{subsection.3.3.7}{}}
+\newlabel{sec:status}{{3.3.5}{14}{ESP: Zustände}{subsection.3.3.5}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.5.1}Rezepte}{14}{subsubsection.3.3.5.1}\protected@file@percent }
+\newlabel{sec:statusrez}{{3.3.5.1}{14}{Rezepte}{subsubsection.3.3.5.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.5.2} Kalibrierung}{15}{subsubsection.3.3.5.2}\protected@file@percent }
+\newlabel{sec:statuscal}{{3.3.5.2}{15}{Kalibrierung}{subsubsection.3.3.5.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.6}GUI: Öffnung der App}{15}{subsection.3.3.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.7}GUI: Keine Kalibrierung}{16}{subsection.3.3.7}\protected@file@percent }
+\newlabel{subsec:nocal}{{3.3.7}{16}{GUI: Keine Kalibrierung}{subsection.3.3.7}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3.8}GUI: Dialog: Anmelden}{16}{subsection.3.3.8}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3.9}GUI: Dialog: Automatische Kalibrierung}{18}{subsection.3.3.9}\protected@file@percent }
+\newlabel{sec:dioautokal}{{3.3.9}{18}{GUI: Dialog: Automatische Kalibrierung}{subsection.3.3.9}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3.10}GUI: Darstellung Liste}{19}{subsection.3.3.10}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.10.1}Pumpen}{19}{subsubsection.3.3.10.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.10.2}Rezepte}{19}{subsubsection.3.3.10.2}\protected@file@percent }
@@ -74,20 +105,22 @@
 \@writefile{lot}{\contentsline {table}{\numberline {3.1}{\ignorespaces Menü}}{24}{table.caption.4}\protected@file@percent }
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
 \newlabel{table:menu}{{3.1}{24}{Menü}{table.caption.4}{}}
-\newlabel{RF2}{25}
-\@writefile{lot}{\contentsline {table}{\numberline {3.2}{\ignorespaces Haupteinstellung}}{25}{table.caption.5}\protected@file@percent }
-\newlabel{table:main}{{3.2}{25}{Haupteinstellung}{table.caption.5}{}}
-\newlabel{RF3}{26}
-\newlabel{table:mach}{{\caption@xref {table:mach}{ on input line 949}}{26}{Die Cocktailmaschineneinstellungen:}{table.caption.6}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {3.3}{\ignorespaces Cocktailmaschineneinstellungen}}{26}{table.caption.6}\protected@file@percent }
-\newlabel{RF4}{27}
-\newlabel{table:weight}{{\caption@xref {table:weight}{ on input line 979}}{27}{Die Waagenkalibrierung:}{table.caption.7}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {3.4}{\ignorespaces Waagenkalibrierung}}{27}{table.caption.7}\protected@file@percent }
-\newlabel{RF5}{28}
-\newlabel{table:pump}{{\caption@xref {table:pump}{ on input line 998}}{28}{Die Pumpenkalibrierung:}{table.caption.8}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {3.5}{\ignorespaces Pumpenkalibrierung}}{28}{table.caption.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.16}DB: Zustände}{25}{subsection.3.3.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.17}Schnittstellen}{25}{subsection.3.3.17}\protected@file@percent }
+\newlabel{RF2}{26}
+\@writefile{lot}{\contentsline {table}{\numberline {3.2}{\ignorespaces Haupteinstellung}}{26}{table.caption.5}\protected@file@percent }
+\newlabel{table:main}{{3.2}{26}{Haupteinstellung}{table.caption.5}{}}
+\newlabel{RF3}{27}
+\newlabel{table:mach}{{\caption@xref {table:mach}{ on input line 958}}{27}{Die Cocktailmaschineneinstellungen:}{table.caption.6}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.3}{\ignorespaces Cocktailmaschineneinstellungen}}{27}{table.caption.6}\protected@file@percent }
+\newlabel{RF4}{28}
+\newlabel{table:weight}{{\caption@xref {table:weight}{ on input line 988}}{28}{Die Waagenkalibrierung:}{table.caption.7}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.4}{\ignorespaces Waagenkalibrierung}}{28}{table.caption.7}\protected@file@percent }
+\newlabel{RF5}{29}
+\newlabel{table:pump}{{\caption@xref {table:pump}{ on input line 1007}}{29}{Die Pumpenkalibrierung:}{table.caption.8}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3.5}{\ignorespaces Pumpenkalibrierung}}{29}{table.caption.8}\protected@file@percent }
 \@setckpt{chapters/03_Entwurf}{
-\setcounter{page}{29}
+\setcounter{page}{30}
 \setcounter{equation}{0}
 \setcounter{enumi}{10}
 \setcounter{enumii}{2}
@@ -98,7 +131,7 @@
 \setcounter{part}{0}
 \setcounter{chapter}{3}
 \setcounter{section}{3}
-\setcounter{subsection}{15}
+\setcounter{subsection}{17}
 \setcounter{subsubsection}{0}
 \setcounter{paragraph}{0}
 \setcounter{subparagraph}{0}
@@ -106,7 +139,7 @@
 \setcounter{table}{5}
 \setcounter{section@level}{2}
 \setcounter{Item}{15}
-\setcounter{bookmark@seq@number}{33}
+\setcounter{bookmark@seq@number}{35}
 \setcounter{lstnumber}{1}
 \setcounter{NAT@ctr}{0}
 \setcounter{caption@flags}{2}

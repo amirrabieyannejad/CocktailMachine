@@ -11,11 +11,16 @@
 \section{Technologien}
 \label{sec:technologien}
 
+	\begin{itemize}	
+		\item Bluetooth
+		\item SQL Datenbank
+		\item JAVA (Android)
+	\end{itemize}
 \section{Detaillierter Entwurf}
 \label{sec:detaillierterentwurf}
 
 \subsection{ESP: Befehle}
-\subsubsection{ Unterstützte Befehle}
+\label{sec:espbefehle}
 
 Nachrichten werden als JSON-Maps (in UTF8) kodiert und folgen alle dem selben Format.
 
@@ -36,9 +41,9 @@ Der Key zum Entschlüsseln ist mit der User-ID verbunden und wird benutzt, um di
 
 Momentan unterstützt der ESP noch keine verschlüsselten Nachricht.
 
-\paragraph{ Allgemeine Befehle}
+\subsubsection{ Allgemeine Befehle}
 
-\textbf{ test (USER): Dummy-Befehl, der nichts macht}
+\paragraph{ test (USER): Dummy-Befehl, der nichts macht}
 
 JSON-Beispiel:
 
@@ -46,7 +51,7 @@ JSON-Beispiel:
 \{"cmd": "test"\}
 *
 
-\textbf{ init\_user (USER): als neuer Benutzer registrieren und eine User-ID erhalten}
+\paragraph{ init\_user (USER): als neuer Benutzer registrieren und eine User-ID erhalten}
 
 - name: str
 
@@ -58,7 +63,7 @@ JSON-Beispiel:
 --> \{"user": 100\}
 *
 
-\textbf{ reset (ADMIN): die Maschine zurücksetzen}
+\paragraph{ reset (ADMIN): die Maschine zurücksetzen}
 
 - user: User
 
@@ -70,7 +75,7 @@ JSON-Beispiel:
 {"cmd": "reset", "user": 0}
 *
 
-\textbf{ reset\_error (ADMIN): gespeicherten Fehler zurücksetzen}
+\paragraph{ reset\_error (ADMIN): gespeicherten Fehler zurücksetzen}
 
 - user: User
 
@@ -82,7 +87,7 @@ JSON-Beispiel:
 {"cmd": "reset\_error", "user": 0}
 *
 
-\textbf{ clean (ADMIN): reinigt die Maschine}
+\paragraph{ clean (ADMIN): reinigt die Maschine}
 
 - user: User
 
@@ -92,7 +97,7 @@ JSON-Beispiel:
 {"cmd": "clean", "user": 0}
 *
 
-\textbf{ restart (ADMIN): startet die Maschine neu}
+\paragraph{ restart (ADMIN): startet die Maschine neu}
 
 - user: User
 
@@ -102,7 +107,7 @@ JSON-Beispiel:
 {"cmd": "restart", "user": 0}
 *
 
-\textbf{ factory\_reset (ADMIN): setzt alle Einstellungen zurück}
+\paragraph{ factory\_reset (ADMIN): setzt alle Einstellungen zurück}
 
 - user: User
 
@@ -112,7 +117,7 @@ JSON-Beispiel:
 {"cmd": "factory\_reset", "user": 0}
 *
 
-\paragraph{ Rezepte definieren}
+\subsubsection{ Rezepte definieren}
 
 \textbf{ define\_recipe (USER): definiert ein neues Rezept}
 
@@ -126,7 +131,7 @@ JSON-Beispiel:
 \{"cmd": "define\_recipe", "user": 0, "name": "radler", "ingredients": [["beer", 250], ["lemonade", 250]]\}
 *
 
-\textbf{ edit\_recipe (USER): editiert ein Rezept}
+\paragraph{ edit\_recipe (USER): editiert ein Rezept}
 
 - user: User
 - name: str
@@ -138,7 +143,7 @@ JSON-Beispiel:
 {"cmd": "edit\_recipe", "user": 0, "name": "radler", "ingredients": [["beer", 250], ["lemonade", 250]]}
 *
 
-\textbf{ delete\_recipe (USER): löscht ein Rezept}
+\paragraph{ delete\_recipe (USER): löscht ein Rezept}
 
 - user: User
 - name: str
@@ -149,7 +154,7 @@ JSON-Beispiel:
 \{"cmd": "delete\_recipe", "user": 0, "name": "radler"\}
 *
 
-\paragraph{ Rezepte machen}
+\subsubsection{ Rezepte machen}
 
 Der Ablauf um ein Rezept zu machen ist:
 
@@ -162,7 +167,7 @@ Der Ablauf um ein Rezept zu machen ist:
 4. Die Maschine beginnt dann mit dem nächsten Rezept in der Warteschlange.
 
 
-\textbf{ queue\_recipe (USER): gibt ein Rezept in Auftrag}
+\paragraph{ queue\_recipe (USER): gibt ein Rezept in Auftrag}
 
 - user: User
 - recipe: str
@@ -173,7 +178,7 @@ JSON-Beispiel:
 \{"cmd": "queue\_recipe", "user": 8858, "recipe": "radler"\}
 *
 
-\textbf{ start\_recipe (USER): fängt das Rezept an, wenn die Maschine bereit ist}
+\paragraph{ start\_recipe (USER): fängt das Rezept an, wenn die Maschine bereit ist}
 
 - user: User
 
@@ -183,7 +188,7 @@ JSON-Beispiel:
 \{"cmd": "start\_recipe", "user": 8858\}
 *
 
-\textbf{ cancel\_recipe (USER): bricht das aktuelle Rezept ab}
+\paragraph{ cancel\_recipe (USER): bricht das aktuelle Rezept ab}
 
 - user: User
 
@@ -193,7 +198,7 @@ JSON-Beispiel:
 \{"cmd": "cancel\_recipe", "user": 483\}
 *
 
-\textbf{ take\_cocktail (USER): gibt Bescheid, dass der Cocktail entnommen wurde}
+\paragraph{ take\_cocktail (USER): gibt Bescheid, dass der Cocktail entnommen wurde}
 
 - user: User
 
@@ -203,7 +208,7 @@ JSON-Beispiel:
 \{"cmd": "take\_cocktail", "user": 483\}
 *
 
-\textbf{ add\_liquid (USER): fügt Flüssigkeit zum aktuellen Rezept hinzu}
+\paragraph{ add\_liquid (USER): fügt Flüssigkeit zum aktuellen Rezept hinzu}
 
 - user: User
 - liquid: str
@@ -215,9 +220,9 @@ JSON-Beispiel:
 \{"cmd": "add\_liquid", "user": 0, "liquid": "water", "volume": 30\}
 *
 
-\paragraph{ Pumpen}
+\subsubsection{ Pumpen}
 
-\textbf{ define\_pump (ADMIN): fügt Pumpe zu ESP hinzu}
+\paragraph{ define\_pump (ADMIN): fügt Pumpe zu ESP hinzu}
 
 - user: User
 - liquid: str
@@ -230,7 +235,7 @@ JSON-Beispiel:
 \{"cmd": "define\_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1\}
 *
 
-\textbf{ define\_pumps (ADMIN): fügt mehrere Pumpe zu ESP hinzu}
+\paragraph{ define\_pumps (ADMIN): fügt mehrere Pumpe zu ESP hinzu}
 
 - user: User
 - liquid: str
@@ -243,7 +248,7 @@ JSON-Beispiel:
 \{"cmd": "define\_pumps", "user": 0, "liquid": "water", "volume": 0, "quantity": 3\}
 *
 
-\textbf{ edit\_pump (ADMIN): editiert eine Pumpe}
+\paragraph{ edit\_pump (ADMIN): editiert eine Pumpe}
 
 - user: User
 - liquid: str
@@ -258,7 +263,7 @@ JSON-Beispiel:
 \{"cmd": "edit\_pump", "user": 0, "liquid": "water", "volume": 1000, "slot": 1\}
 *
 
-\textbf{ refill\_pump (ADMIN): füllt Pumpe auf}
+\paragraph{ refill\_pump (ADMIN): füllt Pumpe auf}
 
 - user: User
 - liquid: str
@@ -270,11 +275,11 @@ JSON-Beispiel:
 \{"cmd": "refill\_pump", "user": 0, "volume": 1000, "slot": 1\}
 *
 
-\paragraph{ automatische Kalibrierung}
+\subsubsection{automatische Kalibrierung}
 
 siehe [Kalibrierung.md]()
 
-\textbf{ calibration\_start (ADMIN): Kalibrierung anfangen}
+\paragraph{calibration\_start (ADMIN): Kalibrierung anfangen}
 
 - user: User
 
@@ -284,7 +289,7 @@ JSON-Beispiel:
 \{"cmd": "calibration\_start", "user": 0\}
 *
 
-\textbf{ calibration\_cancel (ADMIN): Kalibrierung abbrechen}
+\paragraph{calibration\_cancel (ADMIN): Kalibrierung abbrechen}
 
 - user: User
 
@@ -294,7 +299,7 @@ JSON-Beispiel:
 \{"cmd": "calibration\_cancel", "user": 0\}
 *
 
-\textbf{ calibration\_finish (ADMIN): Kalibrierung fertig}
+\paragraph{ calibration\_finish (ADMIN): Kalibrierung fertig}
 
 - user: User
 
@@ -304,7 +309,7 @@ JSON-Beispiel:
 \{"cmd": "calibration\_finish", "user": 0\}
 *
 
-\textbf{ calibration\_add\_empty (ADMIN): leeres Gefäß ist bereit}
+\paragraph{ calibration\_add\_empty (ADMIN): leeres Gefäß ist bereit}
 
 - user: User
 
@@ -314,7 +319,7 @@ JSON-Beispiel:
 \{"cmd": "calibration\_add\_empty", "user": 0\}
 *
 
-\textbf{ calibration\_add\_weight (ADMIN): Gefäß ist mit einer Menge Wasser gefüllt}
+\paragraph{ calibration\_add\_weight (ADMIN): Gefäß ist mit einer Menge Wasser gefüllt}
 
 - user: User
 - weight: float (in Gramm)
@@ -325,7 +330,7 @@ JSON-Beispiel:
 \{"cmd": "calibration\_add\_weight", "user": 0, "weight": 100.0\}
 *
 
-\paragraph{ manuelle Kalibrierung}
+\subsubsection{manuelle Kalibrierung}
 
 \textbf{ run\_pump (ADMIN): lässt die Pumpe für eine bestimmte Zeit laufen}
 
@@ -341,7 +346,7 @@ JSON-Beispiel:
 \{"cmd": "run\_pump", "user": 0, "slot": 1, "time": 1000\}
 *
 
-\textbf{ calibrate\_pump (ADMIN): kalibriert die Pumpe mit vorhandenen Messwerten}
+\paragraph{calibrate\_pump (ADMIN): kalibriert die Pumpe mit vorhandenen Messwerten}
 
 - user: User
 - slot: int
@@ -360,7 +365,7 @@ JSON-Beispiel:
 \{"cmd": "calibrate\_pump", "user": 0, "slot": 1, "time1": 10000, "time2": 20000, "volume1": 15.0, "volume2": 20.0\}
 *
 
-\textbf{ set\_pump\_times (ADMIN): setzt die Kalibrierungswerte für eine Pumpe}
+\paragraph{set\_pump\_times (ADMIN): setzt die Kalibrierungswerte für eine Pumpe}
 
 - user: User
 - slot: int
@@ -376,7 +381,7 @@ JSON-Beispiel:
 \{"cmd": "set\_pump\_times", "user": 0, "slot": 1, "time\_init": 1000, "time\_reverse": 1000, "rate": 1.0\}
 *
 
-\textbf{ tare\_scale (ADMIN): tariert die Waage}
+\paragraph{tare\_scale (ADMIN): tariert die Waage}
 
 - user: User
 
@@ -386,7 +391,7 @@ JSON-Beispiel:
 \{"cmd": "tare\_scale", "user": 0\}
 *
 
-\textbf{ calibrate\_scale (ADMIN): kalibriert die Waage}
+\paragraph{calibrate\_scale (ADMIN): kalibriert die Waage}
 
 - user: User
 - weight: float
@@ -399,7 +404,7 @@ JSON-Beispiel:
 \{"cmd": "calibrate\_scale", "user": 0, "weight": 100.0\}
 *
 
-\textbf{ set\_scale\_factor (ADMIN): setzt den Kalibrierungswert für die Waage}
+\paragraph{set\_scale\_factor (ADMIN): setzt den Kalibrierungswert für die Waage}
 
 - user: User
 - factor: float
@@ -411,7 +416,7 @@ JSON-Beispiel:
 *
 
 \subsection{ESP: Fehler}
-\subsubsection{ Fehler-Rückgaben der Cocktail-Maschine}
+\label{sec:statuserror}
 
 Mögliche Fehler, die vom ESP zurückgegeben werden können. (s. [Befehle.md]())
 
@@ -512,7 +517,7 @@ Die berechneten Werte werden im Debug-Log auch angezeigt.
 \subsection{ESP: Services}
 \subsubsection{ Unterstützte Services}
 
-\paragraph{ Allgemein}
+\paragraph{Allgemein}
 
 Der ESP nutzt kein Pairing. Stattdessen wird jedem Benutzer eine User-ID zugewiesen, die dann bei den Befehlen mit angegeben werden muss.
 
@@ -547,23 +552,23 @@ Die Antwort ist dann:
 
 Die ID ist also 100 und kann dann in anderen Befehlen mit angegeben werden.
 
-\paragraph{ ID-Service}
+\paragraph{ID-Service}
 
 - Name: Cocktail Machine ESP32
 - UUID des Service: 8ccbf239-1cd2-4eb7-8872-1cb76c980d14
 - UUID des Namens: c0605c38-3f94-33f6-ace6-7a5504544a80
 
-\paragraph{ Kommunikations-Service}
+\paragraph{Kommunikations-Service}
 
 - UUID des Service: dad995d1-f228-38ec-8b0f-593953973406
 - UUID user: eb61e31a-f00b-335f-ad14-d654aac8353d
 - UUID admin: 41044979-6a5d-36be-b9f1-d4d49e3f5b73
 
-\paragraph{ Status-Services}
+\paragraph{Status-Services}
 
 - UUID des Service: 0f7742d4-ea2d-43c1-9b98-bb4186be905d
 
-\paragraph{ Pumpen}
+\paragraph{Pumpen}
 
 - UUID Characteristic: 1a9a598a-17ce-3fcd-be03-40a48587d04e
 
@@ -572,10 +577,10 @@ Wert: Map aller verfügbaren Pumpen und deren Füllstand und Kalibrierung. `"cal
 Beispiel:
 
 *
-{"1":{"liquid":"water","volume":1000.0,"cal":[0.0,1000,1000]}
+\{"1":\{"liquid":"water","volume":1000.0,"cal":[0.0,1000,1000]\}\}
 	*
 	
-	\paragraph{ Flüssigkeiten}
+\paragraph{Flüssigkeiten}
 	
 	- UUID Characteristic: fc60afb0-2b00-3af2-877a-69ae6815ca2f
 	
@@ -587,7 +592,7 @@ Beispiel:
 	{"beer": 200, "lemonade": 2000, "orange juice": 2000}
 	*
 	
-	\paragraph{ Zustand}
+\paragraph{Zustand}
 	
 	- UUID Characteristic: e9e4b3f2-fd3f-3b76-8688-088a0671843a
 	
@@ -599,7 +604,7 @@ Beispiel:
 	"ready"
 	*
 	
-	\paragraph{ Rezepte}
+\paragraph{Rezepte}
 	
 	- UUID Characteristic: 9ede6e03-f89b-3e52-bb15-5c6c72605f6c
 	
@@ -611,7 +616,7 @@ Beispiel:
 	[{"name": "radler", "liquids": [["beer", 250], ["lemonade", 250]]}, {"name": "spezi", "liquids": [["cola", 300], ["orange juice", 100]]}]
 	*
 	
-	\paragraph{ Cocktail}
+\paragraph{Cocktail}
 	
 	- UUID Characteristic: 7344136f-c552-3efc-b04f-a43793f16d43
 	
@@ -623,7 +628,7 @@ Beispiel:
 	{"weight": 500.0, "content": [["beer", 250], ["lemonade", 250]]}
 	*
 	
-	\paragraph{ Benutzer in der Warteschlange}
+\paragraph{Benutzer in der Warteschlange}
 	
 	- UUID Characteristic: 2ce478ea-8d6f-30ba-9ac6-2389c8d5b172
 	
@@ -637,7 +642,7 @@ Beispiel:
 	[1, 4, 2]
 	*
 	
-	\paragraph{ Letzte Ändererung}
+\paragraph{Letzte Änderung}
 	
 	- UUID Characteristic: 586b5706-5856-34e1-ad17-94f840298816
 	
@@ -653,7 +658,7 @@ Beispiel:
 	275492
 	*
 	
-	\paragraph{ Waage}
+\paragraph{Waage}
 	
 	- UUID Characteristic: ff18f0ac-f039-4cd0-bee3-b546e3de5551
 	
@@ -665,40 +670,43 @@ Beispiel:
 	{"weight":0.0,"calibrated":true}
 	*
 	
-	\paragraph{ Fehler}
+\paragraph{Fehler}
 	
-	- UUID Characteristic: 2e03aa0c-b25f-456a-a327-bd175771111a
+UUID Characteristic: 2e03aa0c-b25f-456a-a327-bd175771111a
 	
 	Wert: aktueller Fehler (falls vorhanden)
 	
 	Beispiel:
 	
-	*
-	"invalid volume"
-	*
-	
-	\subsection{ESP: Zustände}
-	\subsubsection{ Zustände der Cocktail-Maschine}
-	
-	Der aktuelle Zustand kann im Status-Service ausgelesen werden. (s. [Services.md]())
-	
-	\paragraph{ Rezepte}
-	
-	- `ready`: Maschine ist bereit einen Cocktail zu machen
-	- `waiting for container`: Maschine wartet auf ein leeres Gefäß
-	- `mixing`: Maschine macht einen Cocktail
-	- `pumping`: Maschine pumpt Flüssigkeiten
-	- `cocktail done`: Cocktail ist fertig zubereitet und kann entnommen werden. Danach sollte `take\_cocktail` ausgeführt werden.
-	
-	\paragraph{ Kalibrierung}
-	
-	- `ready`: Maschine ist bereit für eine Kalibrierung
-	- `calibration empty container`: Kalibrierung wartet auf ein leeres Gefäß. Es sollte `calibration\_add\_empty` ausgeführt werden.
-	- `calibration known weight`: Kalibrierung wartet auf ein Gewicht. Es sollte `calibration\_add\_weight` ausgeführt werden.
-	- `calibration pumps`: Kalibrierung pumpt Flüssigkeiten
-	- `calibration calculation`: Kalibrierung berechnet die Werte
-	- `calibration done`: Kalibrierung fertig. Es sollte `calibration\_finish` ausgeführt werden.
 
+	"invalid volume"
+	
+
+
+\subsection{ESP: Zustände}		
+\label{sec:status}
+	
+Der aktuelle Zustand kann im \hyperref[sec:espbefehle]{Status-Service} ausgelesen werden. 
+	
+\subsubsection{Rezepte}
+\label{sec:statusrez}
+	\begin{itemize}	
+		\item `ready`: Maschine ist bereit einen Cocktail zu machen
+		\item `waiting for container`: Maschine wartet auf ein leeres Gefäß
+		\item `mixing`: Maschine macht einen Cocktail
+		\item `pumping`: Maschine pumpt Flüssigkeiten
+		\item `cocktail done`: Cocktail ist fertig zubereitet und kann entnommen werden. Danach sollte `take\_cocktail` ausgeführt werden.
+	\end{itemize}
+\subsubsection{ Kalibrierung}
+\label{sec:statuscal}
+	\begin{itemize}
+		\item `ready`: Maschine ist bereit für eine Kalibrierung
+		\item `calibration empty container`: Kalibrierung wartet auf ein leeres Gefäß. Es sollte `calibration\_add\_empty` ausgeführt werden.
+		\item `calibration known weight`: Kalibrierung wartet auf ein Gewicht. Es sollte `calibration\_add\_weight` ausgeführt werden.
+		\item `calibration pumps`: Kalibrierung pumpt Flüssigkeiten
+		\item `calibration calculation`: Kalibrierung berechnet die Werte
+		\item `calibration done`: Kalibrierung fertig. Es sollte `calibration\_finish` ausgeführt werden.
+	\end{itemize}
 \subsection{GUI: Öffnung der App}
 Die Öffnung der App resultiert erstmal darin die verfügbaren Cocktailmaschinen zu listen und den Nutzer wählen zu lassen. Ist die gewählte Cocktailmaschine kalibriert, wird der Nutzer sofort in das Menü versetzt. Ist die Maschine nicht kalibriert, wird der Nutzer in einen \hyperref[subsec:nocal]{Wartebereich} geschoben. Dort hat der Nutzer die Wahl:
 \begin{itemize}
@@ -739,6 +747,7 @@ Dialogfenster:
 Passwort angeben (''admin"). Gelange in den angemeldeten Zustand.
 
 \subsection{GUI: Dialog: Automatische Kalibrierung}
+\label{sec:dioautokal}
 
 \includegraphics[scale=0.65]{calibrate.png}
 
@@ -1015,3 +1024,17 @@ Im Menü werden die wichtigsten Funktionen dem Nutzer angezeigt.
 
 \subsection{Datenbank}
 
+Die Datenbank verwendet die von Android zur Verfügung stehende Standardimplementierung. 
+
+
+\subsection{DB: Zustände}
+
+Es gibt mehrere \hyperref[sec:status]{Zustände}, die die Cocktailmaschine ein nehmen kann. Programmtechnisch ist es sinnvoll diese in Enums zu verpacken, wobei es mehrere Enum-Pakete gibt. Die \hyperref[sec:statusrez]{Standardzustände}, wie das Mixen eines Cocktails und die \hyperref[sec:statuscal]{Zustände während bzw. kurz vor der Kalibrierung} und die auftretenden \hyperref[sec:statuserror]{Fehler}
+
+
+
+\subsection{Schnittstellen}
+
+
+Es gibt 5 Hauptschnittstellen, eine für Pumpen, für die Rezepte, die Zutaten, die Serviervorschläge und die Cochtailmaschine selbst. 
+Die ersten vier Komponenten von Pumpen, Rezepten, Zutaten und Seviervorschläge ähneln sich. Die Schnittstelle dient als Dateiformat für ein einzelnes Objekt wie ein Rezept mit Namen, Zutaten und ID oder in statischen Funktionen zur Abfrage der Datenbank. Finde zum Beispiel alle Zutaten, die "Wod" im Namen tragen. Die Schnittstelle der Cocktailmaschine diente zunächst als Dummy für die Bluetoothverbindung, weil diese noch nicht implementiert war und trotzdem aufgerufen werden sollte, um die GUI die Cocktailmaschienenfunktionen simulieren zu lassen und diente im Anschluss als Oberfläche die Bluetoothverbindung einzelner \hyperref[sec:espbefehle]{Cocktailmaschinenfunktionen} zu erstellen, sowie die \hyperref[sec:dioautokal]{automatische Kalibrierung} zu starten.
