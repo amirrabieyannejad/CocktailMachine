@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.2.26)  5 MAR 2024 17:57
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.2.26)  5 MAR 2024 18:01
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1092,38 +1092,11 @@ Underfull \vbox (badness 3302) has occurred while \output is active []
 LaTeX Warning: No positions in optional float specifier.
                Default added (so using `tbp') on input line 882.
 
-[23 <./Menu.png>] [24]
-
-! LaTeX Error: There's no line here to end.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.1041 G
-        ebündelt ist der Zugriff auf die Tabellen in einer Klasse zur Erlei...
-
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-
-! LaTeX Error: There's no line here to end.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.1058 
-       
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-[25]) [26] [27] [28] [29] [30]
+[23 <./Menu.png>] [24] [25]) [26] [27] [28] [29] [30]
 \openout2 = `chapters/04_Qualitätssicherung.aux'.
 
- (chapters/04_Qualitätssicherung.tex) [31
+
+(chapters/04_Qualitätssicherung.tex) [31
 
 
 
@@ -1132,8 +1105,8 @@ or  <return>  to continue without it.
 ]
 \openout2 = `chapters/05_Abschlussbericht.aux'.
 
-
-(chapters/05_Abschlussbericht.tex) [32
+ (chapters/05_Abschlussbericht.tex)
+[32
 
 
 
@@ -1357,9 +1330,6 @@ L3 programming layer <2024-02-13>
 
 LaTeX Warning: There were undefined references.
 
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 18F41CE16CC30ED6D29430D3C9CED1D9;7503.
  ) 
@@ -1378,7 +1348,7 @@ vetic/uhvr8a.pfb><C:/Users/johan/AppData/Local/Programs/MiKTeX/fonts/type1/urw/
 times/utmb8a.pfb><C:/Users/johan/AppData/Local/Programs/MiKTeX/fonts/type1/urw/
 times/utmr8a.pfb><C:/Users/johan/AppData/Local/Programs/MiKTeX/fonts/type1/urw/
 times/utmri8a.pfb>
-Output written on main.pdf (47 pages, 303915 bytes).
+Output written on main.pdf (47 pages, 303938 bytes).
 PDF statistics:
  679 PDF objects out of 1000 (max. 8388607)
  210 named destinations out of 1000 (max. 500000)

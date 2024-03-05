@@ -1027,7 +1027,7 @@ Im Menü werden die wichtigsten Funktionen dem Nutzer angezeigt.
 Die Datenbank verwendet die von Android zur Verfügung stehende Standardimplementierung. 
  
 Die Datenbank ist über ein paar simplen Designentscheidungen implementiert. Es gibt eine Standardimplementierung von Grundfunktionen für jede Tabelle die als Oberklasse aller Tabellen fungiert. Die Unterklassen werden dann um die spezifische Implementierungen erweitert. Eine Standardabfrage einer Tabelle ist die Frage nach dem Namen oder den Spaltennamen. Die Abfrage nach Elementen mit einer bestimmten ID, etc. 
-\\
+ 
 Die für diese Anwendung benötigten Tabellen sind. 
 \begin{itemize}
 	\item der Serviervorschlag (Titel, Beschreibung)
@@ -1037,13 +1037,13 @@ Die für diese Anwendung benötigten Tabellen sind.
 	\item die Information ob eine Zutat in einem Rezept ist (Rezept Referenz, Zutat Referenz, Volumen)
 	\item die Information ob ein Serviervorschlag in einem Rezept ist (Rezept Referenz, Serviervorschlag Referenz)
 \end{itemize}
-\\
+ 
 Gebündelt ist der Zugriff auf die Tabellen in einer Klasse zur Erleichterung. 
 Dort ist dann eine Tabelle als statisches Objekt hinterlegt. 
-\\
+ 
 Jede Tabelle hat ein Format seiner Objekte. Diese Datenbankelemente müssen programmatisch hinterlegt werden und die Tabellenspalten abbilden. 
-\\
-Um zu erkennen wo und welche Fehler auftreten, wie zum Beispiel die Doppelnennung einer Zutat in einem Rezept, gitb es eine Reihe von spezifische Exception. 
+ 
+Um zu erkennen, wo und welche Fehler auftreten, wie zum Beispiel die Doppelnennung einer Zutat in einem Rezept, gitb es eine Reihe von spezifische Exception. 
 \begin{itemize}
  	\item die Ablehnung des Zugriffs, weil der App-Nutzer kein Administrator ist
  	\item die fehlende Zutat in einer Pumpe
@@ -1052,16 +1052,16 @@ Um zu erkennen wo und welche Fehler auftreten, wie zum Beispiel die Doppelnennun
  	\item die Datenbank ist nicht erreichbar
  	\item die Zutat ist bereits im Rezept erwähnt
  	\item die Zutat ist nicht im Rezept erwähnt, obwohl explizit nach ihr gefragt wird
- 	\item die Pumpe ist leer/ wurde gerade leer gemacht
+ 	\item die Pumpe ist leer, bzw. wurde gerade leer gemacht
 \end{itemize}
-\\
+ 
 
 Es gibt 4 Klassen, die auf die Datenbank zugreift.
 \begin{itemize}
 	\item eine Klasse, um ein Element zu änder oder hinzuzufügen 
 	\item eine Klasse, um ein Element zu löschen
 	\item eine Klasse, um Elemente abzufragen
-	\item eine Klasse für die Extrabefehle der Datenbank, wie die Erstellung und Löschung von Tabellen  oder das Einlesen vorgefertigeter Rezepte.
+	\item eine Klasse für die Extrabefehle der Datenbank, wie die Erstellung und Löschung von Tabellen  oder das Einlesen vorgefertigter Rezepte.
 	\item die Datenbankverbindung, welche die Standardimplementierung einer SQL-Datenbank darstellt
 	\item eine Hilfsklasse, die beim Auslesen hilft in den unterschiedlichen Androidversionen
 \end{itemize}
